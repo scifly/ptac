@@ -12,6 +12,46 @@ use Illuminate\Support\Facades\Auth;
 |
 */
 
-Route::get('/', 'HomeController@index');
+/*Route::get('/', 'HomeController@index');
 Auth::routes();
-Route::get('/home', 'HomeController@index')->name('home');
+Route::get('/home', 'HomeController@index')->name('home');*/
+
+Route::get('/', function() { return 'Dashboard'; });
+Route::get('schools', function() {
+    $shools = App\Models\School::all();
+    return view('configuration.schools')->with('schools', $shools);
+});
+Route::get('schools/types/{name}', function($name) {
+    $schoolType = App\Models\SchoolType::with('schools')
+        ->whereName($name)
+        ->first();
+    return view('configuration.schools')
+        ->with('schoolType', $schoolType)
+        ->with('schools', $schoolType->schools);
+});
+/*Route::get('schools/{school}', function(App\Models\School $school) {
+    return view('configuration.schools_show')->with('school', $school);
+});*/
+
+
+Route::get('schools/create', function() {
+    return view('configuration.schools_create');
+});
+Route::post('schools', function() {
+    $school = App\Models\School::create(Request::all());
+    return redirect('schools/' . $school->id)
+        ->withSuccess('成功创建学校');
+});
+Route::get('schools/{school}/edit', function(App\Models\School $school) {
+    return view('configuration.schools_edit')->with('school', $school);
+});
+Route::put('schools/{school}', function(App\Models\School $school) {
+    $school->update(Request::all());
+    return redirect('schools/' . $school->id)
+        ->withSuccess('成功更新学校');
+});
+Route::delete('schools/{school}', function(App\Models\School $school) {
+    $school->delete();
+    return redirect('schools')
+        ->withSuccess('该学校已被删除');
+});
