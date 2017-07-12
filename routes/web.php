@@ -29,9 +29,7 @@ Route::get('schools/types/{name}', function($name) {
         ->with('schoolType', $schoolType)
         ->with('schools', $schoolType->schools);
 });
-/*Route::get('schools/{school}', function(App\Models\School $school) {
-    return view('configuration.schools_show')->with('school', $school);
-});*/
+
 
 
 Route::get('schools/create', function() {
@@ -39,19 +37,19 @@ Route::get('schools/create', function() {
 });
 Route::post('schools', function() {
     $school = App\Models\School::create(Request::all());
-    return redirect('schools/' . $school->id)
-        ->withSuccess('成功创建学校');
+    return redirect('schools/' . $school->id)->withSuccess('成功创建学校');
+});
+Route::get('schools/{school}', function(App\Models\School $school) {
+    return view('configuration.schools_show')->with('school', $school);
 });
 Route::get('schools/{school}/edit', function(App\Models\School $school) {
     return view('configuration.schools_edit')->with('school', $school);
 });
 Route::put('schools/{school}', function(App\Models\School $school) {
     $school->update(Request::all());
-    return redirect('schools/' . $school->id)
-        ->withSuccess('成功更新学校');
+    return redirect('schools/' . $school->id)->withSuccess('成功更新学校');
 });
 Route::delete('schools/{school}', function(App\Models\School $school) {
     $school->delete();
-    return redirect('schools')
-        ->withSuccess('该学校已被删除');
+    return redirect('schools')->withSuccess('该学校已被删除');
 });

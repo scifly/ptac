@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -25,27 +26,26 @@ use Illuminate\Database\Eloquent\Model;
  * @property \Carbon\Carbon|null $created_at
  * @property \Carbon\Carbon|null $updated_at
  * @property int $enabled
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\App whereAgentid($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\App whereChatExtensionUrl($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\App whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\App whereDescription($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\App whereEnabled($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\App whereEncodingaeskey($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\App whereHomeUrl($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\App whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\App whereIsreportenter($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\App whereIsreportuser($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\App whereLogoMediaid($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\App whereMenu($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\App whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\App whereRedirectDomain($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\App whereReportLocationFlag($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\App whereToken($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\App whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\App whereUrl($value)
+ * @method static Builder|App whereAgentid($value)
+ * @method static Builder|App whereChatExtensionUrl($value)
+ * @method static Builder|App whereCreatedAt($value)
+ * @method static Builder|App whereDescription($value)
+ * @method static Builder|App whereEnabled($value)
+ * @method static Builder|App whereEncodingaeskey($value)
+ * @method static Builder|App whereHomeUrl($value)
+ * @method static Builder|App whereId($value)
+ * @method static Builder|App whereIsreportenter($value)
+ * @method static Builder|App whereIsreportuser($value)
+ * @method static Builder|App whereLogoMediaid($value)
+ * @method static Builder|App whereMenu($value)
+ * @method static Builder|App whereName($value)
+ * @method static Builder|App whereRedirectDomain($value)
+ * @method static Builder|App whereReportLocationFlag($value)
+ * @method static Builder|App whereToken($value)
+ * @method static Builder|App whereUpdatedAt($value)
+ * @method static Builder|App whereUrl($value)
  * @mixin \Eloquent
  */
-class App extends Model
-{
-    //
+class App extends Model {
+
 }

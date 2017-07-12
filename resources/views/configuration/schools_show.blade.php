@@ -1,14 +1,14 @@
-@extends('layouts.master)
+@extends('layouts.master')
 @section('header')
     <a href="{{ url('/') }}">Back to overview</a>
     <h2>
         {{ $school->name }}
     </h2>
-    <a href="{{ url('schools/' . $school->id.'/edit') }}">
+    <a href="{{ url('schools/' . $school->id . '/edit') }}">
         <span class="glyphicon glyphicon-edit"></span>
         Edit
     </a>
-    <a href="{{ url('schools/' . $school->id.'/delete') }}">
+    <a href="{{ url('schools/' . $school->id . '/delete') }}">
         <span class="glyphicon glyphicon-trash"></span>
         Delete
     </a>
@@ -19,8 +19,7 @@
     <p>
         @if ($school->schoolType)
             类型:
-            {{ link_to('schools/schoolTypes/' . $school->schoolType->name,
-            $school->schoolType->name) }}
+            {{ link_to('schools/schoolTypes/' . $school->schoolType->name, $school->schoolType->name) }}
         @endif
     </p>
 @endsection

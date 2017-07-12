@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -13,15 +14,20 @@ use Illuminate\Database\Eloquent\Model;
  * @property \Carbon\Carbon|null $created_at
  * @property \Carbon\Carbon|null $updated_at
  * @property int $enabled
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Group whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Group whereEnabled($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Group whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Group whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Group whereRemark($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Group whereUpdatedAt($value)
+ * @method static Builder|Group whereCreatedAt($value)
+ * @method static Builder|Group whereEnabled($value)
+ * @method static Builder|Group whereId($value)
+ * @method static Builder|Group whereName($value)
+ * @method static Builder|Group whereRemark($value)
+ * @method static Builder|Group whereUpdatedAt($value)
  * @mixin \Eloquent
  */
-class Group extends Model
-{
-    //
+class Group extends Model {
+    
+    protected $fillable = [
+        'name', 'remark', 'enabled'
+    ];
+    
+    public function users() { return $this->hasMany('App\Model\User'); }
+
 }

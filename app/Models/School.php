@@ -36,6 +36,12 @@ use Illuminate\Database\Eloquent\Model;
  */
 class School extends Model {
     
-    protected $fillable = ['name', 'address', 'school_type_id'];
+    protected $fillable = [
+        'name',
+        'address',
+        'school_type_id',
+        'corp_id',
+        'enabled'
+    ];
     
 }

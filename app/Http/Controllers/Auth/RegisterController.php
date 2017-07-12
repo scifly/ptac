@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\User;
+use App\Models\User;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Auth\Events\Registered;
@@ -39,12 +40,13 @@ class RegisterController extends Controller
         $this->middleware('guest');
         
     }
-
+    
     /**
      * Get a validator for an incoming registration request.
      *
-     * @param  array  $data
+     * @param Request $request
      * @return \Illuminate\Contracts\Validation\Validator
+     * @internal param array $data
      */
     /*protected function validator(array $data) {
         
