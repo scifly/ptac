@@ -1,6 +1,6 @@
 @extends('layouts.master')
 @section('header')
-    <h2>添加新学校</h2>
+    <h1>添加新学校</h1>
 @endsection
 @section('content')
     {!! Form::open(['url' => '/schools', 'method' => 'post']) !!}
