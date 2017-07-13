@@ -14,7 +14,7 @@ class ComposerServiceProvider extends ServiceProvider {
      */
     public function boot() {
         
-        View::composer('configuration.partials.school', 'App\Http\ViewComposers\SchoolComposer');
+        View::composer('partials.school', 'App\Http\ViewComposers\SchoolComposer');
         
     }
     
