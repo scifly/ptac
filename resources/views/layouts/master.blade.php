@@ -114,12 +114,12 @@
                     <!--用户账号-->
                     <li class="dropdown user user-menu">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                            <img src="img/user2-160x160.jpg" class="user-image" alt="User Image">
+                            <img src="{{ URL::asset('img/user2-160x160.jpg') }}" class="user-image" alt="User Image">
                             <span class="hidden-xs">张三</span>
                         </a>
                         <ul class="dropdown-menu">
                             <li class="user-header">
-                                <img src="img/user2-160x160.jpg" class="img-circle" alt="User Image">
+                                <img src="{{ URL::asset('img/user2-160x160.jpg') }}" class="img-circle" alt="User Image">
 
                                 <p>
                                     张三 - 程序员
@@ -163,7 +163,7 @@
         <section class="sidebar">
             <div class="user-panel">
                 <div class="pull-left image">
-                    <img src="img/user2-160x160.jpg" class="img-circle" alt="User Image">
+                    <img src="{{ URL::asset('img/user2-160x160.jpg') }}" class="img-circle" alt="User Image">
                 </div>
                 <div class="pull-left info">
                     <p>张三</p>
