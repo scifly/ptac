@@ -3,8 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 
 /**
  * App\User
@@ -61,7 +61,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 class User extends Authenticatable {
     
     use Notifiable;
-
+    
     /**
      * The attributes that are mass assignable.
      *
@@ -85,7 +85,7 @@ class User extends Authenticatable {
         'avatar_mediaid',
         'enabled',
     ];
-
+    
     /**
      * The attributes that should be hidden for arrays.
      *

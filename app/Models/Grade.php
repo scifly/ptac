@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -14,16 +15,15 @@ use Illuminate\Database\Eloquent\Model;
  * @property \Carbon\Carbon|null $created_at
  * @property \Carbon\Carbon|null $updated_at
  * @property int $enabled
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Grade whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Grade whereEducatorIds($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Grade whereEnabled($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Grade whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Grade whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Grade whereSchoolId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Grade whereUpdatedAt($value)
+ * @method static Builder|Grade whereCreatedAt($value)
+ * @method static Builder|Grade whereEducatorIds($value)
+ * @method static Builder|Grade whereEnabled($value)
+ * @method static Builder|Grade whereId($value)
+ * @method static Builder|Grade whereName($value)
+ * @method static Builder|Grade whereSchoolId($value)
+ * @method static Builder|Grade whereUpdatedAt($value)
  * @mixin \Eloquent
  */
-class Grade extends Model
-{
+class Grade extends Model {
     //
 }

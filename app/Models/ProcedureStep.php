@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -16,18 +17,17 @@ use Illuminate\Database\Eloquent\Model;
  * @property \Carbon\Carbon|null $created_at
  * @property \Carbon\Carbon|null $updated_at
  * @property int $enabled
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ProcedureStep whereApproverUserIds($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ProcedureStep whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ProcedureStep whereEnabled($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ProcedureStep whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ProcedureStep whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ProcedureStep whereProcedureId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ProcedureStep whereRelatedUserIds($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ProcedureStep whereRemark($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ProcedureStep whereUpdatedAt($value)
+ * @method static Builder|ProcedureStep whereApproverUserIds($value)
+ * @method static Builder|ProcedureStep whereCreatedAt($value)
+ * @method static Builder|ProcedureStep whereEnabled($value)
+ * @method static Builder|ProcedureStep whereId($value)
+ * @method static Builder|ProcedureStep whereName($value)
+ * @method static Builder|ProcedureStep whereProcedureId($value)
+ * @method static Builder|ProcedureStep whereRelatedUserIds($value)
+ * @method static Builder|ProcedureStep whereRemark($value)
+ * @method static Builder|ProcedureStep whereUpdatedAt($value)
  * @mixin \Eloquent
  */
-class ProcedureStep extends Model
-{
+class ProcedureStep extends Model {
     //
 }

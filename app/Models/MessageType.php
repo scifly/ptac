@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -13,15 +14,14 @@ use Illuminate\Database\Eloquent\Model;
  * @property \Carbon\Carbon|null $created_at
  * @property \Carbon\Carbon|null $updated_at
  * @property int $enabled
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\MessageType whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\MessageType whereEnabled($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\MessageType whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\MessageType whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\MessageType whereRemark($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\MessageType whereUpdatedAt($value)
+ * @method static Builder|MessageType whereCreatedAt($value)
+ * @method static Builder|MessageType whereEnabled($value)
+ * @method static Builder|MessageType whereId($value)
+ * @method static Builder|MessageType whereName($value)
+ * @method static Builder|MessageType whereRemark($value)
+ * @method static Builder|MessageType whereUpdatedAt($value)
  * @mixin \Eloquent
  */
-class MessageType extends Model
-{
+class MessageType extends Model {
     //
 }

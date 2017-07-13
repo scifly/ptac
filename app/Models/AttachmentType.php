@@ -24,7 +24,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Attachment[] $attachments
  */
 class AttachmentType extends Model {
-
+    
     public function attachments() { return $this->hasMany('App\Models\Attachment'); }
     
 }

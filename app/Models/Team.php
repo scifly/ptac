@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -12,14 +13,13 @@ use Illuminate\Database\Eloquent\Model;
  * @property \Carbon\Carbon|null $created_at
  * @property \Carbon\Carbon|null $updated_at
  * @property int $enabled
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Team whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Team whereEnabled($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Team whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Team whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Team whereUpdatedAt($value)
+ * @method static Builder|Team whereCreatedAt($value)
+ * @method static Builder|Team whereEnabled($value)
+ * @method static Builder|Team whereId($value)
+ * @method static Builder|Team whereName($value)
+ * @method static Builder|Team whereUpdatedAt($value)
  * @mixin \Eloquent
  */
-class Team extends Model
-{
+class Team extends Model {
     //
 }

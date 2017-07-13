@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -13,15 +14,14 @@ use Illuminate\Database\Eloquent\Model;
  * @property \Carbon\Carbon|null $created_at
  * @property \Carbon\Carbon|null $updated_at
  * @property int $enabled
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ProcedureType whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ProcedureType whereEnabled($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ProcedureType whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ProcedureType whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ProcedureType whereRemark($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ProcedureType whereUpdatedAt($value)
+ * @method static Builder|ProcedureType whereCreatedAt($value)
+ * @method static Builder|ProcedureType whereEnabled($value)
+ * @method static Builder|ProcedureType whereId($value)
+ * @method static Builder|ProcedureType whereName($value)
+ * @method static Builder|ProcedureType whereRemark($value)
+ * @method static Builder|ProcedureType whereUpdatedAt($value)
  * @mixin \Eloquent
  */
-class ProcedureType extends Model
-{
+class ProcedureType extends Model {
     //
 }

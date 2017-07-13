@@ -25,7 +25,7 @@ Route::get('schools/types/{name}', function($name) {
     $schoolType = App\Models\SchoolType::with('schools')
         ->whereName($name)
         ->first();
-    return view('configuration.schools')
+    return view('admin.config.school.schools_index')
         ->with('schoolType', $schoolType)
         ->with('schools', $schoolType->schools);
 });
@@ -33,17 +33,17 @@ Route::get('schools/types/{name}', function($name) {
 
 
 Route::get('schools/create', function() {
-    return view('configuration.schools_create');
+    return view('admin.config.school.schools_create');
 });
 Route::post('schools', function() {
     $school = App\Models\School::create(Request::all());
     return redirect('schools/' . $school->id)->withSuccess('成功创建学校');
 });
 Route::get('schools/{school}', function(App\Models\School $school) {
-    return view('configuration.schools_show')->with('school', $school);
+    return view('admin.config.school.schools_show')->with('school', $school);
 });
 Route::get('schools/{school}/edit', function(App\Models\School $school) {
-    return view('configuration.schools_edit')->with('school', $school);
+    return view('admin.config.school.schools_edit')->with('school', $school);
 });
 Route::put('schools/{school}', function(App\Models\School $school) {
     $school->update(Request::all());
@@ -53,3 +53,6 @@ Route::delete('schools/{school}', function(App\Models\School $school) {
     $school->delete();
     return redirect('schools')->withSuccess('该学校已被删除');
 });
+
+# 系统设置
+// 学校设置

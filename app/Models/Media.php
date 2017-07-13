@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @mixin \Eloquent
  */
-class Media extends Model
-{
+class Media extends Model {
     //
 }

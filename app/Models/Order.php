@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -17,19 +18,18 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $transactionid 微信订单号
  * @property \Carbon\Carbon|null $created_at
  * @property \Carbon\Carbon|null $updated_at
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Order whereComboTypeId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Order whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Order whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Order whereOrdersn($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Order wherePayUserId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Order wherePayment($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Order whereStatus($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Order whereTransactionid($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Order whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Order whereUserId($value)
+ * @method static Builder|Order whereComboTypeId($value)
+ * @method static Builder|Order whereCreatedAt($value)
+ * @method static Builder|Order whereId($value)
+ * @method static Builder|Order whereOrdersn($value)
+ * @method static Builder|Order wherePayUserId($value)
+ * @method static Builder|Order wherePayment($value)
+ * @method static Builder|Order whereStatus($value)
+ * @method static Builder|Order whereTransactionid($value)
+ * @method static Builder|Order whereUpdatedAt($value)
+ * @method static Builder|Order whereUserId($value)
  * @mixin \Eloquent
  */
-class Order extends Model
-{
+class Order extends Model {
     //
 }

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -14,17 +15,17 @@ use Illuminate\Database\Eloquent\Model;
  * @property \Carbon\Carbon|null $created_at
  * @property \Carbon\Carbon|null $updated_at
  * @property int $enabled
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Squad whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Squad whereEducatorIds($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Squad whereEnabled($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Squad whereGradeId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Squad whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Squad whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Squad whereUpdatedAt($value)
+ * @method static Builder|Squad whereCreatedAt($value)
+ * @method static Builder|Squad whereEducatorIds($value)
+ * @method static Builder|Squad whereEnabled($value)
+ * @method static Builder|Squad whereGradeId($value)
+ * @method static Builder|Squad whereId($value)
+ * @method static Builder|Squad whereName($value)
+ * @method static Builder|Squad whereUpdatedAt($value)
  * @mixin \Eloquent
  */
 class Squad extends Model {
-
+    
     protected $table = 'classes';
-
+    
 }

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -14,16 +15,15 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $answer 问题答案
  * @property \Carbon\Carbon|null $created_at
  * @property \Carbon\Carbon|null $updated_at
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\PollQuestionnaireAnswer whereAnswer($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\PollQuestionnaireAnswer whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\PollQuestionnaireAnswer whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\PollQuestionnaireAnswer wherePqId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\PollQuestionnaireAnswer wherePqsId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\PollQuestionnaireAnswer whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\PollQuestionnaireAnswer whereUserId($value)
+ * @method static Builder|PollQuestionnaireAnswer whereAnswer($value)
+ * @method static Builder|PollQuestionnaireAnswer whereCreatedAt($value)
+ * @method static Builder|PollQuestionnaireAnswer whereId($value)
+ * @method static Builder|PollQuestionnaireAnswer wherePqId($value)
+ * @method static Builder|PollQuestionnaireAnswer wherePqsId($value)
+ * @method static Builder|PollQuestionnaireAnswer whereUpdatedAt($value)
+ * @method static Builder|PollQuestionnaireAnswer whereUserId($value)
  * @mixin \Eloquent
  */
-class PollQuestionnaireAnswer extends Model
-{
+class PollQuestionnaireAnswer extends Model {
     //
 }

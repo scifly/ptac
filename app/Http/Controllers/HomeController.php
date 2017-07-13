@@ -1,10 +1,10 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Facades\Wechat;
 
-class HomeController extends Controller
-{
+class HomeController extends Controller {
     /**
      * Create a new controller instance.
      *
@@ -14,7 +14,7 @@ class HomeController extends Controller
         $this->middleware('auth');
         
     }
-
+    
     /**
      * Show the application dashboard.
      *

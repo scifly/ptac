@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -16,18 +17,17 @@ use Illuminate\Database\Eloquent\Model;
  * @property \Carbon\Carbon|null $created_at
  * @property \Carbon\Carbon|null $updated_at
  * @property int $enabled
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\PollQuestionnaire whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\PollQuestionnaire whereEnabled($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\PollQuestionnaire whereEnd($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\PollQuestionnaire whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\PollQuestionnaire whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\PollQuestionnaire whereSchoolId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\PollQuestionnaire whereStart($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\PollQuestionnaire whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\PollQuestionnaire whereUserId($value)
+ * @method static Builder|PollQuestionnaire whereCreatedAt($value)
+ * @method static Builder|PollQuestionnaire whereEnabled($value)
+ * @method static Builder|PollQuestionnaire whereEnd($value)
+ * @method static Builder|PollQuestionnaire whereId($value)
+ * @method static Builder|PollQuestionnaire whereName($value)
+ * @method static Builder|PollQuestionnaire whereSchoolId($value)
+ * @method static Builder|PollQuestionnaire whereStart($value)
+ * @method static Builder|PollQuestionnaire whereUpdatedAt($value)
+ * @method static Builder|PollQuestionnaire whereUserId($value)
  * @mixin \Eloquent
  */
-class PollQuestionnaire extends Model
-{
+class PollQuestionnaire extends Model {
     //
 }

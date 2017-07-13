@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -19,21 +20,20 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $step_status 步骤状态：0-通过、1-拒绝、2-待定
  * @property \Carbon\Carbon|null $created_at
  * @property \Carbon\Carbon|null $updated_at
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ProcedureLog whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ProcedureLog whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ProcedureLog whereInitiatorMediaIds($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ProcedureLog whereInitiatorMsg($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ProcedureLog whereInitiatorUserId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ProcedureLog whereOperatorMediaIds($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ProcedureLog whereOperatorMsg($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ProcedureLog whereOperatorUserId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ProcedureLog whereProcedureId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ProcedureLog whereProcedureStepId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ProcedureLog whereStepStatus($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ProcedureLog whereUpdatedAt($value)
+ * @method static Builder|ProcedureLog whereCreatedAt($value)
+ * @method static Builder|ProcedureLog whereId($value)
+ * @method static Builder|ProcedureLog whereInitiatorMediaIds($value)
+ * @method static Builder|ProcedureLog whereInitiatorMsg($value)
+ * @method static Builder|ProcedureLog whereInitiatorUserId($value)
+ * @method static Builder|ProcedureLog whereOperatorMediaIds($value)
+ * @method static Builder|ProcedureLog whereOperatorMsg($value)
+ * @method static Builder|ProcedureLog whereOperatorUserId($value)
+ * @method static Builder|ProcedureLog whereProcedureId($value)
+ * @method static Builder|ProcedureLog whereProcedureStepId($value)
+ * @method static Builder|ProcedureLog whereStepStatus($value)
+ * @method static Builder|ProcedureLog whereUpdatedAt($value)
  * @mixin \Eloquent
  */
-class ProcedureLog extends Model
-{
+class ProcedureLog extends Model {
     //
 }

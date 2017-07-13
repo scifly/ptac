@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -12,14 +13,13 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $user_id 参与者用户ID
  * @property \Carbon\Carbon|null $created_at
  * @property \Carbon\Carbon|null $updated_at
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\PollQuestionnaireParticipant whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\PollQuestionnaireParticipant whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\PollQuestionnaireParticipant wherePqId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\PollQuestionnaireParticipant whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\PollQuestionnaireParticipant whereUserId($value)
+ * @method static Builder|PollQuestionnaireParticipant whereCreatedAt($value)
+ * @method static Builder|PollQuestionnaireParticipant whereId($value)
+ * @method static Builder|PollQuestionnaireParticipant wherePqId($value)
+ * @method static Builder|PollQuestionnaireParticipant whereUpdatedAt($value)
+ * @method static Builder|PollQuestionnaireParticipant whereUserId($value)
  * @mixin \Eloquent
  */
-class PollQuestionnaireParticipant extends Model
-{
+class PollQuestionnaireParticipant extends Model {
     //
 }

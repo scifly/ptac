@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -17,19 +18,18 @@ use Illuminate\Database\Eloquent\Model;
  * @property \Carbon\Carbon|null $created_at
  * @property \Carbon\Carbon|null $updated_at
  * @property int $enabled
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\WsmArticle whereContent($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\WsmArticle whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\WsmArticle whereEnabled($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\WsmArticle whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\WsmArticle whereMediaIds($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\WsmArticle whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\WsmArticle whereSummary($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\WsmArticle whereThumbnailMediaId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\WsmArticle whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\WsmArticle whereWsmId($value)
+ * @method static Builder|WsmArticle whereContent($value)
+ * @method static Builder|WsmArticle whereCreatedAt($value)
+ * @method static Builder|WsmArticle whereEnabled($value)
+ * @method static Builder|WsmArticle whereId($value)
+ * @method static Builder|WsmArticle whereMediaIds($value)
+ * @method static Builder|WsmArticle whereName($value)
+ * @method static Builder|WsmArticle whereSummary($value)
+ * @method static Builder|WsmArticle whereThumbnailMediaId($value)
+ * @method static Builder|WsmArticle whereUpdatedAt($value)
+ * @method static Builder|WsmArticle whereWsmId($value)
  * @mixin \Eloquent
  */
-class WsmArticle extends Model
-{
+class WsmArticle extends Model {
     //
 }

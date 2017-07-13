@@ -17,7 +17,7 @@ class ComposerServiceProvider extends ServiceProvider {
         View::composer('configuration.partials.school', 'App\Http\ViewComposers\SchoolComposer');
         
     }
-
+    
     /**
      * Register the application services.
      *

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -21,23 +22,22 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $recipient_count 接收者数量
  * @property \Carbon\Carbon|null $created_at
  * @property \Carbon\Carbon|null $updated_at
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Message whereContent($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Message whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Message whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Message whereMediaIds($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Message whereMessageId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Message whereMessageTypeId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Message whereReadCount($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Message whereReceivedCount($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Message whereRecipientCount($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Message whereServiceid($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Message whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Message whereUrl($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Message whereUserId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Message whereUserIds($value)
+ * @method static Builder|Message whereContent($value)
+ * @method static Builder|Message whereCreatedAt($value)
+ * @method static Builder|Message whereId($value)
+ * @method static Builder|Message whereMediaIds($value)
+ * @method static Builder|Message whereMessageId($value)
+ * @method static Builder|Message whereMessageTypeId($value)
+ * @method static Builder|Message whereReadCount($value)
+ * @method static Builder|Message whereReceivedCount($value)
+ * @method static Builder|Message whereRecipientCount($value)
+ * @method static Builder|Message whereServiceid($value)
+ * @method static Builder|Message whereUpdatedAt($value)
+ * @method static Builder|Message whereUrl($value)
+ * @method static Builder|Message whereUserId($value)
+ * @method static Builder|Message whereUserIds($value)
  * @mixin \Eloquent
  */
-class Message extends Model
-{
+class Message extends Model {
     //
 }

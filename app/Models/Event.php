@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -25,27 +26,26 @@ use Illuminate\Database\Eloquent\Model;
  * @property \Carbon\Carbon|null $created_at
  * @property \Carbon\Carbon|null $updated_at
  * @property int $enabled
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Event whereAlertMins($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Event whereAlertable($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Event whereContact($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Event whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Event whereEducatorId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Event whereEnabled($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Event whereEnd($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Event whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Event whereIscourse($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Event whereIspublic($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Event whereLocation($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Event whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Event whereRemark($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Event whereStart($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Event whereSubjectId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Event whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Event whereUrl($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Event whereUserId($value)
+ * @method static Builder|Event whereAlertMins($value)
+ * @method static Builder|Event whereAlertable($value)
+ * @method static Builder|Event whereContact($value)
+ * @method static Builder|Event whereCreatedAt($value)
+ * @method static Builder|Event whereEducatorId($value)
+ * @method static Builder|Event whereEnabled($value)
+ * @method static Builder|Event whereEnd($value)
+ * @method static Builder|Event whereId($value)
+ * @method static Builder|Event whereIscourse($value)
+ * @method static Builder|Event whereIspublic($value)
+ * @method static Builder|Event whereLocation($value)
+ * @method static Builder|Event whereName($value)
+ * @method static Builder|Event whereRemark($value)
+ * @method static Builder|Event whereStart($value)
+ * @method static Builder|Event whereSubjectId($value)
+ * @method static Builder|Event whereUpdatedAt($value)
+ * @method static Builder|Event whereUrl($value)
+ * @method static Builder|Event whereUserId($value)
  * @mixin \Eloquent
  */
-class Event extends Model
-{
+class Event extends Model {
     //
 }

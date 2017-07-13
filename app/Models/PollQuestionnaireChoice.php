@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @mixin \Eloquent
  */
-class PollQuestionnaireChoice extends Model
-{
+class PollQuestionnaireChoice extends Model {
     //
 }

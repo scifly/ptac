@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -14,16 +15,15 @@ use Illuminate\Database\Eloquent\Model;
  * @property \Carbon\Carbon|null $created_at
  * @property \Carbon\Carbon|null $updated_at
  * @property int $enabled
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\SubjectModule whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\SubjectModule whereEnabled($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\SubjectModule whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\SubjectModule whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\SubjectModule whereSubjectId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\SubjectModule whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\SubjectModule whereWeight($value)
+ * @method static Builder|SubjectModule whereCreatedAt($value)
+ * @method static Builder|SubjectModule whereEnabled($value)
+ * @method static Builder|SubjectModule whereId($value)
+ * @method static Builder|SubjectModule whereName($value)
+ * @method static Builder|SubjectModule whereSubjectId($value)
+ * @method static Builder|SubjectModule whereUpdatedAt($value)
+ * @method static Builder|SubjectModule whereWeight($value)
  * @mixin \Eloquent
  */
-class SubjectModule extends Model
-{
+class SubjectModule extends Model {
     //
 }

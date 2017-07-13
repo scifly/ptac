@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -20,22 +21,21 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $event_id 相关日程ID
  * @property \Carbon\Carbon|null $created_at
  * @property \Carbon\Carbon|null $updated_at
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ConferenceQueue whereAttendanceQrcodeUrl($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ConferenceQueue whereAttendedEducatorIds($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ConferenceQueue whereConferenceRoomId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ConferenceQueue whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ConferenceQueue whereEducatorId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ConferenceQueue whereEducatorIds($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ConferenceQueue whereEnd($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ConferenceQueue whereEventId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ConferenceQueue whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ConferenceQueue whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ConferenceQueue whereRemark($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ConferenceQueue whereStart($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ConferenceQueue whereUpdatedAt($value)
+ * @method static Builder|ConferenceQueue whereAttendanceQrcodeUrl($value)
+ * @method static Builder|ConferenceQueue whereAttendedEducatorIds($value)
+ * @method static Builder|ConferenceQueue whereConferenceRoomId($value)
+ * @method static Builder|ConferenceQueue whereCreatedAt($value)
+ * @method static Builder|ConferenceQueue whereEducatorId($value)
+ * @method static Builder|ConferenceQueue whereEducatorIds($value)
+ * @method static Builder|ConferenceQueue whereEnd($value)
+ * @method static Builder|ConferenceQueue whereEventId($value)
+ * @method static Builder|ConferenceQueue whereId($value)
+ * @method static Builder|ConferenceQueue whereName($value)
+ * @method static Builder|ConferenceQueue whereRemark($value)
+ * @method static Builder|ConferenceQueue whereStart($value)
+ * @method static Builder|ConferenceQueue whereUpdatedAt($value)
  * @mixin \Eloquent
  */
-class ConferenceQueue extends Model
-{
+class ConferenceQueue extends Model {
     //
 }

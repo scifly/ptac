@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -13,15 +14,14 @@ use Illuminate\Database\Eloquent\Model;
  * @property \Carbon\Carbon|null $created_at
  * @property \Carbon\Carbon|null $updated_at
  * @property int $enabled
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\SchoolType whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\SchoolType whereEnabled($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\SchoolType whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\SchoolType whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\SchoolType whereRemark($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\SchoolType whereUpdatedAt($value)
+ * @method static Builder|SchoolType whereCreatedAt($value)
+ * @method static Builder|SchoolType whereEnabled($value)
+ * @method static Builder|SchoolType whereId($value)
+ * @method static Builder|SchoolType whereName($value)
+ * @method static Builder|SchoolType whereRemark($value)
+ * @method static Builder|SchoolType whereUpdatedAt($value)
  * @mixin \Eloquent
  */
-class SchoolType extends Model
-{
+class SchoolType extends Model {
     //
 }

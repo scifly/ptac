@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -13,15 +14,14 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $subject_type 题目类型：0 - 单选，1 - 多选, 2 - 填空
  * @property \Carbon\Carbon|null $created_at
  * @property \Carbon\Carbon|null $updated_at
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\PollQuestionnaireSubject whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\PollQuestionnaireSubject whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\PollQuestionnaireSubject wherePqId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\PollQuestionnaireSubject whereSubject($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\PollQuestionnaireSubject whereSubjectType($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\PollQuestionnaireSubject whereUpdatedAt($value)
+ * @method static Builder|PollQuestionnaireSubject whereCreatedAt($value)
+ * @method static Builder|PollQuestionnaireSubject whereId($value)
+ * @method static Builder|PollQuestionnaireSubject wherePqId($value)
+ * @method static Builder|PollQuestionnaireSubject whereSubject($value)
+ * @method static Builder|PollQuestionnaireSubject whereSubjectType($value)
+ * @method static Builder|PollQuestionnaireSubject whereUpdatedAt($value)
  * @mixin \Eloquent
  */
-class PollQuestionnaireSubject extends Model
-{
+class PollQuestionnaireSubject extends Model {
     //
 }

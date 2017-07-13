@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -15,17 +16,16 @@ use Illuminate\Database\Eloquent\Model;
  * @property \Carbon\Carbon|null $created_at
  * @property \Carbon\Carbon|null $updated_at
  * @property int $enabled
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Semester whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Semester whereEnabled($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Semester whereEndDate($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Semester whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Semester whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Semester whereSchoolId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Semester whereStartDate($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Semester whereUpdatedAt($value)
+ * @method static Builder|Semester whereCreatedAt($value)
+ * @method static Builder|Semester whereEnabled($value)
+ * @method static Builder|Semester whereEndDate($value)
+ * @method static Builder|Semester whereId($value)
+ * @method static Builder|Semester whereName($value)
+ * @method static Builder|Semester whereSchoolId($value)
+ * @method static Builder|Semester whereStartDate($value)
+ * @method static Builder|Semester whereUpdatedAt($value)
  * @mixin \Eloquent
  */
-class Semester extends Model
-{
+class Semester extends Model {
     //
 }

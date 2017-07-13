@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -14,16 +15,15 @@ use Illuminate\Database\Eloquent\Model;
  * @property \Carbon\Carbon|null $created_at
  * @property \Carbon\Carbon|null $updated_at
  * @property int $enabled
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\WapSite whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\WapSite whereEnabled($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\WapSite whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\WapSite whereMediaIds($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\WapSite whereSchoolId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\WapSite whereSiteTitle($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\WapSite whereUpdatedAt($value)
+ * @method static Builder|WapSite whereCreatedAt($value)
+ * @method static Builder|WapSite whereEnabled($value)
+ * @method static Builder|WapSite whereId($value)
+ * @method static Builder|WapSite whereMediaIds($value)
+ * @method static Builder|WapSite whereSchoolId($value)
+ * @method static Builder|WapSite whereSiteTitle($value)
+ * @method static Builder|WapSite whereUpdatedAt($value)
  * @mixin \Eloquent
  */
-class WapSite extends Model
-{
+class WapSite extends Model {
     //
 }

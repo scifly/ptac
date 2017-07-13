@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -15,17 +16,16 @@ use Illuminate\Database\Eloquent\Model;
  * @property \Carbon\Carbon|null $created_at
  * @property \Carbon\Carbon|null $updated_at
  * @property int $enabled
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Procedure whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Procedure whereEnabled($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Procedure whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Procedure whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Procedure whereProcedureTypeId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Procedure whereRemark($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Procedure whereSchoolId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Procedure whereUpdatedAt($value)
+ * @method static Builder|Procedure whereCreatedAt($value)
+ * @method static Builder|Procedure whereEnabled($value)
+ * @method static Builder|Procedure whereId($value)
+ * @method static Builder|Procedure whereName($value)
+ * @method static Builder|Procedure whereProcedureTypeId($value)
+ * @method static Builder|Procedure whereRemark($value)
+ * @method static Builder|Procedure whereSchoolId($value)
+ * @method static Builder|Procedure whereUpdatedAt($value)
  * @mixin \Eloquent
  */
-class Procedure extends Model
-{
+class Procedure extends Model {
     //
 }

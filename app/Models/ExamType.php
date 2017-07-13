@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -13,15 +14,14 @@ use Illuminate\Database\Eloquent\Model;
  * @property \Carbon\Carbon|null $created_at
  * @property \Carbon\Carbon|null $updated_at
  * @property int $enabled
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ExamType whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ExamType whereEnabled($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ExamType whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ExamType whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ExamType whereRemark($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ExamType whereUpdatedAt($value)
+ * @method static Builder|ExamType whereCreatedAt($value)
+ * @method static Builder|ExamType whereEnabled($value)
+ * @method static Builder|ExamType whereId($value)
+ * @method static Builder|ExamType whereName($value)
+ * @method static Builder|ExamType whereRemark($value)
+ * @method static Builder|ExamType whereUpdatedAt($value)
  * @mixin \Eloquent
  */
-class ExamType extends Model
-{
+class ExamType extends Model {
     //
 }

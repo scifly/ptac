@@ -26,7 +26,6 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|EducatorAttendanceSetting whereUpdatedAt($value)
  * @mixin \Eloquent
  */
-class EducatorAttendanceSetting extends Model
-{
+class EducatorAttendanceSetting extends Model {
     //
 }

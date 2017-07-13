@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -17,19 +18,18 @@ use Illuminate\Database\Eloquent\Model;
  * @property \Carbon\Carbon|null $created_at
  * @property \Carbon\Carbon|null $updated_at
  * @property int $enabled 是否参加考试
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Score whereClassRank($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Score whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Score whereEnabled($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Score whereExamId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Score whereGradeRank($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Score whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Score whereScore($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Score whereStudentId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Score whereSubjectId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Score whereUpdatedAt($value)
+ * @method static Builder|Score whereClassRank($value)
+ * @method static Builder|Score whereCreatedAt($value)
+ * @method static Builder|Score whereEnabled($value)
+ * @method static Builder|Score whereExamId($value)
+ * @method static Builder|Score whereGradeRank($value)
+ * @method static Builder|Score whereId($value)
+ * @method static Builder|Score whereScore($value)
+ * @method static Builder|Score whereStudentId($value)
+ * @method static Builder|Score whereSubjectId($value)
+ * @method static Builder|Score whereUpdatedAt($value)
  * @mixin \Eloquent
  */
-class Score extends Model
-{
+class Score extends Model {
     //
 }

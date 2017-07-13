@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -13,15 +14,14 @@ use Illuminate\Database\Eloquent\Model;
  * @property \Carbon\Carbon|null $created_at
  * @property \Carbon\Carbon|null $updated_at
  * @property int $enabled
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\MediaType whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\MediaType whereEnabled($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\MediaType whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\MediaType whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\MediaType whereRemark($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\MediaType whereUpdatedAt($value)
+ * @method static Builder|MediaType whereCreatedAt($value)
+ * @method static Builder|MediaType whereEnabled($value)
+ * @method static Builder|MediaType whereId($value)
+ * @method static Builder|MediaType whereName($value)
+ * @method static Builder|MediaType whereRemark($value)
+ * @method static Builder|MediaType whereUpdatedAt($value)
  * @mixin \Eloquent
  */
-class MediaType extends Model
-{
+class MediaType extends Model {
     //
 }

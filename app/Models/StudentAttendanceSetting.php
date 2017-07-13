@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -19,21 +20,20 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $msg_template 考勤消息模板
  * @property \Carbon\Carbon|null $created_at
  * @property \Carbon\Carbon|null $updated_at
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\StudentAttendanceSetting whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\StudentAttendanceSetting whereDay($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\StudentAttendanceSetting whereEnd($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\StudentAttendanceSetting whereGradeId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\StudentAttendanceSetting whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\StudentAttendanceSetting whereInorout($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\StudentAttendanceSetting whereIspublic($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\StudentAttendanceSetting whereMsgTemplate($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\StudentAttendanceSetting whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\StudentAttendanceSetting whereSemesterId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\StudentAttendanceSetting whereStart($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\StudentAttendanceSetting whereUpdatedAt($value)
+ * @method static Builder|StudentAttendanceSetting whereCreatedAt($value)
+ * @method static Builder|StudentAttendanceSetting whereDay($value)
+ * @method static Builder|StudentAttendanceSetting whereEnd($value)
+ * @method static Builder|StudentAttendanceSetting whereGradeId($value)
+ * @method static Builder|StudentAttendanceSetting whereId($value)
+ * @method static Builder|StudentAttendanceSetting whereInorout($value)
+ * @method static Builder|StudentAttendanceSetting whereIspublic($value)
+ * @method static Builder|StudentAttendanceSetting whereMsgTemplate($value)
+ * @method static Builder|StudentAttendanceSetting whereName($value)
+ * @method static Builder|StudentAttendanceSetting whereSemesterId($value)
+ * @method static Builder|StudentAttendanceSetting whereStart($value)
+ * @method static Builder|StudentAttendanceSetting whereUpdatedAt($value)
  * @mixin \Eloquent
  */
-class StudentAttendanceSetting extends Model
-{
+class StudentAttendanceSetting extends Model {
     //
 }

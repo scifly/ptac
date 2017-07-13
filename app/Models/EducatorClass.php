@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -13,12 +14,12 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $subject_id 科目ID
  * @property \Carbon\Carbon|null $created_at
  * @property \Carbon\Carbon|null $updated_at
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\EducatorClass whereClassId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\EducatorClass whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\EducatorClass whereEducatorId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\EducatorClass whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\EducatorClass whereSubjectId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\EducatorClass whereUpdatedAt($value)
+ * @method static Builder|EducatorClass whereClassId($value)
+ * @method static Builder|EducatorClass whereCreatedAt($value)
+ * @method static Builder|EducatorClass whereEducatorId($value)
+ * @method static Builder|EducatorClass whereId($value)
+ * @method static Builder|EducatorClass whereSubjectId($value)
+ * @method static Builder|EducatorClass whereUpdatedAt($value)
  * @mixin \Eloquent
  */
 class EducatorClass extends Model {

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -15,17 +16,16 @@ use Illuminate\Database\Eloquent\Model;
  * @property \Carbon\Carbon|null $created_at
  * @property \Carbon\Carbon|null $updated_at
  * @property int $enabled
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ConferenceRoom whereCapacity($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ConferenceRoom whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ConferenceRoom whereEnabled($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ConferenceRoom whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ConferenceRoom whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ConferenceRoom whereRemark($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ConferenceRoom whereSchoolId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ConferenceRoom whereUpdatedAt($value)
+ * @method static Builder|ConferenceRoom whereCapacity($value)
+ * @method static Builder|ConferenceRoom whereCreatedAt($value)
+ * @method static Builder|ConferenceRoom whereEnabled($value)
+ * @method static Builder|ConferenceRoom whereId($value)
+ * @method static Builder|ConferenceRoom whereName($value)
+ * @method static Builder|ConferenceRoom whereRemark($value)
+ * @method static Builder|ConferenceRoom whereSchoolId($value)
+ * @method static Builder|ConferenceRoom whereUpdatedAt($value)
  * @mixin \Eloquent
  */
-class ConferenceRoom extends Model
-{
+class ConferenceRoom extends Model {
     //
 }

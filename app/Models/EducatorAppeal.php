@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -17,19 +18,18 @@ use Illuminate\Database\Eloquent\Model;
  * @property \Carbon\Carbon|null $created_at
  * @property \Carbon\Carbon|null $updated_at
  * @property int $status 审批状态 0 - 通过 1 - 拒绝 2 - 待审
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\EducatorAppeal whereAppealContent($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\EducatorAppeal whereApproverEducatorIds($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\EducatorAppeal whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\EducatorAppeal whereEaIds($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\EducatorAppeal whereEducatorId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\EducatorAppeal whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\EducatorAppeal whereProcedureLogId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\EducatorAppeal whereRelatedEducatorIds($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\EducatorAppeal whereStatus($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\EducatorAppeal whereUpdatedAt($value)
+ * @method static Builder|EducatorAppeal whereAppealContent($value)
+ * @method static Builder|EducatorAppeal whereApproverEducatorIds($value)
+ * @method static Builder|EducatorAppeal whereCreatedAt($value)
+ * @method static Builder|EducatorAppeal whereEaIds($value)
+ * @method static Builder|EducatorAppeal whereEducatorId($value)
+ * @method static Builder|EducatorAppeal whereId($value)
+ * @method static Builder|EducatorAppeal whereProcedureLogId($value)
+ * @method static Builder|EducatorAppeal whereRelatedEducatorIds($value)
+ * @method static Builder|EducatorAppeal whereStatus($value)
+ * @method static Builder|EducatorAppeal whereUpdatedAt($value)
  * @mixin \Eloquent
  */
-class EducatorAppeal extends Model
-{
+class EducatorAppeal extends Model {
     //
 }

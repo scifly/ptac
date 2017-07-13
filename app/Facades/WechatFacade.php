@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Facades;
 
 use Illuminate\Support\Facades\Facade;
@@ -345,7 +346,6 @@ class Wechat extends Facade {
      * @return mixed
      */
     static function getUser($accessToken, $userId) {
-        
         return self::curlGet(sprintf(self::URL_GET_USER, $accessToken, $userId));
         
     }
@@ -511,7 +511,7 @@ class Wechat extends Facade {
      */
     static function delDept($accessToken, $id) {
         
-        return self::curlGet(sprintf(self::URL_DEL_DEPT, $accessToken,$id));
+        return self::curlGet(sprintf(self::URL_DEL_DEPT, $accessToken, $id));
         
     }
     
@@ -822,7 +822,7 @@ class Wechat extends Facade {
     static function createMenu($accessToken, $agentId, $menu) {
         
         return self::curlPost(
-            sprintf(self::URL_CREATE_MENU, $accessToken,$agentId),
+            sprintf(self::URL_CREATE_MENU, $accessToken, $agentId),
             json_encode($menu)
         );
         
@@ -848,7 +848,7 @@ class Wechat extends Facade {
      * @param $agentId
      * @return mixed json格式 {"errcode":0, "errmsg":"ok"}
      */
-    function delMenu($accessToken,$agentId) {
+    function delMenu($accessToken, $agentId) {
         
         return self::curlGet(sprintf(self::URL_DEL_MENU, $accessToken, $agentId));
         

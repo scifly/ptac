@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -16,18 +17,17 @@ use Illuminate\Database\Eloquent\Model;
  * @property \Carbon\Carbon|null $created_at
  * @property \Carbon\Carbon|null $updated_at
  * @property int $enabled 类型：0-统计,1-充值
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\SmsEducator whereBalance($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\SmsEducator whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\SmsEducator whereDepositCount($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\SmsEducator whereEducatorId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\SmsEducator whereEnabled($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\SmsEducator whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\SmsEducator whereStatisticTime($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\SmsEducator whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\SmsEducator whereUserId($value)
+ * @method static Builder|SmsEducator whereBalance($value)
+ * @method static Builder|SmsEducator whereCreatedAt($value)
+ * @method static Builder|SmsEducator whereDepositCount($value)
+ * @method static Builder|SmsEducator whereEducatorId($value)
+ * @method static Builder|SmsEducator whereEnabled($value)
+ * @method static Builder|SmsEducator whereId($value)
+ * @method static Builder|SmsEducator whereStatisticTime($value)
+ * @method static Builder|SmsEducator whereUpdatedAt($value)
+ * @method static Builder|SmsEducator whereUserId($value)
  * @mixin \Eloquent
  */
-class SmsEducator extends Model
-{
+class SmsEducator extends Model {
     //
 }
