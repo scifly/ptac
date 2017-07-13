@@ -7,16 +7,16 @@
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <!-- Bootstrap 3.3.7 -->
-    <link rel="stylesheet" href="public/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ URL::asset('css/bootstrap.min.css') }}">
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="css/font-awesome.min.css">
+    <link rel="stylesheet" href="{{ URL::asset('css/font-awesome.min.css') }}">
     <!-- Ionicons -->
-    <link rel="stylesheet" href="css/ionicons.min.css">
+    <link rel="stylesheet" href="{{ URL::asset('css/ionicons.min.css') }}">
     <!-- jvectormap -->
-    <link rel="stylesheet" href="css/jquery-jvectormap.css">
+    <link rel="stylesheet" href="{{ URL::asset('css/jquery-jvectormap.css') }}">
     <!-- Theme style -->
-    <link rel="stylesheet" href="css/AdminLTE.min.css">
-    <link rel="stylesheet" href="css/skins/_all-skins.min.css">
+    <link rel="stylesheet" href="{{ URL::asset('css/AdminLTE.min.css') }}">
+    <link rel="stylesheet" href="{{ URL::asset('css/skins/_all-skins.min.css') }}">
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -545,23 +545,23 @@
     <div class="control-sidebar-bg"></div>
 </div>
 <!-- jQuery 3 -->
-<script src="js/jquery.min.js"></script>
+<script src="{{ URL::asset('js/jquery.min.js') }}"></script>
 <!-- Bootstrap 3.3.7 -->
-<script src="js/bootstrap.min.js"></script>
+<script src="{{ URL::asset('js/bootstrap.min.js') }}"></script>
 <!-- FastClick -->
-<script src="js/fastclick.js"></script>
+<script src="{{ URL::asset('js/fastclick.js') }}"></script>
 <!-- AdminLTE App -->
-<script src="js/adminlte.min.js"></script>
+<script src="{{ URL::asset('js/adminlte.min.js') }}"></script>
 <!-- Sparkline -->
-<script src="js/jquery.sparkline.min.js"></script>
+<script src="{{ URL::asset('js/jquery.sparkline.min.js') }}"></script>
 <!-- jvectormap  -->
-<script src="js/jquery-jvectormap-1.2.2.min.js"></script>
-<script src="js/jquery-jvectormap-world-mill-en.js"></script>
+<script src="{{ URL::asset('js/jquery-jvectormap-1.2.2.min.js') }}"></script>
+<script src="{{ URL::asset('js/jquery-jvectormap-world-mill-en.js') }}"></script>
 <!-- SlimScroll -->
-<script src="js/jquery.slimscroll.min.js"></script>
+<script src="{{ URL::asset('js/jquery.slimscroll.min.js') }}"></script>
 <!-- ChartJS -->
-<script src="js/Chart.min.js"></script>
+<script src="{{ URL::asset('js/Chart.min.js') }}"></script>
 <!-- AdminLTE for demo purposes -->
-<script src="js/demo.js"></script>
+<script src="{{ URL::asset('js/demo.js') }}"></script>
 </body>
 </html>
