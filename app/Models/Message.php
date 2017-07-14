@@ -40,4 +40,20 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Message extends Model {
     //
+    protected $table = 'messages';
+
+    protected $fillable =[
+        'content',
+        'serviceid',
+        'message_id',
+        'url',
+        'media_ids',
+        'user_id',
+        'message_type_id',
+        'read_count',
+        'recevied_count',
+        'recipient_count',
+        'created_at',
+        'updated_at',
+       ];
 }

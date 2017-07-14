@@ -30,4 +30,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class PollQuestionnaire extends Model {
     //
+    protected $table = 'poll_questionnaires';
+
+    protected $fillable = ['school_id','user_id','name','start','end','created_at','updated-at','enabled'];
 }

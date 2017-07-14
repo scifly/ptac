@@ -32,4 +32,16 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Order extends Model {
     //
+    protected $table = 'orders';
+
+    protected $fillable = ['ordersn',
+        'user_id',
+        'pay_user_id',
+        'status',
+        'combo_type_id',
+        'payment',
+        'transactionid',
+        'created_at',
+        'updated_at'
+    ];
 }

@@ -36,4 +36,17 @@ use Illuminate\Database\Eloquent\Model;
  */
 class ProcedureLog extends Model {
     //
+    protected $table = 'procedure_logs';
+
+    protected $fillable = [
+        'initiator_user_id',
+        'procedure_id',
+        'procedure_step_id',
+        'operator_user_id',
+        'initiator_msg',
+        'operator_media_ids',
+        'step_status',
+        'created_at',
+        'updated_at',
+    ];
 }

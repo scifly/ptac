@@ -26,4 +26,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class PollQuestionnaireAnswer extends Model {
     //
+    protected $table = 'poll_questionnaire_answers';
+
+    protected $fillable = ['user_id','pqs_id','pq_id','answer','created_at','updated_at'];
 }

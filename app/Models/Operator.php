@@ -26,4 +26,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Operator extends Model {
     //
+    protected $table = 'operators';
+
+    protected $fillable = ['company_id','user_id','school_id','type','created_at','updated_at'];
 }

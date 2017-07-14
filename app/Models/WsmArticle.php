@@ -32,4 +32,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class WsmArticle extends Model {
     //
+    protected $table='wsm_artilces';
+    protected $fillable=[
+        'id','wsm_id'
+    ];
 }

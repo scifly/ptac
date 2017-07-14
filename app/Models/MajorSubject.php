@@ -23,5 +23,7 @@ use Illuminate\Database\Eloquent\Model;
 class MajorSubject extends Model {
     
     protected $table = 'majors_subjects';
+
+    protected $fillable = ['id','major_id','subject_id','created_at','updated_id'];
     
 }

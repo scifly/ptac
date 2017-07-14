@@ -24,4 +24,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class MediaType extends Model {
     //
+    protected $table = 'media_types';
+
+    protected $fillable = ['name','remark','created_at','updated_at','enabled'];
 }

@@ -48,4 +48,25 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Event extends Model {
     //
+    protected $table='events';
+
+    protected $fillable=[
+        'id',
+        'name',
+        'remark',
+        'location',
+        'contact',
+        'url',
+        'start',
+        'end',
+        'ispublic',
+        'iscourse',
+        'educator_id',
+        'subject_id',
+        'alert_mins',
+        'user_id',
+        'created_at',
+        'updated_at',
+        'enabled'
+    ];
 }

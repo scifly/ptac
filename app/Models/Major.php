@@ -26,4 +26,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Major extends Model {
     //
+    protected $table='majors';
+
+    protected $fillable=['name','remark','school_id','created_at','updated_at','enabled'];
 }

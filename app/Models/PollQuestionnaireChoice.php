@@ -11,4 +11,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class PollQuestionnaireChoice extends Model {
     //
+    protected $table = 'poll_questionnaire_subject_choices';
+
+    protected $fillable = ['pqs_id','choice','seq_no','created_at','updated_at'];
 }
