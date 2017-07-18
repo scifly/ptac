@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\RegisterUser;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Auth\RegistersUsers;
@@ -42,7 +43,7 @@ class RegisterController extends Controller {
     /**
      * Get a validator for an incoming registration request.
      *
-     * @param Request $request
+     * @param RegisterUser|Request $request
      * @return \Illuminate\Contracts\Validation\Validator
      * @internal param array $data
      */
@@ -58,7 +59,7 @@ class RegisterController extends Controller {
         
     }*/
     
-    public function register(Request $request) {
+    public function register(RegisterUser $request) {
         
         // $this->validator($request->all())->validate();
         
