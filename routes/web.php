@@ -19,6 +19,9 @@ Route::get('groups', function (){
     return view('admin.config.group.groups_index');
 });
 Route::get('/', function() { return 'Dashboard'; });
+
+Route::get('/', 'HomeController@index');
+
 Route::get('schools', function() {
     $shools = App\Models\School::all();
     return view('configuration.schools')->with('schools', $shools);
