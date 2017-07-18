@@ -35,7 +35,7 @@ use Illuminate\Database\Eloquent\Model;
  * @mixin \Eloquent
  */
 class School extends Model {
-    
+    protected $table = 'schools';
     protected $fillable = [
         'name',
         'address',
@@ -43,5 +43,9 @@ class School extends Model {
         'corp_id',
         'enabled'
     ];
+    public function hasManySemester()
+    {
+        return $this->hasMany('App\Models\Semester','school_id','id');
+    }
     
 }

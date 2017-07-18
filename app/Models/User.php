@@ -57,11 +57,13 @@ use Illuminate\Notifications\Notifiable;
  * @method static Builder|User wherePosition($value)
  * @method static Builder|User whereTelephone($value)
  * @method static Builder|User whereUserid($value)
+ * 用户
  */
 class User extends Authenticatable {
     
     use Notifiable;
-    
+    protected $table = 'users';
+
     /**
      * The attributes that are mass assignable.
      *

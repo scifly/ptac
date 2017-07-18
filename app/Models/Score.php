@@ -32,4 +32,16 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Score extends Model {
     //
+    protected $table = 'scores';
+    protected $fillable =[
+        'name',
+        'student_id',
+        'subject_id',
+        'exam_id',
+        'class_rank',
+        'grade_rank',
+        'score',
+        'created_at',
+        'updated_at',
+    ];
 }

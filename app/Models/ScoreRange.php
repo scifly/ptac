@@ -30,4 +30,14 @@ use Illuminate\Database\Eloquent\Model;
  */
 class ScoreRange extends Model {
     //
+    protected $table = 'score_ranges';
+    protected $fillable =[
+        'name',
+        'subject_ids',
+        'school_id',
+        'start_score',
+        'end_score',
+        'created_at',
+        'updated_at',
+    ];
 }

@@ -28,8 +28,22 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|StudentAttendance wherePunchTime($value)
  * @method static Builder|StudentAttendance whereStudentId($value)
  * @method static Builder|StudentAttendance whereUpdatedAt($value)
- * @mixin \Eloquent
+ * @mixin \Eloquent 考勤
  */
 class StudentAttendance extends Model {
     //
+    protected $table = 'student_attendance';
+    protected $fillable = [
+        'id',
+        'student_id',
+        'punch_time',
+        'inorout',
+        'attendance_machine_id',
+        'media_id',
+        'longitude',
+        'latitude',
+        'created_at',
+        'updated_at',
+    ];
+
 }

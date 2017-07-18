@@ -29,7 +29,24 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|WsmArticle whereUpdatedAt($value)
  * @method static Builder|WsmArticle whereWsmId($value)
  * @mixin \Eloquent
+ * 网站内容
  */
 class WsmArticle extends Model {
     //
+    protected $table = 'wsm_articles';
+    protected $fillable = [
+        'id',
+        'wsm_id',
+        'name',
+        'summary',
+        'thumbnail_media_id',
+        'content',
+        'created_at',
+        'updated_at',
+    ];
+    public function belongsToWsm()
+    {
+        return $this->belongsTo('App\Models\WapSiteModule', 'wsm_id', 'id');
+    }
+
 }

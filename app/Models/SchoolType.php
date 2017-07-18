@@ -24,4 +24,11 @@ use Illuminate\Database\Eloquent\Model;
  */
 class SchoolType extends Model {
     //
+    protected $table = 'school_types';
+    protected $fillable =[
+        'name',
+        'remark',
+        'created_at',
+        'updated_at',
+    ];
 }

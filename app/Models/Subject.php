@@ -32,4 +32,20 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Subject extends Model {
     //
+    protected $table = 'subjects';
+    protected $fillable = [
+        'id',
+        'school_id',
+        'name',
+        'isaux',
+        'max_score',
+        'pass_score',
+        'grade_ids',
+        'created_at',
+        'updated_at',
+    ];
+    public function hasManyModule()
+    {
+        return $this->hasMany('App\Models\SubjectModule','subject_id','id');
+    }
 }
