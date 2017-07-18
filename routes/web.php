@@ -15,7 +15,9 @@ use Illuminate\Support\Facades\Auth;
 /*Route::get('/', 'HomeController@index');
 Auth::routes();
 Route::get('/home', 'HomeController@index')->name('home');*/
-
+Route::get('groups', function (){
+    return view('admin.config.group.groups_index');
+});
 Route::get('/', function() { return 'Dashboard'; });
 Route::get('schools', function() {
     $shools = App\Models\School::all();
