@@ -23,5 +23,7 @@ use Illuminate\Database\Eloquent\Model;
  * @mixin \Eloquent
  */
 class SchoolType extends Model {
-    //
+
+    protected $fillable = [''];
+    
 }
