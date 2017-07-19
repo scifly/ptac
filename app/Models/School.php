@@ -38,7 +38,6 @@ use Illuminate\Http\Request;
  */
 class School extends Model {
 
-
     protected $fillable = [
         'name',
         'address',

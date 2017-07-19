@@ -48,7 +48,6 @@ use Illuminate\Database\Eloquent\Model;
  */
 class App extends Model {
 
-    protected $table = 'apps';
     protected $fillable = [
         'name',
         'description',
@@ -64,8 +63,7 @@ class App extends Model {
         'home_url',
         'chat_extension_url',
         'menu',
-        'created_at',
-        'updated_at',
         'enabled'
     ];
+
 }

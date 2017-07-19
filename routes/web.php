@@ -16,13 +16,14 @@ use Illuminate\Support\Facades\Auth;
 //Auth::routes();
 //Route::get('/home', 'HomeController@index')->name('home');
 
+
 //Route::get('/', function() { return 'Dashboard'; });
 
 Route::get('/', 'HomeController@index');
 
 Route::get('schools', function() {
     $shools = App\Models\School::all();
-    return view('configuration.schools')->with('schools', $shools);
+    return view('school.index')->with('schools', $shools);
 });
 Route::get('schools/types/{name}', function($name) {
     $schoolType = App\Models\SchoolType::with('schools')
