@@ -67,5 +67,15 @@ class App extends Model {
     ];
 
 
+    public function datatable(Request $request) {
+
+        $columns = [
+            ['db' => 'App.id', 'dt' => 0],
+            ['db' => 'App.created_at', 'dt' => 1],
+            ['db' => 'App.updated_at', 'dt' => 2]
+        ];
+        return Datatable::simple($this, $request, $columns);
+
+    }
 
 }
