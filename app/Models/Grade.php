@@ -29,4 +29,9 @@ class Grade extends Model {
     protected $table='grades';
 
     protected $fillable=['name','school_id','educator_ids','created_at','updated_at','enabled'];
+
+    public function school()
+    {
+        return $this->belongsTo('App\Models\School');
+    }
 }

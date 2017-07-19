@@ -27,4 +27,9 @@ class ExamType extends Model {
     protected $table='exam_types';
 
     protected $fillable=['name','remark','created_at','updated_at','enabled'];
+
+    public function Exam()
+    {
+        return $this->hasOne('App\Models\Exam');
+    }
 }

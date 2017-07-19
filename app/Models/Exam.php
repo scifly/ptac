@@ -54,4 +54,9 @@ class Exam extends Model {
         'updated_at',
         'enabled'
     ];
+
+    public function examType()
+    {
+        return $this->belongsTo('App\models\ExamType');
+    }
 }

@@ -25,5 +25,15 @@ class MajorSubject extends Model {
     protected $table = 'majors_subjects';
 
     protected $fillable = ['id','major_id','subject_id','created_at','updated_id'];
+
+    public function major()
+    {
+        return $this->belongsTo('App\Models\Major');
+    }
+
+    public function subject()
+    {
+        return $this->belongsTo('App\Models\Subjece');
+    }
     
 }

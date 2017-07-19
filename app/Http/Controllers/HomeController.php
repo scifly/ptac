@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Facades\Wechat;
+use App\Http\Requests\RegisterUser;
 
 class HomeController extends Controller {
     /**
@@ -11,7 +12,7 @@ class HomeController extends Controller {
      */
     public function __construct() {
         
-        $this->middleware('auth');
+       // $this->middleware('auth');
         
     }
     
@@ -21,10 +22,13 @@ class HomeController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function index() {
-        
-        echo Wechat::getAccessToken('a', 'b', 'c');
-        
-        return view('home');
+
+
+        return 'hello world';
+//        exit;
+//        echo Wechat::getAccessToken('a', 'b', 'c');
+//
+//        return view('home');
         
     }
 }

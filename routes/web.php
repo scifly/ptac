@@ -12,11 +12,12 @@ use Illuminate\Support\Facades\Auth;
 |
 */
 
-/*Route::get('/', 'HomeController@index');
-Auth::routes();
-Route::get('/home', 'HomeController@index')->name('home');*/
+Route::get('/', 'HomeController@index');
+//Auth::routes();
+//Route::get('/home', 'HomeController@index')->name('home');
 
-Route::get('/', function() { return 'Dashboard'; });
+//Route::any('/',['uses'=>'IndexController@index']);
+//Route::get('/', function() { return 'Dashboard'; });
 Route::get('schools', function() {
     $shools = App\Models\School::all();
     return view('configuration.schools')->with('schools', $shools);

@@ -14,4 +14,9 @@ class Media extends Model {
     protected $table='medias';
 
     protected $fillable=['path','remark','media_type_id','created_at','updated_at','enabled'];
+
+    public function mediaType()
+    {
+        return $this->belongsTo('App\Models\MediaType');
+    }
 }

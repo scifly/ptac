@@ -27,4 +27,9 @@ class MediaType extends Model {
     protected $table = 'media_types';
 
     protected $fillable = ['name','remark','created_at','updated_at','enabled'];
+
+    public function media()
+    {
+        return $this->hasMany('App\Models\Media');
+    }
 }

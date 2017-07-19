@@ -102,6 +102,18 @@ class User extends Authenticatable {
     public function student() { return $this->hasOne('App\Models\Student'); }
     
     public function group() { return $this->belongsTo('App\Model\Group'); }
+
+    public function operator(){ return $this->hasOne('App\Models\Operator'); }
+
+    public function order(){ return $this->hasOne('App\Models\Order'); }
+
+    public function pollquestionnaires(){ return $this->hasOne('App\Models\PollQuestionnaire'); }
+
+    public function pollquestionnaireAnswer(){ return $this->hasOne('App\Models\PollQuestionnaireAnswer'); }
+
+    public function pollquestionnairePartcipant(){
+        return $this->hasOne('App\Models\PollQuestionnaireParticipant');
+    }
     
     
 }

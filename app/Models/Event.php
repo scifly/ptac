@@ -51,7 +51,6 @@ class Event extends Model {
     protected $table='events';
 
     protected $fillable=[
-        'id',
         'name',
         'remark',
         'location',
