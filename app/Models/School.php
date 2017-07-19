@@ -37,7 +37,8 @@ use Illuminate\Http\Request;
  * @mixin \Eloquent
  */
 class School extends Model {
-    
+    protected $table = 'schools';
+
     const DT_ON = '<span class="badge badge-primary">%s</span>';
     const DT_OFF = '<span class="badge badge-default">%s</span>';
     const DT_LINK_EDIT = '<!--suppress HtmlUnknownTarget -->
@@ -56,6 +57,10 @@ class School extends Model {
         'corp_id',
         'enabled'
     ];
+    public function hasManySemester()
+    {
+        return $this->hasMany('App\Models\Semester','school_id','id');
+    }
     
     public function schoolType() {
         

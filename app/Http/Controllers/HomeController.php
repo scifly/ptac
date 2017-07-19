@@ -12,8 +12,8 @@ class HomeController extends Controller {
      */
     public function __construct() {
         
-       // $this->middleware('auth');
-        
+        $this->middleware('auth');
+
     }
     
     /**
@@ -23,12 +23,9 @@ class HomeController extends Controller {
      */
     public function index() {
 
-
-        return 'hello world';
-//        exit;
-//        echo Wechat::getAccessToken('a', 'b', 'c');
-//
-//        return view('home');
+        echo Wechat::getAccessToken('a', 'b', 'c');
+        
+        return view('home');
         
     }
 }

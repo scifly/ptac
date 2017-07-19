@@ -32,9 +32,12 @@ use Illuminate\Database\Eloquent\Model;
  * @mixin \Eloquent
  */
 class Student extends Model {
-    
+    protected $table = 'students';
+
     public function user() { return $this->belongsTo('App\Models\User'); }
-    
+
     public function custodians() { return $this->belongsToMany('App\Models\Custodian'); }
-    
+
+    public function beLongsToSquad() { return $this->belongsTo('App\Models\Squad','class_id','id'); }
+
 }
