@@ -23,9 +23,22 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|Squad whereName($value)
  * @method static Builder|Squad whereUpdatedAt($value)
  * @mixin \Eloquent
+ * 班级
  */
 class Squad extends Model {
     
     protected $table = 'classes';
+    protected $fillable = [
+        'id',
+        'grade_id',
+        'name',
+        'educator_ids',
+        'created_at',
+        'updated_at',
+    ];
+    public function hasManyStudent()
+    {
+        return $this->hasMany('App\Models\Student','class_id','id');
+    }
     
 }

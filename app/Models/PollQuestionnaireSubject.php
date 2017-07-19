@@ -24,4 +24,12 @@ use Illuminate\Database\Eloquent\Model;
  */
 class PollQuestionnaireSubject extends Model {
     //
+    protected $table = 'poll_questionnaire_subjects';
+
+    protected $fillable = ['subject','pq_id','subject_type','created_at','updated_at'];
+
+    public function pollquestionnaireAnswer()
+    {
+        return $this->hasOne('App\Models\PollQuestionnaireAnswer');
+    }
 }

@@ -30,4 +30,6 @@ use Illuminate\Database\Eloquent\Model;
  */
 class SmsEducator extends Model {
     //
+    protected $table = 'sms_educators';
+
 }
