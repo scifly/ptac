@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Http\Request;
 
 /**
@@ -32,9 +33,8 @@ use Illuminate\Http\Request;
  * @mixin \Eloquent
  */
 class Subject extends Model {
-    //
-    protected $table = 'subjects';
-    protected $fillable = [
+
+    protected $fillable=[
         'school_id',
         'name',
         'isaux',
@@ -44,10 +44,12 @@ class Subject extends Model {
 
     ];
 
-    public function hasManyModule()
+    public function subjectModules()
     {
         return $this->hasMany('App\Models\SubjectModule','subject_id','id');
     }
+
+
 
     public function school()
     {
@@ -58,6 +60,7 @@ class Subject extends Model {
     {
 
         $columns = [
+
             ['db' => 'Subject.id', 'dt' => 0],
             ['db' => 'Subject.name', 'dt'=> 1],
             ['db' => 'Subject.isaux', 'dt'=> 2],
@@ -65,5 +68,7 @@ class Subject extends Model {
             ['db' => '']
         ];
     }
+
+
 
 }

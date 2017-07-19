@@ -37,19 +37,7 @@ use Illuminate\Http\Request;
  * @mixin \Eloquent
  */
 class School extends Model {
-    protected $table = 'schools';
 
-    const DT_ON = '<span class="badge badge-primary">%s</span>';
-    const DT_OFF = '<span class="badge badge-default">%s</span>';
-    const DT_LINK_EDIT = '<!--suppress HtmlUnknownTarget -->
-<a href="/%s/edit/%s" class="btn btn-success btn-icon btn-circle btn-xs"><i class="fa fa-edit"></i></a>';
-    const DT_LINK_DEL = '<!--suppress HtmlUnknownAnchorTarget -->
-<a id="%s" href="#modal-dialog" class="btn btn-danger btn-icon btn-circle btn-xs" data-toggle="modal"><i class="fa fa-times"></i></a>';
-    const DT_SPACE = '&nbsp;';
-    const DT_PRIMARY = '<span class="badge badge-info">%s</span>';
-    const DT_LOCK = '<i class="fa fa-lock"></i>&nbsp;已占用';
-    const DT_UNLOCK = '<i class="fa fa-unlock"></i>&nbsp;空闲中';
-    
     protected $fillable = [
         'name',
         'address',
@@ -57,7 +45,7 @@ class School extends Model {
         'corp_id',
         'enabled'
     ];
-    public function hasManySemester()
+    public function semesters()
     {
         return $this->hasMany('App\Models\Semester','school_id','id');
     }
@@ -86,7 +74,7 @@ class School extends Model {
             [
                 'db' => 'School.enabled', 'dt' => 6,
                 'formatter' => function($d, $row) {
-                    return $this->_dtOps($this, $d, $row);
+                    return Datatable::dtOps($this, $d, $row);
                 }
             ]
         ];
@@ -94,31 +82,6 @@ class School extends Model {
         
     }
     
-    /**
-     * Display data entry operations
-     *
-     * @param Model $model
-     * @param $active
-     * @param $row
-     * @param bool|true $del - if set to false, do not show delete link
-     * @return string
-     */
-    protected function _dtOps(Model $model, $active, $row, $del = true) {
-        
-        switch ($model->getTable()) {
-            case 'Group': $name = 'Groups'; break;
-            case 'Order': $name = 'Orders'; break;
-            case 'Table': $name = 'Tables'; break;
-            default: $name = $model->getTable(); break;
-        }
-        
-        $id = $row[$name][$model->getKeyName()];
-        $status = $active ? __(self::DT_ON, '已启用') : __(self::DT_OFF, '已禁用');
-        $editLink = __(self::DT_LINK_EDIT, $model->getTable(), $id);
-        $delLink = __(self::DT_LINK_DEL, $id);
-        
-        return $status . self::DT_SPACE . $editLink . ($del ? self::DT_SPACE . $delLink : '');
-        
-    }
+
     
 }
