@@ -48,4 +48,24 @@ use Illuminate\Database\Eloquent\Model;
  */
 class App extends Model {
 
+    protected $fillable = [
+        'name',
+        'description',
+        'agentid',
+        'url',
+        'token',
+        'encodingaeskey',
+        'report_location_flag',
+        'logo_mediaid',
+        'redirect_domain',
+        'isreportuser',
+        'isreportenter',
+        'home_url',
+        'chat_extension_url',
+        'menu',
+        'enabled'
+    ];
+
+
+
 }
