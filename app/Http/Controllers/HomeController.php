@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Facades\Wechat;
+use App\Http\Requests\RegisterUser;
+use App\Http\Requests\Request;
 
 class HomeController extends Controller {
     /**
@@ -21,7 +23,7 @@ class HomeController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function index() {
-        
+
         echo Wechat::getAccessToken('a', 'b', 'c');
         
         return view('home');

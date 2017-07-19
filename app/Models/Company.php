@@ -27,5 +27,14 @@ use Illuminate\Database\Eloquent\Model;
 class Company extends Model {
     
     //
+    protected $table = 'companies';
+    protected $fillabled = [
+        'name',
+        'remark',
+        'corpid',
+        'created_at',
+        'updatad_at',
+        'enabled'
+    ];
     
 }

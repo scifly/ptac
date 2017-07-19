@@ -24,5 +24,12 @@ use Illuminate\Database\Eloquent\Model;
  */
 class AlertType extends Model {
 
-
+    protected $table = 'alert_types';
+    protected $fillable = [
+        'name',
+        'english_name',
+        'created_at',
+        'updated_at',
+        'enabled'
+    ];
 }

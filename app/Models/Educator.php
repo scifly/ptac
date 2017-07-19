@@ -25,8 +25,52 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|Educator whereUserId($value)
  * @mixin \Eloquent
  */
-class Educator extends Model {
-    
-    public function user() { return $this->belongsTo('App\Models\User'); }
-    
+class Educator extends Model
+{
+    protected $table = 'educators';
+    protected $fillable = [
+        'user_id',
+        'team_ids',
+        'school_id',
+        'sms_quote',
+        'created_at',
+        'updated_at'
+    ];
+
+    public function user()
+    {
+        return $this->belongsTo('App\Models\User');
+    }
+
+    /**
+     * 教职工与所属组  多对多
+     */
+    public function teams()
+    {
+        return $this->belongsToMany('App\Models\Team');
+    }
+
+    /**
+     * 教职员工与学校 反向一对多
+     */
+    public function school()
+    {
+        return $this->belongsTo('App\Models\School');
+    }
+
+    /**
+     * 教职员工与班级 多对多
+     */
+    public function classes()
+    {
+        return $this->belongsToMany('App\Models\Squad', 'EducatorClass', 'educator_id', 'class_id');
+    }
+
+    /**
+     * 教职员工与科目 多对多
+     */
+    public function sujectes()
+    {
+        return $this->belongsToMany('App\Models\Subject','EducatorClass','educator_id','subject_id');
+    }
 }

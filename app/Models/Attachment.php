@@ -23,8 +23,20 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|Attachment whereUrl($value)
  * @mixin \Eloquent
  */
-class Attachment extends Model {
-    
-    public function attachmentType() { return $this->belongsTo('App\Models\AttachmentType'); }
-    
+class Attachment extends Model
+{
+
+    protected $table = 'attachments';
+    protected $fillable = [
+        'accachment_type_id',
+        'url',
+        'created_at',
+        'updated_at',
+        'enabled'
+    ];
+    public function attachmentType()
+    {
+        return $this->belongsTo('App\Models\AttachmentType');
+    }
+
 }

@@ -38,4 +38,33 @@ use Illuminate\Database\Eloquent\Model;
  */
 class ConferenceQueue extends Model {
     //
+    protected $table ='conference_queues';
+    protected $fillable = [
+        'name',
+        'remark',
+        'start',
+        'end',
+        'educator_id',
+        'educator_ids',
+        'attended_educator_ids',
+        'conference_room_id',
+        'attendance_qrcode_url',
+        'event_id',
+        'created_at',
+        'updated_at'
+    ];
+
+    /**
+     * 会议与会议参与者 一对多
+     */
+    public function conferenceParticipants(){
+        return $this->hasMany('App\Models\ConferenceParticipant');
+    }
+
+    /**
+     * 会议与会议地址 一对一
+     */
+    public function conferenceRoom(){
+        return $this->belongsTo('App\Models\ConferenceRoom');
+    }
 }

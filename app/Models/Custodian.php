@@ -21,10 +21,24 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|Custodian whereUserId($value)
  * @mixin \Eloquent
  */
-class Custodian extends Model {
-    
-    public function user() { return $this->belongsTo('App\Models\User'); }
-    
-    public function students() { return $this->belongsToMany('App\Model\Student'); }
-    
+class Custodian extends Model
+{
+    protected $table = 'custodians';
+    protected $fillable = [
+        'user_id',
+        'created_at',
+        'updated_at',
+        'expiry'
+    ];
+
+    public function user()
+    {
+        return $this->belongsTo('App\Models\User');
+    }
+
+    public function students()
+    {
+        return $this->belongsToMany('App\Model\Student');
+    }
+
 }

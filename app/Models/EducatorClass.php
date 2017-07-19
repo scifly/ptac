@@ -25,5 +25,11 @@ use Illuminate\Database\Eloquent\Model;
 class EducatorClass extends Model {
     
     protected $table = 'educators_classes';
-    
+    protected $fillable = [
+        'educator_id',
+        'class_id',
+        'subject_id',
+        'created_at',
+        'updated_at',
+    ];
 }

@@ -28,7 +28,25 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|ComboType whereUpdatedAt($value)
  * @mixin \Eloquent
  */
-class ComboType extends Model {
+class ComboType extends Model
+{
+    protected $table = 'combo_types';
+    protected $fillable = [
+        'name',
+        'amount',
+        'discount',
+        'school_id',
+        'months',
+        'created_at',
+        'updated_at',
+        'enabled'
+    ];
 
-
+    /**
+     * 套餐与学校 一对多
+     */
+    public function schools()
+    {
+        return $this->belongsTo('App\Models\school');
+    }
 }

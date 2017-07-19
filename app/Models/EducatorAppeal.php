@@ -32,4 +32,38 @@ use Illuminate\Database\Eloquent\Model;
  */
 class EducatorAppeal extends Model {
     //
+    protected $table = 'educator_appeals';
+    protected $fillable = [
+        'educator_id',
+        'ea_ids',
+        'appeal_content',
+        'procedure_log_id',
+        'approver_educator_ids',
+        'reated_educator_ids',
+        'created_at',
+        'updated_at',
+        'status'
+    ];
+
+    /**
+     * 教职工申诉与教职工
+     */
+    public function educator(){
+        return $this->belongsTo('App\Models\Educator');
+    }
+
+    /**
+     * 教职工申诉与考勤记录
+     */
+    public function educatorAttendance(){
+        return $this->belongsTo('App\Models\Educator','ea_ids');
+    }
+
+    /**
+     * 教职工申诉与流程日志
+     */
+    public function procedureLog(){
+        return $this->belongsTo('App\Models\ProcedureLog','procedure_log_id');
+    }
+
 }

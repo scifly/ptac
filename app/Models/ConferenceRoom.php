@@ -28,4 +28,21 @@ use Illuminate\Database\Eloquent\Model;
  */
 class ConferenceRoom extends Model {
     //
+    protected $tables = 'conference_rooms';
+    protected $fillable = [
+        'name',
+        'school_id',
+        'capacity',
+        'remark',
+        'created_at',
+        'updated_at',
+        'enabled'
+    ];
+
+    /**
+     * 会议地址与学校 反向一对多
+     */
+    public function schools(){
+        return $this->belongsTo('\App\Models\School');
+    }
 }

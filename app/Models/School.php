@@ -35,7 +35,7 @@ use Illuminate\Database\Eloquent\Model;
  * @mixin \Eloquent
  */
 class School extends Model {
-    
+    protected $table = 'schools';
     protected $fillable = [
         'name',
         'address',

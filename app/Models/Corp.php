@@ -27,5 +27,19 @@ use Illuminate\Database\Eloquent\Model;
 class Corp extends Model {
     
     //
-    
+    protected $table = 'corps';
+    protected $fillable = [
+        'name',
+        'corpid',
+        'created_at',
+        'updated_at',
+        'enabled'
+    ];
+
+    /**
+     * 企业与部门
+     */
+    public function departments(){
+        return $this->hasMany('App\Models\Department');
+    }
 }
