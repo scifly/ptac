@@ -29,7 +29,21 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|ScoreTotal whereSubjectIds($value)
  * @method static Builder|ScoreTotal whereUpdatedAt($value)
  * @mixin \Eloquent
+ * 总分数
  */
 class ScoreTotal extends Model {
     //
+    protected $table = 'score_totals';
+    protected $fillable =[
+        'student_id',
+        'exam_id',
+        'score',
+        'subject_ids',
+        'na_subject_ids',
+        'class_rank',
+        'grade_rank',
+        'created_at',
+        'updated_at',
+    ];
+
 }

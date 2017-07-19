@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Facades\Wechat;
-use App\Http\Requests\RegisterUser;
 use App\Http\Requests\Request;
+
 
 class HomeController extends Controller {
     /**
@@ -14,7 +14,7 @@ class HomeController extends Controller {
     public function __construct() {
         
         $this->middleware('auth');
-        
+
     }
     
     /**

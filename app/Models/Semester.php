@@ -25,7 +25,22 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|Semester whereStartDate($value)
  * @method static Builder|Semester whereUpdatedAt($value)
  * @mixin \Eloquent
+ * 学期
  */
 class Semester extends Model {
     //
+    protected $table = 'semesters';
+    protected $fillable =[
+        'school_id',
+        'name',
+        'end_date',
+        'created_at',
+        'updated_at',
+    ];
+    public function belongsToSchool()
+    {
+        return $this->belongsTo('App\Models\School', 'school_id', 'id');
+
+    }
+
 }

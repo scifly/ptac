@@ -38,5 +38,25 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Exam extends Model {
 
+    protected $table='exams';
 
+    protected $fillable=[
+        'name',
+        'remark',
+        'exam_type_id',
+        'class_ids',
+        'subject_ids',
+        'max_scores',
+        'pass_scores',
+        'start_date',
+        'end_date',
+        'created_at',
+        'updated_at',
+        'enabled'
+    ];
+
+    public function examType()
+    {
+        return $this->belongsTo('App\models\ExamType');
+    }
 }
