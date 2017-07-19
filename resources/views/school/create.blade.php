@@ -4,6 +4,6 @@
 @endsection
 @section('content')
     {!! Form::open(['url' => '/schools', 'method' => 'post']) !!}
-    @include('partials.school')
+    @include('school.create_edit')
     {!! Form::close() !!}
 @endsection

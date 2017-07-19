@@ -17,6 +17,10 @@
     <!-- Theme style -->
     <link rel="stylesheet" href="{{ URL::asset('css/AdminLTE.min.css') }}">
     <link rel="stylesheet" href="{{ URL::asset('css/skins/_all-skins.min.css') }}">
+    <!-- Parsley style -->
+    <link rel="stylesheet" href="{{ URL::asset('js/plugins/parsley/parsley.css') }}">
+    <!-- DataTable style -->
+    <link rel="stylesheet" href="{{ URL::asset('js/plugins/datatables/datatables.min.css') }}">
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -83,7 +87,8 @@
                                                 <small class="pull-right">20%</small>
                                             </h3>
                                             <div class="progress xs">
-                                                <div class="progress-bar progress-bar-aqua" style="width: 20%" role="progressbar"
+                                                <div class="progress-bar progress-bar-aqua" style="width: 20%"
+                                                     role="progressbar"
                                                      aria-valuenow="20" aria-valuemin="0" aria-valuemax="100">
                                                     <span class="sr-only">20% Complete</span>
                                                 </div>
@@ -97,7 +102,8 @@
                                                 <small class="pull-right">40%</small>
                                             </h3>
                                             <div class="progress xs">
-                                                <div class="progress-bar progress-bar-green" style="width: 40%" role="progressbar"
+                                                <div class="progress-bar progress-bar-green" style="width: 40%"
+                                                     role="progressbar"
                                                      aria-valuenow="20" aria-valuemin="0" aria-valuemax="100">
                                                     <span class="sr-only">40% Complete</span>
                                                 </div>
@@ -119,7 +125,8 @@
                         </a>
                         <ul class="dropdown-menu">
                             <li class="user-header">
-                                <img src="{{ URL::asset('img/user2-160x160.jpg') }}" class="img-circle" alt="User Image">
+                                <img src="{{ URL::asset('img/user2-160x160.jpg') }}" class="img-circle"
+                                     alt="User Image">
 
                                 <p>
                                     张三 - 程序员
@@ -176,7 +183,7 @@
                     <input type="text" name="q" class="form-control" placeholder="搜索...">
                     <span class="input-group-btn">
                 <button type="submit" name="search" id="search-btn" class="btn btn-flat">
-                  <i class="fa fa-search"></i>
+                    <i class="fa fa-search"></i>
                 </button>
               </span>
                 </div>
@@ -561,6 +568,12 @@
 <script src="{{ URL::asset('js/jquery.slimscroll.min.js') }}"></script>
 <!-- ChartJS -->
 <script src="{{ URL::asset('js/Chart.min.js') }}"></script>
+<!-- Parsley -->
+<script src="{{ URL::asset('js/plugins/parsley/parsley.min.js') }}"></script>
+<script src="{{ URL::asset('js/plugins/parsley/i18n/zh_cn.js') }}"></script>
+<script src="{{ URL::asset('js/plugins/parsley/i18n/zh_cn.extra.js') }}"></script>
+<!-- DataTable -->
+<script src="{{ URL::asset('js/plugins/datatables/datatables.js') }}"></script>
 <!-- AdminLTE for demo purposes -->
 <script src="{{ URL::asset('js/demo.js') }}"></script>
 </body>
