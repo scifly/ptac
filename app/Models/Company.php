@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Http\Requests\Request;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
@@ -24,17 +25,38 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|Company whereUpdatedAt($value)
  * @mixin \Eloquent
  */
-class Company extends Model {
-    
+class Company extends Model
+{
+
     //
     protected $table = 'companies';
     protected $fillabled = [
         'name',
         'remark',
         'corpid',
-        'created_at',
-        'updatad_at',
         'enabled'
     ];
-    
+
+    public function corps()
+    {
+
+        return $this->hasMany('App\Models\Company');
+
+    }
+
+    function datatable(Request $request)
+    {
+
+        $columns = [
+            ['db' => 'Company.id', 'dt' => 0],
+            ['db' => 'Company.name', 'dt' => 1],
+            ['db' => 'Company.remark', 'dt' => 2],
+            ['db' => 'Company.corpid', 'dt'=> 3],
+            ['db' => 'Company.created_at', 'dt' => 4],
+            ['db' => 'Company.updated_at', 'dt' => 5],
+            ['db' => 'Company.enabled', 'dt' => 6]
+        ];
+    }
+
+
 }

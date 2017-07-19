@@ -42,4 +42,8 @@ class Corp extends Model {
     public function departments(){
         return $this->hasMany('App\Models\Department');
     }
+    public function company(){
+
+        return $this->belongsTo('App\Models\Corp');
+    }
 }
