@@ -1,0 +1,44 @@
+<?php
+
+namespace App\Http\Requests;
+
+use Illuminate\Foundation\Http\FormRequest;
+
+class AppRequest extends FormRequest
+{
+    /**
+     * Determine if the user is authorized to make this request.
+     *
+     * @return bool
+     */
+    public function authorize()
+    {
+        return false;
+    }
+
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array
+     */
+    public function rules()
+    {
+        return [
+            'name' => 'required|string|max:36',
+            'description' => 'required|string|max:255',
+            'agentid' => 'required|integer',
+            'url' => 'required|string|max:255',
+            'token' => 'required|string|max:255',
+            'encodingaeskey' => 'required|string|max:255',
+            'report_location_flag' => 'required|integer',
+            'logo_mediaid' => 'required|string|max:255',
+            'redirect_domain' => 'required|string|max:255',
+            'isreportuser' => 'required|boolean',
+            'isreportenter' => 'required|boolean',
+            'home_url' => 'required|string|max:255',
+            'chat_extension_url' => 'required|string|max:255',
+            'menu' => 'required|string|max:1024',
+            'enabled' => 'required|boolean'
+        ];
+    }
+}

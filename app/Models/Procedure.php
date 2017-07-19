@@ -28,4 +28,16 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Procedure extends Model {
     //
+    protected $table = 'procedures';
+
+    protected $fillable = [
+        'procedure_type_id',
+        'school_id',
+        'name',
+        'remark',
+        'created_at',
+        'updated_at',
+        'enabled',
+        ];
 }
+

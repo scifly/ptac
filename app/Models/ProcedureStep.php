@@ -30,4 +30,16 @@ use Illuminate\Database\Eloquent\Model;
  */
 class ProcedureStep extends Model {
     //
+   protected $table = 'procedure_steps';
+
+   protected $fillabe = [
+       'procedure_id',
+       'name',
+       'approver_user_ids',
+       'related_user_ids',
+       'remark',
+       'created_at',
+       'updated_at',
+       'enabled'
+   ];
 }

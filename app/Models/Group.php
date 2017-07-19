@@ -23,9 +23,11 @@ use Illuminate\Database\Eloquent\Model;
  * @mixin \Eloquent
  */
 class Group extends Model {
+
+    protected $table='groups';
     
     protected $fillable = [
-        'name', 'remark', 'enabled'
+        'name', 'remark', 'created_at','updated_at','enabled'
     ];
     
     public function users() { return $this->hasMany('App\Model\User'); }

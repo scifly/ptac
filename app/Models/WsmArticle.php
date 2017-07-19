@@ -33,6 +33,12 @@ use Illuminate\Database\Eloquent\Model;
  */
 class WsmArticle extends Model {
     //
+<<<<<<< HEAD
+    protected $table='wsm_artilces';
+    protected $fillable=[
+        'id','wsm_id'
+    ];
+=======
     protected $table = 'wsm_articles';
     protected $fillable = [
         'id',
@@ -49,4 +55,5 @@ class WsmArticle extends Model {
         return $this->belongsTo('App\Models\WapSiteModule', 'wsm_id', 'id');
     }
 
+>>>>>>> origin/master
 }
