@@ -28,8 +28,6 @@ class EducatorClass extends Model {
     protected $fillable = [
         'educator_id',
         'class_id',
-        'subject_id',
-        'created_at',
-        'updated_at',
+        'subject_id'
     ];
 }

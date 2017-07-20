@@ -26,12 +26,9 @@ use Illuminate\Database\Eloquent\Model;
 class Attachment extends Model
 {
 
-    protected $table = 'attachments';
     protected $fillable = [
         'accachment_type_id',
         'url',
-        'created_at',
-        'updated_at',
         'enabled'
     ];
     public function attachmentType()

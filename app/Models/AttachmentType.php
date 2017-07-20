@@ -29,8 +29,6 @@ class AttachmentType extends Model
     protected $fillable=[
         'name',
         'remark',
-        'created_at',
-        'updated_at',
         'enabled'
     ];
     public function attachments()

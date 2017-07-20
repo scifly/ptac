@@ -34,8 +34,6 @@ class AttendanceMachine extends Model
         'location',
         'school_id',
         'machineid',
-        'created_at',
-        'updated_at',
         'enabled'
     ];
 
@@ -48,7 +46,7 @@ class AttendanceMachine extends Model
     }
 
     /**
-     * 考勤机与学生考勤 一对多
+     * 考勤机与学生考勤
      */
     public function studentattendance()
     {

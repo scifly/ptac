@@ -28,8 +28,6 @@ class AlertType extends Model {
     protected $fillable = [
         'name',
         'english_name',
-        'created_at',
-        'updated_at',
         'enabled'
     ];
 }

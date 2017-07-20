@@ -32,9 +32,7 @@ class Educator extends Model
         'user_id',
         'team_ids',
         'school_id',
-        'sms_quote',
-        'created_at',
-        'updated_at'
+        'sms_quote'
     ];
 
     public function user()
@@ -43,7 +41,7 @@ class Educator extends Model
     }
 
     /**
-     * 教职工与所属组  多对多
+     * 教职工与所属组
      */
     public function teams()
     {
@@ -51,7 +49,7 @@ class Educator extends Model
     }
 
     /**
-     * 教职员工与学校 反向一对多
+     * 教职员工与学校
      */
     public function school()
     {

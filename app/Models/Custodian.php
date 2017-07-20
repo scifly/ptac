@@ -26,8 +26,6 @@ class Custodian extends Model
     protected $table = 'custodians';
     protected $fillable = [
         'user_id',
-        'created_at',
-        'updated_at',
         'expiry'
     ];
 

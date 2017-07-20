@@ -27,8 +27,6 @@ class CommType extends Model {
     protected $fillable = [
         'name',
         'remark',
-        'created_at',
-        'updated_at',
         'enabled'
     ];
 }

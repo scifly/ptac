@@ -33,13 +33,11 @@ class ConferenceParticipant extends Model
         'educator_id',
         'attendance_time',
         'conference_queue_id',
-        'created_at',
-        'updated_at',
         'status'
     ];
 
     /**
-     * 会议参与者与教师 一对一
+     * 会议参与者与教师
      */
     public function educator()
     {

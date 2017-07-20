@@ -36,9 +36,10 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|ConferenceQueue whereUpdatedAt($value)
  * @mixin \Eloquent
  */
-class ConferenceQueue extends Model {
-    //
-    protected $table ='conference_queues';
+class ConferenceQueue extends Model
+{
+
+    protected $table = 'conference_queues';
     protected $fillable = [
         'name',
         'remark',
@@ -49,22 +50,22 @@ class ConferenceQueue extends Model {
         'attended_educator_ids',
         'conference_room_id',
         'attendance_qrcode_url',
-        'event_id',
-        'created_at',
-        'updated_at'
+        'event_id'
     ];
 
     /**
-     * 会议与会议参与者 一对多
+     * 会议与会议参与者
      */
-    public function conferenceParticipants(){
+    public function conferenceParticipants()
+    {
         return $this->hasMany('App\Models\ConferenceParticipant');
     }
 
     /**
-     * 会议与会议地址 一对一
+     * 会议与会议地址
      */
-    public function conferenceRoom(){
+    public function conferenceRoom()
+    {
         return $this->belongsTo('App\Models\ConferenceRoom');
     }
 }

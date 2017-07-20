@@ -37,9 +37,7 @@ class EducatorAttendance extends Model {
         'longitude',
         'latitude',
         'inorout',
-        'eas_id',
-        'created_at',
-        'updated_at'
+        'eas_id'
     ];
 
     /**
@@ -50,7 +48,7 @@ class EducatorAttendance extends Model {
     }
 
     /**
-     * 教职工考勤与考勤设置 反向一对多
+     * 教职工考勤与考勤设置
      */
     public function educatorAttendanceSetting(){
         return $this->belongsTo('App\Models\EducatorAttendanceSetting','eas_id');

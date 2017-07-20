@@ -60,3 +60,11 @@ Route::delete('schools/{school}', function(App\Models\School $school) {
 
 # 系统设置
 // 学校设置
+
+// 运营者公司设置
+Route::get('companies/index', 'CompanyController@index');
+Route::get('companies/create', 'CompanyController@create');
+Route::post('companies', 'CompanyController@store');
+Route::get('companies/{company}/edit', 'CompanyController@edit');
+Route::put('companies/{company}', 'CompanyController@update');
+Route::delete('companies/{company}', 'CompanyController@destroy');

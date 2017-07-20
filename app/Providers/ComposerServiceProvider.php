@@ -15,7 +15,8 @@ class ComposerServiceProvider extends ServiceProvider {
     public function boot() {
         
         View::composer('school.create_edit', 'App\Http\ViewComposers\SchoolComposer');
-        
+        View::composer('company.create_edit', 'App\Http\ViewComposers\CompanyComposer');
+
     }
     
     /**

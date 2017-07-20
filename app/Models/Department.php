@@ -41,8 +41,6 @@ class Department extends Model
         'name',
         'remark',
         'order',
-        'created_at',
-        'updated_at',
         'enabled'
     ];
 

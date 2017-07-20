@@ -37,13 +37,11 @@ class ComboType extends Model
         'discount',
         'school_id',
         'months',
-        'created_at',
-        'updated_at',
         'enabled'
     ];
 
     /**
-     * 套餐与学校 一对多
+     * 套餐与学校
      */
     public function schools()
     {

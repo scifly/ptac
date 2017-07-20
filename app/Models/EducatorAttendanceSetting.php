@@ -35,9 +35,7 @@ class EducatorAttendanceSetting extends Model
         'school_id',
         'start',
         'end',
-        'inorout',
-        'created_at',
-        'updated_at'
+        'inorout'
     ];
 
     /**
@@ -49,7 +47,7 @@ class EducatorAttendanceSetting extends Model
     }
 
     /**
-     * 教职工考勤设置与学校 反向一对多
+     * 教职工考勤设置与学校
      */
     public function schools(){
         return $this->belongsTo('App\Models\School');

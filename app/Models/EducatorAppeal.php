@@ -40,8 +40,6 @@ class EducatorAppeal extends Model {
         'procedure_log_id',
         'approver_educator_ids',
         'reated_educator_ids',
-        'created_at',
-        'updated_at',
         'status'
     ];
 

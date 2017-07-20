@@ -30,8 +30,6 @@ class CustodianStudent extends Model
         'custodian_id',
         'student_id',
         'relationship',
-        'created_at',
-        'updated_at'
     ];
 
 }

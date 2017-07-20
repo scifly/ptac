@@ -2,9 +2,10 @@
 
 namespace App\Models;
 
-use App\Http\Requests\Request;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use App\Facades\DatatableFacade as Datatable;
+use Illuminate\Http\Request;
 
 /**
  * App\Models\Company
@@ -28,7 +29,6 @@ use Illuminate\Database\Eloquent\Model;
 class Company extends Model
 {
 
-    //
     protected $table = 'companies';
     protected $fillabled = [
         'name',
@@ -54,8 +54,13 @@ class Company extends Model
             ['db' => 'Company.corpid', 'dt'=> 3],
             ['db' => 'Company.created_at', 'dt' => 4],
             ['db' => 'Company.updated_at', 'dt' => 5],
-            ['db' => 'Company.enabled', 'dt' => 6]
+            [
+                'db' => 'Company.enabled', 'dt' => 6,
+                'formatter' => function($d, $row) {
+                    return Datatable::dtOps($this, $d, $row);
+                }]
         ];
+        return Datatable::simple($this, $request, $columns);
     }
 
 

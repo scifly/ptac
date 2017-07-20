@@ -24,25 +24,26 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|Corp whereUpdatedAt($value)
  * @mixin \Eloquent
  */
-class Corp extends Model {
-    
-    //
+class Corp extends Model
+{
+
     protected $table = 'corps';
     protected $fillable = [
         'name',
         'corpid',
-        'created_at',
-        'updated_at',
         'enabled'
     ];
 
     /**
      * 企业与部门
      */
-    public function departments(){
+    public function departments()
+    {
         return $this->hasMany('App\Models\Department');
     }
-    public function company(){
+
+    public function company()
+    {
 
         return $this->belongsTo('App\Models\Corp');
     }
