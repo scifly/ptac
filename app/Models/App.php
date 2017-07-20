@@ -74,13 +74,13 @@ class App extends Model {
         $columns = [
             ['db' => 'App.id', 'dt' => 0],
             ['db' => 'App.agentid', 'dt' => 1],
-            ['db' => 'App.report_location_flag', 'dt' => 1],
-            ['db' => 'App.isreportuser', 'dt' => 1],
-            ['db' => 'App.isreportenter', 'dt' => 1],
-            ['db' => 'App.created_at', 'dt' => 1],
-            ['db' => 'App.updated_at', 'dt' => 2],
+            ['db' => 'App.report_location_flag', 'dt' => 2],
+            ['db' => 'App.isreportuser', 'dt' => 3],
+            ['db' => 'App.isreportenter', 'dt' => 4],
+            ['db' => 'App.created_at', 'dt' => 5],
+            ['db' => 'App.updated_at', 'dt' => 6],
             [
-                'db' => 'App.enabled', 'dt' => 6,
+                'db' => 'App.enabled', 'dt' => 7,
                 'formatter' => function($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
                 }
