@@ -21,10 +21,7 @@ use Illuminate\Support\Facades\Auth;
 
 Route::get('/', 'HomeController@index');
 
-Route::get('schools', function() {
-    $shools = App\Models\School::all();
-    return view('school.index')->with('schools', $shools);
-});
+
 Route::get('schools/types/{name}', function($name) {
     $schoolType = App\Models\SchoolType::with('schools')
         ->whereName($name)
@@ -34,37 +31,12 @@ Route::get('schools/types/{name}', function($name) {
         ->with('schools', $schoolType->schools);
 });
 
-
-
-Route::get('schools/create', function() {
-    return view('admin.config.school.schools_create');
-});
-Route::post('schools', function() {
-    $school = App\Models\School::create(Request::all());
-    return redirect('schools/' . $school->id)->withSuccess('成功创建学校');
-});
-Route::get('schools/{school}', function(App\Models\School $school) {
-    return view('admin.config.school.schools_show')->with('school', $school);
-});
-Route::get('schools/{school}/edit', function(App\Models\School $school) {
-    return view('admin.config.school.schools_edit')->with('school', $school);
-});
-Route::put('schools/{school}', function(App\Models\School $school) {
-    $school->update(Request::all());
-    return redirect('schools/' . $school->id)->withSuccess('成功更新学校');
-});
-Route::delete('schools/{school}', function(App\Models\School $school) {
-    $school->delete();
-    return redirect('schools')->withSuccess('该学校已被删除');
-});
-
 # 系统设置
 // 学校设置
-Route::get('subject/index','SubjectController@index');
-Route::get('subject/create','SubjectController@create');
-Route::post('subject', 'SubjectController@store');
-Route::get('subject/{subject}/edit', 'SubjectController@edit');
-Route::put('subject/{subject}', 'SubjectController@update');
-Route::delete('subject/{subject}', 'SubjectController@destroy');
-
-
+Route::get('schools/index', 'SchoolController@index');
+Route::get('schools/create', 'SchoolController@create');
+Route::post('schools', 'SchoolController@store');
+Route::get('schools/{school}', 'SchoolController@show');
+Route::get('schools/{school}/edit', 'SchoolController@edit');
+Route::put('schools/{school}', 'SchoolController@update');
+Route::delete('schools/{school}', 'SchoolController@destroy');

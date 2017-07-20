@@ -23,18 +23,18 @@ use Illuminate\Database\Eloquent\Model;
  * @mixin \Eloquent
  */
 class SchoolType extends Model {
-<<<<<<< HEAD
-    //
-    protected $table = 'school_types';
+
     protected $fillable =[
         'name',
         'remark',
         'created_at',
         'updated_at',
     ];
-=======
-
-    protected $fillable = [''];
     
->>>>>>> d25f36b1506eb11ca099f0ee1de8114ddbb2885f
+    public function schools() {
+        
+        return $this->hasMany('App\Models\School');
+        
+    }
+    
 }
