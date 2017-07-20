@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Http\Request;
+use Symfony\Component\VarDumper\Cloner\Data;
 
 /**
  * App\Models\Subject
@@ -65,8 +66,18 @@ class Subject extends Model {
             ['db' => 'Subject.name', 'dt'=> 1],
             ['db' => 'Subject.isaux', 'dt'=> 2],
             ['db' => 'Subject.max_score', 'dt'=> 3],
-            ['db' => '']
+            ['db' => 'Subject.pass_score', 'dt'=> 4],
+            ['db' => 'Subject.created_at', 'dt' => 5],
+            ['db' => 'Subject.updated_at', 'dt' => 6],
+            [
+                'db' => 'Subject.enabled', 'dt' => 7,
+                'formmatter' => function($d, $row)
+                {
+                    return Datatable::dtOps($this, $d ,$row);
+                }
+            ]
         ];
+        return Datatable::simple($this, $request, $columns);
     }
 
 

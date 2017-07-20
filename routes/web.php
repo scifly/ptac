@@ -60,3 +60,11 @@ Route::delete('schools/{school}', function(App\Models\School $school) {
 
 # 系统设置
 // 学校设置
+Route::get('subject/index','SubjectController@index');
+Route::get('subject/create','SubjectController@create');
+Route::post('subject', 'SubjectController@store');
+Route::get('subject/{subject}/edit', 'SubjectController@edit');
+Route::put('subject/{subject}', 'SubjectController@update');
+Route::delete('subject/{subject}', 'SubjectController@destroy');
+
+
