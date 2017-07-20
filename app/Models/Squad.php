@@ -40,5 +40,10 @@ class Squad extends Model {
     {
         return $this->hasMany('App\Models\Student','class_id','id');
     }
+
+    public function grade()
+    {
+        return $this->belongsTo('App\Models\Grade');
+    }
     
 }
