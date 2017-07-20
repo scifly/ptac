@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use App\Facades\DatatableFacade as Datatable;
-use Illuminate\Http\Request;
 
 /**
  * App\Models\School
@@ -63,23 +62,42 @@ class School extends Model {
         
     }
     
-    public function datatable(Request $request) {
+    public function datatable() {
         
         $columns = [
             ['db' => 'School.id', 'dt' => 0],
-            ['db' => 'SchoolType.name', 'dt' => 1],
-            ['db' => 'School.address', 'dt' => 2],
-            ['db' => 'Corp.name', 'dt' => 3],
-            ['db' => 'School.created_at', 'dt' => 4],
-            ['db' => 'School.updated_at', 'dt' => 5],
+            ['db' => 'School.name as schoolname', 'dt' => 1],
+            ['db' => 'SchoolType.name as typename', 'dt' => 2],
+            ['db' => 'School.address', 'dt' => 3],
+            ['db' => 'Corp.name as corpname', 'dt' => 4],
+            ['db' => 'School.created_at', 'dt' => 5],
+            ['db' => 'School.updated_at', 'dt' => 6],
             [
-                'db' => 'School.enabled', 'dt' => 6,
+                'db' => 'School.enabled', 'dt' => 7,
                 'formatter' => function($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
                 }
             ]
         ];
-        return Datatable::simple($this, $request, $columns);
+        $joins = [
+            [
+                'table' => 'school_types',
+                'alias' => 'SchoolType',
+                'type' => 'INNER',
+                'conditions' => [
+                    'SchoolType.id = School.school_type_id'
+                ]
+            ],
+            [
+                'table' => 'corps',
+                'alias' => 'Corp',
+                'type' => 'INNER',
+                'conditions' => [
+                    'Corp.id = School.corp_id'
+                ]
+            ]
+        ];
+        return Datatable::simple($this, $columns, $joins);
         
     }
 
