@@ -1,10 +1,10 @@
 $('#data-table').dataTable({
     processing: true,
     serverSide: true,
-    ajax: '/school/index',
+    ajax: 'index',
     order: [[0, 'desc']],
     stateSave: true,
-    language: { url: '/files/ch.json' }
+    language: { url: '../files/ch.json' }
 });
 
 $(document).on('click', '.fa-trash', function() {

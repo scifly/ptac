@@ -574,6 +574,7 @@
 <script src="{{ URL::asset('js/plugins/parsley/i18n/zh_cn.extra.js') }}"></script>
 <!-- DataTable -->
 <script src="{{ URL::asset('js/plugins/datatables/datatables.js') }}"></script>
+<script src="{{ URL::asset($js) }}"></script>
 <!-- AdminLTE for demo purposes -->
 <script src="{{ URL::asset('js/demo.js') }}"></script>
 </body>
