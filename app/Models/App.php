@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use App\Facades\DatatableFacade as Datatable;
+use Illuminate\Http\Request;
 
 /**
  * App\Models\App
@@ -71,8 +73,18 @@ class App extends Model {
 
         $columns = [
             ['db' => 'App.id', 'dt' => 0],
+            ['db' => 'App.agentid', 'dt' => 1],
+            ['db' => 'App.report_location_flag', 'dt' => 1],
+            ['db' => 'App.isreportuser', 'dt' => 1],
+            ['db' => 'App.isreportenter', 'dt' => 1],
             ['db' => 'App.created_at', 'dt' => 1],
-            ['db' => 'App.updated_at', 'dt' => 2]
+            ['db' => 'App.updated_at', 'dt' => 2],
+            [
+                'db' => 'App.enabled', 'dt' => 6,
+                'formatter' => function($d, $row) {
+                    return Datatable::dtOps($this, $d, $row);
+                }
+            ]
         ];
         return Datatable::simple($this, $request, $columns);
 
