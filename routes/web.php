@@ -59,3 +59,11 @@ Route::delete('schools/{school}', function(App\Models\School $school) {
 
 # 系统设置
 // 学校设置
+
+//年级班级设置
+Route::get('grades/create', 'GradeController@create');
+Route::post('grades', 'GradeController@index');
+Route::get('grades/{grade}', 'GradeController@show');
+Route::get('grades/{grade}/edit', 'GradeController@edit');
+Route::put('grades/{grade}', 'GradeController@update');
+Route::delete('grades/{grade}', 'GradeController@destroy');

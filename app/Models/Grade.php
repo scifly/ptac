@@ -52,9 +52,10 @@ class Grade extends Model {
             ['db' => 'Grade.id', 'dt' => 0],
             ['db' => 'Grade.name', 'dt' => 1],
             ['db' => 'School.name', 'dt' => 2],
-            ['db' => 'User.username', 'dt' => 3],
+            ['db' => 'Grade.educator_ids', 'dt' => 3],
+
             [
-                'db' => 'School.enabled', 'dt' => 6,
+                'db' => 'Grade.enabled', 'dt' => 4,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
                 }
