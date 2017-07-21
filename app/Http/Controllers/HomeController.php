@@ -19,7 +19,6 @@ class HomeController extends Controller {
     public function __construct(School $school) {
         
         $this->school = $school;
-        
         // $this->middleware('auth');
 
     }
