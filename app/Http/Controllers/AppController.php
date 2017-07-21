@@ -3,10 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Models\App;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Request;
 
 class AppController extends Controller
 {
+
+    protected $app;
+
+    function __construct(App $app) { $this->app = $app; }
+
     /**
      * Display a listing of the resource.
      *
@@ -14,7 +19,10 @@ class AppController extends Controller
      */
     public function index()
     {
-        //
+        if (Request::get('draw')) {
+            return response()->json($this->app->datatable());
+        }
+        return view('app.index', ['js' => 'js/app/index.js']);
     }
 
     /**
@@ -30,7 +38,7 @@ class AppController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request|Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)

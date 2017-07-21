@@ -21,14 +21,6 @@ class CompanyController extends Controller
      */
     public function index() {
 
-        /*if (Request::ajax() && !$arg) {
-            return response()->json($this->school->datatable());
-        } elseif ($arg) {
-            return view('school.index', ['js' => 'js/school/index.js']);
-        } else {
-            return response()->json($this->school->datatable());
-        }*/
-
         if (Request::get('draw')) {
             return response()->json($this->company->datatable());
         }
@@ -43,62 +35,62 @@ class CompanyController extends Controller
      */
     public function create()
     {
-        //
+        return view('company.create',['js' => 'js/company/create.js']);
     }
 
     /**
      * 保存新创建的运营者公司记录
-     *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
+     * @internal param \Illuminate\Http\Request|Request $request
      */
-    public function store(Request $request)
+    public function store()
     {
-        //
+        // request
+        return response()->json(['statusCode' => 200, 'Message' => 'nailed it!']);
     }
 
     /**
      * 显示运营者公司记录详情
-     *
-     * @param  \App\Models\Company  $company
      * @return \Illuminate\Http\Response
+     * @internal param Company $company
      */
-    public function show(Company $company)
+    public function show()
     {
-        //
+        // find the record by id
+        return view('company.show', ['company' => $company]);
     }
 
     /**
      * 显示编辑运营者公司记录的表单
-     *
-     * @param  \App\Models\Company  $company
      * @return \Illuminate\Http\Response
+     * @internal param Company $company
      */
-    public function edit(Company $company)
-    {
-        //
+    public function edit() {
+
+        return view('company.edit', ['js' => 'js/company/edit.js']);
+
     }
 
     /**
      * 更新指定运营者公司记录
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Company  $company
      * @return \Illuminate\Http\Response
+     * @internal param \Illuminate\Http\Request $request
+     * @internal param Company $company
      */
-    public function update(Request $request, Company $company)
+    public function update()
     {
-        //
+        // find the record by id
+        // update the record with the request data
+        return response()->json([]);
     }
 
     /**
      * 删除指定运营者公司记录
-     *
-     * @param  \App\Models\Company  $company
      * @return \Illuminate\Http\Response
+     * @internal param Company $company
      */
-    public function destroy(Company $company)
+    public function destroy()
     {
-        //
+        return response()->json([]);
     }
 }
