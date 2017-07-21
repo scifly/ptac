@@ -163,7 +163,6 @@ return [
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
         Collective\Html\HtmlServiceProvider::class,
-
         /*
          * Package Service Providers...
          */
@@ -180,6 +179,8 @@ return [
         Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
         App\Providers\WechatServiceProvider::class,
         App\Providers\TestServiceProvider::class,
+        App\Providers\DatatableServiceProvider::class,
+        App\Providers\ComposerServiceProvider::class,
 
     ],
 
@@ -195,7 +196,6 @@ return [
     */
 
     'aliases' => [
-
         'App' => Illuminate\Support\Facades\App::class,
         'Artisan' => Illuminate\Support\Facades\Artisan::class,
         'Auth' => Illuminate\Support\Facades\Auth::class,
@@ -230,6 +230,7 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
         'Wechat' => App\Facades\Wechat::class,
+        'Datatable' => App\Facades\DatatableFacade::class,
         'Test' => App\Services\Test::class,
         'Form' => Collective\Html\FormFacade::class,
         'Html' => Collective\Html\HtmlFacade::class,

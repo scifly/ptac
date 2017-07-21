@@ -1,0 +1,67 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
+use App\Facades\DatatableFacade as Datatable;
+use Illuminate\Http\Request;
+
+/**
+ * App\Models\Company
+ *
+ * @property int $id
+ * @property string $name 运营者公司名称
+ * @property string $remark 运营者公司备注
+ * @property string $corpid 与运营者公司对应的企业号id
+ * @property \Carbon\Carbon|null $created_at
+ * @property \Carbon\Carbon|null $updated_at
+ * @property int $enabled
+ * @method static Builder|Company whereCorpid($value)
+ * @method static Builder|Company whereCreatedAt($value)
+ * @method static Builder|Company whereEnabled($value)
+ * @method static Builder|Company whereId($value)
+ * @method static Builder|Company whereName($value)
+ * @method static Builder|Company whereRemark($value)
+ * @method static Builder|Company whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
+class Company extends Model
+{
+
+    protected $table = 'companies';
+    protected $fillabled = [
+        'name',
+        'remark',
+        'corpid',
+        'enabled'
+    ];
+
+    public function corps()
+    {
+
+        return $this->hasMany('App\Models\Company');
+
+    }
+
+    function datatable(Request $request)
+    {
+
+        $columns = [
+            ['db' => 'Company.id', 'dt' => 0],
+            ['db' => 'Company.name', 'dt' => 1],
+            ['db' => 'Company.remark', 'dt' => 2],
+            ['db' => 'Company.corpid', 'dt'=> 3],
+            ['db' => 'Company.created_at', 'dt' => 4],
+            ['db' => 'Company.updated_at', 'dt' => 5],
+            [
+                'db' => 'Company.enabled', 'dt' => 6,
+                'formatter' => function($d, $row) {
+                    return Datatable::dtOps($this, $d, $row);
+                }]
+        ];
+        return Datatable::simple($this, $request, $columns);
+    }
+
+
+}

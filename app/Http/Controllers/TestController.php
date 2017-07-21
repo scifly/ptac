@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Services\Test;
 
-class TestController extends Controller
-{
+class TestController extends Controller {
     protected $test;
+    
     //
     
     function __construct(Test $test) {
