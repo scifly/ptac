@@ -2,15 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\App;
+use App\Models\Educator;
 use Illuminate\Support\Facades\Request;
 
-class AppController extends Controller
+class EducatorController extends Controller
 {
 
-    protected $app;
+    protected $educator;
 
-    function __construct(App $app) { $this->app = $app; }
+    public function __construct(Educator $educator)
+    {
+        $this->educator = $educator;
+    }
 
     /**
      * Display a listing of the resource.
@@ -19,10 +22,12 @@ class AppController extends Controller
      */
     public function index()
     {
+        //
         if (Request::get('draw')) {
-            return response()->json($this->app->datatable());
+            return response()->json($this->educator->datatable());
         }
-        return view('app.index', ['js' => 'js/app/index.js']);
+        return view('educator.index' , ['js' => 'js/educator/index.js']);
+
     }
 
     /**
@@ -33,26 +38,28 @@ class AppController extends Controller
     public function create()
     {
         //
+        return view('educators.create',['js' => 'js/educator/create.js']);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param \Illuminate\Http\Request|Request $request
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store()
     {
         //
+
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\App  $app
+     * @param  \App\Models\Educator  $educator
      * @return \Illuminate\Http\Response
      */
-    public function show(App $app)
+    public function show(Educator $educator)
     {
         //
     }
@@ -60,10 +67,10 @@ class AppController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\App  $app
+     * @param  \App\Models\Educator  $educator
      * @return \Illuminate\Http\Response
      */
-    public function edit(App $app)
+    public function edit(Educator $educator)
     {
         //
     }
@@ -72,10 +79,10 @@ class AppController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\App  $app
+     * @param  \App\Models\Educator  $educator
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, App $app)
+    public function update(Request $request, Educator $educator)
     {
         //
     }
@@ -83,10 +90,10 @@ class AppController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\App  $app
+     * @param  \App\Models\Educator  $educator
      * @return \Illuminate\Http\Response
      */
-    public function destroy(App $app)
+    public function destroy(Educator $educator)
     {
         //
     }

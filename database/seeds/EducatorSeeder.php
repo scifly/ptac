@@ -2,7 +2,7 @@
 
 use Illuminate\Database\Seeder;
 
-class SchoolSeeder extends Seeder
+class EducatorSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -11,8 +11,9 @@ class SchoolSeeder extends Seeder
      */
     public function run()
     {
-        factory(App\Models\School::class, 5)->create()->each(function ($school) {
-            $school->save();
+        //
+        factory(App\Models\Educator::class, 5)->create()->each(function ($educator) {
+            $educator->save();
         });
     }
 }

@@ -32,30 +32,46 @@ $factory->define(App\Models\SchoolType::class, function (Faker\Generator $faker)
     ];
     
 });
-
-$factory->define(App\Models\AttendanceMachine::class, function (Faker\Generator $faker) {
+$factory->define(App\Models\School::class, function (Faker\Generator $faker) {
 
     return [
+        'school_type_id' => 1 ,
         'name' => $faker->name,
-        'location' => $faker->address,
-        'school_id' => 1,
-        'machineid' => 'fdsafdsaf454',
+        'address' =>  $faker->address,
+        'corp_id' => 1,
         'enabled' => 1
     ];
 
 });
 
-$factory->define(App\Models\School::class, function (Faker\Generator $faker) {
+$factory->define(App\Models\Grade::class, function (Faker\Generator $faker) {
 
     return [
-        'school_type_id' => 1,
         'name' => $faker->name,
-        'address' => $faker->address,
-        'longitude' => 12.57454,
-        'latitude' => 36.15587,
-        'corp_id' => 1,
-        'sms_max_cnt' => 1,
-        'sms_used' => 1,
+        'school_id' => 1,
+        'educator_ids' => 'abc',
+        'enabled' => 1
+    ];
+
+});
+
+$factory->define(App\Models\Educator::class, function (Faker\Generator $faker) {
+
+    return [
+        'user_id' => 1,
+        'team_ids' => 'abc',
+        'school_id' => 1,
+        'sms_quote' => 100,
+    ];
+
+});
+
+$factory->define(App\Models\Company::class, function (Faker\Generator $faker) {
+
+    return [
+        'name' => $faker->company,
+        'remark' => $faker->sentence(10),
+        'corpid' => 'test1111',
         'enabled' => 1
     ];
 

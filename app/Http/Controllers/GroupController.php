@@ -2,15 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\App;
+use App\Models\Group;
 use Illuminate\Support\Facades\Request;
 
-class AppController extends Controller
+class GroupController extends Controller
 {
+    protected $group;
 
-    protected $app;
-
-    function __construct(App $app) { $this->app = $app; }
+    /**
+     * GroupController constructor.
+     * @param Group $group
+     */
+    function __construct(Group $group){ $this->group = $group; }
 
     /**
      * Display a listing of the resource.
@@ -20,9 +23,10 @@ class AppController extends Controller
     public function index()
     {
         if (Request::get('draw')) {
-            return response()->json($this->app->datatable());
+            return response()->json($this->group->datatable());
         }
-        return view('app.index', ['js' => 'js/app/index.js']);
+        return view('group.index', ['js' => 'js/group/index.js']);
+
     }
 
     /**
@@ -38,7 +42,7 @@ class AppController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param \Illuminate\Http\Request|Request $request
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -49,10 +53,10 @@ class AppController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\App  $app
+     * @param  \App\Models\Group  $group
      * @return \Illuminate\Http\Response
      */
-    public function show(App $app)
+    public function show(Group $group)
     {
         //
     }
@@ -60,10 +64,10 @@ class AppController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\App  $app
+     * @param  \App\Models\Group  $group
      * @return \Illuminate\Http\Response
      */
-    public function edit(App $app)
+    public function edit(Group $group)
     {
         //
     }
@@ -72,10 +76,10 @@ class AppController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\App  $app
+     * @param  \App\Models\Group  $group
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, App $app)
+    public function update(Request $request, Group $group)
     {
         //
     }
@@ -83,10 +87,10 @@ class AppController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\App  $app
+     * @param  \App\Models\Group  $group
      * @return \Illuminate\Http\Response
      */
-    public function destroy(App $app)
+    public function destroy(Group $group)
     {
         //
     }
