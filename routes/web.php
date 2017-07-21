@@ -35,8 +35,8 @@ Route::get('schools/types/{name}', function($name) {
 // 学校设置
 Route::get('schools/index', 'SchoolController@index');
 Route::get('schools/create', 'SchoolController@create');
-Route::post('schools', 'SchoolController@store');
-Route::get('schools/{school}', 'SchoolController@show');
-Route::get('schools/{school}/edit', 'SchoolController@edit');
-Route::put('schools/{school}', 'SchoolController@update');
-Route::delete('schools/{school}', 'SchoolController@destroy');
+Route::post('schools/create', 'SchoolController@store');
+Route::get('schools/show/{id}', 'SchoolController@show');
+Route::get('schools/edit/{id}', 'SchoolController@edit');
+Route::put('schools/edit/{id}', 'SchoolController@update');
+Route::delete('schools/delete/{id}', 'SchoolController@destroy');
