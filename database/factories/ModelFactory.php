@@ -12,7 +12,7 @@
 */
 
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
-$factory->define(App\User::class, function (Faker\Generator $faker) {
+$factory->define(App\Models\User::class, function (Faker\Generator $faker) {
     static $password;
 
     return [
@@ -31,4 +31,32 @@ $factory->define(App\Models\SchoolType::class, function (Faker\Generator $faker)
         'enabled' => 1
     ];
     
+});
+
+$factory->define(App\Models\AttendanceMachine::class, function (Faker\Generator $faker) {
+
+    return [
+        'name' => $faker->name,
+        'location' => $faker->address,
+        'school_id' => 1,
+        'machineid' => 'fdsafdsaf454',
+        'enabled' => 1
+    ];
+
+});
+
+$factory->define(App\Models\School::class, function (Faker\Generator $faker) {
+
+    return [
+        'school_type_id' => 1,
+        'name' => $faker->name,
+        'address' => $faker->address,
+        'longitude' => 12.57454,
+        'latitude' => 36.15587,
+        'corp_id' => 1,
+        'sms_max_cnt' => 1,
+        'sms_used' => 1,
+        'enabled' => 1
+    ];
+
 });

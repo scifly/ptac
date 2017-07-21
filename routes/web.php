@@ -32,9 +32,7 @@ Route::get('schools/types/{name}', function($name) {
 });
 
 # 系统设置
-
 // 学校设置
-
 Route::get('schools/index', 'SchoolController@index');
 Route::get('schools/create', 'SchoolController@create');
 Route::post('schools/create', 'SchoolController@store');
@@ -52,7 +50,7 @@ Route::get('companies/{company}/edit', 'CompanyController@edit');
 Route::put('companies/{company}', 'CompanyController@update');
 Route::delete('companies/{company}', 'CompanyController@destroy');
 
-//年级班级设置
+// 年级班级设置
 Route::get('grades/index', 'GradeController@index');
 Route::get('grades/create', 'GradeController@create');
 Route::post('grades', 'GradeController@index');
@@ -60,3 +58,13 @@ Route::get('grades/{grade}', 'GradeController@show');
 Route::get('grades/{grade}/edit', 'GradeController@edit');
 Route::put('grades/{grade}', 'GradeController@update');
 Route::delete('grades/{grade}', 'GradeController@destroy');
+
+# 考勤管理
+// 考勤设置
+Route::get('attendance_machines/index', 'AttendanceMachineController@index');
+Route::get('attendance_machines/create', 'AttendanceMachineController@create');
+Route::post('attendance_machines/create', 'AttendanceMachineController@store');
+Route::get('attendance_machines/show/{id}', 'AttendanceMachineController@show');
+Route::get('attendance_machines/edit/{id}', 'AttendanceMachineController@edit');
+Route::put('attendance_machines/edit/{id}', 'AttendanceMachineController@update');
+Route::delete('attendance_machines/delete/{id}', 'AttendanceMachineController@destroy');
