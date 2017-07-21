@@ -2,6 +2,7 @@
 @section('header')
     <div class="panel-heading">
         <div class="btn-group">
+
             <a href="{{ url('schools/create') }}" class="btn btn-primary pull-right">
                 添加新学校
             </a>
