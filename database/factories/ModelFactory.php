@@ -32,3 +32,29 @@ $factory->define(App\Models\SchoolType::class, function (Faker\Generator $faker)
     ];
     
 });
+
+$factory->define(App\Models\Subject::class, function (Faker\Generator $faker) {
+
+    return [
+        'school_id' => 1 ,
+        'name' => $faker->name,
+        'isaux' => 1,
+        'max_score' => 100,
+        'pass_score' => 60,
+        'grade_ids' =>'1|33|22',
+        'enabled' => 1
+    ];
+
+});
+
+$factory->define(App\Models\School::class, function (Faker\Generator $faker) {
+
+    return [
+        'school_type_id' => 1 ,
+        'name' => $faker->name,
+        'address' =>  $faker->address,
+        'corp_id' => 1,
+        'enabled' => 1
+    ];
+
+});

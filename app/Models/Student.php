@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use App\Facades\DatatableFacade as Datatable;
 
 /**
  * App\Models\Student
@@ -40,4 +41,44 @@ class Student extends Model {
 
     public function beLongsToSquad() { return $this->belongsTo('App\Models\Squad','class_id','id'); }
 
+    public function datatable() {
+
+        $columns = [
+            ['db' => 'Student.id', 'dt' => 0],
+            ['db' => 'User.username as username', 'dt' => 1],
+            ['db' => 'Squad.name as classname', 'dt' => 2],
+            ['db' => 'Student.card_number', 'dt' => 3],
+            ['db' => 'Student.oncampus', 'dt' => 4],
+            ['db' => 'Student.birthday', 'dt' => 5],
+            ['db' => 'Student.remark', 'dt' => 6],
+            ['db' => 'Student.created_at', 'dt' => 7],
+            ['db' => 'Student.updated_at', 'dt' => 8],
+
+        ];
+
+        $joins = [
+            [
+                'table' => 'users',
+                'alias' => 'User',
+                'type' => 'INNER',
+                'conditions' => [
+                    'User.id = Student.user_id'
+                ]
+            ],
+            [
+                'table' => 'classes',
+                'alias' => 'Squad',
+                'type' => 'INNER',
+                'conditions' => [
+                    'Squad.id = Student.class_id'
+                ]
+            ]
+
+        ];
+
+
+
+        return Datatable::simple($this, $columns,$joins);
+
+    }
 }
