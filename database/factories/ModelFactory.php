@@ -32,3 +32,36 @@ $factory->define(App\Models\SchoolType::class, function (Faker\Generator $faker)
     ];
     
 });
+$factory->define(App\Models\School::class, function (Faker\Generator $faker) {
+
+    return [
+        'school_type_id' => 1 ,
+        'name' => $faker->name,
+        'address' =>  $faker->address,
+        'corp_id' => 1,
+        'enabled' => 1
+    ];
+
+});
+
+$factory->define(App\Models\Grade::class, function (Faker\Generator $faker) {
+
+    return [
+        'name' => $faker->name,
+        'school_id' => 1,
+        'educator_ids' => 'abc',
+        'enabled' => 1
+    ];
+
+});
+
+$factory->define(App\Models\Educator::class, function (Faker\Generator $faker) {
+
+    return [
+        'user_id' => 1,
+        'team_ids' => 'abc',
+        'school_id' => 1,
+        'sms_quote' => 100,
+    ];
+
+});

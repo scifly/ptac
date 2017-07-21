@@ -51,3 +51,28 @@ Route::get('grades/{grade}/edit', 'GradeController@edit');
 Route::put('grades/{grade}', 'GradeController@update');
 Route::delete('grades/{grade}', 'GradeController@destroy');
 
+Route::get('classes/index', 'SquadController@index');
+Route::get('classes/create', 'SquadController@create');
+Route::post('classes', 'SquadController@index');
+Route::get('classes/{squad}', 'SquadController@show');
+Route::get('classes/{squad}/edit', 'SquadController@edit');
+Route::put('classes/{squad}', 'SquadController@update');
+Route::delete('classes/{squad}', 'SquadController@destroy');
+
+//用户/通信管理
+//教职员工
+
+Route::get('educators/index', 'EducatorController@index');
+Route::get('educators/create', 'EducatorController@create');
+Route::post('educators', 'EducatorController@index');
+Route::get('educators/{educator}', 'EducatorController@show');
+Route::get('educators/{educator}/edit', 'EducatorController@edit');
+Route::put('educators/{educator}', 'EducatorController@update');
+Route::delete('educators/{educator}', 'EducatorController@destroy');
+
+
+
+
+Route::get('test/index', 'TestController@index');
+
+

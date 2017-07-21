@@ -2,26 +2,29 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Grade;
+use App\Models\Squad;
 use Illuminate\Support\Facades\Request;
 
-class GradeController extends Controller
+class SquadController extends Controller
 {
-    protected $grade;
+    protected $squad ;
 
-    function __construct(Grade $grade) { $this->grade = $grade; }
+    public function __construct(Squad $squad)
+    {
+        $this->squad = $squad;
+    }
 
     /**
      * Display a listing of the resource.
+     *
      * @return \Illuminate\Http\Response
-     * @internal param Request $request
      */
     public function index() {
 
         if (Request::get('draw')) {
-            return response()->json($this->grade->datatable());
+            return response()->json($this->squad->datatable());
         }
-        return view('grade.index' , ['js' => 'js/grade/index.js']);
+        return view('class.index' , ['js' => 'js/class/index.js']);
 
     }
 
@@ -49,10 +52,10 @@ class GradeController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Grade  $grade
+     * @param  \App\Models\Squad  $squad
      * @return \Illuminate\Http\Response
      */
-    public function show(Grade $grade)
+    public function show(Squad $squad)
     {
         //
     }
@@ -60,10 +63,10 @@ class GradeController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Grade  $grade
+     * @param  \App\Models\Squad  $squad
      * @return \Illuminate\Http\Response
      */
-    public function edit(Grade $grade)
+    public function edit(Squad $squad)
     {
         //
     }
@@ -72,10 +75,10 @@ class GradeController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Grade  $grade
+     * @param  \App\Models\Squad  $squad
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Grade $grade)
+    public function update(Request $request, Squad $squad)
     {
         //
     }
@@ -83,10 +86,10 @@ class GradeController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Grade  $grade
+     * @param  \App\Models\Squad  $squad
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Grade $grade)
+    public function destroy(Squad $squad)
     {
         //
     }

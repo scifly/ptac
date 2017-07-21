@@ -14,3 +14,4 @@ _ide_helper_models.php
 composer.lock
 composer.json
 .phpstorm.meta.php
+/app/Http/Controllers/TestController.php
