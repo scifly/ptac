@@ -9,11 +9,7 @@ class GroupController extends Controller
 {
     protected $group;
 
-    /**
-     * GroupController constructor.
-     * @param Group $group
-     */
-    function __construct(Group $group){ $this->group = $group; }
+    function __construct(Group $group){ $this->group = $group ;}
 
     /**
      * Display a listing of the resource.
@@ -26,7 +22,6 @@ class GroupController extends Controller
             return response()->json($this->group->datatable());
         }
         return view('group.index', ['js' => 'js/group/index.js']);
-
     }
 
     /**

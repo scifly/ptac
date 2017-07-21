@@ -75,9 +75,9 @@ var crud = {
             $cancel = $('#cancel');
         var $form = $('#' + formId);
 
-        App.init();
+        //App.init();
         $form.parsley();
-        FormSliderSwitcher.init();
+       // FormSliderSwitcher.init();
         $('select').select2();
 
         var path = window.location.pathname;

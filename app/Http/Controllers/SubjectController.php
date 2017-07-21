@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-
 use App\Models\Subject;
 use Illuminate\Support\Facades\Request;
 
@@ -37,7 +36,7 @@ class SubjectController extends Controller
      */
     public function create()
     {
-        //
+        return view('subject.create',['js' => 'js/subject/create.js']);
     }
 
     /**
@@ -46,9 +45,10 @@ class SubjectController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store()
     {
-        //
+        // request
+        return response()->json(['statusCode' => 200, 'Message' => 'nailed it!']);
     }
 
     /**
@@ -57,9 +57,9 @@ class SubjectController extends Controller
      * @param  \App\Models\Subject  $subject
      * @return \Illuminate\Http\Response
      */
-    public function show(Subject $subject)
+    public function show()
     {
-        //
+        return view('company.show', ['subject' => $subject]);
     }
 
     /**
@@ -68,9 +68,9 @@ class SubjectController extends Controller
      * @param  \App\Models\Subject  $subject
      * @return \Illuminate\Http\Response
      */
-    public function edit(Subject $subject)
+    public function edit()
     {
-        //
+        return view('subject.edit', ['js' => 'js/subject/edit.js']);
     }
 
     /**
@@ -80,9 +80,9 @@ class SubjectController extends Controller
      * @param  \App\Models\Subject  $subject
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Subject $subject)
+    public function update()
     {
-        //
+        return response()->json([]);
     }
 
     /**
@@ -93,6 +93,6 @@ class SubjectController extends Controller
      */
     public function destroy(Subject $subject)
     {
-        //
+        return response()->json([]);
     }
 }
