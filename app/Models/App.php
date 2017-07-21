@@ -68,8 +68,7 @@ class App extends Model {
         'enabled'
     ];
 
-
-    public function datatable(Request $request) {
+    public function datatable() {
 
         $columns = [
             ['db' => 'App.id', 'dt' => 0],
@@ -86,7 +85,7 @@ class App extends Model {
                 }
             ]
         ];
-        return Datatable::simple($this, $request, $columns);
+        return Datatable::simple($this, $columns);
 
     }
 

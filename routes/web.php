@@ -34,13 +34,23 @@ Route::get('schools/types/{name}', function($name) {
 # 系统设置
 
 // 学校设置
+
 Route::get('schools/index', 'SchoolController@index');
 Route::get('schools/create', 'SchoolController@create');
-Route::post('schools', 'SchoolController@store');
-Route::get('schools/{school}', 'SchoolController@show');
-Route::get('schools/{school}/edit', 'SchoolController@edit');
-Route::put('schools/{school}', 'SchoolController@update');
-Route::delete('schools/{school}', 'SchoolController@destroy');
+Route::post('schools/create', 'SchoolController@store');
+Route::get('schools/show/{id}', 'SchoolController@show');
+Route::get('schools/edit/{id}', 'SchoolController@edit');
+Route::put('schools/edit/{id}', 'SchoolController@update');
+Route::delete('schools/delete/{id}', 'SchoolController@destroy');
+
+// 运营者公司设置
+Route::get('companies/index', 'CompanyController@index');
+Route::get('companies/create', 'CompanyController@create');
+Route::post('companies', 'CompanyController@store');
+Route::get('companies/{company}', 'CompanyController@show');
+Route::get('companies/{company}/edit', 'CompanyController@edit');
+Route::put('companies/{company}', 'CompanyController@update');
+Route::delete('companies/{company}', 'CompanyController@destroy');
 
 //年级班级设置
 Route::get('grades/index', 'GradeController@index');
@@ -74,5 +84,6 @@ Route::delete('educators/{educator}', 'EducatorController@destroy');
 
 
 Route::get('test/index', 'TestController@index');
+
 
 

@@ -26,6 +26,30 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|EducatorAttendanceSetting whereUpdatedAt($value)
  * @mixin \Eloquent
  */
-class EducatorAttendanceSetting extends Model {
+class EducatorAttendanceSetting extends Model
+{
     //
+    protected $table = 'educator_attendance_settings';
+    protected $fillable = [
+        'name',
+        'school_id',
+        'start',
+        'end',
+        'inorout'
+    ];
+
+    /**
+     * 教职工考勤设置与教职工考勤
+     */
+    public function educatorAttendance()
+    {
+        return $this->hasMany('App\Models\EducatorAttendance','eas_id');
+    }
+
+    /**
+     * 教职工考勤设置与学校
+     */
+    public function schools(){
+        return $this->belongsTo('App\Models\School');
+    }
 }

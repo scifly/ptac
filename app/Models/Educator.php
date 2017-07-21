@@ -26,7 +26,8 @@ use App\Facades\DatatableFacade as Datatable;
  * @method static Builder|Educator whereUserId($value)
  * @mixin \Eloquent
  */
-class Educator extends Model {
+class Educator extends Model
+{
 
     protected $fillable = [
         'id',
@@ -37,10 +38,14 @@ class Educator extends Model {
         'enabled',
 
     ];
-    
-    public function user() { return $this->belongsTo('App\Models\User'); }
 
-    public function datatable() {
+    public function user()
+    {
+        return $this->belongsTo('App\Models\User');
+    }
+
+    public function datatable()
+    {
 
         $columns = [
             ['db' => 'Educator.id', 'dt' => 0],
@@ -62,7 +67,7 @@ class Educator extends Model {
             [
                 'table' => 'users',
                 'alias' => 'User',
-                'type'  => 'INNER',
+                'type' => 'INNER',
                 'conditions' => [
                     'User.id = Educator.user_id'
                 ]
@@ -70,15 +75,15 @@ class Educator extends Model {
             [
                 'table' => 'schools',
                 'alias' => 'Shool',
-                'type'  => 'INNER',
+                'type' => 'INNER',
                 'conditions' => [
                     'Shool.id = Educator.school_id'
                 ]
             ]
         ];
 
-        return Datatable::simple($this,  $columns, $joins);
+        return Datatable::simple($this, $columns, $joins);
     }
 
-
 }
+
