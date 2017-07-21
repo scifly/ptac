@@ -12,7 +12,7 @@
 */
 
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
-$factory->define(App\User::class, function (Faker\Generator $faker) {
+$factory->define(App\Models\User::class, function (Faker\Generator $faker) {
     static $password;
 
     return [
@@ -32,21 +32,6 @@ $factory->define(App\Models\SchoolType::class, function (Faker\Generator $faker)
     ];
     
 });
-
-$factory->define(App\Models\Subject::class, function (Faker\Generator $faker) {
-
-    return [
-        'school_id' => 1 ,
-        'name' => $faker->name,
-        'isaux' => 1,
-        'max_score' => 100,
-        'pass_score' => 60,
-        'grade_ids' =>'1|33|22',
-        'enabled' => 1
-    ];
-
-});
-
 $factory->define(App\Models\School::class, function (Faker\Generator $faker) {
 
     return [
@@ -54,6 +39,39 @@ $factory->define(App\Models\School::class, function (Faker\Generator $faker) {
         'name' => $faker->name,
         'address' =>  $faker->address,
         'corp_id' => 1,
+        'enabled' => 1
+    ];
+
+});
+
+$factory->define(App\Models\Grade::class, function (Faker\Generator $faker) {
+
+    return [
+        'name' => $faker->name,
+        'school_id' => 1,
+        'educator_ids' => 'abc',
+        'enabled' => 1
+    ];
+
+});
+
+$factory->define(App\Models\Educator::class, function (Faker\Generator $faker) {
+
+    return [
+        'user_id' => 1,
+        'team_ids' => 'abc',
+        'school_id' => 1,
+        'sms_quote' => 100,
+    ];
+
+});
+
+$factory->define(App\Models\Company::class, function (Faker\Generator $faker) {
+
+    return [
+        'name' => $faker->company,
+        'remark' => $faker->sentence(10),
+        'corpid' => 'test1111',
         'enabled' => 1
     ];
 

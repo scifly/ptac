@@ -32,7 +32,7 @@ class UpdateUsersAddFieldsSetNullableFields extends Migration {
         
     }
 
-    /**
+    /**S
      * Reverse the migrations.
      *
      * @return void

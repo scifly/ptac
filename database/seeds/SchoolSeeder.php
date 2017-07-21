@@ -11,7 +11,7 @@ class SchoolSeeder extends Seeder
      */
     public function run()
     {
-        factory(App\Models\School::class, 2)->create()->each(function ($school) {
+        factory(App\Models\School::class, 5)->create()->each(function ($school) {
             $school->save();
         });
     }

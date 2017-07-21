@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use App\Facades\DatatableFacade as Datatable;
+
 
 /**
  * App\Models\Company
@@ -24,8 +26,41 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|Company whereUpdatedAt($value)
  * @mixin \Eloquent
  */
-class Company extends Model {
-    
-    //
-    
+class Company extends Model
+{
+
+    protected $fillable = [
+        'name',
+        'remark',
+        'corpid',
+        'enabled'
+    ];
+
+    public function corps()
+    {
+
+        return $this->hasMany('App\Models\Company');
+
+    }
+
+    function datatable()
+    {
+
+        $columns = [
+            ['db' => 'Company.id', 'dt' => 0],
+            ['db' => 'Company.name', 'dt' => 1],
+            ['db' => 'Company.remark', 'dt' => 2],
+            ['db' => 'Company.corpid', 'dt'=> 3],
+            ['db' => 'Company.created_at', 'dt' => 4],
+            ['db' => 'Company.updated_at', 'dt' => 5],
+            [
+                'db' => 'Company.enabled', 'dt' => 6,
+                'formatter' => function($d, $row) {
+                    return Datatable::dtOps($this, $d, $row);
+                }]
+        ];
+        return Datatable::simple($this, $columns);
+    }
+
+
 }

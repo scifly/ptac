@@ -178,8 +178,8 @@ return [
         App\Providers\RouteServiceProvider::class,
         Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
         App\Providers\WechatServiceProvider::class,
-        App\Providers\DatatableServiceProvider::class,
         App\Providers\TestServiceProvider::class,
+        App\Providers\DatatableServiceProvider::class,
         App\Providers\ComposerServiceProvider::class,
 
     ],

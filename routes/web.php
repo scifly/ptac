@@ -32,7 +32,9 @@ Route::get('schools/types/{name}', function($name) {
 });
 
 # 系统设置
+
 // 学校设置
+
 Route::get('schools/index', 'SchoolController@index');
 Route::get('schools/create', 'SchoolController@create');
 Route::post('schools/store', 'SchoolController@store');
@@ -41,29 +43,72 @@ Route::get('schools/edit/{id}', 'SchoolController@edit');
 Route::put('schools/update/{id}', 'SchoolController@update');
 Route::delete('schools/delete/{id}', 'SchoolController@destroy');
 
-// 科目设置
-Route::get('subjects/index', 'SubjectController@index');
-Route::get('subjects/create', 'SubjectController@create');
-Route::post('subjects/store', 'SubjectController@store');
-Route::get('subjects/show/{id}', 'SubjectController@show');
-Route::get('subjects/edit/{id}', 'SubjectController@edit');
-Route::put('subjects/update/{id}', 'SubjectController@update');
-Route::delete('subjects/delete{id}', 'SubjectController@destroy');
+// 运营者公司设置
+Route::get('companies/index', 'CompanyController@index');
+Route::get('companies/create', 'CompanyController@create');
+Route::post('companies/store', 'CompanyController@store');
+Route::get('companies/show/{id}', 'CompanyController@show');
+Route::get('companies/edit/{id}', 'CompanyController@edit');
+Route::put('companies/update/{id}', 'CompanyController@update');
+Route::delete('companies/delete/{id}', 'CompanyController@destroy');
 
-// 权限设置
-Route::get('groups/index', 'GroupController@index');
-Route::get('groups/create', 'GroupController@create');
-Route::post('groups/store', 'GroupController@store');
-Route::get('groups/show/{id}', 'GroupController@show');
-Route::get('groups/edit/{id}', 'GroupController@edit');
-Route::put('groups/update/{id}', 'GroupController@update');
-Route::delete('groups/delete/{id}', 'GroupController@destroy');
+//年级班级设置
+Route::get('grades/index', 'GradeController@index');
+Route::get('grades/create', 'GradeController@create');
+Route::post('grades', 'GradeController@index');
+Route::get('grades/{grade}', 'GradeController@show');
+Route::get('grades/{grade}/edit', 'GradeController@edit');
+Route::put('grades/{grade}', 'GradeController@update');
+Route::delete('grades/{grade}', 'GradeController@destroy');
 
-// 学生设置
-Route::get('students/index', 'StudentController@index');
-Route::get('students/create', 'StudentController@create');
-Route::post('students/store', 'StudentController@store');
-Route::get('students/show/{id}', 'StudentController@show');
-Route::get('students/edit/{id}', 'StudentController@edit');
-Route::put('students/update/{id}', 'StudentController@update');
-Route::delete('students/delete/{id}', 'StudentController@destroy');
+Route::get('classes/index', 'SquadController@index');
+Route::get('classes/create', 'SquadController@create');
+Route::post('classes', 'SquadController@index');
+Route::get('classes/{squad}', 'SquadController@show');
+Route::get('classes/{squad}/edit', 'SquadController@edit');
+Route::put('classes/{squad}', 'SquadController@update');
+Route::delete('classes/{squad}', 'SquadController@destroy');
+
+//用户/通信管理
+//教职员工
+
+Route::get('educators/index', 'EducatorController@index');
+Route::get('educators/create', 'EducatorController@create');
+Route::post('educators', 'EducatorController@index');
+Route::get('educators/{educator}', 'EducatorController@show');
+Route::get('educators/{educator}/edit', 'EducatorController@edit');
+Route::put('educators/{educator}', 'EducatorController@update');
+Route::delete('educators/{educator}', 'EducatorController@destroy');
+
+
+
+
+Route::get('test/index', 'TestController@index');
+
+
+
+Route::post('grades/store', 'GradeController@store');
+Route::get('grades/show/{id}', 'GradeController@show');
+Route::get('grades/edit/{id}', 'GradeController@edit');
+Route::put('grades/update/{id}', 'GradeController@update');
+Route::delete('grades/delete/{id}', 'GradeController@destroy');
+
+//企业设置
+Route::get('corps/index', 'CorpController@index');
+Route::get('corps/create', 'CorpController@create');
+Route::post('corps/store', 'CorpController@store');
+Route::get('corps/show/{id}', 'CorpController@show');
+Route::get('corps/edit/{id}', 'CorpController@edit');
+Route::put('corps/update/{id}', 'CorpController@update');
+Route::delete('corps/delete/{id}', 'CorpController@destroy');
+
+# 成绩管理
+
+//成绩管理
+Route::get('scores/index', 'ScoreController@index');
+Route::get('scores/create', 'ScoreController@create');
+Route::post('scores/store', 'ScoreController@store');
+Route::get('scores/show/{id}', 'ScoreController@show');
+Route::get('scores/edit/{id}', 'ScoreController@edit');
+Route::put('scores/update/{id}', 'ScoreController@update');
+Route::delete('scores/delete/{id}', 'ScoreController@destroy');
