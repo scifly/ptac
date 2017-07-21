@@ -2,19 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Company;
+use App\Models\Score;
 use Illuminate\Support\Facades\Request;
 
-
-class CompanyController extends Controller
+class ScoreController extends Controller
 {
+    protected $score;
 
-    protected $company;
-
-    function __construct(Company $company) { $this->company = $company; }
+    function __construct(Score $score) { $this->score = $score; }
 
     /**
-     * 显示运营者公司列表
+     * 显示成绩列表
      * @return \Illuminate\Http\Response
      * @internal param null $arg
      * @internal param Request $request
@@ -30,14 +28,15 @@ class CompanyController extends Controller
         }*/
 
         if (Request::get('draw')) {
-            return response()->json($this->company->datatable());
+            return response()->json($this->score->datatable());
         }
-        return view('company.index', ['js' => 'js/company/index.js']);
+        return view('score.index', ['js' => 'js/score/index.js']);
 
     }
 
+
     /**
-     * 显示创建运营者公司记录的表单
+     * 显示创建成绩记录的表单
      *
      * @return \Illuminate\Http\Response
      */
@@ -47,7 +46,7 @@ class CompanyController extends Controller
     }
 
     /**
-     * 保存新创建的运营者公司记录
+     * 保存新创建的成绩记录
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
@@ -58,46 +57,46 @@ class CompanyController extends Controller
     }
 
     /**
-     * 显示运营者公司记录详情
+     * 显示成绩记录详情
      *
-     * @param  \App\Models\Company  $company
+     * @param  \App\Models\Score  $score
      * @return \Illuminate\Http\Response
      */
-    public function show(Company $company)
+    public function show(Score $score)
     {
         //
     }
 
     /**
-     * 显示编辑运营者公司记录的表单
+     * 显示编辑成绩记录的表单
      *
-     * @param  \App\Models\Company  $company
+     * @param  \App\Models\Score  $score
      * @return \Illuminate\Http\Response
      */
-    public function edit(Company $company)
+    public function edit(Score $score)
     {
         //
     }
 
     /**
-     * 更新指定运营者公司记录
+     * 更新指定成绩记录
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Company  $company
+     * @param  \App\Models\Score  $score
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Company $company)
+    public function update(Request $request, Score $score)
     {
         //
     }
 
     /**
-     * 删除指定运营者公司记录
+     *删除指定成绩记录
      *
-     * @param  \App\Models\Company  $company
+     * @param  \App\Models\Score  $score
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Company $company)
+    public function destroy(Score $score)
     {
         //
     }

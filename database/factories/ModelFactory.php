@@ -32,3 +32,14 @@ $factory->define(App\Models\SchoolType::class, function (Faker\Generator $faker)
     ];
     
 });
+
+$factory->define(App\Models\Company::class, function (Faker\Generator $faker) {
+
+    return [
+        'name' => $faker->company,
+        'remark' => $faker->sentence(10),
+        'corpid' => 'test1111',
+        'enabled' => 1
+    ];
+
+});
