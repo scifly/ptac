@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Facades\Wechat;
+use App\Http\Requests\Request;
 use App\Http\Requests\RegisterUser;
 use App\Models\School;
+
 
 class HomeController extends Controller {
     

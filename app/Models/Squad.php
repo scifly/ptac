@@ -4,7 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-
+use App\Facades\DatatableFacade as Datatable;
+use Illuminate\Http\Request;
 /**
  * App\Models\Squad
  *
@@ -33,10 +34,9 @@ class Squad extends Model {
         'grade_id',
         'name',
         'educator_ids',
-        'created_at',
-        'updated_at',
+        'enabled',
     ];
-    public function hasManyStudent()
+    public function students()
     {
         return $this->hasMany('App\Models\Student','class_id','id');
     }
@@ -44,6 +44,24 @@ class Squad extends Model {
     public function grade()
     {
         return $this->belongsTo('App\Models\Grade');
+    }
+    public function datatable(Request $request) {
+
+        $columns = [
+            ['db' => 'Squad.id', 'dt' => 0],
+            ['db' => 'Squad.grade_id', 'dt' => 1],
+            ['db' => 'Squad.name', 'dt' => 2],
+            ['db' => 'Squad.educator_ids', 'dt' => 3],
+
+            [
+                'db' => 'Squad.enabled', 'dt' => 4,
+                'formatter' => function ($d, $row) {
+                    return Datatable::dtOps($this, $d, $row);
+                }
+            ]
+        ];
+
+        return Datatable::simple($this, $request, $columns);
     }
     
 }

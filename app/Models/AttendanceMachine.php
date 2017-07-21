@@ -26,7 +26,30 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|AttendanceMachine whereUpdatedAt($value)
  * @mixin \Eloquent
  */
-class AttendanceMachine extends Model {
+class AttendanceMachine extends Model
+{
+    protected $table = 'attendance_machines';
+    protected $fillable = [
+        'name',
+        'location',
+        'school_id',
+        'machineid',
+        'enabled'
+    ];
 
+    /**
+     * 考勤机与学校
+     */
+    public function schools()
+    {
+        return $this->belongsTo('App\Medoles\School');
+    }
 
+    /**
+     * 考勤机与学生考勤
+     */
+    public function studentattendance()
+    {
+        return $this->hasMany('App\Models\StudentAttendance');
+    }
 }

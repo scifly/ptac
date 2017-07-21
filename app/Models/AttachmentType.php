@@ -23,8 +23,17 @@ use Illuminate\Database\Eloquent\Model;
  * @mixin \Eloquent
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Attachment[] $attachments
  */
-class AttachmentType extends Model {
-    
-    public function attachments() { return $this->hasMany('App\Models\Attachment'); }
-    
+class AttachmentType extends Model
+{
+    protected $table = 'attachment_types';
+    protected $fillable=[
+        'name',
+        'remark',
+        'enabled'
+    ];
+    public function attachments()
+    {
+        return $this->hasMany('App\Models\Attachment');
+    }
+
 }

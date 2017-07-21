@@ -46,8 +46,11 @@ class School extends Model {
     ];
     
     public function semesters() {
+        
         return $this->hasMany('App\Models\Semester', 'school_id', 'id');
+    
     }
+    
     
     public function schoolType() {
         
@@ -99,6 +102,4 @@ class School extends Model {
         return Datatable::simple($this, $columns, $joins);
         
     }
-    
-    
 }
