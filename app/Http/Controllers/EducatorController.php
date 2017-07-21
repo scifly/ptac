@@ -38,6 +38,7 @@ class EducatorController extends Controller
     public function create()
     {
         //
+        return view('educators.create',['js' => 'js/educator/create.js']);
     }
 
     /**
@@ -46,9 +47,10 @@ class EducatorController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store()
     {
         //
+
     }
 
     /**

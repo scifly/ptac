@@ -80,18 +80,7 @@ Route::get('educators/{educator}/edit', 'EducatorController@edit');
 Route::put('educators/{educator}', 'EducatorController@update');
 Route::delete('educators/{educator}', 'EducatorController@destroy');
 
-
-
-
 Route::get('test/index', 'TestController@index');
-
-
-
-Route::post('grades/store', 'GradeController@store');
-Route::get('grades/show/{id}', 'GradeController@show');
-Route::get('grades/edit/{id}', 'GradeController@edit');
-Route::put('grades/update/{id}', 'GradeController@update');
-Route::delete('grades/delete/{id}', 'GradeController@destroy');
 
 //企业设置
 Route::get('corps/index', 'CorpController@index');
