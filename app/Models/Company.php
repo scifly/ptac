@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use App\Facades\DatatableFacade as Datatable;
-use Illuminate\Http\Request;
+
 
 /**
  * App\Models\Company
@@ -29,8 +29,7 @@ use Illuminate\Http\Request;
 class Company extends Model
 {
 
-    protected $table = 'companies';
-    protected $fillabled = [
+    protected $fillable = [
         'name',
         'remark',
         'corpid',
@@ -44,7 +43,7 @@ class Company extends Model
 
     }
 
-    function datatable(Request $request)
+    function datatable()
     {
 
         $columns = [
@@ -60,7 +59,7 @@ class Company extends Model
                     return Datatable::dtOps($this, $d, $row);
                 }]
         ];
-        return Datatable::simple($this, $request, $columns);
+        return Datatable::simple($this, $columns);
     }
 
 

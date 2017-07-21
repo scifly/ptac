@@ -12,7 +12,7 @@
 */
 
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
-$factory->define(App\User::class, function (Faker\Generator $faker) {
+$factory->define(App\Models\User::class, function (Faker\Generator $faker) {
     static $password;
 
     return [
@@ -62,6 +62,17 @@ $factory->define(App\Models\Educator::class, function (Faker\Generator $faker) {
         'team_ids' => 'abc',
         'school_id' => 1,
         'sms_quote' => 100,
+    ];
+
+});
+
+$factory->define(App\Models\Company::class, function (Faker\Generator $faker) {
+
+    return [
+        'name' => $faker->company,
+        'remark' => $faker->sentence(10),
+        'corpid' => 'test1111',
+        'enabled' => 1
     ];
 
 });
