@@ -12,11 +12,11 @@ class DatatableFacade extends Facade {
     const DT_ON = '<span class="btn btn-xs btn-primary">%s</span>';
     const DT_OFF = '<span class="btn btn-xs btn-default">%s</span>';
     const DT_LINK_EDIT = '<!--suppress HtmlUnknownTarget -->
-<a href="%s/%s/edit" class="btn btn-success btn-icon btn-circle btn-xs"><i class="fa fa-edit"></i></a>';
+<a href="%s/edit/%s" class="btn btn-success btn-icon btn-circle btn-xs"><i class="fa fa-edit"></i></a>';
     const DT_LINK_DEL = '<!--suppress HtmlUnknownAnchorTarget -->
 <a id="%s" href="#modal-dialog" class="btn btn-danger btn-icon btn-circle btn-xs" data-toggle="modal"><i class="fa fa-times"></i></a>';
     const DT_LINK_SHOW = '<!--suppress HtmlUnknownAnchorTarget -->
-<a href="%s/%s/show" class="btn btn-primary btn-icon btn-circle btn-xs"><i class="fa fa-eye"></i></a>';
+<a href="%s/show/%s" class="btn btn-primary btn-icon btn-circle btn-xs"><i class="fa fa-eye"></i></a>';
     const DT_SPACE = '&nbsp;';
     const DT_PRIMARY = '<span class="badge badge-info">%s</span>';
     const DT_LOCK = '<i class="fa fa-lock"></i>&nbsp;已占用';

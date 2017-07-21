@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use App\Facades\DatatableFacade as Datatable;
-use Illuminate\Http\Request;
 
 /**
  * App\Models\Grade
@@ -46,22 +45,36 @@ class Grade extends Model {
             return $this->belongsTo('App\Models\School');
     }
 
-    public function datatable(Request $request) {
+    public function datatable() {
 
         $columns = [
             ['db' => 'Grade.id', 'dt' => 0],
             ['db' => 'Grade.name', 'dt' => 1],
-            ['db' => 'School.name', 'dt' => 2],
-            ['db' => 'User.username', 'dt' => 3],
+            ['db' => 'School.name as schoolname', 'dt' => 2],
+            ['db' => 'Grade.educator_ids', 'dt' => 3],
+            ['db' => 'Grade.created_at', 'dt' => 4],
+            ['db' => 'Grade.updated_at', 'dt' => 5],
+
             [
-                'db' => 'School.enabled', 'dt' => 6,
+                'db' => 'Grade.enabled', 'dt' => 6,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
                 }
             ]
         ];
+        $joins = [
+            [
+                'table' => 'schools',
+                'alias' => 'School',
+                'type'  => 'INNER',
+                'conditions' => [
+                    'School.id = Grade.school_id'
+                ]
 
-        return Datatable::simple($this, $request, $columns);
+            ]
+        ];
+
+        return Datatable::simple($this, $columns, $joins);
     }
 
 }

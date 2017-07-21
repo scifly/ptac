@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Http\Request;
+use Symfony\Component\VarDumper\Cloner\Data;
 
 /**
  * App\Models\Subject
@@ -46,9 +47,8 @@ class Subject extends Model {
 
     public function subjectModules()
     {
-        return $this->hasMany('App\Models\SubjectModule','subject_id','id');
+        return $this->hasMany('App\Models\SubjectModule');
     }
-
 
 
     public function school()
@@ -56,17 +56,40 @@ class Subject extends Model {
         return $this->belongsTo('App\Models\School');
     }
 
-    public function datatable(Request $request)
+    public function datatable()
     {
 
         $columns = [
 
             ['db' => 'Subject.id', 'dt' => 0],
             ['db' => 'Subject.name', 'dt'=> 1],
-            ['db' => 'Subject.isaux', 'dt'=> 2],
-            ['db' => 'Subject.max_score', 'dt'=> 3],
-            ['db' => '']
+            ['db' => 'School.name as schoolname', 'dt' => 2],
+            ['db' => 'Subject.isaux', 'dt'=> 3],
+            ['db' => 'Subject.max_score', 'dt'=> 4],
+            ['db' => 'Subject.pass_score', 'dt'=> 5],
+            ['db' => 'Subject.created_at', 'dt' => 6],
+            ['db' => 'Subject.updated_at', 'dt' => 7],
+            [
+                'db' => 'Subject.enabled', 'dt' => 8,
+                'formatter' => function($d, $row)
+                {
+                    return Datatable::dtOps($this, $d ,$row);
+                }
+            ]
         ];
+
+        $joins = [
+            [
+                'table' => 'schools',
+                'alias' => 'School',
+                'type' => 'INNER',
+                'conditions' => [
+                    'School.id = Subject.school_id'
+                ]
+            ]
+
+        ];
+        return Datatable::simple($this, $columns, $joins);
     }
 
 

@@ -26,6 +26,23 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|ConferenceRoom whereUpdatedAt($value)
  * @mixin \Eloquent
  */
-class ConferenceRoom extends Model {
-    //
+class ConferenceRoom extends Model
+{
+
+    protected $tables = 'conference_rooms';
+    protected $fillable = [
+        'name',
+        'school_id',
+        'capacity',
+        'remark',
+        'enabled'
+    ];
+
+    /**
+     * 会议地址与学校
+     */
+    public function schools()
+    {
+        return $this->belongsTo('\App\Models\School');
+    }
 }

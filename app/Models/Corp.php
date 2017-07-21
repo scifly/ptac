@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use App\Facades\DatatableFacade as Datatable;
 
 /**
  * App\Models\Corp
@@ -24,8 +25,54 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|Corp whereUpdatedAt($value)
  * @mixin \Eloquent
  */
-class Corp extends Model {
-    
-    //
-    
+class Corp extends Model
+{
+
+    protected $fillable = [
+        'name',
+        'corpid',
+        'enabled'
+    ];
+
+
+    public function departments()
+    {
+        return $this->hasMany('App\Models\Department');
+    }
+
+    public function company()
+    {
+
+        return $this->belongsTo('App\Models\Corp');
+    }
+
+    public function datatable()
+    {
+
+        $columns = [
+            ['db' => 'Corp.id', 'dt' => 0],
+            ['db' => 'Corp.name', 'dt' => 1],
+            ['db' => 'Company.name as companyname', 'dt' => 2],
+            ['db' => 'Corp.corpid', 'dt' => 3],
+            ['db' => 'Corp.created_at', 'dt' => 4],
+            ['db' => 'Corp.updated_at', 'dt' => 5],
+            [
+                'db' => 'Corp.enabled', 'dt' => 6,
+                'formatter' => function ($d, $row) {
+                    return Datatable::dtOps($this, $d, $row);
+                }
+            ]
+        ];
+        $joins = [
+            [
+                'table' => 'companies',
+                'alias' => 'Company',
+                'type' => 'INNER',
+                'conditions' => [
+                    'Company.id = Corp.company_id'
+                ]
+            ]
+        ];
+        return Datatable::simple($this, $columns, $joins);
+    }
 }

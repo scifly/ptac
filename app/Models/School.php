@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use App\Facades\DatatableFacade as Datatable;
 
 /**
  * App\Models\School
@@ -36,7 +36,7 @@ use App\Facades\DatatableFacade as Datatable;
  * @mixin \Eloquent
  */
 class School extends Model {
-
+    
     protected $fillable = [
         'name',
         'address',
@@ -44,10 +44,13 @@ class School extends Model {
         'corp_id',
         'enabled'
     ];
-    public function semesters()
-    {
-        return $this->hasMany('App\Models\Semester','school_id','id');
+    
+    public function semesters() {
+        
+        return $this->hasMany('App\Models\Semester', 'school_id', 'id');
+    
     }
+    
     
     public function schoolType() {
         
@@ -73,7 +76,7 @@ class School extends Model {
             ['db' => 'School.updated_at', 'dt' => 6],
             [
                 'db' => 'School.enabled', 'dt' => 7,
-                'formatter' => function($d, $row) {
+                'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
                 }
             ]
@@ -99,7 +102,4 @@ class School extends Model {
         return Datatable::simple($this, $columns, $joins);
         
     }
-    
-
-    
 }
