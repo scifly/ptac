@@ -7,9 +7,13 @@ use Illuminate\Support\Facades\Request;
 
 class GroupController extends Controller
 {
-    protected $groups;
+    protected $group;
 
-    function __construct(Group $groups){ $this->groups = $groups; }
+    /**
+     * GroupController constructor.
+     * @param Group $group
+     */
+    function __construct(Group $group){ $this->group = $group; }
 
     /**
      * Display a listing of the resource.
@@ -19,7 +23,7 @@ class GroupController extends Controller
     public function index()
     {
         if (Request::get('draw')) {
-            return response()->json($this->groups->datatable());
+            return response()->json($this->group->datatable());
         }
         return view('group.index', ['js' => 'js/group/index.js']);
 

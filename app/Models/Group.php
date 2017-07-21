@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use App\Facades\DatatableFacade as Datatable;
 
 /**
  * App\Models\Group
