@@ -33,6 +33,7 @@ use App\Facades\DatatableFacade as Datatable;
  * @mixin \Eloquent
  */
 class Student extends Model {
+
     protected $table = 'students';
 
     public function user() { return $this->belongsTo('App\Models\User'); }

@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Auth;
 //Route::get('/', function() { return 'Dashboard'; });
 
 Route::get('/', 'HomeController@index');
-
+Route::get('test', 'TestController@index');
 
 Route::get('schools/types/{name}', function($name) {
     $schoolType = App\Models\SchoolType::with('schools')
@@ -42,6 +42,22 @@ Route::get('schools/show/{id}', 'SchoolController@show');
 Route::get('schools/edit/{id}', 'SchoolController@edit');
 Route::put('schools/update/{id}', 'SchoolController@update');
 Route::delete('schools/delete/{id}', 'SchoolController@destroy');
+
+// 科目设置
+Route::get('subject/index', 'SubjectController@index');
+Route::get('subject/create', 'SubjectController@create');
+Route::post('subject/store', 'SubjectController@store');
+Route::get('subject/show/{id}', 'SubjectController@show');
+Route::get('subject/edit/{id}', 'SubjectController@edit');
+Route::put('subject/update/{id}', 'SubjectController@update');
+
+// 权限设置
+Route::get('group/index', 'GroupController@index');
+Route::get('group/create', 'GroupController@create');
+Route::post('group/store', 'GroupController@store');
+Route::get('group/show/{id}', 'GroupController@show');
+Route::get('group/edit/{id}', 'GroupController@edit');
+Route::put('group/update/{id}', 'GroupController@update');
 
 // 运营者公司设置
 Route::get('companies/index', 'CompanyController@index');
@@ -80,18 +96,14 @@ Route::get('educators/{educator}/edit', 'EducatorController@edit');
 Route::put('educators/{educator}', 'EducatorController@update');
 Route::delete('educators/{educator}', 'EducatorController@destroy');
 
-
-
-
-Route::get('test/index', 'TestController@index');
-
-
-
-Route::post('grades/store', 'GradeController@store');
-Route::get('grades/show/{id}', 'GradeController@show');
-Route::get('grades/edit/{id}', 'GradeController@edit');
-Route::put('grades/update/{id}', 'GradeController@update');
-Route::delete('grades/delete/{id}', 'GradeController@destroy');
+// 学生设置
+Route::get('students/index', 'StudentController@index');
+Route::get('students/create', 'StudentController@create');
+Route::post('students/store', 'StudentController@store');
+Route::get('students/show/{id}', 'StudentController@show');
+Route::get('students/edit/{id}', 'StudentController@edit');
+Route::put('students/update/{id}', 'StudentController@update');
+Route::delete('students/delete/{id}', 'StudentController@destroy');
 
 //企业设置
 Route::get('corps/index', 'CorpController@index');
