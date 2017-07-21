@@ -2,14 +2,14 @@
 @section('header')
     <div class="panel-heading">
         <div class="btn-group">
-            <a href="{{ url('companies/create') }}" class="btn btn-primary pull-right">
-                添加新运营者
+            <a href="{{ url('educators/create') }}" class="btn btn-primary pull-right">
+                添加新教职员工
             </a>
         </div>
     </div>
 @endsection
 @section('breadcrumb')
-    系统设置/运营者公司设置
+    用户/通信录管理/教职员工
 @endsection
 @section('content')
     <div class="panel-body">
@@ -18,12 +18,12 @@
                 <thead>
                 <tr>
                     <th>#</th>
-                    <th>名称</th>
-                    <th>备注</th>
-                    <th>企业号ID</th>
+                    <th>教职工名称</th>
+                    <th>所属组</th>
+                    <th>所属学校</th>
+                    <th>可用短信条数</th>
                     <th>创建时间</th>
                     <th>更新时间</th>
-                    <th>状态</th>
                 </tr>
                 </thead>
                 <tbody></tbody>

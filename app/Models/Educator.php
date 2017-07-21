@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use App\Facades\DatatableFacade as Datatable;
 
 /**
  * App\Models\Educator
@@ -27,12 +28,15 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Educator extends Model
 {
-    protected $table = 'educators';
+
     protected $fillable = [
+        'id',
         'user_id',
         'team_ids',
         'school_id',
-        'sms_quote'
+        'sms_quote',
+        'enabled',
+
     ];
 
     public function user()
@@ -40,35 +44,46 @@ class Educator extends Model
         return $this->belongsTo('App\Models\User');
     }
 
-    /**
-     * 教职工与所属组
-     */
-    public function teams()
+    public function datatable()
     {
-        return $this->belongsToMany('App\Models\Team');
+
+        $columns = [
+            ['db' => 'Educator.id', 'dt' => 0],
+            ['db' => 'User.username', 'dt' => 1],
+            ['db' => 'Educator.team_ids', 'dt' => 2],
+            ['db' => 'Shool.name', 'dt' => 3],
+            ['db' => 'Educator.sms_quote', 'dt' => 4],
+            ['db' => 'Educator.created_at', 'dt' => 5],
+            ['db' => 'Educator.updated_at', 'dt' => 6],
+
+//            [
+//                'db' => 'Educator.enabled', 'dt' => 7,
+//                'formatter' => function ($d, $row) {
+//                    return Datatable::dtOps($this, $d, $row);
+//                }
+//            ]
+        ];
+        $joins = [
+            [
+                'table' => 'users',
+                'alias' => 'User',
+                'type' => 'INNER',
+                'conditions' => [
+                    'User.id = Educator.user_id'
+                ]
+            ],
+            [
+                'table' => 'schools',
+                'alias' => 'Shool',
+                'type' => 'INNER',
+                'conditions' => [
+                    'Shool.id = Educator.school_id'
+                ]
+            ]
+        ];
+
+        return Datatable::simple($this, $columns, $joins);
     }
 
-    /**
-     * 教职员工与学校
-     */
-    public function school()
-    {
-        return $this->belongsTo('App\Models\School');
-    }
-
-    /**
-     * 教职员工与班级 多对多
-     */
-    public function classes()
-    {
-        return $this->belongsToMany('App\Models\Squad', 'EducatorClass', 'educator_id', 'class_id');
-    }
-
-    /**
-     * 教职员工与科目 多对多
-     */
-    public function sujectes()
-    {
-        return $this->belongsToMany('App\Models\Subject','EducatorClass','educator_id','subject_id');
-    }
 }
+

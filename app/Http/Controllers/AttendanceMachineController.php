@@ -2,15 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\App;
+use App\Models\AttendanceMachine;
 use Illuminate\Support\Facades\Request;
 
-class AppController extends Controller
+class AttendanceMachineController extends Controller
 {
+    protected $attendanceMachine;
 
-    protected $app;
-
-    function __construct(App $app) { $this->app = $app; }
+    function __construct(AttendanceMachine $attendanceMachine)
+    {
+        $this->attendanceMachine = $attendanceMachine;
+    }
 
     /**
      * Display a listing of the resource.
@@ -20,9 +22,10 @@ class AppController extends Controller
     public function index()
     {
         if (Request::get('draw')) {
-            return response()->json($this->app->datatable());
+            return response()->json($this->attendanceMachine->datatable());
         }
-        return view('app.index', ['js' => 'js/app/index.js']);
+
+        return view('attendance_machine.index', ['js' => 'js/attendance_machine/index.js']);
     }
 
     /**
@@ -49,10 +52,10 @@ class AppController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\App  $app
+     * @param  \App\Models\AttendanceMachine  $attendanceMachine
      * @return \Illuminate\Http\Response
      */
-    public function show(App $app)
+    public function show(AttendanceMachine $attendanceMachine)
     {
         //
     }
@@ -60,10 +63,10 @@ class AppController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\App  $app
+     * @param  \App\Models\AttendanceMachine  $attendanceMachine
      * @return \Illuminate\Http\Response
      */
-    public function edit(App $app)
+    public function edit(AttendanceMachine $attendanceMachine)
     {
         //
     }
@@ -71,11 +74,11 @@ class AppController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\App  $app
+     * @param \Illuminate\Http\Request|Request $request
+     * @param  \App\Models\AttendanceMachine $attendanceMachine
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, App $app)
+    public function update(Request $request, AttendanceMachine $attendanceMachine)
     {
         //
     }
@@ -83,10 +86,10 @@ class AppController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\App  $app
+     * @param  \App\Models\AttendanceMachine  $attendanceMachine
      * @return \Illuminate\Http\Response
      */
-    public function destroy(App $app)
+    public function destroy(AttendanceMachine $attendanceMachine)
     {
         //
     }

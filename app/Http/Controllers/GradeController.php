@@ -3,24 +3,25 @@
 namespace App\Http\Controllers;
 
 use App\Models\Grade;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Request;
 
 class GradeController extends Controller
 {
     protected $grade;
 
     function __construct(Grade $grade) { $this->grade = $grade; }
+
     /**
      * Display a listing of the resource.
-     * @param Request $request
      * @return \Illuminate\Http\Response
+     * @internal param Request $request
      */
-    public function index(Request $request) {
+    public function index() {
 
-        if ($request->ajax()) {
-            return response()->json($this->grade->datatable($request));
+        if (Request::get('draw')) {
+            return response()->json($this->grade->datatable());
         }
-        return view('school.index');
+        return view('grade.index' , ['js' => 'js/grade/index.js']);
 
     }
 
