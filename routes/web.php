@@ -20,7 +20,6 @@ use Illuminate\Support\Facades\Auth;
 //Route::get('/', function() { return 'Dashboard'; });
 
 Route::get('/', 'HomeController@index');
-Route::get('test', 'TestController@index');
 
 Route::get('schools/types/{name}', function($name) {
     $schoolType = App\Models\SchoolType::with('schools')
@@ -96,6 +95,7 @@ Route::get('educators/{educator}/edit', 'EducatorController@edit');
 Route::put('educators/{educator}', 'EducatorController@update');
 Route::delete('educators/{educator}', 'EducatorController@destroy');
 
+
 // 学生设置
 Route::get('students/index', 'StudentController@index');
 Route::get('students/create', 'StudentController@create');
@@ -104,6 +104,9 @@ Route::get('students/show/{id}', 'StudentController@show');
 Route::get('students/edit/{id}', 'StudentController@edit');
 Route::put('students/update/{id}', 'StudentController@update');
 Route::delete('students/delete/{id}', 'StudentController@destroy');
+
+Route::get('test/index', 'TestController@index');
+
 
 //企业设置
 Route::get('corps/index', 'CorpController@index');
