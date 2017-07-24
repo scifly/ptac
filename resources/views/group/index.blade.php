@@ -2,8 +2,8 @@
 @section('header')
     <div class="panel-heading">
         <div class="btn-group">
-            <a href="{{ url('groups/create') }}" class="btn btn-primary pull-right">
-                权限设置
+            <a href="{{ url('group/create') }}" class="btn btn-primary pull-right">
+                添加权限
             </a>
         </div>
     </div>
