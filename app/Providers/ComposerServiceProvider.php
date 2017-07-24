@@ -5,23 +5,19 @@ namespace App\Providers;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
-class ComposerServiceProvider extends ServiceProvider
-{
+class ComposerServiceProvider extends ServiceProvider {
 
     /**
      * Bootstrap the application services.
      *
      * @return void
      */
-    public function boot()
-    {
-
+    public function boot() {
         View::composer('school.create_edit', 'App\Http\ViewComposers\SchoolComposer');
         View::composer('company.create_edit', 'App\Http\ViewComposers\CompanyComposer');
         View::composer('grade.create_edit', 'App\Http\ViewComposers\GradeComposer');
         View::composer('class.create_edit', 'App\Http\ViewComposers\SquadComposer');
-
-
+        View::composer('attendance_machine.create_edit', 'App\Http\ViewComposers\AttendanceMachineComposer');
     }
 
     /**
@@ -29,8 +25,7 @@ class ComposerServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function register()
-    {
+    public function register() {
 
         //
 
