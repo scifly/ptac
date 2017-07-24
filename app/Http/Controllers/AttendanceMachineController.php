@@ -6,12 +6,10 @@ use App\Http\Requests\AttendanceMachineRequest;
 use App\Models\AttendanceMachine;
 use Illuminate\Support\Facades\Request;
 
-class AttendanceMachineController extends Controller
-{
+class AttendanceMachineController extends Controller {
     protected $attendanceMachine;
 
-    function __construct(AttendanceMachine $attendanceMachine)
-    {
+    function __construct(AttendanceMachine $attendanceMachine) {
         $this->attendanceMachine = $attendanceMachine;
     }
 
@@ -20,8 +18,7 @@ class AttendanceMachineController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
-    {
+    public function index() {
         if (Request::get('draw')) {
             return response()->json($this->attendanceMachine->datatable());
         }
@@ -34,8 +31,7 @@ class AttendanceMachineController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
-    {
+    public function create() {
         return view('attendance_machine.create', ['js' => 'js/attendance_machine/create.js']);
     }
 
@@ -45,8 +41,7 @@ class AttendanceMachineController extends Controller
      * @return \Illuminate\Http\Response
      * @internal param \Illuminate\Http\Request|Request $request
      */
-    public function store(AttendanceMachineRequest $request)
-    {
+    public function store(AttendanceMachineRequest $request) {
         //创建一个考勤机空记录
         //将request 请求中包含的表单数据填入空记录对应的字段中
         //保存记录
@@ -69,8 +64,7 @@ class AttendanceMachineController extends Controller
      * @return \Illuminate\Http\Response
      * @internal param AttendanceMachine $attendanceMachine
      */
-    public function show($id)
-    {
+    public function show($id) {
         //根据id 查找单条记录
         $am = AttendanceMachine::find($id);
 
@@ -84,10 +78,9 @@ class AttendanceMachineController extends Controller
      * @return \Illuminate\Http\Response
      * @internal param AttendanceMachine $attendanceMachine
      */
-    public function edit( $id)
-    {
+    public function edit($id) {
         //根据id 查找单条记录
-        $am = AttendanceMachine::find($id);
+        $am = AttendanceMachine::whereId($id)->first();
 
         //记录返回给view
         return view('attendance_machine.edit', [
@@ -102,8 +95,7 @@ class AttendanceMachineController extends Controller
      * @internal param \Illuminate\Http\Request|Request $request
      * @internal param AttendanceMachine $attendanceMachine
      */
-    public function update()
-    {
+    public function update() {
         //跟进id查找记录，
         //把request 传的值，赋值给对应的字段
         //保存当前记录
@@ -114,11 +106,10 @@ class AttendanceMachineController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\AttendanceMachine  $attendanceMachine
+     * @param  \App\Models\AttendanceMachine $attendanceMachine
      * @return \Illuminate\Http\Response
      */
-    public function destroy(AttendanceMachine $attendanceMachine)
-    {
+    public function destroy(AttendanceMachine $attendanceMachine) {
         //根据id查找需要删除的数据
         //进行删除操作
         //返回json 格式的操作结果
