@@ -9,15 +9,21 @@
                 </div>
             </div>
             <div class="form-group">
-                {!! Form::label('company_id', '所属运营者',['class' => 'col-sm-4 control-label']) !!}
+                {!! Form::label('address', '地址',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-3">
-                    {!! Form::select('company_id', $companies, null, ['class' => 'form-control']) !!}
+                    {!! Form::text('address', null, ['class' => 'form-control']) !!}
                 </div>
             </div>
             <div class="form-group">
-                {!! Form::label('corpid', '企业号ID',['class' => 'col-sm-4 control-label']) !!}
-                <div class="col-sm-3">
-                    {!! Form::text('corpid', null, ['class' => 'form-control']) !!}
+                {!! Form::label('school_type_id', '类型',['class' => 'col-sm-4 control-label']) !!}
+                <div class="col-sm-2">
+                    {!! Form::select('school_type_id', $schoolTypes, null, ['class' => 'form-control']) !!}
+                </div>
+            </div>
+            <div class="form-group">
+                {!! Form::label('corp_id', '所属企业',['class' => 'col-sm-4 control-label']) !!}
+                <div class="col-sm-2">
+                    {!! Form::select('corp_id', $corps, null, ['class' => 'form-control']) !!}
                 </div>
             </div>
             <div class="form-group">
@@ -35,8 +41,8 @@
         {{--button--}}
         <div class="form-group">
             <div class="col-sm-3 col-sm-offset-4">
-                {!! Form::submit('保存', ['class' => 'btn btn-primary pull-left', 'id' => 'save']) !!}
-                {!! Form::reset('取消', ['class' => 'btn btn-default pull-right', 'id' => 'cancel']) !!}
+                {!! Form::reset('取消', ['class' => 'btn btn-default pull-left']) !!}
+                {!! Form::submit('保存', ['class' => 'btn btn-primary pull-right']) !!}
             </div>
         </div>
     </div>
