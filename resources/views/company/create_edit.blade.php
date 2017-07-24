@@ -28,15 +28,22 @@
                     {!! Form::label('enabled', '禁用') !!}
                 </div>
             </div>
-
+            @if(count($errors)>0)
+                @foreach($errors->all() as $error)
+            <div class="alert alert-info">
+                <a class="close" data-dismiss="alert">×</a>
+                <strong>{{$error}}</strong>
+            </div>
+                @endforeach
+                @endif
         </div>
     </div>
     <div class="box-footer">
         {{--button--}}
         <div class="form-group">
             <div class="col-sm-3 col-sm-offset-4">
-                {!! Form::reset('取消', ['class' => 'btn btn-default pull-left']) !!}
-                {!! Form::submit('保存', ['class' => 'btn btn-primary pull-right']) !!}
+                {!! Form::submit('保存', ['class' => 'btn btn-primary pull-left', 'id' => 'save']) !!}
+                {!! Form::reset('取消', ['class' => 'btn btn-default pull-right', 'id' => 'cancel']) !!}
             </div>
         </div>
     </div>

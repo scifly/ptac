@@ -64,4 +64,15 @@ class EducatorAppeal extends Model {
         return $this->belongsTo('App\Models\ProcedureLog','procedure_log_id');
     }
 
+    public function datatable()
+    {
+        $columns = [
+            ['db' => 'EducatorAppeal.id', 'dt' => 0],
+            ['db' => 'Educator.id', 'dt' => 1],
+            ['db' => 'EducatorAttendance.id', 'dt' => 2],
+        ];
+    }
+
+
+
 }
