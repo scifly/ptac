@@ -18,7 +18,7 @@ var crud = {
             $dialog.modal({ backdrop: true });
             $dialog.find('#confirm-delete').on('click', function() {
                 $.ajax({
-                    type: 'POST',
+                    type: 'DELETE',
                     dataType: 'json',
                     url: '/' + controller + '/delete/' + id,
                     success: function(result) {
@@ -41,16 +41,16 @@ var crud = {
             $cancel = $('#cancel');
         var $form = $('#' + formId);
 
-        App.init();
+        //App.init();
         $form.parsley();
-        FormSliderSwitcher.init();
+        //FormSliderSwitcher.init();
         $('select').select2();
 
         $save.on('click', function() {
             $.ajax({
                 type: 'POST',
                 dataType: 'json',
-                url: '/' + controller + '/add',
+                url: '/' + controller + '/create',
                 data: $form.serialize(),
                 success: function(result) {
                     if (result.statusCode === 200) {
@@ -85,7 +85,7 @@ var crud = {
         var id = paths[paths.length - 1];
         $save.on('click', function() {
             $.ajax({
-                type: 'POST',
+                type: 'PUT',
                 dataType: 'json',
                 url: '/' + controller + '/edit/' + id,
                 data: $form.serialize(),
