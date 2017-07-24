@@ -47,7 +47,7 @@ var crud = {
             $.ajax({
                 type: 'POST',
                 dataType: 'json',
-                url: '/' + controller + '/create',
+                url: '/' + controller + '/store',
                 data: $form.serialize(),
                 success: function(result) {
                     if (result.statusCode === 200) {
