@@ -17,6 +17,5 @@
 @section('content')
     <p>名称：{{ $app->name }}</p>
     <p>
-        @endif
     </p>
 @endsection
