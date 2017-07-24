@@ -41,8 +41,8 @@
         {{--button--}}
         <div class="form-group">
             <div class="col-sm-3 col-sm-offset-4">
-                {!! Form::reset('取消', ['class' => 'btn btn-default pull-left']) !!}
-                {!! Form::submit('保存', ['class' => 'btn btn-primary pull-right']) !!}
+                {!! Form::submit('保存', ['class' => 'btn btn-primary pull-left']) !!}
+                {!! Form::reset('取消', ['class' => 'btn btn-default pull-right']) !!}
             </div>
         </div>
     </div>
