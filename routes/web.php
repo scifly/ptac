@@ -12,12 +12,15 @@ use Illuminate\Support\Facades\Auth;
 |
 */
 
-Route::get('/', 'HomeController@index');
+# Auth::routes();
+# Route::get('/', function() { return 'Dashboard'; });
+# Route::get('/', 'HomeController@index');
+# Route::get('/home', 'HomeController@index')->name('home');
+# Route::get('test/index', 'TestController@index');
+# Route::get('/', 'HomeController@index');
 
 # 系统设置
-
 // 学校设置
-
 Route::get('schools/index', 'SchoolController@index');
 Route::get('schools/create', 'SchoolController@create');
 Route::post('schools/store', 'SchoolController@store');
@@ -54,31 +57,29 @@ Route::delete('companies/delete/{id}', 'CompanyController@destroy');
 //年级班级设置
 Route::get('grades/index', 'GradeController@index');
 Route::get('grades/create', 'GradeController@create');
-Route::post('grades', 'GradeController@index');
-Route::get('grades/{grade}', 'GradeController@show');
-Route::get('grades/{grade}/edit', 'GradeController@edit');
-Route::put('grades/{grade}', 'GradeController@update');
-Route::delete('grades/{grade}', 'GradeController@destroy');
+Route::post('grades/store', 'GradeController@store');
+Route::get('grades/show/{id}', 'GradeController@show');
+Route::get('grades/edit/{id}', 'GradeController@edit');
+Route::put('grades/update/{id}', 'GradeController@update');
+Route::delete('grades/delete/{id}', 'GradeController@destroy');
 
 Route::get('classes/index', 'SquadController@index');
 Route::get('classes/create', 'SquadController@create');
-Route::post('classes', 'SquadController@index');
-Route::get('classes/{squad}', 'SquadController@show');
-Route::get('classes/{squad}/edit', 'SquadController@edit');
-Route::put('classes/{squad}', 'SquadController@update');
-Route::delete('classes/{squad}', 'SquadController@destroy');
+Route::post('classes/store', 'SquadController@store');
+Route::get('classes/show/{id}', 'SquadController@show');
+Route::get('classes/edit/{id}', 'SquadController@edit');
+Route::put('classes/update/{id}', 'SquadController@update');
+Route::delete('classes/delete/{id}', 'SquadController@destroy');
 
 //用户/通信管理
 //教职员工
-
 Route::get('educators/index', 'EducatorController@index');
 Route::get('educators/create', 'EducatorController@create');
-Route::post('educators', 'EducatorController@index');
-Route::get('educators/{educator}', 'EducatorController@show');
-Route::get('educators/{educator}/edit', 'EducatorController@edit');
-Route::put('educators/{educator}', 'EducatorController@update');
-Route::delete('educators/{educator}', 'EducatorController@destroy');
-
+Route::post('educators/store', 'EducatorController@store');
+Route::get('educators/show/{id}', 'EducatorController@show');
+Route::get('educators/edit/{id}', 'EducatorController@edit');
+Route::put('educators/update/{id}', 'EducatorController@update');
+Route::delete('educators/delete/{id}', 'EducatorController@destroy');
 
 // 学生设置
 Route::get('students/index', 'StudentController@index');
@@ -88,9 +89,6 @@ Route::get('students/show/{id}', 'StudentController@show');
 Route::get('students/edit/{id}', 'StudentController@edit');
 Route::put('students/update/{id}', 'StudentController@update');
 Route::delete('students/delete/{id}', 'StudentController@destroy');
-
-Route::get('test/index', 'TestController@index');
-
 
 //企业设置
 Route::get('corps/index', 'CorpController@index');
@@ -102,7 +100,6 @@ Route::put('corps/update/{id}', 'CorpController@update');
 Route::delete('corps/delete/{id}', 'CorpController@destroy');
 
 # 成绩管理
-
 //成绩管理
 Route::get('scores/index', 'ScoreController@index');
 Route::get('scores/create', 'ScoreController@create');
