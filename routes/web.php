@@ -55,19 +55,27 @@ Route::delete('companies/delete/{id}', 'CompanyController@destroy');
 //年级班级设置
 Route::get('grades/index', 'GradeController@index');
 Route::get('grades/create', 'GradeController@create');
-Route::post('grades', 'GradeController@index');
-Route::get('grades/{grade}', 'GradeController@show');
-Route::get('grades/{grade}/edit', 'GradeController@edit');
-Route::put('grades/{grade}', 'GradeController@update');
-Route::delete('grades/{grade}', 'GradeController@destroy');
-
+Route::post('grades/store', 'GradeController@store');
+Route::get('grades/show/{id}', 'GradeController@show');
+Route::get('grades/edit/{id}', 'GradeController@edit');
+Route::put('grades/update/{id}', 'GradeController@update');
+Route::delete('grades/delete/{id}', 'GradeController@destroy');
+//------------------------------------------------------------
 Route::get('classes/index', 'SquadController@index');
 Route::get('classes/create', 'SquadController@create');
-Route::post('classes', 'SquadController@index');
-Route::get('classes/{squad}', 'SquadController@show');
-Route::get('classes/{squad}/edit', 'SquadController@edit');
-Route::put('classes/{squad}', 'SquadController@update');
-Route::delete('classes/{squad}', 'SquadController@destroy');
+Route::post('classes/store', 'SquadController@store');
+Route::get('classes/show/{id}', 'SquadController@show');
+Route::get('classes/edit/{id}', 'SquadController@edit');
+Route::put('classes/update/{id}', 'SquadController@update');
+Route::delete('classes/delete/{id}', 'SquadController@destroy');
+//应用设置
+Route::get('apps/index', 'AppController@index');
+Route::get('apps/create', 'AppController@create');
+Route::post('apps/store', 'AppController@store');
+Route::get('apps/show/{id}', 'AppController@show');
+Route::get('apps/edit/{id}', 'AppController@edit');
+Route::put('apps/update/{id}', 'AppController@update');
+Route::delete('apps/delete/{id}', 'AppController@destroy');
 
 //用户/通信管理
 //教职员工
