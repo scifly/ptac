@@ -9,15 +9,21 @@
                 </div>
             </div>
             <div class="form-group">
-                {!! Form::label('remark', '备注',['class' => 'col-sm-4 control-label']) !!}
+                {!! Form::label('address', '地址',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-3">
-                    {!! Form::text('remark', null, ['class' => 'form-control']) !!}
+                    {!! Form::text('address', null, ['class' => 'form-control']) !!}
                 </div>
             </div>
             <div class="form-group">
-                {!! Form::label('corpid', '企业号ID',['class' => 'col-sm-4 control-label']) !!}
-                <div class="col-sm-3">
-                    {!! Form::text('corpid', null, ['class' => 'form-control']) !!}
+                {!! Form::label('school_type_id', '类型',['class' => 'col-sm-4 control-label']) !!}
+                <div class="col-sm-2">
+                    {!! Form::select('school_type_id', $schoolTypes, null, ['class' => 'form-control']) !!}
+                </div>
+            </div>
+            <div class="form-group">
+                {!! Form::label('corp_id', '所属企业',['class' => 'col-sm-4 control-label']) !!}
+                <div class="col-sm-2">
+                    {!! Form::select('corp_id', $corps, null, ['class' => 'form-control']) !!}
                 </div>
             </div>
             <div class="form-group">
@@ -28,14 +34,7 @@
                     {!! Form::label('enabled', '禁用') !!}
                 </div>
             </div>
-            @if(count($errors)>0)
-                @foreach($errors->all() as $error)
-            <div class="alert alert-info">
-                <a class="close" data-dismiss="alert">×</a>
-                <strong>{{$error}}</strong>
-            </div>
-                @endforeach
-                @endif
+
         </div>
     </div>
     <div class="box-footer">

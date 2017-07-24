@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CompanyRequest;
 use App\Models\Company;
 use Illuminate\Support\Facades\Request;
 
@@ -11,7 +12,10 @@ class CompanyController extends Controller
 
     protected $company;
 
-    function __construct(Company $company) { $this->company = $company; }
+    function __construct(Company $company)
+    {
+        $this->company = $company;
+    }
 
     /**
      * 显示运营者公司列表
@@ -19,7 +23,8 @@ class CompanyController extends Controller
      * @internal param null $arg
      * @internal param Request $request
      */
-    public function index() {
+    public function index()
+    {
 
         if (Request::get('draw')) {
             return response()->json($this->company->datatable());
@@ -35,7 +40,7 @@ class CompanyController extends Controller
      */
     public function create()
     {
-        return view('company.create',['js' => 'js/company/create.js']);
+        return view('company.create', ['js' => 'js/company/create.js']);
     }
 
     /**
@@ -43,14 +48,15 @@ class CompanyController extends Controller
      * @return \Illuminate\Http\Response
      * @internal param \Illuminate\Http\Request|Request $request
      */
-    public function store()
+    public function store(CompanyRequest $request)
     {
-        // request
         //验证
-        $temp = Request::all();
-
+        $input = $request->all();
         //逻辑
-
+        $res = Company::create($input);
+        if (!$res) {
+            return response()->json(['statusCode' => 202, 'Message' => 'add filed']);
+        }
         return response()->json(['statusCode' => 200, 'Message' => 'nailed it!']);
     }
 
@@ -62,7 +68,7 @@ class CompanyController extends Controller
     public function show($id)
     {
         // find the record by id
-        $company = Company::where('id',$id);
+        $company = Company::where('id', $id);
         return view('company.show', ['company' => $company]);
     }
 
@@ -71,7 +77,8 @@ class CompanyController extends Controller
      * @return \Illuminate\Http\Response
      * @internal param Company $company
      */
-    public function edit() {
+    public function edit()
+    {
 
         return view('company.edit', ['js' => 'js/company/edit.js']);
 

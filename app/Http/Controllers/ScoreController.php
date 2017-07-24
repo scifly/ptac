@@ -19,14 +19,6 @@ class ScoreController extends Controller
      */
     public function index() {
 
-        /*if (Request::ajax() && !$arg) {
-            return response()->json($this->school->datatable());
-        } elseif ($arg) {
-            return view('school.index', ['js' => 'js/school/index.js']);
-        } else {
-            return response()->json($this->school->datatable());
-        }*/
-
         if (Request::get('draw')) {
             return response()->json($this->score->datatable());
         }
@@ -42,7 +34,7 @@ class ScoreController extends Controller
      */
     public function create()
     {
-        //
+        return view('score.create',['js' => 'js/score/create.js']);
     }
 
     /**
@@ -51,9 +43,9 @@ class ScoreController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store()
     {
-        //
+        return response()->json(['statusCode' => 200, 'Message' => 'nailed it!']);
     }
 
     /**
@@ -62,9 +54,10 @@ class ScoreController extends Controller
      * @param  \App\Models\Score  $score
      * @return \Illuminate\Http\Response
      */
-    public function show(Score $score)
+    public function show()
     {
-        //
+        //find the record by id
+        //return view('corp.show', ['corp' => $corp]);
     }
 
     /**
@@ -73,9 +66,9 @@ class ScoreController extends Controller
      * @param  \App\Models\Score  $score
      * @return \Illuminate\Http\Response
      */
-    public function edit(Score $score)
+    public function edit()
     {
-        //
+        return view('score.edit', ['js' => 'js/score/edit.js']);
     }
 
     /**
@@ -85,9 +78,11 @@ class ScoreController extends Controller
      * @param  \App\Models\Score  $score
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Score $score)
+    public function update()
     {
-        //
+        // find the record by id
+        // update the record with the request data
+        return response()->json([]);
     }
 
     /**
@@ -96,8 +91,8 @@ class ScoreController extends Controller
      * @param  \App\Models\Score  $score
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Score $score)
+    public function destroy()
     {
-        //
+        return response()->json([]);
     }
 }
