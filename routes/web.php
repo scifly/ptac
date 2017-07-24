@@ -12,23 +12,7 @@ use Illuminate\Support\Facades\Auth;
 |
 */
 
-
-//Auth::routes();
-//Route::get('/home', 'HomeController@index')->name('home');
-
-
-//Route::get('/', function() { return 'Dashboard'; });
-
 Route::get('/', 'HomeController@index');
-
-Route::get('schools/types/{name}', function($name) {
-    $schoolType = App\Models\SchoolType::with('schools')
-        ->whereName($name)
-        ->first();
-    return view('admin.config.school.schools_index')
-        ->with('schoolType', $schoolType)
-        ->with('schools', $schoolType->schools);
-});
 
 # 系统设置
 
@@ -127,3 +111,13 @@ Route::get('scores/show/{id}', 'ScoreController@show');
 Route::get('scores/edit/{id}', 'ScoreController@edit');
 Route::put('scores/update/{id}', 'ScoreController@update');
 Route::delete('scores/delete/{id}', 'ScoreController@destroy');
+
+# 考勤管理
+//考勤机设置
+Route::get('attendance_machines/index', 'AttendanceMachineController@index');
+Route::get('attendance_machines/create', 'AttendanceMachineController@create');
+Route::post('attendance_machines/store', 'AttendanceMachineController@store');
+Route::get('attendance_machines/show/{id}', 'AttendanceMachineController@show');
+Route::get('attendance_machines/edit/{id}', 'AttendanceMachineController@edit');
+Route::put('attendance_machines/update/{id}', 'AttendanceMachineController@update');
+Route::delete('attendance_machines/delete/{id}', 'AttendanceMachineController@destroy');
