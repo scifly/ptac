@@ -1,13 +1,27 @@
 <?php
 namespace App\Facades;
 
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Facade;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Request;
 
 class DatatableFacade extends Facade {
-    
+
+    const DT_ON = '<span class="btn btn-xs btn-primary">%s</span>';
+    const DT_OFF = '<span class="btn btn-xs btn-default">%s</span>';
+    const DT_LINK_EDIT = '<!--suppress HtmlUnknownTarget -->
+<a href="%s/edit/%s" class="btn btn-success btn-icon btn-circle btn-xs"><i class="fa fa-edit"></i></a>';
+    const DT_LINK_DEL = '<!--suppress HtmlUnknownAnchorTarget -->
+<a id="%s" href="#modal-dialog" class="btn btn-danger btn-icon btn-circle btn-xs" data-toggle="modal"><i class="fa fa-times"></i></a>';
+    const DT_LINK_SHOW = '<!--suppress HtmlUnknownAnchorTarget -->
+<a href="%s/show/%s" class="btn btn-primary btn-icon btn-circle btn-xs"><i class="fa fa-eye"></i></a>';
+    const DT_SPACE = '&nbsp;';
+    const DT_PRIMARY = '<span class="badge badge-info">%s</span>';
+    const DT_LOCK = '<i class="fa fa-lock"></i>&nbsp;已占用';
+    const DT_UNLOCK = '<i class="fa fa-unlock"></i>&nbsp;空闲中';
+
     protected static function getFacadeAccessor() { return 'Datatable'; }
     
     /**
@@ -18,7 +32,6 @@ class DatatableFacade extends Facade {
      * sending back to the client.
      *
      * @param Model $model
-     * @param Request $request Data sent to server by DataTables
      * @param array $columns Column information array
      * @param array $joins
      * @param string $condition
@@ -27,15 +40,17 @@ class DatatableFacade extends Facade {
      * @internal param string $table SQL table to query
      * @internal param string $primaryKey Primary key of the table
      */
-    static function simple(Model $model, Request $request, array $columns, array $joins = NULL, $condition = NULL) {
+    static function simple(Model $model, array $columns, array $joins = NULL, $condition = NULL) {
         
-        switch ($model->getTable()) {
+        $modelName = class_basename($model);
+        $tableName = $model->getTable();
+        switch ($modelName) {
             case 'Group': $useTable = 'Groups'; break;
             case 'Order': $useTable = 'Orders'; break;
             case 'Table': $useTable = 'Tables'; break;
-            default: $useTable = $model->getTable(); break;
+            default: $useTable = $modelName; break;
         }
-        $from =  $model->getTable() . ' AS ' . $useTable;
+        $from =  $tableName . ' AS ' . $useTable;
         if (isset($joins)) {
             foreach ($joins as $join) {
                 $from .=
@@ -44,30 +59,32 @@ class DatatableFacade extends Facade {
                     ' ON ' . implode(' AND ', $join['conditions']);
             }
         }
+
         // Build the SQL query string from the request
-        $limit = self::limit($request);
-        $order = self::order($request, $columns);
-        $where = self::filter($request, $columns);
+        $limit = self::limit();
+        $order = self::order($columns);
+        $where = self::filter($columns);
         if (isset($condition)) {
             $where = empty($where) ? ' WHERE ' . $condition : $where . ' AND ' . $condition;
         }
-        // Main query to actually get the data
         
-        $data = DB::select(
-            "SELECT SQL_CALC_FOUND_ROWS " .
+        // Main query to actually get the data
+        $query = "SELECT SQL_CALC_FOUND_ROWS " .
             implode(", ", self::pluck($columns, 'db')) .
-            " FROM " . $from .
-            $where . $order . $limit
-        );
+            " FROM " . $from . $where . $order . $limit;
+        $data = DB::select($query);
+        
         // Data set length after filtering
         $resFilterLength = DB::select("SELECT FOUND_ROWS() AS t");
         $recordsFiltered = $resFilterLength[0]->t;
+
         // Total data set length
-        $resTotalLength = DB::select("SELECT COUNT(*) AS t FROM " . $model->getTable())[0]->t;
+        $resTotalLength = DB::select("SELECT COUNT(*) AS t FROM " . $tableName)[0]->t;
         $recordsTotal = $resTotalLength;
+        
         // Output
         return [
-            "draw"            => intval($request->query('draw')),
+            "draw"            => intval(Request::get('draw')),
             "recordsTotal"    => intval($recordsTotal),
             "recordsFiltered" => intval($recordsFiltered),
             "data"            => self::data_output($columns, $data)
@@ -90,25 +107,25 @@ class DatatableFacade extends Facade {
      *   particular records (for example, restricting by a login id).
      *
      * @param Model $model
-     * @param Request $request Data sent to server by DataTables
      * @param  array $columns Column information array
      * @param  string $whereResult WHERE condition to apply to the result set
      * @param  string $whereAll WHERE condition to apply to all queries
      * @return array Server-side processing response array
+     * @internal param Request $request Data sent to server by DataTables
      * @internal param array|PDO $conn PDO connection resource or connection parameters array
      * @internal param string $table SQL table to query
      * @internal param string $primaryKey Primary key of the table
      */
-    static function complex(Model $model, Request $request, $columns, $whereResult = null, $whereAll = null) {
+    static function complex(Model $model, $columns, $whereResult = null, $whereAll = null) {
         
         # $localWhereResult = [];
         # $localWhereAll = [];
         $whereAllSql = '';
-        $table = $model->{'useTable'};
+        $table = $model->getTable();
         // Build the SQL query string from the request
-        $limit = self::limit($request);
-        $order = self::order($request, $columns);
-        $where = self::filter($request, $columns);
+        $limit = self::limit();
+        $order = self::order($columns);
+        $where = self::filter($columns);
         $whereResult = self::_flatten($whereResult);
         $whereAll = self::_flatten($whereAll);
         if ($whereResult) {
@@ -132,35 +149,57 @@ class DatatableFacade extends Facade {
         $resFilterLength = DB::select("SELECT FOUND_ROWS() AS cnt");
         $recordsFiltered = $resFilterLength[0]->cnt;
         // Total data set length
-        $resTotalLength = DB::select("SELECT COUNT(*) AS cnt FROM " . $model->getTable() . $whereAllSql);
+        $resTotalLength = DB::select("SELECT COUNT(*) AS cnt FROM " . $table . $whereAllSql);
         $recordsTotal = $resTotalLength[0]->cnt;
         /*
          * Output
          */
         return [
-            "draw"            => intval($request->query('draw')),
+            "draw"            => intval(Request::get('draw')),
             "recordsTotal"    => intval($recordsTotal),
             "recordsFiltered" => intval($recordsFiltered),
             "data"            => self::data_output($columns, $data)
         ];
     }
+
+    /**
+     * Display data entry operations
+     *
+     * @param Model $model
+     * @param $active
+     * @param $row
+     * @param bool|true $del - if set to false, do not show delete link
+     * @return string
+     */
+    static function dtOps(Model $model, $active, $row, $del = true) {
+
+        $id = $row['id'];
+        $status = $active ? sprintf(self::DT_ON, '已启用') : sprintf(self::DT_OFF, '已禁用');
+        $showLink = sprintf(self::DT_LINK_SHOW, $model->getTable(), $id);
+        $editLink = sprintf(self::DT_LINK_EDIT, $model->getTable(), $id);
+        $delLink = sprintf(self::DT_LINK_DEL, $id);
+
+        return $status . self::DT_SPACE . $showLink . self::DT_SPACE .
+            $editLink . ($del ? self::DT_SPACE . $delLink : '');
+
+    }
+    
     
     /**
      * Paging
      *
      * Construct the LIMIT clause for server-side processing SQL query
-     *
-     * @param Request $request Data sent to server by DataTables
      * @return string SQL limit clause
+     * @internal param Request $request Data sent to server by DataTables
      * @internal param array $columns Column information array
      */
-    private function limit(Request $request) {
+    private static function limit() {
         
         $limit = '';
-        $start = $request->query('start');
-        $length = $request->query('length');
+        $start = Request::get('start');
+        $length = Request::get('length');
         if (isset($start) && $length != -1) {
-            $limit = "LIMIT ".intval($start) . ", " . intval($length);
+            $limit = "LIMIT " . intval($start) . ", " . intval($length);
         }
         return $limit;
         
@@ -171,14 +210,14 @@ class DatatableFacade extends Facade {
      *
      * Construct the ORDER BY clause for server-side processing SQL query
      *
-     *  @param Request $request Data sent to server by DataTables
-     *  @param array $columns Column information array
-     *  @return string SQL order by clause
+     * @param array $columns Column information array
+     * @return string SQL order by clause
+     * @internal param Request $request Data sent to server by DataTables
      */
-    private function order(Request $request, array $columns) {
+    private static function order(array $columns) {
         
         $orderBy = '';
-        $order = $request->query('order');
+        $order = Request::get('order');
         
         if (isset($order) && count($order)) {
             $orderBy = [];
@@ -186,11 +225,15 @@ class DatatableFacade extends Facade {
             for ($i = 0, $ien = count($order); $i < $ien; $i++ ) {
                 // Convert the column index into the column data property
                 $columnIdx = intval($order[$i]['column']);
-                $requestColumn = $request->query('columns')[$columnIdx];
+                $requestColumn = Request::get('columns')[$columnIdx];
                 $columnIdx = array_search( $requestColumn['data'], $dtColumns );
                 $column = $columns[$columnIdx];
                 if ($requestColumn['orderable'] == 'true') {
                     $dir = $order[$i]['dir'] === 'asc' ? ' ASC ' : ' DESC ';
+                    $pos = stripos($column['db'], ' as ');
+                    if ($pos) {
+                        $column['db'] = substr($column['db'], 0, $pos);
+                    }
                     $orderBy[] = /*'`' . */$column['db'] . ' ' . $dir;
                 }
             }
@@ -209,19 +252,19 @@ class DatatableFacade extends Facade {
      * word by word on any field. It's possible to do here performance on large
      * databases would be very poor
      *
-     * @param Request $request Data sent to server by DataTables
      * @param array $columns Column information array
      * @return string SQL where clause
+     * @internal param Request $request Data sent to server by DataTables
      * @internal param array $bindings Array of values for PDO bindings, used in the
      *    sql_exec() function
      */
-    private function filter(Request $request, array $columns) {
+    private static function filter(array $columns) {
         
         $globalSearch = [];
         $columnSearch = [];
         $dtColumns = self::pluck($columns, 'dt');
-        $requestSearch = $request->query('search');
-        $requestColumns = $request->query('columns');
+        $requestSearch = Request::get('search');
+        $requestColumns = Request::get('columns');
         if (isset($requestSearch) && $requestSearch['value'] != '') {
             $str = $requestSearch['value'];
             for ($i = 0, $ien = count($requestColumns); $i < $ien ; $i++) {
@@ -230,6 +273,10 @@ class DatatableFacade extends Facade {
                 $column = $columns[$columnIdx];
                 if ($requestColumn['searchable'] == 'true') {
                     # $binding = self::bind($bindings, '%' . $str . '%', PDO::PARAM_STR);
+                    $pos = stripos($column['db'], ' as ');
+                    if ($pos) {
+                        $column['db'] = substr($column['db'], 0, $pos);
+                    }
                     $globalSearch[] = $column['db'] . " LIKE BINARY '%" . $str . "%'";
                 }
             }
@@ -270,7 +317,7 @@ class DatatableFacade extends Facade {
      *  @param string $prop Property to read
      *  @return array        Array of property values
      */
-    private function pluck(array $a, $prop) {
+    private static function pluck(array $a, $prop) {
         
         $out = [];
         for ($i = 0, $len = count($a) ; $i < $len ; $i++) {
@@ -308,17 +355,24 @@ class DatatableFacade extends Facade {
     static function data_output(array $columns, array $data) {
         
         $out = [];
-        for ($i = 0, $ien = count($data); $i < $ien; $i++) {
+        $length = count($data);
+        for ($i = 0; $i < $length; $i++) {
             $row = [];
-            for ($j = 0, $jen = count($columns); $j < $jen; $j++) {
-                $column = $columns[$j];
-                $v = explode('.', $column['db']);
-                // Is there a formatter?
-                if (isset($column['formatter'])) {
-                    $row[$column['dt']] = $column['formatter']($data[$i][$v[0]][$v[1]], $data[$i]);
-                } else {
-                    $row[$column['dt']] = $data[$i][$v[0]][$v[1]];
+            $_data = (array)$data[$i];
+            $j = 0;
+            foreach ($_data as $name => $value) {
+                if (in_array($name, ['created_at', 'updated_at'])) {
+                    $dt = Carbon::createFromFormat('Y-m-d H:i:s', $value);
+                    
+                    $value = $dt->diffForhumans();
                 }
+                $column = $columns[$j];
+                if (isset($column['formatter'])) {
+                    $row[$column['dt']] = $column['formatter']($value, $_data);
+                } else {
+                    $row[$column['dt']] = $value;
+                }
+                $j++;
             }
             $out[] = $row;
         }

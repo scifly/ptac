@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="csrf_token" content="{{ csrf_token() }}">
     <title>模板空白页</title>
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
@@ -545,6 +546,13 @@
 <script src="{{ URL::asset('js/plugins/parsley/i18n/zh_cn.extra.js') }}"></script>
 <!-- DataTable -->
 <script src="{{ URL::asset('js/plugins/datatables/datatables.js') }}"></script>
+<!-- Gritter -->
+<script src="{{ URL::asset('js/plugins/gritter/js/jquery.gritter.js') }}"></script>
+<!-- Select2 -->
+<script src="{{ URL::asset('js/plugins/select2/js/select2.min.js') }}"></script>
+<!-- Custom JS -->
+<script src="{{ URL::asset('js/admin.crud.js') }}"></script>
+<script src="{{ URL::asset($js) }}"></script>
 <!-- AdminLTE for demo purposes -->
 <script src="{{ URL::asset('js/demo.js') }}"></script>
 </body>

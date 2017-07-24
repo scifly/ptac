@@ -24,8 +24,31 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|ConferenceParticipant whereUpdatedAt($value)
  * @mixin \Eloquent
  */
-class ConferenceParticipant extends Model {
-    
+class ConferenceParticipant extends Model
+{
+
     //
-    
+    protected $tabled = 'conference_participants';
+    protected $fillable = [
+        'educator_id',
+        'attendance_time',
+        'conference_queue_id',
+        'status'
+    ];
+
+    /**
+     * 会议参与者与教师
+     */
+    public function educator()
+    {
+        return $this->belongsTo('\App\Models\Educator');
+    }
+
+    /**
+     * 会议参与者与会议
+     */
+    public function conferenceQueues(){
+        return $this->belongsTo('App\Models\ConferenceQueue');
+    }
+
 }

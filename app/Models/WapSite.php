@@ -23,7 +23,21 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|WapSite whereSiteTitle($value)
  * @method static Builder|WapSite whereUpdatedAt($value)
  * @mixin \Eloquent
+ * 网站
  */
 class WapSite extends Model {
     //
+    protected $table = 'wap_site';
+    protected $fillable = [
+        'id',
+        'school_id',
+        'site_title',
+        'media_ids',
+        'created_at',
+        'updated_at',
+    ];
+    public function hasManyWsm()
+    {
+        return $this->hasMany('App\Models\WapSiteModule','wap_site_id','id');
+    }
 }

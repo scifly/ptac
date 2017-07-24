@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\CreateSchool;
+use App\Http\Requests\SchoolRequest;
 use App\Models\School;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Request;
 
 class SchoolController extends Controller {
     
@@ -14,16 +14,24 @@ class SchoolController extends Controller {
     
     /**
      * Display a listing of the resource.
-     *
-     * @param Request $request
      * @return \Illuminate\Http\Response
+     * @internal param null $arg
+     * @internal param Request $request
      */
-    public function index(Request $request) {
+    public function index() {
     
-        if ($request->ajax()) {
-            return response()->json($this->school->datatable($request));
+        /*if (Request::ajax() && !$arg) {
+            return response()->json($this->school->datatable());
+        } elseif ($arg) {
+            return view('school.index', ['js' => 'js/school/index.js']);
+        } else {
+            return response()->json($this->school->datatable());
+        }*/
+        
+        if (Request::get('draw')) {
+            return response()->json($this->school->datatable());
         }
-        return view('school.index');
+        return view('school.index', ['js' => 'js/school/index.js']);
     
     }
     
@@ -33,16 +41,18 @@ class SchoolController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function create() {
-        //
+        
+        return view('school.create');
+        
     }
     
     /**
      * Store a newly created resource in storage.
      *
-     * @param CreateSchool|Request $request
+     * @param SchoolRequest $request
      * @return \Illuminate\Http\Response
      */
-    public function store(CreateSchool $request) {
+    public function store(SchoolRequest $request) {
         //
     }
     
@@ -69,11 +79,11 @@ class SchoolController extends Controller {
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
+     * @param SchoolRequest|\Illuminate\Http\Request $request
      * @param  \App\Models\School $school
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, School $school) {
+    public function update(SchoolRequest $request, School $school) {
         //
     }
     

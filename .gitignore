@@ -9,9 +9,9 @@ Homestead.json
 Homestead.yaml
 npm-debug.log
 .env
+composer.json
+composer.lock
 _ide_helper.php
 _ide_helper_models.php
-composer.lock
-composer.json
 .phpstorm.meta.php
 app/Http/Controllers/TestController.php

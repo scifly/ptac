@@ -57,11 +57,13 @@ use Illuminate\Notifications\Notifiable;
  * @method static Builder|User wherePosition($value)
  * @method static Builder|User whereTelephone($value)
  * @method static Builder|User whereUserid($value)
+ * 用户
  */
 class User extends Authenticatable {
     
     use Notifiable;
-    
+    protected $table = 'users';
+
     /**
      * The attributes that are mass assignable.
      *
@@ -102,6 +104,18 @@ class User extends Authenticatable {
     public function student() { return $this->hasOne('App\Models\Student'); }
     
     public function group() { return $this->belongsTo('App\Model\Group'); }
+
+    public function operator(){ return $this->hasOne('App\Models\Operator'); }
+
+    public function order(){ return $this->hasOne('App\Models\Order'); }
+
+    public function pollquestionnaires(){ return $this->hasOne('App\Models\PollQuestionnaire'); }
+
+    public function pollquestionnaireAnswer(){ return $this->hasOne('App\Models\PollQuestionnaireAnswer'); }
+
+    public function pollquestionnairePartcipant(){
+        return $this->hasOne('App\Models\PollQuestionnaireParticipant');
+    }
     
     
 }

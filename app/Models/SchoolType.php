@@ -24,6 +24,17 @@ use Illuminate\Database\Eloquent\Model;
  */
 class SchoolType extends Model {
 
-    protected $fillable = [''];
+    protected $fillable =[
+        'name',
+        'remark',
+        'created_at',
+        'updated_at',
+    ];
+    
+    public function schools() {
+        
+        return $this->hasMany('App\Models\School');
+        
+    }
     
 }

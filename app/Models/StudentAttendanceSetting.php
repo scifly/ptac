@@ -36,4 +36,19 @@ use Illuminate\Database\Eloquent\Model;
  */
 class StudentAttendanceSetting extends Model {
     //
+    protected $table = 'student_attendance_setting';
+    protected $fillable = [
+        'id',
+        'name',
+        'grade_id',
+        'semester_id',
+        'ispublic',
+        'start',
+        'end',
+        'day',
+        'inorout',
+        'msg_template',
+        'created_at',
+        'updated_at',
+    ];
 }

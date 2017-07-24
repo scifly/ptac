@@ -24,4 +24,12 @@ use Illuminate\Database\Eloquent\Model;
  */
 class MessageType extends Model {
     //
+    protected $table = 'message_types';
+
+    protected $fillable = ['name','remark','created_at','updated_at','enabled'];
+
+    public function message()
+    {
+        return $this->hasMany('App\Models\Message');
+    }
 }

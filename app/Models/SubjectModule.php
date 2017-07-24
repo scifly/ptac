@@ -26,4 +26,20 @@ use Illuminate\Database\Eloquent\Model;
  */
 class SubjectModule extends Model {
     //
+    protected $table = 'wap_site_modules';
+    protected $fillable = [
+        'id',
+        'wap_site_id',
+        'name',
+        'summary',
+        'media_id',
+        'created_at',
+        'updated_at',
+    ];
+
+    public function belongsToWs()
+    {
+        return $this->belongsTo('App\Models\Subject','subject_id','id');
+
+    }
 }

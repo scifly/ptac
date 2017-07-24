@@ -30,6 +30,32 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|Department whereUpdatedAt($value)
  * @mixin \Eloquent
  */
-class Department extends Model {
+class Department extends Model
+{
     //
+    protected $table = 'departments';
+    protected $fillable = [
+        'praent_id',
+        'corp_id',
+        'school_id',
+        'name',
+        'remark',
+        'order',
+        'enabled'
+    ];
+
+    /**
+     * 部门与所属企业
+     */
+    public function corp()
+    {
+        return $this->belongsTo('App\Models\Corp');
+    }
+
+    /**
+     * 部门与所属学校
+     */
+    public function school(){
+        return $this->belongsTo('App\Models\School');
+    }
 }

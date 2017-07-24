@@ -4,7 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-
+use App\Facades\DatatableFacade as Datatable;
+use Illuminate\Http\Request;
 /**
  * App\Models\Squad
  *
@@ -23,9 +24,56 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|Squad whereName($value)
  * @method static Builder|Squad whereUpdatedAt($value)
  * @mixin \Eloquent
+ * 班级
  */
 class Squad extends Model {
     
     protected $table = 'classes';
+    protected $fillable = [
+        'id',
+        'grade_id',
+        'name',
+        'educator_ids',
+        'enabled',
+    ];
+    public function students()
+    {
+        return $this->hasMany('App\Models\Student','class_id','id');
+    }
+
+    public function grade()
+    {
+        return $this->belongsTo('App\Models\Grade');
+    }
+    public function datatable() {
+
+        $columns = [
+            ['db' => 'Squad.id', 'dt' => 0],
+            ['db' => 'Squad.name', 'dt' => 1],
+            ['db' => 'Grade.name as gradename', 'dt' => 2],
+            ['db' => 'Squad.educator_ids', 'dt' => 3],
+            ['db' => 'Squad.created_at', 'dt' => 4],
+            ['db' => 'Squad.updated_at', 'dt' => 5],
+
+            [
+                'db' => 'Squad.enabled', 'dt' => 6,
+                'formatter' => function ($d, $row) {
+                    return Datatable::dtOps($this, $d, $row);
+                }
+            ]
+        ];
+        $joins = [
+            [
+                'table' => 'grades',
+                'alias' => 'Grade',
+                'type'  => 'INNER',
+                'conditions' => [
+                    'Grade.id = Squad.grade_id'
+                ]
+            ]
+        ];
+
+        return Datatable::simple($this,  $columns, $joins);
+    }
     
 }

@@ -24,4 +24,11 @@ use Illuminate\Database\Eloquent\Model;
  */
 class ProcedureType extends Model {
     //
+    protected $table = 'procedure_types';
+    protected $fillable =[
+        'name',
+        'remark',
+        'created_at',
+        'updated_at',
+    ];
 }

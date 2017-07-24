@@ -22,8 +22,14 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|CustodianStudent whereUpdatedAt($value)
  * @mixin \Eloquent
  */
-class CustodianStudent extends Model {
-    
+class CustodianStudent extends Model
+{
+
     protected $table = 'custodians_students';
-    
+    protected $fillable = [
+        'custodian_id',
+        'student_id',
+        'relationship',
+    ];
+
 }

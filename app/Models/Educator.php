@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use App\Facades\DatatableFacade as Datatable;
 
 /**
  * App\Models\Educator
@@ -25,8 +26,64 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|Educator whereUserId($value)
  * @mixin \Eloquent
  */
-class Educator extends Model {
-    
-    public function user() { return $this->belongsTo('App\Models\User'); }
-    
+class Educator extends Model
+{
+
+    protected $fillable = [
+        'id',
+        'user_id',
+        'team_ids',
+        'school_id',
+        'sms_quote',
+        'enabled',
+
+    ];
+
+    public function user()
+    {
+        return $this->belongsTo('App\Models\User');
+    }
+
+    public function datatable()
+    {
+
+        $columns = [
+            ['db' => 'Educator.id', 'dt' => 0],
+            ['db' => 'User.username', 'dt' => 1],
+            ['db' => 'Educator.team_ids', 'dt' => 2],
+            ['db' => 'Shool.name', 'dt' => 3],
+            ['db' => 'Educator.sms_quote', 'dt' => 4],
+            ['db' => 'Educator.created_at', 'dt' => 5],
+            ['db' => 'Educator.updated_at', 'dt' => 6],
+
+//            [
+//                'db' => 'Educator.enabled', 'dt' => 7,
+//                'formatter' => function ($d, $row) {
+//                    return Datatable::dtOps($this, $d, $row);
+//                }
+//            ]
+        ];
+        $joins = [
+            [
+                'table' => 'users',
+                'alias' => 'User',
+                'type' => 'INNER',
+                'conditions' => [
+                    'User.id = Educator.user_id'
+                ]
+            ],
+            [
+                'table' => 'schools',
+                'alias' => 'Shool',
+                'type' => 'INNER',
+                'conditions' => [
+                    'Shool.id = Educator.school_id'
+                ]
+            ]
+        ];
+
+        return Datatable::simple($this, $columns, $joins);
+    }
+
 }
+
