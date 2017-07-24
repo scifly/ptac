@@ -56,6 +56,7 @@ class AppController extends Controller
     public function show()
     {
         // find the record by $id
+        $app = DB::table('apps')->get();
         return view('app.show', ['app' => $app]);
     }
 
