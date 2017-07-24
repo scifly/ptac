@@ -1,1 +1,1 @@
-$(crud.edit('','scores'));
+$(crud.edit('formScore'));

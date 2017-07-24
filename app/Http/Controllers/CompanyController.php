@@ -29,7 +29,10 @@ class CompanyController extends Controller
         if (Request::get('draw')) {
             return response()->json($this->company->datatable());
         }
-        return view('company.index', ['js' => 'js/company/index.js']);
+        return view('company.index', [
+            'js' => 'js/company/index.js',
+            'dialog' => true
+        ]);
 
     }
 
@@ -45,6 +48,7 @@ class CompanyController extends Controller
 
     /**
      * 保存新创建的运营者公司记录
+     * @param CompanyRequest $request
      * @return \Illuminate\Http\Response
      * @internal param \Illuminate\Http\Request|Request $request
      */
@@ -62,6 +66,7 @@ class CompanyController extends Controller
 
     /**
      * 显示运营者公司记录详情
+     * @param $id
      * @return \Illuminate\Http\Response
      * @internal param Company $company
      */
@@ -74,13 +79,18 @@ class CompanyController extends Controller
 
     /**
      * 显示编辑运营者公司记录的表单
+     * @param $id
      * @return \Illuminate\Http\Response
      * @internal param Company $company
      */
-    public function edit()
+    public function edit($id)
     {
 
-        return view('company.edit', ['js' => 'js/company/edit.js']);
+        $company = Company::whereId($id)->first();
+        return view('company.edit', [
+            'js' => 'js/company/edit.js',
+            'company' => $company
+        ]);
 
     }
 
@@ -90,10 +100,11 @@ class CompanyController extends Controller
      * @internal param \Illuminate\Http\Request $request
      * @internal param Company $company
      */
-    public function update()
+    public function update($id)
     {
         // find the record by id
         // update the record with the request data
+        $company = Company::find($id);
         return response()->json([]);
     }
 
@@ -102,8 +113,9 @@ class CompanyController extends Controller
      * @return \Illuminate\Http\Response
      * @internal param Company $company
      */
-    public function destroy()
+    public function destroy($id)
     {
-        return response()->json([]);
+        Company::destroy($id);
+        return response()->json(['statusCode' => 200, 'Message' => 'nailed it!']);
     }
 }
