@@ -99,7 +99,7 @@ var crud = {
         });
 
         $cancel.on('click', function() {
-            window.location = 'index';
+            window.location = '../index';
         });
     }
 };
