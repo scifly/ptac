@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\GradeRequest;
 use App\Models\Grade;
 use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\Validator;
 
 class GradeController extends Controller
 {
@@ -25,69 +27,69 @@ class GradeController extends Controller
 
     }
 
+
     /**
-     * Show the form for creating a new resource.
+     * 显示创建年级的表单
      *
      * @return \Illuminate\Http\Response
      */
     public function create()
     {
-        //
+        return view('grade.create',['js' => 'js/grade/create.js']);
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
+     * 保存新创建的年级记录
      * @return \Illuminate\Http\Response
+     * @internal param \Illuminate\Http\Request|Request $request
      */
-    public function store(Request $request)
+    public function store(GradeRequest $gradeRequest)
     {
-        //
+        // request
+        $data = $gradeRequest->input('name');
+
+
+        return response()->json(['statusCode' => 200, 'Message' => 'nailed it!']);
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Grade  $grade
+     * 显示年级记录详情
      * @return \Illuminate\Http\Response
      */
-    public function show(Grade $grade)
+    public function show()
     {
-        //
+        // find the record by id
+//        return view('company.show', ['company' => $company]);
     }
 
     /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Grade  $grade
+     * 显示编辑年级记录的表单
      * @return \Illuminate\Http\Response
      */
-    public function edit(Grade $grade)
-    {
-        //
+    public function edit() {
+
+        return view('grade.edit', ['js' => 'js/grade/edit.js']);
+
     }
 
     /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Grade  $grade
+     * 更新指定年级记录
      * @return \Illuminate\Http\Response
+     * @internal param \Illuminate\Http\Request $request
      */
-    public function update(Request $request, Grade $grade)
+    public function update()
     {
-        //
+        // find the record by id
+        // update the record with the request data
+        return response()->json([]);
     }
 
     /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Grade  $grade
+     * 删除指定年级记录
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Grade $grade)
+    public function destroy()
     {
-        //
+        return response()->json([]);
     }
 }
