@@ -46,6 +46,11 @@ class CompanyController extends Controller
     public function store()
     {
         // request
+        //验证
+        $temp = Request::all();
+
+        //逻辑
+
         return response()->json(['statusCode' => 200, 'Message' => 'nailed it!']);
     }
 
@@ -54,9 +59,10 @@ class CompanyController extends Controller
      * @return \Illuminate\Http\Response
      * @internal param Company $company
      */
-    public function show()
+    public function show($id)
     {
         // find the record by id
+        $company = Company::where('id',$id);
         return view('company.show', ['company' => $company]);
     }
 
