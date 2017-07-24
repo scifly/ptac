@@ -55,7 +55,8 @@ Route::delete('companies/delete/{id}', 'CompanyController@destroy');
 //年级班级设置
 Route::get('grades/index', 'GradeController@index');
 Route::get('grades/create', 'GradeController@create');
-Route::post('grades', 'GradeController@index');
+Route::post('grades/store', 'GradeController@store');
+
 Route::get('grades/{grade}', 'GradeController@show');
 Route::get('grades/{grade}/edit', 'GradeController@edit');
 Route::put('grades/{grade}', 'GradeController@update');
