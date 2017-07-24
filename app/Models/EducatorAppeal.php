@@ -68,9 +68,33 @@ class EducatorAppeal extends Model {
     {
         $columns = [
             ['db' => 'EducatorAppeal.id', 'dt' => 0],
-            ['db' => 'Educator.id', 'dt' => 1],
-            ['db' => 'EducatorAttendance.id', 'dt' => 2],
+            ['db' => 'Educator.name as educatorname', 'dt' => 1],
+            ['db' => 'EducatorAttendance.punch_time as puchtime', 'dt' => 2],
+            ['db' => 'EducatorAppeal.appeal_content', 'dt' => 3],
+            ['db' => 'ProcedureLog.id', 'dt' => 4],
+            ['db' => 'Educator.name as approvername', 'dt' => 5],
+            ['db' => 'Educator.name as relatedname', 'dt' => 6],
+            ['db' => 'EducatorAppeal.created_at', 'dt' => 7],
+            ['db' => 'EducatorAppeal.updated_at', 'dt' => 8],
+            [
+                'db' => 'EducatorAppeal.status', 'dt' => 9,
+                'formatter' => function ($d, $row) {
+                    return Datatable::dtOps($this, $d, $row);
+                }
+            ],
         ];
+
+        $joins = [
+            [
+                'table' => 'educators',
+                'alias' => 'Educator',
+                'type' => 'INNER',
+                'conditions' => [
+                    'Educator.id = EducatorAppeal.educator_id'
+                ]
+            ]
+        ];
+        return Datatable::simple($this, $columns, $joins);
     }
 
 
