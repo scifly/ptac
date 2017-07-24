@@ -127,3 +127,12 @@ Route::get('scores/show/{id}', 'ScoreController@show');
 Route::get('scores/edit/{id}', 'ScoreController@edit');
 Route::put('scores/update/{id}', 'ScoreController@update');
 Route::delete('scores/delete/{id}', 'ScoreController@destroy');
+//成绩发送
+
+Route::group(['prefix' => 'scoreSend'],function(){
+    Route::get('/', 'score_sendController@index');
+    Route::get('/index}', 'score_sendController@index');
+    Route::get('/getgrade/{id}', 'score_sendController@getGrade');
+    Route::get('/getclass/{id}', 'score_sendController@getClass');
+});
+
