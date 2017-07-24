@@ -64,7 +64,7 @@ var crud = {
         });
 
         $cancel.on('click', function() {
-            window.location = '/' + controller + '/index';
+            window.location = 'index';
         });
     },
     edit: function(formId, controller) {
@@ -99,7 +99,7 @@ var crud = {
         });
 
         $cancel.on('click', function() {
-            window.location = '/' + controller + '/index';
+            window.location = 'index';
         });
     }
 };

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\SchoolRequest;
-use App\Models\School;
+use App\Models\School as School;
 use Illuminate\Support\Facades\Request;
 
 class SchoolController extends Controller {
@@ -60,13 +60,17 @@ class SchoolController extends Controller {
     
     /**
      * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\School $school
+     * @param $id
      * @return \Illuminate\Http\Response
+     * @internal param School $school
      */
-    public function edit(School $school) {
+    public function edit($id) {
         
-        return view('school.edit', ['js' => 'js/school/edit.js']);
+        $school = School::whereId($id)->first();
+        return view('school.edit', [
+            'js' => 'js/school/edit.js',
+            'school' => $school
+        ]);
         
     }
     
