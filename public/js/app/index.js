@@ -1,1 +1,1 @@
-$(crud.index('apps'));
+$(crud.index());
