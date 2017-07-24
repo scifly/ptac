@@ -2,22 +2,22 @@
 @section('header')
     <a href="{{ url('/') }}">Back to overview</a>
     <h2>
-        {{ $school->name }}
+        {{ $grade->name }}
     </h2>
-    <a href="{{ url('schools/' . $school->id . '/edit') }}">
+    <a href="{{ url('grades/' . $grade->id . '/edit') }}">
         <span class="glyphicon glyphicon-edit"></span>
         Edit
     </a>
-    <a href="{{ url('schools/' . $school->id . '/delete') }}">
+    <a href="{{ url('grades/' . $grade->id . '/delete') }}">
         <span class="glyphicon glyphicon-trash"></span>
         Delete
     </a>
-    <p>Last edited: {{ $school->updated_at->diffForHumans() }}</p>
+    <p>Last edited: {{ $grade->updated_at->diffForHumans() }}</p>
 @endsection
 @section('content')
-    <p>地址：{{ $school->address }}</p>
+    <p>地址：{{ $grade->address }}</p>
     <p>
-        @if ($school->schoolType)
+        @if ($grade->schoolType)
             类型:
             {{ link_to('schools/schoolTypes/' . $school->schoolType->name, $school->schoolType->name) }}
         @endif

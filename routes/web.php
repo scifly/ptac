@@ -71,8 +71,17 @@ Route::get('classes/edit/{id}', 'SquadController@edit');
 Route::put('classes/update/{id}', 'SquadController@update');
 Route::delete('classes/delete/{id}', 'SquadController@destroy');
 
-//用户/通信管理
-//教职员工
+// 应用设置
+Route::get('apps/index', 'AppController@index');
+Route::get('apps/create', 'AppController@create');
+Route::post('apps/store', 'AppController@store');
+Route::get('apps/show/{id}', 'AppController@show');
+Route::get('apps/edit/{id}', 'AppController@edit');
+Route::put('apps/update/{id}', 'AppController@update');
+Route::delete('apps/delete/{id}', 'AppController@destroy');
+
+// 用户/通信管理
+// 教职员工
 Route::get('educators/index', 'EducatorController@index');
 Route::get('educators/create', 'EducatorController@create');
 Route::post('educators/store', 'EducatorController@store');
@@ -90,7 +99,7 @@ Route::get('students/edit/{id}', 'StudentController@edit');
 Route::put('students/update/{id}', 'StudentController@update');
 Route::delete('students/delete/{id}', 'StudentController@destroy');
 
-//企业设置
+// 企业设置
 Route::get('corps/index', 'CorpController@index');
 Route::get('corps/create', 'CorpController@create');
 Route::post('corps/store', 'CorpController@store');
@@ -108,3 +117,13 @@ Route::get('scores/show/{id}', 'ScoreController@show');
 Route::get('scores/edit/{id}', 'ScoreController@edit');
 Route::put('scores/update/{id}', 'ScoreController@update');
 Route::delete('scores/delete/{id}', 'ScoreController@destroy');
+
+# 考勤管理
+//考勤机设置
+Route::get('attendance_machines/index', 'AttendanceMachineController@index');
+Route::get('attendance_machines/create', 'AttendanceMachineController@create');
+Route::post('attendance_machines/store', 'AttendanceMachineController@store');
+Route::get('attendance_machines/show/{id}', 'AttendanceMachineController@show');
+Route::get('attendance_machines/edit/{id}', 'AttendanceMachineController@edit');
+Route::put('attendance_machines/update/{id}', 'AttendanceMachineController@update');
+Route::delete('attendance_machines/delete/{id}', 'AttendanceMachineController@destroy');

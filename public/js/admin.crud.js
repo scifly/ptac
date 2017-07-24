@@ -1,6 +1,5 @@
 var crud = {
     index: function(controller) {
-        // App.init();
         $('#data-table').dataTable({
             processing: true,
             serverSide: true,
@@ -41,9 +40,7 @@ var crud = {
             $cancel = $('#cancel');
         var $form = $('#' + formId);
 
-        //App.init();
         $form.parsley();
-        //FormSliderSwitcher.init();
         $('select').select2();
 
         $save.on('click', function() {
@@ -75,9 +72,7 @@ var crud = {
             $cancel = $('#cancel');
         var $form = $('#' + formId);
 
-        App.init();
         $form.parsley();
-        FormSliderSwitcher.init();
         $('select').select2();
 
         var path = window.location.pathname;
