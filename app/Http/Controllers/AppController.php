@@ -32,29 +32,31 @@ class AppController extends Controller
      */
     public function create()
     {
-        //
+        return view('app.create',['js' => 'js/app/create.js']);
     }
 
     /**
      * Store a newly created resource in storage.
-     *
-     * @param \Illuminate\Http\Request|Request $request
      * @return \Illuminate\Http\Response
+     * @internal param \Illuminate\Http\Request|Request $request
      */
-    public function store(Request $request)
+    public function store()
     {
-        //
+        // create a new record
+        // assign the values to corresponding fields
+        // save the record
+        return response()->json(['statusCode' => 200, 'message' => '创建成功']);
     }
 
     /**
      * Display the specified resource.
-     *
-     * @param  \App\Models\App  $app
      * @return \Illuminate\Http\Response
+     * @internal param App $app
      */
-    public function show(App $app)
+    public function show()
     {
-        //
+        // find the record by $id
+        return view('app.show', ['app' => $app]);
     }
 
     /**
@@ -65,19 +67,22 @@ class AppController extends Controller
      */
     public function edit(App $app)
     {
-        //
+        // find the record by $id
+        return view('app.edit',['js' => 'js/app/edit.js', 'app' => $app]);
     }
 
     /**
      * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\App  $app
      * @return \Illuminate\Http\Response
+     * @internal param \Illuminate\Http\Request $request
+     * @internal param App $app
      */
-    public function update(Request $request, App $app)
+    public function update()
     {
-        //
+        // fin the record by $id
+        // assign the values to corresponding fields
+        // save the record
+        return response()->json(['statusCode' => 200, 'message' => '编辑成功']);
     }
 
     /**

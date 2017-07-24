@@ -1,9 +1,9 @@
 @extends('layouts.master')
 @section('header')
-    <h2>编辑运营者公司</h2>
+    <h2>编辑年级</h2>
 @endsection
 @section('content')
-    {!! Form::model($company, ['url' => '/companines/edit' . $company->id, 'method' => 'put']) !!}
+    {!! Form::model($grade, ['url' => '/grades/' . $grade->id, 'method' => 'put']) !!}
     @include('configuration.configuration.partials.school')
     {!! Form::close() !!}
 @endsection

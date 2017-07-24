@@ -1,0 +1,1 @@
+$(crud.create('formSchool', 'schools'));
