@@ -45,23 +45,35 @@ class Squad extends Model {
     {
         return $this->belongsTo('App\Models\Grade');
     }
-    public function datatable(Request $request) {
+    public function datatable() {
 
         $columns = [
             ['db' => 'Squad.id', 'dt' => 0],
-            ['db' => 'Squad.grade_id', 'dt' => 1],
-            ['db' => 'Squad.name', 'dt' => 2],
+            ['db' => 'Squad.name', 'dt' => 1],
+            ['db' => 'Grade.name as gradename', 'dt' => 2],
             ['db' => 'Squad.educator_ids', 'dt' => 3],
+            ['db' => 'Squad.created_at', 'dt' => 4],
+            ['db' => 'Squad.updated_at', 'dt' => 5],
 
             [
-                'db' => 'Squad.enabled', 'dt' => 4,
+                'db' => 'Squad.enabled', 'dt' => 6,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
                 }
             ]
         ];
+        $joins = [
+            [
+                'table' => 'grades',
+                'alias' => 'Grade',
+                'type'  => 'INNER',
+                'conditions' => [
+                    'Grade.id = Squad.grade_id'
+                ]
+            ]
+        ];
 
-        return Datatable::simple($this, $request, $columns);
+        return Datatable::simple($this,  $columns, $joins);
     }
     
 }

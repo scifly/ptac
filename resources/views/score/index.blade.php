@@ -2,14 +2,14 @@
 @section('header')
     <div class="panel-heading">
         <div class="btn-group">
-            <a href="{{ url('companies/create') }}" class="btn btn-primary pull-right">
-                添加新运营者
+            <a href="{{ url('scores/create') }}" class="btn btn-primary pull-right">
+                添加新成绩
             </a>
         </div>
     </div>
 @endsection
 @section('breadcrumb')
-    系统设置/运营者公司设置
+    成绩管理/成绩管理
 @endsection
 @section('content')
     <div class="panel-body">
@@ -18,9 +18,12 @@
                 <thead>
                 <tr>
                     <th>#</th>
-                    <th>名称</th>
-                    <th>备注</th>
-                    <th>企业号ID</th>
+                    <th>学号</th>
+                    <th>科目名称</th>
+                    <th>考试名称</th>
+                    <th>班级排名</th>
+                    <th>年级排名</th>
+                    <th>成绩</th>
                     <th>创建时间</th>
                     <th>更新时间</th>
                     <th>状态</th>
