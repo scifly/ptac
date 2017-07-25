@@ -1,1 +1,1 @@
-$(crud.index('grades'));
+$(crud.index());

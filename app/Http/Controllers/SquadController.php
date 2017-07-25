@@ -24,7 +24,11 @@ class SquadController extends Controller
         if (Request::get('draw')) {
             return response()->json($this->squad->datatable());
         }
-        return view('class.index' , ['js' => 'js/class/index.js']);
+        return view('class.index' , [
+            'js' => 'js/class/index.js',
+            'dialog' => true
+
+        ]);
 
     }
 
