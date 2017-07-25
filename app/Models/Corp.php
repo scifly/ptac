@@ -46,6 +46,9 @@ class Corp extends Model
         return $this->belongsTo('App\Models\Corp');
     }
 
+    /**
+     * @return mixed
+     */
     public function datatable()
     {
 

@@ -1,0 +1,1 @@
+$(crud.create('formCorp'));

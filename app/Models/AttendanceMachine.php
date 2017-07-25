@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
@@ -40,16 +41,47 @@ class AttendanceMachine extends Model
     /**
      * 考勤机与学校
      */
-    public function schools()
+    public function school()
     {
-        return $this->belongsTo('App\Medoles\School');
+        return $this->belongsTo('App\Models\School');
     }
 
     /**
      * 考勤机与学生考勤
      */
-    public function studentattendance()
+    public function studentAttendances()
     {
         return $this->hasMany('App\Models\StudentAttendance');
+    }
+
+    public function datatable()
+    {
+
+        $columns = [
+            ['db' => 'AttendanceMachine.id', 'dt' => 0],
+            ['db' => 'AttendanceMachine.name', 'dt' => 1],
+            ['db' => 'AttendanceMachine.location', 'dt' => 2],
+            ['db' => 'School.name as schoolname', 'dt' => 3],
+            ['db' => 'AttendanceMachine.machineid', 'dt' => 4],
+            ['db' => 'AttendanceMachine.created_at', 'dt' => 5],
+            ['db' => 'AttendanceMachine.updated_at', 'dt' => 6],
+            [
+                'db' => 'AttendanceMachine.enabled', 'dt' => 7,
+                'formatter' => function ($d, $row) {
+                    return Datatable::dtOps($this, $d, $row);
+                }
+            ],
+        ];
+        $joins = [
+            [
+                'table' => 'schools',
+                'alias' => 'School',
+                'type' => 'INNER',
+                'conditions' => [
+                    'School.id = AttendanceMachine.school_id'
+                ]
+            ]
+        ];
+        return Datatable::simple($this, $columns, $joins);
     }
 }

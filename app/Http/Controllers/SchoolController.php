@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\SchoolRequest;
-use App\Models\School;
+use App\Models\School as School;
 use Illuminate\Support\Facades\Request;
 
 class SchoolController extends Controller {
@@ -20,14 +20,6 @@ class SchoolController extends Controller {
      */
     public function index() {
     
-        /*if (Request::ajax() && !$arg) {
-            return response()->json($this->school->datatable());
-        } elseif ($arg) {
-            return view('school.index', ['js' => 'js/school/index.js']);
-        } else {
-            return response()->json($this->school->datatable());
-        }*/
-        
         if (Request::get('draw')) {
             return response()->json($this->school->datatable());
         }
@@ -42,7 +34,7 @@ class SchoolController extends Controller {
      */
     public function create() {
         
-        return view('school.create');
+        return view('school.create', ['js' => 'js/school/create.js']);
         
     }
     
@@ -68,12 +60,18 @@ class SchoolController extends Controller {
     
     /**
      * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\School $school
+     * @param $id
      * @return \Illuminate\Http\Response
+     * @internal param School $school
      */
-    public function edit(School $school) {
-        //
+    public function edit($id) {
+        
+        $school = School::whereId($id)->first();
+        return view('school.edit', [
+            'js' => 'js/school/edit.js',
+            'school' => $school
+        ]);
+        
     }
     
     /**

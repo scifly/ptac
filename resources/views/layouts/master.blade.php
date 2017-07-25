@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="csrf_token" content="{{ csrf_token() }}">
+    <meta name="csrf_token" content="{{ csrf_token() }}" id="csrf_token">
     <title>模板空白页</title>
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
@@ -15,6 +15,8 @@
     <link rel="stylesheet" href="{{ URL::asset('css/ionicons.min.css') }}">
     <!-- jvectormap -->
     <link rel="stylesheet" href="{{ URL::asset('css/jquery-jvectormap.css') }}">
+    <!-- select2 style -->
+    <link rel="stylesheet" href="{{ URL::asset('js/plugins/select2/css/select2.min.css') }}">
     <!-- Theme style -->
     <link rel="stylesheet" href="{{ URL::asset('css/AdminLTE.min.css') }}">
     <link rel="stylesheet" href="{{ URL::asset('css/skins/_all-skins.min.css') }}">
@@ -22,6 +24,9 @@
     <link rel="stylesheet" href="{{ URL::asset('js/plugins/parsley/parsley.css') }}">
     <!-- DataTable style -->
     <link rel="stylesheet" href="{{ URL::asset('js/plugins/datatables/datatables.min.css') }}">
+    <!-- switchery style -->
+    <link rel="stylesheet" href="{{ URL::asset('js/plugins/switchery/css/switchery.min.css') }}">
+    <!-- gritter style -->
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -192,26 +197,11 @@
             <!--左侧菜单-->
             <ul class="sidebar-menu" data-widget="tree">
                 <li class="header">菜单</li>
-                <li class="active treeview menu-open">
-                    <a href="#">
-                        <i class="fa fa-dashboard"></i> <span>系统设置</span>
-                        <span class="pull-right-container">
-                            <i class="fa fa-angle-left pull-right"></i>
-                        </span>
-                    </a>
-                    <ul class="treeview-menu">
-                        <li><a href="#"><i class="fa fa-circle-o"></i> 学校设置</a></li>
-                        <li><a href="#"><i class="fa fa-circle-o"></i> 科目设置</a></li>
-                        <li><a href="#"><i class="fa fa-circle-o"></i> 角色/权限管理</a></li>
-                        <li><a href="#"><i class="fa fa-circle-o"></i> 年级/班级管理</a></li>
-                        <li><a href="#"><i class="fa fa-circle-o"></i> 运营者管理</a></li>
-                        <li><a href="#"><i class="fa fa-circle-o"></i> 应用设置</a></li>
-                    </ul>
-                </li>
+                <li><a href="#"><i class="fa fa-home"></i> 首页</a></li>
+                <!--用户通讯录-->
                 <li class="treeview">
                     <a href="#">
-                        <i class="fa fa-files-o"></i>
-                        <span>用户/通信录管理</span>
+                        <i class="fa fa-phone-square"></i> <span>用户/通讯录</span>
                         <span class="pull-right-container">
                             <i class="fa fa-angle-left pull-right"></i>
                         </span>
@@ -221,16 +211,12 @@
                         <li><a href="#"><i class="fa fa-circle-o"></i> 监护人</a></li>
                         <li><a href="#"><i class="fa fa-circle-o"></i> 学生</a></li>
                         <li><a href="#"><i class="fa fa-circle-o"></i> 管理员</a></li>
-                        <li><a href="#"><i class="fa fa-circle-o"></i> 成绩管理</a></li>
-                        <li><a href="#"><i class="fa fa-circle-o"></i> 统计/大数据</a></li>
-                        <li><a href="#"><i class="fa fa-circle-o"></i> 成绩发布</a></li>
-                        <li><a href="#"><i class="fa fa-circle-o"></i> 学生期中期末综合报表</a></li>
                     </ul>
                 </li>
+                <!--成绩管理-->
                 <li class="treeview">
                     <a href="#">
-                        <i class="fa fa-files-o"></i>
-                        <span>成绩管理</span>
+                        <i class="fa fa-dashboard"></i> <span> 成绩管理</span>
                         <span class="pull-right-container">
                             <i class="fa fa-angle-left pull-right"></i>
                         </span>
@@ -242,10 +228,10 @@
                         <li><a href="#"><i class="fa fa-circle-o"></i> 成绩发布</a></li>
                     </ul>
                 </li>
+                <!--考勤管理-->
                 <li class="treeview">
                     <a href="#">
-                        <i class="fa fa-files-o"></i>
-                        <span>考勤管理</span>
+                        <i class="fa fa-dashboard"></i> <span> 考勤管理</span>
                         <span class="pull-right-container">
                             <i class="fa fa-angle-left pull-right"></i>
                         </span>
@@ -253,94 +239,67 @@
                     <ul class="treeview-menu">
                         <li><a href="#"><i class="fa fa-circle-o"></i> 考勤设置</a></li>
                         <li><a href="#"><i class="fa fa-circle-o"></i> 考勤查询/统计</a></li>
-                        <li><a href="#"><i class="fa fa-circle-o"></i> 学生定位/监控（可选）</a></li>
+                        <li><a href="#"><i class="fa fa-circle-o"></i> 学生定位/监控</a></li>
                     </ul>
                 </li>
+                <!--课程表管理-->
                 <li class="treeview">
                     <a href="#">
-                        <i class="fa fa-files-o"></i>
-                        <span>课程表管理</span>
+                        <i class="fa fa-dashboard"></i> <span> 课程表管理</span>
                         <span class="pull-right-container">
                             <i class="fa fa-angle-left pull-right"></i>
                         </span>
                     </a>
                     <ul class="treeview-menu">
-                        <li><a href="#"><i class="fa fa-circle-o"></i> 日历方式</a></li>
-                        <li><a href="#"><i class="fa fa-circle-o"></i> 课程CRUD、发布</a></li>
-                        <li><a href="#"><i class="fa fa-circle-o"></i> 支持自动提醒功能</a></li>
+                        <li><a href="#"><i class="fa fa-circle-o"></i> 课程表设置</a></li>
                     </ul>
                 </li>
+                <!--自媒体管理-->
                 <li class="treeview">
                     <a href="#">
-                        <i class="fa fa-files-o"></i>
-                        <span>自媒体(微网站、Web)管理</span>
+                        <i class="fa fa-dashboard"></i> <span> 自媒体管理</span>
                         <span class="pull-right-container">
                             <i class="fa fa-angle-left pull-right"></i>
                         </span>
                     </a>
                     <ul class="treeview-menu">
-                        <li><a href="#"><i class="fa fa-circle-o"></i> 栏目设置</a></li>
-                        <li><a href="#"><i class="fa fa-circle-o"></i> 模板设置</a></li>
+                        <li><a href="#"><i class="fa fa-circle-o"></i> 微网站管理</a></li>
                     </ul>
                 </li>
+                <!--投票问卷-->
                 <li class="treeview">
                     <a href="#">
-                        <i class="fa fa-share"></i> <span>移动办公</span>
+                        <i class="fa fa-edit"></i> <span>投票问卷</span>
                         <span class="pull-right-container">
                             <i class="fa fa-angle-left pull-right"></i>
                         </span>
                     </a>
                     <ul class="treeview-menu">
-                        <li class="treeview">
-                            <a href="#"><i class="fa fa-circle-o"></i> 审批设置
-                                <span class="pull-right-container">
-                                    <i class="fa fa-angle-left pull-right"></i>
-                                </span>
-                            </a>
-                            <ul class="treeview-menu">
-                                <li><a href="#"><i class="fa fa-circle-o"></i> 设置自定义审批类型</a></li>
-                                <li><a href="#"><i class="fa fa-circle-o"></i> 审批发起/处理</a></li>
-                            </ul>
-                        </li>
-                        <li class="treeview">
-                            <a href="#"><i class="fa fa-circle-o"></i> 会议助手
-                                <span class="pull-right-container">
-                                    <i class="fa fa-angle-left pull-right"></i>
-                                </span>
-                            </a>
-                            <ul class="treeview-menu">
-                                <li><a href="#"><i class="fa fa-circle-o"></i> 会议室定义</a></li>
-                                <li><a href="#"><i class="fa fa-circle-o"></i> 会议室当前状态</a></li>
-                                <li><a href="#"><i class="fa fa-circle-o"></i> 会议室当前状态设置</a></li>
-                            </ul>
-                        </li>
-                        <li class="treeview">
-                            <a href="#"><i class="fa fa-circle-o"></i> 申诉
-                                <span class="pull-right-container">
-                                    <i class="fa fa-angle-left pull-right"></i>
-                                </span>
-                            </a>
-                            <ul class="treeview-menu">
-                                <li><a href="#"><i class="fa fa-circle-o"></i> 教职员工申诉管理</a></li>
-                            </ul>
-                        </li>
-                        <li class="treeview">
-                            <a href="#"><i class="fa fa-circle-o"></i> 财务助手（待定）
-                                <span class="pull-right-container">
-                                    <i class="fa fa-angle-left pull-right"></i>
-                                </span>
-                            </a>
-                            <ul class="treeview-menu">
-                                <li><a href="#"><i class="fa fa-circle-o"></i> 后台发起申请</a></li>
-                                <li><a href="#"><i class="fa fa-circle-o"></i> 查看申请审批进度</a></li>
-                            </ul>
-                        </li>
+                        <li><a href="#"><i class="fa fa-circle-o"></i> 发起</a></li>
+                        <li><a href="#"><i class="fa fa-circle-o"></i> 参与</a></li>
+                        <li><a href="#"><i class="fa fa-circle-o"></i> 查询/统计</a></li>
                     </ul>
                 </li>
+                <!--移动办公-->
                 <li class="treeview">
                     <a href="#">
-                        <i class="fa fa-files-o"></i>
-                        <span>用户中心</span>
+                        <i class="fa fa-dashboard"></i> <span> 移动办公</span>
+                        <span class="pull-right-container">
+                            <i class="fa fa-angle-left pull-right"></i>
+                        </span>
+                    </a>
+                    <ul class="treeview-menu">
+                        <li><a href="#"><i class="fa fa-circle-o"></i> 审批设置</a></li>
+                        <li><a href="#"><i class="fa fa-circle-o"></i> 审批发起/处理</a></li>
+                        <li><a href="#"><i class="fa fa-circle-o"></i> 会议助手</a></li>
+                        <li><a href="#"><i class="fa fa-circle-o"></i> 申诉</a></li>
+                        <li><a href="#"><i class="fa fa-circle-o"></i> 财务助手</a></li>
+                    </ul>
+                </li>
+                <!--用户中心-->
+                <li class="treeview">
+                    <a href="#">
+                        <i class="fa fa-user"></i> <span>用户中心</span>
                         <span class="pull-right-container">
                             <i class="fa fa-angle-left pull-right"></i>
                         </span>
@@ -350,6 +309,23 @@
                         <li><a href="#"><i class="fa fa-circle-o"></i> 消息中心</a></li>
                         <li><a href="#"><i class="fa fa-circle-o"></i> 日历</a></li>
                         <li><a href="#"><i class="fa fa-circle-o"></i> 个人信息</a></li>
+                    </ul>
+                </li>
+                <!--系统设置-->
+                <li class="treeview">
+                    <a href="#">
+                        <i class="fa fa-gear"></i> <span>系统设置</span>
+                        <span class="pull-right-container">
+                            <i class="fa fa-angle-left pull-right"></i>
+                        </span>
+                    </a>
+                    <ul class="treeview-menu">
+                        <li><a href="#"><i class="fa fa-circle-o"></i> 学校设置</a></li>
+                        <li><a href="#"><i class="fa fa-circle-o"></i> 科目设置</a></li>
+                        <li><a href="#"><i class="fa fa-circle-o"></i> 角色/权限</a></li>
+                        <li><a href="#"><i class="fa fa-circle-o"></i> 年级/班级设置</a></li>
+                        <li><a href="#"><i class="fa fa-circle-o"></i> 运营者设置</a></li>
+                        <li><a href="#"><i class="fa fa-circle-o"></i> 应用设置</a></li>
                     </ul>
                 </li>
             </ul>
@@ -369,10 +345,8 @@
         </section>
         <!--content-->
         <section class="content">
-            @if (Session::has('success'))
-                <div class="alert alert-success">
-                    {{ Session::get('success') }}
-                </div>
+            @isset($dialog)
+                @include('partials.modal_dialog')
             @endif
             @yield('content')
         </section>
@@ -579,6 +553,8 @@
 <script src="{{ URL::asset('js/plugins/gritter/js/jquery.gritter.js') }}"></script>
 <!-- Select2 -->
 <script src="{{ URL::asset('js/plugins/select2/js/select2.min.js') }}"></script>
+<!-- switchery -->
+<script src="{{ URL::asset('js/plugins/switchery/js/switchery.min.js') }}"></script>
 <!-- Custom JS -->
 <script src="{{ URL::asset('js/admin.crud.js') }}"></script>
 <script src="{{ URL::asset($js) }}"></script>

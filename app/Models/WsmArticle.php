@@ -32,13 +32,7 @@ use Illuminate\Database\Eloquent\Model;
  * 网站内容
  */
 class WsmArticle extends Model {
-    //
-<<<<<<< HEAD
-    protected $table='wsm_artilces';
-    protected $fillable=[
-        'id','wsm_id'
-    ];
-=======
+
     protected $table = 'wsm_articles';
     protected $fillable = [
         'id',
@@ -50,10 +44,10 @@ class WsmArticle extends Model {
         'created_at',
         'updated_at',
     ];
-    public function belongsToWsm()
+
+    public function wapSiteModule()
     {
         return $this->belongsTo('App\Models\WapSiteModule', 'wsm_id', 'id');
     }
 
->>>>>>> origin/master
 }

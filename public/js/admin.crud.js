@@ -1,13 +1,12 @@
 var crud = {
-    index: function(controller) {
-        // App.init();
+    index: function() {
         $('#data-table').dataTable({
             processing: true,
             serverSide: true,
             ajax: 'index',
             order: [[0, 'desc']],
             stateSave: true,
-            language: { url: '../files/ch.json' }
+            language: { url: '../files.json' }
         });
 
         $(document).on('click', '.fa-trash', function() {
@@ -20,7 +19,8 @@ var crud = {
                 $.ajax({
                     type: 'DELETE',
                     dataType: 'json',
-                    url: '/' + controller + '/delete/' + id,
+                    url: 'delete/' + id,
+                    data: {_token: $('#csrf_token').attr('content')},
                     success: function(result) {
                         if (result.statusCode === 200) {
                             $row.remove();
@@ -36,21 +36,20 @@ var crud = {
             });
         });
     },
-    create: function(formId, controller) {
+    create: function(formId) {
         var $save = $('#save'),
             $cancel = $('#cancel');
         var $form = $('#' + formId);
 
-        //App.init();
+        $('form').submit(false);
         $form.parsley();
-        //FormSliderSwitcher.init();
         $('select').select2();
 
         $save.on('click', function() {
             $.ajax({
                 type: 'POST',
                 dataType: 'json',
-                url: '/' + controller + '/create',
+                url: 'store',
                 data: $form.serialize(),
                 success: function(result) {
                     if (result.statusCode === 200) {
@@ -67,17 +66,16 @@ var crud = {
         });
 
         $cancel.on('click', function() {
-            window.location = '/' + controller + '/index';
+            window.location = 'index';
         });
     },
-    edit: function(formId, controller) {
+    edit: function(formId) {
         var $save = $('#save'),
             $cancel = $('#cancel');
         var $form = $('#' + formId);
 
-        //App.init();
+        $('form').submit(false);
         $form.parsley();
-       // FormSliderSwitcher.init();
         $('select').select2();
 
         var path = window.location.pathname;
@@ -87,7 +85,7 @@ var crud = {
             $.ajax({
                 type: 'PUT',
                 dataType: 'json',
-                url: '/' + controller + '/edit/' + id,
+                url: '../update/' + id,
                 data: $form.serialize(),
                 success: function(result) {
                     if (result.statusCode === 200) {
@@ -104,7 +102,7 @@ var crud = {
         });
 
         $cancel.on('click', function() {
-            window.location = '/' + controller + '/index';
+            window.location = '../index';
         });
     }
 };

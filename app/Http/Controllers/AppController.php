@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\AppRequest;
 use App\Models\App;
 use Illuminate\Support\Facades\Request;
 
@@ -32,29 +33,60 @@ class AppController extends Controller
      */
     public function create()
     {
-        //
+        return view('app.create',['js' => 'js/app/create.js']);
     }
 
     /**
      * Store a newly created resource in storage.
-     *
-     * @param \Illuminate\Http\Request|Request $request
      * @return \Illuminate\Http\Response
+     * @internal param \Illuminate\Http\Request|Request $request
      */
-    public function store(Request $request)
+    public function store(AppRequest $request)
     {
-        //
+        //验证
+        $input = $request->all();
+        //逻辑
+        $res = App::create($input);
+        if (!$res) {
+            return response()->json(['statusCode' => 200, 'message' => '创建成功！']);
+        }
+        return response()->json(['statusCode' => 500, 'message' => '创建失败！']);
+//        // create a new record
+//        $app = new App;
+//        // assign the values to corresponding fields
+//        $app->name = $request->name;
+//        $app->description = $request->description;
+//        $app->agentid = $request->agentid;
+//        $app->url = $request->url;
+//        $app->token = $request->token;
+//        $app->encodingaeskey = $request->encodingaeskey;
+//        $app->report_location_flag = $request->report_location_flag;
+//        $app->logo_mediaid = $request->logo_mediaid;
+//        $app->redirect_domain = $request->redirect_domain;
+//        $app->isreportuser = $request->isreportuser;
+//        $app->isreportenter = $request->isreportenter;
+//        $app->home_url = $request->home_url;
+//        $app->chat_extension_url = $request->chat_extension_url;
+//        $app->menu = $request->menu;
+//        $app->enabled = $request->enabled;
+//        // save the record
+//        if ($app->save()) {
+//            return response()->json(['statusCode' => 200, 'message' => '创建成功！']);
+//        }
+//
+//        return response()->json(['statusCode' => 500, 'message' => '创建失败！']);
     }
 
     /**
      * Display the specified resource.
-     *
-     * @param  \App\Models\App  $app
      * @return \Illuminate\Http\Response
+     * @internal param App $app
      */
-    public function show(App $app)
+    public function show($id)
     {
-        //
+        // find the record by $id
+        $app = App::find($id);
+        return view('app.show', ['app' => $app]);
     }
 
     /**
@@ -63,21 +95,26 @@ class AppController extends Controller
      * @param  \App\Models\App  $app
      * @return \Illuminate\Http\Response
      */
-    public function edit(App $app)
+    public function edit($id)
     {
-        //
+        // find the record by $id
+        $app = App::find($id);
+        //记录返回给view
+        return view('app.edit',['js' => 'js/app/edit.js', 'app' => $app]);
     }
 
     /**
      * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\App  $app
      * @return \Illuminate\Http\Response
+     * @internal param \Illuminate\Http\Request $request
+     * @internal param App $app
      */
-    public function update(Request $request, App $app)
+    public function update()
     {
-        //
+        // fin the record by $id
+        // assign the values to corresponding fields
+        // save the record
+        return response()->json(['statusCode' => 200, 'message' => '编辑成功']);
     }
 
     /**
