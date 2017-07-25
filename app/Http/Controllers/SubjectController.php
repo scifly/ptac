@@ -54,10 +54,13 @@ class SubjectController extends Controller
             $data['grade_ids'] = implode('|',$grade);
 
             $res = Subject::create($data);
-       
 
+            if (!$res) {
+                return response()->json(['statusCode' => 202, 'message' => 'add filed']);
+            }
+            return response()->json(['statusCode' => 200, 'message' => 'nailed it!']);
         }
-        return response()->json(['statusCode' => 200, 'Message' => 'nailed it!']);
+
     }
 
     /**

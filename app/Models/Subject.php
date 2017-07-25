@@ -35,6 +35,7 @@ use Symfony\Component\VarDumper\Cloner\Data;
  */
 class Subject extends Model {
 
+    protected $table='subjects';
     protected $fillable=[
         'school_id',
         'name',
@@ -42,6 +43,7 @@ class Subject extends Model {
         'max_score',
         'pass_score',
         'grade_ids',
+        'enabled'
 
     ];
 

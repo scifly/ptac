@@ -5,15 +5,13 @@ namespace App\Http\Requests;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 
-class CompanyRequest extends FormRequest
-{
+class CompanyRequest extends FormRequest {
     /**
      * Determine if the user is authorized to make this request.
      *
      * @return bool
      */
-    public function authorize()
-    {
+    public function authorize() {
         return true;
     }
 
@@ -22,8 +20,7 @@ class CompanyRequest extends FormRequest
      *
      * @return array
      */
-    public function rules()
-    {
+    public function rules() {
         return [
             'name' => 'required|string|max:255|min:4',
             'remark' => 'required|string|max:255',
@@ -32,8 +29,7 @@ class CompanyRequest extends FormRequest
         ];
     }
 
-    public function messages()
-    {
+    public function messages() {
         return [
             'name.required' => '公司名称不能为空',
             'name.min' => '公司名称不能少于四个字符',
@@ -42,8 +38,11 @@ class CompanyRequest extends FormRequest
         ];
     }
 
-    protected function formatErrors(Validator $validator)
-    {
+    protected function formatErrors(Validator $validator) {
         return $validator->errors()->all();
+    }
+
+    public function ValidateForm() {
+
     }
 }
