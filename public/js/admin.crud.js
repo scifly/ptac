@@ -45,10 +45,6 @@ var crud = {
         $form.parsley();
         $('select').select2();
 
-        // Switchery
-        var elem = document.querySelector('.js-switch');
-        var init = new Switchery(elem, { size: 'small' });
-
         $save.on('click', function() {
             $.ajax({
                 type: 'POST',
@@ -59,6 +55,7 @@ var crud = {
                     if (result.statusCode === 200) {
                         $form[0].reset();
                     }
+                    // console.log($.gritter);
                     $.gritter.add({
                         title: "新增结果",
                         text: result.message,
@@ -83,8 +80,8 @@ var crud = {
         $('select').select2();
 
         // Switchery
-        var elem = document.querySelector('.js-switch');
-        var init = new Switchery(elem, { size: 'small' });
+        // var elem = document.querySelector('.js-switch');
+        // var init = new Switchery(elem, { size: 'small' });
 
         var path = window.location.pathname;
         var paths = path.split('/');
