@@ -46,8 +46,8 @@ var crud = {
         $('select').select2();
 
         // Switchery
-        var elem = document.querySelector('.js-switch');
-        var init = new Switchery(elem, { size: 'small' });
+        // var elem = document.querySelector('.js-switch');
+        // var init = new Switchery(elem, { size: 'small' });
 
         $save.on('click', function() {
             $.ajax({
@@ -83,8 +83,8 @@ var crud = {
         $('select').select2();
 
         // Switchery
-        var elem = document.querySelector('.js-switch');
-        var init = new Switchery(elem, { size: 'small' });
+        // var elem = document.querySelector('.js-switch');
+        // var init = new Switchery(elem, { size: 'small' });
 
         var path = window.location.pathname;
         var paths = path.split('/');
@@ -94,6 +94,9 @@ var crud = {
                 type: 'PUT',
                 dataType: 'json',
                 url: '../update/' + id,
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
                 data: $form.serialize(),
                 success: function(result) {
                     if (result.statusCode === 200) {

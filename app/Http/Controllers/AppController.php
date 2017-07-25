@@ -43,14 +43,13 @@ class AppController extends Controller
      */
     public function store(AppRequest $request)
     {
-        //验证
-        $input = $request->all();
-        //逻辑
-        $res = App::create($input);
-        if (!$res) {
+        //添加新数据
+        $res = App::create($request->all());
+        if ($res) {
             return response()->json(['statusCode' => 200, 'message' => '创建成功！']);
+        }else{
+            return response()->json(['statusCode' => 500, 'message' => '创建失败！']);
         }
-        return response()->json(['statusCode' => 500, 'message' => '创建失败！']);
 //        // create a new record
 //        $app = new App;
 //        // assign the values to corresponding fields
@@ -109,12 +108,15 @@ class AppController extends Controller
      * @internal param \Illuminate\Http\Request $request
      * @internal param App $app
      */
-    public function update()
+    public function update(AppRequest $request, $id)
     {
-        // fin the record by $id
-        // assign the values to corresponding fields
-        // save the record
-        return response()->json(['statusCode' => 200, 'message' => '编辑成功']);
+        $app = App::findOrFail($id);
+        $res = $app->update($request->all());
+        if ($res) {
+            return response()->json(['statusCode' => 200, 'message' => '编辑成功！']);
+        }else{
+            return response()->json(['statusCode' => 500, 'message' => '编辑失败！']);
+        }
     }
 
     /**
@@ -123,8 +125,13 @@ class AppController extends Controller
      * @param  \App\Models\App  $app
      * @return \Illuminate\Http\Response
      */
-    public function destroy(App $app)
+    public function destroy($id)
     {
-        //
+        $app = App::findOrFail($id);
+        if ($app->delete()){
+            return response()->json(['statusCode' => 200, 'message' => '删除成功！']);
+        }else{
+            return response()->json(['statusCode' => 200, 'message' => '删除失败！']);
+        }
     }
 }
