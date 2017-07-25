@@ -1,5 +1,5 @@
 var crud = {
-    index: function(controller) {
+    index: function() {
         $('#data-table').dataTable({
             processing: true,
             serverSide: true,
@@ -19,7 +19,8 @@ var crud = {
                 $.ajax({
                     type: 'DELETE',
                     dataType: 'json',
-                    url: '/' + controller + '/delete/' + id,
+                    url: 'delete/' + id,
+                    data: {_token: $('#csrf_token').attr('content')},
                     success: function(result) {
                         if (result.statusCode === 200) {
                             $row.remove();
@@ -35,19 +36,24 @@ var crud = {
             });
         });
     },
-    create: function(formId, controller) {
+    create: function(formId) {
         var $save = $('#save'),
             $cancel = $('#cancel');
         var $form = $('#' + formId);
 
+        $('form').submit(false);
         $form.parsley();
         $('select').select2();
+
+        // Switchery
+        var elem = document.querySelector('.js-switch');
+        var init = new Switchery(elem, { size: 'small' });
 
         $save.on('click', function() {
             $.ajax({
                 type: 'POST',
                 dataType: 'json',
-                url: '/' + controller + '/create',
+                url: 'store',
                 data: $form.serialize(),
                 success: function(result) {
                     if (result.statusCode === 200) {
@@ -64,16 +70,21 @@ var crud = {
         });
 
         $cancel.on('click', function() {
-            window.location = '/' + controller + '/index';
+            window.location = 'index';
         });
     },
-    edit: function(formId, controller) {
+    edit: function(formId) {
         var $save = $('#save'),
             $cancel = $('#cancel');
         var $form = $('#' + formId);
 
+        $('form').submit(false);
         $form.parsley();
         $('select').select2();
+
+        // Switchery
+        var elem = document.querySelector('.js-switch');
+        var init = new Switchery(elem, { size: 'small' });
 
         var path = window.location.pathname;
         var paths = path.split('/');
@@ -82,7 +93,7 @@ var crud = {
             $.ajax({
                 type: 'PUT',
                 dataType: 'json',
-                url: '/' + controller + '/edit/' + id,
+                url: '../update/' + id,
                 data: $form.serialize(),
                 success: function(result) {
                     if (result.statusCode === 200) {
@@ -99,7 +110,7 @@ var crud = {
         });
 
         $cancel.on('click', function() {
-            window.location = '/' + controller + '/index';
+            window.location = '../index';
         });
     }
 };

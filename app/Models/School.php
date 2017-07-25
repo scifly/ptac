@@ -69,8 +69,8 @@ class School extends Model {
         $columns = [
             ['db' => 'School.id', 'dt' => 0],
             ['db' => 'School.name as schoolname', 'dt' => 1],
-            ['db' => 'SchoolType.name as typename', 'dt' => 2],
-            ['db' => 'School.address', 'dt' => 3],
+            ['db' => 'School.address', 'dt' => 2],
+            ['db' => 'SchoolType.name as typename', 'dt' => 3],
             ['db' => 'Corp.name as corpname', 'dt' => 4],
             ['db' => 'School.created_at', 'dt' => 5],
             ['db' => 'School.updated_at', 'dt' => 6],

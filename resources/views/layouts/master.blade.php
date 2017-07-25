@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="csrf_token" content="{{ csrf_token() }}">
+    <meta name="csrf_token" content="{{ csrf_token() }}" id="csrf_token">
     <title>模板空白页</title>
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
@@ -15,6 +15,8 @@
     <link rel="stylesheet" href="{{ URL::asset('css/ionicons.min.css') }}">
     <!-- jvectormap -->
     <link rel="stylesheet" href="{{ URL::asset('css/jquery-jvectormap.css') }}">
+    <!-- select2 style -->
+    <link rel="stylesheet" href="{{ URL::asset('js/plugins/select2/css/select2.min.css') }}">
     <!-- Theme style -->
     <link rel="stylesheet" href="{{ URL::asset('css/AdminLTE.min.css') }}">
     <link rel="stylesheet" href="{{ URL::asset('css/skins/_all-skins.min.css') }}">
@@ -22,6 +24,9 @@
     <link rel="stylesheet" href="{{ URL::asset('js/plugins/parsley/parsley.css') }}">
     <!-- DataTable style -->
     <link rel="stylesheet" href="{{ URL::asset('js/plugins/datatables/datatables.min.css') }}">
+    <!-- switchery style -->
+    <link rel="stylesheet" href="{{ URL::asset('js/plugins/switchery/css/switchery.min.css') }}">
+    <!-- gritter style -->
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -340,10 +345,8 @@
         </section>
         <!--content-->
         <section class="content">
-            @if (Session::has('success'))
-                <div class="alert alert-success">
-                    {{ Session::get('success') }}
-                </div>
+            @isset($dialog)
+                @include('partials.modal_dialog')
             @endif
             @yield('content')
         </section>
@@ -550,6 +553,8 @@
 <script src="{{ URL::asset('js/plugins/gritter/js/jquery.gritter.js') }}"></script>
 <!-- Select2 -->
 <script src="{{ URL::asset('js/plugins/select2/js/select2.min.js') }}"></script>
+<!-- switchery -->
+<script src="{{ URL::asset('js/plugins/switchery/js/switchery.min.js') }}"></script>
 <!-- Custom JS -->
 <script src="{{ URL::asset('js/admin.crud.js') }}"></script>
 <script src="{{ URL::asset($js) }}"></script>
