@@ -24,7 +24,11 @@ class SquadController extends Controller
         if (Request::get('draw')) {
             return response()->json($this->squad->datatable());
         }
-        return view('class.index' , ['js' => 'js/class/index.js']);
+        return view('class.index' , [
+            'js' => 'js/class/index.js',
+            'dialog' => true
+
+        ]);
 
     }
 
@@ -36,6 +40,8 @@ class SquadController extends Controller
     public function create()
     {
         //
+        return view('class.create',['js' => 'js/class/create.js']);
+
     }
 
     /**

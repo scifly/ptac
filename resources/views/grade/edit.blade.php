@@ -3,7 +3,7 @@
     <h2>编辑年级</h2>
 @endsection
 @section('content')
-    {!! Form::model($grade, ['url' => '/grades/' . $grade->id, 'method' => 'put']) !!}
-    @include('configuration.configuration.partials.school')
+    {!! Form::model($grade, [ 'method' => 'put',  'id' => 'fromGrade']) !!}
+    @include('grade.create_edit')
     {!! Form::close() !!}
 @endsection

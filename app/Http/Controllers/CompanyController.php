@@ -7,13 +7,11 @@ use App\Models\Company;
 use Illuminate\Support\Facades\Request;
 
 
-class CompanyController extends Controller
-{
+class CompanyController extends Controller {
 
     protected $company;
 
-    function __construct(Company $company)
-    {
+    function __construct(Company $company) {
         $this->company = $company;
     }
 
@@ -23,8 +21,7 @@ class CompanyController extends Controller
      * @internal param null $arg
      * @internal param Request $request
      */
-    public function index()
-    {
+    public function index() {
 
         if (Request::get('draw')) {
             return response()->json($this->company->datatable());
@@ -41,8 +38,7 @@ class CompanyController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
-    {
+    public function create() {
         return view('company.create', ['js' => 'js/company/create.js']);
     }
 
@@ -52,16 +48,16 @@ class CompanyController extends Controller
      * @return \Illuminate\Http\Response
      * @internal param \Illuminate\Http\Request|Request $request
      */
-    public function store(CompanyRequest $request)
-    {
+    public function store(CompanyRequest $request) {
         //验证
         $input = $request->all();
         //逻辑
         $res = Company::create($input);
+        //dd($res);
         if (!$res) {
-            return response()->json(['statusCode' => 202, 'Message' => 'add filed']);
+            return response()->json(['statusCode' => 202, 'message' => 'add filed']);
         }
-        return response()->json(['statusCode' => 200, 'Message' => 'nailed it!']);
+        return response()->json(['statusCode' => 200, 'message' => 'nailed it!']);
     }
 
     /**
@@ -70,8 +66,7 @@ class CompanyController extends Controller
      * @return \Illuminate\Http\Response
      * @internal param Company $company
      */
-    public function show($id)
-    {
+    public function show($id) {
         // find the record by id
         $company = Company::where('id', $id);
         return view('company.show', ['company' => $company]);
@@ -83,8 +78,7 @@ class CompanyController extends Controller
      * @return \Illuminate\Http\Response
      * @internal param Company $company
      */
-    public function edit($id)
-    {
+    public function edit($id) {
 
         $company = Company::whereId($id)->first();
         return view('company.edit', [
@@ -100,12 +94,19 @@ class CompanyController extends Controller
      * @internal param \Illuminate\Http\Request $request
      * @internal param Company $company
      */
-    public function update($id)
-    {
+    public function update(CompanyRequest $request,$id) {
         // find the record by id
         // update the record with the request data
         $company = Company::find($id);
-        return response()->json([]);
+        $company->name = $request->get('name');
+        $company->remark = $request->get('remark');
+        $company->corpid = $request->get('corpid');
+        $company->enabled = $request->get('enabled');
+        $res = $company->save();
+        if (!$res) {
+            return response()->json(['statusCode' => 202, 'message' => 'add filed']);
+        }
+        return response()->json(['statusCode' => 200, 'message' => 'nailed it!']);
     }
 
     /**
@@ -113,9 +114,11 @@ class CompanyController extends Controller
      * @return \Illuminate\Http\Response
      * @internal param Company $company
      */
-    public function destroy($id)
-    {
-        Company::destroy($id);
-        return response()->json(['statusCode' => 200, 'Message' => 'nailed it!']);
+    public function destroy($id) {
+        $res = Company::destroy($id);
+        if (!$res) {
+            return response()->json(['statusCode' => 202, 'message' => 'add filed']);
+        }
+        return response()->json(['statusCode' => 200, 'message' => 'nailed it!']);
     }
 }

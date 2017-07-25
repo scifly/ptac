@@ -8,7 +8,7 @@ class GradeRequest extends FormRequest
 {
 
     protected $rules = [
-        'name' => 'required|string|max:2',
+        'name' => 'required|string|max:255',
         'school_id' => 'required|integer',
         'educator_ids' => 'required|integer',
         'enabled' => 'required|boolean'

@@ -38,7 +38,7 @@ class EducatorController extends Controller
     public function create()
     {
         //
-        return view('educators.create',['js' => 'js/educator/create.js']);
+        return view('educator.create',['js' => 'js/educator/create.js']);
     }
 
     /**

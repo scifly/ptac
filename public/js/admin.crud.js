@@ -9,30 +9,33 @@ var crud = {
             language: { url: '../files/ch.json' }
         });
 
-        $(document).on('click', '.fa-trash', function() {
-            var $dialog = $('#modal-dialog');
-            var id = $(this).attr('id');
-            var $row = $(this).parents().eq(1);
+        var $dialog = $('#modal-dialog');
+        var $del = $('#confirm-delete');
+        var id, $row;
 
+        $(document).on('click', '.fa-trash', function() {
+            id = $(this).attr('id');
+            $row = $(this).parents().eq(1);
             $dialog.modal({ backdrop: true });
-            $dialog.find('#confirm-delete').on('click', function() {
-                $.ajax({
-                    type: 'DELETE',
-                    dataType: 'json',
-                    url: 'delete/' + id,
-                    data: {_token: $('#csrf_token').attr('content')},
-                    success: function(result) {
-                        if (result.statusCode === 200) {
-                            $row.remove();
-                        }
-                        $.gritter.add({
-                            title: "删除结果",
-                            text: result.message,
-                            image: result.statusCode === 200 ? '/img/confirm.png' : '/img/failure.jpg'
-                        });
-                        return false;
+        });
+
+        $del.on('click', function() {
+            $.ajax({
+                type: 'DELETE',
+                dataType: 'json',
+                url: 'delete/' + id,
+                data: {_token: $('#csrf_token').attr('content')},
+                success: function(result) {
+                    if (result.statusCode === 200) {
+                        $row.remove();
                     }
-                });
+                    $.gritter.add({
+                        title: "删除结果",
+                        text: result.message,
+                        image: result.statusCode === 200 ? '/img/confirm.png' : '/img/failure.jpg'
+                    });
+                    return false;
+                }
             });
         });
     },
@@ -45,6 +48,10 @@ var crud = {
         $form.parsley();
         $('select').select2();
 
+        // Switchery
+        // var elem = document.querySelector('.js-switch');
+        // var init = new Switchery(elem, { size: 'small' });
+
         $save.on('click', function() {
             $.ajax({
                 type: 'POST',
@@ -55,6 +62,7 @@ var crud = {
                     if (result.statusCode === 200) {
                         $form[0].reset();
                     }
+                    // console.log($.gritter);
                     $.gritter.add({
                         title: "新增结果",
                         text: result.message,
@@ -78,6 +86,10 @@ var crud = {
         $form.parsley();
         $('select').select2();
 
+        // Switchery
+        // var elem = document.querySelector('.js-switch');
+        // var init = new Switchery(elem, { size: 'small' });
+
         var path = window.location.pathname;
         var paths = path.split('/');
         var id = paths[paths.length - 1];
@@ -86,6 +98,9 @@ var crud = {
                 type: 'PUT',
                 dataType: 'json',
                 url: '../update/' + id,
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
                 data: $form.serialize(),
                 success: function(result) {
                     if (result.statusCode === 200) {

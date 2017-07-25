@@ -15,6 +15,8 @@
     <link rel="stylesheet" href="{{ URL::asset('css/ionicons.min.css') }}">
     <!-- jvectormap -->
     <link rel="stylesheet" href="{{ URL::asset('css/jquery-jvectormap.css') }}">
+    <!-- select2 style -->
+    <link rel="stylesheet" href="{{ URL::asset('js/plugins/select2/css/select2.min.css') }}">
     <!-- Theme style -->
     <link rel="stylesheet" href="{{ URL::asset('css/AdminLTE.min.css') }}">
     <link rel="stylesheet" href="{{ URL::asset('css/skins/_all-skins.min.css') }}">
@@ -22,10 +24,9 @@
     <link rel="stylesheet" href="{{ URL::asset('js/plugins/parsley/parsley.css') }}">
     <!-- DataTable style -->
     <link rel="stylesheet" href="{{ URL::asset('js/plugins/datatables/datatables.min.css') }}">
-    <!-- select2 style -->
-    <link rel="stylesheet" href="{{ URL::asset('js/plugins/select2/css/select2.min.css') }}">
+    <!-- switchery style -->
+    <link rel="stylesheet" href="{{ URL::asset('js/plugins/switchery/css/switchery.min.css') }}">
     <!-- gritter style -->
-    <link rel="stylesheet" href="{{ URL::asset('js/plugins/gritter/css/jquery.gritter.css') }}">
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -552,6 +553,8 @@
 <script src="{{ URL::asset('js/plugins/gritter/js/jquery.gritter.js') }}"></script>
 <!-- Select2 -->
 <script src="{{ URL::asset('js/plugins/select2/js/select2.min.js') }}"></script>
+<!-- switchery -->
+<script src="{{ URL::asset('js/plugins/switchery/js/switchery.min.js') }}"></script>
 <!-- Custom JS -->
 <script src="{{ URL::asset('js/admin.crud.js') }}"></script>
 <script src="{{ URL::asset($js) }}"></script>
