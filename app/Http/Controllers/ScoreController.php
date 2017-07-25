@@ -5,11 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\Score;
 use Illuminate\Support\Facades\Request;
 
-class ScoreController extends Controller
-{
+class ScoreController extends Controller {
     protected $score;
 
-    function __construct(Score $score) { $this->score = $score; }
+    function __construct(Score $score) {
+        $this->score = $score;
+    }
 
     /**
      * 显示成绩列表
@@ -32,30 +33,27 @@ class ScoreController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
-    {
-        return view('score.create',['js' => 'js/score/create.js']);
+    public function create() {
+        return view('score.create', ['js' => 'js/score/create.js']);
     }
 
     /**
      * 保存新创建的成绩记录
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
-    public function store()
-    {
+    public function store() {
         return response()->json(['statusCode' => 200, 'Message' => 'nailed it!']);
     }
 
     /**
      * 显示成绩记录详情
      *
-     * @param  \App\Models\Score  $score
+     * @param  \App\Models\Score $score
      * @return \Illuminate\Http\Response
      */
-    public function show()
-    {
+    public function show() {
         //find the record by id
         //return view('corp.show', ['corp' => $corp]);
     }
@@ -63,23 +61,21 @@ class ScoreController extends Controller
     /**
      * 显示编辑成绩记录的表单
      *
-     * @param  \App\Models\Score  $score
+     * @param  \App\Models\Score $score
      * @return \Illuminate\Http\Response
      */
-    public function edit()
-    {
+    public function edit() {
         return view('score.edit', ['js' => 'js/score/edit.js']);
     }
 
     /**
      * 更新指定成绩记录
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Score  $score
+     * @param  \Illuminate\Http\Request $request
+     * @param  \App\Models\Score $score
      * @return \Illuminate\Http\Response
      */
-    public function update()
-    {
+    public function update() {
         // find the record by id
         // update the record with the request data
         return response()->json([]);
@@ -88,11 +84,10 @@ class ScoreController extends Controller
     /**
      *删除指定成绩记录
      *
-     * @param  \App\Models\Score  $score
+     * @param  \App\Models\Score $score
      * @return \Illuminate\Http\Response
      */
-    public function destroy()
-    {
+    public function destroy() {
         return response()->json([]);
     }
 }

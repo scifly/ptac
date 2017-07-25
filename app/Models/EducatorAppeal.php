@@ -69,11 +69,8 @@ class EducatorAppeal extends Model {
         $columns = [
             ['db' => 'EducatorAppeal.id', 'dt' => 0],
             ['db' => 'Educator.name as educatorname', 'dt' => 1],
-            ['db' => 'EducatorAttendance.punch_time as puchtime', 'dt' => 2],
             ['db' => 'EducatorAppeal.appeal_content', 'dt' => 3],
             ['db' => 'ProcedureLog.id', 'dt' => 4],
-            ['db' => 'Educator.name as approvername', 'dt' => 5],
-            ['db' => 'Educator.name as relatedname', 'dt' => 6],
             ['db' => 'EducatorAppeal.created_at', 'dt' => 7],
             ['db' => 'EducatorAppeal.updated_at', 'dt' => 8],
             [
