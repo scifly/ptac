@@ -23,7 +23,7 @@ class AppController extends Controller
         if (Request::get('draw')) {
             return response()->json($this->app->datatable());
         }
-        return view('app.index', ['js' => 'js/app/index.js']);
+        return view('app.index', ['js' => 'js/app/index.js','dialog' => true]);
     }
 
     /**

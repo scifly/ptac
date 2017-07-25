@@ -18,7 +18,7 @@
             <div class="form-group">
                 {!! Form::label('agentid', '应用id',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-2">
-                    {!! Form::text('agentid', null, ['class' => 'form-control', 'required'=>'']) !!}
+                    {!! Form::text('agentid', null, ['class' => 'form-control']) !!}
                 </div>
             </div>
             <div class="form-group">
