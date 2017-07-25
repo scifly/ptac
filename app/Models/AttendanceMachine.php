@@ -43,7 +43,7 @@ class AttendanceMachine extends Model
      */
     public function school()
     {
-        return $this->belongsTo('App\Medoles\School');
+        return $this->belongsTo('App\Models\School');
     }
 
     /**
