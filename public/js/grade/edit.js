@@ -1,1 +1,1 @@
-$(crud.edit())
+$(crud.edit('fromGrade','grades'));

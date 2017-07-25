@@ -36,6 +36,8 @@ class SquadController extends Controller
     public function create()
     {
         //
+        return view('class.create',['js' => 'js/class/create.js']);
+
     }
 
     /**
