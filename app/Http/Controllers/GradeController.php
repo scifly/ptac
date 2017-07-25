@@ -46,10 +46,20 @@ class GradeController extends Controller
     public function store(GradeRequest $gradeRequest)
     {
         // request
-        $data = $gradeRequest->input('name');
+        $data['name'] = $gradeRequest->input('name');
+        $data['school_id'] = $gradeRequest->input('school_id');
+        $data['educator_ids'] = $gradeRequest->input('educator_ids');
+        $data['enabled'] = $gradeRequest->input('enabled');
 
+        if(Grade::create($data))
+        {
+            return response()->json(['statusCode' => 200, 'Message' => '添加成功!']);
 
-        return response()->json(['statusCode' => 200, 'Message' => 'nailed it!']);
+        }else{
+            return response()->json(['statusCode' => 202, 'Message' => '添加失败!']);
+
+        }
+
     }
 
     /**
@@ -59,17 +69,16 @@ class GradeController extends Controller
     public function show()
     {
         // find the record by id
-//        return view('company.show', ['company' => $company]);
+//        return view('grade.show', ['grade' => $grade]);
     }
 
     /**
      * 显示编辑年级记录的表单
      * @return \Illuminate\Http\Response
      */
-    public function edit() {
+    public function edit( ) {
 
         return view('grade.edit', ['js' => 'js/grade/edit.js']);
-
     }
 
     /**
@@ -77,7 +86,7 @@ class GradeController extends Controller
      * @return \Illuminate\Http\Response
      * @internal param \Illuminate\Http\Request $request
      */
-    public function update()
+    public function update($id)
     {
         // find the record by id
         // update the record with the request data
