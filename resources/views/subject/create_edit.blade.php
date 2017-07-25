@@ -11,13 +11,13 @@
             <div class="form-group">
                 {!! Form::label('max_score', '最高分',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-2">
-                    {!! Form::text('name', null, ['class' => 'form-control']) !!}
+                    {!! Form::text('max_score', null, ['class' => 'form-control']) !!}
                 </div>
             </div>
             <div class="form-group">
                 {!! Form::label('pass_score', '及格分',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-2">
-                    {!! Form::text('name', null, ['class' => 'form-control']) !!}
+                    {!! Form::text('pass_score', null, ['class' => 'form-control']) !!}
                 </div>
             </div>
 
@@ -37,6 +37,12 @@
                 </div>
             </div>
             <div class="form-group">
+                {!! Form::label('grade_ids', '年级名称',['class' => 'col-sm-4 control-label']) !!}
+                <div class="col-sm-3">
+                    {!! Form::select('grade_ids[]', $grades, null, ['class' => 'form-control', 'multiple' => 'multiple']) !!}
+                </div>
+            </div>
+            <div class="form-group">
                 <div class="col-sm-3 col-sm-offset-4">
                     {!! Form::radio('enabled', '1', true) !!}
                     {!! Form::label('enabled', '启用') !!}
@@ -51,8 +57,8 @@
         {{--button--}}
         <div class="form-group">
             <div class="col-sm-3 col-sm-offset-4">
-                {!! Form::reset('取消', ['class' => 'btn btn-default pull-left']) !!}
-                {!! Form::submit('保存', ['class' => 'btn btn-primary pull-right']) !!}
+                {!! Form::submit('保存', ['class' => 'btn btn-primary pull-left', 'id' => 'save']) !!}
+                {!! Form::reset('取消', ['class' => 'btn btn-default pull-right', 'id' => 'cancel']) !!}
             </div>
         </div>
     </div>

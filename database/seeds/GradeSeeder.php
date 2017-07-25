@@ -11,7 +11,7 @@ class GradeSeeder extends Seeder
      */
     public function run()
     {
-        factory(App\Models\Grade::class, 5)->create()->each(function ($grade) {
+        factory(App\Models\Grade::class, 10)->create()->each(function ($grade) {
             $grade->save();
         });
     }

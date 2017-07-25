@@ -42,13 +42,21 @@ class SubjectController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request  $requestid
      * @return \Illuminate\Http\Response
      */
     public function store()
     {
         $data = Request::all();
-        dd($data);
+
+        if($data !=null){
+            $grade = $data['grade_ids'];
+            $data['grade_ids'] = implode('|',$grade);
+
+            $res = Subject::create($data);
+       
+
+        }
         return response()->json(['statusCode' => 200, 'Message' => 'nailed it!']);
     }
 

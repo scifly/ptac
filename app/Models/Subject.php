@@ -56,6 +56,11 @@ class Subject extends Model {
         return $this->belongsTo('App\Models\School');
     }
 
+    public function grade()
+    {
+        return $this->belongsTo('App\Models\Grade','grade_ids');
+    }
+
     public function datatable()
     {
 
@@ -87,6 +92,7 @@ class Subject extends Model {
                     'School.id = Subject.school_id'
                 ]
             ]
+
 
         ];
         return Datatable::simple($this, $columns, $joins);
