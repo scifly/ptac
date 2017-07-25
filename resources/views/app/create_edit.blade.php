@@ -2,16 +2,17 @@
     <div class="box-header"></div>
     <div class="box-body">
         <div class="form-horizontal">
+            <meta name="csrf-token" content="{{ csrf_token() }}">
             <div class="form-group">
                 {!! Form::label('name', '应用名称',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-2">
-                    {!! Form::text('name', null, ['class' => 'form-control']) !!}
+                    {!! Form::text('name', null, ['class' => 'form-control', 'required'=>'']) !!}
                 </div>
             </div>
             <div class="form-group">
                 {!! Form::label('description', '应用备注',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-3">
-                    {!! Form::text('description', null, ['class' => 'form-control']) !!}
+                    {!! Form::text('description', null, ['class' => 'form-control', 'required'=>'']) !!}
                 </div>
             </div>
             <div class="form-group">
