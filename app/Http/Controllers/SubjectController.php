@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\SubjectRequest;
 use App\Models\Subject;
 use Illuminate\Support\Facades\Request;
 
@@ -9,11 +10,19 @@ class SubjectController extends Controller
 {
     protected $subject;
 
+    protected $message;
     /**
      * SubjectController constructor.
      * @param Subject $subject
      */
-    function __construct(Subject $subject){ $this->subject = $subject; }
+    function __construct(Subject $subject){
+        $this->subject = $subject;
+        $this->message = [
+            'statusCode' => 200,
+            'message' => ''
+        ];
+
+    }
 
     /**
      * Display a listing of the resource.
@@ -25,7 +34,10 @@ class SubjectController extends Controller
         if (Request::get('draw')) {
             return response()->json($this->subject->datatable());
         }
-        return view('subject.index', ['js' => 'js/subject/index.js']);
+        return view('subject.index', [
+            'js' => 'js/subject/index.js',
+            'dialog' => true
+            ]);
 
     }
 
@@ -47,6 +59,7 @@ class SubjectController extends Controller
      */
     public function store()
     {
+        $data = Request::except('_token');
         $data = Request::all();
 
         if($data !=null){
@@ -80,31 +93,60 @@ class SubjectController extends Controller
      * @param  \App\Models\Subject  $subject
      * @return \Illuminate\Http\Response
      */
-    public function edit()
+    public function edit($id)
     {
-        return view('subject.edit', ['js' => 'js/subject/edit.js']);
+
+        $subject = Subject::whereId($id)->first();
+
+        return view('subject.edit', [
+            'js' => 'js/subject/edit.js',
+            'subject' => $subject
+        ]);
+
     }
 
     /**
-     * Update the specified resource in storage.
+     * 更新科目.
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \App\Models\Subject  $subject
      * @return \Illuminate\Http\Response
      */
-    public function update()
+    public function update(SubjectRequest $request,$id)
     {
-        return response()->json([]);
+        $subject = Subject::find($id);
+        $subject->name = $request->get('name');
+        $subject->max_score = $request->get('max_score');
+        $subject->pass_score = $request->get('pass_score');
+        $subject->isaux = $request->get('isaux');
+        $subject->grade_ids = $request->get('grade_ids');
+        $subject->enabled = $request->get('enabled');
+
+        $res = $subject->save();
+        if (!$res) {
+            $this->message['statusCode'] = 202;
+            $this->message['message'] = 'add filed';
+        } else {
+            $this->message['statusCode'] = 200;
+            $this->message['message'] = 'nailed it!';
+        }
+        return response()->json($this->message);
+
     }
 
     /**
-     * Remove the specified resource from storage.
+     * 删除科目.
      *
      * @param  \App\Models\Subject  $subject
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Subject $subject)
+    public function destroy($id)
     {
-        return response()->json([]);
+
+        $res = Subject::destroy($id);
+        if (!$res) {
+            return response()->json(['statusCode' => 202, 'message' => 'add filed']);
+        }
+        return response()->json(['statusCode' => 200, 'message' => 'nailed it!']);
     }
 }

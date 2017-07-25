@@ -4,20 +4,36 @@
         <div class="form-horizontal">
             <div class="form-group">
                 {!! Form::label('name', '名称',['class' => 'col-sm-4 control-label']) !!}
-                <div class="col-sm-2">
-                    {!! Form::text('name', null, ['class' => 'form-control']) !!}
+                <div class="col-sm-3">
+                    {!! Form::text('name', null, [
+                    'class' => 'form-control',
+                    'placeholder' => '(不能超过20个汉字)',
+                    'data-parsley-required' => 'true',
+
+                    ]) !!}
                 </div>
             </div>
             <div class="form-group">
                 {!! Form::label('max_score', '最高分',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-2">
-                    {!! Form::text('max_score', null, ['class' => 'form-control']) !!}
+                    {!! Form::text('max_score', null, [
+                    'class' => 'form-control',
+                    'placeholder' => '最高分必须是数字',
+                    'data-parsley-required' => 'true',
+                     'data-parsley-type' => 'integer',
+
+                    ]) !!}
                 </div>
             </div>
             <div class="form-group">
                 {!! Form::label('pass_score', '及格分',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-2">
-                    {!! Form::text('pass_score', null, ['class' => 'form-control']) !!}
+                    {!! Form::text('pass_score', null, [
+                    'class' => 'form-control',
+                    'placeholder' => '及格分必须是数字',
+                    'data-parsley-required' => 'true',
+                    'data-parsley-type' => 'integer',
+                    ]) !!}
                 </div>
             </div>
 
