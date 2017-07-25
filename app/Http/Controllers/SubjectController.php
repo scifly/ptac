@@ -47,7 +47,8 @@ class SubjectController extends Controller
      */
     public function store()
     {
-        // request
+        $data = Request::all();
+        dd($data);
         return response()->json(['statusCode' => 200, 'Message' => 'nailed it!']);
     }
 
