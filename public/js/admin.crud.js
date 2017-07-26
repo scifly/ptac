@@ -62,6 +62,7 @@ var crud = {
                     if (result.statusCode === 200) {
                         $form[0].reset();
                     }
+                    // console.log($.gritter);
                     $.gritter.add({
                         title: "新增结果",
                         text: result.message,

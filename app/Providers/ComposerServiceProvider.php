@@ -22,6 +22,7 @@ class ComposerServiceProvider extends ServiceProvider {
 
 
         View::composer('attendance_machine.create_edit', 'App\Http\ViewComposers\AttendanceMachineComposer');
+        View::composer('procedure.create_edit', 'App\Http\ViewComposers\ProcedureComposer');
     }
 
     /**

@@ -26,7 +26,7 @@ class AppRequest extends FormRequest
         return [
             'name' => 'required|string|max:36',
             'description' => 'required|string|max:255',
-            'agentid' => 'required|integer',
+            'agentid' => 'required|integer|max:3',
             'url' => 'required|string|max:255',
             'token' => 'required|string|max:255',
             'encodingaeskey' => 'required|string|max:255',
