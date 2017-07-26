@@ -4,11 +4,11 @@
     <h2>
         {{ $am->name }}
     </h2>
-    <a href="{{ url('attendance_machines/' . $am->id . '/edit') }}">
+    <a href="{{ url('attendance_machines/edit/'. $am->id) }}">
         <span class="glyphicon glyphicon-edit"></span>
         Edit
     </a>
-    <a href="{{ url('attendance_machines/' . $am->id . '/delete') }}">
+    <a href="{{ url('attendance_machines/delete/'. $am->id) }}">
         <span class="glyphicon glyphicon-trash"></span>
         Delete
     </a>

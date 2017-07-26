@@ -66,10 +66,10 @@ class ProcedureController extends Controller {
      */
     public function show($id) {
         //根据id 查找单条记录
-        $procedure = Procedure::find($id);
+        $procedure = Procedure::whereId($id)->first();
 
         //记录返回给view
-        return view('procedure.show', ['pt' => $procedure]);
+        return view('procedure.show', ['procedure' => $procedure]);
     }
 
     /**
@@ -85,7 +85,7 @@ class ProcedureController extends Controller {
         //记录返回给view
         return view('procedure.edit', [
             'js' => 'js/procedure/edit.js',
-            'am' => $procedure
+            'procedure' => $procedure
         ]);
     }
 

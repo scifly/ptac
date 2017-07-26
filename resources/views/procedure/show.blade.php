@@ -4,11 +4,11 @@
     <h2>
         {{ $procedure->name }}
     </h2>
-    <a href="{{ url('procedures/' . $procedure->id . '/edit') }}">
+    <a href="{{ url('procedures/edit/'. $procedure->id) }}">
         <span class="glyphicon glyphicon-edit"></span>
         Edit
     </a>
-    <a href="{{ url('procedures/' . $procedure->id . '/delete') }}">
+    <a href="{{ url('procedures/delete/'. $procedure->id) }}">
         <span class="glyphicon glyphicon-trash"></span>
         Delete
     </a>

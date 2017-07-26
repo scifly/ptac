@@ -4,11 +4,11 @@
     <h2>
         {{ $pt->name }}
     </h2>
-    <a href="{{ url('procedure_types/' . $pt->id . '/edit') }}">
+    <a href="{{ url('procedure_types/edit/'. $pt->id ) }}">
         <span class="glyphicon glyphicon-edit"></span>
         Edit
     </a>
-    <a href="{{ url('procedure_types/' . $pt->id . '/delete') }}">
+    <a href="{{ url('procedure_types/delete/'. $pt->id ) }}">
         <span class="glyphicon glyphicon-trash"></span>
         Delete
     </a>

@@ -83,7 +83,7 @@ class ProcedureTypeController extends Controller {
         //记录返回给view
         return view('procedure_type.edit', [
             'js' => 'js/procedure_type/edit.js',
-            'am' => $pt
+            'pt' => $pt
         ]);
     }
 
