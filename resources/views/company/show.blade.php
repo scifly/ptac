@@ -2,24 +2,19 @@
 @section('header')
     <a href="{{ url('/') }}">Back to overview</a>
     <h2>
-        {{ $school->name }}
+        {{ $company->name }}
     </h2>
-    <a href="{{ url('schools/' . $school->id . '/edit') }}">
+    <a href="{{ url('companies/' . $company->id . '/edit') }}">
         <span class="glyphicon glyphicon-edit"></span>
         Edit
     </a>
-    <a href="{{ url('schools/' . $school->id . '/delete') }}">
+    <a href="{{ url('companies/' . $company->id . '/delete') }}">
         <span class="glyphicon glyphicon-trash"></span>
         Delete
     </a>
-    <p>Last edited: {{ $school->updated_at->diffForHumans() }}</p>
+    <p>Last edited: {{ $company->updated_at->diffForHumans() }}</p>
 @endsection
 @section('content')
-    <p>地址：{{ $school->address }}</p>
-    <p>
-        @if ($school->schoolType)
-            类型:
-            {{ link_to('schools/schoolTypes/' . $school->schoolType->name, $school->schoolType->name) }}
-        @endif
-    </p>
+    <p>备注：{{ $company->remark }}</p>
+    <p>企业号ID：{{ $company->corpid }}</p>
 @endsection

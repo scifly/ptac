@@ -45,6 +45,10 @@ $factory->define(App\Models\School::class, function (Faker\Generator $faker) {
         'school_type_id' => 1 ,
         'name' => $faker->name,
         'address' =>  $faker->address,
+        'longitude' => 15.0244,
+        'latitude' => 30.0244,
+        'sms_max_cnt' => 30,
+        'sms_used' => 10,
         'corp_id' => 1,
         'enabled' => 1
     ];
@@ -83,3 +87,56 @@ $factory->define(App\Models\Company::class, function (Faker\Generator $faker) {
     ];
 
 });
+
+$factory->define(App\Models\AttendanceMachine::class, function (Faker\Generator $faker) {
+
+    return [
+        'name' => $faker->name,
+        'location' => '成都武侯区',
+        'school_id' => 1,
+        'machineid' => '1456872587',
+        'enabled' => 1
+    ];
+
+});
+
+$factory->define(App\Models\ProcedureType::class, function (Faker\Generator $faker) {
+
+    return [
+        'name' => $faker->name,
+        'remark' => 'Test',
+        'enabled' => 1
+    ];
+
+});
+
+$factory->define(App\Models\Procedure::class, function (Faker\Generator $faker) {
+
+    return [
+        'procedure_type_id' => 1,
+        'school_id' => 1,
+        'name' => $faker->name,
+        'remark' => $faker->name,
+        'enabled' => 1
+    ];
+
+});
+
+$factory->define(App\Models\User::class, function (Faker\Generator $faker) {
+
+    return [
+        'group_id' => 1,
+        'username' => $faker->name,
+        'password' => md5('123456'),
+        'gender' => 1,
+        'realname' => $faker->name,
+        'avatar_url' =>'http://www.baidu.com',
+        'enabled' => 1,
+        'userid' => 002,
+        'department_ids'=>30
+    ];
+
+});
+
+
+

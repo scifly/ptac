@@ -5,7 +5,13 @@
             <div class="form-group">
                 {!! Form::label('name', '名称',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-2">
-                    {!! Form::text('name', null, ['class' => 'form-control']) !!}
+                    {!! Form::text('name', null, [
+                        'class' => 'form-control',
+                        'placeholder' => '(不超过40个汉字)',
+                        'data-parsley-required' => 'true',
+                        'data-parsley-minlength' => '4',
+                        'data-parsley-maxlength' => '40'
+                    ]) !!}
                 </div>
             </div>
             <div class="form-group">
@@ -17,7 +23,12 @@
             <div class="form-group">
                 {!! Form::label('corpid', '企业号ID',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-3">
-                    {!! Form::text('corpid', null, ['class' => 'form-control']) !!}
+                    {!! Form::text('corpid', null, [
+                         'class' => 'form-control',
+                         'placeholder' => '(36个小写字母与阿拉伯数字)',
+                         'data-parsley-required' => 'true',
+                         'data-parsley-type' => 'alphanum'
+                     ]) !!}
                 </div>
             </div>
             <div class="form-group">
@@ -28,14 +39,6 @@
                     {!! Form::label('enabled', '禁用') !!}
                 </div>
             </div>
-            @if(count($errors)>0)
-                @foreach($errors->all() as $error)
-            <div class="alert alert-info">
-                <a class="close" data-dismiss="alert">×</a>
-                <strong>{{$error}}</strong>
-            </div>
-                @endforeach
-                @endif
         </div>
     </div>
     <div class="box-footer">

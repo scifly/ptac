@@ -35,6 +35,7 @@ use Symfony\Component\VarDumper\Cloner\Data;
  */
 class Subject extends Model {
 
+    protected $table='subjects';
     protected $fillable=[
         'school_id',
         'name',
@@ -42,6 +43,7 @@ class Subject extends Model {
         'max_score',
         'pass_score',
         'grade_ids',
+        'enabled'
 
     ];
 
@@ -54,6 +56,11 @@ class Subject extends Model {
     public function school()
     {
         return $this->belongsTo('App\Models\School');
+    }
+
+    public function grade()
+    {
+        return $this->belongsTo('App\Models\Grade','grade_ids');
     }
 
     public function datatable()
@@ -87,6 +94,7 @@ class Subject extends Model {
                     'School.id = Subject.school_id'
                 ]
             ]
+
 
         ];
         return Datatable::simple($this, $columns, $joins);

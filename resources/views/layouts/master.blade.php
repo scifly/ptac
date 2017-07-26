@@ -558,7 +558,7 @@
 <!-- Custom JS -->
 <script src="{{ URL::asset('js/admin.crud.js') }}"></script>
 @isset($js)
-    <script src="{{ URL::asset($js) }}"></script>
+<script src="{{ URL::asset($js) }}"></script>
 @endisset
 <!-- AdminLTE for demo purposes -->
 <script src="{{ URL::asset('js/demo.js') }}"></script>

@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
@@ -37,17 +36,19 @@ class Group extends Model {
     public function datatable() {
 
         $columns = [
-            ['db' => 'Group.id', 'dt' => 0],
-            ['db' => 'Group.name', 'dt' => 1],
-            ['db' => 'Group.remark', 'dt' => 2],
-            ['db' => 'Group.created_at', 'dt' => 3],
-            ['db' => 'Group.updated_at', 'dt' => 4],
+            ['db' => 'Groups.id', 'dt' => 0],
+            ['db' => 'Groups.name', 'dt' => 1],
+            ['db' => 'Groups.remark', 'dt' => 2],
+            ['db' => 'Groups.created_at', 'dt' => 3],
+            ['db' => 'Groups.updated_at', 'dt' => 4],
             [
-                'db' => 'Group.enabled', 'dt' => 5,
-                'formatter' => function($d, $row) {
-                    return Datatable::dtOps($this, $d, $row);
+                'db' => 'Groups.enabled', 'dt' => 5,
+                'formatter' => function($d, $row)
+                {
+                    return Datatable::dtOps($this, $d ,$row);
                 }
             ]
+
         ];
 
         return Datatable::simple($this, $columns);

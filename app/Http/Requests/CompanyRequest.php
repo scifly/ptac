@@ -23,7 +23,6 @@ class CompanyRequest extends FormRequest {
     public function rules() {
         return [
             'name' => 'required|string|max:255|min:4',
-            'remark' => 'required|string|max:255',
             'corpid' => 'required|string|max:255',
             'enabled' => 'required|boolean'
         ];
@@ -33,16 +32,11 @@ class CompanyRequest extends FormRequest {
         return [
             'name.required' => '公司名称不能为空',
             'name.min' => '公司名称不能少于四个字符',
-            'remark.required' => '备注不能为空',
             'corpid.required' => '企业号ID不能为空'
         ];
     }
 
     protected function formatErrors(Validator $validator) {
         return $validator->errors()->all();
-    }
-
-    public function ValidateForm() {
-
     }
 }
