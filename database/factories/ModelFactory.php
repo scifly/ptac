@@ -122,6 +122,7 @@ $factory->define(App\Models\Procedure::class, function (Faker\Generator $faker) 
 
 });
 
+
 $factory->define(App\Models\Subject::class, function (Faker\Generator $faker) {
 
     return [
@@ -134,8 +135,25 @@ $factory->define(App\Models\Subject::class, function (Faker\Generator $faker) {
         'enabled' => 1
 
     ];
+});
+
+$factory->define(App\Models\User::class, function (Faker\Generator $faker) {
+
+    return [
+        'group_id' => 1,
+        'username' => $faker->name,
+        'password' => md5('123456'),
+        'gender' => 1,
+        'realname' => $faker->name,
+        'avatar_url' =>'http://www.baidu.com',
+        'enabled' => 1,
+        'userid' => 002,
+        'department_ids'=>30
+
+    ];
 
 });
+
 
 $factory->define(App\Models\Student::class, function (Faker\Generator $faker) {
 
@@ -165,6 +183,8 @@ $factory->define(App\Models\Exam::class, function (Faker\Generator $faker) {
         'enabled' => 1
     ];
 });
+
+
 
 
 

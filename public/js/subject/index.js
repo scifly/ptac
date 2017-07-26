@@ -1,1 +1,1 @@
-$(crud.index('subject'));
+$(crud.index());

@@ -37,6 +37,7 @@ Route::post('subject/store', 'SubjectController@store');
 Route::get('subject/show/{id}', 'SubjectController@show');
 Route::get('subject/edit/{id}', 'SubjectController@edit');
 Route::put('subject/update/{id}', 'SubjectController@update');
+Route::delete('subject/delete/{id}', 'SubjectController@destroy');
 
 // 权限设置
 Route::get('group/index', 'GroupController@index');
@@ -45,6 +46,7 @@ Route::post('group/store', 'GroupController@store');
 Route::get('group/show/{id}', 'GroupController@show');
 Route::get('group/edit/{id}', 'GroupController@edit');
 Route::put('group/update/{id}', 'GroupController@update');
+Route::delete('group/delete/{id}', 'GroupController@destroy');
 
 // 运营者公司设置
 Route::get('companies/index', 'CompanyController@index');
