@@ -1,31 +1,31 @@
 var crud = {
-    index: function() {
+    index: function () {
         $('#data-table').dataTable({
             processing: true,
             serverSide: true,
             ajax: 'index',
             order: [[0, 'desc']],
             stateSave: true,
-            language: { url: '../files/ch.json' }
+            language: {url: '../files/ch.json'}
         });
 
         var $dialog = $('#modal-dialog');
         var $del = $('#confirm-delete');
         var id, $row;
 
-        $(document).on('click', '.fa-trash', function() {
+        $(document).on('click', '.fa-trash', function () {
             id = $(this).attr('id');
             $row = $(this).parents().eq(1);
-            $dialog.modal({ backdrop: true });
+            $dialog.modal({backdrop: true});
         });
 
-        $del.on('click', function() {
+        $del.on('click', function () {
             $.ajax({
                 type: 'DELETE',
                 dataType: 'json',
                 url: 'delete/' + id,
                 data: {_token: $('#csrf_token').attr('content')},
-                success: function(result) {
+                success: function (result) {
                     if (result.statusCode === 200) {
                         $row.remove();
                     }
@@ -39,7 +39,7 @@ var crud = {
             });
         });
     },
-    create: function(formId) {
+    create: function (formId) {
         var $save = $('#save'),
             $cancel = $('#cancel');
         var $form = $('#' + formId);
@@ -49,16 +49,18 @@ var crud = {
         $('select').select2();
 
         // Switchery
-        // var elem = document.querySelector('.js-switch');
-        // var init = new Switchery(elem, { size: 'small' });
+        var elems = Array.prototype.slice.call(document.querySelectorAll('.js-switch'));
+        elems.forEach(function (html) {
+            var switchery = new Switchery(html, {size: 'small'});
+        });
 
-        $save.on('click', function() {
+        $save.on('click', function () {
             $.ajax({
                 type: 'POST',
                 dataType: 'json',
                 url: 'store',
                 data: $form.serialize(),
-                success: function(result) {
+                success: function (result) {
                     if (result.statusCode === 200) {
                         $form[0].reset();
                     }
@@ -73,11 +75,11 @@ var crud = {
             });
         });
 
-        $cancel.on('click', function() {
+        $cancel.on('click', function () {
             window.location = 'index';
         });
     },
-    edit: function(formId) {
+    edit: function (formId) {
         var $save = $('#save'),
             $cancel = $('#cancel');
         var $form = $('#' + formId);
@@ -93,7 +95,7 @@ var crud = {
         var path = window.location.pathname;
         var paths = path.split('/');
         var id = paths[paths.length - 1];
-        $save.on('click', function() {
+        $save.on('click', function () {
             $.ajax({
                 type: 'PUT',
                 dataType: 'json',
@@ -102,7 +104,7 @@ var crud = {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
                 data: $form.serialize(),
-                success: function(result) {
+                success: function (result) {
                     if (result.statusCode === 200) {
                         $form[0].reset();
                     }
@@ -116,7 +118,7 @@ var crud = {
             });
         });
 
-        $cancel.on('click', function() {
+        $cancel.on('click', function () {
             window.location = '../index';
         });
     }
