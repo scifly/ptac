@@ -62,14 +62,15 @@ var crud = {
                     if (result.statusCode === 200) {
                         $form[0].reset();
                     }
-                    // console.log($.gritter);
+                    console.log(result);
                     $.gritter.add({
                         title: "新增结果",
                         text: result.message,
                         image: result.statusCode === 200 ? '/img/confirm.png' : '/img/failure.jpg'
                     });
                     return false;
-                }
+                },
+
             });
         });
 

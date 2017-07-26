@@ -2,21 +2,20 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 
-class GradeRequest extends FormRequest
+class SquadRequest extends FormRequest
 {
 
     protected $rules = [
-        'name' => 'required|string|max:1',
-        'school_id' => 'required|integer',
+        'name' => 'required|string|max:255',
+        'grade_id' => 'required|integer',
         'educator_ids' => 'required|integer',
         'enabled' => 'required|boolean'
     ];
     protected $strings_key = [
-        'name' => '年级名称',
-        'school_id' => '所属学校',
+        'name' => '班级名称',
+        'grade_id' => '所属年级',
         'educator_ids' => '年级主任',
         'enabled' => '是否启用'
     ];
@@ -62,17 +61,4 @@ class GradeRequest extends FormRequest
 
         return $array;
     }
-//
-//    protected function formatErrors(Validator $validator)
-//    {
-//        $code = "";
-//        $data= [
-//            'statusCode' =>  '200',
-//            'message' => $validator->errors()->all(),
-//            'data' => []
-//        ];
-////            var_dump($data);die;
-//            return response()->json($data);
-//    }
-
 }
