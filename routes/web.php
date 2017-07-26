@@ -29,6 +29,15 @@ Route::get('schools/edit/{id}', 'SchoolController@edit');
 Route::put('schools/update/{id}', 'SchoolController@update');
 Route::delete('schools/delete/{id}', 'SchoolController@destroy');
 
+// 学校类型设置
+Route::get('school_types/index', 'SchoolTypeController@index');
+Route::get('school_types/create', 'SchoolTypeController@create');
+Route::post('school_types/store', 'SchoolTypeController@store');
+Route::get('school_types/show/{id}', 'SchoolTypeController@show');
+Route::get('school_types/edit/{id}', 'SchoolTypeController@edit');
+Route::put('school_types/update/{id}', 'SchoolTypeController@update');
+Route::delete('school_types/delete/{id}', 'SchoolTypeController@destroy');
+
 // 科目设置
 Route::get('subject/index', 'SubjectController@index');
 Route::get('subject/create', 'SubjectController@create');

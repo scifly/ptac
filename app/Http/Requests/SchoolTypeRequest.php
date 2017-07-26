@@ -4,14 +4,14 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class AttendanceMachineRequest extends FormRequest {
+class SchoolTypeRequest extends FormRequest {
     /**
      * Determine if the user is authorized to make this request.
      *
      * @return bool
      */
     public function authorize() {
-        return true;
+        return false;
     }
     
     /**
@@ -22,12 +22,8 @@ class AttendanceMachineRequest extends FormRequest {
     public function rules() {
         return [
             'name' => 'required|string|max:60',
-            'location' => 'required|string|max:255',
-            'school_id' => 'required|integer',
-            'machineid' => 'required|string|max:20',
+            'remark' => 'string|max:255',
             'enabled' => 'required|boolean'
         ];
     }
-    
-    public function wantsJson() { return true; }
 }
