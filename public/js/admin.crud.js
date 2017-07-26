@@ -40,50 +40,101 @@ var crud = {
         });
     },
     create: function(formId) {
-        var $save = $('#save'),
-            $cancel = $('#cancel');
+        var $cancel = $('#cancel');
         var $form = $('#' + formId);
 
-        $('form').submit(false);
-        $form.parsley();
+        $form.parsley().on("form:validated", function () {
+            var ok = $('.parsley-error').length === 0;
+            if (ok) {
+                $.ajax({
+                    type: 'POST',
+                    dataType: 'json',
+                    url: 'store',
+                    data: $form.serialize(),
+                    success: function(result) {
+                        alert(result.statusCode());
+                        if (result.statusCode === 200) {
+                            $form[0].reset();
+                        } else {
+
+                        }
+                        $.gritter.add({
+                            title: "新增结果",
+                            text: result.message,
+                            image: result.statusCode === 200 ? '/img/confirm.png' : '/img/failure.jpg'
+                        });
+                        return false;
+                    },
+                    error: function(e) {
+                        var obj = JSON.parse(e.responseText);
+                        for (var key in obj) {
+                            if (obj.hasOwnProperty(key)) {
+                                $.gritter.add({
+                                    title: "新增结果",
+                                    text: obj[key],
+                                    image: '/img/failure.jpg'
+                                });
+                            }
+                        }
+                    }
+                });
+            }
+        }).on('form:submit', function() {
+            return false;
+        });
         $('select').select2();
 
         // Switchery
         // var elem = document.querySelector('.js-switch');
         // var init = new Switchery(elem, { size: 'small' });
 
-        $save.on('click', function() {
-            $.ajax({
-                type: 'POST',
-                dataType: 'json',
-                url: 'store',
-                data: $form.serialize(),
-                success: function(result) {
-                    if (result.statusCode === 200) {
-                        $form[0].reset();
-                    }
-                    // console.log($.gritter);
-                    $.gritter.add({
-                        title: "新增结果",
-                        text: result.message,
-                        image: result.statusCode === 200 ? '/img/confirm.png' : '/img/failure.jpg'
-                    });
-                    return false;
-                }
-            });
-        });
-
         $cancel.on('click', function() {
             window.location = 'index';
         });
     },
     edit: function(formId) {
-        var $save = $('#save'),
-            $cancel = $('#cancel');
+        var $cancel = $('#cancel');
         var $form = $('#' + formId);
 
-        $('form').submit(false);
-        $form.parsley();
+        $form.parsley().on("form:validated", function () {
+            var ok = $('.parsley-error').length === 0;
+            if (ok) {
+                $.ajax({
+                    type: 'PUT',
+                    dataType: 'json',
+                    url: '../update/' + id,
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    data: $form.serialize(),
+                    success: function(result) {
+                        if (result.statusCode === 200) {
+                            $form[0].reset();
+                        }
+                        $.gritter.add({
+                            title: "编辑结果",
+                            text: result.message,
+                            image: result.statusCode === 200 ? '/img/confirm.png' : '/img/failure.jpg'
+                        });
+                        return false;
+                    },
+                    error: function(e) {
+                        var obj = JSON.parse(e.responseText);
+                        for (var key in obj) {
+                            if (obj.hasOwnProperty(key)) {
+                                $.gritter.add({
+                                    title: "编辑结果",
+                                    text: obj[key],
+                                    image: '/img/failure.jpg'
+                                });
+                            }
+                        }
+                    }
+                });
+            }
+        }).on('form:submit', function() {
+            return false;
+        });
         $('select').select2();
 
         // Switchery
@@ -93,28 +144,6 @@ var crud = {
         var path = window.location.pathname;
         var paths = path.split('/');
         var id = paths[paths.length - 1];
-        $save.on('click', function() {
-            $.ajax({
-                type: 'PUT',
-                dataType: 'json',
-                url: '../update/' + id,
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                data: $form.serialize(),
-                success: function(result) {
-                    if (result.statusCode === 200) {
-                        $form[0].reset();
-                    }
-                    $.gritter.add({
-                        title: "编辑结果",
-                        text: result.message,
-                        image: result.statusCode === 200 ? '/img/confirm.png' : '/img/failure.jpg'
-                    });
-                    return false;
-                }
-            });
-        });
 
         $cancel.on('click', function() {
             window.location = '../index';
