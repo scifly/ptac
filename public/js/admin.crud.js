@@ -15,6 +15,7 @@ var crud = {
 
         $(document).on('click', '.fa-trash', function () {
             id = $(this).attr('id');
+
             $row = $(this).parents().eq(1);
             $dialog.modal({backdrop: true});
         });
@@ -47,14 +48,13 @@ var crud = {
         $('form').submit(false);
         $form.parsley();
         $('select').select2();
-
         // Switchery
         var elems = Array.prototype.slice.call(document.querySelectorAll('.js-switch'));
         elems.forEach(function (html) {
             var switchery = new Switchery(html, {size: 'small'});
         });
-
         $save.on('click', function () {
+
             $.ajax({
                 type: 'POST',
                 dataType: 'json',
@@ -64,14 +64,15 @@ var crud = {
                     if (result.statusCode === 200) {
                         $form[0].reset();
                     }
-                    // console.log($.gritter);
+                    console.log(result);
                     $.gritter.add({
                         title: "新增结果",
                         text: result.message,
                         image: result.statusCode === 200 ? '/img/confirm.png' : '/img/failure.jpg'
                     });
                     return false;
-                }
+                },
+
             });
         });
 
@@ -87,10 +88,6 @@ var crud = {
         $('form').submit(false);
         $form.parsley();
         $('select').select2();
-
-        // Switchery
-        // var elem = document.querySelector('.js-switch');
-        // var init = new Switchery(elem, { size: 'small' });
 
         var path = window.location.pathname;
         var paths = path.split('/');

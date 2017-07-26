@@ -3,7 +3,7 @@
     <h2>编辑学校</h2>
 @endsection
 @section('content')
-    {!! Form::model($school, ['url' => '/schools/' . $school->id, 'method' => 'put']) !!}
-    @include('configuration.configuration.partials.school')
+    {!! Form::model($corp, ['method' => 'put', 'id' => 'formCorp']) !!}
+    @include('corp.create_edit')
     {!! Form::close() !!}
 @endsection

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\SquadRequest;
 use App\Models\Squad;
 use Illuminate\Support\Facades\Request;
 
@@ -50,9 +51,24 @@ class SquadController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(SquadRequest $squadRequest)
     {
         //
+        // request
+        $data['name'] = $squadRequest->input('name');
+        $data['grade_id'] = $squadRequest->input('grade_id');
+        $data['educator_ids'] = $squadRequest->input('educator_ids');
+        $data['enabled'] = $squadRequest->input('enabled');
+
+        if(Squad::create($data))
+        {
+            return response()->json(['statusCode' => 200, 'message' => '添加成功!']);
+
+        }else{
+            return response()->json(['statusCode' => 202, 'message' => '添加失败!']);
+
+        }
+
     }
 
     /**
