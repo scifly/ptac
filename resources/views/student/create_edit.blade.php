@@ -3,39 +3,29 @@
     <div class="box-body">
         <div class="form-horizontal">
             <div class="form-group">
-                {!! Form::label('name', '学生',['class' => 'col-sm-4 control-label']) !!}
+                {!! Form::label('student_number', '学号',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-3">
-                    {!! Form::text('name', null, [
+                    {!! Form::text('student_number', null, [
                     'class' => 'form-control',
-                    'placeholder' => '(不能超过20个汉字)',
+                    'placeholder' => '学号必须是数字',
                     'data-parsley-required' => 'true',
 
                     ]) !!}
                 </div>
             </div>
             <div class="form-group">
-                {!! Form::label('max_score', '最高分',['class' => 'col-sm-4 control-label']) !!}
+                {!! Form::label('card_number', '卡号',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-2">
-                    {!! Form::text('max_score', null, [
+                    {!! Form::text('card_number', null, [
                     'class' => 'form-control',
-                    'placeholder' => '最高分必须是数字',
+                    'placeholder' => '卡号必须是数字',
                     'data-parsley-required' => 'true',
                      'data-parsley-type' => 'integer',
 
                     ]) !!}
                 </div>
             </div>
-            <div class="form-group">
-                {!! Form::label('pass_score', '及格分',['class' => 'col-sm-4 control-label']) !!}
-                <div class="col-sm-2">
-                    {!! Form::text('pass_score', null, [
-                    'class' => 'form-control',
-                    'placeholder' => '及格分必须是数字',
-                    'data-parsley-required' => 'true',
-                    'data-parsley-type' => 'integer',
-                    ]) !!}
-                </div>
-            </div>
+      
 
             <div class="form-group">
                 {!! Form::label('isaux', '是否为副科',['class' => 'col-sm-4 control-label']) !!}
