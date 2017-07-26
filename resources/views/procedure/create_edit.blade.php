@@ -3,26 +3,27 @@
     <div class="box-body">
         <div class="form-horizontal">
             <div class="form-group">
-                {!! Form::label('name', '名称',['class' => 'col-sm-4 control-label']) !!}
-                {!! csrf_field() !!}
-                <div class="col-sm-2">
-                    {!! Form::text('name', null, ['class' => 'form-control']) !!}
-                </div>
-                <div class="col-sm-5">
-                    <p class="form-control-static text-danger">{{ $errors->first('name') }}</p>
-                </div>
-            </div>
-
-            <div class="form-group">
                 {!! Form::label('school_id', '所属学校',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-2">
                     {!! Form::select('school_id', $schools, null, ['class' => 'form-control']) !!}
                 </div>
             </div>
             <div class="form-group">
-                {!! Form::label('educator_ids', '年级主任',['class' => 'col-sm-4 control-label']) !!}
+                {!! Form::label('procedure_type_id', '流程类型',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-2">
-                    {!! Form::select('educator_ids', $educators, null, ['class' => 'form-control']) !!}
+                    {!! Form::select('procedure_type_id', $procedureTypes, null, ['class' => 'form-control']) !!}
+                </div>
+            </div>
+            <div class="form-group">
+                {!! Form::label('name', '名称',['class' => 'col-sm-4 control-label']) !!}
+                <div class="col-sm-2">
+                    {!! Form::text('name', null, ['class' => 'form-control']) !!}
+                </div>
+            </div>
+            <div class="form-group">
+                {!! Form::label('remark', '备注',['class' => 'col-sm-4 control-label']) !!}
+                <div class="col-sm-3">
+                    {!! Form::text('remark', null, ['class' => 'form-control']) !!}
                 </div>
             </div>
             <div class="form-group">

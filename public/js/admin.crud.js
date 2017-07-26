@@ -15,6 +15,7 @@ var crud = {
 
         $(document).on('click', '.fa-trash', function() {
             id = $(this).attr('id');
+
             $row = $(this).parents().eq(1);
             $dialog.modal({ backdrop: true });
         });
@@ -58,6 +59,7 @@ var crud = {
                     if (result.statusCode === 200) {
                         $form[0].reset();
                     }
+                    // console.log($.gritter);
                     $.gritter.add({
                         title: "新增结果",
                         text: result.message,

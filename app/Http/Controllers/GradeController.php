@@ -23,7 +23,11 @@ class GradeController extends Controller
         if (Request::get('draw')) {
             return response()->json($this->grade->datatable());
         }
-        return view('grade.index' , ['js' => 'js/grade/index.js']);
+        return view('grade.index' ,
+            [
+                'js' => 'js/grade/index.js',
+                'dialog' => true
+            ]);
 
     }
 
@@ -53,10 +57,10 @@ class GradeController extends Controller
 
         if(Grade::create($data))
         {
-            return response()->json(['statusCode' => 200, 'Message' => '添加成功!']);
+            return response()->json(['statusCode' => 200, 'message' => '添加成功!']);
 
         }else{
-            return response()->json(['statusCode' => 202, 'Message' => '添加失败!']);
+            return response()->json(['statusCode' => 202, 'message' => '添加失败!']);
 
         }
 
@@ -66,19 +70,24 @@ class GradeController extends Controller
      * 显示年级记录详情
      * @return \Illuminate\Http\Response
      */
-    public function show()
+    public function show($id)
     {
         // find the record by id
-//        return view('grade.show', ['grade' => $grade]);
+        $grade = Grade::find($id);
+
+        return view('grade.show', ['grade' => $grade]);
     }
 
     /**
      * 显示编辑年级记录的表单
      * @return \Illuminate\Http\Response
      */
-    public function edit( ) {
-
-        return view('grade.edit', ['js' => 'js/grade/edit.js']);
+    public function edit($id ) {
+        $grade = Grade::whereId($id)->first();
+        return view('grade.edit', [
+            'js' => 'js/grade/edit.js',
+            'grade' => $grade
+        ]);
     }
 
     /**
@@ -97,8 +106,10 @@ class GradeController extends Controller
      * 删除指定年级记录
      * @return \Illuminate\Http\Response
      */
-    public function destroy()
+    public function destroy($id)
     {
-        return response()->json([]);
+        Grade::destroy($id);
+
+        return response()->json([['statusCode' => 200, 'Message' => 'nailed it!']]);
     }
 }

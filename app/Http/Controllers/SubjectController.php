@@ -82,9 +82,10 @@ class SubjectController extends Controller
      * @param  \App\Models\Subject  $subject
      * @return \Illuminate\Http\Response
      */
-    public function show()
+    public function show($id)
     {
-        return view('company.show', ['subject' => $subject]);
+        $subject = Subject::where('id', $id);
+        return view('subject.show', ['subject' => $subject]);
     }
 
     /**
@@ -119,7 +120,8 @@ class SubjectController extends Controller
         $subject->max_score = $request->get('max_score');
         $subject->pass_score = $request->get('pass_score');
         $subject->isaux = $request->get('isaux');
-        $subject->grade_ids = $request->get('grade_ids');
+        $subject->grade_ids = implode('|',$request->get('grade_ids'));
+
         $subject->enabled = $request->get('enabled');
 
         $res = $subject->save();
@@ -142,7 +144,6 @@ class SubjectController extends Controller
      */
     public function destroy($id)
     {
-
         $res = Subject::destroy($id);
         if (!$res) {
             return response()->json(['statusCode' => 202, 'message' => 'add filed']);
