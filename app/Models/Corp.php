@@ -30,6 +30,7 @@ class Corp extends Model
 
     protected $fillable = [
         'name',
+        'company_id',
         'corpid',
         'enabled'
     ];
@@ -43,7 +44,7 @@ class Corp extends Model
     public function company()
     {
 
-        return $this->belongsTo('App\Models\Corp');
+        return $this->belongsTo('App\Models\Company');
     }
 
     /**
