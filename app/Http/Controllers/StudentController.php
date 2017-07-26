@@ -9,15 +9,10 @@ class StudentController extends Controller
 {
     protected $student;
 
-    /**
-     * StudentController constructor.
-     * @param Student $student
-     */
     function __construct(Student $student){ $this->student = $student; }
 
     /**
-     * Display a listing of the resource.
-     *
+     * 显示学生列表
      * @return \Illuminate\Http\Response
      */
     public function index()
@@ -29,24 +24,23 @@ class StudentController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
+
      * @return \Illuminate\Http\Response
      */
     public function create()
     {
-        //
+        return view('student.create',['js' => 'js/student/create.js']);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request|Request $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store()
     {
-        //
+
     }
 
     /**
@@ -55,9 +49,9 @@ class StudentController extends Controller
      * @param  \App\Models\Student  $student
      * @return \Illuminate\Http\Response
      */
-    public function show(Student $student)
+    public function show()
     {
-        //
+
     }
 
     /**
@@ -66,21 +60,20 @@ class StudentController extends Controller
      * @param  \App\Models\Student  $student
      * @return \Illuminate\Http\Response
      */
-    public function edit(Student $student)
+    public function edit()
     {
-        //
+        return view('student.edit', ['js' => 'js/student/edit.js']);
     }
 
     /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Student  $student
+     * 更新指定学生的信息
      * @return \Illuminate\Http\Response
+     * @internal param \Illuminate\Http\Request $request
+     * @internal param Company $company
      */
     public function update(Request $request, Student $student)
     {
-        //
+
     }
 
     /**
@@ -91,6 +84,6 @@ class StudentController extends Controller
      */
     public function destroy(Student $student)
     {
-        //
+
     }
 }

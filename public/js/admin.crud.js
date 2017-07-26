@@ -15,6 +15,7 @@ var crud = {
 
         $(document).on('click', '.fa-trash', function() {
             id = $(this).attr('id');
+
             $row = $(this).parents().eq(1);
             $dialog.modal({ backdrop: true });
         });
@@ -47,10 +48,6 @@ var crud = {
         $('form').submit(false);
         $form.parsley();
         $('select').select2();
-
-        // Switchery
-        // var elem = document.querySelector('.js-switch');
-        // var init = new Switchery(elem, { size: 'small' });
 
         $save.on('click', function() {
             $.ajax({
@@ -85,10 +82,6 @@ var crud = {
         $('form').submit(false);
         $form.parsley();
         $('select').select2();
-
-        // Switchery
-        // var elem = document.querySelector('.js-switch');
-        // var init = new Switchery(elem, { size: 'small' });
 
         var path = window.location.pathname;
         var paths = path.split('/');

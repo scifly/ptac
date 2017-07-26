@@ -3,19 +3,13 @@
     <div class="box-body">
         <div class="form-horizontal">
             <div class="form-group">
-                {!! Form::label('school_id', '所属学校',['class' => 'col-sm-4 control-label']) !!}
+                {!! Form::label('procedure_id', '流程',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-2">
-                    {!! Form::select('school_id', $schools, null, ['class' => 'form-control']) !!}
+                    {!! Form::select('procedure_id', $procedures, null, ['class' => 'form-control']) !!}
                 </div>
             </div>
             <div class="form-group">
-                {!! Form::label('procedure_type_id', '流程类型',['class' => 'col-sm-4 control-label']) !!}
-                <div class="col-sm-2">
-                    {!! Form::select('procedure_type_id', $procedureTypes, null, ['class' => 'form-control']) !!}
-                </div>
-            </div>
-            <div class="form-group">
-                {!! Form::label('name', '名称',['class' => 'col-sm-4 control-label']) !!}
+                {!! Form::label('name', '步骤',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-2">
                     {!! Form::text('name', null, [
                         'class' => 'form-control',
@@ -26,15 +20,25 @@
                 </div>
             </div>
             <div class="form-group">
-                {!! Form::label('remark', '备注',[
-                    'class' => 'col-sm-4 control-label',
-                ]) !!}
+                {!! Form::label('approver_user_ids', '审批用户',['class' => 'col-sm-4 control-label']) !!}
+                <div class="col-sm-2">
+                    {!! Form::select('user_id', $approver_users, null, ['class' => 'form-control']) !!}
+                </div>
+            </div>
+            <div class="form-group">
+                {!! Form::label('related_user_ids', '相关人员',['class' => 'col-sm-4 control-label']) !!}
+                <div class="col-sm-2">
+                    {!! Form::select('user_id', $related_users, null, ['class' => 'form-control']) !!}
+                </div>
+            </div>
+            <div class="form-group">
+                {!! Form::label('remark', '备注',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-3">
                     {!! Form::text('remark', null, [
                         'class' => 'form-control',
-                         'placeholder' => '(不得超过80个汉字)',
-                         'data-parsley-required' => 'true',
-                         'maxlength' => '255'
+                        'placeholder' => '(不得超过80个汉字)',
+                        'data-parsley-required' => 'true',
+                        'maxlength' => '255'
                     ]) !!}
                 </div>
             </div>

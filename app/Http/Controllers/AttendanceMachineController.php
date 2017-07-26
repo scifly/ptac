@@ -23,7 +23,10 @@ class AttendanceMachineController extends Controller {
             return response()->json($this->attendanceMachine->datatable());
         }
 
-        return view('attendance_machine.index', ['js' => 'js/attendance_machine/index.js']);
+        return view('attendance_machine.index', [
+            'js' => 'js/attendance_machine/index.js',
+            'dialog' => true
+        ]);
     }
 
     /**
@@ -91,27 +94,49 @@ class AttendanceMachineController extends Controller {
 
     /**
      * Update the specified resource in storage.
+     * @param AttendanceMachineRequest $request
+     * @param $id
      * @return \Illuminate\Http\Response
      * @internal param \Illuminate\Http\Request|Request $request
      * @internal param AttendanceMachine $attendanceMachine
      */
-    public function update() {
+    public function update(AttendanceMachineRequest $request, $id) {
         //跟进id查找记录，
         //把request 传的值，赋值给对应的字段
         //保存当前记录
         //根据操作结果返回不同的json数据
+
+        $am = AttendanceMachine::whereId($id)->first();
+        $am->name = $request->name;
+        $am->location = $request->location;
+        $am->school_id = $request->school_id;
+        $am->machineid = $request->machineid;
+        $am->enabled = $request->enabled;
+        if ($am->save()) {
+            return response()->json(['statusCode' => 200, 'message' => '创建成功！']);
+        }
+
+        return response()->json(['statusCode' => 500, 'message' => '创建失败！']);
 
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\AttendanceMachine $attendanceMachine
+     * @param $id
      * @return \Illuminate\Http\Response
+     * @internal param AttendanceMachine $attendanceMachine
      */
-    public function destroy(AttendanceMachine $attendanceMachine) {
+    public function destroy($id) {
         //根据id查找需要删除的数据
         //进行删除操作
         //返回json 格式的操作结果
+        $am = AttendanceMachine::whereId($id)->first();
+
+        if ($am->delete()) {
+            return response()->json(['statusCode' => 200, 'message' => '删除成功！']);
+        }
+
+        return response()->json(['statusCode' => 500, 'message' => '删除失败！']);
     }
 }

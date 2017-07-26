@@ -9,7 +9,7 @@
                         'class' => 'form-control',
                         'placeholder' => '(不得超过20个汉字)',
                         'data-parsley-required' => 'true',
-                        'max' => '60'
+                        'maxlength' => '60'
                     ]) !!}
                 </div>
             </div>
@@ -20,7 +20,7 @@
                         'class' => 'form-control',
                         'placeholder' => '(不得超过80个汉字)',
                         'data-parsley-required' => 'true',
-                        'max' => '255'
+                        'maxlength' => '255'
                     ]) !!}
                 </div>
             </div>
