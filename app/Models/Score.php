@@ -35,7 +35,6 @@ class Score extends Model
 {
 
     protected $fillable = [
-        'name',
         'student_id',
         'subject_id',
         'exam_id',
@@ -66,15 +65,16 @@ class Score extends Model
         $columns = [
             ['db' => 'Score.id', 'dt' => 0],
             ['db' => 'Student.student_number', 'dt' => 1],
-            ['db' => 'Subject.name as subjectname', 'dt' => 2],
-            ['db' => 'Exam.name as examname', 'dt' => 3],
-            ['db' => 'Score.class_rank', 'dt' => 4],
-            ['db' => 'Score.grade_rank', 'dt' => 5],
-            ['db' => 'Score.score', 'dt' => 6],
-            ['db' => 'Score.created_at', 'dt' => 7],
-            ['db' => 'Score.updated_at', 'dt' => 8],
+            ['db' => 'User.realname', 'dt' => 2],
+            ['db' => 'Subject.name as subjectname', 'dt' => 3],
+            ['db' => 'Exam.name as examname', 'dt' => 4],
+            ['db' => 'Score.class_rank', 'dt' => 5],
+            ['db' => 'Score.grade_rank', 'dt' => 6],
+            ['db' => 'Score.score', 'dt' => 7],
+            ['db' => 'Score.created_at', 'dt' => 8],
+            ['db' => 'Score.updated_at', 'dt' => 9],
             [
-                'db' => 'Score.enabled', 'dt' => 9,
+                'db' => 'Score.enabled', 'dt' => 10,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
                 }
@@ -105,6 +105,14 @@ class Score extends Model
                     'Exam.id = Score.exam_id'
                 ]
             ],
+            [
+                'table' => 'users',
+                'alias' => 'User',
+                'type' => 'INNER',
+                'conditions' => [
+                    'User.id = Student.user_id'
+                ]
+            ]
         ];
         return Datatable::simple($this, $columns, $joins);
     }

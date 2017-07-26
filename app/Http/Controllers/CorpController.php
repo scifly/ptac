@@ -2,15 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CorpRequest;
 use App\Models\Corp;
 use Illuminate\Support\Facades\Request;
 
 
 class CorpController extends Controller {
     protected $corp;
+    protected $message;
 
     function __construct(Corp $corp) {
         $this->corp = $corp;
+        $this->message = [
+            'statusCode' => 200,
+            'message' => ''
+        ];
     }
 
     /**
@@ -23,7 +29,10 @@ class CorpController extends Controller {
         if (Request::get('draw')) {
             return response()->json($this->corp->datatable());
         }
-        return view('corp.index', ['js' => 'js/corp/index.js']);
+        return view('corp.index', [
+            'js' => 'js/corp/index.js',
+            'dialog' => true
+        ]);
     }
 
     /**
@@ -40,8 +49,19 @@ class CorpController extends Controller {
      * @return \Illuminate\Http\Response
      * @internal param \Illuminate\Http\Request $request
      */
-    public function store() {
-        return response()->json(['statusCode' => 200, 'Message' => 'nailed it!']);
+    public function store(CorpRequest $request) {
+        //验证
+        $input = $request->except('_token');
+        //逻辑
+        $res = Corp::create($input);
+        if (!$res) {
+            $this->message['statusCode'] = 202;
+            $this->message['message'] = 'add filed';
+        } else {
+            $this->message['statusCode'] = 200;
+            $this->message['message'] = 'nailed it!';
+        }
+        return response()->json($this->message);
     }
 
     /**
@@ -50,9 +70,10 @@ class CorpController extends Controller {
      * @param  \App\Models\Corp $corp
      * @return \Illuminate\Http\Response
      */
-    public function show() {
+    public function show($id) {
         // find the record by id
-        //return view('corp.show', ['corp' => $corp]);
+        $corp = Corp::whereId($id)->first();
+        return view('corp.show', ['corp' => $corp]);
     }
 
     /**
@@ -61,8 +82,12 @@ class CorpController extends Controller {
      * @param  \App\Models\Corp $corp
      * @return \Illuminate\Http\Response
      */
-    public function edit() {
-        return view('corp.edit', ['js' => 'js/corp/edit.js']);
+    public function edit($id) {
+        $corp = Corp::whereId($id)->first();
+        return view('corp.edit', [
+            'js' => 'js/corp/edit.js',
+            'corp' => $corp
+        ]);
     }
 
     /**
@@ -72,10 +97,24 @@ class CorpController extends Controller {
      * @param  \App\Models\Corp $corp
      * @return \Illuminate\Http\Response
      */
-    public function update() {
+    public function update(CorpRequest $request,$id) {
         // find the record by id
         // update the record with the request data
-        return response()->json([]);
+        $corp = Corp::find($id);
+        $corp->name = $request->get('name');
+        $corp->company_id = $request->get('company_id');
+        $corp->corpid = $request->get('corpid');
+        $corp->enabled = $request->get('enabled');
+        $res = $corp->save();
+        if (!$res) {
+            $this->message['statusCode'] = 202;
+            $this->message['message'] = 'add filed';
+        } else {
+            $this->message['statusCode'] = 200;
+            $this->message['message'] = 'nailed it!';
+
+        }
+        return response()->json($this->message);
     }
 
     /**
@@ -84,7 +123,16 @@ class CorpController extends Controller {
      * @param  \App\Models\Corp $corp
      * @return \Illuminate\Http\Response
      */
-    public function destroy() {
-        return response()->json([]);
+    public function destroy($id) {
+        $res = Corp::destroy($id);
+        if (!$res) {
+            $this->message['statusCode'] = 202;
+            $this->message['message'] = 'add filed';
+        } else {
+            $this->message['statusCode'] = 200;
+            $this->message['message'] = 'nailed it!';
+
+        }
+        return response()->json($this->message);
     }
 }

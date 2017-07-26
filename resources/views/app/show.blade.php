@@ -1,6 +1,6 @@
 @extends('layouts.master')
 @section('header')
-    <a href="{{ url('/') }}">Back to overview</a>
+    <a href="javascript:history.back();">Back to overview</a>
     <h2>
         {{ $app->name }}
     </h2>

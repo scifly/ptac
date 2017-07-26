@@ -4,15 +4,21 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CompanyRequest;
 use App\Models\Company;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\Request;
 
 
 class CompanyController extends Controller {
 
     protected $company;
+    protected $message;
 
     function __construct(Company $company) {
         $this->company = $company;
+        $this->message = [
+            'statusCode' => 200,
+            'message' => ''
+        ];
     }
 
     /**
@@ -50,14 +56,23 @@ class CompanyController extends Controller {
      */
     public function store(CompanyRequest $request) {
         //验证
-        $input = $request->all();
+        $input = $request->except('_token');
         //逻辑
-        $res = Company::create($input);
-        //dd($res);
-        if (!$res) {
-            return response()->json(['statusCode' => 202, 'message' => 'add filed']);
+        try {
+
+        } catch (\Exception $exception){
+
         }
-        return response()->json(['statusCode' => 200, 'message' => 'nailed it!']);
+
+        $res = Company::create($input);
+        if (!$res) {
+            $this->message['statusCode'] = 202;
+            $this->message['message'] = 'add filed';
+        } else {
+            $this->message['statusCode'] = 200;
+            $this->message['message'] = 'nailed it!';
+        }
+        return response()->json($this->message);
     }
 
     /**
@@ -68,7 +83,7 @@ class CompanyController extends Controller {
      */
     public function show($id) {
         // find the record by id
-        $company = Company::where('id', $id);
+        $company = Company::whereId($id)->first();
         return view('company.show', ['company' => $company]);
     }
 
@@ -94,7 +109,7 @@ class CompanyController extends Controller {
      * @internal param \Illuminate\Http\Request $request
      * @internal param Company $company
      */
-    public function update(CompanyRequest $request,$id) {
+    public function update(CompanyRequest $request, $id) {
         // find the record by id
         // update the record with the request data
         $company = Company::find($id);
@@ -104,9 +119,13 @@ class CompanyController extends Controller {
         $company->enabled = $request->get('enabled');
         $res = $company->save();
         if (!$res) {
-            return response()->json(['statusCode' => 202, 'message' => 'add filed']);
+            $this->message['statusCode'] = 202;
+            $this->message['message'] = 'add filed';
+        } else {
+            $this->message['statusCode'] = 200;
+            $this->message['message'] = 'nailed it!';
         }
-        return response()->json(['statusCode' => 200, 'message' => 'nailed it!']);
+        return response()->json($this->message);
     }
 
     /**
@@ -117,8 +136,13 @@ class CompanyController extends Controller {
     public function destroy($id) {
         $res = Company::destroy($id);
         if (!$res) {
-            return response()->json(['statusCode' => 202, 'message' => 'add filed']);
+            $this->message['statusCode'] = 202;
+            $this->message['message'] = 'add filed';
+        } else {
+            $this->message['statusCode'] = 200;
+            $this->message['message'] = 'nailed it!';
+
         }
-        return response()->json(['statusCode' => 200, 'message' => 'nailed it!']);
+        return response()->json($this->message);
     }
 }

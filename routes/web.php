@@ -1,6 +1,7 @@
 <?php
+
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Auth;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -45,6 +46,7 @@ Route::post('subject/store', 'SubjectController@store');
 Route::get('subject/show/{id}', 'SubjectController@show');
 Route::get('subject/edit/{id}', 'SubjectController@edit');
 Route::put('subject/update/{id}', 'SubjectController@update');
+Route::delete('subject/delete/{id}', 'SubjectController@destroy');
 
 // 权限设置
 Route::get('group/index', 'GroupController@index');
@@ -53,6 +55,7 @@ Route::post('group/store', 'GroupController@store');
 Route::get('group/show/{id}', 'GroupController@show');
 Route::get('group/edit/{id}', 'GroupController@edit');
 Route::put('group/update/{id}', 'GroupController@update');
+Route::delete('group/delete/{id}', 'GroupController@destroy');
 
 // 运营者公司设置
 Route::get('companies/index', 'CompanyController@index');
@@ -136,3 +139,22 @@ Route::get('attendance_machines/show/{id}', 'AttendanceMachineController@show');
 Route::get('attendance_machines/edit/{id}', 'AttendanceMachineController@edit');
 Route::put('attendance_machines/update/{id}', 'AttendanceMachineController@update');
 Route::delete('attendance_machines/delete/{id}', 'AttendanceMachineController@destroy');
+
+
+//流程类型设置
+Route::get('procedure_types/index', 'ProcedureTypeController@index');
+Route::get('procedure_types/create', 'ProcedureTypeController@create');
+Route::post('procedure_types/store', 'ProcedureTypeController@store');
+Route::get('procedure_types/show/{id}', 'ProcedureTypeController@show');
+Route::get('procedure_types/edit/{id}', 'ProcedureTypeController@edit');
+Route::put('procedure_types/update/{id}', 'ProcedureTypeController@update');
+Route::delete('procedure_types/delete/{id}', 'ProcedureTypeController@destroy');
+
+//流程设置
+Route::get('procedures/index', 'ProcedureController@index');
+Route::get('procedures/create', 'ProcedureController@create');
+Route::post('procedures/store', 'ProcedureController@store');
+Route::get('procedure/show/{id}', 'ProcedureController@show');
+Route::get('procedure/edit/{id}', 'ProcedureController@edit');
+Route::put('procedure/update/{id}', 'ProcedureController@update');
+Route::delete('procedure/delete/{id}', 'ProcedureController@destroy');

@@ -2,13 +2,14 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 
 class GradeRequest extends FormRequest
 {
 
     protected $rules = [
-        'name' => 'required|string|max:255',
+        'name' => 'required|string|max:1',
         'school_id' => 'required|integer',
         'educator_ids' => 'required|integer',
         'enabled' => 'required|boolean'
@@ -61,4 +62,17 @@ class GradeRequest extends FormRequest
 
         return $array;
     }
+//
+//    protected function formatErrors(Validator $validator)
+//    {
+//        $code = "";
+//        $data= [
+//            'statusCode' =>  '200',
+//            'message' => $validator->errors()->all(),
+//            'data' => []
+//        ];
+////            var_dump($data);die;
+//            return response()->json($data);
+//    }
+
 }

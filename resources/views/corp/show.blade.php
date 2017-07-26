@@ -1,25 +1,19 @@
 @extends('layouts.master')
 @section('header')
-    <a href="{{ url('/') }}">Back to overview</a>
+    <a href="{{ url('/corps/index') }}">Back to overview</a>
     <h2>
-        {{ $school->name }}
+        {{ $corp->name }}
     </h2>
-    <a href="{{ url('schools/' . $school->id . '/edit') }}">
+    <a href="{{ url('corps/' . 'edit/' . $corp->id )  }}">
         <span class="glyphicon glyphicon-edit"></span>
         Edit
     </a>
-    <a href="{{ url('schools/' . $school->id . '/delete') }}">
+    <a href="{{  url('corps/' . 'delete/' . $corp->id )  }}">
         <span class="glyphicon glyphicon-trash"></span>
         Delete
     </a>
-    <p>Last edited: {{ $school->updated_at->diffForHumans() }}</p>
+    <p>Last edited: {{ $corp->updated_at->diffForHumans() }}</p>
 @endsection
 @section('content')
-    <p>地址：{{ $school->address }}</p>
-    <p>
-        @if ($school->schoolType)
-            类型:
-            {{ link_to('schools/schoolTypes/' . $school->schoolType->name, $school->schoolType->name) }}
-        @endif
-    </p>
+    <p>所属运营者：{{$corp->company->name}}</p>
 @endsection
