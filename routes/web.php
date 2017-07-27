@@ -30,6 +30,15 @@ Route::get('schools/edit/{id}', 'SchoolController@edit');
 Route::put('schools/update/{id}', 'SchoolController@update');
 Route::delete('schools/delete/{id}', 'SchoolController@destroy');
 
+// 学校类型设置
+Route::get('school_types/index', 'SchoolTypeController@index');
+Route::get('school_types/create', 'SchoolTypeController@create');
+Route::post('school_types/store', 'SchoolTypeController@store');
+Route::get('school_types/show/{id}', 'SchoolTypeController@show');
+Route::get('school_types/edit/{id}', 'SchoolTypeController@edit');
+Route::put('school_types/update/{id}', 'SchoolTypeController@update');
+Route::delete('school_types/delete/{id}', 'SchoolTypeController@destroy');
+
 // 科目设置
 Route::get('subject/index', 'SubjectController@index');
 Route::get('subject/create', 'SubjectController@create');
@@ -121,6 +130,14 @@ Route::get('scores/edit/{id}', 'ScoreController@edit');
 Route::put('scores/update/{id}', 'ScoreController@update');
 Route::delete('scores/delete/{id}', 'ScoreController@destroy');
 
+// 成绩统计项设置
+Route::get('score_ranges/index', 'ScoreRangeController@index');
+Route::get('score_ranges/create', 'ScoreRangeController@create');
+Route::post('score_ranges/store', 'ScoreRangeController@store');
+Route::get('score_ranges/show/{id}', 'ScoreRangeController@show');
+Route::get('score_ranges/edit/{id}', 'ScoreRangeController@edit');
+Route::put('score_ranges/update/{id}', 'ScoreRangeController@update');
+Route::delete('score_ranges/delete/{id}', 'ScoreRangeController@destroy');
 # 考勤管理
 //考勤机设置
 Route::get('attendance_machines/index', 'AttendanceMachineController@index');

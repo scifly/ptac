@@ -30,4 +30,5 @@
     <p>关联会话url：{{ $app->chat_extension_url }}</p>
     <p>应用菜单：{{ $app->menu }}</p>
     <p>是否启用：{{ $app->enabled==1 ? '是' : '否' }}</p>
+    <p>Last edited: {{ $app->updated_at->diffForHumans() }}</p>
 @endsection
