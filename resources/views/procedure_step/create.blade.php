@@ -1,13 +1,13 @@
 @extends('layouts.master')
 @section('header')
-    <h2>编辑流程类型</h2>
+    <h1>添加新流程步骤</h1>
 @endsection
 @section('content')
-    {!! Form::model($pt, [
-        'method' => 'put',
-        'id' => 'formProcedureType',
+    {!! Form::open([
+        'method' => 'post',
+        'id' => 'formProcedureStep',
         'data-parsley-validate' => 'true'
     ]) !!}
-    @include('procedure_type.create_edit')
+    @include('procedure_step.create_edit')
     {!! Form::close() !!}
 @endsection

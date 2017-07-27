@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ProcedureRequest;
-use App\Models\Procedure;
+use App\Http\Requests\ProcedureStepRequest;
+use App\Models\ProcedureStep;
 use Illuminate\Support\Facades\Request;
 
-class ProcedureController extends Controller {
-    protected $procedure;
+class ProcedureStepController extends Controller {
+    protected $procedureStep;
 
-    function __construct(Procedure $procedure) {
-        $this->procedure = $procedure;
+    function __construct(ProcedureStep $procedureStep) {
+        $this->procedureStep = $procedureStep;
     }
 
     /**
@@ -20,11 +20,11 @@ class ProcedureController extends Controller {
      */
     public function index() {
         if (Request::get('draw')) {
-            return response()->json($this->procedure->datatable());
+            return response()->json($this->procedureStep->datatable());
         }
 
-        return view('procedure.index', [
-            'js' => 'js/procedure/index.js',
+        return view('procedure_step.index', [
+            'js' => 'js/procedure_step/index.js',
             'dialog' => true
         ]);
     }
@@ -35,27 +35,28 @@ class ProcedureController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function create() {
-        return view('procedure.create', ['js' => 'js/procedure/create.js']);
+        return view('procedure_step.create', ['js' => 'js/procedure_step/create.js']);
     }
 
     /**
      * Store a newly created resource in storage.
-     * @param ProcedureRequest $request
+     * @param ProcedureStepRequest $request
      * @return \Illuminate\Http\Response
      * @internal param \Illuminate\Http\Request|Request $request
      */
-    public function store(ProcedureRequest $request) {
-        //创建一个考勤机空记录
+    public function store(ProcedureStepRequest $request) {
+        //创建一个流程步骤空记录
         //将request 请求中包含的表单数据填入空记录对应的字段中
         //保存记录
 
-        $procedure = new Procedure;
-        $procedure->procedure_type_id = $request->procedure_type_id;
-        $procedure->school_id = $request->school_id;
-        $procedure->name = $request->name;
-        $procedure->remark = $request->remark;
-        $procedure->enabled = $request->enabled;
-        if ($procedure->save()) {
+        $procedureStep = new ProcedureStep;
+        $procedureStep->procedure_id = $request->procedure_id;
+        $procedureStep->name = $request->name;
+        $procedureStep->approver_user_ids = $request->approver_user_ids;
+        $procedureStep->related_user_ids = $request->related_user_ids;
+        $procedureStep->remark = $request->remark;
+        $procedureStep->enabled = $request->enabled;
+        if ($procedureStep->save()) {
             return response()->json(['statusCode' => 200, 'message' => '创建成功！']);
         }
 
@@ -69,10 +70,10 @@ class ProcedureController extends Controller {
      */
     public function show($id) {
         //根据id 查找单条记录
-        $procedure = Procedure::whereId($id)->first();
+        $procedureStep = ProcedureStep::whereId($id)->first();
 
         //记录返回给view
-        return view('procedure.show', ['procedure' => $procedure]);
+        return view('procedure_step.show', ['procedureStep' => $procedureStep]);
     }
 
     /**
@@ -83,35 +84,36 @@ class ProcedureController extends Controller {
      */
     public function edit($id) {
         //根据id 查找单条记录
-        $procedure = Procedure::whereId($id)->first();
+        $procedureStep = ProcedureStep::whereId($id)->first();
 
         //记录返回给view
-        return view('procedure.edit', [
-            'js' => 'js/procedure/edit.js',
-            'procedure' => $procedure
+        return view('procedure_step.edit', [
+            'js' => 'js/procedure_step/edit.js',
+            'procedureStep' => $procedureStep
         ]);
     }
 
     /**
      * Update the specified resource in storage.
-     * @param ProcedureRequest $request
+     * @param ProcedureStepRequest $request
      * @param $id
      * @return \Illuminate\Http\Response
      * @internal param \Illuminate\Http\Request|Request $request
      * @internal param AttendanceMachine $attendanceMachine
      */
-    public function update(ProcedureRequest $request, $id) {
+    public function update(ProcedureStepRequest $request, $id) {
         //根据id查找记录，
         //把request 传的值，赋值给对应的字段
         //保存当前记录
         //根据操作结果返回不同的json数据
-        $procedure = Procedure::whereId($id)->first();
-        $procedure->procedure_type_id = $request->procedure_type_id;
-        $procedure->school_id = $request->school_id;
-        $procedure->name = $request->name;
-        $procedure->remark = $request->remark;
-        $procedure->enabled = $request->enabled;
-        if ($procedure->save()) {
+        $procedureStep = ProcedureStep::whereId($id)->first();
+        $procedureStep->procedure_id = $request->procedure_id;
+        $procedureStep->name = $request->name;
+        $procedureStep->approver_user_ids = $request->approver_user_ids;
+        $procedureStep->related_user_ids = $request->related_user_ids;
+        $procedureStep->remark = $request->remark;
+        $procedureStep->enabled = $request->enabled;
+        if ($procedureStep->save()) {
             return response()->json(['statusCode' => 200, 'message' => '更新成功！']);
         }
 
@@ -132,9 +134,9 @@ class ProcedureController extends Controller {
         //根据id查找需要删除的数据
         //进行删除操作
         //返回json 格式的操作结果
-        $procedure = Procedure::whereId($id)->first();
+        $procedureStep = Procedure::whereId($id)->first();
 
-        if ($procedure->delete()) {
+        if ($procedureStep->delete()) {
             return response()->json(['statusCode' => 200, 'message' => '删除成功！']);
         }
 

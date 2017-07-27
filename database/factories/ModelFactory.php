@@ -154,13 +154,21 @@ $factory->define(App\Models\User::class, function (Faker\Generator $faker) {
         'password' => md5('123456'),
         'gender' => 1,
         'realname' => $faker->name,
-        'avatar_url' =>'http://www.baidu.com',
-        'enabled' => 1,
-        'userid' => 002,
-        'department_ids'=>30
-
+        'avatar_url' => 'http://www.baidu.com',
+        'remember_token' => '454564fdafdafadfsa',
+        'email' => '18513094620@qq.com',
+        'wechatid' => 'fdsfds45454',
+        'enabled' => 1
     ];
+});
 
+
+$factory->define(App\Models\Custodian::class, function (Faker\Generator $faker) {
+
+    return [
+        'user_id' => rand(1, 5),
+        'expiry' => $faker->dateTime,
+    ];
 });
 
 $factory->define(App\Models\Student::class, function (Faker\Generator $faker) {
@@ -183,10 +191,22 @@ $factory->define(App\Models\Squad::class, function (Faker\Generator $faker) {
         'grade_id' => 1,
         'name' => $faker->name,
         'educator_ids' => 0035,
-        'enabled' => 1,
-
+        'enabled' => 1
     ];
 
+});
+
+
+$factory->define(App\Models\ProcedureStep::class, function (Faker\Generator $faker) {
+
+    return [
+        'procedure_id' => 1,
+        'name' => $faker->name,
+        'approver_user_ids' => '1|2|3',
+        'related_user_ids' => '2|3|4',
+        'remark' => $faker->name,
+        'enabled' => 1
+    ];
 });
 
 $factory->define(App\Models\Group::class, function (Faker\Generator $faker) {
@@ -194,8 +214,7 @@ $factory->define(App\Models\Group::class, function (Faker\Generator $faker) {
     return [
         'name' => $faker->name,
         'remark' => $faker->sentence(5),
-        'enabled' => 1,
-
+        'enabled' => 1
     ];
 
 });

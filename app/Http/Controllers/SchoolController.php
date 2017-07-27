@@ -23,7 +23,10 @@ class SchoolController extends Controller {
         if (Request::get('draw')) {
             return response()->json($this->school->datatable());
         }
-        return view('school.index', ['js' => 'js/school/index.js']);
+        return view('school.index', [
+            'js' => 'js/school/index.js',
+            'datatable' => true
+        ]);
     
     }
     

@@ -1,1 +1,1 @@
-$(crud.create('formAttendanceMachine', 'attendance_machines'));
+$(crud.create('formAttendanceMachine'));
