@@ -2,7 +2,7 @@
 @section('header')
     <div class="panel-heading">
         <div class="btn-group">
-            <a href="{{ url('subject/create') }}" class="btn btn-primary pull-right">
+            <a href="{{ url('subjects/create') }}" class="btn btn-primary pull-right">
                 添加新科目
             </a>
         </div>

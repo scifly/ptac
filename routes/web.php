@@ -31,22 +31,22 @@ Route::put('schools/update/{id}', 'SchoolController@update');
 Route::delete('schools/delete/{id}', 'SchoolController@destroy');
 
 // 科目设置
-Route::get('subject/index', 'SubjectController@index');
-Route::get('subject/create', 'SubjectController@create');
-Route::post('subject/store', 'SubjectController@store');
-Route::get('subject/show/{id}', 'SubjectController@show');
-Route::get('subject/edit/{id}', 'SubjectController@edit');
-Route::put('subject/update/{id}', 'SubjectController@update');
-Route::delete('subject/delete/{id}', 'SubjectController@destroy');
+Route::get('subjects/index', 'SubjectController@index');
+Route::get('subjects/create', 'SubjectController@create');
+Route::post('subjects/store', 'SubjectController@store');
+Route::get('subjects/show/{id}', 'SubjectController@show');
+Route::get('subjects/edit/{id}', 'SubjectController@edit');
+Route::put('subjects/update/{id}', 'SubjectController@update');
+Route::delete('subjects/delete/{id}', 'SubjectController@destroy');
 
 // 权限设置
-Route::get('group/index', 'GroupController@index');
-Route::get('group/create', 'GroupController@create');
-Route::post('group/store', 'GroupController@store');
-Route::get('group/show/{id}', 'GroupController@show');
-Route::get('group/edit/{id}', 'GroupController@edit');
-Route::put('group/update/{id}', 'GroupController@update');
-Route::delete('group/delete/{id}', 'GroupController@destroy');
+Route::get('groups/index', 'GroupController@index');
+Route::get('groups/create', 'GroupController@create');
+Route::post('groups/store', 'GroupController@store');
+Route::get('groups/show/{id}', 'GroupController@show');
+Route::get('groups/edit/{id}', 'GroupController@edit');
+Route::put('groups/update/{id}', 'GroupController@update');
+Route::delete('groups/delete/{id}', 'GroupController@destroy');
 
 // 运营者公司设置
 Route::get('companies/index', 'CompanyController@index');
