@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\GradeRequest;
 use App\Models\Grade;
-use Illuminate\Support\Facades\Request;
-use Illuminate\Support\Facades\Validator;
 
 class GradeController extends Controller
 {
@@ -44,6 +42,7 @@ class GradeController extends Controller
 
     /**
      * 保存新创建的年级记录
+     * @param GradeRequest $gradeRequest
      * @return \Illuminate\Http\Response
      * @internal param \Illuminate\Http\Request|Request $request
      */
@@ -51,9 +50,9 @@ class GradeController extends Controller
     {
         // request
         $data['name'] = $gradeRequest->input('name');
-        $data['school_id'] = $gradeRequest->input('school_id');
-        $data['educator_ids'] = $gradeRequest->input('educator_ids');
-        $data['enabled'] = $gradeRequest->input('enabled');
+//        $data['school_id'] = $gradeRequest->input('school_id');
+//        $data['educator_ids'] = $gradeRequest->input('educator_ids');
+//        $data['enabled'] = $gradeRequest->input('enabled');
 
         if(Grade::create($data))
         {
