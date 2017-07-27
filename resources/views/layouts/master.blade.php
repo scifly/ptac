@@ -543,9 +543,11 @@
 <script src="{{ URL::asset('js/adminlte.min.js') }}"></script>
 <!-- Sparkline -->
 <script src="{{ URL::asset('js/jquery.sparkline.min.js') }}"></script>
-<!-- jvectormap  -->
-<script src="{{ URL::asset('js/jquery-jvectormap-1.2.2.min.js') }}"></script>
-<script src="{{ URL::asset('js/jquery-jvectormap-world-mill-en.js') }}"></script>
+@isset($map)
+    <!-- jvectormap  -->
+    <script src="{{ URL::asset('js/jquery-jvectormap-1.2.2.min.js') }}"></script>
+    <script src="{{ URL::asset('js/jquery-jvectormap-world-mill-en.js') }}"></script>
+@endisset
 <!-- SlimScroll -->
 <script src="{{ URL::asset('js/jquery.slimscroll.min.js') }}"></script>
 @isset($chart)

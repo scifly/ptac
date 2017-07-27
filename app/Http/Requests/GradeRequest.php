@@ -9,7 +9,7 @@ class GradeRequest extends FormRequest
 {
 
     protected $rules = [
-        'name' => 'required|string|max:255',
+        'name' => 'required|string|max:1',
         'school_id' => 'required|integer',
         'educator_ids' => 'required|array',
         'enabled' => 'required|boolean'
@@ -62,17 +62,8 @@ class GradeRequest extends FormRequest
 
         return $array;
     }
-//
-//    protected function formatErrors(Validator $validator)
-//    {
-//        $code = "";
-//        $data= [
-//            'statusCode' =>  '200',
-//            'message' => $validator->errors()->all(),
-//            'data' => []
-//        ];
-////            var_dump($data);die;
-//            return response()->json($data);
-//    }
+    public function wantsJson() { return true; }
+
+
 
 }
