@@ -36,7 +36,6 @@ class Student extends Model {
 
     protected $table = 'students';
 
-
     protected $fillable = [
         'user_id',
         'class_id',
