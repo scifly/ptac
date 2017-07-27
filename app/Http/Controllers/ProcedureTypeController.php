@@ -23,7 +23,10 @@ class ProcedureTypeController extends Controller {
             return response()->json($this->procedureType->datatable());
         }
 
-        return view('procedure_type.index', ['js' => 'js/procedure_type/index.js']);
+        return view('procedure_type.index', [
+            'js' => 'js/procedure_type/index.js',
+            'dialog' => true
+        ]);
     }
 
     /**
@@ -83,34 +86,55 @@ class ProcedureTypeController extends Controller {
         //记录返回给view
         return view('procedure_type.edit', [
             'js' => 'js/procedure_type/edit.js',
-            'am' => $pt
+            'pt' => $pt
         ]);
     }
 
     /**
      * Update the specified resource in storage.
+     * @param ProcedureTypeRequest $request
+     * @param $id
      * @return \Illuminate\Http\Response
      * @internal param \Illuminate\Http\Request|Request $request
      * @internal param AttendanceMachine $attendanceMachine
      */
-    public function update() {
-        //跟进id查找记录，
+    public function update(ProcedureTypeRequest $request, $id) {
+        //根据id查找记录，
         //把request 传的值，赋值给对应的字段
         //保存当前记录
         //根据操作结果返回不同的json数据
+
+        $pt = ProcedureType::whereId($id)->first();
+        $pt->name = $request->name;
+        $pt->remark = $request->remark;
+        $pt->enabled = $request->enabled;
+        if ($pt->save()) {
+            return response()->json(['statusCode' => 200, 'message' => '更新成功！']);
+        }
+
+        return response()->json(['statusCode' => 500, 'message' => '更新失败！']);
 
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param ProcedureType $procedure_type
+     * @param $id
      * @return \Illuminate\Http\Response
+     * @internal param ProcedureType $procedure_type
      * @internal param AttendanceMachine $attendanceMachine
      */
-    public function destroy(ProcedureType $procedure_type) {
+    public function destroy($id) {
         //根据id查找需要删除的数据
         //进行删除操作
         //返回json 格式的操作结果
+
+        $pt = ProcedureType::whereId($id)->first();
+
+        if ($pt->delete()) {
+            return response()->json(['statusCode' => 200, 'message' => '删除成功！']);
+        }
+
+        return response()->json(['statusCode' => 500, 'message' => '删除失败！']);
     }
 }

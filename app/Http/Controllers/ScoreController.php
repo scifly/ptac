@@ -53,16 +53,13 @@ class ScoreController extends Controller {
      * @internal param \Illuminate\Http\Request $request
      */
     public function store(ScoreRequest $request) {
-        //验证
-        $input = $request->except('_token');
-        //逻辑
-        $res = Score::create($input);
+        $res = $this->score->create($request->except('_token'));
         if (!$res) {
             $this->message['statusCode'] = 202;
-            $this->message['message'] = 'add filed';
+            $this->message['message'] = '添加失败';
         } else {
             $this->message['statusCode'] = 200;
-            $this->message['message'] = 'nailed it!';
+            $this->message['message'] = '添加成功!';
         }
         return response()->json($this->message);
     }
@@ -75,11 +72,8 @@ class ScoreController extends Controller {
      * @internal param Score $score
      */
     public function show($id) {
-        // find the record by id
-        $score = Score::whereId($id)->first();
-        $userid = $score->student->user_id;
-        $studentname = User::whereId($userid)->first();
-        //$username = User::whereId($userid)->pluck('realname');
+        $score = $this->score->findOrFail($id);
+        $studentname = User::whereId($score->student->user_id)->get(['realname'])->first();
         return view('score.show', ['score' => $score, 'studentname' => $studentname]);
     }
 
@@ -91,10 +85,10 @@ class ScoreController extends Controller {
      * @internal param Score $score
      */
     public function edit($id) {
-        $score = Score::whereId($id)->first();
         return view('score.edit', [
             'js' => 'js/score/edit.js',
-            'score' => $score
+            'score' => $this->score->findOrFail($id),
+            'form' => true
         ]);
     }
 
@@ -107,23 +101,13 @@ class ScoreController extends Controller {
      * @internal param Score $score
      */
     public function update(ScoreRequest $request, $id) {
-        // find the record by id
-        // update the record with the request data
-        $score = Score::find($id);
-        $score->student_id = $request->get('student_id');
-        $score->subject_id = $request->get('subject_id');
-        $score->exam_id = $request->get('exam_id');
-        $score->class_rank = $request->get('class_rank');
-        $score->grade_rank = $request->get('grade_rank');
-        $score->score = $request->get('score');
-        $score->enabled = $request->get('enabled');
-        $res = $score->save();
+        $res = $this->score->findOrFail($id)->update($request->all());
         if (!$res) {
             $this->message['statusCode'] = 202;
-            $this->message['message'] = 'add filed';
+            $this->message['message'] = '更新失败';
         } else {
             $this->message['statusCode'] = 200;
-            $this->message['message'] = 'nailed it!';
+            $this->message['message'] = '更新成功';
         }
         return response()->json($this->message);
     }
@@ -136,14 +120,13 @@ class ScoreController extends Controller {
      * @internal param Score $score
      */
     public function destroy($id) {
-        $res = Score::destroy($id);
+        $res = $this->score->findOrFail($id)->delete();
         if (!$res) {
             $this->message['statusCode'] = 202;
-            $this->message['message'] = 'add filed';
+            $this->message['message'] = '删除失败';
         } else {
             $this->message['statusCode'] = 200;
-            $this->message['message'] = 'nailed it!';
-
+            $this->message['message'] = '删除成功';
         }
         return response()->json($this->message);
     }

@@ -1,6 +1,7 @@
 <?php
 
 /*
+ *
 |--------------------------------------------------------------------------
 | Model Factories
 |--------------------------------------------------------------------------
@@ -110,6 +111,15 @@ $factory->define(App\Models\ProcedureType::class, function (Faker\Generator $fak
 
 });
 
+$factory->define(App\Models\Team::class, function (Faker\Generator $faker) {
+
+    return [
+        'name' => $faker->name,
+        'enabled' => 1
+    ];
+
+});
+
 $factory->define(App\Models\Procedure::class, function (Faker\Generator $faker) {
 
     return [
@@ -121,7 +131,6 @@ $factory->define(App\Models\Procedure::class, function (Faker\Generator $faker) 
     ];
 
 });
-
 
 $factory->define(App\Models\Subject::class, function (Faker\Generator $faker) {
 
@@ -145,26 +154,80 @@ $factory->define(App\Models\User::class, function (Faker\Generator $faker) {
         'password' => md5('123456'),
         'gender' => 1,
         'realname' => $faker->name,
-        'avatar_url' =>'http://www.baidu.com',
-        'enabled' => 1,
-        'userid' => 002,
-        'department_ids'=>30
-
+        'avatar_url' => 'http://www.baidu.com',
+        'remember_token' => '454564fdafdafadfsa',
+        'email' => '18513094620@qq.com',
+        'wechatid' => 'fdsfds45454',
+        'enabled' => 1
     ];
-
 });
 
+
+$factory->define(App\Models\Custodian::class, function (Faker\Generator $faker) {
+
+    return [
+        'user_id' => rand(1, 5),
+        'expiry' => $faker->dateTime,
+    ];
+});
 
 $factory->define(App\Models\Student::class, function (Faker\Generator $faker) {
 
     return [
         'user_id' => 1,
         'class_id' => 1,
-        'student_number' => $faker->randomNumber(9),
+        'student_number' => 2017211132,
         'card_number' => $faker->creditCardNumber,
         'oncampus' => 1,
         'birthday' => $faker->date(),
-        'remark' => $faker->sentence(10)
+        'remark' => $faker->sentence(10),
+    ];
+});
+
+
+$factory->define(App\Models\Squad::class, function (Faker\Generator $faker) {
+
+    return [
+        'grade_id' => 1,
+        'name' => $faker->name,
+        'educator_ids' => 0035,
+        'enabled' => 1
+    ];
+
+});
+
+
+$factory->define(App\Models\ProcedureStep::class, function (Faker\Generator $faker) {
+
+    return [
+        'procedure_id' => 1,
+        'name' => $faker->name,
+        'approver_user_ids' => '1|2|3',
+        'related_user_ids' => '2|3|4',
+        'remark' => $faker->name,
+        'enabled' => 1
+    ];
+});
+
+$factory->define(App\Models\Group::class, function (Faker\Generator $faker) {
+
+    return [
+        'name' => $faker->name,
+        'remark' => $faker->sentence(5),
+        'enabled' => 1
+    ];
+
+});
+
+
+$factory->define(App\Models\ScoreRange::class, function (Faker\Generator $faker) {
+    return [
+        'name' => $faker->name,
+        'subject_ids' => '1|2|3',
+        'school_id' => 1,
+        'start_score' => 250,
+        'end_score' => 400,
+        'enabled' => 1
     ];
 });
 

@@ -6,11 +6,17 @@
                 {!! Form::label('name', '名称',['class' => 'col-sm-4 control-label']) !!}
                 {!! csrf_field() !!}
                 <div class="col-sm-2">
-                    {!! Form::text('name', null, ['class' => 'form-control']) !!}
+                    {!! Form::text('name', null, [
+                        'class' => 'form-control',
+                        'placeholder' => '(不超过40个汉字)',
+                        'data-parsley-required' => 'true',
+                        'data-parsley-minlength' => '4',
+                        'data-parsley-maxlength' => '40'
+                    ]) !!}
                 </div>
-                <div class="col-sm-5">
-                    <p class="form-control-static text-danger">{{ $errors->first('name') }}</p>
-                </div>
+                {{--<div class="col-sm-5">--}}
+                    {{--<p class="form-control-static text-danger">{{ $errors->first('name') }}</p>--}}
+                {{--</div>--}}
             </div>
 
             <div class="form-group">
@@ -22,7 +28,7 @@
             <div class="form-group">
                 {!! Form::label('educator_ids', '年级主任',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-2">
-                    {!! Form::select('educator_ids', $educators, null, ['class' => 'form-control']) !!}
+                    {!! Form::select('educator_ids[]', $educators, null, ['class' => 'form-control', 'multiple' => 'multiple']) !!}
                 </div>
             </div>
             <div class="form-group">

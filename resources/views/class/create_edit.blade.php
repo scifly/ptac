@@ -10,8 +10,8 @@
                         'class' => 'form-control',
                         'placeholder' => '(不超过40个汉字)',
                         'data-parsley-required' => 'true',
-                        'max' => '120'
-
+                        'data-parsley-minlength' => '4',
+                        'data-parsley-maxlength' => '40'
                     ]) !!}
                 </div>
                 <div class="col-sm-5">
@@ -28,7 +28,7 @@
             <div class="form-group">
                 {!! Form::label('educator_ids', '年级主任',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-2">
-                    {!! Form::select('educator_ids', $educators, null,['class' => 'form-control', 'multiple' => 'multiple']) !!}
+                    {!! Form::select('educator_ids[]', $educators, null,['class' => 'form-control', 'multiple' => 'multiple']) !!}
                 </div>
             </div>
             <div class="form-group">

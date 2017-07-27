@@ -1,1 +1,1 @@
-$(crud.create('formProcedureType', 'procedure_types'));
+$(crud.create('formProcedureType'));

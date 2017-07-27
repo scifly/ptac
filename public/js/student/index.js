@@ -1,1 +1,1 @@
-$(crud.index('student'));
+$(crud.index());

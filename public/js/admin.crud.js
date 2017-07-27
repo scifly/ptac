@@ -95,11 +95,16 @@ var crud = {
         });
     },
 
+
     edit: function (formId) {
         var $cancel = $('#cancel');
         var $form = $('#' + formId);
 
         $('select').select2();
+        var path = window.location.pathname;
+        var paths = path.split('/');
+        var id = paths[paths.length - 1];
+
         $form.parsley().on("form:validated", function () {
             var ok = $('.parsley-error').length === 0;
             if (ok) {

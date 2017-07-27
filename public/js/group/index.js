@@ -1,1 +1,1 @@
-$(crud.index('group'));
+$(crud.index());

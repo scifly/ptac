@@ -39,7 +39,5 @@ class CorpRequest extends FormRequest
             'corpid.max' => '36个小写字母与阿拉伯数字'
         ];
     }
-    protected function formatErrors(Validator $validator) {
-        return $validator->errors()->all();
-    }
+    public function wantsJson() { return true; }
 }
