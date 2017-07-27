@@ -6,7 +6,7 @@ var crud = {
             ajax: 'index',
             order: [[0, 'desc']],
             stateSave: true,
-            language: {url: '../files.json'}
+            language: {url: '../files/ch.json'}
         });
 
         var $dialog = $('#modal-dialog');
