@@ -138,5 +138,27 @@ $factory->define(App\Models\User::class, function (Faker\Generator $faker) {
 
 });
 
+$factory->define(App\Models\Subject::class, function (Faker\Generator $faker) {
+    return [
+        'school_id' => 1,
+        'name' => $faker->name,
+        'isaux' => 1,
+        'max_score' => 150,
+        'pass_score' => 90,
+        'grade_ids' => '1|33|22',
+        'enabled' => 1
+    ];
+});
+
+$factory->define(App\Models\ScoreRange::class, function (Faker\Generator $faker) {
+    return [
+        'name' => $faker->name,
+        'subject_ids' => '1|2|3',
+        'school_id' => 1,
+        'start_score' => 250,
+        'end_score' => 400,
+        'enabled' => 1
+    ];
+});
 
 
