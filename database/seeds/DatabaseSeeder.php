@@ -13,8 +13,10 @@ class DatabaseSeeder extends Seeder {
 
 //         $this->call(UserSeeder::class);
 
+
 //        $this->call(SchoolTypeSeeder::class);
 //        $this->call(SubjectSeeder::class);
+//        $this->call(ScoreRangeSeeder::class);
 //        $this->call(CorpSeeder::class);
 //        $this->call(SchoolSeeder::class);
 //        $this->call(GradeSeeder::class);
@@ -28,9 +30,7 @@ class DatabaseSeeder extends Seeder {
         $this->call(GroupSeeder::class);
 
 //        $this->call(TeamSeeder::class);
-//       $this->call(StudentSeeder::class);
+//        $this->call(StudentSeeder::class);
 //        $this->call(ExamSeeder::class);
-
     }
-    
 }

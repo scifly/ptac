@@ -130,6 +130,14 @@ Route::get('scores/edit/{id}', 'ScoreController@edit');
 Route::put('scores/update/{id}', 'ScoreController@update');
 Route::delete('scores/delete/{id}', 'ScoreController@destroy');
 
+// 成绩统计项设置
+Route::get('score_ranges/index', 'ScoreRangeController@index');
+Route::get('score_ranges/create', 'ScoreRangeController@create');
+Route::post('score_ranges/store', 'ScoreRangeController@store');
+Route::get('score_ranges/show/{id}', 'ScoreRangeController@show');
+Route::get('score_ranges/edit/{id}', 'ScoreRangeController@edit');
+Route::put('score_ranges/update/{id}', 'ScoreRangeController@update');
+Route::delete('score_ranges/delete/{id}', 'ScoreRangeController@destroy');
 # 考勤管理
 //考勤机设置
 Route::get('attendance_machines/index', 'AttendanceMachineController@index');

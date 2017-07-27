@@ -110,6 +110,7 @@ $factory->define(App\Models\ProcedureType::class, function (Faker\Generator $fak
     ];
 
 });
+
 $factory->define(App\Models\Team::class, function (Faker\Generator $faker) {
 
     return [
@@ -130,7 +131,6 @@ $factory->define(App\Models\Procedure::class, function (Faker\Generator $faker) 
     ];
 
 });
-
 
 $factory->define(App\Models\Subject::class, function (Faker\Generator $faker) {
 
@@ -158,20 +158,6 @@ $factory->define(App\Models\User::class, function (Faker\Generator $faker) {
         'enabled' => 1,
         'userid' => 002,
         'department_ids'=>30
-
-    ];
-
-});
-
-$factory->define(App\Models\Subject::class, function (Faker\Generator $faker) {
-
-    return [
-        'school_id' => 1,
-        'name' => $faker->name,
-        'isaux' => 1,
-        'max_score' => 150,
-        'pass_score' => 90,
-        'grade_ids' => '1|33|22'
 
     ];
 
@@ -215,16 +201,14 @@ $factory->define(App\Models\Group::class, function (Faker\Generator $faker) {
 });
 
 
-$factory->define(App\Models\Student::class, function (Faker\Generator $faker) {
-
+$factory->define(App\Models\ScoreRange::class, function (Faker\Generator $faker) {
     return [
-        'user_id' => 1,
-        'class_id' => 1,
-        'student_number' => $faker->randomNumber(9),
-        'card_number' => $faker->creditCardNumber,
-        'oncampus' => 1,
-        'birthday' => $faker->date(),
-        'remark' => $faker->sentence(10)
+        'name' => $faker->name,
+        'subject_ids' => '1|2|3',
+        'school_id' => 1,
+        'start_score' => 250,
+        'end_score' => 400,
+        'enabled' => 1
     ];
 });
 
