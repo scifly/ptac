@@ -1,5 +1,7 @@
 getSubjectBySchoolId();
-
+if($('#subject_select_ids').val()){
+    var $array_sub_ids = $('#subject_select_ids').val().split(",");
+}
 $('#school_id').change(function(){
     getSubjectBySchoolId();
 });
@@ -23,9 +25,14 @@ function getSubjectBySchoolId() {
                     });
                 }else{
                     $array = eval(result.subjects);
-                    for(var i=0;i<$array.length;i++){
-                        $subjectSelect.append("<option value='"+$array[i].id+"'>"+$array[i].name+"</option>");
-                    }
+                    $.each($array,function () {
+                        $subjectSelect.append("<option value='"+this.id+"'>"+this.name+"</option>");
+                    })
+                    $("#subject_ids option").each(function() {
+                        if($.inArray($(this).val(),$array_sub_ids) !== -1){
+                            $(this).attr('selected','selected');
+                        }
+                    })
                 }
             }
             return false;

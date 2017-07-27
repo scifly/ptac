@@ -45,12 +45,9 @@
             <div class="form-group">
                 {!! Form::label('subject_ids', '统计科目',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-3">
-                    {!! Form::select('subject_ids[]', $subjects, null, [
-                    'class' => 'form-control',
-                    'id' => 'subject_ids',
-                    'data-parsley-required' => 'true',
-                    'multiple' => 'multiple'
-                    ]) !!}
+                    <input type="hidden" id="subject_select_ids" value="{{ $scoreRange['subject_ids'] or '' }}">
+                    <select name="subject_ids[]" id="subject_ids" class="form-control" multiple="multiple" data-parsley-required="true">
+                    </select>
                 </div>
             </div>
             <div class="form-group">
