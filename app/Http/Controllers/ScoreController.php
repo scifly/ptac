@@ -9,15 +9,8 @@ use Illuminate\Support\Facades\Request;
 
 class ScoreController extends Controller {
     protected $score;
-    protected $message;
 
-    function __construct(Score $score) {
-        $this->score = $score;
-        $this->message = [
-            'statusCode' => 200,
-            'message' => ''
-        ];
-    }
+    function __construct(Score $score) {$this->score = $score;}
 
     /**
      * 显示成绩列表
@@ -32,11 +25,12 @@ class ScoreController extends Controller {
         }
         return view('score.index', [
             'js' => 'js/score/index.js',
-            'dialog' => true
+            'dialog' => true,
+            'datatable' => true,
+            'form' => true
         ]);
 
     }
-
 
     /**
      * 显示创建成绩记录的表单
@@ -44,24 +38,27 @@ class ScoreController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function create() {
-        return view('score.create', ['js' => 'js/score/create.js']);
+        return view('score.create', [
+            'js' => 'js/score/create.js',
+            'form' => true
+            ]);
     }
 
     /**
      * 保存新创建的成绩记录
+     * @param ScoreRequest $request
      * @return \Illuminate\Http\Response
      * @internal param \Illuminate\Http\Request $request
      */
     public function store(ScoreRequest $request) {
-        $res = $this->score->create($request->except('_token'));
-        if (!$res) {
-            $this->message['statusCode'] = 202;
-            $this->message['message'] = '添加失败';
+        if ($this->score->create($request->all())) {
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
+            $this->result['message'] = self::MSG_CREATE_OK;
         } else {
-            $this->message['statusCode'] = 200;
-            $this->message['message'] = '添加成功!';
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+            $this->result['message'] = '';
         }
-        return response()->json($this->message);
+        return response()->json($this->result);
     }
 
     /**
@@ -101,15 +98,14 @@ class ScoreController extends Controller {
      * @internal param Score $score
      */
     public function update(ScoreRequest $request, $id) {
-        $res = $this->score->findOrFail($id)->update($request->all());
-        if (!$res) {
-            $this->message['statusCode'] = 202;
-            $this->message['message'] = '更新失败';
+        if ($this->score->findOrFail($id)->update($request->all())) {
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
+            $this->result['message'] = self::MSG_EDIT_OK;
         } else {
-            $this->message['statusCode'] = 200;
-            $this->message['message'] = '更新成功';
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+            $this->result['message'] = '';
         }
-        return response()->json($this->message);
+        return response()->json($this->result);
     }
 
     /**
@@ -120,14 +116,13 @@ class ScoreController extends Controller {
      * @internal param Score $score
      */
     public function destroy($id) {
-        $res = $this->score->findOrFail($id)->delete();
-        if (!$res) {
-            $this->message['statusCode'] = 202;
-            $this->message['message'] = '删除失败';
+        if ($this->score->findOrFail($id)->delete()) {
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
+            $this->result['message'] = self::MSG_DEL_OK;
         } else {
-            $this->message['statusCode'] = 200;
-            $this->message['message'] = '删除成功';
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+            $this->result['message'] = '';
         }
-        return response()->json($this->message);
+        return response()->json($this->result);
     }
 }
