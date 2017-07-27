@@ -1,14 +1,14 @@
 @extends('layouts.master')
 @section('header')
-    <a href="{{ url('/') }}">Back to overview</a>
+    <a href="{{ url('/corps/index') }}">Back to overview</a>
     <h2>
         {{ $corp->name }}
     </h2>
-    <a href="{{ url('corps/' . $corp->id . '/edit') }}">
+    <a href="{{ url('corps/' . 'edit/' . $corp->id )  }}">
         <span class="glyphicon glyphicon-edit"></span>
         Edit
     </a>
-    <a href="{{ url('corps/' . $corp->id . '/delete') }}">
+    <a href="{{  url('corps/' . 'delete/' . $corp->id )  }}">
         <span class="glyphicon glyphicon-trash"></span>
         Delete
     </a>

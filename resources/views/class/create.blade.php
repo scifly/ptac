@@ -3,7 +3,7 @@
     <h1>添加新班级</h1>
 @endsection
 @section('content')
-    {!! Form::open(['url' => 'classes/store', 'method' => 'post', 'id' => 'fromSquad']) !!}
+    {!! Form::open(['method' => 'post', 'id' => 'fromSquad', 'data-parsley-validate' => 'true']) !!}
     @include('class.create_edit')
     {!! Form::close() !!}
 @endsection

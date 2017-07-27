@@ -1,7 +1,13 @@
-<?php
-/**
- * Created by PhpStorm.
- * User: Yuhang
- * Date: 2017/7/12
- * Time: 14:34
- */
+@extends('layouts.master')
+@section('header')
+    <h1>添加新学期</h1>
+@endsection
+@section('content')
+    {!! Form::open([
+        'method' => 'post',
+        'id' => 'formSemester',
+        'data-parsley-validate' => 'true'
+    ]) !!}
+    @include('semester.create_edit')
+    {!! Form::close() !!}
+@endsection
