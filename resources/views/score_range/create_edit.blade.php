@@ -47,6 +47,7 @@
                 <div class="col-sm-3">
                     {!! Form::select('subject_ids[]', $subjects, null, [
                     'class' => 'form-control',
+                    'id' => 'subject_ids',
                     'data-parsley-required' => 'true',
                     'multiple' => 'multiple'
                     ]) !!}

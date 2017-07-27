@@ -47,6 +47,7 @@ Route::get('subject/show/{id}', 'SubjectController@show');
 Route::get('subject/edit/{id}', 'SubjectController@edit');
 Route::put('subject/update/{id}', 'SubjectController@update');
 Route::delete('subject/delete/{id}', 'SubjectController@destroy');
+Route::get('subject/query/{id}', 'SubjectController@query');
 
 // 权限设置
 Route::get('group/index', 'GroupController@index');

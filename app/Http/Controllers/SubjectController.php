@@ -150,4 +150,21 @@ class SubjectController extends Controller
         }
         return response()->json(['statusCode' => 200, 'message' => 'nailed it!']);
     }
+
+    /**
+     * 根据条件查询科目.
+     *
+     * @param $school_id
+     * @return \Illuminate\Http\Response
+     * @internal param Subject $subject
+     */
+    public function query($school_id)
+    {
+        $subjects = $this->subject->where('school_id',$school_id)->get(['id','name']);
+        if ($subjects) {
+            return response()->json(['statusCode' => 200, 'subjects' => $subjects]);
+        }else{
+            return response()->json(['statusCode' => 500, 'message' => '查询失败!']);
+        }
+    }
 }
