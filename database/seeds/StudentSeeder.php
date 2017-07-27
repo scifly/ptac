@@ -13,6 +13,7 @@ class StudentSeeder extends Seeder
     {
         factory(App\Models\Student::class, 10)->create()->each(function ($subject) {
             $subject->save();
+
         });
     }
 }

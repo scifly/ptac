@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\GradeRequest;
 use App\Models\Grade;
+use App\Models\School;
+use App\Models\User;
 use Illuminate\Support\Facades\Request;
-use Illuminate\Support\Facades\Validator;
+
 
 class GradeController extends Controller
 {
@@ -44,6 +46,7 @@ class GradeController extends Controller
 
     /**
      * 保存新创建的年级记录
+     * @param GradeRequest $gradeRequest
      * @return \Illuminate\Http\Response
      * @internal param \Illuminate\Http\Request|Request $request
      */
@@ -52,7 +55,8 @@ class GradeController extends Controller
         // request
         $data['name'] = $gradeRequest->input('name');
         $data['school_id'] = $gradeRequest->input('school_id');
-        $data['educator_ids'] = $gradeRequest->input('educator_ids');
+        $ids = $gradeRequest->input('educator_ids');
+        $data['educator_ids'] = implode(',', $ids);
         $data['enabled'] = $gradeRequest->input('enabled');
 
         if(Grade::create($data))
@@ -72,10 +76,14 @@ class GradeController extends Controller
      */
     public function show($id)
     {
-        // find the record by id
-        $grade = Grade::find($id);
+        $grade = Grade::whereId($id)->first();
+        $educators = User::whereHas('educator' , function($query) use ($grade) {
 
-        return view('grade.show', ['grade' => $grade]);
+                $f = explode(",", $grade->educator_ids);
+                $query-> whereIn('id', $f);
+
+        })->get(['id','username'])->toArray();
+        return view('grade.show', ['grade' => $grade, 'educators' => $educators]);
     }
 
     /**
@@ -95,11 +103,25 @@ class GradeController extends Controller
      * @return \Illuminate\Http\Response
      * @internal param \Illuminate\Http\Request $request
      */
-    public function update($id)
+    public function update(GradeRequest $gradeRequest ,$id)
     {
         // find the record by id
         // update the record with the request data
-        return response()->json([]);
+        $data = Grade::find($id);
+
+        $data->name = $gradeRequest->input('name');
+        $data->school_id = $gradeRequest->input('school_id');
+        $data->educator_ids = $gradeRequest->input('educator_ids');
+        $data->enabled = $gradeRequest->input('enabled');
+
+        if($data->save())
+        {
+            return response()->json(['statusCode' => 200, 'message' => '修改成功!']);
+
+        }else{
+            return response()->json(['statusCode' => 202, 'message' => '修改失败!']);
+
+        }
     }
 
     /**
@@ -110,6 +132,6 @@ class GradeController extends Controller
     {
         Grade::destroy($id);
 
-        return response()->json([['statusCode' => 200, 'Message' => 'nailed it!']]);
+        return response()->json(['statusCode' => 200, 'Message' => 'nailed it!']);
     }
 }

@@ -67,7 +67,11 @@ class School extends Model {
         return $this->belongsTo('App\Models\Corp');
         
     }
-    
+    public function grade() {
+
+        return $this->hasMany('App\Models\Grade', 'school_id', 'id');
+
+    }
     public function datatable() {
         
         $columns = [

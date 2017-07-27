@@ -26,7 +26,11 @@ class TeamController extends Controller {
         if (Request::get('draw')) {
             return response()->json($this->team->datatable());
         }
-        return view('team.index', ['js' => 'js/team/index.js']);
+        return view('team.index', [
+            'js' => 'js/team/index.js',
+            'datatable' => true,
+            'dialog' => true
+        ]);
         
     }
     
@@ -37,7 +41,10 @@ class TeamController extends Controller {
      */
     public function create() {
         
-        return view('team.create', ['js' => 'js/team/create.js']);
+        return view('team.create', [
+            'js' => 'js/team/create.js',
+            'form' => true
+        ]);
         
     }
     
@@ -49,52 +56,83 @@ class TeamController extends Controller {
      */
     public function store(TeamRequest $request) {
     
-    
+        if ($this->team->create($request->all())) {
+            return response()->json([
+                'statusCode' => 200, 'message' => '保存成功',
+            ]);
+        }
+        return response()->json([
+            'statusCode' => 500, 'message' => '保存失败'
+        ]);
     
     }
     
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Team $team
+     * @param $id
      * @return \Illuminate\Http\Response
+     * @internal param Team $team
      */
-    public function show(Team $team) {
-        
-        return view('team.show', $team);
+    public function show($id) {
+    
+        return view('team.show', [
+            'team' => $this->team->findOrFail($id)
+        ]);
         
     }
     
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Team $team
+     * @param $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(Team $team) {
+    public function edit($id) {
         
-        return view('team.edit', $team);
+        return view('team.edit', [
+            'js' => 'js/team/edit.js',
+            'team' => $this->team->findOrFail($id),
+            'form' => true
+        ]);
         
     }
     
     /**
      * Update the specified resource in storage.
      *
-     * @param  \App\Models\Team $team
+     * @param $id
      * @return \Illuminate\Http\Response
-     * @internal param \Illuminate\Http\Request $request
      */
-    public function update(Team $team) {
-        //
+    public function update($id) {
+    
+        if ($this->team->findOrFail($id)->update(Request::all())) {
+            return response()->json([
+                'statusCode' => 200, 'message' => '保存成功'
+            ]);
+        }
+        return response()->json([
+            'statusCode' => 500, 'message' => '保存失败'
+        ]);
+        
     }
     
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Team $team
+     * @param $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Team $team) {
-        //
+    public function destroy($id) {
+    
+        if ($this->team->findOrFail($id)->delete()) {
+            return response()->json([
+                'statusCode' => 200, 'message' => '删除成功'
+            ]);
+        }
+        return response()->json([
+            'statusCode' => 500, 'message' => '删除失败'
+        ]);
+        
     }
 }

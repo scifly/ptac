@@ -8,16 +8,19 @@
                     {!! Form::text('name', null, [
                         'class' => 'form-control',
                         'placeholder' => '(不超过40个汉字)',
-                        'data-parsley-required' => 'true',
-                        'data-parsley-minlength' => '4',
-                        'data-parsley-maxlength' => '40'
+                        // 'data-parsley-required' => 'true',
+                        // 'data-parsley-minlength' => '4',
+                        // 'data-parsley-maxlength' => '40'
                     ]) !!}
                 </div>
             </div>
             <div class="form-group">
                 {!! Form::label('remark', '备注',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-3">
-                    {!! Form::text('remark', null, ['class' => 'form-control']) !!}
+                    {!! Form::text('remark', null, [
+                    'class' => 'form-control',
+                    'data-parsley-required' => 'true'
+                    ]) !!}
                 </div>
             </div>
             <div class="form-group">

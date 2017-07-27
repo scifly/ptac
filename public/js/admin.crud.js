@@ -6,7 +6,11 @@ var crud = {
             ajax: 'index',
             order: [[0, 'desc']],
             stateSave: true,
+<<<<<<< HEAD
             language: {url: '../files/ch.json'}
+=======
+            language: {url: '../files.json'}
+>>>>>>> refs/remotes/origin/master
         });
 
         var $dialog = $('#modal-dialog');
@@ -94,7 +98,10 @@ var crud = {
             window.location = 'index';
         });
     },
+<<<<<<< HEAD
 
+=======
+>>>>>>> refs/remotes/origin/master
     edit: function (formId) {
         var $cancel = $('#cancel');
         var $form = $('#' + formId);
@@ -149,3 +156,4 @@ var crud = {
         });
     }
 };
+
