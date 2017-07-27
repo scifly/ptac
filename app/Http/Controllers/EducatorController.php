@@ -4,8 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\EducatorRequest;
 use App\Models\Educator;
+use App\Models\Team;
 use Illuminate\Support\Facades\Request;
 
+/**
+ * @property array message
+ */
 class EducatorController extends Controller
 {
 
@@ -27,7 +31,12 @@ class EducatorController extends Controller
         if (Request::get('draw')) {
             return response()->json($this->educator->datatable());
         }
-        return view('educator.index' , ['js' => 'js/educator/index.js']);
+        return view('educator.index' , [
+            'js' => 'js/educator/index.js',
+            'dialog' => true,
+            'datatable' => true,
+            'form' => true,
+            ]);
 
     }
 
@@ -39,7 +48,10 @@ class EducatorController extends Controller
     public function create()
     {
         //
-        return view('educator.create',['js' => 'js/educator/create.js']);
+        return view('educator.create',[
+            'js' => 'js/educator/create.js',
+            'form' => true
+            ]);
     }
 
     /**
@@ -58,14 +70,15 @@ class EducatorController extends Controller
         $data['school_id'] = $educatorRequest->input('school_id');
         $data['sms_quote'] = $educatorRequest->input('sms_quote');
 
-        if(Educator::create($data))
+        if($this->educator->create($data))
         {
-            return response()->json(['statusCode' => 200, 'message' => '添加成功!']);
-
-        }else{
-            return response()->json(['statusCode' => 202, 'message' => '添加失败!']);
+            $this->result['message'] = self::MSG_CREATE_OK;
+        } else {
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+            $this->result['message'] = '';
 
         }
+        return response()->json($this->result);
 
     }
 
@@ -75,9 +88,19 @@ class EducatorController extends Controller
      * @param  \App\Models\Educator  $educator
      * @return \Illuminate\Http\Response
      */
-    public function show(Educator $educator)
+    public function show($id)
     {
-        //
+        $educator = $this->educator->whereId($id)->first();
+
+        $team = Educator::with('team',function ($query) use ($educator) {
+            $f = explode(",", $educator->team_ids);
+            $query->whereIn('id', $f);
+        })->get(['id','name'])->toArray();
+
+        return view('educator.show', [
+            'educator' => $educator,
+            'team' => $team
+        ]);
     }
 
     /**
@@ -86,31 +109,62 @@ class EducatorController extends Controller
      * @param  \App\Models\Educator  $educator
      * @return \Illuminate\Http\Response
      */
-    public function edit(Educator $educator)
+    public function edit($id)
     {
-        //
+        $educator = $this->educator->whereId($id)->first();
+        return view('educator.edit', [
+            'js' => 'js/educator/edit.js',
+            'educator' => $educator,
+            'form' => true
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Educator  $educator
+     * @param EducatorRequest|\Illuminate\Http\Request $request
+     * @param $id
      * @return \Illuminate\Http\Response
+     * @internal param Educator $educator
      */
-    public function update(Request $request, Educator $educator)
+    public function update(EducatorRequest $request ,$id)
     {
-        //
+        // find the record by id
+        // update the record with the request data
+        $data = Educator::find($id);
+
+        $data->user_id = $request->input('user_id');
+        $data->school_id = $request->input('school_id');
+        $ids = $request->input('team_ids');
+        $data->team_ids = implode(',', $ids);
+        $data->sms_quote = $request->input('sms_quote');
+
+        if($data->save())
+        {
+            $this->result['message'] = self::MSG_EDIT_OK;
+        } else {
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+            $this->result['message'] = '';
+
+        }
+        return response()->json($this->result);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Educator  $educator
+     * @param $id
      * @return \Illuminate\Http\Response
+     * @internal param Educator $educator
      */
-    public function destroy(Educator $educator)
+    public function destroy($id)
     {
-        //
+        if ($this->educator->findOrFail($id)->delete()) {
+            $this->result['message'] = self::MSG_DEL_OK;
+        } else {
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+            $this->result['message'] = '';
+        }
+        return response()->json($this->result);
     }
 }

@@ -111,7 +111,7 @@ class GroupController extends Controller {
             return response()->json([
                 'statusCode' => 200, 'message' => '保存成功',
             ]);
-        }   
+        }
         
         return response()->json([
             'statusCode' => 500, 'message' => '保存失败'
