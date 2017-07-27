@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StudentRequest;
 use App\Models\Student;
 use Illuminate\Support\Facades\Request;
 
@@ -9,7 +10,16 @@ class StudentController extends Controller
 {
     protected $student;
 
-    function __construct(Student $student){ $this->student = $student; }
+    protected $message;
+
+    function __construct(Student $student)
+    {
+        $this->student = $student;
+        $this->message = [
+            'statusCode' => 200,
+            'message' => ''
+        ];
+    }
 
     /**
      * 显示学生列表
@@ -20,7 +30,10 @@ class StudentController extends Controller
         if (Request::get('draw')) {
             return response()->json($this->student->datatable());
         }
-        return view('student.index', ['js' => 'js/student/index.js']);
+        return view('student.index', [
+            'js' => 'js/student/index.js',
+            'dialog' => true
+        ]);
     }
 
     /**
@@ -38,8 +51,23 @@ class StudentController extends Controller
      * @param \Illuminate\Http\Request|Request $request
      * @return \Illuminate\Http\Response
      */
-    public function store()
+    public function store(StudentRequest $request)
     {
+
+        $data = $request->except('_token');
+
+        if($data !=null){
+            $res = $this->create($data);
+
+            if ($res) {
+                $this->message['statusCode'] = 200;
+                $this->message['message'] = 'nailed it!';
+            } else {
+                $this->message['statusCode'] = 202;
+                $this->message['message'] = 'add filed';
+            }
+            return response()->json($this->message);
+        }
 
     }
 
@@ -49,9 +77,11 @@ class StudentController extends Controller
      * @param  \App\Models\Student  $student
      * @return \Illuminate\Http\Response
      */
-    public function show()
+    public function show($id)
     {
+        $student = Student::whereId($id)->first();
 
+        return view('student.show', ['student' => $student]);
     }
 
     /**
@@ -60,9 +90,13 @@ class StudentController extends Controller
      * @param  \App\Models\Student  $student
      * @return \Illuminate\Http\Response
      */
-    public function edit()
+    public function edit($id)
     {
-        return view('student.edit', ['js' => 'js/student/edit.js']);
+        $student = Student::whereId($id)->first();
+        return view('student.edit', [
+            'js' => 'js/student/edit.js',
+            'student' => $student
+        ]);
     }
 
     /**
@@ -71,19 +105,46 @@ class StudentController extends Controller
      * @internal param \Illuminate\Http\Request $request
      * @internal param Company $company
      */
-    public function update(Request $request, Student $student)
+    public function update(StudentRequest $request, $id)
     {
+        $student = Student::find($id);
+        $student->user_id = $request->get('user_id');
+        $student->class_id = $request->get('class_id');
+        $student->student_number = $request->get('student_number');
+        $student->card_number = $request->get('card_number');
+        $student->oncampus = $request->get('oncampus');
+        $student->birthday = $request->get('birthday');
+        $student->remark = $request->get('remark');
+
+        if ($student->save()) {
+            $this->message['statusCode'] = 200;
+            $this->message['message'] = 'nailed it!';
+        } else {
+            $this->message['statusCode'] = 202;
+            $this->message['message'] = 'add filed';
+        }
+        return response()->json($this->message);
+
 
     }
 
     /**
-     * Remove the specified resource from storage.
+     * 删除学生
      *
      * @param  \App\Models\Student  $student
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Student $student)
+    public function destroy($id)
     {
+        $res = Student::destroy($id);
+        if ($res) {
+            $this->message['statusCode'] = 200;
+            $this->message['message'] = 'nailed it!';
+        }else{
+            $this->message['statusCode'] = 202;
+            $this->message['message'] = 'add filed';
+        }
+        return response()->json($this->message);
 
     }
 }

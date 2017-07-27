@@ -48,6 +48,7 @@ class DatatableFacade extends Facade {
             case 'Group': $useTable = 'Groups'; break;
             case 'Order': $useTable = 'Orders'; break;
             case 'Table': $useTable = 'Tables'; break;
+            case 'Procedure': $useTable = 'Procedures'; break;
             default: $useTable = $modelName; break;
         }
         $from =  $tableName . ' AS ' . $useTable;
@@ -174,12 +175,16 @@ class DatatableFacade extends Facade {
     static function dtOps(Model $model, $active, $row, $del = true) {
 
         $id = $row['id'];
-        $status = $active ? sprintf(self::DT_ON, '已启用') : sprintf(self::DT_OFF, '已禁用');
+        if(isset($row['enabled'])){
+            $lable = $active ? sprintf(self::DT_ON, '已启用') : sprintf(self::DT_OFF, '已禁用');
+        }else{
+            $lable = $row['updated_at'];
+        }
         $showLink = sprintf(self::DT_LINK_SHOW, /*$model->getTable(),*/ $id);
         $editLink = sprintf(self::DT_LINK_EDIT, /*$model->getTable(), */$id);
         $delLink = sprintf(self::DT_LINK_DEL, $id);
 
-        return $status . self::DT_SPACE . $showLink . self::DT_SPACE .
+        return $lable . self::DT_SPACE . $showLink . self::DT_SPACE .
             $editLink . ($del ? self::DT_SPACE . $delLink : '');
 
     }

@@ -47,15 +47,16 @@ Route::get('subject/show/{id}', 'SubjectController@show');
 Route::get('subject/edit/{id}', 'SubjectController@edit');
 Route::put('subject/update/{id}', 'SubjectController@update');
 Route::delete('subject/delete/{id}', 'SubjectController@destroy');
+Route::get('subject/query/{id}', 'SubjectController@query');
 
 // 权限设置
-Route::get('group/index', 'GroupController@index');
-Route::get('group/create', 'GroupController@create');
-Route::post('group/store', 'GroupController@store');
-Route::get('group/show/{id}', 'GroupController@show');
-Route::get('group/edit/{id}', 'GroupController@edit');
-Route::put('group/update/{id}', 'GroupController@update');
-Route::delete('group/delete/{id}', 'GroupController@destroy');
+Route::get('groups/index', 'GroupController@index');
+Route::get('groups/create', 'GroupController@create');
+Route::post('groups/store', 'GroupController@store');
+Route::get('groups/show/{id}', 'GroupController@show');
+Route::get('groups/edit/{id}', 'GroupController@edit');
+Route::put('groups/update/{id}', 'GroupController@update');
+Route::delete('groups/delete/{id}', 'GroupController@destroy');
 
 // 运营者公司设置
 Route::get('companies/index', 'CompanyController@index');
@@ -162,7 +163,16 @@ Route::delete('procedure_types/delete/{id}', 'ProcedureTypeController@destroy');
 Route::get('procedures/index', 'ProcedureController@index');
 Route::get('procedures/create', 'ProcedureController@create');
 Route::post('procedures/store', 'ProcedureController@store');
-Route::get('procedure/show/{id}', 'ProcedureController@show');
-Route::get('procedure/edit/{id}', 'ProcedureController@edit');
-Route::put('procedure/update/{id}', 'ProcedureController@update');
-Route::delete('procedure/delete/{id}', 'ProcedureController@destroy');
+Route::get('procedures/show/{id}', 'ProcedureController@show');
+Route::get('procedures/edit/{id}', 'ProcedureController@edit');
+Route::put('procedures/update/{id}', 'ProcedureController@update');
+Route::delete('procedures/delete/{id}', 'ProcedureController@destroy');
+
+//流程步骤设置
+Route::get('procedure_steps/index', 'ProcedureStepController@index');
+Route::get('procedure_steps/create', 'ProcedureStepController@create');
+Route::post('procedure_steps/store', 'ProcedureStepController@store');
+Route::get('procedure_steps/show/{id}', 'ProcedureStepController@show');
+Route::get('procedure_steps/edit/{id}', 'ProcedureStepController@edit');
+Route::put('procedure_steps/update/{id}', 'ProcedureStepController@update');
+Route::delete('procedure_steps/delete/{id}', 'ProcedureStepController@destroy');

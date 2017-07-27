@@ -59,15 +59,15 @@ class Procedure extends Model {
     public function datatable() {
 
         $columns = [
-            ['db' => 'Procedure.id', 'dt' => 0],
+            ['db' => 'Procedures.id', 'dt' => 0],
             ['db' => 'ProcedureType.name as proceduretypename', 'dt' => 1],
             ['db' => 'School.name as schoolname', 'dt' => 2],
-            ['db' => 'Procedure.name', 'dt' => 3],
-            ['db' => 'Procedure.remark', 'dt' => 4],
-            ['db' => 'Procedure.created_at', 'dt' => 5],
-            ['db' => 'Procedure.updated_at', 'dt' => 6],
+            ['db' => 'Procedures.name', 'dt' => 3],
+            ['db' => 'Procedures.remark', 'dt' => 4],
+            ['db' => 'Procedures.created_at', 'dt' => 5],
+            ['db' => 'Procedures.updated_at', 'dt' => 6],
             [
-                'db' => 'Procedure.enabled', 'dt' => 7,
+                'db' => 'Procedures.enabled', 'dt' => 7,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
                 }
@@ -80,7 +80,7 @@ class Procedure extends Model {
                 'alias' => 'School',
                 'type' => 'INNER',
                 'conditions' => [
-                    'School.id = Procedure.school_id'
+                    'School.id = Procedures.school_id'
                 ]
             ],
             [
@@ -88,7 +88,7 @@ class Procedure extends Model {
                 'alias' => 'ProcedureType',
                 'type' => 'INNER',
                 'conditions' => [
-                    'ProcedureType.id = Procedure.procedure_type_id'
+                    'ProcedureType.id = Procedures.procedure_type_id'
                 ]
             ]
         ];
