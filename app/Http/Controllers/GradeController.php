@@ -18,10 +18,7 @@ class GradeController extends Controller
 
     function __construct(Grade $grade) {
         $this->grade = $grade;
-        $this->message = [
-            'statusCode' => 200,
-            'message' => '!'
-        ];
+
     }
 
     /**
@@ -70,22 +67,21 @@ class GradeController extends Controller
         $ids = $request->input('educator_ids');
         $data['educator_ids'] = implode(',', $ids);
         $data['enabled'] = $request->input('enabled');
-
-        if($this->grade->create($data))
-        {
-            $this->message = [
-                'statusCode' => 200,
-                'message' => '添加成功!'
-            ];
-
+        $row = $this->grade->where(['school_id' => $data['school_id'], 'name' => $data['name']])->first();
+        if(!empty($row)){
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+            $this->result['message'] = '年级名称重复！';
         }else{
-            $this->message = [
-                'statusCode' => 200,
-                'message' => '添加失败!'
-            ];
-
+            if($this->grade->create($data))
+            {
+                $this->result['message'] = self::MSG_CREATE_OK;
+            } else {
+                $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+                $this->result['message'] = '';
+            }
         }
-        return response()->json($this->message);
+
+        return response()->json($this->result);
 
     }
 
@@ -103,15 +99,19 @@ class GradeController extends Controller
                 $query->whereIn('id', $f);
 
         })->get(['id','username'])->toArray();
-        return view('grade.show', ['grade' => $grade, 'educators' => $educators]);
+        return view('grade.show', [
+            'grade' => $grade,
+            'educators' => $educators
+        ]);
     }
 
     /**
      * 显示编辑年级记录的表单
+     * @param $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id) {
-        $grade = Grade::whereId($id)->first();
+        $grade = $this->grade->whereId($id)->first();
         return view('grade.edit', [
             'js' => 'js/grade/edit.js',
             'grade' => $grade,
@@ -137,22 +137,24 @@ class GradeController extends Controller
         $ids = $gradeRequest->input('educator_ids');
         $data->educator_ids = implode(',', $ids);
         $data->enabled = $gradeRequest->input('enabled');
+        $row = $this->grade->where(['school_id' => $data->school_id, 'name' => $data->name])->first();
+        if(!empty($row) && $row->id != $id){
 
-        if($data->save())
-        {
-            $this->message = [
-                'statusCode' => 200,
-                'message' => '添加成功!'
-            ];
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+            $this->result['message'] = '年级名称重复！';
 
         }else{
-            $this->message = [
-                'statusCode' => 200,
-                'message' => '添加失败!'
-            ];
+            if($data->save())
+            {
+                $this->result['message'] = self::MSG_EDIT_OK;
+            } else {
+                $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+                $this->result['message'] = '';
 
+            }
         }
-        return response()->json($this->message);
+
+        return response()->json($this->result);
     }
 
     /**
@@ -161,21 +163,13 @@ class GradeController extends Controller
      */
     public function destroy($id)
     {
-        $res = $this->grade->findOrFail($id)->delete();
-        if (!$res) {
-            $this->message = [
-                'statusCode' => 200,
-                'message' => '删除成功!'
-            ];
-
-        }else{
-            $this->message = [
-                'statusCode' => 200,
-                'message' => '删除失败!'
-            ];
-
+        if ($this->grade->findOrFail($id)->delete()) {
+            $this->result['message'] = self::MSG_DEL_OK;
+        } else {
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+            $this->result['message'] = '';
         }
-        return response()->json($this->message);
+        return response()->json($this->result);
 
     }
 }
