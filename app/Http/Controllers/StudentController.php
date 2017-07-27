@@ -53,10 +53,11 @@ class StudentController extends Controller
      */
     public function store(StudentRequest $request)
     {
+
         $data = $request->except('_token');
 
         if($data !=null){
-            $res = Student::create($data);
+            $res = $this->create($data);
 
             if ($res) {
                 $this->message['statusCode'] = 200;
