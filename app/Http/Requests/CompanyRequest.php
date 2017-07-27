@@ -39,10 +39,6 @@ class CompanyRequest extends FormRequest {
         ];
     }
 
-    /*protected function formatErrors(Validator $validator) {
-        return $validator->errors()->all();
-    }*/
-
     public function wantsJson() { return true; }
 
 }
