@@ -6,14 +6,14 @@ $('#school_id').change(function(){
 
 function getSubjectBySchoolId() {
     var school_id = $('#school_id').val();
+    $('#subject_ids').empty();
     var $subjectSelect = $('#subject_ids');
     $.ajax({
         type: 'GET',
-        url: '../subject/query/' + school_id,
+        url: '/ptac/public/subject/query/' + school_id,
         success: function(result) {
             if (result.statusCode === 200) {
                 $subjectSelect.removeAttr("disabled");
-                $subjectSelect.empty();
                 if(result.subjects.length == 0){
                     $subjectSelect.attr("disabled","disabled");
                     $.gritter.add({

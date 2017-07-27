@@ -54,14 +54,11 @@
                 </div>
             </div>
             <div class="form-group">
-                <div class="col-sm-3 col-sm-offset-4">
-                    {!! Form::radio('enabled', '1', true) !!}
-                    {!! Form::label('enabled', '启用') !!}
-                    {!! Form::radio('enabled', '0') !!}
-                    {!! Form::label('enabled', '禁用') !!}
+                <label for="enabled" class="col-sm-4 control-label">启用</label>
+                <div class="col-sm-3" style="padding-top: 5px;">
+                    <input type="checkbox" name="enabled" id="enabled" class="form-control js-switch" enabled>
                 </div>
             </div>
-
         </div>
     </div>
     <div class="box-footer">
