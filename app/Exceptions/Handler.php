@@ -46,7 +46,24 @@ class Handler extends ExceptionHandler {
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function render($request, Exception $exception) {
+        
+        if ($request->ajax() || $request->wantsJson()) {
+            $response = [
+                'errors' => '对不起，好像出了点儿问题'
+            ];
+            if (env('APP_DEBUG')) {
+                $response['exception'] = get_class($exception);
+                $response['message'] = $exception->getMessage();
+                $response['trace'] = $exception->getTrace();
+            }
+            $status = 400;
+            if ($this->isHttpException($exception)) {
+                $status = $exception->getCode();
+            }
+            return response()->json($response, $status);
+        }
         return parent::render($request, $exception);
+        
     }
     
     /**
