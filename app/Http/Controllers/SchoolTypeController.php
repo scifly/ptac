@@ -10,7 +10,9 @@ class SchoolTypeController extends Controller {
     
     protected $schoolType;
     
-    function __construct(SchoolType $schoolType) { $this->schoolType = $schoolType; }
+    function __construct(SchoolType $schoolType) {
+        $this->schoolType = $schoolType;
+    }
     
     /**
      * Display a listing of the resource.
@@ -127,7 +129,7 @@ class SchoolTypeController extends Controller {
             $this->result['message'] = self::MSG_DEL_OK;
         } else {
             $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = 'Wtf';
+            $this->result['message'] = '';
         }
         return response()->json($this->result);
         

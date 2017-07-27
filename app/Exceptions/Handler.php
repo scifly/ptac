@@ -7,8 +7,8 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-use Illuminate\Validation\ValidationException;
 use Illuminate\Session\TokenMismatchException;
+use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class Handler extends ExceptionHandler {
@@ -42,15 +42,28 @@ class Handler extends ExceptionHandler {
      * Render an exception into an HTTP response.
      *
      * @param  \Illuminate\Http\Request $request
-     * @param Exception $e
-     * @return \Illuminate\Http\Response
-     * @internal param Exception $exception
      * @param  \Exception $exception
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function render($request, Exception $e) {
-        return parent::render($request, $e);
-
+    public function render($request, Exception $exception) {
+        
+        if ($request->ajax() || $request->wantsJson()) {
+            $response = [
+                'errors' => '对不起，好像出了点儿问题'
+            ];
+            if (env('APP_DEBUG')) {
+                $response['exception'] = get_class($exception);
+                $response['message'] = $exception->getMessage();
+                $response['trace'] = $exception->getTrace();
+            }
+            $status = 400;
+            if ($this->isHttpException($exception)) {
+                $status = $exception->getCode();
+            }
+            return response()->json($response, $status);
+        }
+        return parent::render($request, $exception);
+        
     }
     
     /**

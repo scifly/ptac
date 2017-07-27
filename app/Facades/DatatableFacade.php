@@ -48,6 +48,7 @@ class DatatableFacade extends Facade {
             case 'Group': $useTable = 'Groups'; break;
             case 'Order': $useTable = 'Orders'; break;
             case 'Table': $useTable = 'Tables'; break;
+            case 'Procedure': $useTable = 'Procedures'; break;
             default: $useTable = $modelName; break;
         }
         $from =  $tableName . ' AS ' . $useTable;

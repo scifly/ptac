@@ -51,7 +51,11 @@ class School extends Model {
     
     }
     
-    
+    public function subject(){
+
+        return $this->hasMany('App\Models\Subject');
+
+    }
     public function schoolType() {
         
         return $this->belongsTo('App\Models\SchoolType');

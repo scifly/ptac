@@ -46,8 +46,8 @@ class ProcedureType extends Model {
             ['db' => 'ProcedureType.id', 'dt' => 0],
             ['db' => 'ProcedureType.name', 'dt' => 1],
             ['db' => 'ProcedureType.remark', 'dt' => 2],
-            ['db' => 'ProcedureType.create_at', 'dt' => 3],
-            ['db' => 'ProcedureType.update_at', 'dt' => 4],
+            ['db' => 'ProcedureType.created_at', 'dt' => 3],
+            ['db' => 'ProcedureType.updated_at', 'dt' => 4],
             [
                 'db' => 'ProcedureType.enabled', 'dt' => 5,
                 'formatter' => function ($d, $row) {
