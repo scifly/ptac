@@ -55,22 +55,14 @@ class CompanyController extends Controller {
      * @internal param \Illuminate\Http\Request|Request $request
      */
     public function store(CompanyRequest $request) {
-        //验证
-        $input = $request->except('_token');
-        //逻辑
-        try {
 
-        } catch (\Exception $exception){
-
-        }
-
-        $res = Company::create($input);
+        $res = $this->company->create($request->except('_token'));
         if (!$res) {
             $this->message['statusCode'] = 202;
-            $this->message['message'] = 'add filed';
+            $this->message['message'] = '添加失败';
         } else {
             $this->message['statusCode'] = 200;
-            $this->message['message'] = 'nailed it!';
+            $this->message['message'] = '添加成功';
         }
         return response()->json($this->message);
     }
@@ -83,8 +75,7 @@ class CompanyController extends Controller {
      */
     public function show($id) {
         // find the record by id
-        $company = Company::whereId($id)->first();
-        return view('company.show', ['company' => $company]);
+        return view('company.show', ['company' => $this->company->findOrFail($id)]);
     }
 
     /**
@@ -95,29 +86,24 @@ class CompanyController extends Controller {
      */
     public function edit($id) {
 
-        $company = Company::whereId($id)->first();
         return view('company.edit', [
             'js' => 'js/company/edit.js',
-            'company' => $company
+            'company' => $this->company->findOrFail($id),
+            'form' => true
         ]);
 
     }
 
     /**
      * 更新指定运营者公司记录
+     * @param CompanyRequest $request
+     * @param $id
      * @return \Illuminate\Http\Response
-     * @internal param \Illuminate\Http\Request $request
-     * @internal param Company $company
      */
     public function update(CompanyRequest $request, $id) {
         // find the record by id
         // update the record with the request data
-        $company = Company::find($id);
-        $company->name = $request->get('name');
-        $company->remark = $request->get('remark');
-        $company->corpid = $request->get('corpid');
-        $company->enabled = $request->get('enabled');
-        $res = $company->save();
+        $res = $this->company->findOrFail($id)->update($request->all());
         if (!$res) {
             $this->message['statusCode'] = 202;
             $this->message['message'] = 'add filed';
@@ -130,18 +116,18 @@ class CompanyController extends Controller {
 
     /**
      * 删除指定运营者公司记录
+     * @param $id
      * @return \Illuminate\Http\Response
      * @internal param Company $company
      */
     public function destroy($id) {
-        $res = Company::destroy($id);
+        $res = $this->company->findOrFail($id)->delete();
         if (!$res) {
             $this->message['statusCode'] = 202;
-            $this->message['message'] = 'add filed';
+            $this->message['message'] = '添加失败';
         } else {
             $this->message['statusCode'] = 200;
-            $this->message['message'] = 'nailed it!';
-
+            $this->message['message'] = '添加成功';
         }
         return response()->json($this->message);
     }

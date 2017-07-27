@@ -94,6 +94,8 @@ var crud = {
             window.location = 'index';
         });
     },
+
+
     edit: function (formId) {
         var $cancel = $('#cancel');
         var $form = $('#' + formId);
@@ -148,4 +150,3 @@ var crud = {
         });
     }
 };
-

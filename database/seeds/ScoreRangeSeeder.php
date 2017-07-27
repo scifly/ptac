@@ -2,7 +2,7 @@
 
 use Illuminate\Database\Seeder;
 
-class StudentSeeder extends Seeder
+class ScoreRangeSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -11,9 +11,8 @@ class StudentSeeder extends Seeder
      */
     public function run()
     {
-        factory(App\Models\Student::class, 10)->create()->each(function ($subject) {
-            $subject->save();
-
+        factory(App\Models\ScoreRange::class, 5)->create()->each(function ($scoreRange) {
+            $scoreRange->save();
         });
     }
 }

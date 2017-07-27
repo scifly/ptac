@@ -3,65 +3,53 @@
     <div class="box-body">
         <div class="form-horizontal">
             <div class="form-group">
-                {!! Form::label('name', '名称',['class' => 'col-sm-4 control-label']) !!}
+                {!! Form::label('name', '成绩项名称',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-3">
                     {!! Form::text('name', null, [
                     'class' => 'form-control',
-                    'placeholder' => '不能超过20个汉字',
+                    'placeholder' => '请输入成绩项名称(例：200-400)',
                     'data-parsley-required' => 'true',
-                    'data-parsley-maxlength' => '20',
-                    'data-parsley-minlength' => '2',
-
                     ]) !!}
                 </div>
             </div>
             <div class="form-group">
-                {!! Form::label('max_score', '最高分',['class' => 'col-sm-4 control-label']) !!}
+                {!! Form::label('start_score', '起始分数',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-2">
-                    {!! Form::text('max_score', null, [
+                    {!! Form::text('start_score', null, [
                     'class' => 'form-control',
-                    'placeholder' => '最高分必须是数字',
+                    'placeholder' => '最多两位小数',
                     'data-parsley-required' => 'true',
-                    'data-parsley-type' => 'integer',
-                    'data-parsley-maxlength' => '3',
-                    'data-parsley-minlength' => '3',
-
+                    'data-parsley-type' => 'number',
+                    'data-parsley-pattern' => '/^\d+(\.\d{1,2})?$/',
                     ]) !!}
                 </div>
             </div>
             <div class="form-group">
-                {!! Form::label('pass_score', '及格分',['class' => 'col-sm-4 control-label']) !!}
+                {!! Form::label('end_score', '截止分数',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-2">
-                    {!! Form::text('pass_score', null, [
+                    {!! Form::text('end_score', null, [
                     'class' => 'form-control',
-                    'placeholder' => '及格分必须是数字',
+                    'placeholder' => '最多两位小数',
                     'data-parsley-required' => 'true',
-                    'data-parsley-type' => 'integer',
-                    'data-parsley-maxlength' => '2',
-                    'data-parsley-minlength' => '2',
+                    'data-parsley-type' => 'number',
+                    'data-parsley-pattern' => '/^\d+(\.\d{1,2})?$/',
                     ]) !!}
-                </div>
-            </div>
-
-            <div class="form-group">
-                {!! Form::label('isaux', '是否为副科',['class' => 'col-sm-4 control-label']) !!}
-                <div class="col-sm-2">
-                    {!! Form::radio('isaux', '1', true) !!}
-                    {!! Form::label('isaux', '是') !!}
-                    {!! Form::radio('isaux', '0') !!}
-                    {!! Form::label('isaux', '否') !!}
                 </div>
             </div>
             <div class="form-group">
                 {!! Form::label('school_id', '所属学校',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-2">
-                    {!! Form::select('school_id', $school, null, ['class' => 'form-control']) !!}
+                    {!! Form::select('school_id', $schools, null, ['class' => 'form-control']) !!}
                 </div>
             </div>
             <div class="form-group">
-                {!! Form::label('grade_ids', '年级名称',['class' => 'col-sm-4 control-label']) !!}
+                {!! Form::label('subject_ids', '统计科目',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-3">
-                    {!! Form::select('grade_ids[]', $grades, null, ['class' => 'form-control', 'multiple' => 'multiple']) !!}
+                    {!! Form::select('subject_ids[]', $subjects, null, [
+                    'class' => 'form-control',
+                    'data-parsley-required' => 'true',
+                    'multiple' => 'multiple'
+                    ]) !!}
                 </div>
             </div>
             <div class="form-group">

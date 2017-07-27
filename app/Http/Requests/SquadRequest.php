@@ -61,4 +61,6 @@ class SquadRequest extends FormRequest
 
         return $array;
     }
+    public function wantsJson() { return true; }
+
 }

@@ -2,7 +2,7 @@
 
 use Illuminate\Database\Seeder;
 
-class StudentSeeder extends Seeder
+class GroupSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -11,9 +11,8 @@ class StudentSeeder extends Seeder
      */
     public function run()
     {
-        factory(App\Models\Student::class, 10)->create()->each(function ($subject) {
+        factory(App\Models\Group::class, 10)->create()->each(function ($subject) {
             $subject->save();
-
         });
     }
 }
