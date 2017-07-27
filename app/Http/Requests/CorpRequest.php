@@ -25,20 +25,19 @@ class CorpRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|string|max:255|min:3',
-            'corpid' => 'required|string|max:255',
-            'enabled' => 'required|boolean'
+            'name' => 'required|string|max:120|min:3',
+            'corpid' => 'required|string|alpha_num|max:36'
         ];
     }
 
     public function messages() {
         return [
             'name.required' => '企业名称不能为空',
-            'name.min' => '公司名称不能少于3个字符',
-            'corpid.required' => '企业号ID不能为空'
+            'name.max' => '企业名称超过60个汉字',
+            'name.min' => '公司名称不能少于4个字符',
+            'corpid.required' => '企业号ID不能为空',
+            'corpid.max' => '36个小写字母与阿拉伯数字'
         ];
     }
-    protected function formatErrors(Validator $validator) {
-        return $validator->errors()->all();
-    }
+    public function wantsJson() { return true; }
 }

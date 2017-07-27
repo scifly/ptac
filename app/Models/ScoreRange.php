@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use App\Facades\DatatableFacade as Datatable;
 
 /**
  * App\Models\ScoreRange
@@ -39,5 +40,48 @@ class ScoreRange extends Model {
         'end_score',
         'created_at',
         'updated_at',
+        'enabled'
     ];
+
+    /**
+     * 获取拥有该统计项的学校。
+     */
+    public function school()
+    {
+        return $this->belongsTo('App\Models\School');
+    }
+
+    public function datatable()
+    {
+        $columns = [
+            ['db' => 'ScoreRange.id', 'dt' => 0],
+            ['db' => 'ScoreRange.name', 'dt'=> 1],
+            ['db' => 'School.name as schoolname', 'dt' => 2],
+            ['db' => 'ScoreRange.start_score', 'dt'=> 3],
+            ['db' => 'ScoreRange.end_score', 'dt'=> 4],
+            ['db' => 'ScoreRange.created_at', 'dt' => 5],
+            ['db' => 'ScoreRange.updated_at', 'dt' => 6],
+            [
+                'db' => 'ScoreRange.enabled', 'dt' => 7,
+                'formatter' => function($d, $row)
+                {
+                    return Datatable::dtOps($this, $d ,$row);
+                }
+            ]
+        ];
+
+        $joins = [
+            [
+                'table' => 'schools',
+                'alias' => 'School',
+                'type' => 'LEFT',
+                'conditions' => [
+                    'School.id = ScoreRange.school_id'
+                ]
+            ]
+
+
+        ];
+        return Datatable::simple($this, $columns, $joins);
+    }
 }

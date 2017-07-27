@@ -35,7 +35,6 @@ class Educator extends Model
         'team_ids',
         'school_id',
         'sms_quote',
-        'enabled',
 
     ];
 
@@ -56,12 +55,12 @@ class Educator extends Model
             ['db' => 'Educator.created_at', 'dt' => 5],
             ['db' => 'Educator.updated_at', 'dt' => 6],
 
-//            [
-//                'db' => 'Educator.enabled', 'dt' => 7,
-//                'formatter' => function ($d, $row) {
-//                    return Datatable::dtOps($this, $d, $row);
-//                }
-//            ]
+            [
+                'db' => '', 'dt' => 7,
+                'formatter' => function ($d, $row) {
+                    return Datatable::dtOps($this, $d, $row);
+                }
+            ]
         ];
         $joins = [
             [

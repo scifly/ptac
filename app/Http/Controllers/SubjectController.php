@@ -57,10 +57,9 @@ class SubjectController extends Controller
      * @param  \Illuminate\Http\Request  $requestid
      * @return \Illuminate\Http\Response
      */
-    public function store()
+    public function store(SubjectRequest $request)
     {
-        $data = Request::except('_token');
-        $data = Request::all();
+        $data = $request->except('_token');
 
         if($data !=null){
             $grade = $data['grade_ids'];
@@ -84,19 +83,19 @@ class SubjectController extends Controller
      */
     public function show($id)
     {
-        $subject = Subject::where('id', $id);
+        $subject = Subject::whereId($id)->first();
+
         return view('subject.show', ['subject' => $subject]);
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * 编辑
      *
      * @param  \App\Models\Subject  $subject
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
     {
-
         $subject = Subject::whereId($id)->first();
 
         return view('subject.edit', [
@@ -116,12 +115,12 @@ class SubjectController extends Controller
     public function update(SubjectRequest $request,$id)
     {
         $subject = Subject::find($id);
+
         $subject->name = $request->get('name');
         $subject->max_score = $request->get('max_score');
         $subject->pass_score = $request->get('pass_score');
         $subject->isaux = $request->get('isaux');
         $subject->grade_ids = implode('|',$request->get('grade_ids'));
-
         $subject->enabled = $request->get('enabled');
 
         $res = $subject->save();
@@ -145,9 +144,13 @@ class SubjectController extends Controller
     public function destroy($id)
     {
         $res = Subject::destroy($id);
-        if (!$res) {
-            return response()->json(['statusCode' => 202, 'message' => 'add filed']);
+        if ($res) {
+            $this->message['statusCode'] = 200;
+            $this->message['message'] = 'nailed it!';
+        }else{
+            $this->message['statusCode'] = 202;
+            $this->message['message'] = 'add filed';
         }
-        return response()->json(['statusCode' => 200, 'message' => 'nailed it!']);
+        return response()->json($this->message);
     }
 }

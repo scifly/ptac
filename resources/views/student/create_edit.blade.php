@@ -3,12 +3,27 @@
     <div class="box-body">
         <div class="form-horizontal">
             <div class="form-group">
+                {!! Form::label('user_id', '学生姓名',['class' => 'col-sm-4 control-label']) !!}
+                <div class="col-sm-2">
+                {!! Form::select('user_id', $user, null, ['class' => 'form-control']) !!}
+                </div>
+            </div>
+            <div class="form-group">
+                {!! Form::label('class_id', '班级名称',['class' => 'col-sm-4 control-label']) !!}
+                <div class="col-sm-2">
+                {!! Form::select('class_id', $class, null, ['class' => 'form-control']) !!}
+            </div>
+            </div>
+            <div class="form-group">
                 {!! Form::label('student_number', '学号',['class' => 'col-sm-4 control-label']) !!}
-                <div class="col-sm-3">
+                <div class="col-sm-2">
                     {!! Form::text('student_number', null, [
                     'class' => 'form-control',
                     'placeholder' => '学号必须是数字',
+                     'data-parsley-type' => 'integer',
                     'data-parsley-required' => 'true',
+                    'data-parsley-maxlength' => '32',
+                    'data-parsley-minlength' => '2',
 
                     ]) !!}
                 </div>
@@ -20,40 +35,45 @@
                     'class' => 'form-control',
                     'placeholder' => '卡号必须是数字',
                     'data-parsley-required' => 'true',
-                     'data-parsley-type' => 'integer',
+                    'data-parsley-type' => 'integer',
+                    'data-parsley-maxlength' => '32',
+                    'data-parsley-minlength' => '2',
 
                     ]) !!}
                 </div>
             </div>
-      
-
             <div class="form-group">
-                {!! Form::label('isaux', '是否为副科',['class' => 'col-sm-4 control-label']) !!}
+                {!! Form::label('birthday', '生日',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-2">
-                    {!! Form::radio('isaux', '1', true) !!}
-                    {!! Form::label('isaux', '是') !!}
-                    {!! Form::radio('isaux', '0') !!}
-                    {!! Form::label('isaux', '否') !!}
+                    {!! Form::text('birthday', null, [
+                    'class' => 'form-control',
+                    'placeholder' => '生日格式为2000-08-12形式',
+                    'data-parsley-required' => 'true'
+
+                    ]) !!}
                 </div>
             </div>
-            {{--<div class="form-group">--}}
-                {{--{!! Form::label('school_id', '所属学校',['class' => 'col-sm-4 control-label']) !!}--}}
-                {{--<div class="col-sm-2">--}}
-                    {{--{!! Form::select('school_id', $school, null, ['class' => 'form-control']) !!}--}}
-                {{--</div>--}}
-            {{--</div>--}}
-            {{--<div class="form-group">--}}
-                {{--{!! Form::label('grade_ids', '年级名称',['class' => 'col-sm-4 control-label']) !!}--}}
-                {{--<div class="col-sm-3">--}}
-                    {{--{!! Form::select('grade_ids[]', $grades, null, ['class' => 'form-control', 'multiple' => 'multiple']) !!}--}}
-                {{--</div>--}}
-            {{--</div>--}}
             <div class="form-group">
-                <div class="col-sm-3 col-sm-offset-4">
-                    {!! Form::radio('enabled', '1', true) !!}
-                    {!! Form::label('enabled', '启用') !!}
-                    {!! Form::radio('enabled', '0') !!}
-                    {!! Form::label('enabled', '禁用') !!}
+                {!! Form::label('remark', '备注',['class' => 'col-sm-4 control-label']) !!}
+                <div class="col-sm-2">
+                    {!! Form::text('remark', null, [
+                    'class' => 'form-control',
+                    'placeholder' => '备注',
+                    'data-parsley-required' => 'true',
+                    'data-parsley-maxlength' => '32',
+                    'data-parsley-minlength' => '2',
+
+
+                    ]) !!}
+                </div>
+            </div>
+            <div class="form-group">
+                {!! Form::label('oncampus', '是否住校',['class' => 'col-sm-4 control-label']) !!}
+                <div class="col-sm-2">
+                    {!! Form::radio('oncampus', '1', true) !!}
+                    {!! Form::label('oncampus', '是') !!}
+                    {!! Form::radio('oncampus', '0') !!}
+                    {!! Form::label('oncampus', '否') !!}
                 </div>
             </div>
 

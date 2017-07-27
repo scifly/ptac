@@ -33,7 +33,10 @@ class AppController extends Controller
      */
     public function create()
     {
-        return view('app.create',['js' => 'js/app/create.js']);
+        return view('app.create',[
+            'js' => 'js/app/create.js',
+            'form' => true
+        ]);
     }
 
     /**
