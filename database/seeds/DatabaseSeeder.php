@@ -9,7 +9,11 @@ class DatabaseSeeder extends Seeder {
      * @return void
      */
     public function run() {
-//        $this->call(UserSeeder::class);
+
+
+//         $this->call(UserSeeder::class);
+
+
 //        $this->call(SchoolTypeSeeder::class);
 //        $this->call(SubjectSeeder::class);
 //        $this->call(ScoreRangeSeeder::class);
@@ -20,6 +24,11 @@ class DatabaseSeeder extends Seeder {
 //        $this->call(CompaniesTableSeeder::class);
 //        $this->call(AppSeeder::class);
 //        $this->call(AttendanceMachineSeeder::class);
+
+//        $this->call(ClassesSeeder::class);
+//        $this->call(StudentSeeder::class);
+        $this->call(GroupSeeder::class);
+
 //        $this->call(TeamSeeder::class);
 //        $this->call(StudentSeeder::class);
 //        $this->call(ExamSeeder::class);

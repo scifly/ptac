@@ -76,7 +76,6 @@ class User extends Authenticatable {
         'gender',
         'avatar_url',
         'wechatid',
-        'userid',
         'english_name',
         'department_ids',
         'isleader',

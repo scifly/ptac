@@ -44,7 +44,5 @@ class ScoreRequest extends FormRequest
             'score.numeric' => '分数不能超过5位数字'
         ];
     }
-    protected function formatErrors(Validator $validator) {
-        return $validator->errors()->all();
-    }
+    public function wantsJson() { return true; }
 }

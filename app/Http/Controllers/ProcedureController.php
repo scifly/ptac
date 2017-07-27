@@ -23,7 +23,10 @@ class ProcedureController extends Controller {
             return response()->json($this->procedure->datatable());
         }
 
-        return view('procedure.index', ['js' => 'js/procedure/index.js']);
+        return view('procedure.index', [
+            'js' => 'js/procedure/index.js',
+            'dialog' => true
+        ]);
     }
 
     /**
@@ -66,10 +69,10 @@ class ProcedureController extends Controller {
      */
     public function show($id) {
         //根据id 查找单条记录
-        $procedure = Procedure::find($id);
+        $procedure = Procedure::whereId($id)->first();
 
         //记录返回给view
-        return view('procedure.show', ['pt' => $procedure]);
+        return view('procedure.show', ['procedure' => $procedure]);
     }
 
     /**
@@ -85,34 +88,56 @@ class ProcedureController extends Controller {
         //记录返回给view
         return view('procedure.edit', [
             'js' => 'js/procedure/edit.js',
-            'am' => $procedure
+            'procedure' => $procedure
         ]);
     }
 
     /**
      * Update the specified resource in storage.
+     * @param ProcedureRequest $request
+     * @param $id
      * @return \Illuminate\Http\Response
      * @internal param \Illuminate\Http\Request|Request $request
      * @internal param AttendanceMachine $attendanceMachine
      */
-    public function update() {
-        //跟进id查找记录，
+    public function update(ProcedureRequest $request, $id) {
+        //根据id查找记录，
         //把request 传的值，赋值给对应的字段
         //保存当前记录
         //根据操作结果返回不同的json数据
+        $procedure = Procedure::whereId($id)->first();
+        $procedure->procedure_type_id = $request->procedure_type_id;
+        $procedure->school_id = $request->school_id;
+        $procedure->name = $request->name;
+        $procedure->remark = $request->remark;
+        $procedure->enabled = $request->enabled;
+        if ($procedure->save()) {
+            return response()->json(['statusCode' => 200, 'message' => '更新成功！']);
+        }
+
+        return response()->json(['statusCode' => 500, 'message' => '更新失败！']);
+
 
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param Procedure $procedure
+     * @param $id
      * @return \Illuminate\Http\Response
+     * @internal param Procedure $procedure
      * @internal param AttendanceMachine $attendanceMachine
      */
-    public function destroy(Procedure $procedure) {
+    public function destroy($id) {
         //根据id查找需要删除的数据
         //进行删除操作
         //返回json 格式的操作结果
+        $procedure = Procedure::whereId($id)->first();
+
+        if ($procedure->delete()) {
+            return response()->json(['statusCode' => 200, 'message' => '删除成功！']);
+        }
+
+        return response()->json(['statusCode' => 500, 'message' => '删除失败！']);
     }
 }

@@ -50,16 +50,14 @@ class CorpController extends Controller {
      * @internal param \Illuminate\Http\Request $request
      */
     public function store(CorpRequest $request) {
-        //验证
-        $input = $request->except('_token');
-        //逻辑
-        $res = Corp::create($input);
+
+        $res =  $this->corp->create($request->except('_token'));
         if (!$res) {
             $this->message['statusCode'] = 202;
-            $this->message['message'] = 'add filed';
+            $this->message['message'] = '添加失败';
         } else {
             $this->message['statusCode'] = 200;
-            $this->message['message'] = 'nailed it!';
+            $this->message['message'] = '添加成功!';
         }
         return response()->json($this->message);
     }
@@ -67,52 +65,45 @@ class CorpController extends Controller {
     /**
      * 显示企业记录详情
      *
-     * @param  \App\Models\Corp $corp
+     * @param $id
      * @return \Illuminate\Http\Response
      */
     public function show($id) {
         // find the record by id
-        $corp = Corp::whereId($id)->first();
-        return view('corp.show', ['corp' => $corp]);
+        return view('corp.show', ['corp' => $this->corp->findOrFail($id)]);
     }
 
     /**
      * 显示编辑企业记录的表单
      *
-     * @param  \App\Models\Corp $corp
+     * @param $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id) {
-        $corp = Corp::whereId($id)->first();
         return view('corp.edit', [
-            'js' => 'js/corp/edit.js',
-            'corp' => $corp
+            'js' => 'js/company/edit.js',
+            'company' => $this->corp->findOrFail($id),
+            'form' => true
         ]);
     }
 
     /**
      * 更新指定企业记录
      *
-     * @param  \Illuminate\Http\Request $request
-     * @param  \App\Models\Corp $corp
+     * @param CorpRequest|\Illuminate\Http\Request $request
+     * @param $id
      * @return \Illuminate\Http\Response
      */
     public function update(CorpRequest $request,$id) {
         // find the record by id
         // update the record with the request data
-        $corp = Corp::find($id);
-        $corp->name = $request->get('name');
-        $corp->company_id = $request->get('company_id');
-        $corp->corpid = $request->get('corpid');
-        $corp->enabled = $request->get('enabled');
-        $res = $corp->save();
+        $res = $this->corp->findOrFail($id)->update($request->all());
         if (!$res) {
             $this->message['statusCode'] = 202;
-            $this->message['message'] = 'add filed';
+            $this->message['message'] = '更新失败';
         } else {
             $this->message['statusCode'] = 200;
-            $this->message['message'] = 'nailed it!';
-
+            $this->message['message'] = '更新成功!';
         }
         return response()->json($this->message);
     }
@@ -120,18 +111,17 @@ class CorpController extends Controller {
     /**
      *删除指定企业记录
      *
-     * @param  \App\Models\Corp $corp
+     * @param $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id) {
-        $res = Corp::destroy($id);
+        $res = $this->corp->findOrFail($id)->delete();
         if (!$res) {
             $this->message['statusCode'] = 202;
-            $this->message['message'] = 'add filed';
+            $this->message['message'] = '删除失败';
         } else {
             $this->message['statusCode'] = 200;
-            $this->message['message'] = 'nailed it!';
-
+            $this->message['message'] = '删除成功!';
         }
         return response()->json($this->message);
     }

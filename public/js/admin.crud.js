@@ -44,7 +44,17 @@ var crud = {
         var $cancel = $('#cancel');
         var $form = $('#' + formId);
 
+        // Select2
         $('select').select2();
+
+        // Switchery
+        var elems = Array.prototype.slice.call(document.querySelectorAll('.js-switch'));
+        elems.forEach(function (html) {
+            // noinspection JSUnusedLocalSymbols
+            var switchery = new Switchery(html, {size: 'small'});
+        });
+
+        // Parsley
         $form.parsley().on("form:validated", function () {
             var ok = $('.parsley-error').length === 0;
             if (ok) {
@@ -84,22 +94,28 @@ var crud = {
         }).on('form:submit', function() {
             return false;
         });
-        // Switchery
-        // var elems = Array.prototype.slice.call(document.querySelectorAll('.js-switch'));
-        // elems.forEach(function (html) {
-        //    var switchery = new Switchery(html, {size: 'small'});
-        // });
 
         $cancel.on('click', function() {
             window.location = 'index';
         });
     },
 
+
     edit: function (formId) {
         var $cancel = $('#cancel');
         var $form = $('#' + formId);
 
+        // Select2
         $('select').select2();
+
+        // Switchery
+        var elems = Array.prototype.slice.call(document.querySelectorAll('.js-switch'));
+        elems.forEach(function (html) {
+            // noinspection JSUnusedLocalSymbols
+            var switchery = new Switchery(html, {size: 'small'});
+        });
+
+        // Parsley
         var path = window.location.pathname;
         var paths = path.split('/');
         var id = paths[paths.length - 1];

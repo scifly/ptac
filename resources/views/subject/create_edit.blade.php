@@ -7,8 +7,10 @@
                 <div class="col-sm-3">
                     {!! Form::text('name', null, [
                     'class' => 'form-control',
-                    'placeholder' => '(不能超过20个汉字)',
+                    'placeholder' => '不能超过20个汉字',
                     'data-parsley-required' => 'true',
+                    'data-parsley-maxlength' => '20',
+                    'data-parsley-minlength' => '2',
 
                     ]) !!}
                 </div>
@@ -20,7 +22,9 @@
                     'class' => 'form-control',
                     'placeholder' => '最高分必须是数字',
                     'data-parsley-required' => 'true',
-                     'data-parsley-type' => 'integer',
+                    'data-parsley-type' => 'integer',
+                    'data-parsley-maxlength' => '3',
+                    'data-parsley-minlength' => '3',
 
                     ]) !!}
                 </div>
@@ -33,6 +37,8 @@
                     'placeholder' => '及格分必须是数字',
                     'data-parsley-required' => 'true',
                     'data-parsley-type' => 'integer',
+                    'data-parsley-maxlength' => '2',
+                    'data-parsley-minlength' => '2',
                     ]) !!}
                 </div>
             </div>
