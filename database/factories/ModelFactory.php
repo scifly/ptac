@@ -109,6 +109,14 @@ $factory->define(App\Models\ProcedureType::class, function (Faker\Generator $fak
     ];
 
 });
+$factory->define(App\Models\Team::class, function (Faker\Generator $faker) {
+
+    return [
+        'name' => $faker->name,
+        'enabled' => 1
+    ];
+
+});
 
 $factory->define(App\Models\Procedure::class, function (Faker\Generator $faker) {
 

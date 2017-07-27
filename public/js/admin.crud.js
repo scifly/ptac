@@ -48,7 +48,6 @@ var crud = {
         $('form').submit(false);
         $form.parsley();
         $('select').select2();
-
         $save.on('click', function() {
             $.ajax({
                 type: 'POST',
@@ -57,14 +56,16 @@ var crud = {
                 data: $form.serialize(),
                 success: function(result) {
                     if (result.statusCode === 200) {
-                        $form[0].reset();
+                        // $form[0].reset();
+                        window.location = 'index';
                     }
-                    console.log(result);
+                    console.log(result.statusCode);
                     $.gritter.add({
                         title: "新增结果",
                         text: result.message,
-                        image: result.statusCode === 200 ? '/img/confirm.png' : '/img/failure.jpg'
+                        // image: result.statusCode === 200 ? '/img/confirm.png' : '/img/failure.jpg'
                     });
+
                     return false;
                 },
 
@@ -98,7 +99,9 @@ var crud = {
                 data: $form.serialize(),
                 success: function(result) {
                     if (result.statusCode === 200) {
-                        $form[0].reset();
+                        // $form[0].reset();
+                        window.location = 'index';
+
                     }
                     $.gritter.add({
                         title: "编辑结果",

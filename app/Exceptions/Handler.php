@@ -5,6 +5,7 @@ namespace App\Exceptions;
 use Exception;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Validation\ValidationException;
 
 class Handler extends ExceptionHandler {
     /**
@@ -37,11 +38,13 @@ class Handler extends ExceptionHandler {
      * Render an exception into an HTTP response.
      *
      * @param  \Illuminate\Http\Request $request
-     * @param  \Exception $exception
+     * @param Exception $e
      * @return \Illuminate\Http\Response
+     * @internal param Exception $exception
      */
-    public function render($request, Exception $exception) {
-        return parent::render($request, $exception);
+    public function render($request, Exception $e) {
+        return parent::render($request, $e);
+
     }
     
     /**

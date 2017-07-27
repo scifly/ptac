@@ -2,30 +2,28 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 
-class SquadRequest extends FormRequest
+class EducatorRequest extends FormRequest
 {
 
     protected $rules = [
-        'name' => 'required|string|max:255',
-        'grade_id' => 'required|integer',
-        'educator_ids' => 'required|array',
-        'enabled' => 'required|boolean'
+        'user_id' => 'required|integer',
+        'team_ids' => 'required|array',
+        'school_id' => 'required|integer',
+        'sms_quote' => 'required|integer'
     ];
     protected $strings_key = [
-        'name' => '班级名称',
-        'grade_id' => '所属年级',
-        'educator_ids' => '年级主任',
-        'enabled' => '是否启用'
+        'user_id' => '教职员工',
+        'team_ids' => '所属组',
+        'school_id' => '所属学校',
+        'sms_quote' => '可用短信条数'
     ];
     protected $strings_val = [
         'required'=> '为必填项',
-        'string'=> '为字符串',
-        'max'=> '最大为:max',
         'array'=> '必须为数组',
         'integer'=> '必须为整数',
-        'boolean'=> '为0或1',
     ];
 
 
@@ -61,4 +59,17 @@ class SquadRequest extends FormRequest
 
         return $array;
     }
+//
+//    protected function formatErrors(Validator $validator)
+//    {
+//        $code = "";
+//        $data= [
+//            'statusCode' =>  '200',
+//            'message' => $validator->errors()->all(),
+//            'data' => []
+//        ];
+////            var_dump($data);die;
+//            return response()->json($data);
+//    }
+
 }
