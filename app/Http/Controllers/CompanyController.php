@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CompanyRequest;
 use App\Models\Company;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\Request;
 
 
@@ -57,6 +58,12 @@ class CompanyController extends Controller {
         //验证
         $input = $request->except('_token');
         //逻辑
+        try {
+
+        } catch (\Exception $exception){
+
+        }
+
         $res = Company::create($input);
         if (!$res) {
             $this->message['statusCode'] = 202;

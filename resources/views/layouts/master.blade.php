@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="csrf_token" content="{{ csrf_token() }}" id="csrf_token">
-    <title>模板空白页</title>
+    <title>家校通</title>
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <!-- Bootstrap 3.3.7 -->
@@ -13,20 +13,27 @@
     <link rel="stylesheet" href="{{ URL::asset('css/font-awesome.min.css') }}">
     <!-- Ionicons -->
     <link rel="stylesheet" href="{{ URL::asset('css/ionicons.min.css') }}">
-    <!-- jvectormap -->
-    <link rel="stylesheet" href="{{ URL::asset('css/jquery-jvectormap.css') }}">
-    <!-- select2 style -->
-    <link rel="stylesheet" href="{{ URL::asset('js/plugins/select2/css/select2.min.css') }}">
+    @isset($map)
+        <!-- jvectormap -->
+        <link rel="stylesheet" href="{{ URL::asset('css/jquery-jvectormap.css') }}">
+    @endisset
     <!-- Theme style -->
     <link rel="stylesheet" href="{{ URL::asset('css/AdminLTE.min.css') }}">
     <link rel="stylesheet" href="{{ URL::asset('css/skins/_all-skins.min.css') }}">
-    <!-- Parsley style -->
-    <link rel="stylesheet" href="{{ URL::asset('js/plugins/parsley/parsley.css') }}">
-    <!-- DataTable style -->
-    <link rel="stylesheet" href="{{ URL::asset('js/plugins/datatables/datatables.min.css') }}">
-    <!-- switchery style -->
-    <link rel="stylesheet" href="{{ URL::asset('js/plugins/switchery/css/switchery.min.css') }}">
-    <!-- gritter style -->
+    @isset($form)
+        <!-- select2 style -->
+        <link rel="stylesheet" href="{{ URL::asset('js/plugins/select2/css/select2.min.css') }}">
+        <!-- Parsley style -->
+        <link rel="stylesheet" href="{{ URL::asset('js/plugins/parsley/parsley.css') }}">
+        <!-- switchery style -->
+        <link rel="stylesheet" href="{{ URL::asset('js/plugins/switchery/css/switchery.min.css') }}">
+        <!-- gritter style -->
+        <link rel="stylesheet" href="{{ URL::asset('js/plugins/gritter/css/jquery.gritter.css') }}">
+    @endisset
+    @isset($datatable)
+        <!-- DataTable style -->
+        <link rel="stylesheet" href="{{ URL::asset('js/plugins/datatables/datatables.min.css') }}">
+    @endisset
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -541,24 +548,30 @@
 <script src="{{ URL::asset('js/jquery-jvectormap-world-mill-en.js') }}"></script>
 <!-- SlimScroll -->
 <script src="{{ URL::asset('js/jquery.slimscroll.min.js') }}"></script>
-<!-- ChartJS -->
-<script src="{{ URL::asset('js/Chart.min.js') }}"></script>
-<!-- Parsley -->
-<script src="{{ URL::asset('js/plugins/parsley/parsley.min.js') }}"></script>
-<script src="{{ URL::asset('js/plugins/parsley/i18n/zh_cn.js') }}"></script>
-<script src="{{ URL::asset('js/plugins/parsley/i18n/zh_cn.extra.js') }}"></script>
-<!-- DataTable -->
-<script src="{{ URL::asset('js/plugins/datatables/datatables.js') }}"></script>
-<!-- Gritter -->
-<script src="{{ URL::asset('js/plugins/gritter/js/jquery.gritter.js') }}"></script>
-<!-- Select2 -->
-<script src="{{ URL::asset('js/plugins/select2/js/select2.min.js') }}"></script>
-<!-- switchery -->
-<script src="{{ URL::asset('js/plugins/switchery/js/switchery.min.js') }}"></script>
+@isset($chart)
+    <!-- ChartJS -->
+    <script src="{{ URL::asset('js/Chart.min.js') }}"></script>
+@endisset
+@isset($form)
+    <!-- Parsley -->
+    <script src="{{ URL::asset('js/plugins/parsley/parsley.min.js') }}"></script>
+    <script src="{{ URL::asset('js/plugins/parsley/i18n/zh_cn.js') }}"></script>
+    <script src="{{ URL::asset('js/plugins/parsley/i18n/zh_cn.extra.js') }}"></script>
+    <!-- Gritter -->
+    <script src="{{ URL::asset('js/plugins/gritter/js/jquery.gritter.js') }}"></script>
+    <!-- Select2 -->
+    <script src="{{ URL::asset('js/plugins/select2/js/select2.min.js') }}"></script>
+    <!-- switchery -->
+    <script src="{{ URL::asset('js/plugins/switchery/js/switchery.min.js') }}"></script>
+@endisset
+@isset($datatable)
+    <!-- DataTable -->
+    <script src="{{ URL::asset('js/plugins/datatables/datatables.js') }}"></script>
+@endisset
 <!-- Custom JS -->
 <script src="{{ URL::asset('js/admin.crud.js') }}"></script>
 @isset($js)
-<script src="{{ URL::asset($js) }}"></script>
+    <script src="{{ URL::asset($js) }}"></script>
 @endisset
 <!-- AdminLTE for demo purposes -->
 <script src="{{ URL::asset('js/demo.js') }}"></script>
