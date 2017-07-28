@@ -71,6 +71,12 @@ class School extends Model {
 
         return $this->hasMany('App\Models\Grade', 'school_id', 'id');
 
+
+    }
+    public function educator() {
+
+        return $this->hasMany('App\Models\Educator');
+
     }
     public function datatable() {
         

@@ -7,6 +7,9 @@ use App\Models\Squad;
 use App\Models\User;
 use Illuminate\Support\Facades\Request;
 
+/**
+ * @property array message
+ */
 class SquadController extends Controller
 {
     protected $squad ;
@@ -14,6 +17,7 @@ class SquadController extends Controller
     public function __construct(Squad $squad)
     {
         $this->squad = $squad;
+
     }
 
     /**
@@ -28,7 +32,8 @@ class SquadController extends Controller
         }
         return view('class.index' , [
             'js' => 'js/class/index.js',
-            'dialog' => true
+            'dialog' => true,
+            'datatable' => true,
 
         ]);
 
@@ -42,7 +47,11 @@ class SquadController extends Controller
     public function create()
     {
         //
-        return view('class.create',['js' => 'js/class/create.js']);
+        return view('class.create',[
+            'js' => 'js/class/create.js',
+            'form' => true
+
+        ]);
 
     }
 
@@ -63,14 +72,20 @@ class SquadController extends Controller
         $data['educator_ids'] = implode(',', $ids);
         $data['enabled'] = $squadRequest->input('enabled');
 
-        if(Squad::create($data))
-        {
-            return response()->json(['statusCode' => 200, 'message' => '添加成功!']);
-
+        $row = $this->squad->where(['grade_id' => $data['grade_id'], 'name' => $data['name']])->first();
+        if(!empty($row)){
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+            $this->result['message'] = '班级名称重复！';
         }else{
-            return response()->json(['statusCode' => 202, 'message' => '添加失败!']);
-
+            if($this->squad->create($data))
+            {
+                $this->result['message'] = self::MSG_CREATE_OK;
+            } else {
+                $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+                $this->result['message'] = '';
+            }
         }
+        return response()->json($this->result);
 
     }
 
@@ -106,7 +121,9 @@ class SquadController extends Controller
         $squad = Squad::whereId($id)->first();
         return view('class.edit', [
             'js' => 'js/class/edit.js',
-            'squad' => $squad
+            'squad' => $squad,
+            'form' => true
+
         ]);
     }
 
@@ -125,17 +142,27 @@ class SquadController extends Controller
 
         $data->name = $squadRequest->input('name');
         $data->grade_id = $squadRequest->input('grade_id');
-        $data->educator_ids = $squadRequest->input('educator_ids');
+        $ids = $squadRequest->input('educator_ids');
+        $data->educator_ids = implode(',', $ids);
         $data->enabled = $squadRequest->input('enabled');
 
-        if($data->save())
-        {
-            return response()->json(['statusCode' => 200, 'message' => '修改成功!']);
+        $row = $this->squad->where(['grade_id' => $data->grade_id, 'name' => $data->name])->first();
+        if(!empty($row) && $row->id != $id){
+
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+            $this->result['message'] = '班级名称重复！';
 
         }else{
-            return response()->json(['statusCode' => 202, 'message' => '修改失败!']);
+            if($data->save())
+            {
+                $this->result['message'] = self::MSG_EDIT_OK;
+            } else {
+                $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+                $this->result['message'] = '';
 
+            }
         }
+        return response()->json($this->result);
     }
 
     /**
@@ -147,8 +174,12 @@ class SquadController extends Controller
      */
     public function destroy($id)
     {
-        Squad::destroy($id);
-
-        return response()->json(['statusCode' => 200, 'Message' => 'nailed it!']);
+        if ($this->squad->findOrFail($id)->delete()) {
+            $this->result['message'] = self::MSG_DEL_OK;
+        } else {
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+            $this->result['message'] = '';
+        }
+        return response()->json($this->result);
     }
 }

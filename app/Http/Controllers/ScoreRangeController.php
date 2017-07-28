@@ -24,7 +24,8 @@ class ScoreRangeController extends Controller
         }
         return view('score_range.index', [
             'js' => 'js/score_range/index.js',
-            'dialog' => true
+            'dialog' => true,
+            'datatable' => true
         ]);
     }
 
@@ -35,7 +36,11 @@ class ScoreRangeController extends Controller
      */
     public function create()
     {
-        return view('score_range.create',['js' => 'js/score_range/create.js']);
+        return view('score_range.create',[
+            'js' => 'js/score_range/create.js',
+            'scoreCreateEditJs' => true,
+            'form' => true
+        ]);
     }
 
     /**
@@ -55,17 +60,6 @@ class ScoreRangeController extends Controller
         }else{
             return response()->json(['statusCode' => 500, 'message' => '创建失败！']);
         }
-//        // create a new record
-//        $scoreRange = new ScoreRange;
-//        // assign the values to corresponding fields
-//        $scoreRange->name = $request->name;
-//        $scoreRange->description = $request->description;
-//        // save the record
-//        if ($scoreRange->save()) {
-//            return response()->json(['statusCode' => 200, 'message' => '创建成功！']);
-//        }
-//
-//        return response()->json(['statusCode' => 500, 'message' => '创建失败！']);
     }
 
     /**
@@ -92,9 +86,13 @@ class ScoreRangeController extends Controller
     {
         // find the record by $id
         $scoreRange = $this->scoreRange->findOrFail($id);
-        $scoreRange['subject_ids'] = explode('|',$scoreRange['subject_ids']);
         //记录返回给view
-        return view('score_range.edit',['js' => 'js/score_range/edit.js', 'scoreRange' => $scoreRange]);
+        return view('score_range.edit',[
+            'js' => 'js/score_range/edit.js',
+            'scoreCreateEditJs' => true,
+            'scoreRange' => $scoreRange,
+            'form' => true
+        ]);
     }
 
     /**
@@ -109,7 +107,7 @@ class ScoreRangeController extends Controller
     {
         $scoreRange = $this->scoreRange->findOrFail($id);
         $score_range = $request->all();
-        $score_range['subject_ids'] = implode('|',$score_range['subject_ids']);
+        $score_range['subject_ids'] = implode(',',$score_range['subject_ids']);
         $res = $scoreRange->update($score_range);
         if ($res) {
             return response()->json(['statusCode' => 200, 'message' => '编辑成功！']);

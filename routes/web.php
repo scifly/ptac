@@ -40,13 +40,14 @@ Route::put('school_types/update/{id}', 'SchoolTypeController@update');
 Route::delete('school_types/delete/{id}', 'SchoolTypeController@destroy');
 
 // 科目设置
-Route::get('subjects/index', 'SubjectController@index');
-Route::get('subjects/create', 'SubjectController@create');
-Route::post('subjects/store', 'SubjectController@store');
-Route::get('subjects/show/{id}', 'SubjectController@show');
-Route::get('subjects/edit/{id}', 'SubjectController@edit');
-Route::put('subjects/update/{id}', 'SubjectController@update');
-Route::delete('subjects/delete/{id}', 'SubjectController@destroy');
+Route::get('subject/index', 'SubjectController@index');
+Route::get('subject/create', 'SubjectController@create');
+Route::post('subject/store', 'SubjectController@store');
+Route::get('subject/show/{id}', 'SubjectController@show');
+Route::get('subject/edit/{id}', 'SubjectController@edit');
+Route::put('subject/update/{id}', 'SubjectController@update');
+Route::delete('subject/delete/{id}', 'SubjectController@destroy');
+Route::get('subject/query/{id}', 'SubjectController@query');
 
 // 权限设置
 Route::get('groups/index', 'GroupController@index');
