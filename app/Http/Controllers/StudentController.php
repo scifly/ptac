@@ -10,16 +10,7 @@ class StudentController extends Controller
 {
     protected $student;
 
-    protected $message;
-
-    function __construct(Student $student)
-    {
-        $this->student = $student;
-        $this->message = [
-            'statusCode' => 200,
-            'message' => ''
-        ];
-    }
+    function __construct(Student $student){ $this->student = $student; }
 
     /**
      * 显示学生列表
@@ -32,70 +23,62 @@ class StudentController extends Controller
         }
         return view('student.index', [
             'js' => 'js/student/index.js',
-            'dialog' => true
+            'dialog' => true,
+            'datatable' => true,
+            'form'=>true,
         ]);
     }
 
     /**
-
      * @return \Illuminate\Http\Response
      */
     public function create()
     {
-        return view('student.create',['js' => 'js/student/create.js']);
+        return view('student.create',[
+            'js' => 'js/student/create.js',
+            'form' => true
+        ]);
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
+     * 添加学生
      * @param \Illuminate\Http\Request|Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(StudentRequest $request)
     {
-
-        $data = $request->except('_token');
-
-        if($data !=null){
-            $res = $this->create($data);
-
-            if ($res) {
-                $this->message['statusCode'] = 200;
-                $this->message['message'] = 'nailed it!';
-            } else {
-                $this->message['statusCode'] = 202;
-                $this->message['message'] = 'add filed';
-            }
-            return response()->json($this->message);
+        if ($this->student->create($request->except('_token'))) {
+            return response()->json([
+                'statusCode' => self::HTTP_STATUSCODE_OK, 'message' => self::MSG_CREATE_OK,
+            ]);
         }
-
+        return response()->json([
+            'statusCode' => 500, 'message' => '添加失败'
+        ]);
     }
 
     /**
-     * Display the specified resource.
-     *
+     * 学生详情页面.
      * @param  \App\Models\Student  $student
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
-    {
-        $student = Student::whereId($id)->first();
+    public function show($id){
 
+        $student = $this->student->findOrFail($id);
         return view('student.show', ['student' => $student]);
     }
 
     /**
-     * Show the form for editing the specified resource.
-     *
+     *  编辑学生页面
      * @param  \App\Models\Student  $student
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
-    {
-        $student = Student::whereId($id)->first();
+    public function edit($id){
+
         return view('student.edit', [
             'js' => 'js/student/edit.js',
-            'student' => $student
+            'student' => $this->student->findOrFail($id),
+            'form' => true
         ]);
     }
 
@@ -105,46 +88,34 @@ class StudentController extends Controller
      * @internal param \Illuminate\Http\Request $request
      * @internal param Company $company
      */
-    public function update(StudentRequest $request, $id)
-    {
-        $student = Student::find($id);
-        $student->user_id = $request->get('user_id');
-        $student->class_id = $request->get('class_id');
-        $student->student_number = $request->get('student_number');
-        $student->card_number = $request->get('card_number');
-        $student->oncampus = $request->get('oncampus');
-        $student->birthday = $request->get('birthday');
-        $student->remark = $request->get('remark');
+    public function update(StudentRequest $request, $id){
 
-        if ($student->save()) {
-            $this->message['statusCode'] = 200;
-            $this->message['message'] = 'nailed it!';
+        if ($this->student->findOrFail($id)->update($request->all())) {
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
+            $this->result['message'] = self::MSG_EDIT_OK;
         } else {
-            $this->message['statusCode'] = 202;
-            $this->message['message'] = 'add filed';
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+            $this->result['message'] = '更新失败';
         }
-        return response()->json($this->message);
+        return response()->json($this->result);
 
 
     }
 
     /**
      * 删除学生
-     *
      * @param  \App\Models\Student  $student
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
-    {
-        $res = Student::destroy($id);
-        if ($res) {
-            $this->message['statusCode'] = 200;
-            $this->message['message'] = 'nailed it!';
-        }else{
-            $this->message['statusCode'] = 202;
-            $this->message['message'] = 'add filed';
+    public function destroy($id){
+
+        if ($this->student->findOrFail($id)->delete()) {
+            $this->result['message'] = self::MSG_DEL_OK;
+        } else {
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+            $this->result['message'] = '删除失败';
         }
-        return response()->json($this->message);
+        return response()->json($this->result);
 
     }
 }
