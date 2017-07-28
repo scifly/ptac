@@ -72,7 +72,7 @@
                                 <option value="{{$key}}">{{$value}}</option>
                             @endif
                         @endforeach
-                        <select>
+                    <select>
                 </div>
             </div>
             <div class="form-group">
