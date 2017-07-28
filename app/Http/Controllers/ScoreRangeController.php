@@ -24,7 +24,8 @@ class ScoreRangeController extends Controller
         }
         return view('score_range.index', [
             'js' => 'js/score_range/index.js',
-            'dialog' => true
+            'dialog' => true,
+            'datatable' => true
         ]);
     }
 
@@ -85,7 +86,6 @@ class ScoreRangeController extends Controller
     {
         // find the record by $id
         $scoreRange = $this->scoreRange->findOrFail($id);
-        $scoreRange['subject_ids'] = explode('|',$scoreRange['subject_ids']);
         //记录返回给view
         return view('score_range.edit',[
             'js' => 'js/score_range/edit.js',
@@ -107,7 +107,7 @@ class ScoreRangeController extends Controller
     {
         $scoreRange = $this->scoreRange->findOrFail($id);
         $score_range = $request->all();
-        $score_range['subject_ids'] = implode('|',$score_range['subject_ids']);
+        $score_range['subject_ids'] = implode(',',$score_range['subject_ids']);
         $res = $scoreRange->update($score_range);
         if ($res) {
             return response()->json(['statusCode' => 200, 'message' => '编辑成功！']);

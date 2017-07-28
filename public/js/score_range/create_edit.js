@@ -1,19 +1,21 @@
 getSubjectBySchoolId();
-
+if($('#subject_select_ids').val()){
+    var $array_sub_ids = $('#subject_select_ids').val().split(",");
+}
 $('#school_id').change(function(){
     getSubjectBySchoolId();
 });
 
 function getSubjectBySchoolId() {
     var school_id = $('#school_id').val();
+    $('#subject_ids').empty();
     var $subjectSelect = $('#subject_ids');
     $.ajax({
         type: 'GET',
-        url: '../subject/query/' + school_id,
+        url: '/ptac/public/subject/query/' + school_id,
         success: function(result) {
             if (result.statusCode === 200) {
                 $subjectSelect.removeAttr("disabled");
-                $subjectSelect.empty();
                 if(result.subjects.length == 0){
                     $subjectSelect.attr("disabled","disabled");
                     $.gritter.add({
@@ -23,9 +25,14 @@ function getSubjectBySchoolId() {
                     });
                 }else{
                     $array = eval(result.subjects);
-                    for(var i=0;i<$array.length;i++){
-                        $subjectSelect.append("<option value='"+$array[i].id+"'>"+$array[i].name+"</option>");
-                    }
+                    $.each($array,function () {
+                        $subjectSelect.append("<option value='"+this.id+"'>"+this.name+"</option>");
+                    })
+                    $("#subject_ids option").each(function() {
+                        if($.inArray($(this).val(),$array_sub_ids) !== -1){
+                            $(this).attr('selected','selected');
+                        }
+                    })
                 }
             }
             return false;

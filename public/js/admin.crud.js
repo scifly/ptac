@@ -1,4 +1,64 @@
 var crud = {
+    success: 'img/confirm.png',
+    failure: 'img/failure.jpg',
+    siteroot: function() {
+        var path = window.location.pathname;
+        var paths = path.split('/');
+        return '/' + paths[1] + '/' + paths[2] + '/';
+    },
+    inform: function(title, text, image) {
+        $.gritter.add({title: title, text: text, image: crud.siteroot() + image});
+    },
+    ajaxRequest: function(requestType, ajaxUrl, data, obj) {
+        $.ajax({
+            type: requestType,
+            dataType: 'json',
+            url: ajaxUrl,
+            data: data,
+            success: function(result) {
+                if (result.statusCode === 200) {
+                    switch(requestType) {
+                        case 'POST': obj.reset(); break;
+                        case 'DELETE': obj.remove(); break;
+                        default: break;
+                    }
+                }
+                crud.inform(
+                    '操作结果', result.message,
+                    result.statusCode === 200 ? crud.success : crud.failure
+                );
+                return false;
+            },
+            error: function(e) {
+                var obj = JSON.parse(e.responseText);
+                crud.inform('出现异常', obj['message'], crud.failure);
+            }
+        });
+    },
+    init: function(homeUrl, formId, ajaxUrl, requestType) {
+        // Select2
+        $('select').select2();
+
+        // Switchery
+        var elems = Array.prototype.slice.call(document.querySelectorAll('.js-switch'));
+        elems.forEach(function (html) {
+            // noinspection JSUnusedLocalSymbols
+            var switchery = new Switchery(html, {size: 'small'});
+        });
+
+        // Cancel button
+        $('#cancel').on('click', function() { window.location = homeUrl; });
+
+        var $form = $('#' + formId);
+        // Parsley
+        $form.parsley().on("form:validated", function () {
+            if ($('.parsley-error').length === 0) {
+                crud.ajaxRequest(requestType, ajaxUrl, $form.serialize(), $form[0]);
+            }
+        }).on('form:submit', function() {
+            return false;
+        });
+    },
     index: function () {
         $('#data-table').dataTable({
             processing: true,
@@ -9,159 +69,26 @@ var crud = {
             language: {url: '../files/ch.json'}
         });
 
-        var $dialog = $('#modal-dialog');
-        var $del = $('#confirm-delete');
         var id, $row;
 
         $(document).on('click', '.fa-trash', function () {
             id = $(this).attr('id');
-
             $row = $(this).parents().eq(1);
-            $dialog.modal({backdrop: true});
+            $('#modal-dialog').modal({backdrop: true});
         });
 
-        $del.on('click', function () {
-            $.ajax({
-                type: 'DELETE',
-                dataType: 'json',
-                url: 'delete/' + id,
-                data: {_token: $('#csrf_token').attr('content')},
-                success: function (result) {
-                    if (result.statusCode === 200) {
-                        $row.remove();
-                    }
-                    $.gritter.add({
-                        title: "删除结果",
-                        text: result.message,
-                        image: result.statusCode === 200 ? '../../img/confirm.png' : '../../img/failure.jpg'
-                    });
-                    return false;
-                }
-            });
+        $('#confirm-delete').on('click', function () {
+            crud.ajaxRequest(
+                'DELETE', 'delete/' + id,
+                { _token: $('#csrf_token').attr('content') }, $row
+            );
         });
     },
-    create: function(formId) {
-        var $cancel = $('#cancel');
-        var $form = $('#' + formId);
-
-        // Select2
-        $('select').select2();
-
-        // Switchery
-        var elems = Array.prototype.slice.call(document.querySelectorAll('.js-switch'));
-        elems.forEach(function (html) {
-            // noinspection JSUnusedLocalSymbols
-            var switchery = new Switchery(html, {size: 'small'});
-        });
-
-        // Parsley
-        $form.parsley().on("form:validated", function () {
-            var ok = $('.parsley-error').length === 0;
-            if (ok) {
-                $.ajax({
-                    type: 'POST',
-                    dataType: 'json',
-                    url: 'store',
-                    data: $form.serialize(),
-                    success: function(result) {
-                        //alert(result.statusCode());
-                        if (result.statusCode === 200) {
-                            $form[0].reset();
-                        } else {
-
-                        }
-                        $.gritter.add({
-                            title: "新增结果",
-                            text: result.message,
-                            image: result.statusCode === 200 ? '../../img/confirm.png' : '../../img/failure.jpg'
-                        });
-                        return false;
-                    },
-                    error: function(e) {
-                        var obj = JSON.parse(e.responseText);
-                        for (var key in obj) {
-                            if (obj.hasOwnProperty(key)) {
-                                $.gritter.add({
-                                    title: "出现异常",
-                                    text: obj[key],
-                                    image: '../../img/failure.jpg'
-                                });
-                            }
-                        }
-                    }
-                });
-            }
-        }).on('form:submit', function() {
-            return false;
-        });
-
-        $cancel.on('click', function() {
-            window.location = 'index';
-        });
-    },
-
-
+    create: function(formId) { this.init('index', formId, 'store', 'POST'); },
     edit: function (formId) {
-        var $cancel = $('#cancel');
-        var $form = $('#' + formId);
-
-        // Select2
-        $('select').select2();
-
-        // Switchery
-        var elems = Array.prototype.slice.call(document.querySelectorAll('.js-switch'));
-        elems.forEach(function (html) {
-            // noinspection JSUnusedLocalSymbols
-            var switchery = new Switchery(html, {size: 'small'});
-        });
-
-        // Parsley
         var path = window.location.pathname;
         var paths = path.split('/');
         var id = paths[paths.length - 1];
-
-        $form.parsley().on("form:validated", function () {
-            var ok = $('.parsley-error').length === 0;
-            if (ok) {
-                $.ajax({
-                    type: 'PUT',
-                    dataType: 'json',
-                    url: '../update/' + id,
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    data: $form.serialize(),
-                    success: function(result) {
-                        if (result.statusCode === 200) {
-                            $form[0].reset();
-                        }
-                        $.gritter.add({
-                            title: "编辑结果",
-                            text: result.message,
-                            image: result.statusCode === 200 ? '../../img/confirm.png' : '../../img/failure.jpg'
-                        });
-                        return false;
-                    },
-                    error: function(e) {
-                        var obj = JSON.parse(e.responseText);
-                        for (var key in obj) {
-                            if (obj.hasOwnProperty(key)) {
-                                $.gritter.add({
-                                    title: "出现异常",
-                                    text: obj[key],
-                                    image: '../../img/failure.jpg'
-                                });
-                            }
-                        }
-                    }
-                });
-            }
-        }).on('form:submit', function() {
-            return false;
-        });
-
-        $cancel.on('click', function () {
-            window.location = '../index';
-        });
+        this.init('../index', formId, '../update/' + id, 'PUT');
     }
 };
