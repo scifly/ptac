@@ -175,3 +175,8 @@ Route::get('procedure_steps/show/{id}', 'ProcedureStepController@show');
 Route::get('procedure_steps/edit/{id}', 'ProcedureStepController@edit');
 Route::put('procedure_steps/update/{id}', 'ProcedureStepController@update');
 Route::delete('procedure_steps/delete/{id}', 'ProcedureStepController@destroy');
+
+//流程日志
+Route::get('procedure_logs/index', 'ProcedureLogController@index');
+Route::get('procedure_logs/show/{id}', 'ProcedureLogController@show');
+Route::delete('procedure_logs/delete/{id}', 'ProcedureLogController@destroy');
