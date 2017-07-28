@@ -56,9 +56,10 @@ class Educator extends Model
             ['db' => 'Shool.name', 'dt' => 3],
             ['db' => 'Educator.sms_quote', 'dt' => 4],
             ['db' => 'Educator.created_at', 'dt' => 5],
+            ['db' => 'Educator.updated_at', 'dt' => 6],
 
             [
-                'db' => 'Educator.updated_at', 'dt' => 6,
+                'db' => 'Educator.enabled', 'dt' => 7,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
                 }

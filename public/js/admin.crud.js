@@ -33,7 +33,7 @@ var crud = {
                     $.gritter.add({
                         title: "删除结果",
                         text: result.message,
-                        image: result.statusCode === 200 ? '../img/confirm.png' : '../img/failure.jpg'
+                        image: result.statusCode === 200 ? '../../img/confirm.png' : '../../img/failure.jpg'
                     });
                     return false;
                 }
@@ -73,7 +73,7 @@ var crud = {
                         $.gritter.add({
                             title: "新增结果",
                             text: result.message,
-                            image: result.statusCode === 200 ? '../img/confirm.png' : '../img/failure.jpg'
+                            image: result.statusCode === 200 ? '../../img/confirm.png' : '../../img/failure.jpg'
                         });
                         return false;
                     },
@@ -82,9 +82,9 @@ var crud = {
                         for (var key in obj) {
                             if (obj.hasOwnProperty(key)) {
                                 $.gritter.add({
-                                    title: "新增结果",
+                                    title: "出现异常",
                                     text: obj[key],
-                                    image: '../img/failure.jpg'
+                                    image: '../../img/failure.jpg'
                                 });
                             }
                         }
@@ -138,7 +138,7 @@ var crud = {
                         $.gritter.add({
                             title: "编辑结果",
                             text: result.message,
-                            image: result.statusCode === 200 ? '../img/confirm.png' : '../img/failure.jpg'
+                            image: result.statusCode === 200 ? '../../img/confirm.png' : '../../img/failure.jpg'
                         });
                         return false;
                     },
@@ -147,9 +147,9 @@ var crud = {
                         for (var key in obj) {
                             if (obj.hasOwnProperty(key)) {
                                 $.gritter.add({
-                                    title: "编辑结果",
+                                    title: "出现异常",
                                     text: obj[key],
-                                    image: '../img/failure.jpg'
+                                    image: '../../img/failure.jpg'
                                 });
                             }
                         }
