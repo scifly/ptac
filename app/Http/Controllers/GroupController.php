@@ -130,11 +130,11 @@ class GroupController extends Controller {
     
         if ($this->group->findOrFail($id)->delete()) {
             return response()->json([
-                'statusCode' => 200, 'message' => '保存成功',
+                'statusCode' => 200, 'message' => '删除成功',
             ]);
         }
         return response()->json([
-            'statusCode' => 500, 'message' => '保存失败'
+            'statusCode' => 500, 'message' => '删除失败'
         ]);
         
     }
