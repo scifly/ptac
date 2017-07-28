@@ -28,7 +28,6 @@ class CompanyController extends Controller {
             'js' => 'js/company/index.js',
             'dialog' => true,
             'datatable' => true,
-            'form' => true
         ]);
     }
 

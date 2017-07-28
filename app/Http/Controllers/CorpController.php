@@ -79,7 +79,6 @@ class CorpController extends Controller {
         return view('corp.edit', [
             'js' => 'js/company/edit.js',
             'company' => $this->corp->findOrFail($id),
-            'form' => true
         ]);
     }
 

@@ -30,7 +30,16 @@
             <div class="form-group">
                 <label for="enabled" class="col-sm-4 control-label">启用</label>
                 <div class="col-sm-3" style="padding-top: 5px;">
-                    <input id="enabled" name="enabled" type="checkbox" class="form-control js-switch" checked />
+                    <input id="enabled" name="enabled" type="checkbox" class="form-control js-switch"
+                           @if(isset($group))
+                                   @if($group->enabled)
+                                    value="1" checked
+                                   @else
+                                           value="0"
+                                   @endif
+                           @else
+                                   value="1" checked
+                           @endif  />
                 </div>
             </div>
         </div>

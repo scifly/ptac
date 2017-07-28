@@ -27,7 +27,6 @@ class ScoreController extends Controller {
             'js' => 'js/score/index.js',
             'dialog' => true,
             'datatable' => true,
-            'form' => true
         ]);
 
     }
