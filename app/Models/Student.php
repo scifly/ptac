@@ -36,7 +36,6 @@ class Student extends Model {
 
     protected $table = 'students';
 
-
     protected $fillable = [
         'user_id',
         'class_id',
@@ -69,7 +68,9 @@ class Student extends Model {
             ['db' => 'Student.birthday', 'dt' => 5],
             ['db' => 'Student.remark', 'dt' => 6],
             ['db' => 'Student.created_at', 'dt' => 7],
-            ['db' => 'Student.updated_at', 'dt' => 8,
+            ['db' => 'Student.updated_at', 'dt' => 8],
+            [
+                'db' => 'Student.enabled', 'dt' => 9,
                 'formatter' => function($d, $row)
                 {
                     return Datatable::dtOps($this, $d ,$row);
