@@ -9,7 +9,7 @@ class GradeRequest extends FormRequest
 {
 
     protected $rules = [
-        'name' => 'required|string|max:1',
+        'name' => 'required|string|max:255',
         'school_id' => 'required|integer',
         'educator_ids' => 'required|array',
         'enabled' => 'required|boolean'
@@ -47,10 +47,11 @@ class GradeRequest extends FormRequest
 
     }
 
-    public function messages(){
+    public function messages() {
         $rules = $this->rules();
         $k_array = $this->strings_key;
         $v_array = $this->strings_val;
+        $array = [];
         foreach ($rules as $key => $value) {
             $new_arr = explode('|', $value);//分割成数组
             foreach ($new_arr as $k => $v) {
@@ -63,7 +64,5 @@ class GradeRequest extends FormRequest
         return $array;
     }
     public function wantsJson() { return true; }
-
-
 
 }

@@ -13,6 +13,8 @@
     <link rel="stylesheet" href="{{ URL::asset('css/font-awesome.min.css') }}">
     <!-- Ionicons -->
     <link rel="stylesheet" href="{{ URL::asset('css/ionicons.min.css') }}">
+    <!-- gritter style -->
+    <link rel="stylesheet" href="{{ URL::asset('js/plugins/gritter/css/jquery.gritter.css') }}">
     @isset($map)
         <!-- jvectormap -->
         <link rel="stylesheet" href="{{ URL::asset('css/jquery-jvectormap.css') }}">
@@ -27,8 +29,6 @@
         <link rel="stylesheet" href="{{ URL::asset('js/plugins/parsley/parsley.css') }}">
         <!-- switchery style -->
         <link rel="stylesheet" href="{{ URL::asset('js/plugins/switchery/css/switchery.min.css') }}">
-        <!-- gritter style -->
-        <link rel="stylesheet" href="{{ URL::asset('js/plugins/gritter/css/jquery.gritter.css') }}">
     @endisset
     @isset($datatable)
         <!-- DataTable style -->
@@ -537,19 +537,21 @@
 <script src="{{ URL::asset('js/jquery.min.js') }}"></script>
 <!-- Bootstrap 3.3.7 -->
 <script src="{{ URL::asset('js/bootstrap.min.js') }}"></script>
-<!-- FastClick -->
-<script src="{{ URL::asset('js/fastclick.js') }}"></script>
 <!-- AdminLTE App -->
 <script src="{{ URL::asset('js/adminlte.min.js') }}"></script>
+<!-- FastClick -->
+{{-- <script src="{{ URL::asset('js/fastclick.js') }}"></script> --}}
 <!-- Sparkline -->
-<script src="{{ URL::asset('js/jquery.sparkline.min.js') }}"></script>
+{{--<script src="{{ URL::asset('js/jquery.sparkline.min.js') }}"></script>--}}
+<!-- SlimScroll -->
+{{--<script src="{{ URL::asset('js/jquery.slimscroll.min.js') }}"></script>--}}
+<!-- Gritter -->
+<script src="{{ URL::asset('js/plugins/gritter/js/jquery.gritter.js') }}"></script>
 @isset($map)
     <!-- jvectormap  -->
     <script src="{{ URL::asset('js/jquery-jvectormap-1.2.2.min.js') }}"></script>
     <script src="{{ URL::asset('js/jquery-jvectormap-world-mill-en.js') }}"></script>
 @endisset
-<!-- SlimScroll -->
-<script src="{{ URL::asset('js/jquery.slimscroll.min.js') }}"></script>
 @isset($chart)
     <!-- ChartJS -->
     <script src="{{ URL::asset('js/Chart.min.js') }}"></script>
@@ -559,8 +561,6 @@
     <script src="{{ URL::asset('js/plugins/parsley/parsley.min.js') }}"></script>
     <script src="{{ URL::asset('js/plugins/parsley/i18n/zh_cn.js') }}"></script>
     <script src="{{ URL::asset('js/plugins/parsley/i18n/zh_cn.extra.js') }}"></script>
-    <!-- Gritter -->
-    <script src="{{ URL::asset('js/plugins/gritter/js/jquery.gritter.js') }}"></script>
     <!-- Select2 -->
     <script src="{{ URL::asset('js/plugins/select2/js/select2.min.js') }}"></script>
     <!-- switchery -->
@@ -574,6 +574,10 @@
 <script src="{{ URL::asset('js/admin.crud.js') }}"></script>
 @isset($js)
     <script src="{{ URL::asset($js) }}"></script>
+@endisset
+@isset($scoreCreateEditJs)
+    <!-- DataTable -->
+    <script src="{{ URL::asset('js/score_range/create_edit.js') }}"></script>
 @endisset
 <!-- AdminLTE for demo purposes -->
 <script src="{{ URL::asset('js/demo.js') }}"></script>

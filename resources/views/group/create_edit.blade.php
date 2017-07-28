@@ -27,13 +27,19 @@
                     ]) !!}
                 </div>
             </div>
-
+            {{--<div class="form-group">--}}
+                {{--<label for="enabled" class="col-sm-4 control-label">启用</label>--}}
+                {{--<div class="col-sm-3" style="padding-top: 5px;">--}}
+                    {{--<input id="enabled" name="enabled" type="checkbox" class="form-control js-switch" checked />--}}
+                {{--</div>--}}
+            {{--</div>--}}
             <div class="form-group">
-                <div class="col-sm-3 col-sm-offset-4">
+                {!! Form::label('enabled', '启用',['class' => 'col-sm-4 control-label']) !!}
+                <div class="col-sm-2">
                     {!! Form::radio('enabled', '1', true) !!}
-                    {!! Form::label('enabled', '启用') !!}
+                    {!! Form::label('enabled', '是') !!}
                     {!! Form::radio('enabled', '0') !!}
-                    {!! Form::label('enabled', '禁用') !!}
+                    {!! Form::label('enabled', '否') !!}
                 </div>
             </div>
 

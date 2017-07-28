@@ -4,29 +4,21 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\SubjectRequest;
 use App\Models\Subject;
+use App\Models\Grade;
 use Illuminate\Support\Facades\Request;
 
 class SubjectController extends Controller
 {
     protected $subject;
 
-    protected $message;
     /**
      * SubjectController constructor.
      * @param Subject $subject
      */
-    function __construct(Subject $subject){
-        $this->subject = $subject;
-        $this->message = [
-            'statusCode' => 200,
-            'message' => ''
-        ];
-
-    }
+    function __construct(Subject $subject){ $this->subject = $subject; }
 
     /**
-     * Display a listing of the resource.
-     *
+     * 显示科目列表.
      * @return \Illuminate\Http\Response
      */
     public function index() {
@@ -36,71 +28,77 @@ class SubjectController extends Controller
         }
         return view('subject.index', [
             'js' => 'js/subject/index.js',
-            'dialog' => true
+            'dialog' => true,
+            'datatable' => true,
+            'form'=>true,
             ]);
 
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
+     * 显示创建新的科目.
      * @return \Illuminate\Http\Response
      */
     public function create()
     {
-        return view('subject.create',['js' => 'js/subject/create.js']);
+        return view('subject.create',[
+            'js' => 'js/subject/create.js',
+            'form' => true
+        ]);
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
+     * 添加新科目
      * @param  \Illuminate\Http\Request  $requestid
      * @return \Illuminate\Http\Response
      */
-    public function store(SubjectRequest $request)
-    {
+    public function store(SubjectRequest $request){
+
         $data = $request->except('_token');
+        $data['grade_ids'] = implode(',',$data['grade_ids']);
+        if($this->subject->create($data)){
+            return response()->json([
+                'statusCode' => self::HTTP_STATUSCODE_OK, 'message' => self::MSG_CREATE_OK,
+            ]);
+        }else{
+            return response()->json([
+                'statusCode' => self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR,
+                'message' => '添加失败'
+            ]);
 
-        if($data !=null){
-            $grade = $data['grade_ids'];
-            $data['grade_ids'] = implode('|',$grade);
-
-            $res = Subject::create($data);
-
-            if (!$res) {
-                return response()->json(['statusCode' => 202, 'message' => 'add filed']);
-            }
-            return response()->json(['statusCode' => 200, 'message' => 'nailed it!']);
         }
 
     }
 
     /**
-     * Display the specified resource.
-     *
+     *科目详情
      * @param  \App\Models\Subject  $subject
      * @return \Illuminate\Http\Response
      */
     public function show($id)
     {
-        $subject = Subject::whereId($id)->first();
-
-        return view('subject.show', ['subject' => $subject]);
+        return view('subject.show', ['subject' => $this->subject->findOrFail($id)]);
     }
 
     /**
      * 编辑
-     *
      * @param  \App\Models\Subject  $subject
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
-    {
-        $subject = Subject::whereId($id)->first();
+    public function edit($id){
 
+        $subject = $this->subject->findOrFail($id)->toArray();
+        $ids = explode(',',$subject['grade_ids']);
+        $gradeId = [];
+        foreach ($ids as $value) {
+            $grade = Grade::find($value)->toArray();
+            $gradeId[$value] = $grade['name'];
+        }
         return view('subject.edit', [
             'js' => 'js/subject/edit.js',
-            'subject' => $subject
+            'form' => true,
+            'subject' => $subject,
+            'gradeId' =>$gradeId
         ]);
 
     }
@@ -114,24 +112,17 @@ class SubjectController extends Controller
      */
     public function update(SubjectRequest $request,$id)
     {
-        $subject = Subject::find($id);
-
-        $subject->name = $request->get('name');
-        $subject->max_score = $request->get('max_score');
-        $subject->pass_score = $request->get('pass_score');
-        $subject->isaux = $request->get('isaux');
-        $subject->grade_ids = implode('|',$request->get('grade_ids'));
-        $subject->enabled = $request->get('enabled');
-
-        $res = $subject->save();
-        if (!$res) {
-            $this->message['statusCode'] = 202;
-            $this->message['message'] = 'add filed';
+        $data = $request->all();
+        $data['grade_ids'] = implode(',',$request->get('grade_ids'));
+        $subject = $this->subject->findOrFail($id);
+        if ($subject->update($data)) {
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
+            $this->result['message'] = self::MSG_EDIT_OK;
         } else {
-            $this->message['statusCode'] = 200;
-            $this->message['message'] = 'nailed it!';
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+            $this->result['message'] = '更新失败';
         }
-        return response()->json($this->message);
+        return response()->json($this->result);
 
     }
 
@@ -143,14 +134,29 @@ class SubjectController extends Controller
      */
     public function destroy($id)
     {
-        $res = Subject::destroy($id);
-        if ($res) {
-            $this->message['statusCode'] = 200;
-            $this->message['message'] = 'nailed it!';
-        }else{
-            $this->message['statusCode'] = 202;
-            $this->message['message'] = 'add filed';
+        if ($this->subject->findOrFail($id)->delete()) {
+            $this->result['message'] = self::MSG_DEL_OK;
+        } else {
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+            $this->result['message'] = '删除失败';
         }
-        return response()->json($this->message);
+        return response()->json($this->result);
+    }
+
+    /**
+     * 根据条件查询科目.
+     *
+     * @param $school_id
+     * @return \Illuminate\Http\Response
+     * @internal param Subject $subject
+     */
+    public function query($school_id)
+    {
+        $subjects = $this->subject->where('school_id',$school_id)->get(['id','name']);
+        if ($subjects) {
+            return response()->json(['statusCode' => 200, 'subjects' => $subjects]);
+        }else{
+            return response()->json(['statusCode' => 500, 'message' => '查询失败!']);
+        }
     }
 }

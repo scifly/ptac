@@ -42,7 +42,10 @@ class Educator extends Model
     {
         return $this->belongsTo('App\Models\User');
     }
-
+    public function school()
+    {
+        return $this->belongsTo('App\Models\School');
+    }
     public function datatable()
     {
 
@@ -56,7 +59,7 @@ class Educator extends Model
             ['db' => 'Educator.updated_at', 'dt' => 6],
 
             [
-                'db' => '', 'dt' => 7,
+                'db' => 'Educator.enabled', 'dt' => 7,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
                 }
