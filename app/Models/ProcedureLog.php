@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use App\Facades\DatatableFacade as Datatable;
 
 /**
  * App\Models\ProcedureLog
@@ -49,4 +50,99 @@ class ProcedureLog extends Model {
         'created_at',
         'updated_at',
     ];
+
+    /**
+     * 流程日志与用户
+     */
+    public function user() {
+        return $this->belongsTo('App\Models\User');
+    }
+
+    /**
+     * 流程日志与流程
+     */
+    public function procedure() {
+        return $this->belongsTo('App\Models\Procedure');
+    }
+
+    /**
+     * 日志与流程步骤
+     */
+    public function procedureStep() {
+        return $this->belongsTo('App\Models\ProcedureStep');
+    }
+
+    /**
+     * @param $userId
+     * @return \Illuminate\Database\Eloquent\Collection|Model|null|static|static[]
+     */
+    public function users($userId){
+        return User::find($userId);
+    }
+
+    public function status($d){
+
+        switch ($d){
+            case 0: return '通过';
+            case 1: return '拒绝';
+            case 2: return '待定';
+            default: return 'N/A';
+        }
+    }
+
+    public function datatable(){
+
+        $columns = [
+            ['db' => 'ProcedureLog.id', 'dt' => 0],
+            [
+                'db' => 'ProcedureLog.initiator_user_id', 'dt' => 1,
+                'formatter' => function($d, $row) {
+                       $user = $this->users($d);
+                       return $user->realname;
+                }
+            ],
+            ['db' => 'Procedures.name as procedurename', 'dt' => 2],
+            ['db' => 'ProcedureStep.name procedurestepname', 'dt' => 3],
+            [
+                'db' => 'ProcedureLog.operator_user_id', 'dt' => 4,
+                'formatter' => function($d, $row) {
+                    $user = $this->users($d);
+                    return $user->realname;
+                }
+            ],
+            ['db' => 'ProcedureLog.initiator_msg', 'dt' => 5],
+            ['db' => 'ProcedureLog.operator_msg', 'dt' => 6],
+            ['db' => 'ProcedureLog.created_at', 'dt' => 7],
+            ['db' => 'ProcedureLog.updated_at', 'dt' => 8],
+            [
+                'db' => 'ProcedureLog.step_status', 'dt' => 9,
+                'formatter' => function($d, $row) {
+                    return $this->status($d);
+//                    return Datatable::dtOps($this, $d, $row);
+                }
+            ],
+        ];
+
+        $joins = [
+            [
+                'table' => 'procedures',
+                'alias' => 'Procedures',
+                'type' => 'INNER',
+                'conditions' => [
+                    'Procedures.id = ProcedureLog.procedure_id'
+                ]
+            ],
+            [
+                'table' => 'procedure_steps',
+                'alias' => 'ProcedureStep',
+                'type' => 'INNER',
+                'conditions' => [
+                    'ProcedureStep.id = ProcedureLog.procedure_step_id'
+                ]
+            ]
+        ];
+
+        return Datatable::simple($this, $columns, $joins);
+    }
+
 }
