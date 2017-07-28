@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ScoreRangeRequest;
 use App\Models\ScoreRange;
+use App\Models\Subject;
 use Illuminate\Support\Facades\Request;
 
 class ScoreRangeController extends Controller
@@ -38,7 +39,6 @@ class ScoreRangeController extends Controller
     {
         return view('score_range.create',[
             'js' => 'js/score_range/create.js',
-            'scoreCreateEditJs' => true,
             'form' => true
         ]);
     }
@@ -72,6 +72,12 @@ class ScoreRangeController extends Controller
     {
         // find the record by $id
         $scoreRange = $this->scoreRange->findOrFail($id);
+        $subjects_arr = explode(',', $scoreRange['subject_ids']);
+        $str = '';
+        foreach ($subjects_arr as $val){
+            $str .= ',' . Subject::findOrFail($val)['name'];
+        }
+        $scoreRange['subject_ids'] = substr($str,1);
         return view('score_range.show', ['scoreRange' => $scoreRange]);
     }
 
@@ -89,7 +95,6 @@ class ScoreRangeController extends Controller
         //记录返回给view
         return view('score_range.edit',[
             'js' => 'js/score_range/edit.js',
-            'scoreCreateEditJs' => true,
             'scoreRange' => $scoreRange,
             'form' => true
         ]);
