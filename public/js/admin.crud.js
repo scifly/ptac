@@ -33,7 +33,7 @@ var crud = {
                     $.gritter.add({
                         title: "删除结果",
                         text: result.message,
-                        image: result.statusCode === 200 ? '../img/confirm.png' : '../img/failure.jpg'
+                        image: result.statusCode === 200 ? '../../img/confirm.png' : '../../img/failure.jpg'
                     });
                     return false;
                 }
@@ -73,21 +73,26 @@ var crud = {
                         $.gritter.add({
                             title: "新增结果",
                             text: result.message,
-                            image: result.statusCode === 200 ? '../img/confirm.png' : '../img/failure.jpg'
+                            image: result.statusCode === 200 ? '../../img/confirm.png' : '../../img/failure.jpg'
                         });
                         return false;
                     },
                     error: function(e) {
                         var obj = JSON.parse(e.responseText);
-                        for (var key in obj) {
-                            if (obj.hasOwnProperty(key)) {
-                                $.gritter.add({
-                                    title: "新增结果",
-                                    text: obj[key],
-                                    image: '/img/failure.jpg'
-                                });
-                            }
-                        }
+                        $.gritter.add({
+                            title: "出现异常",
+                            text: obj['message'],
+                            image: '../../img/failure.jpg'
+                        });
+                        // for (var key in obj) {
+                        //     if (obj.hasOwnProperty(key)) {
+                        //         $.gritter.add({
+                        //             title: "新增结果",
+                        //             text: obj[key],
+                        //             image: '/img/failure.jpg'
+                        //         });
+                        //     }
+                        // }
                     }
                 });
             }
@@ -138,21 +143,26 @@ var crud = {
                         $.gritter.add({
                             title: "编辑结果",
                             text: result.message,
-                            image: result.statusCode === 200 ? '../img/confirm.png' : '../img/failure.jpg'
+                            image: result.statusCode === 200 ? '../../img/confirm.png' : '../../img/failure.jpg'
                         });
                         return false;
                     },
                     error: function(e) {
                         var obj = JSON.parse(e.responseText);
-                        for (var key in obj) {
-                            if (obj.hasOwnProperty(key)) {
-                                $.gritter.add({
-                                    title: "编辑结果",
-                                    text: obj[key],
-                                    image: '/img/failure.jpg'
-                                });
-                            }
-                        }
+                        $.gritter.add({
+                            title: "出现异常",
+                            text: obj['message'],
+                            image: '../../img/failure.jpg'
+                        });
+                        // for (var key in obj) {
+                        //     if (obj.hasOwnProperty(key)) {
+                        //         $.gritter.add({
+                        //             title: "编辑结果",
+                        //             text: obj[,
+                        //             image: '/img/failure.jpg'
+                        //         });
+                        //     }
+                        // }
                     }
                 });
             }

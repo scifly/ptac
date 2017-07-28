@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\SubjectRequest;
 use App\Models\Subject;
+use App\Models\Grade;
 use Illuminate\Support\Facades\Request;
 
 class SubjectController extends Controller
@@ -84,14 +85,20 @@ class SubjectController extends Controller
      * @param  \App\Models\Subject  $subject
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
-    {
-        $subject = $this->subject->findOrFail($id)->toArray();
+    public function edit($id){
 
+        $subject = $this->subject->findOrFail($id)->toArray();
+        $ids = explode(',',$subject['grade_ids']);
+        $gradeId = [];
+        foreach ($ids as $value) {
+            $grade = Grade::find($value)->toArray();
+            $gradeId[$value] = $grade['name'];
+        }
         return view('subject.edit', [
             'js' => 'js/subject/edit.js',
+            'form' => true,
             'subject' => $subject,
-            'form' => true
+            'gradeId' =>$gradeId
         ]);
 
     }
@@ -102,13 +109,13 @@ class SubjectController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @param  \App\Models\Subject  $subject
      * @return \Illuminate\Http\Response
-     */-
+     */
     public function update(SubjectRequest $request,$id)
     {
         $data = $request->all();
-        $data['grade_ids'] = implode('|',$request->get('grade_ids'));
-
-        if ($this->subject->findOrFail($id)->update($request->all())) {
+        $data['grade_ids'] = implode(',',$request->get('grade_ids'));
+        $subject = $this->subject->findOrFail($id);
+        if ($subject->update($data)) {
             $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
             $this->result['message'] = self::MSG_EDIT_OK;
         } else {
