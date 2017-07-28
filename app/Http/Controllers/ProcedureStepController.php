@@ -25,7 +25,8 @@ class ProcedureStepController extends Controller {
 
         return view('procedure_step.index', [
             'js' => 'js/procedure_step/index.js',
-            'dialog' => true
+            'dialog' => true,
+            'datatable' => true
         ]);
     }
 
@@ -35,7 +36,7 @@ class ProcedureStepController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function create() {
-        return view('procedure_step.create', ['js' => 'js/procedure_step/create.js']);
+        return view('procedure_step.create', ['js' => 'js/procedure_step/create.js' , 'form' => true]);
     }
 
     /**
@@ -89,7 +90,8 @@ class ProcedureStepController extends Controller {
         //记录返回给view
         return view('procedure_step.edit', [
             'js' => 'js/procedure_step/edit.js',
-            'procedureStep' => $procedureStep
+            'procedureStep' => $procedureStep ,
+            'form' => true
         ]);
     }
 

@@ -40,14 +40,14 @@ Route::put('school_types/update/{id}', 'SchoolTypeController@update');
 Route::delete('school_types/delete/{id}', 'SchoolTypeController@destroy');
 
 // 科目设置
-Route::get('subject/index', 'SubjectController@index');
-Route::get('subject/create', 'SubjectController@create');
-Route::post('subject/store', 'SubjectController@store');
-Route::get('subject/show/{id}', 'SubjectController@show');
-Route::get('subject/edit/{id}', 'SubjectController@edit');
-Route::put('subject/update/{id}', 'SubjectController@update');
-Route::delete('subject/delete/{id}', 'SubjectController@destroy');
-Route::get('subject/query/{id}', 'SubjectController@query');
+Route::get('subjects/index', 'SubjectController@index');
+Route::get('subjects/create', 'SubjectController@create');
+Route::post('subjects/store', 'SubjectController@store');
+Route::get('subjects/show/{id}', 'SubjectController@show');
+Route::get('subjects/edit/{id}', 'SubjectController@edit');
+Route::put('subjects/update/{id}', 'SubjectController@update');
+Route::delete('subjects/delete/{id}', 'SubjectController@destroy');
+Route::get('subjects/query/{id}', 'SubjectController@query');
 
 // 权限设置
 Route::get('groups/index', 'GroupController@index');
@@ -176,3 +176,8 @@ Route::get('procedure_steps/show/{id}', 'ProcedureStepController@show');
 Route::get('procedure_steps/edit/{id}', 'ProcedureStepController@edit');
 Route::put('procedure_steps/update/{id}', 'ProcedureStepController@update');
 Route::delete('procedure_steps/delete/{id}', 'ProcedureStepController@destroy');
+
+//流程日志
+Route::get('procedure_logs/index', 'ProcedureLogController@index');
+Route::get('procedure_logs/show/{id}', 'ProcedureLogController@show');
+Route::delete('procedure_logs/delete/{id}', 'ProcedureLogController@destroy');

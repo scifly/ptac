@@ -247,6 +247,21 @@ $factory->define(App\Models\Exam::class, function (Faker\Generator $faker) {
     ];
 });
 
+$factory->define(App\Models\ProcedureLog::class, function (Faker\Generator $faker) {
+
+    return [
+        'initiator_user_id' => rand(1,5),
+        'procedure_id' => rand(1,5),
+        'procedure_step_id' => rand(1,5),
+        'operator_user_id' => rand(1,5),
+        'initiator_msg' => 'test',
+        'initiator_media_ids' => '1|2',
+        'operator_msg' => 'test',
+        'operator_media_ids' => '2|3',
+        'step_status' => rand(1,2),
+    ];
+});
+
 
 
 

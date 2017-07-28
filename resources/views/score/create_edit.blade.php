@@ -4,7 +4,7 @@
         <div class="form-horizontal">
             <div class="form-group">
                 {!! Form::label('student_id', '学号',['class' => 'col-sm-4 control-label']) !!}
-                <div class="col-sm-2">
+                <div class="col-sm-3">
                     {!! Form::select('student_id', $students, null, ['class' => 'form-control']) !!}
                 </div>
             </div>
@@ -49,9 +49,10 @@
                 <div class="col-sm-3">
                     {!! Form::text('score', null, [
                         'class' => 'form-control',
-                        'placeholder' => '(不超过6个字符)',
+                        'placeholder' => '(不超过5个数字含小数点)',
                         'data-parsley-required' => 'true',
-                        'data-parsley-maxlength' => '6'
+                        'data-parsley-type' => "number",
+                        'data-parsley-maxlength' => '5'
                         ]) !!}
                 </div>
             </div>

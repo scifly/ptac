@@ -25,7 +25,8 @@ class ProcedureTypeController extends Controller {
 
         return view('procedure_type.index', [
             'js' => 'js/procedure_type/index.js',
-            'dialog' => true
+            'dialog' => true,
+            'datatable' => true
         ]);
     }
 
@@ -35,7 +36,7 @@ class ProcedureTypeController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function create() {
-        return view('procedure_type.create', ['js' => 'js/procedure_type/create.js']);
+        return view('procedure_type.create', ['js' => 'js/procedure_type/create.js', 'form' => true]);
     }
 
     /**
@@ -86,7 +87,8 @@ class ProcedureTypeController extends Controller {
         //记录返回给view
         return view('procedure_type.edit', [
             'js' => 'js/procedure_type/edit.js',
-            'pt' => $pt
+            'pt' => $pt,
+            'form' => true
         ]);
     }
 

@@ -8,7 +8,8 @@
                     {!! Form::text('name', null, [
                         'class' => 'form-control',
                         'placeholder' => '(不超过60个汉字)',
-                        'data-parsley-required' => 'true'
+                        'data-parsley-required' => 'true',
+                        'data-parsley-minlength' => '3',
                     ]) !!}
                 </div>
             </div>
