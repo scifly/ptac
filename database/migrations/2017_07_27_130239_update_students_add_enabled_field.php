@@ -14,7 +14,7 @@ class UpdateStudentsAddEnabledField extends Migration
     public function up()
     {
         Schema::table('students', function (Blueprint $table) {
-            $table->tinyInteger('enabled')->after('updated_at')->comment('是否启用');
+            $table->boolean('enabled')->after('updated_at')->comment('是否启用');
         });
     }
 

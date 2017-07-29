@@ -45,6 +45,12 @@ class Squad extends Model {
     {
         return $this->belongsTo('App\Models\Grade');
     }
+
+    public function educatorClass()
+    {
+        return $this->hasOne('App\Models\EducatorClass');
+    }
+
     public function datatable() {
 
         $columns = [

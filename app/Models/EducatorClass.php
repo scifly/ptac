@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use App\Facades\DatatableFacade as Datatable;
 
 /**
  * App\Models\EducatorClass
@@ -25,9 +26,85 @@ use Illuminate\Database\Eloquent\Model;
 class EducatorClass extends Model {
     
     protected $table = 'educators_classes';
+
     protected $fillable = [
         'educator_id',
         'class_id',
-        'subject_id'
+        'subject_id',
+        'enabled'
     ];
+
+    public function educator()
+    {
+        return $this->belongsTo('App\Models\Educator');
+    }
+
+    public function subject()
+    {
+        return $this->belongsTo('App\Models\Subject');
+    }
+
+    public function squad()
+    {
+        return $this->belongsTo('App\Models\Squad');
+    }
+
+    public function datatable()
+    {
+
+        $columns = [
+            ['db' => 'EducatorClass.id', 'dt' => 0],
+            ['db' => 'User.realname as usersname', 'dt' => 1],
+//            ['db' => 'EducatorClass.educator_id', 'dt' => 1],
+            ['db' => 'Squad.name as squadname', 'dt' => 2],
+            ['db' => 'Subject.name as subjectname', 'dt' => 3],
+            ['db' => 'EducatorClass.created_at', 'dt' => 4],
+            ['db' => 'EducatorClass.updated_at', 'dt' => 5],
+            [
+                'db' => 'EducatorClass.enabled', 'dt' => 6,
+                'formatter' => function ($d, $row) {
+                    return Datatable::dtOps($this, $d, $row);
+                }
+            ]
+        ];
+        $joins = [
+            [
+                'table' => 'classes',
+                'alias' => 'Squad',
+                'type' => 'INNER',
+                'conditions' => [
+                    'Squad.id = EducatorClass.educator_id'
+                ]
+            ],
+            [
+                'table' => 'subjects',
+                'alias' => 'Subject',
+                'type' => 'INNER',
+                'conditions' => [
+                    'Subject.id = EducatorClass.subject_id'
+                ]
+            ],
+
+            [
+                'table' => 'educators',
+                'alias' => 'Educator',
+                'type' => 'INNER',
+                'conditions' => [
+                    'Educator.id = EducatorClass.educator_id'
+                ]
+            ],
+            [
+                'table' => 'users',
+                'alias' => 'User',
+                'type' => 'INNER',
+                'conditions' => [
+                    'User.id = Educator.user_id'
+                ]
+            ]
+        ];
+
+        return Datatable::simple($this, $columns,$joins);
+    }
+
+
 }

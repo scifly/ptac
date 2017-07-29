@@ -2,14 +2,14 @@
 @section('header')
     <div class="panel-heading">
         <div class="btn-group">
-            <a href="{{ url('subjectModules/create') }}" class="btn btn-primary pull-right">
-                添加次分类
+            <a href="{{ url('educatorClasses/create') }}" class="btn btn-primary pull-right">
+                添加教职员工
             </a>
         </div>
     </div>
 @endsection
 @section('breadcrumb')
-    系统设置/科目次分类
+    系统设置/教职员工
 @endsection
 @section('content')
     <div class="panel-body">
@@ -18,9 +18,9 @@
                 <thead>
                 <tr>
                     <th>#</th>
+                    <th>教职员工姓名</th>
+                    <th>班级名称</th>
                     <th>科目名称</th>
-                    <th>次分类名称</th>
-                    <th>次分类权重</th>
                     <th>创建时间</th>
                     <th>更新时间</th>
                     <th>状态</th>

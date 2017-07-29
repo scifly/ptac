@@ -42,10 +42,17 @@ class Educator extends Model
     {
         return $this->belongsTo('App\Models\User');
     }
+
     public function school()
     {
         return $this->belongsTo('App\Models\School');
     }
+
+    public function educatorClass()
+    {
+        return $this->hasOne('App\Models\EducatorClass');
+    }
+
     public function datatable()
     {
 
