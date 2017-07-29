@@ -29,9 +29,9 @@
         @if ($procedureStep->approver_user_ids)
             审批用户:
 
-             @foreach ($procedureStep->approvers_show($procedureStep->approver_user_ids) as $user)
+             @foreach ($approver_user_ids as $user_id => $realname)
 
-                {{ link_to('users/show/' .  $user->id,$user->realname)}}|
+                {{ link_to('users/show/' .  $user_id,$realname)}}|
 
             @endforeach
 
@@ -41,9 +41,9 @@
         @if ($procedureStep->related_user_ids)
             相关人员:
 
-            @foreach ($procedureStep->related_users_show($procedureStep->related_user_ids) as $user)
+            @foreach ($related_user_ids as $user_id => $realname)
 
-                {{ link_to('users/show/' .  $user->id,$user->realname)}}|
+                {{ link_to('users/show/' .  $user_id,$realname)}}|
 
             @endforeach
 

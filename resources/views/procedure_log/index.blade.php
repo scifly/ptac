@@ -15,9 +15,9 @@
                     <th>操作人</th>
                     <th>发起人留言</th>
                     <th>操作人留言</th>
-                    <th>操作状态</th>
                     <th>创建时间</th>
                     <th>更新时间</th>
+                    <th>操作状态</th>
                 </tr>
                 </thead>
                 <tbody></tbody>

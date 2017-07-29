@@ -70,7 +70,7 @@ $factory->define(App\Models\Grade::class, function (Faker\Generator $faker) {
 $factory->define(App\Models\Educator::class, function (Faker\Generator $faker) {
 
     return [
-        'user_id' => 1,
+        'user_id' => rand(1,5),
         'team_ids' => 'abc',
         'school_id' => 1,
         'sms_quote' => 100,
@@ -258,7 +258,7 @@ $factory->define(App\Models\ProcedureLog::class, function (Faker\Generator $fake
         'initiator_media_ids' => '1|2',
         'operator_msg' => 'test',
         'operator_media_ids' => '2|3',
-        'step_status' => rand(1,2),
+        'step_status' => rand(0,2),
     ];
 });
 

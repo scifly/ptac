@@ -131,9 +131,10 @@ class ProcedureController extends Controller {
      * @internal param AttendanceMachine $attendanceMachine
      */
     public function destroy($id) {
-        //根据id查找需要删除的数据
+        //根据id查找需要删除表数据
         //进行删除操作
         //返回json 格式的操作结果
+
         $procedure = Procedure::whereId($id)->first();
 
         if ($procedure->delete()) {

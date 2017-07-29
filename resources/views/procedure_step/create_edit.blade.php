@@ -22,13 +22,40 @@
             <div class="form-group">
                 {!! Form::label('approver_user_ids', '审批用户',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-2">
-                    {!! Form::select('user_id', $approver_users, null, ['class' => 'form-control']) !!}
+                    <select multiple="multiple" name="approver_user_ids[]" id="approver_user_ids[]">
+                        @foreach($educators as $key => $value)
+                            @if(isset($approver_user_ids))
+                                <option value="{{$key}}"
+                                        @if(array_key_exists($key,$approver_user_ids))
+                                            selected="selected"
+                                        @endif>
+                                    {{$value}}
+                                </option>
+                            @else
+                                <option value="{{$key}}">{{$value}}</option>
+                            @endif
+                        @endforeach
+                    </select>
                 </div>
             </div>
             <div class="form-group">
                 {!! Form::label('related_user_ids', '相关人员',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-2">
-                    {!! Form::select('user_id', $related_users, null, ['class' => 'form-control']) !!}
+                    <select multiple="multiple" name="related_user_ids[]" id="related_user_ids[]">
+                        @foreach($educators as $key => $value)
+
+                            @if(isset($related_user_ids))
+                                <option value="{{$key}}"
+                                        @if(array_key_exists($key,$related_user_ids))
+                                        selected="selected"
+                                        @endif>
+                                    {{$value}}
+                                </option>
+                            @else
+                                <option value="{{$key}}">{{$value}}</option>
+                            @endif
+                        @endforeach
+                    </select>
                 </div>
             </div>
             <div class="form-group">
