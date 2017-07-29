@@ -1,9 +1,9 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use App\Facades\DatatableFacade as Datatable;
 
 /**
  * App\Models\SubjectModule
@@ -26,20 +26,53 @@ use Illuminate\Database\Eloquent\Model;
  */
 class SubjectModule extends Model {
     //
-    protected $table = 'wap_site_modules';
+    protected $table = 'subject_modules';
     protected $fillable = [
-        'id',
-        'wap_site_id',
+        'subject_id',
         'name',
-        'summary',
-        'media_id',
-        'created_at',
-        'updated_at',
+        'weight',
+        'enabled',
     ];
 
-    public function belongsToWs()
+    public function subject()
     {
         return $this->belongsTo('App\Models\Subject','subject_id','id');
+
+    }
+
+    public function datatable() {
+
+        $columns = [
+            ['db' => 'SubjectModule.id', 'dt' => 0],
+            ['db' => 'Subject.name as subjectname', 'dt' => 1],
+            ['db' => 'SubjectModule.name', 'dt' => 2],
+            ['db' => 'SubjectModule.weight', 'dt' => 3],
+            ['db' => 'SubjectModule.created_at', 'dt' => 4],
+            ['db' => 'SubjectModule.updated_at', 'dt' => 5],
+            [
+                'db' => 'SubjectModule.enabled', 'dt' => 6,
+                'formatter' => function($d, $row)
+                {
+                    return Datatable::dtOps($this, $d ,$row);
+                }
+            ],
+
+
+        ];
+
+        $joins = [
+            [
+                'table' => 'subjects',
+                'alias' => 'Subject',
+                'type' => 'INNER',
+                'conditions' => [
+                    'Subject.id = SubjectModule.subject_id'
+                ]
+            ],
+
+        ];
+
+        return Datatable::simple($this, $columns,$joins);
 
     }
 }

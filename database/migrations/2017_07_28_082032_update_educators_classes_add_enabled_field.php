@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class UpdateStudentsAddEnabledField extends Migration
+class UpdateEducatorsClassesAddEnabledField extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class UpdateStudentsAddEnabledField extends Migration
      */
     public function up()
     {
-        Schema::table('students', function (Blueprint $table) {
+        Schema::table('educators_classes', function (Blueprint $table) {
             $table->boolean('enabled')->after('updated_at')->comment('是否启用');
         });
     }
@@ -25,7 +25,7 @@ class UpdateStudentsAddEnabledField extends Migration
      */
     public function down()
     {
-        Schema::table('students', function (Blueprint $table) {
+        Schema::table('educators_classes', function (Blueprint $table) {
             $table->dropColumn('enabled');
         });
     }

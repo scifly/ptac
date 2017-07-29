@@ -74,6 +74,7 @@ $factory->define(App\Models\Educator::class, function (Faker\Generator $faker) {
         'team_ids' => 'abc',
         'school_id' => 1,
         'sms_quote' => 100,
+        'enabled' => 1
     ];
 
 });
@@ -259,6 +260,28 @@ $factory->define(App\Models\ProcedureLog::class, function (Faker\Generator $fake
         'operator_msg' => 'test',
         'operator_media_ids' => '2|3',
         'step_status' => rand(0,2),
+    ];
+});
+
+$factory->define(App\Models\SubjectModule::class, function (Faker\Generator $faker) {
+
+    return [
+        'subject_id' => rand(1,10),
+        'name' => $faker->name,
+        'weight' => rand(1,5),
+        'enabled' =>1
+
+    ];
+});
+
+$factory->define(App\Models\EducatorClass::class, function (Faker\Generator $faker) {
+
+    return [
+        'educator_id' => rand(1,10),
+        'class_id' => rand(1,10),
+        'subject_id' => rand(1,10),
+        'enabled' =>1
+
     ];
 });
 

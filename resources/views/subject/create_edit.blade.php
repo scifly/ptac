@@ -72,7 +72,7 @@
                                 <option value="{{$key}}">{{$value}}</option>
                             @endif
                         @endforeach
-                        <select>
+                    </select>
                 </div>
             </div>
             <div class="form-group">
@@ -83,8 +83,6 @@
                     {!! Form::label('enabled', '禁用') !!}
                 </div>
             </div>
-
-
         </div>
     </div>
     <div class="box-footer">

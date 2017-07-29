@@ -6,27 +6,32 @@
                 {!! Form::label('name', '名称',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-2">
                     {!! Form::text('name', null, [
-                        'class' => 'form-control',
-                        'placeholder' => '(不超过60个汉字)',
-                        'data-parsley-required' => 'true',
-                        'data-parsley-minlength' => '3',
+                    'class' => 'form-control',
+                    'placeholder' => '不能超过20个汉字',
+                    'data-parsley-required' => 'true',
+                    'data-parsley-maxlength' => '20',
+                    'data-parsley-minlength' => '2',
+
                     ]) !!}
                 </div>
             </div>
             <div class="form-group">
-                {!! Form::label('company_id', '所属运营者',['class' => 'col-sm-4 control-label']) !!}
-                <div class="col-sm-3">
-                    {!! Form::select('company_id', $companies, null, ['class' => 'form-control']) !!}
+                {!! Form::label('subject_id', '科目名称',['class' => 'col-sm-4 control-label']) !!}
+                <div class="col-sm-2">
+                    {!! Form::select('subject_id', $subject, null, ['class' => 'form-control']) !!}
                 </div>
             </div>
             <div class="form-group">
-                {!! Form::label('corpid', '企业号ID',['class' => 'col-sm-4 control-label']) !!}
-                <div class="col-sm-3">
-                    {!! Form::text('corpid', null, [
-                        'class' => 'form-control',
-                        'placeholder' => '(36个小写字母与阿拉伯数字)',
-                        'data-parsley-required' => 'true',
-                        'data-parsley-type' => 'alphanum'
+                {!! Form::label('weight', '次分类权重',['class' => 'col-sm-4 control-label']) !!}
+                <div class="col-sm-2">
+                    {!! Form::text('weight', null, [
+                    'class' => 'form-control',
+                    'placeholder' => '次分类权重是数字',
+                    'data-parsley-required' => 'true',
+                    'data-parsley-type' => 'integer',
+                    'data-parsley-maxlength' => '3',
+                    'data-parsley-minlength' => '1',
+
                     ]) !!}
                 </div>
             </div>
@@ -38,7 +43,6 @@
                     {!! Form::label('enabled', '禁用') !!}
                 </div>
             </div>
-
         </div>
     </div>
     <div class="box-footer">
