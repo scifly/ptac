@@ -8,23 +8,39 @@ use Illuminate\Support\Facades\Request;
 class CustodianStudentController extends Controller
 {
     protected $custodianStudent;
+
+    function __construct(CustodianStudent $custodianStudent)
+    {
+        $this->custodianStudent = $custodianStudent;
+    }
+
     /**
-     * Display a listing of the resource.
+     * 显示监护人列表
      * @return \Illuminate\Http\Response
      */
     public function index()
     {
-
+        if (Request::get('draw')) {
+            return response()->json($this->custodianStudent->datatable());
+        }
+        return view('custodian_student.index', [
+            'js' => 'js/custodian_student/index.js',
+            'dialog' => true,
+            'datatable' => true,
+            'form'=>true,
+        ]);
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
+     * 添加监护人页面
      * @return \Illuminate\Http\Response
      */
     public function create()
     {
-        //
+        return view('custodian_student.create',[
+            'js' => 'js/custodian_student/create.js',
+            'form' => true
+        ]);
     }
 
     /**

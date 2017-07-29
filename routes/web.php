@@ -120,6 +120,15 @@ Route::get('educatorClasses/edit/{id}', 'EducatorClassController@edit');
 Route::put('educatorClasses/update/{id}', 'EducatorClassController@update');
 Route::delete('educatorClasses/delete/{id}', 'EducatorClassController@destroy');
 
+// 
+Route::get('custodianStudents/index', 'CustodianStudentController@index');
+Route::get('custodianStudents/create', 'CustodianStudentController@create');
+Route::post('custodianStudents/store', 'CustodianStudentController@store');
+Route::get('custodianStudents/show/{id}', 'CustodianStudentController@show');
+Route::get('custodianStudents/edit/{id}', 'CustodianStudentController@edit');
+Route::put('custodianStudents/update/{id}', 'CustodianStudentController@update');
+Route::delete('custodianStudents/delete/{id}', 'CustodianStudentController@destroy');
+
 // 学生设置
 Route::get('students/index', 'StudentController@index');
 Route::get('students/create', 'StudentController@create');

@@ -19,8 +19,8 @@
                 <div class="col-sm-2">
                     {!! Form::text('student_number', null, [
                     'class' => 'form-control',
-                    'placeholder' => '学号必须是数字',
-                     'data-parsley-type' => 'integer',
+                    'placeholder' => '小写字母与阿拉伯数字',
+                     'data-parsley-type' => 'alphanum',
                     'data-parsley-required' => 'true',
                     'data-parsley-maxlength' => '32',
                     'data-parsley-minlength' => '2',
@@ -33,9 +33,9 @@
                 <div class="col-sm-2">
                     {!! Form::text('card_number', null, [
                     'class' => 'form-control',
-                    'placeholder' => '卡号必须是数字',
+                    'placeholder' => '小写字母与阿拉伯数字',
                     'data-parsley-required' => 'true',
-                    'data-parsley-type' => 'integer',
+                    'data-parsley-type' => 'alphanum',
                     'data-parsley-maxlength' => '32',
                     'data-parsley-minlength' => '2',
 
@@ -48,8 +48,6 @@
                     {!! Form::text('birthday', null, [
                     'class' => 'form-control',
                     'placeholder' => '生日格式为2000-08-12形式',
-                    'data-parsley-required' => 'true'
-
                     ]) !!}
                 </div>
             </div>
@@ -74,6 +72,15 @@
                     {!! Form::label('oncampus', '是') !!}
                     {!! Form::radio('oncampus', '0') !!}
                     {!! Form::label('oncampus', '否') !!}
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-3 col-sm-offset-4">
+                    {!! Form::radio('enabled', '1', true) !!}
+                    {!! Form::label('enabled', '启用') !!}
+                    {!! Form::radio('enabled', '0') !!}
+                    {!! Form::label('enabled', '禁用') !!}
                 </div>
             </div>
 

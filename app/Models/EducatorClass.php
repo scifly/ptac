@@ -55,7 +55,6 @@ class EducatorClass extends Model {
         $columns = [
             ['db' => 'EducatorClass.id', 'dt' => 0],
             ['db' => 'User.realname as usersname', 'dt' => 1],
-//            ['db' => 'EducatorClass.educator_id', 'dt' => 1],
             ['db' => 'Squad.name as squadname', 'dt' => 2],
             ['db' => 'Subject.name as subjectname', 'dt' => 3],
             ['db' => 'EducatorClass.created_at', 'dt' => 4],

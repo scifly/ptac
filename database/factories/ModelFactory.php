@@ -159,7 +159,9 @@ $factory->define(App\Models\User::class, function (Faker\Generator $faker) {
         'remember_token' => '454564fdafdafadfsa',
         'email' => '18513094620@qq.com',
         'wechatid' => 'fdsfds45454',
-        'enabled' => 1
+        'userid' => rand(1,5).",".rand(5,10),
+        'department_ids' =>rand(1,5).",".rand(5,10),
+        'enabled' => 1,
     ];
 });
 
@@ -167,7 +169,7 @@ $factory->define(App\Models\User::class, function (Faker\Generator $faker) {
 $factory->define(App\Models\Custodian::class, function (Faker\Generator $faker) {
 
     return [
-        'user_id' => rand(1, 5),
+        'user_id' => rand(1, 10),
         'expiry' => $faker->dateTime,
     ];
 });
@@ -286,6 +288,16 @@ $factory->define(App\Models\EducatorClass::class, function (Faker\Generator $fak
 });
 
 
+$factory->define(App\Models\CustodianStudent::class, function (Faker\Generator $faker) {
+
+    return [
+        'custodian_id' => rand(1, 10),
+        'student_id' => rand(1, 10),
+        'relationship' => '父子',
+        'enabled' =>1
+
+    ];
+});
 
 
 

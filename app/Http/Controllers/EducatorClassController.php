@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\EducatorClassRequest;
 
+use App\Models\Educator;
+use App\Models\User;
 use App\Models\EducatorClass;
 use Illuminate\Support\Facades\Request;
 
@@ -11,19 +13,18 @@ class EducatorClassController extends Controller
 {
     protected $educatorClass;
 
+    protected $educator;
+
     protected $message;
-
-
 
     /**
      * SubjectModulesController constructor.
      * @param EducatorClass $educatorClass
      */
-    function __construct(EducatorClass $educatorClass )
+    function __construct(EducatorClass $educatorClass, Educator $educator)
     {
-
         $this->educatorClass = $educatorClass;
-
+        $this->educator = $educator;
         $this->message = [
             'statusCode' => 200,
             'message' => ''
@@ -53,8 +54,6 @@ class EducatorClassController extends Controller
      */
     public function create()
     {
-
-
         return view('educator_class.create',[
             'js' => 'js/educator_class/create.js',
             'form' => true,
@@ -68,8 +67,10 @@ class EducatorClassController extends Controller
      */
     public function store(EducatorClassRequest $request)
     {
-        $data = $request->except('_token');
-
+        $data = $request->all();
+        $user_id = $request->get('educator_id');
+        $educator = $this->educator->where('user_id',$user_id)->pluck('id');
+        $data['educator_id'] = $educator[0];
         if($this->educatorClass->create($data)){
             $this->message['statusCode'] = self::HTTP_STATUSCODE_OK;
             $this->message['message'] = self::MSG_CREATE_OK;
@@ -100,7 +101,6 @@ class EducatorClassController extends Controller
      */
     public function edit($id)
     {
-
         return view('educator_class.edit', [
             'js' => 'js/educator_class/edit.js',
             'educatorClass' => $this->educatorClass->findOrFail($id),
@@ -117,6 +117,10 @@ class EducatorClassController extends Controller
      */
     public function update(EducatorClassRequest $request, $id)
     {
+        $data = $request->except('_token');
+        $user_id = $request->get('educator_id');
+        $educator = $this->educator->where('user_id',$user_id)->pluck('id');
+        $data['educator_id'] = $educator[0];
         if ($this->educatorClass->findOrFail($id)->update($request->all()))
         {
             $this->message['statusCode'] = self::HTTP_STATUSCODE_OK;

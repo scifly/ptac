@@ -12,7 +12,7 @@ class EducatorSeeder extends Seeder
     public function run()
     {
         //
-        factory(App\Models\Educator::class, 5)->create()->each(function ($educator) {
+        factory(App\Models\Educator::class,10)->create()->each(function ($educator) {
             $educator->save();
         });
     }
