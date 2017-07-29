@@ -36,7 +36,9 @@ use App\Facades\DatatableFacade as Datatable;
  * @mixin \Eloquent
  */
 class ProcedureLog extends Model {
-    //
+
+    const DT_PEND = '<span class="badge bg-orange">%s</span>';
+
     protected $table = 'procedure_logs';
 
     protected $fillable = [
@@ -45,6 +47,8 @@ class ProcedureLog extends Model {
         'procedure_step_id',
         'operator_user_id',
         'initiator_msg',
+        'initiator_media_ids',
+        'operator_msg',
         'operator_media_ids',
         'step_status',
         'created_at',
@@ -73,21 +77,45 @@ class ProcedureLog extends Model {
     }
 
     /**
+     * 获取用户信息
      * @param $userId
      * @return \Illuminate\Database\Eloquent\Collection|Model|null|static|static[]
      */
-    public function users($userId){
+    public function get_user($userId){
         return User::find($userId);
     }
 
+    /**
+     * 步骤状态处理，0-通过，1-拒绝，2-待定
+     * @param $d
+     * @return string
+     */
     public function status($d){
 
         switch ($d){
             case 0: return '通过';
             case 1: return '拒绝';
             case 2: return '待定';
-            default: return 'N/A';
+            default: return '通过';
         }
+    }
+
+    /**
+     * 拆分initiator_media_ids、operator_media_ids,
+     * @param $media_ids
+     * @return array 处理后字典 key=>media.id,value => media
+     */
+    public function operate_ids($media_ids){
+
+        $ids = explode('|',$media_ids);
+
+        $medias = array();
+        foreach ($ids as $mid) {
+            $media = Media::find($mid);
+            $medias[$mid] = $media;
+        }
+
+        return $medias;
     }
 
     public function datatable(){
@@ -97,7 +125,7 @@ class ProcedureLog extends Model {
             [
                 'db' => 'ProcedureLog.initiator_user_id', 'dt' => 1,
                 'formatter' => function($d, $row) {
-                       $user = $this->users($d);
+                       $user = $this->get_user($d);
                        return $user->realname;
                 }
             ],
@@ -106,7 +134,7 @@ class ProcedureLog extends Model {
             [
                 'db' => 'ProcedureLog.operator_user_id', 'dt' => 4,
                 'formatter' => function($d, $row) {
-                    $user = $this->users($d);
+                    $user = $this->get_user($d);
                     return $user->realname;
                 }
             ],
@@ -117,8 +145,32 @@ class ProcedureLog extends Model {
             [
                 'db' => 'ProcedureLog.step_status', 'dt' => 9,
                 'formatter' => function($d, $row) {
-                    return $this->status($d);
-//                    return Datatable::dtOps($this, $d, $row);
+
+                    switch ($d){
+
+                        case 0:
+                            $status =  sprintf(Datatable::DT_ON, '通过');
+                            break;
+
+                        case 1:
+                            $status = sprintf(Datatable::DT_OFF, '拒绝');
+                            break;
+
+                        case 2:
+                            $status = sprintf(self::DT_PEND, '待定');
+                            break;
+
+                        default:
+                            $status =  sprintf(Datatable::DT_ON, '通过');
+                            break;
+                    }
+
+                    $id = $row['id'];
+                    $showLink = sprintf(Datatable::DT_LINK_SHOW, /*$model->getTable(),*/ $id);
+                    $delLink = sprintf(Datatable::DT_LINK_DEL, $id);
+
+                    return $status . Datatable::DT_SPACE . $showLink . Datatable::DT_SPACE . $delLink;
+
                 }
             ],
         ];

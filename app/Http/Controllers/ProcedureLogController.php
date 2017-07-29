@@ -36,11 +36,22 @@ class ProcedureLogController extends Controller {
      * @internal param AttendanceMachine $attendanceMachine
      */
     public function show($id) {
+
         //根据id 查找单条记录
         $procedureLog = ProcedureLog::whereId($id)->first();
+        $initiator_medias = $procedureLog->operate_ids($procedureLog->initiator_media_ids);
+        $operator_medias = $procedureLog->operate_ids($procedureLog->operator_media_ids);
+        $initiator_user = $procedureLog->get_user($procedureLog->initiator_user_id);
+        $operator_user = $procedureLog->get_user($procedureLog->operator_user_id);
 
         //记录返回给view
-        return view('procedure_log.show', ['procedureLog' => $procedureLog]);
+        return view('procedure_log.show', [
+            'procedureLog' => $procedureLog,
+            'initiator_user' => $initiator_user,
+            'initiator_medias' => $initiator_medias,
+            'operator_user' => $operator_user,
+            'operator_medias' => $operator_medias
+        ]);
     }
 
 

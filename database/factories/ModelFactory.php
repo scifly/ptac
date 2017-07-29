@@ -261,7 +261,7 @@ $factory->define(App\Models\ProcedureLog::class, function (Faker\Generator $fake
         'initiator_media_ids' => '1|2',
         'operator_msg' => 'test',
         'operator_media_ids' => '2|3',
-        'step_status' => rand(1,2),
+        'step_status' => rand(0,2),
     ];
 });
 
