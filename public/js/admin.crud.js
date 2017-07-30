@@ -81,13 +81,9 @@ var crud = {
             $('#modal-dialog').modal({backdrop: true});
         });
         $(document).on('click', '.fa-show', function () {
-            console.log('123');
             id = $(this).attr('id');
             $row = $(this).parents().eq(1);
-            crud.ajaxRequest(
-                'GET', 'show/' + id,
-                { _token: $('#csrf_token').attr('content') }, $row
-            );
+
             $('#modal-show-company').modal({backdrop: true});
         });
 

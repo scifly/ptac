@@ -216,3 +216,12 @@ Route::get('exam_types/show/{id}', 'ExamTypeController@show');
 Route::get('exam_types/edit/{id}', 'ExamTypeController@edit');
 Route::put('exam_types/update/{id}', 'ExamTypeController@update');
 Route::delete('exam_types/delete/{id}', 'ExamTypeController@destroy');
+
+//考试设置
+Route::get('exams/index', 'ExamController@index');
+Route::get('exams/create', 'ExamController@create');
+Route::post('exams/store', 'ExamController@store');
+Route::get('exams/show/{id}', 'ExamController@show');
+Route::get('exams/edit/{id}', 'ExamController@edit');
+Route::put('exams/update/{id}', 'ExamController@update');
+Route::delete('exams/delete/{id}', 'ExamController@destroy');

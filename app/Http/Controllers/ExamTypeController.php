@@ -106,6 +106,8 @@ class ExamTypeController extends Controller
         return view('exam_type.edit', [
             'js' => 'js/exam_type/edit.js',
             'examType' => $examType,
+            'form' => true
+
         ]);
     }
 
@@ -148,11 +150,18 @@ class ExamTypeController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\ExamType  $examType
+     * @param $id
      * @return \Illuminate\Http\Response
+     * @internal param ExamType $examType
      */
-    public function destroy(ExamType $examType)
+    public function destroy($id)
     {
-        //
+        if ($this->examType->findOrFail($id)->delete()) {
+            $this->result['message'] = self::MSG_DEL_OK;
+        } else {
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+            $this->result['message'] = '';
+        }
+        return response()->json($this->result);
     }
 }

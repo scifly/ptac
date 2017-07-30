@@ -35,7 +35,6 @@ class EducatorController extends Controller
         return view('educator.index' , [
             'js' => 'js/educator/index.js',
             'dialog' => true,
-            'show' => true,
             'datatable' => true,
             'form' => true,
             ]);
@@ -87,28 +86,33 @@ class EducatorController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Educator  $educator
+     * @param $id
      * @return \Illuminate\Http\Response
+     * @internal param Educator $educator
      */
     public function show($id)
     {
+
         $educator = $this->educator->whereId($id)->first();
+        $f = explode(",", $educator->team_ids);
 
-        $teams = Educator::with('team',function ($query) use ($educator) {
-            $f = explode(",", $educator->team_ids);
-            $query->whereIn('id', $f);
-        })->get(['id','name'])->toArray();
-
-//        return view('educator.show', [
-//            'educator' => $educator,
-//            'teams' => $teams
-//        ]);
-        return response()->json(
-            [
+        $teams = DB::table('teams')
+            ->whereIn('id', $f )
+            ->get(['id','name']);
+        return view('educator.show', [
             'educator' => $educator,
+            'show' => true,
+
             'teams' => $teams
-            ]
-        );
+        ]);
+//        return response()->json(
+//            [
+//            'educator' => $educator,
+//            'teams' => $teams,
+//                'message' => '',
+//                'statusCode' => 200
+//            ]
+//        );
     }
 
     /**
