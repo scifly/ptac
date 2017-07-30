@@ -62,10 +62,12 @@ class GroupController extends Controller
             return response()->json([
                 'statusCode' => self::HTTP_STATUSCODE_OK, 'message' => self::MSG_CREATE_OK,
             ]);
+        }else{
+            return response()->json([
+                'statusCode' => self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR, 'message' => '添加失败'
+            ]);
         }
-        return response()->json([
-            'statusCode' => self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR, 'message' => '添加失败'
-        ]);
+
 
     }
 

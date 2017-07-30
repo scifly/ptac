@@ -9,15 +9,8 @@ use Illuminate\Support\Facades\Request;
 
 class CorpController extends Controller {
     protected $corp;
-    protected $message;
 
-    function __construct(Corp $corp) {
-        $this->corp = $corp;
-        $this->message = [
-            'statusCode' => 200,
-            'message' => ''
-        ];
-    }
+    function __construct(Corp $corp) {$this->corp = $corp;}
 
     /**
      * 显示企业列表
@@ -31,7 +24,9 @@ class CorpController extends Controller {
         }
         return view('corp.index', [
             'js' => 'js/corp/index.js',
-            'dialog' => true
+            'dialog' => true,
+            'datatable' => true,
+            'form' => true
         ]);
     }
 
@@ -41,7 +36,10 @@ class CorpController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function create() {
-        return view('corp.create', ['js' => 'js/corp/create.js']);
+        return view('corp.create', [
+            'js' => 'js/corp/create.js',
+            'form' => true
+        ]);
     }
 
     /**
@@ -51,15 +49,14 @@ class CorpController extends Controller {
      */
     public function store(CorpRequest $request) {
 
-        $res =  $this->corp->create($request->except('_token'));
-        if (!$res) {
-            $this->message['statusCode'] = 202;
-            $this->message['message'] = '添加失败';
+        if ($this->corp->create($request->all())) {
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
+            $this->result['message'] = self::MSG_CREATE_OK;
         } else {
-            $this->message['statusCode'] = 200;
-            $this->message['message'] = '添加成功!';
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+            $this->result['message'] = '';
         }
-        return response()->json($this->message);
+        return response()->json($this->result);
     }
 
     /**
@@ -69,7 +66,6 @@ class CorpController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function show($id) {
-        // find the record by id
         return view('corp.show', ['corp' => $this->corp->findOrFail($id)]);
     }
 
@@ -83,7 +79,6 @@ class CorpController extends Controller {
         return view('corp.edit', [
             'js' => 'js/company/edit.js',
             'company' => $this->corp->findOrFail($id),
-            'form' => true
         ]);
     }
 
@@ -95,17 +90,14 @@ class CorpController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function update(CorpRequest $request,$id) {
-        // find the record by id
-        // update the record with the request data
-        $res = $this->corp->findOrFail($id)->update($request->all());
-        if (!$res) {
-            $this->message['statusCode'] = 202;
-            $this->message['message'] = '更新失败';
+        if ($this->corp->findOrFail($id)->update($request->all())) {
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
+            $this->result['message'] = self::MSG_EDIT_OK;
         } else {
-            $this->message['statusCode'] = 200;
-            $this->message['message'] = '更新成功!';
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+            $this->result['message'] = '';
         }
-        return response()->json($this->message);
+        return response()->json($this->result);
     }
 
     /**
@@ -115,14 +107,13 @@ class CorpController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function destroy($id) {
-        $res = $this->corp->findOrFail($id)->delete();
-        if (!$res) {
-            $this->message['statusCode'] = 202;
-            $this->message['message'] = '删除失败';
+        if ($this->corp->findOrFail($id)->delete()) {
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
+            $this->result['message'] = self::MSG_DEL_OK;
         } else {
-            $this->message['statusCode'] = 200;
-            $this->message['message'] = '删除成功!';
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+            $this->result['message'] = '';
         }
-        return response()->json($this->message);
+        return response()->json($this->result);
     }
 }

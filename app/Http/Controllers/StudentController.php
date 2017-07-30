@@ -29,7 +29,7 @@ class StudentController extends Controller
         ]);
     }
 
-    /**
+    /*
      * @return \Illuminate\Http\Response
      */
     public function create()
@@ -47,14 +47,16 @@ class StudentController extends Controller
      */
     public function store(StudentRequest $request)
     {
+
         if ($this->student->create($request->except('_token'))) {
-            return response()->json([
-                'statusCode' => self::HTTP_STATUSCODE_OK, 'message' => self::MSG_CREATE_OK,
-            ]);
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
+            $this->result['message'] = self::MSG_CREATE_OK;
+        }else{
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+            $this->result['message'] = self::添加失败;
         }
-        return response()->json([
-            'statusCode' => 500, 'message' => '添加失败'
-        ]);
+
+        return response()->json($this->result);
     }
 
     /**

@@ -43,7 +43,8 @@ class Student extends Model {
         'card_number',
         'oncampus',
         'birthday',
-        'remark'
+        'remark',
+        'enabled'
     ];
     public function user() { return $this->belongsTo('App\Models\User'); }
 
@@ -55,6 +56,11 @@ class Student extends Model {
 
         return $this->belongsTo('App\Models\Squad','class_id','id');
 
+    }
+
+    public function custodianStudent()
+    {
+        return $this->belongsToMany('App\Models\Student');
     }
 
     public function datatable() {

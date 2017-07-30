@@ -578,10 +578,6 @@
 @isset($js)
     <script src="{{ URL::asset($js) }}"></script>
 @endisset
-@isset($scoreCreateEditJs)
-    <!-- DataTable -->
-    <script src="{{ URL::asset('js/score_range/create_edit.js') }}"></script>
-@endisset
 <!-- AdminLTE for demo purposes -->
 <script src="{{ URL::asset('js/demo.js') }}"></script>
 </body>

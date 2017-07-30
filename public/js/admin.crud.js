@@ -91,6 +91,10 @@ var crud = {
             $('#modal-show-company').modal({backdrop: true});
         });
 
+        $(document).on('click','.fa-eye',function () {
+
+
+        })
         $('#confirm-delete').on('click', function () {
             crud.ajaxRequest(
                 'DELETE', 'delete/' + id,

@@ -2,28 +2,37 @@
 
 namespace App\Http\ViewComposers;
 
-use App\Models\Procedure;
+use App\Models\Educator;
 use App\Models\User;
+use App\Models\Procedure;
 use Illuminate\Contracts\View\View;
 
 class ProcedureStepComposer {
 
     protected $procedures;
-    protected $approver_users;
-    protected $related_users;
+    protected $educators;
 
-    public function __construct(Procedure $procedures, User $approver_users, User $related_users) {
+    public function __construct(Procedure $procedures,User $educators) {
         $this->procedures = $procedures;
-        $this->approver_users = $approver_users;
-        $this->related_users = $related_users;
+        $this->educators = $educators;
     }
 
     public function compose(View $view) {
 
+        $data =  User::whereHas('educator')->get(['id','realname'])->toArray();
+
+        $educators=array();
+
+        if(!empty( $data ))
+        {
+            foreach ($data as $v){
+                $educators[$v['id']] = $v['realname'];
+            }
+        }
+
         $view->with([
             'procedures' => $this->procedures->pluck('name', 'id'),
-            'approver_users' => $this->approver_users->pluck('realname', 'id'),
-            'related_users' => $this->related_users->pluck('realname', 'id'),
+            'educators' => $this->educators->pluck('realname','id')
         ]);
     }
 
