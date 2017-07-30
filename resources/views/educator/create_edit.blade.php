@@ -12,7 +12,17 @@
             <div class="form-group">
                 {!! Form::label('team_ids', '所属组',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-2">
-                    {!! Form::select('team_ids[]', $teams, null, ['class' => 'form-control']) !!}
+                    <select multiple="multiple" name="team_ids[]" id="team_ids">
+                        @foreach($teams as $key => $value)
+                            @if(isset($teamIds))
+                                <option value="{{$key}}" @if(array_key_exists($key,$teamIds))selected="selected"@endif>
+                                    {{$value}}
+                                </option>
+                            @else
+                                <option value="{{$key}}">{{$value}}</option>
+                            @endif
+                        @endforeach
+                    </select>
                 </div>
             </div>
             <div class="form-group">

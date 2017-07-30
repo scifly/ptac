@@ -20,25 +20,15 @@
             </div>
 
             <div class="form-group">
-                {!! Form::label('school_id', '所属学校',['class' => 'col-sm-4 control-label']) !!}
-                <div class="col-sm-2">
-                    {!! Form::select('school_id', $schools, null, ['class' => 'form-control']) !!}
-                </div>
-            </div>
-            <div class="form-group">
-                {!! Form::label('educator_ids', '年级主任',['class' => 'col-sm-4 control-label']) !!}
+                {!! Form::label('remark', '备注',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-3">
-                    <select multiple="multiple" name="educator_ids[]" id="educator_ids">
-                        @foreach($educators as $key => $value)
-                            @if(isset($educatorIds))
-                                <option value="{{$key}}" @if(array_key_exists($key,$educatorIds))selected="selected"@endif>
-                                    {{$value}}
-                                </option>
-                            @else
-                                <option value="{{$key}}">{{$value}}</option>
-                            @endif
-                        @endforeach
-                    </select>
+                    {!! Form::text('remark', null, [
+                    'class' => 'form-control',
+                    'placeholder' => '不能超过20个汉字',
+                    'data-parsley-required' => 'true',
+                    'data-parsley-minlength' => '2',
+                    'data-parsley-maxlength' => '20'
+                    ]) !!}
                 </div>
             </div>
             <div class="form-group">

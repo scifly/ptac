@@ -181,3 +181,12 @@ Route::delete('procedure_steps/delete/{id}', 'ProcedureStepController@destroy');
 Route::get('procedure_logs/index', 'ProcedureLogController@index');
 Route::get('procedure_logs/show/{id}', 'ProcedureLogController@show');
 Route::delete('procedure_logs/delete/{id}', 'ProcedureLogController@destroy');
+
+//考试类型设置
+Route::get('exam_types/index', 'ExamTypeController@index');
+Route::get('exam_types/create', 'ExamTypeController@create');
+Route::post('exam_types/store', 'ExamTypeController@store');
+Route::get('exam_types/show/{id}', 'ExamTypeController@show');
+Route::get('exam_types/edit/{id}', 'ExamTypeController@edit');
+Route::put('exam_types/update/{id}', 'ExamTypeController@update');
+Route::delete('exam_types/delete/{id}', 'ExamTypeController@destroy');

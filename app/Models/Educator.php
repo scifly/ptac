@@ -46,6 +46,10 @@ class Educator extends Model
     {
         return $this->belongsTo('App\Models\School');
     }
+    public function classes()
+    {
+        return $this->belongsToMany('App\Models\Squad', 'educators_classes','class_id','educator_id');
+    }
     public function datatable()
     {
 

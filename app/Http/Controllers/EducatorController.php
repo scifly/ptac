@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\EducatorRequest;
 use App\Models\Educator;
 use App\Models\Team;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
 
 /**
@@ -27,13 +28,14 @@ class EducatorController extends Controller
      */
     public function index()
     {
-        //
+
         if (Request::get('draw')) {
             return response()->json($this->educator->datatable());
         }
         return view('educator.index' , [
             'js' => 'js/educator/index.js',
             'dialog' => true,
+            'show' => true,
             'datatable' => true,
             'form' => true,
             ]);
@@ -92,15 +94,21 @@ class EducatorController extends Controller
     {
         $educator = $this->educator->whereId($id)->first();
 
-        $team = Educator::with('team',function ($query) use ($educator) {
+        $teams = Educator::with('team',function ($query) use ($educator) {
             $f = explode(",", $educator->team_ids);
             $query->whereIn('id', $f);
         })->get(['id','name'])->toArray();
 
-        return view('educator.show', [
+//        return view('educator.show', [
+//            'educator' => $educator,
+//            'teams' => $teams
+//        ]);
+        return response()->json(
+            [
             'educator' => $educator,
-            'team' => $team
-        ]);
+            'teams' => $teams
+            ]
+        );
     }
 
     /**
@@ -112,9 +120,19 @@ class EducatorController extends Controller
     public function edit($id)
     {
         $educator = $this->educator->whereId($id)->first();
+        $ids = explode(",", $educator->team_ids);
+
+        $teams = DB::table('teams')
+            ->whereIn('id', $ids )
+            ->get(['id','name']);
+        $teamIds = [];
+        foreach ($teams as $value) {
+            $teamIds[$value->id] = $value->name;
+        }
         return view('educator.edit', [
             'js' => 'js/educator/edit.js',
             'educator' => $educator,
+            'teamIds' => $teamIds,
             'form' => true
         ]);
     }

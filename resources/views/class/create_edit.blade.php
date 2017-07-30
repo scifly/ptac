@@ -27,8 +27,18 @@
             </div>
             <div class="form-group">
                 {!! Form::label('educator_ids', '年级主任',['class' => 'col-sm-4 control-label']) !!}
-                <div class="col-sm-2">
-                    {!! Form::select('educator_ids[]', $educators, null,['class' => 'form-control', 'multiple' => 'multiple']) !!}
+                <div class="col-sm-3">
+                    <select multiple="multiple" name="educator_ids[]" id="educator_ids">
+                        @foreach($educators as $key => $value)
+                            @if(isset($educatorIds))
+                                <option value="{{$key}}" @if(array_key_exists($key,$educatorIds))selected="selected"@endif>
+                                    {{$value}}
+                                </option>
+                            @else
+                                <option value="{{$key}}">{{$value}}</option>
+                            @endif
+                        @endforeach
+                    </select>
                 </div>
             </div>
             <div class="form-group">

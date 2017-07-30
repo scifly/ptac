@@ -355,6 +355,9 @@
             @isset($dialog)
                 @include('partials.modal_dialog')
             @endif
+                @isset($show)
+                    @include('partials.modal_show')
+                @endif
             @yield('content')
         </section>
     </div>
