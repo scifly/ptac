@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class UpdateStudentsAddEnabledField extends Migration
+class UpdateScoreTotalsTableAddEnabledField extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class UpdateStudentsAddEnabledField extends Migration
      */
     public function up()
     {
-        Schema::table('students', function (Blueprint $table) {
+        Schema::table('score_totals', function (Blueprint $table) {
             $table->boolean('enabled');
         });
     }
@@ -25,7 +25,7 @@ class UpdateStudentsAddEnabledField extends Migration
      */
     public function down()
     {
-        Schema::table('students', function (Blueprint $table) {
+        Schema::table('score_totals', function (Blueprint $table) {
             $table->dropColumn('enabled');
         });
     }

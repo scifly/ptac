@@ -27,7 +27,7 @@ function getSubjectBySchoolId() {
                     $array = eval(result.subjects);
                     $.each($array,function () {
                         $subjectSelect.append("<option value='"+this.id+"'>"+this.name+"</option>");
-                    })
+                    });
                     $("#subject_ids option").each(function() {
                         if($.inArray($(this).val(),$array_sub_ids) !== -1){
                             $(this).attr('selected','selected');
