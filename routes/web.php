@@ -49,6 +49,15 @@ Route::put('subjects/update/{id}', 'SubjectController@update');
 Route::delete('subjects/delete/{id}', 'SubjectController@destroy');
 Route::get('subjects/query/{id}', 'SubjectController@query');
 
+// 科目次分类
+Route::get('subjectModules/index', 'SubjectModulesController@index');
+Route::get('subjectModules/create', 'SubjectModulesController@create');
+Route::post('subjectModules/store', 'SubjectModulesController@store');
+Route::get('subjectModules/show/{id}', 'SubjectModulesController@show');
+Route::get('subjectModules/edit/{id}', 'SubjectModulesController@edit');
+Route::put('subjectModules/update/{id}', 'SubjectModulesController@update');
+Route::delete('subjectModules/delete/{id}', 'SubjectModulesController@destroy');
+
 // 权限设置
 Route::get('groups/index', 'GroupController@index');
 Route::get('groups/create', 'GroupController@create');
@@ -102,6 +111,23 @@ Route::get('educators/show/{id}', 'EducatorController@show');
 Route::get('educators/edit/{id}', 'EducatorController@edit');
 Route::put('educators/update/{id}', 'EducatorController@update');
 Route::delete('educators/delete/{id}', 'EducatorController@destroy');
+
+Route::get('educatorClasses/index', 'EducatorClassController@index');
+Route::get('educatorClasses/create', 'EducatorClassController@create');
+Route::post('educatorClasses/store', 'EducatorClassController@store');
+Route::get('educatorClasses/show/{id}', 'EducatorClassController@show');
+Route::get('educatorClasses/edit/{id}', 'EducatorClassController@edit');
+Route::put('educatorClasses/update/{id}', 'EducatorClassController@update');
+Route::delete('educatorClasses/delete/{id}', 'EducatorClassController@destroy');
+
+// 
+Route::get('custodianStudents/index', 'CustodianStudentController@index');
+Route::get('custodianStudents/create', 'CustodianStudentController@create');
+Route::post('custodianStudents/store', 'CustodianStudentController@store');
+Route::get('custodianStudents/show/{id}', 'CustodianStudentController@show');
+Route::get('custodianStudents/edit/{id}', 'CustodianStudentController@edit');
+Route::put('custodianStudents/update/{id}', 'CustodianStudentController@update');
+Route::delete('custodianStudents/delete/{id}', 'CustodianStudentController@destroy');
 
 // 学生设置
 Route::get('students/index', 'StudentController@index');
@@ -192,3 +218,21 @@ Route::delete('procedure_steps/delete/{id}', 'ProcedureStepController@destroy');
 Route::get('procedure_logs/index', 'ProcedureLogController@index');
 Route::get('procedure_logs/show/{id}', 'ProcedureLogController@show');
 Route::delete('procedure_logs/delete/{id}', 'ProcedureLogController@destroy');
+
+//考试类型设置
+Route::get('exam_types/index', 'ExamTypeController@index');
+Route::get('exam_types/create', 'ExamTypeController@create');
+Route::post('exam_types/store', 'ExamTypeController@store');
+Route::get('exam_types/show/{id}', 'ExamTypeController@show');
+Route::get('exam_types/edit/{id}', 'ExamTypeController@edit');
+Route::put('exam_types/update/{id}', 'ExamTypeController@update');
+Route::delete('exam_types/delete/{id}', 'ExamTypeController@destroy');
+
+//考试设置
+Route::get('exams/index', 'ExamController@index');
+Route::get('exams/create', 'ExamController@create');
+Route::post('exams/store', 'ExamController@store');
+Route::get('exams/show/{id}', 'ExamController@show');
+Route::get('exams/edit/{id}', 'ExamController@edit');
+Route::put('exams/update/{id}', 'ExamController@update');
+Route::delete('exams/delete/{id}', 'ExamController@destroy');

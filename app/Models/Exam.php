@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use App\Facades\DatatableFacade as Datatable;
 
 /**
  * App\Models\Exam
@@ -58,5 +59,40 @@ class Exam extends Model {
     public function examType()
     {
         return $this->belongsTo('App\models\ExamType');
+    }
+    public function datatable() {
+
+        $columns = [
+            ['db' => 'Exam.id', 'dt' => 0],
+            ['db' => 'Exam.name', 'dt' => 1],
+            ['db' => 'Exam.remark', 'dt' => 2],
+            ['db' => 'ExamType.name as examtypename', 'dt' => 3],
+            ['db' => 'Exam.max_scores', 'dt' => 4],
+            ['db' => 'Exam.pass_scores', 'dt' => 5],
+            ['db' => 'Exam.start_date', 'dt' => 6],
+            ['db' => 'Exam.end_date', 'dt' => 7],
+            ['db' => 'Exam.created_at', 'dt' => 8],
+            ['db' => 'Exam.updated_at', 'dt' => 9],
+
+            [
+                'db' => 'Exam.enabled', 'dt' => 10,
+                'formatter' => function ($d, $row) {
+                    return Datatable::dtOps($this, $d, $row);
+                }
+            ]
+        ];
+        $joins = [
+            [
+                'table' => 'exam_types',
+                'alias' => 'ExamType',
+                'type'  => 'INNER',
+                'conditions' => [
+                    'ExamType.id = Exam.exam_type_id'
+                ]
+
+            ]
+        ];
+
+        return Datatable::simple($this, $columns, $joins);
     }
 }

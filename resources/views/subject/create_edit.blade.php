@@ -83,8 +83,6 @@
                     {!! Form::label('enabled', '禁用') !!}
                 </div>
             </div>
-
-
         </div>
     </div>
     <div class="box-footer">

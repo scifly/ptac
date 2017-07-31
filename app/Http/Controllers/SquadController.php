@@ -118,10 +118,22 @@ class SquadController extends Controller
     public function edit($id)
     {
         //
-        $squad = Squad::whereId($id)->first();
+        $squad = $this->squad->whereId($id)->first();
+        $educators = User::whereHas('educator' , function($query) use ($squad) {
+
+            $f = explode(",", $squad->educator_ids);
+            $query->whereIn('id', $f);
+
+        })->get(['id','username'])->toArray();
+
+        $educatorIds = [];
+        foreach ($educators as $value) {
+            $educatorIds[$value['id']] = $value['username'];
+        }
         return view('class.edit', [
             'js' => 'js/class/edit.js',
             'squad' => $squad,
+            'educatorIds' => $educatorIds,
             'form' => true
 
         ]);

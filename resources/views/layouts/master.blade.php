@@ -355,6 +355,9 @@
             @isset($dialog)
                 @include('partials.modal_dialog')
             @endif
+                @isset($show)
+                    @include('partials.modal_show')
+                @endif
             @yield('content')
         </section>
     </div>
@@ -574,10 +577,6 @@
 <script src="{{ URL::asset('js/admin.crud.js') }}"></script>
 @isset($js)
     <script src="{{ URL::asset($js) }}"></script>
-@endisset
-@isset($scoreCreateEditJs)
-    <!-- DataTable -->
-    <script src="{{ URL::asset('js/score_range/create_edit.js') }}"></script>
 @endisset
 <!-- AdminLTE for demo purposes -->
 <script src="{{ URL::asset('js/demo.js') }}"></script>

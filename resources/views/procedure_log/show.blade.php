@@ -26,7 +26,7 @@
     <p>
         @if ($procedureLog->initiator_user_id)
             发起人员:
-            {{ link_to('users/show/' . $procedureLog->users($procedureLog->initiator_user_id)->id, $procedureLog->users($procedureLog->initiator_user_id)->name) }}
+            {{ link_to('users/show/' . $initiator_user->id, $initiator_user->realname) }}
         @endif
     </p>
     <p>
@@ -34,13 +34,13 @@
        {{$procedureLog->initiator_msg}}
     </p>
     <p>
-        发起人媒体信息：
-{{--        {{$procedureLog->initiator_msg}}--}}
+        发起人媒体信息：$initiator_medias 信息->尚未进行处理。
+        {{--{{$procedureLog->initiator_msg}}--}}
     </p>
     <p>
         @if ($procedureLog->operator_user_id)
             操作人员:
-            {{ link_to('users/show/' . $procedureLog->users($procedureLog->operator_user_id)->id, $procedureLog->users($procedureLog->operator_user_id)->name) }}
+            {{ link_to('users/show/' . $operator_user->id, $operator_user->realname) }}
         @endif
     </p>
     <p>
@@ -48,7 +48,7 @@
         {{$procedureLog->operator_msg}}
     </p>
     <p>
-        操作人媒体信息：
+        操作人媒体信息：$operator_medias 信息->尚未进行处理。
         {{--        {{$procedureLog->operator_msg}}--}}
     </p>
     <p>

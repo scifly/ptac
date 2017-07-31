@@ -26,12 +26,12 @@ class SquadComposer {
     public function compose(View $view) {
 
 
-        $data =  User::whereHas('educator')->get(['id','username'])->toArray();
+        $data = Educator::with('user')->get()->toArray();
         $educators=array();
         if(!empty( $data ))
         {
             foreach ($data as $v){
-                $educators[$v['id']] = $v['username'];
+                $educators[$v['id']] = $v['user']['username'];
             }
         }
 
