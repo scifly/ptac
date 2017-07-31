@@ -1,1 +1,1 @@
-$(crud.index('corps'));
+$(crud.index());

@@ -2,7 +2,7 @@
 @section('header')
     <div class="panel-heading">
         <div class="btn-group">
-            <a href="{{ url('attendance_machines/create') }}" class="btn btn-primary pull-right">
+            <a href="{{ url('schools/create') }}" class="btn btn-primary pull-right">
                 添加新学校
             </a>
         </div>
@@ -19,9 +19,9 @@
                 <tr>
                     <th>#</th>
                     <th>名称</th>
-                    <th>位置</th>
-                    <th>所属学校</th>
-                    <th>考勤机id</th>
+                    <th>地址</th>
+                    <th>类型</th>
+                    <th>所属企业</th>
                     <th>创建时间</th>
                     <th>更新时间</th>
                     <th>状态</th>

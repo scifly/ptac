@@ -18,13 +18,6 @@ class CorpController extends Controller
      */
     public function index()
     {
-        /*if (Request::ajax() && !$arg) {
-           return response()->json($this->school->datatable());
-       } elseif ($arg) {
-           return view('school.index', ['js' => 'js/school/index.js']);
-       } else {
-           return response()->json($this->school->datatable());
-       }*/
 
         if (Request::get('draw')) {
             return response()->json($this->corp->datatable());
@@ -39,18 +32,17 @@ class CorpController extends Controller
      */
     public function create()
     {
-        //
+        return view('corp.create',['js' => 'js/corp/create.js']);
     }
 
     /**
      * 保存新创建的企业记录
-     *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
+     * @internal param \Illuminate\Http\Request $request
      */
-    public function store(Request $request)
+    public function store()
     {
-        //
+        return response()->json(['statusCode' => 200, 'Message' => 'nailed it!']);
     }
 
     /**
@@ -59,9 +51,10 @@ class CorpController extends Controller
      * @param  \App\Models\Corp  $corp
      * @return \Illuminate\Http\Response
      */
-    public function show(Corp $corp)
+    public function show()
     {
-        //
+        // find the record by id
+        //return view('corp.show', ['corp' => $corp]);
     }
 
     /**
@@ -70,9 +63,9 @@ class CorpController extends Controller
      * @param  \App\Models\Corp  $corp
      * @return \Illuminate\Http\Response
      */
-    public function edit(Corp $corp)
+    public function edit()
     {
-        //
+        return view('corp.edit', ['js' => 'js/corp/edit.js']);
     }
 
     /**
@@ -82,9 +75,11 @@ class CorpController extends Controller
      * @param  \App\Models\Corp  $corp
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Corp $corp)
+    public function update()
     {
-        //
+        // find the record by id
+        // update the record with the request data
+        return response()->json([]);
     }
 
     /**
@@ -93,8 +88,8 @@ class CorpController extends Controller
      * @param  \App\Models\Corp  $corp
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Corp $corp)
+    public function destroy()
     {
-        //
+        return response()->json([]);
     }
 }

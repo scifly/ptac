@@ -1,7 +1,9 @@
-<?php
-/**
- * Created by PhpStorm.
- * User: Yuhang
- * Date: 2017/7/12
- * Time: 16:06
- */
+@extends('layouts.master')
+@section('header')
+    <h1>添加新运营者公司</h1>
+@endsection
+@section('content')
+    {!! Form::open(['method' => 'post', 'id' => 'formCompany']) !!}
+    @include('company.create_edit')
+    {!! Form::close() !!}
+@endsection

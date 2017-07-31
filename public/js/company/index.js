@@ -1,1 +1,1 @@
-$(crud.index('companies'));
+$(crud.index());

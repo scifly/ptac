@@ -38,13 +38,17 @@ class Squad extends Model {
     ];
     public function students()
     {
-        return $this->hasMany('App\Models\Student','class_id','id');
+        return $this->hasMany('App\Models\Student');
     }
 
     public function grade()
     {
         return $this->belongsTo('App\Models\Grade');
     }
+
+
+
+
     public function datatable() {
 
         $columns = [

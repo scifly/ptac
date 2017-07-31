@@ -1,0 +1,1 @@
+$(crud.edit('formAttendanceMachine', 'attendance_machines'));
