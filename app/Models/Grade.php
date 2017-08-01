@@ -49,6 +49,22 @@ class Grade extends Model {
         return $this->hasMany('App\Models\Subject');
     }
 
+    public function students()
+    {
+        #先获取班级对象集合
+        $classes=$this->squads()->get();
+
+        $students=[];
+        #循环班级对象集合
+        foreach ($classes as $class)
+        {
+            $stdents[]=Student::whereClassId($class->id);
+        }
+
+        return $students;
+
+    }
+
     public function datatable() {
 
         $columns = [

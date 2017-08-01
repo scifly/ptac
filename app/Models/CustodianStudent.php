@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use App\Facades\DatatableFacade as Datatable;
+use App\Models\Student as Student;
 
 /**
  * App\Models\CustodianStudent
@@ -48,10 +49,15 @@ class CustodianStudent extends Model
 
         $columns = [
             ['db' => 'CustodianStudent.id', 'dt' => 0],
-
 //            ['db' => 'User.realname as studentname', 'dt' => 2],
             ['db' => 'User.realname as custodianname', 'dt' => 1],
-            ['db' => 'Student.id as studentname', 'dt' => 2],
+            [
+                'db' => 'Student.id as studentname', 'dt' => 2,
+                'formatter' => function($d, $row) {
+                    $student = Student::whereId($d)->first();
+                    return $student->user->realname;
+                }
+            ],
             ['db' => 'CustodianStudent.relationship', 'dt' => 3],
             ['db' => 'CustodianStudent.created_at', 'dt' => 4],
             ['db' => 'CustodianStudent.updated_at', 'dt' => 5],
@@ -62,7 +68,6 @@ class CustodianStudent extends Model
                     return Datatable::dtOps($this, $d ,$row);
                 }
             ],
-
 
         ];
 
@@ -75,7 +80,6 @@ class CustodianStudent extends Model
                     'Custodian.id = CustodianStudent.custodian_id'
                 ]
             ],
-
             [
                 'table' => 'users',
                 'alias' => 'User',
@@ -93,7 +97,6 @@ class CustodianStudent extends Model
                     'Student.id = CustodianStudent.student_id',
                 ]
             ],
-
 //            [
 //                'table' => 'users',
 //                'alias' => 'User',
@@ -104,8 +107,6 @@ class CustodianStudent extends Model
 //            ],
 
         ];
-
-
 
         return Datatable::simple($this, $columns,$joins);
 

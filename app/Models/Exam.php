@@ -60,6 +60,61 @@ class Exam extends Model {
     {
         return $this->belongsTo('App\models\ExamType');
     }
+
+
+    //获取当前考试班级
+    public function examClasses($classIds) {
+
+        $class_ids = explode(',', $classIds);
+        $classes = [];
+        foreach ($class_ids as $class_id) {
+            $classes[] = Squad::whereId($class_id)->first();
+        }
+        return $classes;
+
+    }
+
+    /**
+     * 返回班级相关的所有考试
+     *
+     * @param $class_id
+     * @return array
+     */
+    public function examsByClassId($class_id) {
+
+        $exams = $this::all();
+        $_exams = [];
+        foreach ($exams as $exam) {
+            $classIds = explode(',', $exam->class_ids);
+            if (in_array($class_id, $classIds)) {
+                $_exams[] = $exam;
+            }
+        }
+
+        return $_exams;
+
+    }
+
+
+
+    /**
+     * 获取当前考试的科目
+     * @param $subjectIds
+     * @return array
+     */
+    public function subjectsByExamId($examId) {
+
+
+        $subjectIds=self::whereid($examId)->first(["subject_ids"])->toArray();
+        $subject_ids = explode(',', $subjectIds['subject_ids']);
+        $subjects = [];
+        foreach ($subject_ids as $subject_id) {
+            $subjects[]=Subject::whereId($subject_id)->first(['id','name']);
+        }
+        return $subjects;
+    }
+
+
     public function datatable() {
 
         $columns = [
@@ -95,4 +150,5 @@ class Exam extends Model {
 
         return Datatable::simple($this, $columns, $joins);
     }
+
 }

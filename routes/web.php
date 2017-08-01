@@ -12,7 +12,6 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
-
 # Auth::routes();
 # Route::get('/', function() { return 'Dashboard'; });
 # Route::get('/', 'HomeController@index');
@@ -156,6 +155,19 @@ Route::get('scores/show/{id}', 'ScoreController@show');
 Route::get('scores/edit/{id}', 'ScoreController@edit');
 Route::put('scores/update/{id}', 'ScoreController@update');
 Route::delete('scores/delete/{id}', 'ScoreController@destroy');
+//成绩发送
+
+Route::group(['prefix' => 'scoreSend'],function(){
+    Route::get('/', 'score_sendController@index');
+    Route::get('/index', 'score_sendController@index');
+    Route::post('/getgrade/{id}', 'score_sendController@getGrade');
+    Route::post('/getclass/{id}', 'score_sendController@getClass');
+    Route::post('/getexam/{id}', 'score_sendController@getExam');
+    Route::post('/getsubject/{id}', 'score_sendController@getSubject');
+    Route::post('/preview/{examid}/{classid}/{subjectids}/{itemid}', 'score_sendController@preview');
+});
+
+
 
 // 成绩统计项设置
 Route::get('score_ranges/index', 'ScoreRangeController@index');
@@ -174,6 +186,7 @@ Route::get('attendance_machines/show/{id}', 'AttendanceMachineController@show');
 Route::get('attendance_machines/edit/{id}', 'AttendanceMachineController@edit');
 Route::put('attendance_machines/update/{id}', 'AttendanceMachineController@update');
 Route::delete('attendance_machines/delete/{id}', 'AttendanceMachineController@destroy');
+
 
 
 //流程类型设置
