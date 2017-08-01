@@ -86,16 +86,10 @@ class ScoreTotalController extends Controller {
      * @internal param Company $company
      */
     public function show($id) {
-//        $subjects = [];
-//        $na_subjects = [];
         $score_total = $this->score_total->findOrFail($id);
         $studentname = User::whereId($score_total->student->user_id)->get(['realname'])->first();
         $subjects_arr = explode(',', $score_total['subject_ids']);
         $subjects = Subject::whereIn('id', $subjects_arr)->get(['name']);
-//        foreach ($temp_subjects as $value){
-//            $subjects[] = $value['name'];
-//        }
-//        dd($subjects);
         $na_subjects_arr = explode(',', $score_total['na_subject_ids']);
         $na_subjects = Subject::whereIn('id', $na_subjects_arr)->get(['name']);
 
@@ -166,7 +160,6 @@ class ScoreTotalController extends Controller {
         $temp = Exam::whereId($id)->get(['subject_ids'])->first();
         $exam_subject_ids = explode(',', $temp['subject_ids']);
         $exam_temp_subjects = Subject::whereIn('id', $exam_subject_ids)->get(['id', 'name'])->toArray();
-        //dd($exam_temp_subjects);
         if ($exam_temp_subjects) {
             return response()->json(['statusCode' => 200, 'exam_subjects' => $exam_temp_subjects]);
         } else {

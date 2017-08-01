@@ -547,7 +547,20 @@
 <!-- Sparkline -->
 {{--<script src="{{ URL::asset('js/jquery.sparkline.min.js') }}"></script>--}}
 <!-- SlimScroll -->
+<<<<<<< HEAD
+<script src="{{ URL::asset('js/jquery.slimscroll.min.js') }}"></script>
+<!-- ChartJS -->
+<script src="{{ URL::asset('js/Chart.min.js') }}"></script>
+<!-- Parsley -->
+<script src="{{ URL::asset('js/plugins/parsley/parsley.min.js') }}"></script>
+<script src="{{ URL::asset('js/plugins/parsley/i18n/zh_cn.js') }}"></script>
+<script src="{{ URL::asset('js/plugins/parsley/i18n/zh_cn.extra.js') }}"></script>
+<!-- DataTable -->
+<script src="{{ URL::asset('js/plugins/datatables/datatables.js') }}"></script>
+<script src="{{ URL::asset('js/plugins/datatables/datatables.checkboxes.min.js') }}"></script>
+=======
 {{--<script src="{{ URL::asset('js/jquery.slimscroll.min.js') }}"></script>--}}
+>>>>>>> 1300a8c35ada8cb1349ef986e5da61190754e596
 <!-- Gritter -->
 <script src="{{ URL::asset('js/plugins/gritter/js/jquery.gritter.js') }}"></script>
 @isset($map)

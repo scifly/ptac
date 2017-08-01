@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\EducatorClassRequest;
 
 use App\Models\Educator;
-use App\Models\User;
 use App\Models\EducatorClass;
+
 use Illuminate\Support\Facades\Request;
 
 class EducatorClassController extends Controller
@@ -101,9 +101,14 @@ class EducatorClassController extends Controller
      */
     public function edit($id)
     {
+        $educatorClass = $this->educatorClass->findOrFail($id)->toArray();
+        $educator_id = $educatorClass['educator_id'];
+        $educator = $this->educator->where('id',$educator_id)->pluck('user_id');
+        $educatorClass['educator_id'] =$educator[0];
+
         return view('educator_class.edit', [
             'js' => 'js/educator_class/edit.js',
-            'educatorClass' => $this->educatorClass->findOrFail($id),
+            'educatorClass' => $educatorClass,
             'form' => true
         ]);
     }
