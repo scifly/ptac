@@ -113,9 +113,13 @@ class Score_SendController extends Controller
 
 
     /**
-     * @param null $id
+     * @param $examId
+     * @param $classId
+     * @param $subjectIds
+     * @param $itemId
+     * @return string
      */
-    public function preview($examId,$classId,$subjectIds,$itemId)
+    public function preview($examId, $classId, $subjectIds, $itemId)
     {
         #拆分所选科目
         $subject_Ids=explode(',',$subjectIds);
