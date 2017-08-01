@@ -37,7 +37,6 @@ var crud = {
     },
     init: function(homeUrl, formId, ajaxUrl, requestType) {
         // Select2
-        console.log($('select'));
         if($('select').select2()){
             $('select').select2();
 
@@ -80,17 +79,6 @@ var crud = {
             $row = $(this).parents().eq(1);
             $('#modal-dialog').modal({backdrop: true});
         });
-        $(document).on('click', '.fa-show', function () {
-            id = $(this).attr('id');
-            $row = $(this).parents().eq(1);
-
-            $('#modal-show-company').modal({backdrop: true});
-        });
-
-        $(document).on('click','.fa-eye',function () {
-
-
-        })
         $('#confirm-delete').on('click', function () {
             crud.ajaxRequest(
                 'DELETE', 'delete/' + id,

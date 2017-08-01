@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ScoreTotalRequest;
+use App\Models\Exam;
 use App\Models\ScoreTotal;
 use App\Models\Subject;
+use App\Models\User;
 use Illuminate\Support\Facades\Request;
 
 class ScoreTotalController extends Controller {
@@ -42,8 +44,7 @@ class ScoreTotalController extends Controller {
         return view('score_total.create', [
             'js' => 'js/score_total/create.js',
             'form' => true,
-            'scoreTotalCreateEditJs' =>true
-            ]);
+        ]);
     }
 
     /**
@@ -54,14 +55,26 @@ class ScoreTotalController extends Controller {
      */
     public function store(ScoreTotalRequest $request) {
         $data = $request->all();
-        $data['subject_ids'] = implode(',',$data['subject_ids']);
-        $data['na_subject_ids'] = implode(',',$data['na_subject_ids']);
-        if ($this->score_total->create($data)) {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-            $this->result['message'] = self::MSG_CREATE_OK;
-        } else {
+        $record = $this->score_total->where([
+            ['student_id', $data['student_id']],
+            ['exam_id', $data['exam_id']]
+        ])->get();
+        if ((count($record) !== 0)) {
             $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '';
+            $this->result['message'] = '该学生本场考试已有记录';
+        } else {
+            $temp = Exam::whereId($data['exam_id'])->get(['subject_ids'])->first()->toArray();
+            $exam_suject_arr = explode(',', $temp['subject_ids']);
+            $data['na_subject_ids'] = array_diff($exam_suject_arr, $data['subject_ids']);
+            $data['subject_ids'] = implode(',', $data['subject_ids']);
+            $data['na_subject_ids'] = implode(',', $data['na_subject_ids']);
+            if ($this->score_total->create($data)) {
+                $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
+                $this->result['message'] = self::MSG_CREATE_OK;
+            } else {
+                $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+                $this->result['message'] = '';
+            }
         }
         return response()->json($this->result);
     }
@@ -73,7 +86,25 @@ class ScoreTotalController extends Controller {
      * @internal param Company $company
      */
     public function show($id) {
-        return view('score_total.show', ['score_total' => $this->score_total->findOrFail($id)]);
+//        $subjects = [];
+//        $na_subjects = [];
+        $score_total = $this->score_total->findOrFail($id);
+        $studentname = User::whereId($score_total->student->user_id)->get(['realname'])->first();
+        $subjects_arr = explode(',', $score_total['subject_ids']);
+        $subjects = Subject::whereIn('id', $subjects_arr)->get(['name']);
+//        foreach ($temp_subjects as $value){
+//            $subjects[] = $value['name'];
+//        }
+//        dd($subjects);
+        $na_subjects_arr = explode(',', $score_total['na_subject_ids']);
+        $na_subjects = Subject::whereIn('id', $na_subjects_arr)->get(['name']);
+
+        return view('score_total.show', [
+            'score_total' => $score_total,
+            'studentname' => $studentname,
+            'subjects' => $subjects,
+            'na_subjects' => $na_subjects
+        ]);
     }
 
     /**
@@ -99,8 +130,8 @@ class ScoreTotalController extends Controller {
      */
     public function update(ScoreTotalRequest $request, $id) {
         $data = $request->all();
-        $data['subject_ids'] = implode(',',$data['subject_ids']);
-        $data['na_subject_ids'] = implode(',',$data['na_subject_ids']);
+        $data['subject_ids'] = implode(',', $data['subject_ids']);
+        $data['na_subject_ids'] = implode(',', $data['na_subject_ids']);
         if ($this->score_total->findOrFail($id)->update($data)) {
             $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
             $this->result['message'] = self::MSG_EDIT_OK;
@@ -132,11 +163,13 @@ class ScoreTotalController extends Controller {
      * @return array
      */
     public function getExamSubjects($id) {
-        $exam_subject_ids = explode(',', $this->score_total->whereId($id)->first()->exam->subject_ids);
-        $exam_temp_subjects = Subject::whereIn('id', $exam_subject_ids)->get(['id','name']);
+        $temp = Exam::whereId($id)->get(['subject_ids'])->first();
+        $exam_subject_ids = explode(',', $temp['subject_ids']);
+        $exam_temp_subjects = Subject::whereIn('id', $exam_subject_ids)->get(['id', 'name'])->toArray();
+        //dd($exam_temp_subjects);
         if ($exam_temp_subjects) {
             return response()->json(['statusCode' => 200, 'exam_subjects' => $exam_temp_subjects]);
-        }else{
+        } else {
             return response()->json(['statusCode' => 500, 'message' => '查询失败!']);
         }
     }

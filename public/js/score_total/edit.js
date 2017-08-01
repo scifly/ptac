@@ -3,6 +3,7 @@ $(crud.edit('formScoreTotal'));
 getExamSubjects();
 if ($('#subject_select_ids').val()) {
     var $array_sub_ids = $('#subject_select_ids').val().split(",");
+    var $array_na_sub_ids = $('#na_subject_select_ids').val().split(",");
 }
 $('#exam_id').change(function () {
     getExamSubjects();
@@ -13,23 +14,20 @@ $('#exam_id').change(function () {
 
 function getExamSubjects() {
     var exam_id = $('#exam_id').val();
-    $('#subject_ids').empty();
-    $('#na_subject_ids').empty();
     var $subjectSelect = $('#subject_ids');
     var $naSubjectSelect = $('#na_subject_ids');
+    $subjectSelect.empty();
+    $naSubjectSelect.empty();
+    $naSubjectSelect.attr("disabled",false);
     $.ajax({
         type: 'GET',
         url: '/ptac/public/score_totals/getExamSubjects/' + exam_id,
         success: function (result) {
             if (result.statusCode === 200) {
                 //$subjectSelect.removeAttr("disabled");
-                if (result.exam_subjects.length == 0) {
+                if (result.exam_subjects.length === 0) {
                     //$subjectSelect.attr("disabled", "disabled");
-                    $.gritter.add({
-                        title: "注意！",
-                        text: "该考试暂未设置科目",
-                        image: '../img/failure.jpg'
-                    });
+                    crud.inform('出现异常', '该考试暂未设置科目', crud.failure);
                 } else {
                     $array = eval(result.exam_subjects);
                     $.each($array, function () {
@@ -42,7 +40,7 @@ function getExamSubjects() {
                         }
                     });
                     $("#na_subject_ids option").each(function () {
-                        if ($.inArray($(this).val(), $array_sub_ids) === -1) {
+                        if ($.inArray($(this).val(), $array_na_sub_ids) !== -1) {
                             $(this).attr('selected', 'selected');
                         }
                     });
@@ -52,15 +50,7 @@ function getExamSubjects() {
         },
         error: function (e) {
             var obj = JSON.parse(e.responseText);
-            for (var key in obj) {
-                if (obj.hasOwnProperty(key)) {
-                    $.gritter.add({
-                        title: "科目获取失败",
-                        text: obj[key],
-                        image: '../img/failure.jpg'
-                    });
-                }
-            }
+            crud.inform('出现异常', obj['message'], crud.failure);
         }
     });
 }

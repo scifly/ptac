@@ -12,12 +12,6 @@
                 {!! Form::label('exam_id', '考试名称',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-2">
                     {!! Form::select('exam_id', $exams, null, ['class' => 'form-control']) !!}
-                 {{--   <select id="exam_id" class="form-control">
-                        @foreach($exams as $key => $value)
-                            <option value="{{$key}}">{{$value}}
-                            </option>
-                            @endforeach
-                    </select>--}}
                 </div>
             </div>
             <div class="form-group">
@@ -28,7 +22,7 @@
                         'placeholder' => '(不超过5个数字含小数点)',
                         'data-parsley-required' => 'true',
                         'data-parsley-type' => "number",
-                        'data-parsley-maxlength' => '5'
+                        'data-parsley-maxlength' => '5',
                         ]) !!}
                 </div>
             </div>
@@ -43,16 +37,8 @@
             <div class="form-group">
                 {!! Form::label('na_subject_ids', '未计入总成绩科目名称',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-2">
-                    <select multiple="multiple" class="form-control" name="na_subject_ids[]" id="na_subject_ids">
-                       {{-- @foreach($subjects as $key => $value)
-                            @if(isset($notHaveId))
-                                <option value="{{$key}}" @if(array_key_exists($key,$notHaveId))selected="selected"@endif>
-                                    {{$value}}
-                                </option>
-                            @else
-                                <option value="{{$key}}">{{$value}}</option>
-                            @endif
-                        @endforeach--}}
+                    <input type="hidden" id="na_subject_select_ids" value="{{ $scoreTotal['na_subject_ids'] or '' }}">
+                    <select multiple="multiple" class="form-control" name="na_subject_ids[]" id="na_subject_ids" disabled="disabled">
                     </select>
                 </div>
             </div>
