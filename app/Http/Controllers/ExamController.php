@@ -100,9 +100,23 @@ class ExamController extends Controller
      * @param  \App\Models\Exam  $exam
      * @return \Illuminate\Http\Response
      */
-    public function show(Exam $exam)
+    public function show($id)
     {
-        //
+        $exam = Exam::whereId($id)->first();
+        $classIds = explode(",", $exam->class_ids);
+        $classes = DB::table('classes')
+            ->whereIn('id', $classIds )
+            ->get(['id','name']);
+        $subjectIds = explode(",", $exam->subject_ids);
+        $subjects = DB::table('subjects')
+            ->whereIn('id', $subjectIds )
+            ->get(['id','name']);
+
+        return view('exam.show', [
+            'exam' => $exam,
+            'classes' => $classes,
+            'subjects' => $subjects,
+        ]);
     }
 
     /**

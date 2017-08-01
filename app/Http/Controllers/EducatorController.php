@@ -95,24 +95,17 @@ class EducatorController extends Controller
 
         $educator = $this->educator->whereId($id)->first();
         $f = explode(",", $educator->team_ids);
-
         $teams = DB::table('teams')
             ->whereIn('id', $f )
             ->get(['id','name']);
+
         return view('educator.show', [
             'educator' => $educator,
             'show' => true,
 
             'teams' => $teams
         ]);
-//        return response()->json(
-//            [
-//            'educator' => $educator,
-//            'teams' => $teams,
-//                'message' => '',
-//                'statusCode' => 200
-//            ]
-//        );
+
     }
 
     /**
