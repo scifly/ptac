@@ -36,16 +36,44 @@ class Student extends Model {
 
     protected $table = 'students';
 
+
     public function user() {
         return $this->belongsTo('App\Models\User');
     }
+
+    protected $fillable = [
+        'user_id',
+        'class_id',
+        'student_number',
+        'card_number',
+        'oncampus',
+        'birthday',
+        'remark',
+        'enabled'
+    ];
+
+
 
     public function custodians() {
         return $this->belongsToMany('App\Models\Custodian');
     }
 
-    public function squad() {
+
+    public function squad()
+    {
         return $this->belongsTo('App\Models\Squad');
+    }
+
+
+
+    public function beLongsToSquad() {
+        return $this->belongsTo('App\Models\Squad','class_id','id');
+
+    }
+    public function custodianStudent()
+    {
+        return $this->belongsToMany('App\Models\Student');
+
     }
 
     public function datatable() {
@@ -60,6 +88,14 @@ class Student extends Model {
             ['db' => 'Student.remark', 'dt' => 6],
             ['db' => 'Student.created_at', 'dt' => 7],
             ['db' => 'Student.updated_at', 'dt' => 8],
+            [
+                'db' => 'Student.enabled', 'dt' => 9,
+                'formatter' => function($d, $row)
+                {
+                    return Datatable::dtOps($this, $d ,$row);
+                }
+            ],
+
 
         ];
 
@@ -108,6 +144,7 @@ class Student extends Model {
     {
         return $this->hasMany('App\Models\ScoreTotal');
     }
+
 
 
 

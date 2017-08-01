@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use App\Facades\DatatableFacade as Datatable;
 
 /**
  * App\Models\SchoolType
@@ -34,6 +35,26 @@ class SchoolType extends Model {
     public function schools() {
         
         return $this->hasMany('App\Models\School');
+        
+    }
+    
+    public function datatable() {
+        
+        $columns = [
+            ['db' => 'SchoolType.id', 'dt' => 0],
+            ['db' => 'SchoolType.name', 'dt' => 1],
+            ['db' => 'SchoolType.remark', 'dt' => 2],
+            ['db' => 'SchoolType.created_at', 'dt' => 3],
+            ['db' => 'SchoolType.updated_at', 'dt' => 4],
+            [
+                'db' => 'SchoolType.enabled', 'dt' => 5,
+                'formatter' => function ($d, $row) {
+                    return Datatable::dtOps($this, $d, $row);
+                }
+            ]
+        ];
+        
+        return Datatable::simple($this, $columns);
         
     }
     

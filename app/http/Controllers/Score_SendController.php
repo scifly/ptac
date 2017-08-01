@@ -61,7 +61,7 @@ class Score_SendController extends Controller
     {
         //先通过角色判断管理员、政教、年级主任等 多角色获取
         //如果是普通老师获取关联的考次，班主任获取管理班级所考次，科任老师获取任教科目考次
-        return view("score_send.index",['js' => 'js/score_send/index.js','schools'=>$this->school::all(['name','id'])]);
+        return view("score_send.index",['js' => 'js/score_send/index.js','schools'=>$this->school::all(['name','id']),'form'=>0]);
     }
 
 
@@ -135,6 +135,7 @@ class Score_SendController extends Controller
                 ->where('grade_id',$grade_id)
                 ->join('scores','students.id','scores.student_id')
                 ->join('exams','exams.id','scores.exam_id')
+                ->where('exams.id',$examId)
                 ->join('subjects','scores.subject_id','subjects.id')
                 ->join('users','students.user_id','users.id')
                 ->get(['scores.score'
@@ -147,6 +148,7 @@ class Score_SendController extends Controller
                 ->join('classes','students.class_id','classes.id')
                 ->join('scores','students.id','scores.student_id')
                 ->join('exams','exams.id','scores.exam_id')
+                ->where('exams.id',$examId)
                 ->join('subjects','scores.subject_id','subjects.id')
                 ->join('users','students.user_id','users.id')
                 ->get(['users.realname','scores.score','exams.name as examname','subjects.name'

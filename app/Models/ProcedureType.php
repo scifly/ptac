@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
@@ -25,10 +26,36 @@ use Illuminate\Database\Eloquent\Model;
 class ProcedureType extends Model {
     //
     protected $table = 'procedure_types';
+
     protected $fillable =[
         'name',
         'remark',
         'created_at',
         'updated_at',
     ];
+
+    public function procedures() {
+
+        return $this->hasMany('App\Models\Procedure');
+
+    }
+
+    public function datatable() {
+
+        $columns = [
+            ['db' => 'ProcedureType.id', 'dt' => 0],
+            ['db' => 'ProcedureType.name', 'dt' => 1],
+            ['db' => 'ProcedureType.remark', 'dt' => 2],
+            ['db' => 'ProcedureType.created_at', 'dt' => 3],
+            ['db' => 'ProcedureType.updated_at', 'dt' => 4],
+            [
+                'db' => 'ProcedureType.enabled', 'dt' => 5,
+                'formatter' => function ($d, $row) {
+                    return Datatable::dtOps($this, $d, $row);
+                }
+            ],
+        ];
+
+        return Datatable::simple($this, $columns);
+    }
 }

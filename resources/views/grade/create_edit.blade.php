@@ -6,11 +6,17 @@
                 {!! Form::label('name', '名称',['class' => 'col-sm-4 control-label']) !!}
                 {!! csrf_field() !!}
                 <div class="col-sm-2">
-                    {!! Form::text('name', null, ['class' => 'form-control']) !!}
+                    {!! Form::text('name', null, [
+                        'class' => 'form-control',
+                        'placeholder' => '(不超过40个汉字)',
+                        'data-parsley-required' => 'true',
+                        'data-parsley-minlength' => '4',
+                        'data-parsley-maxlength' => '40'
+                    ]) !!}
                 </div>
-                <div class="col-sm-5">
-                    <p class="form-control-static text-danger">{{ $errors->first('name') }}</p>
-                </div>
+                {{--<div class="col-sm-5">--}}
+                    {{--<p class="form-control-static text-danger">{{ $errors->first('name') }}</p>--}}
+                {{--</div>--}}
             </div>
 
             <div class="form-group">
@@ -21,8 +27,18 @@
             </div>
             <div class="form-group">
                 {!! Form::label('educator_ids', '年级主任',['class' => 'col-sm-4 control-label']) !!}
-                <div class="col-sm-2">
-                    {!! Form::select('educator_ids', $educators, null, ['class' => 'form-control']) !!}
+                <div class="col-sm-3">
+                    <select multiple="multiple" name="educator_ids[]" id="educator_ids">
+                        @foreach($educators as $key => $value)
+                            @if(isset($educatorIds))
+                                <option value="{{$key}}" @if(array_key_exists($key,$educatorIds))selected="selected"@endif>
+                                    {{$value}}
+                                </option>
+                            @else
+                                <option value="{{$key}}">{{$value}}</option>
+                            @endif
+                        @endforeach
+                    </select>
                 </div>
             </div>
             <div class="form-group">
@@ -40,8 +56,8 @@
         {{--button--}}
         <div class="form-group">
             <div class="col-sm-3 col-sm-offset-4">
-                {!! Form::reset('取消', ['class' => 'btn btn-default pull-left']) !!}
-                {!! Form::submit('保存', ['class' => 'btn btn-primary pull-right']) !!}
+                {!! Form::submit('保存', ['class' => 'btn btn-primary pull-left', 'id' => 'save']) !!}
+                {!! Form::reset('取消', ['class' => 'btn btn-default pull-right', 'id' => 'cancel']) !!}
             </div>
         </div>
     </div>

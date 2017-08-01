@@ -2,9 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\SquadRequest;
 use App\Models\Squad;
+use App\Models\User;
 use Illuminate\Support\Facades\Request;
 
+/**
+ * @property array message
+ */
 class SquadController extends Controller
 {
     protected $squad ;
@@ -12,6 +17,7 @@ class SquadController extends Controller
     public function __construct(Squad $squad)
     {
         $this->squad = $squad;
+
     }
 
     /**
@@ -24,7 +30,12 @@ class SquadController extends Controller
         if (Request::get('draw')) {
             return response()->json($this->squad->datatable());
         }
-        return view('class.index' , ['js' => 'js/class/index.js']);
+        return view('class.index' , [
+            'js' => 'js/class/index.js',
+            'dialog' => true,
+            'datatable' => true,
+
+        ]);
 
     }
 
@@ -36,17 +47,46 @@ class SquadController extends Controller
     public function create()
     {
         //
+        return view('class.create',[
+            'js' => 'js/class/create.js',
+            'form' => true
+
+        ]);
+
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param SquadRequest $squadRequest
      * @return \Illuminate\Http\Response
+     * @internal param \Illuminate\Http\Request $request
      */
-    public function store(Request $request)
+    public function store(SquadRequest $squadRequest)
     {
         //
+        // request
+        $data['name'] = $squadRequest->input('name');
+        $data['grade_id'] = $squadRequest->input('grade_id');
+        $ids = $squadRequest->input('educator_ids');
+        $data['educator_ids'] = implode(',', $ids);
+        $data['enabled'] = $squadRequest->input('enabled');
+
+        $row = $this->squad->where(['grade_id' => $data['grade_id'], 'name' => $data['name']])->first();
+        if(!empty($row)){
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+            $this->result['message'] = '班级名称重复！';
+        }else{
+            if($this->squad->create($data))
+            {
+                $this->result['message'] = self::MSG_CREATE_OK;
+            } else {
+                $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+                $this->result['message'] = '';
+            }
+        }
+        return response()->json($this->result);
+
     }
 
     /**
@@ -55,9 +95,18 @@ class SquadController extends Controller
      * @param  \App\Models\Squad  $squad
      * @return \Illuminate\Http\Response
      */
-    public function show(Squad $squad)
+    public function show($id)
     {
         //
+        $squad = Squad::whereId($id)->first();
+        $educators = User::whereHas('educator' , function($query) use ($squad) {
+
+            $f = explode(",", $squad->educator_ids);
+            $query-> whereIn('id', $f);
+
+        })->get(['id','username'])->toArray();
+        return view('class.show', ['squad' => $squad, 'educators' => $educators]);
+
     }
 
     /**
@@ -66,31 +115,83 @@ class SquadController extends Controller
      * @param  \App\Models\Squad  $squad
      * @return \Illuminate\Http\Response
      */
-    public function edit(Squad $squad)
+    public function edit($id)
     {
         //
+        $squad = $this->squad->whereId($id)->first();
+        $educators = User::whereHas('educator' , function($query) use ($squad) {
+
+            $f = explode(",", $squad->educator_ids);
+            $query->whereIn('id', $f);
+
+        })->get(['id','username'])->toArray();
+
+        $educatorIds = [];
+        foreach ($educators as $value) {
+            $educatorIds[$value['id']] = $value['username'];
+        }
+        return view('class.edit', [
+            'js' => 'js/class/edit.js',
+            'squad' => $squad,
+            'educatorIds' => $educatorIds,
+            'form' => true
+
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Squad  $squad
+     * @param SquadRequest $squadRequest
+     * @param $id
      * @return \Illuminate\Http\Response
+     * @internal param \Illuminate\Http\Request $request
+     * @internal param Squad $squad
      */
-    public function update(Request $request, Squad $squad)
+    public function update(SquadRequest $squadRequest, $id)
     {
-        //
+        $data = Squad::find($id);
+
+        $data->name = $squadRequest->input('name');
+        $data->grade_id = $squadRequest->input('grade_id');
+        $ids = $squadRequest->input('educator_ids');
+        $data->educator_ids = implode(',', $ids);
+        $data->enabled = $squadRequest->input('enabled');
+
+        $row = $this->squad->where(['grade_id' => $data->grade_id, 'name' => $data->name])->first();
+        if(!empty($row) && $row->id != $id){
+
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+            $this->result['message'] = '班级名称重复！';
+
+        }else{
+            if($data->save())
+            {
+                $this->result['message'] = self::MSG_EDIT_OK;
+            } else {
+                $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+                $this->result['message'] = '';
+
+            }
+        }
+        return response()->json($this->result);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Squad  $squad
+     * @param $id
      * @return \Illuminate\Http\Response
+     * @internal param Squad $squad
      */
-    public function destroy(Squad $squad)
+    public function destroy($id)
     {
-        //
+        if ($this->squad->findOrFail($id)->delete()) {
+            $this->result['message'] = self::MSG_DEL_OK;
+        } else {
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+            $this->result['message'] = '';
+        }
+        return response()->json($this->result);
     }
 }

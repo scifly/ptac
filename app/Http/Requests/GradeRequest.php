@@ -2,15 +2,16 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 
 class GradeRequest extends FormRequest
 {
 
     protected $rules = [
-        'name' => 'required|string|max:2',
+        'name' => 'required|string|max:255',
         'school_id' => 'required|integer',
-        'educator_ids' => 'required|integer',
+        'educator_ids' => 'required|array',
         'enabled' => 'required|boolean'
     ];
     protected $strings_key = [
@@ -23,7 +24,7 @@ class GradeRequest extends FormRequest
         'required'=> '为必填项',
         'string'=> '为字符串',
         'max'=> '最大为:max',
-        'between'=> '长度在:min和:max之间',
+        'array'=> '必须为数组',
         'integer'=> '必须为整数',
         'boolean'=> '为0或1',
     ];
@@ -46,10 +47,11 @@ class GradeRequest extends FormRequest
 
     }
 
-    public function messages(){
+    public function messages() {
         $rules = $this->rules();
         $k_array = $this->strings_key;
         $v_array = $this->strings_val;
+        $array = [];
         foreach ($rules as $key => $value) {
             $new_arr = explode('|', $value);//分割成数组
             foreach ($new_arr as $k => $v) {
@@ -61,4 +63,6 @@ class GradeRequest extends FormRequest
 
         return $array;
     }
+    public function wantsJson() { return true; }
+
 }

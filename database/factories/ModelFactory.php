@@ -1,6 +1,7 @@
 <?php
 
 /*
+ *
 |--------------------------------------------------------------------------
 | Model Factories
 |--------------------------------------------------------------------------
@@ -45,6 +46,10 @@ $factory->define(App\Models\School::class, function (Faker\Generator $faker) {
         'school_type_id' => 1 ,
         'name' => $faker->name,
         'address' =>  $faker->address,
+        'longitude' => 15.0244,
+        'latitude' => 30.0244,
+        'sms_max_cnt' => 30,
+        'sms_used' => 10,
         'corp_id' => 1,
         'enabled' => 1
     ];
@@ -65,10 +70,11 @@ $factory->define(App\Models\Grade::class, function (Faker\Generator $faker) {
 $factory->define(App\Models\Educator::class, function (Faker\Generator $faker) {
 
     return [
-        'user_id' => 1,
+        'user_id' => rand(1,5),
         'team_ids' => 'abc',
         'school_id' => 1,
         'sms_quote' => 100,
+        'enabled' => 1
     ];
 
 });
@@ -83,3 +89,215 @@ $factory->define(App\Models\Company::class, function (Faker\Generator $faker) {
     ];
 
 });
+
+$factory->define(App\Models\AttendanceMachine::class, function (Faker\Generator $faker) {
+
+    return [
+        'name' => $faker->name,
+        'location' => '成都武侯区',
+        'school_id' => 1,
+        'machineid' => '1456872587',
+        'enabled' => 1
+    ];
+
+});
+
+$factory->define(App\Models\ProcedureType::class, function (Faker\Generator $faker) {
+
+    return [
+        'name' => $faker->name,
+        'remark' => 'Test',
+        'enabled' => 1
+    ];
+
+});
+
+$factory->define(App\Models\Team::class, function (Faker\Generator $faker) {
+
+    return [
+        'name' => $faker->name,
+        'enabled' => 1
+    ];
+
+});
+
+$factory->define(App\Models\Procedure::class, function (Faker\Generator $faker) {
+
+    return [
+        'procedure_type_id' => 1,
+        'school_id' => 1,
+        'name' => $faker->name,
+        'remark' => $faker->name,
+        'enabled' => 1
+    ];
+
+});
+
+$factory->define(App\Models\Subject::class, function (Faker\Generator $faker) {
+
+    return [
+        'school_id' => 1,
+        'name' => $faker->name,
+        'isaux' => 1,
+        'max_score' => 150,
+        'pass_score' => 90,
+        'grade_ids' => '1|33|22',
+        'enabled' => 1
+
+    ];
+});
+
+$factory->define(App\Models\User::class, function (Faker\Generator $faker) {
+
+    return [
+        'group_id' => 1,
+        'username' => $faker->name,
+        'password' => md5('123456'),
+        'gender' => 1,
+        'realname' => $faker->name,
+        'avatar_url' => 'http://www.baidu.com',
+        'remember_token' => '454564fdafdafadfsa',
+        'email' => '18513094620@qq.com',
+        'wechatid' => 'fdsfds45454',
+        'userid' => rand(1,5).",".rand(5,10),
+        'department_ids' =>rand(1,5).",".rand(5,10),
+        'enabled' => 1,
+    ];
+});
+
+
+$factory->define(App\Models\Custodian::class, function (Faker\Generator $faker) {
+
+    return [
+        'user_id' => rand(1, 10),
+        'expiry' => $faker->dateTime,
+    ];
+});
+
+$factory->define(App\Models\Student::class, function (Faker\Generator $faker) {
+
+    return [
+        'user_id' => 1,
+        'class_id' => 1,
+        'student_number' => 2017211132,
+        'card_number' => $faker->creditCardNumber,
+        'oncampus' => 1,
+        'birthday' => $faker->date(),
+        'remark' => $faker->sentence(10),
+    ];
+});
+
+
+$factory->define(App\Models\Squad::class, function (Faker\Generator $faker) {
+
+    return [
+        'grade_id' => 1,
+        'name' => $faker->name,
+        'educator_ids' => 0035,
+        'enabled' => 1
+    ];
+
+});
+
+
+$factory->define(App\Models\ProcedureStep::class, function (Faker\Generator $faker) {
+
+    return [
+        'procedure_id' => 1,
+        'name' => $faker->name,
+        'approver_user_ids' => '1|2|3',
+        'related_user_ids' => '2|3|4',
+        'remark' => $faker->name,
+        'enabled' => 1
+    ];
+});
+
+$factory->define(App\Models\Group::class, function (Faker\Generator $faker) {
+
+    return [
+        'name' => $faker->name,
+        'remark' => $faker->sentence(5),
+        'enabled' => 1
+    ];
+
+});
+
+
+$factory->define(App\Models\ScoreRange::class, function (Faker\Generator $faker) {
+    return [
+        'name' => $faker->name,
+        'subject_ids' => '1|2|3',
+        'school_id' => 1,
+        'start_score' => 250,
+        'end_score' => 400,
+        'enabled' => 1
+    ];
+});
+
+$factory->define(App\Models\Exam::class, function (Faker\Generator $faker) {
+
+    return [
+        'name' => $faker->name,
+        'remark' => $faker->sentence(10),
+        'exam_type_id' => 1,
+        'class_ids' => '1|2|3',
+        'subject_ids' => '1|2|3',
+        'max_scores' => 150,
+        'pass_scores' => 90,
+        'start_date' => $faker->dateTime,
+        'end_date' => $faker->dateTime,
+        'enabled' => 1
+    ];
+});
+
+$factory->define(App\Models\ProcedureLog::class, function (Faker\Generator $faker) {
+
+    return [
+        'initiator_user_id' => rand(1,5),
+        'procedure_id' => rand(1,5),
+        'procedure_step_id' => rand(1,5),
+        'operator_user_id' => rand(1,5),
+        'initiator_msg' => 'test',
+        'initiator_media_ids' => '1|2',
+        'operator_msg' => 'test',
+        'operator_media_ids' => '2|3',
+        'step_status' => rand(0,2),
+    ];
+});
+
+$factory->define(App\Models\SubjectModule::class, function (Faker\Generator $faker) {
+
+    return [
+        'subject_id' => rand(1,10),
+        'name' => $faker->name,
+        'weight' => rand(1,5),
+        'enabled' =>1
+
+    ];
+});
+
+$factory->define(App\Models\EducatorClass::class, function (Faker\Generator $faker) {
+
+    return [
+        'educator_id' => rand(1,10),
+        'class_id' => rand(1,10),
+        'subject_id' => rand(1,10),
+        'enabled' =>1
+
+    ];
+});
+
+
+$factory->define(App\Models\CustodianStudent::class, function (Faker\Generator $faker) {
+
+    return [
+        'custodian_id' => rand(1, 10),
+        'student_id' => rand(1, 10),
+        'relationship' => '父子',
+        'enabled' =>1
+
+    ];
+});
+
+
+

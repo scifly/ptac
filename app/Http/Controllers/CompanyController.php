@@ -7,15 +7,11 @@ use App\Models\Company;
 use Illuminate\Support\Facades\Request;
 
 
-class CompanyController extends Controller
-{
+class CompanyController extends Controller {
 
     protected $company;
 
-    function __construct(Company $company)
-    {
-        $this->company = $company;
-    }
+    function __construct(Company $company) {$this->company = $company;}
 
     /**
      * 显示运营者公司列表
@@ -23,17 +19,16 @@ class CompanyController extends Controller
      * @internal param null $arg
      * @internal param Request $request
      */
-    public function index()
-    {
+    public function index() {
 
         if (Request::get('draw')) {
             return response()->json($this->company->datatable());
         }
         return view('company.index', [
             'js' => 'js/company/index.js',
-            'dialog' => true
+            'dialog' => true,
+            'datatable' => true,
         ]);
-
     }
 
     /**
@@ -41,9 +36,8 @@ class CompanyController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
-    {
-        return view('company.create', ['js' => 'js/company/create.js']);
+    public function create() {
+        return view('company.create', ['js' => 'js/company/create.js', 'form' => true]);
     }
 
     /**
@@ -52,16 +46,16 @@ class CompanyController extends Controller
      * @return \Illuminate\Http\Response
      * @internal param \Illuminate\Http\Request|Request $request
      */
-    public function store(CompanyRequest $request)
-    {
-        //验证
-        $input = $request->all();
-        //逻辑
-        $res = Company::create($input);
-        if (!$res) {
-            return response()->json(['statusCode' => 202, 'Message' => 'add filed']);
+    public function store(CompanyRequest $request) {
+
+        if ($this->company->create($request->all())) {
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
+            $this->result['message'] = self::MSG_CREATE_OK;
+        } else {
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+            $this->result['message'] = '';
         }
-        return response()->json(['statusCode' => 200, 'Message' => 'nailed it!']);
+        return response()->json($this->result);
     }
 
     /**
@@ -70,11 +64,8 @@ class CompanyController extends Controller
      * @return \Illuminate\Http\Response
      * @internal param Company $company
      */
-    public function show($id)
-    {
-        // find the record by id
-        $company = Company::where('id', $id);
-        return view('company.show', ['company' => $company]);
+    public function show($id) {
+        return view('company.show', ['company' => $this->company->findOrFail($id)]);
     }
 
     /**
@@ -83,39 +74,48 @@ class CompanyController extends Controller
      * @return \Illuminate\Http\Response
      * @internal param Company $company
      */
-    public function edit($id)
-    {
+    public function edit($id) {
 
-        $company = Company::whereId($id)->first();
         return view('company.edit', [
             'js' => 'js/company/edit.js',
-            'company' => $company
+            'company' => $this->company->findOrFail($id),
+            'form' => true
         ]);
 
     }
 
     /**
      * 更新指定运营者公司记录
+     * @param CompanyRequest $request
+     * @param $id
      * @return \Illuminate\Http\Response
-     * @internal param \Illuminate\Http\Request $request
-     * @internal param Company $company
      */
-    public function update($id)
-    {
-        // find the record by id
-        // update the record with the request data
-        $company = Company::find($id);
-        return response()->json([]);
+    public function update(CompanyRequest $request, $id) {
+        if ($this->company->findOrFail($id)->update($request->all())) {
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
+            $this->result['message'] = self::MSG_EDIT_OK;
+        } else {
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+            $this->result['message'] = '';
+        }
+        return response()->json($this->result);
     }
 
     /**
      * 删除指定运营者公司记录
+     * @param $id
      * @return \Illuminate\Http\Response
      * @internal param Company $company
      */
-    public function destroy($id)
-    {
-        Company::destroy($id);
-        return response()->json(['statusCode' => 200, 'Message' => 'nailed it!']);
+    public function destroy($id) {
+        if ($this->company->findOrFail($id)->delete()) {
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
+            $this->result['message'] = self::MSG_DEL_OK;
+        } else {
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+            $this->result['message'] = '';
+        }
+        return response()->json($this->result);
     }
 }
+

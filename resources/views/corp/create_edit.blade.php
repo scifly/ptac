@@ -5,7 +5,12 @@
             <div class="form-group">
                 {!! Form::label('name', '名称',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-2">
-                    {!! Form::text('name', null, ['class' => 'form-control']) !!}
+                    {!! Form::text('name', null, [
+                        'class' => 'form-control',
+                        'placeholder' => '(不超过60个汉字)',
+                        'data-parsley-required' => 'true',
+                        'data-parsley-minlength' => '3',
+                    ]) !!}
                 </div>
             </div>
             <div class="form-group">
@@ -17,7 +22,12 @@
             <div class="form-group">
                 {!! Form::label('corpid', '企业号ID',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-3">
-                    {!! Form::text('corpid', null, ['class' => 'form-control']) !!}
+                    {!! Form::text('corpid', null, [
+                        'class' => 'form-control',
+                        'placeholder' => '(36个小写字母与阿拉伯数字)',
+                        'data-parsley-required' => 'true',
+                        'data-parsley-type' => 'alphanum'
+                    ]) !!}
                 </div>
             </div>
             <div class="form-group">

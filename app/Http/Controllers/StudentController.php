@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StudentRequest;
 use App\Models\Student;
 use Illuminate\Support\Facades\Request;
 
@@ -9,15 +10,10 @@ class StudentController extends Controller
 {
     protected $student;
 
-    /**
-     * StudentController constructor.
-     * @param Student $student
-     */
     function __construct(Student $student){ $this->student = $student; }
 
     /**
-     * Display a listing of the resource.
-     *
+     * 显示学生列表
      * @return \Illuminate\Http\Response
      */
     public function index()
@@ -25,72 +21,103 @@ class StudentController extends Controller
         if (Request::get('draw')) {
             return response()->json($this->student->datatable());
         }
-        return view('student.index', ['js' => 'js/student/index.js']);
+        return view('student.index', [
+            'js' => 'js/student/index.js',
+            'dialog' => true,
+            'datatable' => true,
+            'form'=>true,
+        ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
+    /*
      * @return \Illuminate\Http\Response
      */
     public function create()
     {
-        //
+        return view('student.create',[
+            'js' => 'js/student/create.js',
+            'form' => true
+        ]);
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
+     * 添加学生
+     * @param \Illuminate\Http\Request|Request $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StudentRequest $request)
     {
-        //
+
+        if ($this->student->create($request->except('_token'))) {
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
+            $this->result['message'] = self::MSG_CREATE_OK;
+        }else{
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+            $this->result['message'] = self::添加失败;
+        }
+
+        return response()->json($this->result);
     }
 
     /**
-     * Display the specified resource.
-     *
+     * 学生详情页面.
      * @param  \App\Models\Student  $student
      * @return \Illuminate\Http\Response
      */
-    public function show(Student $student)
-    {
-        //
+    public function show($id){
+
+        $student = $this->student->findOrFail($id);
+        return view('student.show', ['student' => $student]);
     }
 
     /**
-     * Show the form for editing the specified resource.
-     *
+     *  编辑学生页面
      * @param  \App\Models\Student  $student
      * @return \Illuminate\Http\Response
      */
-    public function edit(Student $student)
-    {
-        //
+    public function edit($id){
+
+        return view('student.edit', [
+            'js' => 'js/student/edit.js',
+            'student' => $this->student->findOrFail($id),
+            'form' => true
+        ]);
     }
 
     /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Student  $student
+     * 更新指定学生的信息
      * @return \Illuminate\Http\Response
+     * @internal param \Illuminate\Http\Request $request
+     * @internal param Company $company
      */
-    public function update(Request $request, Student $student)
-    {
-        //
+    public function update(StudentRequest $request, $id){
+
+        if ($this->student->findOrFail($id)->update($request->all())) {
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
+            $this->result['message'] = self::MSG_EDIT_OK;
+        } else {
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+            $this->result['message'] = '更新失败';
+        }
+        return response()->json($this->result);
+
+
     }
 
     /**
-     * Remove the specified resource from storage.
-     *
+     * 删除学生
      * @param  \App\Models\Student  $student
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Student $student)
-    {
-        //
+    public function destroy($id){
+
+        if ($this->student->findOrFail($id)->delete()) {
+            $this->result['message'] = self::MSG_DEL_OK;
+        } else {
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+            $this->result['message'] = '删除失败';
+        }
+        return response()->json($this->result);
+
     }
 }

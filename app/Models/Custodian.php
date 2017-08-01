@@ -39,4 +39,9 @@ class Custodian extends Model
         return $this->belongsToMany('App\Model\Student');
     }
 
+    public function custodianStudent()
+    {
+        return $this->hasOne('App\Models\CustodianStudent');
+    }
+
 }

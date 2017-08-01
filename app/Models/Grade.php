@@ -42,7 +42,11 @@ class Grade extends Model {
 
     public function school() {
 
-            return $this->belongsTo('App\Models\School');
+        return $this->belongsTo('App\Models\School');
+    }
+
+    public function subject() {
+        return $this->hasMany('App\Models\Subject');
     }
 
     public function students()
