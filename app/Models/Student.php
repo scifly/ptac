@@ -36,6 +36,11 @@ class Student extends Model {
 
     protected $table = 'students';
 
+
+    public function user() {
+        return $this->belongsTo('App\Models\User');
+    }
+
     protected $fillable = [
         'user_id',
         'class_id',
@@ -46,21 +51,29 @@ class Student extends Model {
         'remark',
         'enabled'
     ];
-    public function user() { return $this->belongsTo('App\Models\User'); }
 
-    public function custodians() { return $this->belongsToMany('App\Models\Custodian'); }
 
-    public function squad(){ return $this->belongsTo('App\Models\Squad','class_id','id'); }
+
+    public function custodians() {
+        return $this->belongsToMany('App\Models\Custodian');
+    }
+
+
+    public function squad()
+    {
+        return $this->belongsTo('App\Models\Squad');
+    }
+
+
 
     public function beLongsToSquad() {
-
         return $this->belongsTo('App\Models\Squad','class_id','id');
 
     }
-
     public function custodianStudent()
     {
         return $this->belongsToMany('App\Models\Student');
+
     }
 
     public function datatable() {
@@ -111,4 +124,30 @@ class Student extends Model {
         return Datatable::simple($this, $columns,$joins);
 
     }
+
+
+    /**
+     * 获取学生所有分数
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function score()
+    {
+        return $this->hasMany('App\Models\Score');
+    }
+
+
+    /**
+     * 获取学生总分
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function scoreTotal()
+    {
+        return $this->hasMany('App\Models\ScoreTotal');
+    }
+
+
+
+
+
+
 }

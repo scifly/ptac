@@ -155,6 +155,19 @@ Route::get('scores/show/{id}', 'ScoreController@show');
 Route::get('scores/edit/{id}', 'ScoreController@edit');
 Route::put('scores/update/{id}', 'ScoreController@update');
 Route::delete('scores/delete/{id}', 'ScoreController@destroy');
+//成绩发送
+
+Route::group(['prefix' => 'scoreSend'],function(){
+    Route::get('/', 'score_sendController@index');
+    Route::get('/index', 'score_sendController@index');
+    Route::post('/getgrade/{id}', 'score_sendController@getGrade');
+    Route::post('/getclass/{id}', 'score_sendController@getClass');
+    Route::post('/getexam/{id}', 'score_sendController@getExam');
+    Route::post('/getsubject/{id}', 'score_sendController@getSubject');
+    Route::post('/preview/{examid}/{classid}/{subjectids}/{itemid}', 'score_sendController@preview');
+});
+
+
 
 // 成绩统计项设置
 Route::get('score_ranges/index', 'ScoreRangeController@index');
@@ -173,6 +186,7 @@ Route::get('attendance_machines/show/{id}', 'AttendanceMachineController@show');
 Route::get('attendance_machines/edit/{id}', 'AttendanceMachineController@edit');
 Route::put('attendance_machines/update/{id}', 'AttendanceMachineController@update');
 Route::delete('attendance_machines/delete/{id}', 'AttendanceMachineController@destroy');
+
 
 
 //流程类型设置
@@ -206,3 +220,21 @@ Route::delete('procedure_steps/delete/{id}', 'ProcedureStepController@destroy');
 Route::get('procedure_logs/index', 'ProcedureLogController@index');
 Route::get('procedure_logs/show/{id}', 'ProcedureLogController@show');
 Route::delete('procedure_logs/delete/{id}', 'ProcedureLogController@destroy');
+
+//考试类型设置
+Route::get('exam_types/index', 'ExamTypeController@index');
+Route::get('exam_types/create', 'ExamTypeController@create');
+Route::post('exam_types/store', 'ExamTypeController@store');
+Route::get('exam_types/show/{id}', 'ExamTypeController@show');
+Route::get('exam_types/edit/{id}', 'ExamTypeController@edit');
+Route::put('exam_types/update/{id}', 'ExamTypeController@update');
+Route::delete('exam_types/delete/{id}', 'ExamTypeController@destroy');
+
+//考试设置
+Route::get('exams/index', 'ExamController@index');
+Route::get('exams/create', 'ExamController@create');
+Route::post('exams/store', 'ExamController@store');
+Route::get('exams/show/{id}', 'ExamController@show');
+Route::get('exams/edit/{id}', 'ExamController@edit');
+Route::put('exams/update/{id}', 'ExamController@update');
+Route::delete('exams/delete/{id}', 'ExamController@destroy');
