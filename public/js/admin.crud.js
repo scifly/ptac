@@ -77,10 +77,6 @@ var crud = {
             $('#modal-dialog').modal({backdrop: true});
         });
 
-        $(document).on('click','.fa-eye',function () {
-
-
-        })
         $('#confirm-delete').on('click', function () {
             crud.ajaxRequest(
                 'DELETE', 'delete/' + id,
