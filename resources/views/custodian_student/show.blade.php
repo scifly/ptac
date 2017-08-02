@@ -2,13 +2,13 @@
 @section('header')
     <a href="{{ url('/') }}">Back to overview</a>
     <h2>
-        {{ $subject->name }}
+        监护人/学生关系详情
     </h2>
-    <a href="{{ url('subject/edit/' . $subject->id . '') }}">
+    <a href="{{ url('custodians_students/edit/' . $subject->id . '') }}">
         <span class="glyphicon glyphicon-edit"></span>
         Edit
     </a>
-    <a href="{{ url('subject/delete/' . $subject->id . '') }}">
+    <a href="{{ url('custodians_students/delete/' . $subject->id . '') }}">
         <span class="glyphicon glyphicon-trash"></span>
         Delete
     </a>

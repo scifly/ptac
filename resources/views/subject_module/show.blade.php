@@ -4,11 +4,11 @@
     <h2>
         {{ $subject->name }}
     </h2>
-    <a href="{{ url('subject/edit/' . $subject->id . '') }}">
+    <a href="{{ url('subject_modules/edit/' . $subject->id . '') }}">
         <span class="glyphicon glyphicon-edit"></span>
         Edit
     </a>
-    <a href="{{ url('subject/delete/' . $subject->id . '') }}">
+    <a href="{{ url('subject_modules/delete/' . $subject->id . '') }}">
         <span class="glyphicon glyphicon-trash"></span>
         Delete
     </a>

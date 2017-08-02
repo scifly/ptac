@@ -4,11 +4,11 @@
     <h2>
        教职员工详情
     </h2>
-    <a href="{{ url('educator_class/edit/' . $educatorClass->id . '') }}">
+    <a href="{{ url('educators_classes/edit/' . $educatorClass->id . '') }}">
         <span class="glyphicon glyphicon-edit"></span>
         Edit
     </a>
-    <a href="{{ url('educator_class/delete/' . $educatorClass->id . '') }}">
+    <a href="{{ url('educators_classes/delete/' . $educatorClass->id . '') }}">
         <span class="glyphicon glyphicon-trash"></span>
         Delete
     </a>
