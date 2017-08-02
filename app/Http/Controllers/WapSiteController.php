@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\WapSiteRequest;
+use App\Models\Educator;
+use App\Models\Grade;
+use App\Models\Media;
 use App\Models\WapSite;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
@@ -50,20 +54,36 @@ class WapSiteController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(WapSiteRequest $request)
     {
-        //
+        $res = $this->wapSite->save($request->all());
+
+        $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
+        $this->result['message'] = self::MSG_CREATE_OK;
+
+        return response()->json($this->result);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\WapSite  $wapSite
+     * @param $id
      * @return \Illuminate\Http\Response
+     * @internal param WapSite $wapSite
      */
-    public function show(WapSite $wapSite)
+    public function show($id)
     {
-        //
+
+        $wapsite = WapSite::whereId($id)->first();
+        $f = explode(",", $wapsite->media_ids);
+
+        $medias = Media::whereIn('id',$f)->get(['id','path']);
+
+        return view('wap_site.show', [
+            'wapsite' => $wapsite,
+            'medias' => $medias,
+            'ws' =>true
+        ]);
     }
 
     /**
@@ -74,7 +94,7 @@ class WapSiteController extends Controller
      */
     public function edit(WapSite $wapSite)
     {
-        //
+
     }
 
     /**

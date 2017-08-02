@@ -35,8 +35,9 @@
         <link rel="stylesheet" href="{{ URL::asset('js/plugins/datatables/datatables.min.css') }}">
     @endisset
     <!-- 微网站 -->
+    @isset($ws)
     <link rel="stylesheet" href="{{ URL::asset('css/wapSite.css') }}">
-
+    @endisset
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>

@@ -1,6 +1,5 @@
 @extends('layouts.master')
 @section('header')
-
     微网站管理
 @endsection
 @section('breadcrumb')
