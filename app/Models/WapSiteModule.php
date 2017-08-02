@@ -37,11 +37,11 @@ class WapSiteModule extends Model {
         'created_at',
         'updated_at',
     ];
-    public function hasManyArticle()
+    public function wsmarticles()
     {
         return $this->hasMany('App\Models\WsmArticle','wsm_id','id');
     }
-    public function belongsToWs()
+    public function wapsite()
     {
         return $this->belongsTo('App\Models\WapSite', 'wap_site_id', 'id');
 

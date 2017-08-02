@@ -78,6 +78,11 @@ class School extends Model {
         return $this->hasMany('App\Models\Educator');
 
     }
+    public function wapsite() {
+
+        return $this->hasOne('App\Models\WapSite');
+
+    }
     public function datatable() {
         
         $columns = [
