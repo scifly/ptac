@@ -25,6 +25,7 @@ use App\Facades\DatatableFacade as Datatable;
  * @method static Builder|Educator whereUpdatedAt($value)
  * @method static Builder|Educator whereUserId($value)
  * @mixin \Eloquent
+ * @property-read \App\Models\School $school
  */
 class Educator extends Model
 {

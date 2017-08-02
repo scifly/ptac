@@ -12,12 +12,24 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
+
 # Auth::routes();
 # Route::get('/', function() { return 'Dashboard'; });
 # Route::get('/', 'HomeController@index');
 # Route::get('/home', 'HomeController@index')->name('home');
 # Route::get('test/index', 'TestController@index');
 # Route::get('/', 'HomeController@index');
+
+# 菜单管理
+// action设置
+Route::get('actions/index', 'ActionController@index');
+Route::get('actions/create', 'ActionController@create');
+Route::post('actions/store', 'ActionController@store');
+Route::get('actions/show/{id}', 'ActionController@show');
+Route::get('actions/edit/{id}', 'ActionController@edit');
+Route::put('actions/update/{id}', 'ActionController@update');
+Route::delete('actions/delete/{id}', 'ActionController@destroy');
+
 
 # 系统设置
 // 学校设置
@@ -56,6 +68,14 @@ Route::get('subjectModules/show/{id}', 'SubjectModulesController@show');
 Route::get('subjectModules/edit/{id}', 'SubjectModulesController@edit');
 Route::put('subjectModules/update/{id}', 'SubjectModulesController@update');
 Route::delete('subjectModules/delete/{id}', 'SubjectModulesController@destroy');
+Route::get('subjects/index', 'SubjectController@index');
+Route::get('subjects/create', 'SubjectController@create');
+Route::post('subjects/store', 'SubjectController@store');
+Route::get('subjects/show/{id}', 'SubjectController@show');
+Route::get('subjects/edit/{id}', 'SubjectController@edit');
+Route::put('subjects/update/{id}', 'SubjectController@update');
+Route::delete('subjects/delete/{id}', 'SubjectController@destroy');
+Route::get('subjects/query/{id}', 'SubjectController@query');
 
 // 权限设置
 Route::get('groups/index', 'GroupController@index');
@@ -111,23 +131,6 @@ Route::get('educators/edit/{id}', 'EducatorController@edit');
 Route::put('educators/update/{id}', 'EducatorController@update');
 Route::delete('educators/delete/{id}', 'EducatorController@destroy');
 
-Route::get('educatorClasses/index', 'EducatorClassController@index');
-Route::get('educatorClasses/create', 'EducatorClassController@create');
-Route::post('educatorClasses/store', 'EducatorClassController@store');
-Route::get('educatorClasses/show/{id}', 'EducatorClassController@show');
-Route::get('educatorClasses/edit/{id}', 'EducatorClassController@edit');
-Route::put('educatorClasses/update/{id}', 'EducatorClassController@update');
-Route::delete('educatorClasses/delete/{id}', 'EducatorClassController@destroy');
-
-// 
-Route::get('custodianStudents/index', 'CustodianStudentController@index');
-Route::get('custodianStudents/create', 'CustodianStudentController@create');
-Route::post('custodianStudents/store', 'CustodianStudentController@store');
-Route::get('custodianStudents/show/{id}', 'CustodianStudentController@show');
-Route::get('custodianStudents/edit/{id}', 'CustodianStudentController@edit');
-Route::put('custodianStudents/update/{id}', 'CustodianStudentController@update');
-Route::delete('custodianStudents/delete/{id}', 'CustodianStudentController@destroy');
-
 // 学生设置
 Route::get('students/index', 'StudentController@index');
 Route::get('students/create', 'StudentController@create');
@@ -155,19 +158,6 @@ Route::get('scores/show/{id}', 'ScoreController@show');
 Route::get('scores/edit/{id}', 'ScoreController@edit');
 Route::put('scores/update/{id}', 'ScoreController@update');
 Route::delete('scores/delete/{id}', 'ScoreController@destroy');
-//成绩发送
-
-Route::group(['prefix' => 'scoreSend'],function(){
-    Route::get('/', 'score_sendController@index');
-    Route::get('/index', 'score_sendController@index');
-    Route::post('/getgrade/{id}', 'score_sendController@getGrade');
-    Route::post('/getclass/{id}', 'score_sendController@getClass');
-    Route::post('/getexam/{id}', 'score_sendController@getExam');
-    Route::post('/getsubject/{id}', 'score_sendController@getSubject');
-    Route::post('/preview/{examid}/{classid}/{subjectids}/{itemid}', 'score_sendController@preview');
-});
-
-
 
 // 成绩统计项设置
 Route::get('score_ranges/index', 'ScoreRangeController@index');

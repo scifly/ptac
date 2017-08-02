@@ -26,6 +26,8 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|Procedure whereSchoolId($value)
  * @method static Builder|Procedure whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property-read \App\Models\ProcedureType $procedureType
+ * @property-read \App\Models\School $school
  */
 class Procedure extends Model {
     //

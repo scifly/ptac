@@ -68,9 +68,7 @@ class EducatorClassController extends Controller
     public function store(EducatorClassRequest $request)
     {
         $data = $request->all();
-        $user_id = $request->get('educator_id');
-        $educator = $this->educator->where('user_id',$user_id)->pluck('id');
-        $data['educator_id'] = $educator[0];
+
         if($this->educatorClass->create($data)){
             $this->message['statusCode'] = self::HTTP_STATUSCODE_OK;
             $this->message['message'] = self::MSG_CREATE_OK;
@@ -89,9 +87,9 @@ class EducatorClassController extends Controller
      * @param  \App\Models\EducatorClass  $educatorClass
      * @return \Illuminate\Http\Response
      */
-    public function show(EducatorClass $educatorClass)
+    public function show($id)
     {
-
+        return view('educator_class.show', ['educatorClass' => $this->educatorClass->findOrFail($id)]);
     }
 
     /**
@@ -102,10 +100,6 @@ class EducatorClassController extends Controller
     public function edit($id)
     {
         $educatorClass = $this->educatorClass->findOrFail($id)->toArray();
-        $educator_id = $educatorClass['educator_id'];
-        $educator = $this->educator->where('id',$educator_id)->pluck('user_id');
-        $educatorClass['educator_id'] =$educator[0];
-
         return view('educator_class.edit', [
             'js' => 'js/educator_class/edit.js',
             'educatorClass' => $educatorClass,
@@ -123,10 +117,8 @@ class EducatorClassController extends Controller
     public function update(EducatorClassRequest $request, $id)
     {
         $data = $request->except('_token');
-        $user_id = $request->get('educator_id');
-        $educator = $this->educator->where('user_id',$user_id)->pluck('id');
-        $data['educator_id'] = $educator[0];
-        if ($this->educatorClass->findOrFail($id)->update($request->all()))
+
+        if ($this->educatorClass->findOrFail($id)->update($data))
         {
             $this->message['statusCode'] = self::HTTP_STATUSCODE_OK;
             $this->message['message'] = self::MSG_EDIT_OK;

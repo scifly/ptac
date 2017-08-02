@@ -25,6 +25,9 @@ use App\Facades\DatatableFacade as Datatable;
  * @method static Builder|Grade whereUpdatedAt($value)
  * @mixin \Eloquent
  * 年级
+ * @property-read \App\Models\School $school
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Squad[] $squads
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Subject[] $subject
  */
 class Grade extends Model {
 

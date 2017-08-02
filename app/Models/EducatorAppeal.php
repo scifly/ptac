@@ -29,6 +29,9 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|EducatorAppeal whereStatus($value)
  * @method static Builder|EducatorAppeal whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property-read \App\Models\Educator $educator
+ * @property-read \App\Models\Educator $educatorAttendance
+ * @property-read \App\Models\ProcedureLog $procedureLog
  */
 class EducatorAppeal extends Model {
     //

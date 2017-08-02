@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|MediaType whereRemark($value)
  * @method static Builder|MediaType whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Media[] $media
  */
 class MediaType extends Model {
     //

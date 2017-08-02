@@ -23,6 +23,8 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|Operator whereUpdatedAt($value)
  * @method static Builder|Operator whereUserId($value)
  * @mixin \Eloquent
+ * @property-read \App\Models\Company $company
+ * @property-read \App\Models\User $user
  */
 class Operator extends Model {
     //

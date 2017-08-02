@@ -36,6 +36,7 @@ use App\Facades\DatatableFacade as Datatable;
  * @method static Builder|Exam whereSubjectIds($value)
  * @method static Builder|Exam whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property-read \App\Models\ExamType $examType
  */
 class Exam extends Model {
 

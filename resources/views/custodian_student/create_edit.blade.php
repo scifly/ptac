@@ -20,9 +20,8 @@
                 <div class="col-sm-2">
                     {!! Form::text('relationship', null, [
                     'class' => 'form-control',
-                    'placeholder' => '不能超过20个汉字',
+                    'placeholder' => '不能少于2个汉字',
                     'data-parsley-required' => 'true',
-                    'data-parsley-maxlength' => '20',
                     'data-parsley-minlength' => '2',
 
                     ]) !!}

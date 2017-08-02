@@ -25,6 +25,8 @@ use Illuminate\Http\Request;
  * @method static Builder|Squad whereUpdatedAt($value)
  * @mixin \Eloquent
  * 班级
+ * @property-read \App\Models\Grade $grade
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Student[] $students
  */
 class Squad extends Model {
     

@@ -24,6 +24,14 @@ class CustodianStudentRequest extends FormRequest
     public function rules()
     {
         return [
+            'relationship' =>'required|string|min:2',
+        ];
+    }
+
+    public function messages() {
+        return [
+            'relationship.required' => '关系不能为空!',
+            'relationship.min' => '不能少于2个字符!',
 
         ];
     }

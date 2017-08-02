@@ -29,6 +29,8 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|Order whereUpdatedAt($value)
  * @method static Builder|Order whereUserId($value)
  * @mixin \Eloquent
+ * @property-read \App\Models\ComboType $comboType
+ * @property-read \App\Models\User $user
  */
 class Order extends Model {
     //
