@@ -2,7 +2,7 @@
 @section('header')
     <div class="panel-heading">
         <div class="btn-group">
-            <a href="{{ url('subjectModules/create') }}" class="btn btn-primary pull-right">
+            <a href="{{ url('subject_modules/create') }}" class="btn btn-primary pull-right">
                 添加次分类
             </a>
         </div>

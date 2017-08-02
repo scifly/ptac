@@ -61,21 +61,14 @@ Route::delete('subjects/delete/{id}', 'SubjectController@destroy');
 Route::get('subjects/query/{id}', 'SubjectController@query');
 
 // 科目次分类
-Route::get('subjectModules/index', 'SubjectModulesController@index');
-Route::get('subjectModules/create', 'SubjectModulesController@create');
-Route::post('subjectModules/store', 'SubjectModulesController@store');
-Route::get('subjectModules/show/{id}', 'SubjectModulesController@show');
-Route::get('subjectModules/edit/{id}', 'SubjectModulesController@edit');
-Route::put('subjectModules/update/{id}', 'SubjectModulesController@update');
-Route::delete('subjectModules/delete/{id}', 'SubjectModulesController@destroy');
-Route::get('subjects/index', 'SubjectController@index');
-Route::get('subjects/create', 'SubjectController@create');
-Route::post('subjects/store', 'SubjectController@store');
-Route::get('subjects/show/{id}', 'SubjectController@show');
-Route::get('subjects/edit/{id}', 'SubjectController@edit');
-Route::put('subjects/update/{id}', 'SubjectController@update');
-Route::delete('subjects/delete/{id}', 'SubjectController@destroy');
-Route::get('subjects/query/{id}', 'SubjectController@query');
+Route::get('subject_modules/index', 'SubjectModulesController@index');
+Route::get('subject_modules/create', 'SubjectModulesController@create');
+Route::post('subject_modules/store', 'SubjectModulesController@store');
+Route::get('subject_modules/show/{id}', 'SubjectModulesController@show');
+Route::get('subject_modules/edit/{id}', 'SubjectModulesController@edit');
+Route::put('subject_modules/update/{id}', 'SubjectModulesController@update');
+Route::delete('subject_modules/delete/{id}', 'SubjectModulesController@destroy');
+
 
 // 权限设置
 Route::get('groups/index', 'GroupController@index');
@@ -131,6 +124,24 @@ Route::get('educators/edit/{id}', 'EducatorController@edit');
 Route::put('educators/update/{id}', 'EducatorController@update');
 Route::delete('educators/delete/{id}', 'EducatorController@destroy');
 
+// 教职员工-班级
+Route::get('educators_classes/index', 'EducatorClassController@index');
+Route::get('educators_classes/create', 'EducatorClassController@create');
+Route::post('educators_classes/store', 'EducatorClassController@store');
+Route::get('educators_classes/show/{id}', 'EducatorClassController@show');
+Route::get('educators_classes/edit/{id}', 'EducatorClassController@edit');
+Route::put('educators_classes/update/{id}', 'EducatorClassController@update');
+Route::delete('educators_classes/delete/{id}', 'EducatorClassController@destroy');
+
+//监护人-学生
+Route::get('custodians_students/index', 'CustodianStudentController@index');
+Route::get('custodians_students/create', 'CustodianStudentController@create');
+Route::post('custodians_students/store', 'CustodianStudentController@store');
+Route::get('custodians_students/show/{id}', 'CustodianStudentController@show');
+Route::get('custodians_students/edit/{id}', 'CustodianStudentController@edit');
+Route::put('custodians_students/update/{id}', 'CustodianStudentController@update');
+Route::delete('custodians_students/delete/{id}', 'CustodianStudentController@destroy');
+
 // 学生设置
 Route::get('students/index', 'StudentController@index');
 Route::get('students/create', 'StudentController@create');
@@ -167,6 +178,7 @@ Route::get('score_ranges/show/{id}', 'ScoreRangeController@show');
 Route::get('score_ranges/edit/{id}', 'ScoreRangeController@edit');
 Route::put('score_ranges/update/{id}', 'ScoreRangeController@update');
 Route::delete('score_ranges/delete/{id}', 'ScoreRangeController@destroy');
+
 # 考勤管理
 //考勤机设置
 Route::get('attendance_machines/index', 'AttendanceMachineController@index');
@@ -176,7 +188,6 @@ Route::get('attendance_machines/show/{id}', 'AttendanceMachineController@show');
 Route::get('attendance_machines/edit/{id}', 'AttendanceMachineController@edit');
 Route::put('attendance_machines/update/{id}', 'AttendanceMachineController@update');
 Route::delete('attendance_machines/delete/{id}', 'AttendanceMachineController@destroy');
-
 
 
 //流程类型设置
