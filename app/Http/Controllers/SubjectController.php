@@ -56,17 +56,15 @@ class SubjectController extends Controller
 
         $data = $request->except('_token');
         $data['grade_ids'] = implode(',',$data['grade_ids']);
-        if($this->subject->create($data)){
-            return response()->json([
-                'statusCode' => self::HTTP_STATUSCODE_OK, 'message' => self::MSG_CREATE_OK,
-            ]);
-        }else{
-            return response()->json([
-                'statusCode' => self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR,
-                'message' => '添加失败'
-            ]);
 
-        }
+            if ($this->subject->create($data)) {
+                $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
+                $this->result['message'] = self::MSG_CREATE_OK;
+            }else{
+                $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+                $this->result['message'] = self::添加失败;
+            }
+        return response()->json($this->result);
 
     }
 
