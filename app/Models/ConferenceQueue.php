@@ -35,6 +35,8 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|ConferenceQueue whereStart($value)
  * @method static Builder|ConferenceQueue whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\ConferenceParticipant[] $conferenceParticipants
+ * @property-read \App\Models\ConferenceRoom $conferenceRoom
  */
 class ConferenceQueue extends Model
 {

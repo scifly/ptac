@@ -27,6 +27,8 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|EducatorAttendance wherePunchTime($value)
  * @method static Builder|EducatorAttendance whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property-read \App\Models\EducatorAppeal $educatorAppeal
+ * @property-read \App\Models\EducatorAttendanceSetting $educatorAttendanceSetting
  */
 class EducatorAttendance extends Model {
     //

@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|MessageType whereRemark($value)
  * @method static Builder|MessageType whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Message[] $message
  */
 class MessageType extends Model {
     //

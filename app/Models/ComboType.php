@@ -27,6 +27,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|ComboType whereSchoolId($value)
  * @method static Builder|ComboType whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property-read \App\Models\School $schools
  */
 class ComboType extends Model
 {

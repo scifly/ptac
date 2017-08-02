@@ -23,6 +23,11 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|SubjectModule whereUpdatedAt($value)
  * @method static Builder|SubjectModule whereWeight($value)
  * @mixin \Eloquent
+ * @property int $wap_site_id 所属微网站ID
+ * @property int $media_id 模块图片多媒体ID
+ * @property-read \App\Models\Subject $belongsToWs
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\SubjectModule whereMediaId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\SubjectModule whereWapSiteId($value)
  */
 class SubjectModule extends Model {
     //

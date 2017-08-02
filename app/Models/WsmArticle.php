@@ -30,6 +30,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|WsmArticle whereWsmId($value)
  * @mixin \Eloquent
  * 网站内容
+ * @property-read \App\Models\WapSiteModule $wapSiteModule
  */
 class WsmArticle extends Model {
 

@@ -28,6 +28,7 @@ use App\Facades\DatatableFacade as Datatable;
  * @method static Builder|ProcedureStep whereRemark($value)
  * @method static Builder|ProcedureStep whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property-read \App\Models\Procedure $procedure
  */
 class ProcedureStep extends Model {
     //

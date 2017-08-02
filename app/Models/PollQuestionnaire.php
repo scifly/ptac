@@ -27,6 +27,10 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|PollQuestionnaire whereUpdatedAt($value)
  * @method static Builder|PollQuestionnaire whereUserId($value)
  * @mixin \Eloquent
+ * @property-read \App\Models\PollQuestionnaireAnswer $pollquestionnaireAnswer
+ * @property-read \App\Models\PollQuestionnaireParticipant $pollquestionnairePartcipant
+ * @property-read \App\Models\School $school
+ * @property-read \App\Models\User $user
  */
 class PollQuestionnaire extends Model {
     //

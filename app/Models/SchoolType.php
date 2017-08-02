@@ -22,6 +22,7 @@ use App\Facades\DatatableFacade as Datatable;
  * @method static Builder|SchoolType whereRemark($value)
  * @method static Builder|SchoolType whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\School[] $schools
  */
 class SchoolType extends Model {
 

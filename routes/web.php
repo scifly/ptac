@@ -17,8 +17,19 @@ use Illuminate\Support\Facades\Route;
 # Route::get('/', function() { return 'Dashboard'; });
 # Route::get('/', 'HomeController@index');
 # Route::get('/home', 'HomeController@index')->name('home');
-# Route::get('test/index', 'TestController@index');
+Route::get('test/index', 'TestController@index');
 # Route::get('/', 'HomeController@index');
+
+# 菜单管理
+// action设置
+Route::get('actions/index', 'ActionController@index');
+Route::get('actions/create', 'ActionController@create');
+Route::post('actions/store', 'ActionController@store');
+Route::get('actions/show/{id}', 'ActionController@show');
+Route::get('actions/edit/{id}', 'ActionController@edit');
+Route::put('actions/update/{id}', 'ActionController@update');
+Route::delete('actions/delete/{id}', 'ActionController@destroy');
+
 
 # 系统设置
 // 学校设置
@@ -40,14 +51,14 @@ Route::put('school_types/update/{id}', 'SchoolTypeController@update');
 Route::delete('school_types/delete/{id}', 'SchoolTypeController@destroy');
 
 // 科目设置
-Route::get('subject/index', 'SubjectController@index');
-Route::get('subject/create', 'SubjectController@create');
-Route::post('subject/store', 'SubjectController@store');
-Route::get('subject/show/{id}', 'SubjectController@show');
-Route::get('subject/edit/{id}', 'SubjectController@edit');
-Route::put('subject/update/{id}', 'SubjectController@update');
-Route::delete('subject/delete/{id}', 'SubjectController@destroy');
-Route::get('subject/query/{id}', 'SubjectController@query');
+Route::get('subjects/index', 'SubjectController@index');
+Route::get('subjects/create', 'SubjectController@create');
+Route::post('subjects/store', 'SubjectController@store');
+Route::get('subjects/show/{id}', 'SubjectController@show');
+Route::get('subjects/edit/{id}', 'SubjectController@edit');
+Route::put('subjects/update/{id}', 'SubjectController@update');
+Route::delete('subjects/delete/{id}', 'SubjectController@destroy');
+Route::get('subjects/query/{id}', 'SubjectController@query');
 
 // 权限设置
 Route::get('groups/index', 'GroupController@index');

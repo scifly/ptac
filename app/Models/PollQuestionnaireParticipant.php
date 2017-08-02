@@ -19,6 +19,8 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|PollQuestionnaireParticipant whereUpdatedAt($value)
  * @method static Builder|PollQuestionnaireParticipant whereUserId($value)
  * @mixin \Eloquent
+ * @property-read \App\Models\PollQuestionnaire $pollquestionnaire
+ * @property-read \App\Models\User $user
  */
 class PollQuestionnaireParticipant extends Model {
     //

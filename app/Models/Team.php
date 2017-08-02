@@ -21,6 +21,10 @@ use App\Facades\DatatableFacade as Datatable;
  * @method static Builder|Team whereUpdatedAt($value)
  * @mixin \Eloquent
  * 教师员工组
+ * @property int $school_id 所属学校ID
+ * @property string|null $remark 备注
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Team whereRemark($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Team whereSchoolId($value)
  */
 class Team extends Model {
     

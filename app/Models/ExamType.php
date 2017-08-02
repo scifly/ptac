@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|ExamType whereRemark($value)
  * @method static Builder|ExamType whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property-read \App\Models\Exam $Exam
  */
 class ExamType extends Model {
     //

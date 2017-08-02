@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use App\Facades\DatatableFacade as Datatable;
 
 /**
  * App\Models\Student
@@ -31,12 +31,14 @@ use App\Facades\DatatableFacade as Datatable;
  * @method static Builder|Student whereUpdatedAt($value)
  * @method static Builder|Student whereUserId($value)
  * @mixin \Eloquent
+ * @property-read \App\Models\Squad $beLongsToSquad
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Custodian[] $custodians
+ * @property-read \App\Models\Squad $squad
  */
 class Student extends Model {
-
+    
     protected $table = 'students';
-
-
+    
     protected $fillable = [
         'user_id',
         'class_id',
@@ -46,20 +48,21 @@ class Student extends Model {
         'birthday',
         'remark'
     ];
+    
     public function user() { return $this->belongsTo('App\Models\User'); }
-
+    
     public function custodians() { return $this->belongsToMany('App\Models\Custodian'); }
-
-    public function squad(){ return $this->belongsTo('App\Models\Squad','class_id','id'); }
-
+    
+    public function squad() { return $this->belongsTo('App\Models\Squad', 'class_id', 'id'); }
+    
     public function beLongsToSquad() {
-
-        return $this->belongsTo('App\Models\Squad','class_id','id');
-
+        
+        return $this->belongsTo('App\Models\Squad', 'class_id', 'id');
+        
     }
-
+    
     public function datatable() {
-
+        
         $columns = [
             ['db' => 'Student.id', 'dt' => 0],
             ['db' => 'User.username as username', 'dt' => 1],
@@ -70,15 +73,11 @@ class Student extends Model {
             ['db' => 'Student.remark', 'dt' => 6],
             ['db' => 'Student.created_at', 'dt' => 7],
             ['db' => 'Student.updated_at', 'dt' => 8,
-                'formatter' => function($d, $row)
-                {
-                    return Datatable::dtOps($this, $d ,$row);
+                'formatter' => function ($d, $row) {
+                    return Datatable::dtOps($this, $d, $row);
                 }
             ],
-
-
         ];
-
         $joins = [
             [
                 'table' => 'users',
@@ -96,12 +95,9 @@ class Student extends Model {
                     'Squad.id = Student.class_id'
                 ]
             ]
-
+        
         ];
-
-
-
-        return Datatable::simple($this, $columns,$joins);
-
+        return Datatable::simple($this, $columns, $joins);
+        
     }
 }
