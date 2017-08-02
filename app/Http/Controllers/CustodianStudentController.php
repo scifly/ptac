@@ -56,12 +56,23 @@ class CustodianStudentController extends Controller
     public function store(CustodianStudentRequest $request)
     {
         $data = $request->except('_token');
-        if ($this->custodianStudent->create($data)) {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-            $this->result['message'] = self::MSG_CREATE_OK;
+        $result = $this->custodianStudent
+            ->where('custodian_id',$data['custodian_id'])
+            ->where('student_id',$data['student_id'])
+            ->get()
+            ->toArray();
+        if(!empty($result))
+        {
+            $this->result['statusCode'] = self::MSG_BAD_REQUEST;
+            $this->result['message'] = '该条数据已经存在!';
         }else{
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = self::添加失败;
+            if ($this->custodianStudent->create($data)) {
+                $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
+                $this->result['message'] = self::MSG_CREATE_OK;
+            }else{
+                $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+                $this->result['message'] = self::添加失败;
+            }
         }
 
         return response()->json($this->result);
@@ -106,14 +117,26 @@ class CustodianStudentController extends Controller
     {
         $data = $request->all();
         $custodianStudent = $this->custodianStudent->findOrFail($id);
-        if($custodianStudent->update($data))
+        $result = $this->custodianStudent
+            ->where('custodian_id',$data['custodian_id'])
+            ->where('student_id',$data['student_id'])
+            ->first();
+
+        if(!empty($result) && ($result->id !=$id))
         {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-            $this->result['message'] = self::MSG_EDIT_OK;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '更新失败';
+            $this->result['statusCode'] = self::MSG_BAD_REQUEST;
+            $this->result['message'] = '该条数据已经存在!';
+        }else{
+            if($custodianStudent->update($data))
+            {
+                $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
+                $this->result['message'] = self::MSG_EDIT_OK;
+            } else {
+                $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+                $this->result['message'] = '更新失败';
+            }
         }
+
         return response()->json($this->result);
     }
 

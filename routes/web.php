@@ -61,13 +61,13 @@ Route::delete('subjects/delete/{id}', 'SubjectController@destroy');
 Route::get('subjects/query/{id}', 'SubjectController@query');
 
 // 科目次分类
-Route::get('subject_modules/index', 'SubjectModulesController@index');
-Route::get('subject_modules/create', 'SubjectModulesController@create');
-Route::post('subject_modules/store', 'SubjectModulesController@store');
-Route::get('subject_modules/show/{id}', 'SubjectModulesController@show');
-Route::get('subject_modules/edit/{id}', 'SubjectModulesController@edit');
-Route::put('subject_modules/update/{id}', 'SubjectModulesController@update');
-Route::delete('subject_modules/delete/{id}', 'SubjectModulesController@destroy');
+Route::get('subject_modules/index', 'SubjectModuleController@index');
+Route::get('subject_modules/create', 'SubjectModuleController@create');
+Route::post('subject_modules/store', 'SubjectModuleController@store');
+Route::get('subject_modules/show/{id}', 'SubjectModuleController@show');
+Route::get('subject_modules/edit/{id}', 'SubjectModuleController@edit');
+Route::put('subject_modules/update/{id}', 'SubjectModuleController@update');
+Route::delete('subject_modules/delete/{id}', 'SubjectModuleController@destroy');
 
 
 // 权限设置

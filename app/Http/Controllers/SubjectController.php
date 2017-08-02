@@ -62,7 +62,7 @@ class SubjectController extends Controller
                 $this->result['message'] = self::MSG_CREATE_OK;
             }else{
                 $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-                $this->result['message'] = self::添加失败;
+                $this->result['message'] = '添加失败';
             }
         return response()->json($this->result);
 
