@@ -239,3 +239,12 @@ Route::get('exams/show/{id}', 'ExamController@show');
 Route::get('exams/edit/{id}', 'ExamController@edit');
 Route::put('exams/update/{id}', 'ExamController@update');
 Route::delete('exams/delete/{id}', 'ExamController@destroy');
+
+//微网站管理
+Route::get('wapsites/index', 'WapSiteController@index');
+Route::get('wapsites/create', 'WapSiteController@create');
+Route::post('wapsites/store', 'WapSiteController@store');
+Route::get('wapsites/show/{id}', 'WapSiteController@show');
+Route::get('wapsites/edit/{id}', 'WapSiteController@edit');
+Route::put('wapsites/update/{id}', 'WapSiteController@update');
+Route::delete('wapsites/delete/{id}', 'WapSiteController@destroy');
