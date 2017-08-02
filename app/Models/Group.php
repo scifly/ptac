@@ -21,6 +21,7 @@ use App\Facades\DatatableFacade as Datatable;
  * @method static Builder|Group whereRemark($value)
  * @method static Builder|Group whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\User[] $users
  */
 class Group extends Model {
 
@@ -30,7 +31,7 @@ class Group extends Model {
         'name', 'remark', 'enabled'
     ];
     
-    public function users() { return $this->hasMany('App\Model\User'); }
+    public function users() { return $this->hasMany('App\Models\User'); }
 
 
     public function datatable() {

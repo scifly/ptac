@@ -25,6 +25,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|ConferenceRoom whereSchoolId($value)
  * @method static Builder|ConferenceRoom whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property-read \App\Models\School $schools
  */
 class ConferenceRoom extends Model
 {

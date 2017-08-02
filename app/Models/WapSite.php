@@ -24,6 +24,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|WapSite whereUpdatedAt($value)
  * @mixin \Eloquent
  * 网站
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\WapSiteModule[] $hasManyWsm
  */
 class WapSite extends Model {
     //

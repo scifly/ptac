@@ -30,6 +30,9 @@ use App\Facades\DatatableFacade as Datatable;
  * @method static Builder|Score whereSubjectId($value)
  * @method static Builder|Score whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property-read \App\Models\Exam $exam
+ * @property-read \App\Models\Student $student
+ * @property-read \App\Models\Subject $subject
  */
 class Score extends Model
 {

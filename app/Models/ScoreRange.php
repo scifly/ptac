@@ -28,6 +28,7 @@ use App\Facades\DatatableFacade as Datatable;
  * @method static Builder|ScoreRange whereSubjectIds($value)
  * @method static Builder|ScoreRange whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property-read \App\Models\School $school
  */
 class ScoreRange extends Model {
     //

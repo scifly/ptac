@@ -25,6 +25,7 @@ use App\Facades\DatatableFacade as Datatable;
  * @method static Builder|Company whereRemark($value)
  * @method static Builder|Company whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Company[] $corps
  */
 class Company extends Model
 {

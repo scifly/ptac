@@ -29,6 +29,8 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|Department whereSchoolId($value)
  * @method static Builder|Department whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property-read \App\Models\Corp $corp
+ * @property-read \App\Models\School $school
  */
 class Department extends Model
 {
