@@ -4,7 +4,7 @@
         <div class="form-horizontal">
 
             <div class="form-group">
-                {!! Form::label('educator_id', '教职工名称',['class' => 'col-sm-4 control-label']) !!}
+                {!! Form::label('educator_id', '教职工姓名',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-2">
                     {!! Form::select('educator_id', $users, null, ['class' => 'form-control']) !!}
                 </div>
