@@ -73,7 +73,7 @@ class ScoreTotalController extends Controller {
                 $this->result['message'] = self::MSG_CREATE_OK;
             } else {
                 $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-                $this->result['message'] = '';
+                $this->result['message'] = '保存失败';
             }
         }
         return response()->json($this->result);
@@ -147,7 +147,7 @@ class ScoreTotalController extends Controller {
             $this->result['message'] = self::MSG_DEL_OK;
         } else {
             $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '';
+            $this->result['message'] = '删除失败';
         }
         return response()->json($this->result);
     }
@@ -157,6 +157,7 @@ class ScoreTotalController extends Controller {
      * @return array
      */
     public function getExamSubjects($id) {
+
         $temp = Exam::whereId($id)->get(['subject_ids'])->first();
         $exam_subject_ids = explode(',', $temp['subject_ids']);
         $exam_temp_subjects = Subject::whereIn('id', $exam_subject_ids)->get(['id', 'name'])->toArray();

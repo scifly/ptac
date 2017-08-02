@@ -55,7 +55,7 @@ class ScoreTotal extends Model {
     }
 
     function subjects() {
-        return $this->belongsTo('App\Models\Exam');
+        return $this->belongsTo('App\Models\Subject');
     }
 
     public function datatable() {
