@@ -37,7 +37,11 @@ var crud = {
     },
     init: function(homeUrl, formId, ajaxUrl, requestType) {
         // Select2
-        $('select').select2();
+        console.log($('select'));
+        if($('select').select2()){
+            $('select').select2();
+
+        }
 
         // Switchery
         var elems = Array.prototype.slice.call(document.querySelectorAll('.js-switch'));
@@ -76,6 +80,13 @@ var crud = {
             $row = $(this).parents().eq(1);
             $('#modal-dialog').modal({backdrop: true});
         });
+        // $(document).on('click', '.fa-show', function () {
+        //     id = $(this).attr('id');
+        //     $row = $(this).parents().eq(1);
+        //
+        //     $('#modal-show-company').modal({backdrop: true});
+        // });
+
 
         $('#confirm-delete').on('click', function () {
             crud.ajaxRequest(

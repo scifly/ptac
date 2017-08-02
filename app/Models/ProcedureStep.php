@@ -45,79 +45,6 @@ class ProcedureStep extends Model {
        'enabled'
    ];
 
-   public function approvers($approver_user_ids){
-
-       $approvers_users_ids = explode('|',$approver_user_ids);
-
-       $approvers = [];
-       foreach ($approvers_users_ids as $auid) {
-           $approver = Custodian::find($auid);
-           $userId = $approver->user_id;
-           $user = User::find($userId);
-           $approvers[]['user'] = $user;
-           $approvers[]['custodian'] = $approver;
-       }
-
-       return $approvers;
-
-   }
-
-    /**
-     * @param $approver_user_ids
-     * @return array
-     */
-    public function approvers_show($approver_user_ids){
-
-        $approvers_users_ids = explode('|',$approver_user_ids);
-
-        $approvers = [];
-        foreach ($approvers_users_ids as $auid) {
-            $approver = Custodian::find($auid);
-            $userId = $approver->user_id;
-            $user = User::find($userId);
-            $approvers[] = $user;
-        }
-
-        return $approvers;
-    }
-
-    public function related_users($related_user_ids){
-
-        $related_users_ids = explode('|',$related_user_ids);
-
-        $related_users = [];
-        foreach ($related_users_ids as $ruid) {
-            $related_user = Custodian::find($ruid);
-            $userId = $related_user->user_id;
-            $user = User::find($userId);
-            $related_users[]['user'] = $user;
-            $related_users[]['custodian'] = $related_user;
-        }
-
-        return $related_users;
-
-    }
-
-    /**
-     * @param $related_user_ids
-     * @return array
-     */
-    public function related_users_show($related_user_ids){
-
-        $related_users_ids = explode('|',$related_user_ids);
-
-        $related_users = [];
-        foreach ($related_users_ids as $ruid) {
-            $related_user = Custodian::find($ruid);
-            $userId = $related_user->user_id;
-            $user = User::find($userId);
-            $related_users[] = $user;
-        }
-
-        return $related_users;
-    }
-
-
     public function procedure(){
 
         return $this->belongsTo('App\Models\Procedure');
@@ -132,14 +59,10 @@ class ProcedureStep extends Model {
            [
                'db' => 'ProcedureStep.approver_user_ids', 'dt' => 2,
                'formatter' => function($d, $row) {
-                   $users = $this->approvers($d);
+                   $users = $this->operate_ids($d);
                    $data = '';
-                   foreach($users as $user) {
-
-                       if(isset($user['user'])){
-                           $arr = $user['user'];
-                           $data .= $arr->realname . ', ';
-                       }
+                   foreach(array_keys($users) as $uid) {
+                       $data .= $users[$uid]. ', ';
                    }
                    return $data;
                }
@@ -147,16 +70,12 @@ class ProcedureStep extends Model {
            [
                'db' => 'ProcedureStep.related_user_ids', 'dt' => 3,
                'formatter' => function($d, $row) {
-                   $ruids = $this->related_users($d);
-                   $relateData = '';
-                   foreach($ruids as $ruid) {
-
-                       if(isset($ruid['user'])){
-                           $arr = $ruid['user'];
-                           $relateData .= $arr->realname . ', ';
-                       }
+                   $users = $this->operate_ids($d);
+                   $data = '';
+                   foreach(array_keys($users) as $uid) {
+                       $data .= $users[$uid]. ', ';
                    }
-                   return $relateData;
+                   return $data;
                }
            ],
            ['db' => 'ProcedureStep.name', 'dt' => 4],
@@ -184,4 +103,33 @@ class ProcedureStep extends Model {
 
        return Datatable::simple($this, $columns, $joins);
    }
+
+    /**
+     * 拆分appover_user_ids、related_user_ids,
+     * @param $user_ids '|'符号拼接的教职工id字符串
+     * @return array 处理后字典 key=>user.id,value => user.realname
+     */
+    public function operate_ids($user_ids){
+
+        $user_ids = explode('|',$user_ids);
+
+        $educators = array();
+        foreach ($user_ids as $auid) {
+//            $educator = Educator::find($auid);
+//            $userId = $educator->user_id;
+            $user = User::find($auid);
+            $educators[$auid] = $user->username;
+        }
+
+        return $educators;
+    }
+
+    /**
+     * 使用'|', 拼接教职工id
+     * @param $arry_id
+     * @return string
+     */
+    public function join_ids($arry_id){
+        return implode('|',$arry_id);
+    }
 }

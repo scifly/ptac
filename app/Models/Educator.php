@@ -43,10 +43,21 @@ class Educator extends Model
     {
         return $this->belongsTo('App\Models\User');
     }
+
     public function school()
     {
         return $this->belongsTo('App\Models\School');
     }
+    public function classes()
+    {
+        return $this->belongsToMany('App\Models\Squad', 'educators_classes','class_id','educator_id');
+    }
+
+    public function educatorClass()
+    {
+        return $this->hasOne('App\Models\EducatorClass');
+    }
+
     public function datatable()
     {
 
@@ -57,9 +68,10 @@ class Educator extends Model
             ['db' => 'Shool.name', 'dt' => 3],
             ['db' => 'Educator.sms_quote', 'dt' => 4],
             ['db' => 'Educator.created_at', 'dt' => 5],
+            ['db' => 'Educator.updated_at', 'dt' => 6],
 
             [
-                'db' => 'Educator.updated_at', 'dt' => 6,
+                'db' => 'Educator.enabled', 'dt' => 7,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
                 }

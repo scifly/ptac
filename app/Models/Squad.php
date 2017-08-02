@@ -40,13 +40,30 @@ class Squad extends Model {
     ];
     public function students()
     {
-        return $this->hasMany('App\Models\Student','class_id','id');
+        return $this->hasMany('App\Models\Student');
     }
 
     public function grade()
     {
         return $this->belongsTo('App\Models\Grade');
     }
+
+
+
+
+
+//    public function educator()
+//    {
+//        return $this->belongsToMany('App\Models\Educator', 'educators_classes','class_id','educator_id');
+//
+//    }
+
+    public function educatorClass()
+    {
+        return $this->hasOne('App\Models\EducatorClass');
+    }
+
+
     public function datatable() {
 
         $columns = [

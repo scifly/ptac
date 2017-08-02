@@ -1,8 +1,6 @@
 <?php
-
 namespace App\Http\Requests;
 
-use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StudentRequest extends FormRequest
@@ -25,10 +23,9 @@ class StudentRequest extends FormRequest
     public function rules()
     {
         return [
-            'student_number' => 'required|integer|max:32|min:2',
-            'card_number' => 'required|integer|max:32|min:2',
-            'remark' => 'required|string|max:32|min|2'
-
+            'student_number' => 'required|alphanum|max:32|min:2',
+            'card_number' => 'required|alphanum|max:32|min:2',
+            'remark' => 'required|string|max:32|min:2',
         ];
     }
 
@@ -42,11 +39,14 @@ class StudentRequest extends FormRequest
             'card_number.min' => '卡号长度最小为2位!',
             'remark.required' => '备注不能为空!',
             'remark.max' => '不能超过32个字符!',
-            'remark.min' => '备注不能少于2个字符!'
+            'remark.min' => '备注不能少于2个字符!',
         ];
     }
 
-    protected function formatErrors(Validator $validator) {
-        return $validator->errors()->all();
+
+    public function wantsJson() {
+
+        return true;
+
     }
 }

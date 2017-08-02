@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\GradeRequest;
+use App\Models\Educator;
 use App\Models\Grade;
 use App\Models\School;
 use App\Models\User;
@@ -99,6 +100,7 @@ class GradeController extends Controller
                 $query->whereIn('id', $f);
 
         })->get(['id','username'])->toArray();
+
         return view('grade.show', [
             'grade' => $grade,
             'educators' => $educators
@@ -112,9 +114,22 @@ class GradeController extends Controller
      */
     public function edit($id) {
         $grade = $this->grade->whereId($id)->first();
+
+        $educators = User::whereHas('educator' , function($query) use ($grade) {
+
+            $f = explode(",", $grade->educator_ids);
+            $query->whereIn('id', $f);
+
+        })->get(['id','username'])->toArray();
+
+        $educatorIds = [];
+        foreach ($educators as $value) {
+            $educatorIds[$value['id']] = $value['username'];
+        }
         return view('grade.edit', [
             'js' => 'js/grade/edit.js',
             'grade' => $grade,
+            'educatorIds' => $educatorIds,
             'form' => true
         ]);
     }

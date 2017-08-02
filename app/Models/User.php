@@ -76,9 +76,11 @@ class User extends Authenticatable {
      * @var array
      */
     protected $fillable = [
+        'group_id',
         'username',
-        'realname',
+        'password',
         'email',
+        'realname',
         'gender',
         'avatar_url',
         'wechatid',

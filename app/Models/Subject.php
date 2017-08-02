@@ -52,7 +52,7 @@ class Subject extends Model {
 
     public function subjectModules()
     {
-        return $this->hasMany('App\Models\SubjectModule');
+        return $this->hasOne('App\Models\SubjectModule');
     }
 
 
@@ -64,6 +64,11 @@ class Subject extends Model {
     public function grade()
     {
         return $this->belongsTo('App\Models\Grade','grade_ids');
+    }
+
+    public function educatorClass()
+    {
+        return $this->hasOne('App\Models\EducatorClass');
     }
 
     public function datatable()

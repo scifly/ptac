@@ -6,23 +6,27 @@ use App\Http\Requests\GroupRequest;
 use App\Models\Group;
 use Illuminate\Support\Facades\Request;
 
-class GroupController extends Controller {
-    
+class GroupController extends Controller
+{
+
     protected $group;
-    
+
     /**
      * GroupController constructor.
      * @param Group $group
      */
-    function __construct(Group $group) { $this->group = $group; }
-    
+    function __construct(Group $group)
+    {
+        $this->group = $group;
+    }
+
     /**
-     * Display a listing of the resource.
-     *
+     * 角色列表主页
      * @return \Illuminate\Http\Response
      */
-    public function index() {
-        
+    public function index()
+    {
+
         if (Request::get('draw')) {
             return response()->json($this->group->datatable());
         }
@@ -31,56 +35,55 @@ class GroupController extends Controller {
             'datatable' => true,
             'dialog' => true
         ]);
-        
+
     }
-    
+
     /**
-     * Show the form for creating a new resource.
-     *
+     * 新建角色页面
      * @return \Illuminate\Http\Response
      */
-    public function create() {
-        
+    public function create()
+    {
         return view('group.create', [
             'js' => 'js/group/create.js',
             'form' => true
         ]);
-        
+
     }
-    
+
     /**
-     * Store a newly created resource in storage.
-     *
+     *创建角色
      * @param GroupRequest $request
      * @return \Illuminate\Http\Response
      */
-    public function store(GroupRequest $request) {
-        
+    public function store(GroupRequest $request)
+    {
         if ($this->group->create($request->all())) {
             return response()->json([
-                'statusCode' => 200, 'message' => '保存成功',
+                'statusCode' => self::HTTP_STATUSCODE_OK, 'message' => self::MSG_CREATE_OK,
+            ]);
+        }else{
+            return response()->json([
+                'statusCode' => self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR, 'message' => '添加失败'
             ]);
         }
-        return response()->json([
-            'statusCode' => 500, 'message' => '保存失败'
-        ]);
-        
+
+
     }
-    
+
     /**
-     * Display the specified resource.
-     *
+     * 角色详情.
      * @param $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id) {
-        
+    public function show($id)
+    {
         return view('group.show', [
             'group' => $this->group->findOrFail($id)
         ]);
-        
+
     }
-    
+
     /**
      * Show the form for editing the specified resource.
      *
@@ -88,16 +91,17 @@ class GroupController extends Controller {
      * @return \Illuminate\Http\Response
      * @internal param Group $group
      */
-    public function edit($id) {
-    
+    public function edit($id)
+    {
+
         return view('group.edit', [
             'js' => 'js/group/edit.js',
             'group' => $this->group->findOrFail($id),
             'form' => true
         ]);
-    
+
     }
-    
+
     /**
      * Update the specified resource in storage.
      *
@@ -105,29 +109,30 @@ class GroupController extends Controller {
      * @return \Illuminate\Http\Response
      * @internal param Group $group
      */
-    public function update($id) {
-        
+    public function update($id)
+    {
+
         if ($this->group->findOrFail($id)->update(Request::all())) {
             return response()->json([
-                'statusCode' => 200, 'message' => '保存成功',
+                'statusCode' => 200, 'message' => '更改成功',
             ]);
         }
-        
+
         return response()->json([
-            'statusCode' => 500, 'message' => '保存失败'
+            'statusCode' => 500, 'message' => '更改失败'
         ]);
-        
+
     }
-    
+
     /**
-     * Remove the specified resource from storage.
-     *
+     * 删除角色.
      * @param $id
      * @return \Illuminate\Http\Response
      * @internal param Group $group
      */
-    public function destroy($id) {
-    
+    public function destroy($id)
+    {
+
         if ($this->group->findOrFail($id)->delete()) {
             return response()->json([
                 'statusCode' => 200, 'message' => '删除成功',
@@ -136,7 +141,7 @@ class GroupController extends Controller {
         return response()->json([
             'statusCode' => 500, 'message' => '删除失败'
         ]);
-        
+
     }
-    
+
 }

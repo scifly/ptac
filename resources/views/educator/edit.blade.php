@@ -4,6 +4,6 @@
 @endsection
 @section('content')
     {!! Form::model($educator, [ 'method' => 'put', 'id' => 'fromEducator']) !!}
-    @include('configuration.configuration.partials.school')
+    @include('educator.create_edit')
     {!! Form::close() !!}
 @endsection

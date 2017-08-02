@@ -18,8 +18,10 @@ class ComposerServiceProvider extends ServiceProvider {
         View::composer('grade.create_edit', 'App\Http\ViewComposers\GradeComposer');
         View::composer('class.create_edit', 'App\Http\ViewComposers\SquadComposer');
         View::composer('educator.create_edit', 'App\Http\ViewComposers\EducatorComposer');
+        View::composer('educator_class.create_edit', 'App\Http\ViewComposers\EducatorClassComposer');
         View::composer('score.create_edit', 'App\Http\ViewComposers\ScoreComposer');
         View::composer('subject.create_edit', 'App\Http\ViewComposers\SubjectComposer');
+        View::composer('subject_module.create_edit', 'App\Http\ViewComposers\SubjectModuleComposer');
         View::composer('educator.create_edit', 'App\Http\ViewComposers\EducatorComposer');
         View::composer('attendance_machine.create_edit', 'App\Http\ViewComposers\AttendanceMachineComposer');
         View::composer('semester.create_edit', 'App\Http\ViewComposers\SemesterComposer');
@@ -27,6 +29,8 @@ class ComposerServiceProvider extends ServiceProvider {
         View::composer('procedure_step.create_edit', 'App\Http\ViewComposers\ProcedureStepComposer');
         View::composer('student.create_edit', 'App\Http\ViewComposers\StudentComposer');
         View::composer('score_range.create_edit', 'App\Http\ViewComposers\ScoreRangeComposer');
+        View::composer('custodian_student.create_edit', 'App\Http\ViewComposers\CustodianStudentComposer');
+        View::composer('exam.create_edit', 'App\Http\ViewComposers\ExamComposer');
 
     }
 

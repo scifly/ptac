@@ -16,7 +16,7 @@ class DatatableFacade extends Facade {
     const DT_LINK_DEL = '<!--suppress HtmlUnknownAnchorTarget -->
 <a id="%s" href="#modal-dialog" class="btn btn-danger btn-icon btn-circle btn-xs fa-trash" data-toggle="modal"><i class="fa fa-times"></i></a>';
     const DT_LINK_SHOW = '<!--suppress HtmlUnknownAnchorTarget -->
-<a href="show/%s" class="btn btn-primary btn-icon btn-circle btn-xs"><i class="fa fa-eye"></i></a>';
+<a id="" href="show/%s" class="btn btn-primary btn-icon btn-circle btn-xs"  data-toggle="modal"><i class="fa fa-eye"></i></a>';
     const DT_SPACE = '&nbsp;';
     const DT_PRIMARY = '<span class="badge badge-info">%s</span>';
     const DT_LOCK = '<i class="fa fa-lock"></i>&nbsp;已占用';
@@ -175,16 +175,12 @@ class DatatableFacade extends Facade {
     static function dtOps(Model $model, $active, $row, $del = true) {
 
         $id = $row['id'];
-        if(isset($row['enabled'])){
-            $lable = $active ? sprintf(self::DT_ON, '已启用') : sprintf(self::DT_OFF, '已禁用');
-        }else{
-            $lable = $row['updated_at'];
-        }
+        $status = $active ? sprintf(self::DT_ON, '已启用') : sprintf(self::DT_OFF, '已禁用');
         $showLink = sprintf(self::DT_LINK_SHOW, /*$model->getTable(),*/ $id);
         $editLink = sprintf(self::DT_LINK_EDIT, /*$model->getTable(), */$id);
         $delLink = sprintf(self::DT_LINK_DEL, $id);
 
-        return $lable . self::DT_SPACE . $showLink . self::DT_SPACE .
+        return $status . self::DT_SPACE . $showLink . self::DT_SPACE .
             $editLink . ($del ? self::DT_SPACE . $delLink : '');
 
     }

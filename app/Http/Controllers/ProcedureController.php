@@ -25,7 +25,8 @@ class ProcedureController extends Controller {
 
         return view('procedure.index', [
             'js' => 'js/procedure/index.js',
-            'dialog' => true
+            'dialog' => true,
+            'datatable' => true
         ]);
     }
 
@@ -35,7 +36,7 @@ class ProcedureController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function create() {
-        return view('procedure.create', ['js' => 'js/procedure/create.js']);
+        return view('procedure.create', ['js' => 'js/procedure/create.js', 'form' => true]);
     }
 
     /**
@@ -88,7 +89,8 @@ class ProcedureController extends Controller {
         //记录返回给view
         return view('procedure.edit', [
             'js' => 'js/procedure/edit.js',
-            'procedure' => $procedure
+            'procedure' => $procedure,
+            'form' => true
         ]);
     }
 
@@ -129,9 +131,10 @@ class ProcedureController extends Controller {
      * @internal param AttendanceMachine $attendanceMachine
      */
     public function destroy($id) {
-        //根据id查找需要删除的数据
+        //根据id查找需要删除表数据
         //进行删除操作
         //返回json 格式的操作结果
+
         $procedure = Procedure::whereId($id)->first();
 
         if ($procedure->delete()) {

@@ -61,7 +61,18 @@
             <div class="form-group">
                 {!! Form::label('grade_ids', '年级名称',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-3">
-                    {!! Form::select('grade_ids[]', $grades, null, ['class' => 'form-control', 'multiple' => 'multiple']) !!}
+                    {{--{!! Form::select('grade_ids[]', $grades, $abcs, ['class' => 'form-control', 'multiple' => 'multiple']) !!}--}}
+                    <select multiple="multiple" name="grade_ids[]" id="grade_ids">
+                        @foreach($grades as $key => $value)
+                            @if(isset($gradeId))
+                                <option value="{{$key}}" @if(array_key_exists($key,$gradeId))selected="selected"@endif>
+                                    {{$value}}
+                                </option>
+                            @else
+                                <option value="{{$key}}">{{$value}}</option>
+                            @endif
+                        @endforeach
+                    </select>
                 </div>
             </div>
             <div class="form-group">
@@ -72,7 +83,6 @@
                     {!! Form::label('enabled', '禁用') !!}
                 </div>
             </div>
-
         </div>
     </div>
     <div class="box-footer">

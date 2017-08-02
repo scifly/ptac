@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Route;
 # Route::get('/', function() { return 'Dashboard'; });
 # Route::get('/', 'HomeController@index');
 # Route::get('/home', 'HomeController@index')->name('home');
-Route::get('test/index', 'TestController@index');
+# Route::get('test/index', 'TestController@index');
 # Route::get('/', 'HomeController@index');
 
 # 菜单管理
@@ -51,6 +51,23 @@ Route::put('school_types/update/{id}', 'SchoolTypeController@update');
 Route::delete('school_types/delete/{id}', 'SchoolTypeController@destroy');
 
 // 科目设置
+Route::get('subjects/index', 'SubjectController@index');
+Route::get('subjects/create', 'SubjectController@create');
+Route::post('subjects/store', 'SubjectController@store');
+Route::get('subjects/show/{id}', 'SubjectController@show');
+Route::get('subjects/edit/{id}', 'SubjectController@edit');
+Route::put('subjects/update/{id}', 'SubjectController@update');
+Route::delete('subjects/delete/{id}', 'SubjectController@destroy');
+Route::get('subjects/query/{id}', 'SubjectController@query');
+
+// 科目次分类
+Route::get('subjectModules/index', 'SubjectModulesController@index');
+Route::get('subjectModules/create', 'SubjectModulesController@create');
+Route::post('subjectModules/store', 'SubjectModulesController@store');
+Route::get('subjectModules/show/{id}', 'SubjectModulesController@show');
+Route::get('subjectModules/edit/{id}', 'SubjectModulesController@edit');
+Route::put('subjectModules/update/{id}', 'SubjectModulesController@update');
+Route::delete('subjectModules/delete/{id}', 'SubjectModulesController@destroy');
 Route::get('subjects/index', 'SubjectController@index');
 Route::get('subjects/create', 'SubjectController@create');
 Route::post('subjects/store', 'SubjectController@store');
@@ -161,6 +178,7 @@ Route::put('attendance_machines/update/{id}', 'AttendanceMachineController@updat
 Route::delete('attendance_machines/delete/{id}', 'AttendanceMachineController@destroy');
 
 
+
 //流程类型设置
 Route::get('procedure_types/index', 'ProcedureTypeController@index');
 Route::get('procedure_types/create', 'ProcedureTypeController@create');
@@ -187,3 +205,26 @@ Route::get('procedure_steps/show/{id}', 'ProcedureStepController@show');
 Route::get('procedure_steps/edit/{id}', 'ProcedureStepController@edit');
 Route::put('procedure_steps/update/{id}', 'ProcedureStepController@update');
 Route::delete('procedure_steps/delete/{id}', 'ProcedureStepController@destroy');
+
+//流程日志
+Route::get('procedure_logs/index', 'ProcedureLogController@index');
+Route::get('procedure_logs/show/{id}', 'ProcedureLogController@show');
+Route::delete('procedure_logs/delete/{id}', 'ProcedureLogController@destroy');
+
+//考试类型设置
+Route::get('exam_types/index', 'ExamTypeController@index');
+Route::get('exam_types/create', 'ExamTypeController@create');
+Route::post('exam_types/store', 'ExamTypeController@store');
+Route::get('exam_types/show/{id}', 'ExamTypeController@show');
+Route::get('exam_types/edit/{id}', 'ExamTypeController@edit');
+Route::put('exam_types/update/{id}', 'ExamTypeController@update');
+Route::delete('exam_types/delete/{id}', 'ExamTypeController@destroy');
+
+//考试设置
+Route::get('exams/index', 'ExamController@index');
+Route::get('exams/create', 'ExamController@create');
+Route::post('exams/store', 'ExamController@store');
+Route::get('exams/show/{id}', 'ExamController@show');
+Route::get('exams/edit/{id}', 'ExamController@edit');
+Route::put('exams/update/{id}', 'ExamController@update');
+Route::delete('exams/delete/{id}', 'ExamController@destroy');
