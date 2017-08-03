@@ -22,6 +22,7 @@ class ScoreTotalRequest extends FormRequest {
     public function rules() {
         return [
             'score' => 'required|numeric|max:1000',
+            'subject_ids' =>'required',
             'class_rank' => 'required|numeric|max:1000',
             'grade_rank' => 'required|numeric|max:10000',
         ];
@@ -37,7 +38,8 @@ class ScoreTotalRequest extends FormRequest {
             'grade_rank.numeric' => '不超过5个数字',
             'score.required' => '成绩不能为空',
             'score.max' => '成绩不能超过3位数字',
-            'score.numeric' => '成绩不能超过5位数字'
+            'score.numeric' => '成绩不能超过5位数字',
+            'subject_ids.required' => '请选择计入总成绩科目'
         ];
     }
 

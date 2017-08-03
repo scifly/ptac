@@ -22,6 +22,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|ProcedureType whereRemark($value)
  * @method static Builder|ProcedureType whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Procedure[] $procedures
  */
 class ProcedureType extends Model {
     //

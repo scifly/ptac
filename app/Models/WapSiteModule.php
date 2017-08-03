@@ -24,6 +24,8 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|WapSiteModule whereWapSiteId($value)
  * @mixin \Eloquent
  * 网站类型
+ * @property-read \App\Models\WapSite $belongsToWs
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\WsmArticle[] $hasManyArticle
  */
 class WapSiteModule extends Model {
     //

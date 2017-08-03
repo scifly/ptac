@@ -19,21 +19,21 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|MajorSubject whereSubjectId($value)
  * @method static Builder|MajorSubject whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property-read \App\Models\Major $major
+ * @property-read \App\Models\Subject $subject
  */
 class MajorSubject extends Model {
     
     protected $table = 'majors_subjects';
-
-    protected $fillable = ['id','major_id','subject_id','created_at','updated_id'];
-
-    public function major()
-    {
+    
+    protected $fillable = ['id', 'major_id', 'subject_id', 'created_at', 'updated_id'];
+    
+    public function major() {
         return $this->belongsTo('App\Models\Major');
     }
-
-    public function subject()
-    {
-        return $this->belongsTo('App\Models\Subjece');
+    
+    public function subject() {
+        return $this->belongsTo('App\Models\Subject');
     }
     
 }

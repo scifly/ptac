@@ -25,6 +25,8 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|EducatorAttendanceSetting whereStart($value)
  * @method static Builder|EducatorAttendanceSetting whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\EducatorAttendance[] $educatorAttendance
+ * @property-read \App\Models\School $schools
  */
 class EducatorAttendanceSetting extends Model
 {

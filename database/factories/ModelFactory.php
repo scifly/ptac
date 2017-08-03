@@ -121,6 +121,7 @@ $factory->define(App\Models\Team::class, function (Faker\Generator $faker) {
 
 });
 
+// $factory->define(App\Models\ActionType::class, ActionTypeSeeder::class);
 $factory->define(App\Models\Procedure::class, function (Faker\Generator $faker) {
 
     return [

@@ -24,6 +24,10 @@ use App\Facades\DatatableFacade as Datatable;
  * @method static Builder|Corp whereName($value)
  * @method static Builder|Corp whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property int $company_id 所属运营者公司ID
+ * @property-read \App\Models\Company $company
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Department[] $departments
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Corp whereCompanyId($value)
  */
 class Corp extends Model
 {

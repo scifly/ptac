@@ -32,6 +32,9 @@ use Symfony\Component\VarDumper\Cloner\Data;
  * @method static Builder|Subject whereSchoolId($value)
  * @method static Builder|Subject whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property-read \App\Models\Grade $grade
+ * @property-read \App\Models\School $school
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\SubjectModule[] $subjectModules
  */
 class Subject extends Model {
 

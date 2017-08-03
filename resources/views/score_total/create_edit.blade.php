@@ -30,7 +30,7 @@
                 {!! Form::label('subject_ids', '计入总成绩科目名称',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-2">
                     <input type="hidden" id="subject_select_ids" value="{{ $scoreTotal['subject_ids'] or '' }}">
-                    <select multiple="multiple" class="form-control" name="subject_ids[]" id="subject_ids">
+                    <select multiple="multiple" class="form-control"  name="subject_ids[]" id="subject_ids">
                     </select>
                 </div>
             </div>

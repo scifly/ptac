@@ -8,6 +8,7 @@ use Illuminate\Notifications\Notifiable;
 
 /**
  * App\User
+ *
  * @mixin \Eloquent
  * @property int $id
  * @property int $group_id 所属角色/权限ID
@@ -58,9 +59,14 @@ use Illuminate\Notifications\Notifiable;
  * @method static Builder|User whereTelephone($value)
  * @method static Builder|User whereUserid($value)
  * 用户
+ * @property-read \App\Models\Group $group
+ * @property-read \App\Models\Operator $operator
+ * @property-read \App\Models\PollQuestionnaireAnswer $pollquestionnaireAnswer
+ * @property-read \App\Models\PollQuestionnaireParticipant $pollquestionnairePartcipant
+ * @property-read \App\Models\PollQuestionnaire $pollquestionnaires
  */
 class User extends Authenticatable {
-    
+
     use Notifiable;
     protected $table = 'users';
 
@@ -88,7 +94,7 @@ class User extends Authenticatable {
         'avatar_mediaid',
         'enabled',
     ];
-    
+
     /**
      * The attributes that should be hidden for arrays.
      *
@@ -97,14 +103,14 @@ class User extends Authenticatable {
     protected $hidden = [
         'password', 'remember_token',
     ];
-    
+
     public function custodian() { return $this->hasOne('App\Models\Custodian'); }
-    
+
     public function educator() { return $this->hasOne('App\Models\Educator'); }
-    
+
     public function student() { return $this->hasOne('App\Models\Student'); }
-    
-    public function group() { return $this->belongsTo('App\Model\Group'); }
+
+    public function group() { return $this->belongsTo('App\Models\Group'); }
 
     public function operator(){ return $this->hasOne('App\Models\Operator'); }
 
@@ -117,6 +123,5 @@ class User extends Authenticatable {
     public function pollquestionnairePartcipant(){
         return $this->hasOne('App\Models\PollQuestionnaireParticipant');
     }
-    
-    
+
 }

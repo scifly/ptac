@@ -27,6 +27,9 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|Semester whereUpdatedAt($value)
  * @mixin \Eloquent
  * 学期
+ * @property string|null $remark 备注
+ * @property-read \App\Models\School $school
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Semester whereRemark($value)
  */
 class Semester extends Model {
     

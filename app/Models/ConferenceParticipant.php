@@ -23,6 +23,8 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|ConferenceParticipant whereStatus($value)
  * @method static Builder|ConferenceParticipant whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property-read \App\Models\ConferenceQueue $conferenceQueues
+ * @property-read \App\Models\Educator $educator
  */
 class ConferenceParticipant extends Model
 {

@@ -55,11 +55,12 @@ class ScoreTotalController extends Controller {
      */
     public function store(ScoreTotalRequest $request) {
         $data = $request->all();
+        dd($data);
         $record = $this->score_total->where([
             ['student_id', $data['student_id']],
             ['exam_id', $data['exam_id']]
-        ])->get();
-        if ((count($record) !== 0)) {
+        ])->first();
+        if ((!empty($record))) {
             $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
             $this->result['message'] = '该学生本场考试已有记录';
         } else {
@@ -124,8 +125,25 @@ class ScoreTotalController extends Controller {
      */
     public function update(ScoreTotalRequest $request, $id) {
         $data = $request->all();
-        $data['subject_ids'] = implode(',', $data['subject_ids']);
-        $data['na_subject_ids'] = implode(',', $data['na_subject_ids']);
+        $record = $this->score_total->where([
+            ['student_id', $data['student_id']],
+            ['exam_id', $data['exam_id']]
+        ])->first();
+        if (!empty($record) && ($record->id != $id)) {
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+            $this->result['message'] = '该学生本场考试已有记录';
+            return response()->json($this->result);
+        }
+        if (isset($data['subject_ids']) && isset($data['na_subject_ids'])) {
+            $arr = array_intersect($data['subject_ids'], $data['na_subject_ids']);
+            if (count($arr) !== 0) {
+                $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+                $this->result['message'] = '计入总成绩科目与未计入总成绩科目有冲突';
+                return response()->json($this->result);
+            }
+        }
+        if (isset($data['subject_ids'])) {$data['subject_ids'] = implode(',', $data['subject_ids']);}
+        if (isset($data['na_subject_ids'])) {$data['na_subject_ids'] = implode(',', $data['na_subject_ids']);}
         if ($this->score_total->findOrFail($id)->update($data)) {
             $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
             $this->result['message'] = self::MSG_EDIT_OK;
