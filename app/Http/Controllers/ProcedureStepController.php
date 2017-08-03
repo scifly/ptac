@@ -167,6 +167,10 @@ class ProcedureStepController extends Controller {
         return response()->json(['statusCode' => 500, 'message' => '删除失败！']);
     }
 
+    /**
+     * @param  $id
+     * @return Json educator_id:realname
+     */
     public function getSchoolEducators($id) {
         $temp = Procedure::whereId($id)->first(['school_id']);
         $data =Educator::with('user')->where('school_id',$temp->school_id)->get()->toArray();
@@ -177,6 +181,7 @@ class ProcedureStepController extends Controller {
             }
             return response()->json(['statusCode' => 200, 'educators' => $educators]);
         }
+        dd($educators);
         return response()->json(['statusCode' => 500, 'message' => '查询失败!']);
     }
 }

@@ -18,7 +18,7 @@
     <p>学号：{{ $score->student->student_number }}</p>
     <p>科目：{{ $score->subject->name }}</p>
     <p>考试名称：{{ $score->exam->name }}</p>
-    <p>班级排名：{{ $score->class_rank }}</p>
-    <p>年级排名：{{ $score->grade_rank }}</p>
+    <p>班级排名：{{ $score->class_rank === 0 ? "未统计" : $score->class_rank}}</p>
+    <p>年级排名：{{ $score->grade_rank === 0 ? "未统计" : $score->grade_rank}}</p>
     <p>成绩：{{ $score->score }}</p>
 @endsection

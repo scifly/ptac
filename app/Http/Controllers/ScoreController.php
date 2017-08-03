@@ -53,16 +53,18 @@ class ScoreController extends Controller {
      * @internal param \Illuminate\Http\Request $request
      */
     public function store(ScoreRequest $request) {
-        $data = $request->all();
-        $record = $this->score->where([
-            ['student_id', $data['student_id']],
-            ['subject_id', $data['subject_id']],
-            ['exam_id', $data['exam_id']]
-        ])->first();
+        $data = $request->except(['class_rank','grade_rank']);
+        $data['class_rank'] = 0;
+        $data['grade_rank'] = 0;
+        $record = $this->score->where('student_id', $data['student_id'])
+            ->where('subject_id', $data['subject_id'])
+            ->where('exam_id', $data['exam_id'])
+            ->first();
         if (!empty($record)) {
             $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
             $this->result['message'] = '该学生本场考试科目已有记录';
         } else {
+
             if ($this->score->create($data)) {
                 $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
                 $this->result['message'] = self::MSG_CREATE_OK;
@@ -112,16 +114,16 @@ class ScoreController extends Controller {
      */
     public function update(ScoreRequest $request, $id) {
         $data = $request->all();
-        $record = $this->score->where([
-            ['student_id', $data['student_id']],
-            ['subject_id', $data['subject_id']],
-            ['exam_id', $data['exam_id']]
-        ])->first();
+        dd($data);
+        $record = $this->score->where('student_id', $data['student_id'])
+            ->where('subject_id', $data['subject_id'])
+            ->where('exam_id', $data['exam_id'])
+            ->first();
         if (!empty($record) && ($record->id != $id)) {
             $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
             $this->result['message'] = '该学生本场科目考试已有记录';
         } else {
-            if ($this->score->findOrFail($id)->update($request->all())) {
+            if ($this->score->findOrFail($id)->update($data)) {
                 $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
                 $this->result['message'] = self::MSG_EDIT_OK;
             } else {
