@@ -107,7 +107,7 @@ class ProcedureLog extends Model {
      */
     public function operate_ids($media_ids){
 
-        $ids = explode('|',$media_ids);
+        $ids = explode(',',$media_ids);
 
         $medias = array();
         foreach ($ids as $mid) {

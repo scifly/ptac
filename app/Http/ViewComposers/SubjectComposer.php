@@ -8,14 +8,12 @@ use Illuminate\Contracts\View\View;
 class SubjectComposer {
 
     protected $school;
+    protected $grade;
 
-    protected $grades;
-
-    public function __construct(School $school,Grade $grades) {
+    public function __construct(School $school,Grade $grade) {
 
         $this->school = $school;
-
-        $this->grades = $grades;
+        $this->grade = $grade;
 
     }
 
@@ -23,15 +21,10 @@ class SubjectComposer {
 
         // $view->with('schoolTypes', $this->schoolTypes->pluck('name', 'id'));
         $view->with([
-            'school' => $this->school->pluck('name', 'id'),
-
+            'schools' => $this->school->pluck('name', 'id'),
+            'grades' => $this->grade->pluck('name', 'id'),
         ]);
 
-
-        $view->with([
-            'grades' => $this->grades->pluck('name', 'id'),
-
-        ]);
     }
 
 }

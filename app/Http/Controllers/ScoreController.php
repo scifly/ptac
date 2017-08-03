@@ -11,7 +11,9 @@ use Illuminate\Support\Facades\Request;
 class ScoreController extends Controller {
     protected $score;
 
-    function __construct(Score $score) {$this->score = $score;}
+    function __construct(Score $score) {
+        $this->score = $score;
+    }
 
     /**
      * 显示成绩列表
@@ -41,7 +43,7 @@ class ScoreController extends Controller {
         return view('score.create', [
             'js' => 'js/score/create.js',
             'form' => true
-            ]);
+        ]);
     }
 
     /**
@@ -51,12 +53,23 @@ class ScoreController extends Controller {
      * @internal param \Illuminate\Http\Request $request
      */
     public function store(ScoreRequest $request) {
-        if ($this->score->create($request->all())) {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-            $this->result['message'] = self::MSG_CREATE_OK;
-        } else {
+        $data = $request->all();
+        $record = $this->score->where([
+            ['student_id', $data['student_id']],
+            ['subject_id', $data['subject_id']],
+            ['exam_id', $data['exam_id']]
+        ])->first();
+        if (!empty($record)) {
             $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '';
+            $this->result['message'] = '该学生本场考试科目已有记录';
+        } else {
+            if ($this->score->create($data)) {
+                $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
+                $this->result['message'] = self::MSG_CREATE_OK;
+            } else {
+                $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+                $this->result['message'] = '';
+            }
         }
         return response()->json($this->result);
     }
@@ -98,12 +111,23 @@ class ScoreController extends Controller {
      * @internal param Score $score
      */
     public function update(ScoreRequest $request, $id) {
-        if ($this->score->findOrFail($id)->update($request->all())) {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-            $this->result['message'] = self::MSG_EDIT_OK;
-        } else {
+        $data = $request->all();
+        $record = $this->score->where([
+            ['student_id', $data['student_id']],
+            ['subject_id', $data['subject_id']],
+            ['exam_id', $data['exam_id']]
+        ])->first();
+        if (!empty($record) && ($record->id != $id)) {
             $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '';
+            $this->result['message'] = '该学生本场科目考试已有记录';
+        } else {
+            if ($this->score->findOrFail($id)->update($request->all())) {
+                $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
+                $this->result['message'] = self::MSG_EDIT_OK;
+            } else {
+                $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+                $this->result['message'] = '';
+            }
         }
         return response()->json($this->result);
     }

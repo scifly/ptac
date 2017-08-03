@@ -12,27 +12,26 @@ class ProcedureStepComposer {
     protected $procedures;
     protected $educators;
 
-    public function __construct(Procedure $procedures,User $educators) {
+    public function __construct(Procedure $procedures,Educator $educators) {
         $this->procedures = $procedures;
         $this->educators = $educators;
     }
 
     public function compose(View $view) {
 
-        $data =  User::whereHas('educator')->get(['id','realname'])->toArray();
+        $data =  Educator::with('user')->get()->toArray();
 
         $educators=array();
 
         if(!empty( $data ))
         {
             foreach ($data as $v){
-                $educators[$v['id']] = $v['realname'];
+                $educators[$v['id']] = $v['user']['realname'];
             }
         }
-
         $view->with([
             'procedures' => $this->procedures->pluck('name', 'id'),
-            'educators' => $this->educators->pluck('realname','id')
+            'educators' => $educators
         ]);
     }
 

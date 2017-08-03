@@ -4,7 +4,6 @@
         <div class="form-horizontal">
             <div class="form-group">
                 {!! Form::label('name', '名称',['class' => 'col-sm-4 control-label']) !!}
-                {!! csrf_field() !!}
                 <div class="col-sm-2">
                     {!! Form::text('name', null, [
                         'class' => 'form-control',
@@ -30,8 +29,8 @@
                 <div class="col-sm-3">
                     <select multiple="multiple" name="educator_ids[]" id="educator_ids">
                         @foreach($educators as $key => $value)
-                            @if(isset($educatorIds))
-                                <option value="{{$key}}" @if(array_key_exists($key,$educatorIds))selected="selected"@endif>
+                            @if(isset($selectedEducators))
+                                <option value="{{$key}}" @if(array_key_exists($key,$selectedEducators))selected="selected"@endif>
                                     {{$value}}
                                 </option>
                             @else

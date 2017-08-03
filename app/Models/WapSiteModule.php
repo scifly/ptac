@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use App\Facades\DatatableFacade as Datatable;
 
 /**
  * App\Models\WapSiteModule
@@ -47,6 +48,39 @@ class WapSiteModule extends Model {
     {
         return $this->belongsTo('App\Models\WapSite', 'wap_site_id', 'id');
 
+    }
+
+    /**
+     * @return array
+     */
+    public function datatable() {
+
+        $columns = [
+            ['db' => 'WapSiteModule.id', 'dt' => 0],
+            ['db' => 'WapSiteModule.name', 'dt' => 1],
+            ['db' => 'WapSite.site_title', 'dt' => 2],
+            ['db' => 'WapSiteModule.created_at', 'dt' => 3],
+            ['db' => 'WapSiteModule.updated_at', 'dt' => 4],
+
+            [
+                'db' => 'WapSiteModule.enabled', 'dt' => 5,
+                'formatter' => function ($d, $row) {
+                    return Datatable::dtOps($this, $d, $row);
+                }
+            ]
+        ];
+        $joins = [
+            [
+                'table' => 'wap_sites',
+                'alias' => 'WapSite',
+                'type'  => 'INNER',
+                'conditions' => [
+                    'WapSite.id = WapSiteModule.wap_site_id'
+                ]
+            ]
+        ];
+
+        return Datatable::simple($this,  $columns, $joins);
     }
 
 }

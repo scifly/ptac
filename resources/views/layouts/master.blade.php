@@ -28,7 +28,7 @@
         <!-- Parsley style -->
         <link rel="stylesheet" href="{{ URL::asset('js/plugins/parsley/parsley.css') }}">
         <!-- switchery style -->
-        <link rel="stylesheet" href="{{ URL::asset('js/plugins/switchery/css/switchery.min.css') }}">
+        <link rel="stylesheet" href="{{ URL::asset('js/plugins/switchery/switchery.min.css') }}">
     @endisset
     @isset($datatable)
         <!-- DataTable style -->
@@ -38,6 +38,10 @@
     @isset($ws)
     <link rel="stylesheet" href="{{ URL::asset('css/wapSite.css') }}">
     @endisset
+
+    <!-- fileinput-->
+    <link rel="stylesheet" href="{{ URL::asset('js/plugins/fileinput/css/fileinput.min.css') }}">
+
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -571,17 +575,22 @@
     <!-- Select2 -->
     <script src="{{ URL::asset('js/plugins/select2/js/select2.min.js') }}"></script>
     <!-- switchery -->
-    <script src="{{ URL::asset('js/plugins/switchery/js/switchery.min.js') }}"></script>
+    <script src="{{ URL::asset('js/plugins/switchery/switchery.min.js') }}"></script>
+    <script src="{{ URL::asset('js/switcher.init.js') }}"></script>
 @endisset
 @isset($datatable)
     <!-- DataTable -->
-    <script src="{{ URL::asset('js/plugins/datatables/datatables.js') }}"></script>
+    <script src="{{ URL::asset('js/plugins/datatables/datatables.min.js') }}"></script>
+    <script src="{{ URL::asset('js/plugins/datatables/dataTables.checkboxes.min.js') }}"></script>
 @endisset
 <!-- Custom JS -->
 <script src="{{ URL::asset('js/admin.crud.js') }}"></script>
 @isset($js)
     <script src="{{ URL::asset($js) }}"></script>
 @endisset
+<!-- fileinput-->
+<script src="{{ URL::asset('js/plugins/fileinput/js/fileinput.min.js') }}"></script>
+<script src="{{ URL::asset('js/plugins/fileinput/js/locales/zh.js') }}"></script>
 <!-- AdminLTE for demo purposes -->
 <script src="{{ URL::asset('js/demo.js') }}"></script>
 </body>

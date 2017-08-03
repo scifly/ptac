@@ -52,7 +52,7 @@
                         'placeholder' => '(不超过5个数字含小数点)',
                         'data-parsley-required' => 'true',
                         'data-parsley-type' => "number",
-                        'data-parsley-maxlength' => '5'
+                        'data-parsley-maxlength' => '5',
                         ]) !!}
                 </div>
             </div>
