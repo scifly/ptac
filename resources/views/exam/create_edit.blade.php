@@ -4,7 +4,6 @@
         <div class="form-horizontal">
             <div class="form-group">
                 {!! Form::label('name', '名称',['class' => 'col-sm-4 control-label']) !!}
-                {!! csrf_field() !!}
                 <div class="col-sm-2">
                     {!! Form::text('name', null, [
                         'class' => 'form-control',
@@ -68,7 +67,6 @@
             </div>
             <div class="form-group">
                 {!! Form::label('max_scores', '科目满分',['class' => 'col-sm-4 control-label']) !!}
-                {!! csrf_field() !!}
                 <div class="col-sm-2">
                     {!! Form::text('max_scores', null, [
                         'class' => 'form-control',
@@ -82,7 +80,6 @@
             </div>
             <div class="form-group">
                 {!! Form::label('pass_scores', '科目及格分数',['class' => 'col-sm-4 control-label']) !!}
-                {!! csrf_field() !!}
                 <div class="col-sm-2">
                     {!! Form::text('pass_scores', null, [
                         'class' => 'form-control',
@@ -96,7 +93,6 @@
             </div>
             <div class="form-group">
                 {!! Form::label('start_date', '考试开始日期',['class' => 'col-sm-4 control-label']) !!}
-                {!! csrf_field() !!}
                 <div class="col-sm-2">
                     {!! Form::date('start_date', null, [
                         'class' => 'form-control',
@@ -105,7 +101,6 @@
             </div>
             <div class="form-group">
                 {!! Form::label('end_date', '考试结束日期',['class' => 'col-sm-4 control-label']) !!}
-                {!! csrf_field() !!}
                 <div class="col-sm-2">
                     {!! Form::date('end_date', null, [
                         'class' => 'form-control',

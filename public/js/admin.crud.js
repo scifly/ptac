@@ -37,7 +37,6 @@ var crud = {
     },
     init: function(homeUrl, formId, ajaxUrl, requestType) {
         // Select2
-        console.log($('select'));
         if($('select').select2()){
             $('select').select2();
 

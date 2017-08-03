@@ -33,12 +33,8 @@
             </div>
             <div class="form-group">
                 {!! Form::label('sms_quote', '可用短信条数',['class' => 'col-sm-4 control-label']) !!}
-                {!! csrf_field() !!}
                 <div class="col-sm-2">
                     {!! Form::text('sms_quote', null, ['class' => 'form-control']) !!}
-                </div>
-                <div class="col-sm-5">
-                    <p class="form-control-static text-danger">{{ $errors->first('sms_quote') }}</p>
                 </div>
             </div>
             <div class="form-group">

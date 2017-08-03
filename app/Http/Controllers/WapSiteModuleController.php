@@ -2,20 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\WapSiteRequest;
-use App\Models\Educator;
-use App\Models\Grade;
-use App\Models\Media;
-use App\Models\WapSite;
+use App\Models\WapSiteModule;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
-class WapSiteController extends Controller
-{
-    protected $wapSite;
 
-    public function __construct(WapSite $wapSite)
+class WapSiteModuleController extends Controller
+{
+    protected $wapSiteModule;
+
+    public function __construct(WapSiteModule $wapSiteModule)
     {
-        $this->wapSite = $wapSite;
+        $this->wapSiteModule = $wapSiteModule;
     }
     /**
      * Display a listing of the resource.
@@ -25,10 +22,10 @@ class WapSiteController extends Controller
     public function index()
     {
         if (Request::get('draw')) {
-            return response()->json($this->wapSite->datatable());
+            return response()->json($this->wapSiteModule->datatable());
         }
-        return view('wap_site.index' , [
-            'js' => 'js/wap_site/index.js',
+        return view('wap_site_module.index' , [
+            'js' => 'js/wap_site_module/index.js',
             'dialog' => true,
             'datatable' => true,
             'form' => true,
@@ -42,8 +39,8 @@ class WapSiteController extends Controller
      */
     public function create()
     {
-        return view('wap_site.create',[
-            'js' => 'js/wap_site/create.js',
+        return view('wap_site_module.create',[
+            'js' => 'js/wap_site_module/create.js',
             'form' => true
         ]);
     }
@@ -54,57 +51,41 @@ class WapSiteController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(WapSiteRequest $request)
+    public function store(Request $request)
     {
-        $res = $this->wapSite->save($request->all());
-
-        $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-        $this->result['message'] = self::MSG_CREATE_OK;
-
-        return response()->json($this->result);
+        //
     }
 
     /**
      * Display the specified resource.
      *
-     * @param $id
+     * @param  \App\Models\WapSiteModule  $wapSiteModule
      * @return \Illuminate\Http\Response
-     * @internal param WapSite $wapSite
      */
-    public function show($id)
+    public function show(WapSiteModule $wapSiteModule)
     {
-
-        $wapsite = WapSite::whereId($id)->first();
-        $f = explode(",", $wapsite->media_ids);
-
-        $medias = Media::whereIn('id',$f)->get(['id','path']);
-
-        return view('wap_site.show', [
-            'wapsite' => $wapsite,
-            'medias' => $medias,
-            'ws' =>true
-        ]);
+        //
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\WapSite  $wapSite
+     * @param  \App\Models\WapSiteModule  $wapSiteModule
      * @return \Illuminate\Http\Response
      */
-    public function edit(WapSite $wapSite)
+    public function edit(WapSiteModule $wapSiteModule)
     {
-
+        //
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\WapSite  $wapSite
+     * @param  \App\Models\WapSiteModule  $wapSiteModule
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, WapSite $wapSite)
+    public function update(Request $request, WapSiteModule $wapSiteModule)
     {
         //
     }
@@ -112,12 +93,12 @@ class WapSiteController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\WapSite  $wapSite
+     * @param  \App\Models\WapSiteModule  $wapSiteModule
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
-        if ($this->wapSite->findOrFail($id)->delete()) {
+        if ($this->wapSiteModule->findOrFail($id)->delete()) {
             $this->result['message'] = self::MSG_DEL_OK;
         } else {
             $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
@@ -126,4 +107,3 @@ class WapSiteController extends Controller
         return response()->json($this->result);
     }
 }
-
