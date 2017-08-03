@@ -115,7 +115,6 @@ class Action extends Model {
         return $this->belongsToMany('App\Models\Tab', 'tabs_actions')
             ->withPivot('default', 'enabled')
             ->withTimestamps();
-        
     }
     
     public function datatable() {

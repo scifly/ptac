@@ -13,6 +13,7 @@ class ComposerServiceProvider extends ServiceProvider {
      * @return void
      */
     public function boot() {
+        
         View::composer('school.create_edit', 'App\Http\ViewComposers\SchoolComposer');
         View::composer('corp.create_edit', 'App\Http\ViewComposers\CorpComposer');
         View::composer('grade.create_edit', 'App\Http\ViewComposers\GradeComposer');
@@ -31,6 +32,7 @@ class ComposerServiceProvider extends ServiceProvider {
         View::composer('score_range.create_edit', 'App\Http\ViewComposers\ScoreRangeComposer');
         View::composer('custodian_student.create_edit', 'App\Http\ViewComposers\CustodianStudentComposer');
         View::composer('exam.create_edit', 'App\Http\ViewComposers\ExamComposer');
+        View::composer('action.create_edit', 'App\Http\ViewComposers\ActionComposer');
 
     }
 
