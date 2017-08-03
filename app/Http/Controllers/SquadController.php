@@ -126,14 +126,14 @@ class SquadController extends Controller
 
         })->get(['id','username'])->toArray();
 
-        $educatorIds = [];
+        $selectedEducators = [];
         foreach ($educators as $value) {
-            $educatorIds[$value['id']] = $value['username'];
+            $selectedEducators[$value['id']] = $value['username'];
         }
         return view('class.edit', [
             'js' => 'js/class/edit.js',
             'squad' => $squad,
-            'educatorIds' => $educatorIds,
+            'selectedEducators' => $selectedEducators,
             'form' => true
 
         ]);
