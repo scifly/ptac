@@ -35,14 +35,10 @@ class Custodian extends Model
         return $this->belongsTo('App\Models\User');
     }
 
-    public function students()
-    {
-        return $this->belongsToMany('App\Models\Student');
-    }
 
     public function custodianStudent()
     {
-        return $this->hasOne('App\Models\CustodianStudent');
+        return $this->hasMany('App\Models\CustodianStudent');
     }
 
 }

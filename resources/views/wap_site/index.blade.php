@@ -2,14 +2,14 @@
 @section('header')
     <div class="panel-heading">
         <div class="btn-group">
-            <a href="{{ url('subject_modules/create') }}" class="btn btn-primary pull-right">
-                添加次分类
+            <a href="{{ url('wapsites/create') }}" class="btn btn-primary pull-right">
+                添加微网站
             </a>
         </div>
     </div>
 @endsection
 @section('breadcrumb')
-    系统设置/科目次分类
+    自媒体管理/微网站管理
 @endsection
 @section('content')
     <div class="panel-body">
@@ -18,9 +18,8 @@
                 <thead>
                 <tr>
                     <th>#</th>
-                    <th>科目名称</th>
-                    <th>次分类名称</th>
-                    <th>次分类权重</th>
+                    <th>所属学校</th>
+                    <th>首页抬头</th>
                     <th>创建时间</th>
                     <th>更新时间</th>
                     <th>状态</th>

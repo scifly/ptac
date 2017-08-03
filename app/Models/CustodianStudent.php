@@ -42,7 +42,7 @@ class CustodianStudent extends Model
 
     public function student()
     {
-        return $this->belongsToMany('App\Models\Student');
+        return $this->belongsTo('App\Models\Student');
     }
 
     public function datatable() {

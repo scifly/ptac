@@ -68,8 +68,10 @@ class SubjectModuleController extends Controller {
      * @param  \App\Models\SubjectModule $subjectModule
      * @return \Illuminate\Http\Response
      */
-    public function show(SubjectModule $subjectModule) {
-    
+    public function show($id) {
+        return view('subject_module.show',[
+            'subjectModule' => $this->subjectModule->FindOrfail($id)
+        ]);
     }
     
     /**
