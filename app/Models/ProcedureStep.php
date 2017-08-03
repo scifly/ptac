@@ -111,13 +111,13 @@ class ProcedureStep extends Model {
      */
     public function operate_ids($user_ids){
 
-        $user_ids = explode('|',$user_ids);
+        $user_ids = explode(',',$user_ids);
 
         $educators = array();
         foreach ($user_ids as $auid) {
-//            $educator = Educator::find($auid);
-//            $userId = $educator->user_id;
-            $user = User::find($auid);
+            $educator = Educator::find($auid);
+            $userId = $educator->user_id;
+            $user = User::find($userId);
             $educators[$auid] = $user->username;
         }
 
@@ -130,6 +130,6 @@ class ProcedureStep extends Model {
      * @return string
      */
     public function join_ids($arry_id){
-        return implode('|',$arry_id);
+        return implode(',',$arry_id);
     }
 }

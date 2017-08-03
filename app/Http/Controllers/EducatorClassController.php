@@ -15,7 +15,6 @@ class EducatorClassController extends Controller
 
     protected $educator;
 
-    protected $message;
 
     /**
      * SubjectModulesController constructor.
@@ -25,10 +24,7 @@ class EducatorClassController extends Controller
     {
         $this->educatorClass = $educatorClass;
         $this->educator = $educator;
-        $this->message = [
-            'statusCode' => 200,
-            'message' => ''
-        ];
+
     }
 
     /**
@@ -68,18 +64,28 @@ class EducatorClassController extends Controller
     public function store(EducatorClassRequest $request)
     {
         $data = $request->all();
-
-        if($this->educatorClass->create($data)){
-            $this->message['statusCode'] = self::HTTP_STATUSCODE_OK;
-            $this->message['message'] = self::MSG_CREATE_OK;
-
+        $result = $this->educatorClass
+            ->where('class_id',$data['class_id'])
+            ->where('subject_id',$data['subject_id'])
+            ->get()
+            ->toArray();
+        if($result!=null)
+        {
+            $this->result['statusCode'] = self::MSG_BAD_REQUEST;
+            $this->result['message'] = '该条数据已经存在!';
         }else{
+            if($this->educatorClass->create($data)){
+                $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
+                $this->result['message'] = self::MSG_CREATE_OK;
 
-            $this->message['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->message['message'] = '添加失败';
+            }else{
+                $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+                $this->result['message'] = '添加失败';
+            }
         }
 
-        return response()->json($this->message);
+
+        return response()->json($this->result);
     }
 
     /**
@@ -118,19 +124,28 @@ class EducatorClassController extends Controller
     {
         $data = $request->except('_token');
 
-        if ($this->educatorClass->findOrFail($id)->update($data))
+        $result = $this->educatorClass
+            ->where('class_id',$data['class_id'])
+            ->where('subject_id',$data['subject_id'])
+            ->first();
+
+        if(!empty($result)&&($result->educator_id!= $data['educator_id']))
         {
-            $this->message['statusCode'] = self::HTTP_STATUSCODE_OK;
-            $this->message['message'] = self::MSG_EDIT_OK;
+            $this->result['statusCode'] = self::MSG_BAD_REQUEST;
+            $this->result['message'] = '同一个班级的同一个科目不能有两个老师教!';
 
-
-        } else {
-            $this->message['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->message['message'] = '更新失败';
+        }else{
+            if ($this->educatorClass->findOrFail($id)->update($data))
+            {
+                $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
+                $this->result['message'] = self::MSG_EDIT_OK;
+            } else {
+                $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+                $this->result['message'] = '更新失败';
+            }
         }
 
-        return response()->json($this->message);
-
+        return response()->json($this->result);
 
     }
 
@@ -142,11 +157,11 @@ class EducatorClassController extends Controller
     public function destroy($id)
     {
         if ($this->educatorClass->findOrFail($id)->delete()) {
-            $this->message['message'] = self::MSG_DEL_OK;
+            $this->result['message'] = self::MSG_DEL_OK;
         } else {
-            $this->message['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->message['message'] = '删除失败';
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+            $this->result['message'] = '删除失败';
         }
-        return response()->json($this->message);
+        return response()->json($this->result);
     }
 }

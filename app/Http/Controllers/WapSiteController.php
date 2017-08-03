@@ -115,8 +115,15 @@ class WapSiteController extends Controller
      * @param  \App\Models\WapSite  $wapSite
      * @return \Illuminate\Http\Response
      */
-    public function destroy(WapSite $wapSite)
+    public function destroy($id)
     {
-        //
+        if ($this->wapSite->findOrFail($id)->delete()) {
+            $this->result['message'] = self::MSG_DEL_OK;
+        } else {
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+            $this->result['message'] = '';
+        }
+        return response()->json($this->result);
     }
 }
+

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Facades\DatatableFacade as Datatable;
 
 /**
  * App\User
@@ -66,7 +67,7 @@ use Illuminate\Notifications\Notifiable;
  * @property-read \App\Models\PollQuestionnaire $pollquestionnaires
  */
 class User extends Authenticatable {
-    
+
     use Notifiable;
     protected $table = 'users';
 
@@ -78,23 +79,15 @@ class User extends Authenticatable {
     protected $fillable = [
         'group_id',
         'username',
-        'password',
         'email',
         'realname',
         'gender',
+        'realname',
         'avatar_url',
         'wechatid',
-        'english_name',
-        'department_ids',
-        'isleader',
-        'position',
-        'telephone',
-        'order',
-        'mobile',
-        'avatar_mediaid',
         'enabled',
     ];
-    
+
     /**
      * The attributes that should be hidden for arrays.
      *
@@ -103,13 +96,13 @@ class User extends Authenticatable {
     protected $hidden = [
         'password', 'remember_token',
     ];
-    
+
     public function custodian() { return $this->hasOne('App\Models\Custodian'); }
-    
+
     public function educator() { return $this->hasOne('App\Models\Educator'); }
-    
+
     public function student() { return $this->hasOne('App\Models\Student'); }
-    
+
     public function group() { return $this->belongsTo('App\Models\Group'); }
 
     public function operator(){ return $this->hasOne('App\Models\Operator'); }
@@ -120,9 +113,44 @@ class User extends Authenticatable {
 
     public function pollquestionnaireAnswer(){ return $this->hasOne('App\Models\PollQuestionnaireAnswer'); }
 
-    public function pollquestionnairePartcipant(){
-        return $this->hasOne('App\Models\PollQuestionnaireParticipant');
+    public function pollquestionnairePartcipant(){ return $this->hasOne('App\Models\PollQuestionnaireParticipant'); }
+
+    public function datatable() {
+
+        $columns = [
+            ['db' => 'User.id', 'dt' => 0],
+            ['db' => 'Groups.name as grapname', 'dt' => 1],
+            ['db' => 'User.username', 'dt' => 2],
+            ['db' => 'User.avatar_url', 'dt' => 3],
+            ['db' => 'User.realname', 'dt' => 4],
+            [
+                'db' => 'User.gender', 'dt' => 5,
+                'formatter' => function ($d, $row) {
+                    return $d?'女':'男';
+                }
+            ],
+            ['db' => 'User.email', 'dt' => 6],
+            ['db' => 'User.created_at', 'dt' => 7],
+            ['db' => 'User.updated_at', 'dt' => 8],
+            [
+                'db' => 'User.enabled', 'dt' => 9,
+                'formatter' => function ($d, $row) {
+                    return Datatable::dtOps($this, $d, $row);
+                }
+            ],
+        ];
+
+        $joins = [
+            [
+                'table' => 'groups',
+                'alias' => 'Groups',
+                'type' => 'INNER',
+                'conditions' => [
+                    'Groups.id = User.group_id'
+                ]
+            ]
+        ];
+
+        return Datatable::simple($this, $columns, $joins);
     }
-    
-    
 }
