@@ -36,11 +36,6 @@ class Student extends Model {
 
     protected $table = 'students';
 
-
-    public function user() {
-        return $this->belongsTo('App\Models\User');
-    }
-
     protected $fillable = [
         'user_id',
         'class_id',
@@ -60,27 +55,49 @@ class Student extends Model {
     }
 
 
-
     public function beLongsToSquad() {
         return $this->belongsTo('App\Models\Squad','class_id','id');
 
     }
+
     public function custodianStudent()
     {
         return $this->hasMany('App\Models\CustodianStudent');
 
     }
 
+    public function user()
+    {
+        return $this->belongsTo('App\Models\User');
+    }
+    /**
+     * 获取学生所有分数
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function score()
+    {
+        return $this->hasMany('App\Models\Score');
+    }
+
+    /**
+     * 获取学生总分
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function scoreTotal()
+    {
+        return $this->hasMany('App\Models\ScoreTotal');
+    }
+
     public function datatable() {
 
         $columns = [
             ['db' => 'Student.id', 'dt' => 0],
-            ['db' => 'User.username as username', 'dt' => 1],
+            ['db' => 'User.realname as username', 'dt' => 1],
             ['db' => 'Squad.name as classname', 'dt' => 2],
             ['db' => 'Student.card_number', 'dt' => 3],
             [
                 'db' => 'Student.oncampus', 'dt' => 4,
-                'formatter' => function($d, $row) {
+                'formatter' => function($d) {
                     $student = Student::whereId($d)->first();
                     return $student->oncampus==1 ? '是' : '否' ;
                 }
@@ -127,24 +144,7 @@ class Student extends Model {
     }
 
 
-    /**
-     * 获取学生所有分数
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function score()
-    {
-        return $this->hasMany('App\Models\Score');
-    }
 
-
-    /**
-     * 获取学生总分
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function scoreTotal()
-    {
-        return $this->hasMany('App\Models\ScoreTotal');
-    }
 
 
 

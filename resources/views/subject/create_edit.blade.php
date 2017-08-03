@@ -55,7 +55,7 @@
             <div class="form-group">
                 {!! Form::label('school_id', '所属学校',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-2">
-                    {!! Form::select('school_id', $school, null, ['class' => 'form-control']) !!}
+                    {!! Form::select('school_id', $schools, null, ['class' => 'form-control']) !!}
                 </div>
             </div>
             <div class="form-group">

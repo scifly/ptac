@@ -22,7 +22,7 @@ class StudentComposer {
     public function compose(View $view) {
 
         $view->with([
-            'user' => $this->user->pluck('realname', 'id'),
+            'user' => $this->user->pluck('realname','id'),
 
         ]);
 

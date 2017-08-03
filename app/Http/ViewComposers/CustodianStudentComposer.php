@@ -27,7 +27,7 @@ class CustodianStudentComposer {
         {
             foreach ($custodians as $k=>$v)
             {
-                $cus_name[$v['id']] = $v['user']['realname'];
+                $custodianName[$v['id']] = $v['user']['realname'];
             }
         }
         $students = Student::with('user')->get()->toArray();
@@ -35,13 +35,13 @@ class CustodianStudentComposer {
         {
             foreach ($students as $k=>$v)
             {
-                $student_name[$v['id']] = $v['user']['realname'];
+                $studentName[$v['id']] = $v['user']['realname'];
             }
         }
 
         $view->with([
-            'student_name' => $student_name,
-            'cus_name' => $cus_name]
+            'studentName' => $studentName,
+            'cusName' => $custodianName]
         );
 
 
