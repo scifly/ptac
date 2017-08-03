@@ -179,6 +179,17 @@ Route::get('score_ranges/edit/{id}', 'ScoreRangeController@edit');
 Route::put('score_ranges/update/{id}', 'ScoreRangeController@update');
 Route::delete('score_ranges/delete/{id}', 'ScoreRangeController@destroy');
 
+// 总成绩设置
+Route::get('score_totals/index', 'ScoreTotalController@index');
+Route::get('score_totals/create', 'ScoreTotalController@create');
+Route::post('score_totals/store', 'ScoreTotalController@store');
+Route::get('score_totals/show/{id}', 'ScoreTotalController@show');
+Route::get('score_totals/edit/{id}', 'ScoreTotalController@edit');
+Route::put('score_totals/update/{id}', 'ScoreTotalController@update');
+Route::delete('score_totals/delete/{id}', 'ScoreTotalController@destroy');
+Route::get('score_totals/getExamSubjects/{id}', 'ScoreTotalController@getExamSubjects');
+
+
 # 考勤管理
 //考勤机设置
 Route::get('attendance_machines/index', 'AttendanceMachineController@index');
@@ -206,7 +217,7 @@ Route::post('procedures/store', 'ProcedureController@store');
 Route::get('procedures/show/{id}', 'ProcedureController@show');
 Route::get('procedures/edit/{id}', 'ProcedureController@edit');
 Route::put('procedures/update/{id}', 'ProcedureController@update');
-Route::delete('procedures/delete/{id}', 'ProcedureController@destroy');
+Route::delete('procedures/getSchoolEducators/{id}', 'ProcedureController@getSchoolEducators');
 
 //流程步骤设置
 Route::get('procedure_steps/index', 'ProcedureStepController@index');
@@ -216,6 +227,7 @@ Route::get('procedure_steps/show/{id}', 'ProcedureStepController@show');
 Route::get('procedure_steps/edit/{id}', 'ProcedureStepController@edit');
 Route::put('procedure_steps/update/{id}', 'ProcedureStepController@update');
 Route::delete('procedure_steps/delete/{id}', 'ProcedureStepController@destroy');
+Route::get('procedure_steps/delete/{id}', 'ProcedureStepController@destroy');
 
 //流程日志
 Route::get('procedure_logs/index', 'ProcedureLogController@index');

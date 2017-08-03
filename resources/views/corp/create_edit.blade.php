@@ -15,13 +15,13 @@
             </div>
             <div class="form-group">
                 {!! Form::label('company_id', '所属运营者',['class' => 'col-sm-4 control-label']) !!}
-                <div class="col-sm-3">
+                <div class="col-sm-2">
                     {!! Form::select('company_id', $companies, null, ['class' => 'form-control']) !!}
                 </div>
             </div>
             <div class="form-group">
                 {!! Form::label('corpid', '企业号ID',['class' => 'col-sm-4 control-label']) !!}
-                <div class="col-sm-3">
+                <div class="col-sm-2">
                     {!! Form::text('corpid', null, [
                         'class' => 'form-control',
                         'placeholder' => '(36个小写字母与阿拉伯数字)',
@@ -31,7 +31,7 @@
                 </div>
             </div>
             <div class="form-group">
-                <div class="col-sm-3 col-sm-offset-4">
+                <div class="col-sm-2 col-sm-offset-4">
                     {!! Form::radio('enabled', '1', true) !!}
                     {!! Form::label('enabled', '启用') !!}
                     {!! Form::radio('enabled', '0') !!}

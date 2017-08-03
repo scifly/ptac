@@ -66,7 +66,7 @@ use Illuminate\Notifications\Notifiable;
  * @property-read \App\Models\PollQuestionnaire $pollquestionnaires
  */
 class User extends Authenticatable {
-    
+
     use Notifiable;
     protected $table = 'users';
 
@@ -94,7 +94,7 @@ class User extends Authenticatable {
         'avatar_mediaid',
         'enabled',
     ];
-    
+
     /**
      * The attributes that should be hidden for arrays.
      *
@@ -103,13 +103,13 @@ class User extends Authenticatable {
     protected $hidden = [
         'password', 'remember_token',
     ];
-    
+
     public function custodian() { return $this->hasOne('App\Models\Custodian'); }
-    
+
     public function educator() { return $this->hasOne('App\Models\Educator'); }
-    
+
     public function student() { return $this->hasOne('App\Models\Student'); }
-    
+
     public function group() { return $this->belongsTo('App\Models\Group'); }
 
     public function operator(){ return $this->hasOne('App\Models\Operator'); }
@@ -123,6 +123,5 @@ class User extends Authenticatable {
     public function pollquestionnairePartcipant(){
         return $this->hasOne('App\Models\PollQuestionnaireParticipant');
     }
-    
-    
+
 }

@@ -97,7 +97,7 @@ class Student extends Model {
             ['db' => 'Student.card_number', 'dt' => 3],
             [
                 'db' => 'Student.oncampus', 'dt' => 4,
-                'formatter' => function($d, $row) {
+                'formatter' => function($d) {
                     $student = Student::whereId($d)->first();
                     return $student->oncampus==1 ? '是' : '否' ;
                 }

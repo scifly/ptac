@@ -11,7 +11,9 @@ class CompanyController extends Controller {
 
     protected $company;
 
-    function __construct(Company $company) {$this->company = $company;}
+    function __construct(Company $company) {
+        $this->company = $company;
+    }
 
     /**
      * 显示运营者公司列表
@@ -47,13 +49,22 @@ class CompanyController extends Controller {
      * @internal param \Illuminate\Http\Request|Request $request
      */
     public function store(CompanyRequest $request) {
-
-        if ($this->company->create($request->all())) {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-            $this->result['message'] = self::MSG_CREATE_OK;
-        } else {
+        $data = $request->all();
+        $record = $this->company->where([
+            ['name', $data['name']],
+            ['corpid', $data['corpid']],
+        ])->first();
+        if (!empty($record)) {
             $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '';
+            $this->result['message'] = '已经有该记录';
+        } else {
+            if ($this->company->create($data)) {
+                $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
+                $this->result['message'] = self::MSG_CREATE_OK;
+            } else {
+                $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+                $this->result['message'] = '';
+            }
         }
         return response()->json($this->result);
     }
@@ -91,12 +102,22 @@ class CompanyController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function update(CompanyRequest $request, $id) {
-        if ($this->company->findOrFail($id)->update($request->all())) {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-            $this->result['message'] = self::MSG_EDIT_OK;
-        } else {
+        $data = $request->all();
+        $record = $this->company->where([
+            ['name', $data['name']],
+            ['corpid', $data['corpid']],
+        ])->first();
+        if (!empty($record) && ($record->id != $id)) {
             $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '';
+            $this->result['message'] = '已有该记录';
+        } else {
+            if ($this->company->findOrFail($id)->update($request->all())) {
+                $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
+                $this->result['message'] = self::MSG_EDIT_OK;
+            } else {
+                $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+                $this->result['message'] = '';
+            }
         }
         return response()->json($this->result);
     }
