@@ -3,7 +3,7 @@
     <div class="box-body">
         <div class="form-horizontal">
             <div class="form-group">
-                {!! Form::label('site_title', '首页抬头',['class' => 'col-sm-4 control-label']) !!}
+                {!! Form::label('site_title', '首页抬头',['class' => 'col-sm-2 control-label']) !!}
                 <div class="col-sm-3">
                     {!! Form::text('site_title', null, [
                     'class' => 'form-control',
@@ -11,20 +11,23 @@
                     'data-parsley-required' => 'true',
                     'data-parsley-maxlength' => '40',
                     'data-parsley-minlength' => '2',
-
                     ]) !!}
                 </div>
             </div>
             <div class="form-group">
-                {!! Form::label('school_id', '所属学校',['class' => 'col-sm-4 control-label']) !!}
+                {!! Form::label('school_id', '所属学校',['class' => 'col-sm-2 control-label']) !!}
                 <div class="col-sm-2">
                     {!! Form::select('school_id', $schools, null, ['class' => 'form-control']) !!}
                 </div>
             </div>
-
-
             <div class="form-group">
-                <div class="col-sm-3 col-sm-offset-4">
+                {!! Form::label('media_ids', '轮播图',['class' => 'col-sm-2 control-label']) !!}
+                <div class="col-sm-6">
+                    <input type="file" id="media_ids" name="image_data[]" multiple>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-3 col-sm-offset-2">
                     {!! Form::radio('enabled', '1', true) !!}
                     {!! Form::label('enabled', '启用') !!}
                     {!! Form::radio('enabled', '0') !!}
@@ -36,10 +39,11 @@
     <div class="box-footer">
         {{--button--}}
         <div class="form-group">
-            <div class="col-sm-3 col-sm-offset-4">
+            <div class="col-sm-6 col-sm-offset-2">
                 {!! Form::submit('保存', ['class' => 'btn btn-primary pull-left', 'id' => 'save']) !!}
                 {!! Form::reset('取消', ['class' => 'btn btn-default pull-right', 'id' => 'cancel']) !!}
             </div>
         </div>
     </div>
 </div>
+
