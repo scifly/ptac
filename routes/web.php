@@ -169,6 +169,7 @@ Route::get('scores/show/{id}', 'ScoreController@show');
 Route::get('scores/edit/{id}', 'ScoreController@edit');
 Route::put('scores/update/{id}', 'ScoreController@update');
 Route::delete('scores/delete/{id}', 'ScoreController@destroy');
+Route::get('scores/statistics/{exam_id}', 'ScoreController@statistics');
 
 // 成绩统计项设置
 Route::get('score_ranges/index', 'ScoreRangeController@index');
