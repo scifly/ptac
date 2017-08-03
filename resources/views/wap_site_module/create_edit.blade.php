@@ -3,33 +3,28 @@
     <div class="box-body">
         <div class="form-horizontal">
             <div class="form-group">
-                {!! Form::label('name', '名称',['class' => 'col-sm-4 control-label']) !!}
+                {!! Form::label('wap_site_id', '所属网站',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-2">
+                    {!! Form::select('wap_site_id', $wapSites, null, ['class' => 'form-control']) !!}
+                </div>
+            </div>
+            <div class="form-group">
+                {!! Form::label('name', '名称',['class' => 'col-sm-4 control-label']) !!}
+                <div class="col-sm-3">
                     {!! Form::text('name', null, [
-                        'class' => 'form-control',
-                        'placeholder' => '(不超过40个汉字)',
-                        'data-parsley-required' => 'true',
-                        'data-parsley-minlength' => '4',
-                        'data-parsley-maxlength' => '40'
+                    'class' => 'form-control',
+                    'placeholder' => '不能超过40个汉字',
+                    'data-parsley-required' => 'true',
+                    'data-parsley-maxlength' => '40',
+                    'data-parsley-minlength' => '2',
+
                     ]) !!}
                 </div>
-                {{--<div class="col-sm-5">--}}
-                    {{--<p class="form-control-static text-danger">{{ $errors->first('name') }}</p>--}}
-                {{--</div>--}}
             </div>
 
-            <div class="form-group">
-                {!! Form::label('remark', '备注',['class' => 'col-sm-4 control-label']) !!}
-                <div class="col-sm-3">
-                    {!! Form::text('remark', null, [
-                    'class' => 'form-control',
-                    'placeholder' => '不能超过20个汉字',
-                    'data-parsley-required' => 'true',
-                    'data-parsley-minlength' => '2',
-                    'data-parsley-maxlength' => '20'
-                    ]) !!}
-                </div>
-            </div>
+
+
+
             <div class="form-group">
                 <div class="col-sm-3 col-sm-offset-4">
                     {!! Form::radio('enabled', '1', true) !!}
@@ -38,7 +33,6 @@
                     {!! Form::label('enabled', '禁用') !!}
                 </div>
             </div>
-
         </div>
     </div>
     <div class="box-footer">

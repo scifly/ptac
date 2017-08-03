@@ -35,8 +35,7 @@ class EducatorController extends Controller
         return view('educator.index' , [
             'js' => 'js/educator/index.js',
             'dialog' => true,
-            'datatable' => true,
-            'form' => true,
+            'datatable' => true
             ]);
 
     }

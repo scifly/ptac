@@ -252,6 +252,17 @@ Route::get('exams/edit/{id}', 'ExamController@edit');
 Route::put('exams/update/{id}', 'ExamController@update');
 Route::delete('exams/delete/{id}', 'ExamController@destroy');
 
+<<<<<<< HEAD
+#问卷调查参与
+
+Route::group(['prefix' => 'pollQuestionnaireParticpation'],function(){
+    Route::get('/', 'PqParticipantController@index');
+    Route::get('/index', 'PqParticipantController@index');
+    Route::post('/show/{id}', 'PqParticipantController@show');
+    Route::put('/update', 'PqParticipantController@update')->name("pqp_update");
+
+});
+=======
 //微网站管理
 Route::get('wapsites/index', 'WapSiteController@index');
 Route::get('wapsites/create', 'WapSiteController@create');
@@ -260,3 +271,22 @@ Route::get('wapsites/show/{id}', 'WapSiteController@show');
 Route::get('wapsites/edit/{id}', 'WapSiteController@edit');
 Route::put('wapsites/update/{id}', 'WapSiteController@update');
 Route::delete('wapsites/delete/{id}', 'WapSiteController@destroy');
+
+//微网站管理-网站模块管理
+Route::get('wapsitemodules/index', 'WapSiteModuleController@index');
+Route::get('wapsitemodules/create', 'WapSiteModuleController@create');
+Route::post('wapsitemodules/store', 'WapSiteModuleController@store');
+Route::get('wapsitemodules/show/{id}', 'WapSiteModuleController@show');
+Route::get('wapsitemodules/edit/{id}', 'WapSiteModuleController@edit');
+Route::put('wapsitemodules/update/{id}', 'WapSiteModuleController@update');
+Route::delete('wapsitemodules/delete/{id}', 'WapSiteModuleController@destroy');
+
+//微网站管理-文章管理
+Route::get('wsmarticles/index', 'WsmArticleController@index');
+Route::get('wsmarticles/create', 'WsmArticleController@create');
+Route::post('wsmarticles/store', 'WsmArticleController@store');
+Route::get('wsmarticles/show/{id}', 'WsmArticleController@show');
+Route::get('wsmarticles/edit/{id}', 'WsmArticleController@edit');
+Route::put('wsmarticles/update/{id}', 'WsmArticleController@update');
+Route::delete('wsmarticles/delete/{id}', 'WsmArticleController@destroy');
+>>>>>>> origin

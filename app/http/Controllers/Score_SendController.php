@@ -5,16 +5,24 @@ namespace App\Http\Controllers;
 //用到学校数据模型
 use App\Models\Exam;
 use App\Models\Grade;
+<<<<<<< HEAD
+//考试数据模型
+
+=======
 use App\Models\School;
+>>>>>>> origin
 use App\Models\Score;
 use App\Models\ScoreTotal;
 use App\Models\Squad;
 use App\Models\Student;
 use App\Models\Subject;
 
+<<<<<<< HEAD
+=======
 //用到年级数据模型
 //班级数据模型
 //考试数据模型
+>>>>>>> origin
 
 
 //成绩发送控制
@@ -129,6 +137,16 @@ class Score_SendController extends Controller {
         #获取年级的考试信息
         $grade_scores =
             $this->student
+<<<<<<< HEAD
+                ->join('classes','students.class_id','classes.id')
+                ->where('grade_id',$grade_id)
+                ->join('scores','students.id','scores.student_id')
+                ->join('exams','exams.id','scores.exam_id')
+                #获取当前考试
+                ->where('exams.id',$examId)
+                ->join('subjects','scores.subject_id','subjects.id')
+                ->join('users','students.user_id','users.id')
+=======
                 ->join('classes', 'students.class_id', 'classes.id')
                 ->where('grade_id', $grade_id)
                 ->join('scores', 'students.id', 'scores.student_id')
@@ -136,11 +154,27 @@ class Score_SendController extends Controller {
                 ->where('exams.id', $examId)
                 ->join('subjects', 'scores.subject_id', 'subjects.id')
                 ->join('users', 'students.user_id', 'users.id')
+>>>>>>> origin
                 ->get(['scores.score'
                     , 'scores.subject_id', 'subjects.max_score', 'subjects.pass_score'
                     , 'scores.class_rank', 'scores.grade_rank', 'students.id']);
         
         #获取班级的考试信息
+<<<<<<< HEAD
+        $class_scores=
+            $this->student->where('class_id',$classId)
+                ->join('classes','students.class_id','classes.id')
+                ->join('scores','students.id','scores.student_id')
+                ->join('exams','exams.id','scores.exam_id')
+                #获取当前考试
+                ->where('exams.id',$examId)
+                ->join('subjects','scores.subject_id','subjects.id')
+                ->join('users','students.user_id','users.id')
+                ->get(['users.realname','scores.score','exams.name as examname','subjects.name'
+                    ,'scores.subject_id','subjects.max_score','subjects.pass_score'
+                    ,'scores.class_rank','scores.grade_rank','students.id']);
+
+=======
         $class_scores =
             $this->student->where('class_id', $classId)
                 ->join('classes', 'students.class_id', 'classes.id')
@@ -153,6 +187,7 @@ class Score_SendController extends Controller {
                     , 'scores.subject_id', 'subjects.max_score', 'subjects.pass_score'
                     , 'scores.class_rank', 'scores.grade_rank', 'students.id']);
         
+>>>>>>> origin
         #年级总分信息
         $grade_total_scores =
             $this->student->join('classes', 'students.class_id', 'classes.id')

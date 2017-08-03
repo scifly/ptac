@@ -3,33 +3,46 @@
     <div class="box-body">
         <div class="form-horizontal">
             <div class="form-group">
-                {!! Form::label('name', '名称',['class' => 'col-sm-4 control-label']) !!}
+                {!! Form::label('wsm_id', '所属网站模块',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-2">
+                    {!! Form::select('wsm_id', $wsms, null, ['class' => 'form-control']) !!}
+                </div>
+            </div>
+            <div class="form-group">
+                {!! Form::label('name', '名称',['class' => 'col-sm-4 control-label']) !!}
+                <div class="col-sm-3">
                     {!! Form::text('name', null, [
-                        'class' => 'form-control',
-                        'placeholder' => '(不超过40个汉字)',
-                        'data-parsley-required' => 'true',
-                        'data-parsley-minlength' => '4',
-                        'data-parsley-maxlength' => '40'
+                    'class' => 'form-control',
+                    'placeholder' => '不能超过40个汉字',
+                    'data-parsley-required' => 'true',
+                    'data-parsley-maxlength' => '40',
+                    'data-parsley-minlength' => '2',
+
                     ]) !!}
                 </div>
-                {{--<div class="col-sm-5">--}}
-                    {{--<p class="form-control-static text-danger">{{ $errors->first('name') }}</p>--}}
-                {{--</div>--}}
+            </div>
+            <div class="form-group">
+                {!! Form::label('summary', '文章摘要',['class' => 'col-sm-4 control-label']) !!}
+                <div class="col-sm-3">
+                    {!! Form::text('summary', null, [
+                    'class' => 'form-control',
+                    'placeholder' => '不能超过60个汉字',
+                    'data-parsley-required' => 'true',
+                    'data-parsley-maxlength' => '60',
+                    'data-parsley-minlength' => '2',
+
+                    ]) !!}
+                </div>
+            </div>
+            <div class="form-group">
+                {!! Form::file('thumbnail_media_id', '缩略图',['class' => 'col-sm-4 control-label']) !!}
+                <div class="col-sm-2">
+                    {!! Form::select('thumbnail_media_id', $schools, null, ['class' => 'form-control']) !!}
+                </div>
             </div>
 
-            <div class="form-group">
-                {!! Form::label('remark', '备注',['class' => 'col-sm-4 control-label']) !!}
-                <div class="col-sm-3">
-                    {!! Form::text('remark', null, [
-                    'class' => 'form-control',
-                    'placeholder' => '不能超过20个汉字',
-                    'data-parsley-required' => 'true',
-                    'data-parsley-minlength' => '2',
-                    'data-parsley-maxlength' => '20'
-                    ]) !!}
-                </div>
-            </div>
+
+
             <div class="form-group">
                 <div class="col-sm-3 col-sm-offset-4">
                     {!! Form::radio('enabled', '1', true) !!}
@@ -38,7 +51,6 @@
                     {!! Form::label('enabled', '禁用') !!}
                 </div>
             </div>
-
         </div>
     </div>
     <div class="box-footer">
