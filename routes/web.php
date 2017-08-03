@@ -261,6 +261,16 @@ Route::group(['prefix' => 'pollQuestionnaireParticpation'],function(){
     Route::put('/update', 'PqParticipantController@update')->name("pqp_update");
 
 });
+#成绩发送
+Route::group(['prefix' => 'scoreSend'],function(){
+    Route::get('/', 'Score_SendController@index');
+    Route::get('/index', 'Score_SendController@index@index');
+    Route::Post('/getgrade/{id}', 'Score_SendController@getGrade');
+    Route::Post('/getclass/{id}', 'Score_SendController@getClass');
+    Route::Post('/getexam/{id}', 'Score_SendController@getExam');
+    Route::Post('/getsubject/{id}', 'Score_SendController@getSubject');
+    Route::post('/preview/{examId}/{classId}/{subjectIds}/{itemId}', 'Score_SendController@preview');
+});
 //微网站管理
 Route::get('wapsites/index', 'WapSiteController@index');
 Route::get('wapsites/create', 'WapSiteController@create');

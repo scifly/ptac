@@ -577,6 +577,7 @@
 @isset($datatable)
     <!-- DataTable -->
     <script src="{{ URL::asset('js/plugins/datatables/datatables.min.js') }}"></script>
+    <script src="{{ URL::asset('js/plugins/datatables/dataTables.checkboxes.min.js') }}"></script>
 @endisset
 <!-- Custom JS -->
 <script src="{{ URL::asset('js/admin.crud.js') }}"></script>
