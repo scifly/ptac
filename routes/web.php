@@ -171,16 +171,8 @@ Route::put('scores/update/{id}', 'ScoreController@update');
 Route::delete('scores/delete/{id}', 'ScoreController@destroy');
 Route::get('scores/statistics/{exam_id}', 'ScoreController@statistics');
 
-// 成绩统计项设置
-Route::get('score_ranges/index', 'ScoreRangeController@index');
-Route::get('score_ranges/create', 'ScoreRangeController@create');
-Route::post('score_ranges/store', 'ScoreRangeController@store');
-Route::get('score_ranges/show/{id}', 'ScoreRangeController@show');
-Route::get('score_ranges/edit/{id}', 'ScoreRangeController@edit');
-Route::put('score_ranges/update/{id}', 'ScoreRangeController@update');
-Route::delete('score_ranges/delete/{id}', 'ScoreRangeController@destroy');
-
 // 总成绩设置
+Route::get('score_totals/{exam_id}', 'ScoreTotalController@statistics');
 Route::get('score_totals/index', 'ScoreTotalController@index');
 Route::get('score_totals/create', 'ScoreTotalController@create');
 Route::post('score_totals/store', 'ScoreTotalController@store');
@@ -189,6 +181,15 @@ Route::get('score_totals/edit/{id}', 'ScoreTotalController@edit');
 Route::put('score_totals/update/{id}', 'ScoreTotalController@update');
 Route::delete('score_totals/delete/{id}', 'ScoreTotalController@destroy');
 Route::get('score_totals/getExamSubjects/{id}', 'ScoreTotalController@getExamSubjects');
+
+// 成绩统计项设置
+Route::get('score_ranges/index', 'ScoreRangeController@index');
+Route::get('score_ranges/create', 'ScoreRangeController@create');
+Route::post('score_ranges/store', 'ScoreRangeController@store');
+Route::get('score_ranges/show/{id}', 'ScoreRangeController@show');
+Route::get('score_ranges/edit/{id}', 'ScoreRangeController@edit');
+Route::put('score_ranges/update/{id}', 'ScoreRangeController@update');
+Route::delete('score_ranges/delete/{id}', 'ScoreRangeController@destroy');
 
 
 # 考勤管理

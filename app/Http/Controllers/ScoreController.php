@@ -178,18 +178,16 @@ class ScoreController extends Controller {
             }
             //循环每个科目
             foreach ($subject as $val){
-                $ranks = [];
                 foreach ($val as $k => $v){
                     $v->grade_rank = $k+1;
-                    if($k>1){
-                        if($v->score == $ranks[$k-1]->score){
-                            $v->grade_rank = $ranks[$k-1]->grade_rank;
+                    if($k>0){
+                        if($v->score == $val[$k-1]->score){
+                            $v->grade_rank = $val[$k-1]->grade_rank;
                         }
                     }
-                    $ranks []= $v;
                 }
                 //写入年级排名
-                foreach ($ranks as $grade_rank){
+                foreach ($val as $grade_rank){
                     DB::table('scores')->where('id', $grade_rank->id)->update(['grade_rank' => $grade_rank->grade_rank]);
                 }
 
@@ -200,18 +198,16 @@ class ScoreController extends Controller {
                 }
                 //循环每个班级
                 foreach ($classes as $v){
-                    $c_ranks = [];
                     foreach ($v as $c_k => $c_v){
                         $c_v->class_rank = $c_k+1;
-                        if($c_k>1){
-                            if($c_v->score == $c_ranks[$c_k-1]->score){
-                                $c_v->class_rank = $c_ranks[$c_k-1]->class_rank;
+                        if($c_k>0){
+                            if($c_v->score == $v[$c_k-1]->score){
+                                $c_v->class_rank = $v[$c_k-1]->class_rank;
                             }
                         }
-                        $c_ranks []= $c_v;
                     }
                     //写入年级排名
-                    foreach ($c_ranks as $class_rank){
+                    foreach ($v as $class_rank){
                         DB::table('scores')->where('id', $class_rank->id)->update(['class_rank' => $class_rank->class_rank]);
                     }
                 }

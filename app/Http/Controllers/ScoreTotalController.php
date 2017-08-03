@@ -7,6 +7,7 @@ use App\Models\Exam;
 use App\Models\ScoreTotal;
 use App\Models\Subject;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
 
 class ScoreTotalController extends Controller {
@@ -183,6 +184,108 @@ class ScoreTotalController extends Controller {
             return response()->json(['statusCode' => 200, 'exam_subjects' => $exam_temp_subjects]);
         } else {
             return response()->json(['statusCode' => 500, 'message' => '查询失败!']);
+        }
+    }
+
+    public function statistics($exam_id){
+        $class_ids = DB::table('exams')->where('id', $exam_id)->value('class_ids');
+        $class = DB::table('classes')
+            ->whereIn('id', explode(',', $class_ids))
+            ->select('id', 'grade_id')
+            ->get();
+        //通过年级分组
+        $grades = [];
+        foreach($class as $item){
+            $grades[$item->grade_id][] = $item->id;
+        }
+        //循环每个年级
+        foreach ($grades as $class_ids_arr){
+            $data = [];
+            //查找此年级参与考试班级的所有学生
+            $students = DB::table('students')
+                ->whereIn('class_id',$class_ids_arr)
+                ->pluck('class_id', 'id');
+            //循环学生
+            foreach ($students as $student => $class_id){
+                $scores = DB::table('scores')
+                    ->where(['student_id' => $student, 'exam_id' => $exam_id])
+                    ->pluck('score','id');
+                $score = 0;
+                $na_subject_ids = '';
+                $subject_ids = '';
+                foreach ($scores as $id => $v){
+                    if($v == 0){
+                        $na_subject_ids .= ',' . $id;
+                    }else{
+                        $subject_ids .= ',' . $id;
+                    }
+                    $score += $v;
+                }
+                $insert = [
+                    'student_id' => $student,
+                    'class_id' => $class_id,
+                    'exam_id' => intval($exam_id),
+                    'score' => $score,
+                    'subject_ids' => empty($subject_ids) ? '' : substr($subject_ids,1),
+                    'na_subject_ids' => empty($na_subject_ids) ? '' : substr($na_subject_ids,1)
+                ];
+                $data []=$insert;
+            }
+            foreach ($data as $key => $row)
+            {
+                $score_sore[$key]  = $row['score'];
+            }
+            array_multisort($score_sore, SORT_DESC, $data);
+
+
+            $grade_ranks = [];
+            //计算年级排名
+            foreach ($data as $k => $v){
+                $v['grade_rank'] = $k+1;
+                if($k>0){
+                    if($v['score'] == $data[0]['score']){
+                        $v['grade_rank'] = $grade_ranks[0]['grade_rank'];
+                    }
+                }
+                $grade_ranks []= $v;
+            }
+            //通过班级分组
+            $classes = [];
+            foreach($grade_ranks as $item){
+                $classes[$item['class_id']][] = $item;
+            }
+            //循环每个班级
+            foreach ($classes as $v){
+                //计算班级排名
+                $inserts = [];
+                foreach ($v as $c_k => $c_v){
+                    $c_v['class_rank'] = $c_k+1;
+                    if($c_k>1){
+                        if($c_v['score'] == $v[$c_k-1]['score']){
+                            $c_v['class_rank'] = $inserts[$c_k-1]['class_rank'];
+                        }
+                    }
+                    unset($c_v['class_id']);
+                    $inserts []= $c_v;
+                }
+                $this->score_total->insert([[
+                    'student_id' => 1,
+                    'exam_id' => 1,
+                    'score' => 123,
+                    'subject_ids' => 1,
+                    'na_subject_ids' => 1,
+                    'class_rank' => 1,
+                    'grade_rank' => 1
+                ],[
+                    'student_id' => 1,
+                    'exam_id' => 1,
+                    'score' => 123,
+                    'subject_ids' => 1,
+                    'na_subject_ids' => 1,
+                    'class_rank' => 1,
+                    'grade_rank' => 1
+                ]]);
+            }
         }
     }
 }
