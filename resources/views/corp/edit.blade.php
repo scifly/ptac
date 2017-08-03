@@ -1,6 +1,6 @@
 @extends('layouts.master')
 @section('header')
-    <h2>编辑学校</h2>
+    <h2>编辑企业</h2>
 @endsection
 @section('content')
     {!! Form::model($corp, ['method' => 'put', 'id' => 'formCorp', 'data-parsley-validate' => 'true']) !!}

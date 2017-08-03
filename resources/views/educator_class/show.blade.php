@@ -15,9 +15,8 @@
     <p>Last edited: {{ $educatorClass->updated_at->diffForHumans() }}</p>
 @endsection
 @section('content')
-    <p>教职员工姓名：{{ $educatorClass->educator->user_id }}</p>
-    {{--<p>所属学校：{{ $subject->school->name }}</p>--}}
-    {{--<p>是否为副科：{{ $subject->isaux==1 ? '是' : '否' }}</p>--}}
-    {{--<p>满分：{{ $subject->max_score }}</p>--}}
-    {{--<p>及格分：{{ $subject->pass_score }}</p>--}}
+    <p>教职员工姓名：{{ $educatorClass->educator->user->realname }}</p>
+    <p>班级名称：{{ $educatorClass->squad->name }}</p>
+    <p>科目：{{ $educatorClass->subject->name }}</p>
+
 @endsection

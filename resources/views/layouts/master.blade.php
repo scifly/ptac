@@ -28,7 +28,7 @@
         <!-- Parsley style -->
         <link rel="stylesheet" href="{{ URL::asset('js/plugins/parsley/parsley.css') }}">
         <!-- switchery style -->
-        <link rel="stylesheet" href="{{ URL::asset('js/plugins/switchery/css/switchery.min.css') }}">
+        <link rel="stylesheet" href="{{ URL::asset('js/plugins/switchery/switchery.min.css') }}">
     @endisset
     @isset($datatable)
         <!-- DataTable style -->
@@ -571,11 +571,12 @@
     <!-- Select2 -->
     <script src="{{ URL::asset('js/plugins/select2/js/select2.min.js') }}"></script>
     <!-- switchery -->
-    <script src="{{ URL::asset('js/plugins/switchery/js/switchery.min.js') }}"></script>
+    <script src="{{ URL::asset('js/plugins/switchery/switchery.min.js') }}"></script>
+    <script src="{{ URL::asset('js/switcher.init.js') }}"></script>
 @endisset
 @isset($datatable)
     <!-- DataTable -->
-    <script src="{{ URL::asset('js/plugins/datatables/datatables.js') }}"></script>
+    <script src="{{ URL::asset('js/plugins/datatables/datatables.min.js') }}"></script>
 @endisset
 <!-- Custom JS -->
 <script src="{{ URL::asset('js/admin.crud.js') }}"></script>

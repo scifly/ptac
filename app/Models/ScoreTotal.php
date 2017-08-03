@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use App\Facades\DatatableFacade as Datatable;
 
 /**
  * App\Models\ScoreTotal
@@ -32,9 +33,9 @@ use Illuminate\Database\Eloquent\Model;
  * 总分数
  */
 class ScoreTotal extends Model {
-    //
+
     protected $table = 'score_totals';
-    protected $fillable =[
+    protected $fillable = [
         'student_id',
         'exam_id',
         'score',
@@ -42,8 +43,67 @@ class ScoreTotal extends Model {
         'na_subject_ids',
         'class_rank',
         'grade_rank',
-        'created_at',
-        'updated_at',
+        'enabled'
     ];
+
+    public function student() {
+        return $this->belongsTo('App\Models\Student');
+    }
+
+    public function exam() {
+        return $this->belongsTo('App\Models\Exam');
+    }
+
+    function subjects() {
+        return $this->belongsTo('App\Models\Subject');
+    }
+
+    public function datatable() {
+
+        $columns = [
+            ['db' => 'ScoreTotal.id', 'dt' => 0],
+            ['db' => 'Student.student_number', 'dt' => 1],
+            ['db' => 'User.realname', 'dt' => 2],
+            ['db' => 'Exam.name as examname', 'dt' => 3],
+            ['db' => 'ScoreTotal.score', 'dt' => 4],
+            ['db' => 'ScoreTotal.class_rank', 'dt' => 5],
+            ['db' => 'ScoreTotal.grade_rank', 'dt' => 6],
+            ['db' => 'ScoreTotal.created_at', 'dt' => 7],
+            ['db' => 'ScoreTotal.updated_at', 'dt' => 8],
+            [
+                'db' => 'ScoreTotal.enabled', 'dt' => 9,
+                'formatter' => function ($d, $row) {
+                    return Datatable::dtOps($this, $d, $row);
+                }
+            ]
+        ];
+        $joins = [
+            [
+                'table' => 'students',
+                'alias' => 'Student',
+                'type' => 'INNER',
+                'conditions' => [
+                    'Student.id = ScoreTotal.student_id'
+                ]
+            ],
+            [
+                'table' => 'exams',
+                'alias' => 'Exam',
+                'type' => 'INNER',
+                'conditions' => [
+                    'Exam.id = ScoreTotal.exam_id'
+                ]
+            ],
+            [
+                'table' => 'users',
+                'alias' => 'User',
+                'type' => 'INNER',
+                'conditions' => [
+                    'User.id = Student.user_id'
+                ]
+            ]
+        ];
+        return Datatable::simple($this, $columns, $joins);
+    }
 
 }
