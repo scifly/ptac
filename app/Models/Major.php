@@ -23,6 +23,8 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|Major whereSchoolId($value)
  * @method static Builder|Major whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property-read \App\Models\MajorSubject $majorSubject
+ * @property-read \App\Models\School $school
  */
 class Major extends Model {
     //

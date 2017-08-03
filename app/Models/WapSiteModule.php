@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use App\Facades\DatatableFacade as Datatable;
 
 /**
  * App\Models\WapSiteModule
@@ -24,6 +25,8 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|WapSiteModule whereWapSiteId($value)
  * @mixin \Eloquent
  * 网站类型
+ * @property-read \App\Models\WapSite $belongsToWs
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\WsmArticle[] $hasManyArticle
  */
 class WapSiteModule extends Model {
     //
@@ -37,14 +40,47 @@ class WapSiteModule extends Model {
         'created_at',
         'updated_at',
     ];
-    public function hasManyArticle()
+    public function wsmarticles()
     {
         return $this->hasMany('App\Models\WsmArticle','wsm_id','id');
     }
-    public function belongsToWs()
+    public function wapsite()
     {
         return $this->belongsTo('App\Models\WapSite', 'wap_site_id', 'id');
 
+    }
+
+    /**
+     * @return array
+     */
+    public function datatable() {
+
+        $columns = [
+            ['db' => 'WapSiteModule.id', 'dt' => 0],
+            ['db' => 'WapSiteModule.name', 'dt' => 1],
+            ['db' => 'WapSite.site_title', 'dt' => 2],
+            ['db' => 'WapSiteModule.created_at', 'dt' => 3],
+            ['db' => 'WapSiteModule.updated_at', 'dt' => 4],
+
+            [
+                'db' => 'WapSiteModule.enabled', 'dt' => 5,
+                'formatter' => function ($d, $row) {
+                    return Datatable::dtOps($this, $d, $row);
+                }
+            ]
+        ];
+        $joins = [
+            [
+                'table' => 'wap_sites',
+                'alias' => 'WapSite',
+                'type'  => 'INNER',
+                'conditions' => [
+                    'WapSite.id = WapSiteModule.wap_site_id'
+                ]
+            ]
+        ];
+
+        return Datatable::simple($this,  $columns, $joins);
     }
 
 }

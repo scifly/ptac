@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|PollQuestionnaireSubject whereSubjectType($value)
  * @method static Builder|PollQuestionnaireSubject whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property-read \App\Models\PollQuestionnaireAnswer $pollquestionnaireAnswer
  */
 class PollQuestionnaireSubject extends Model {
     //

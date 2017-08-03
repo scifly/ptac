@@ -28,6 +28,7 @@ use App\Facades\DatatableFacade as Datatable;
  * @method static Builder|ProcedureStep whereRemark($value)
  * @method static Builder|ProcedureStep whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property-read \App\Models\Procedure $procedure
  */
 class ProcedureStep extends Model {
     //
@@ -110,7 +111,7 @@ class ProcedureStep extends Model {
      */
     public function operate_ids($user_ids){
 
-        $user_ids = explode('|',$user_ids);
+        $user_ids = explode(',',$user_ids);
 
         $educators = array();
         foreach ($user_ids as $auid) {
@@ -129,6 +130,6 @@ class ProcedureStep extends Model {
      * @return string
      */
     public function join_ids($arry_id){
-        return implode('|',$arry_id);
+        return implode(',',$arry_id);
     }
 }

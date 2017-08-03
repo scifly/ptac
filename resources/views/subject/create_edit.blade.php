@@ -62,10 +62,10 @@
                 {!! Form::label('grade_ids', '年级名称',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-3">
                     {{--{!! Form::select('grade_ids[]', $grades, $abcs, ['class' => 'form-control', 'multiple' => 'multiple']) !!}--}}
-                    <select multiple="multiple" name="grade_ids[]" id="grade_ids">
+                    <select multiple name="grade_ids[]" id="grade_ids">
                         @foreach($grades as $key => $value)
-                            @if(isset($gradeId))
-                                <option value="{{$key}}" @if(array_key_exists($key,$gradeId))selected="selected"@endif>
+                            @if(isset($selectedGrades))
+                                <option value="{{$key}}" @if(array_key_exists($key, $selectedGrades)) selected @endif>
                                     {{$value}}
                                 </option>
                             @else

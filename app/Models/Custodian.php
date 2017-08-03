@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|Custodian whereUpdatedAt($value)
  * @method static Builder|Custodian whereUserId($value)
  * @mixin \Eloquent
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Student[] $students
  */
 class Custodian extends Model
 {
@@ -34,14 +35,10 @@ class Custodian extends Model
         return $this->belongsTo('App\Models\User');
     }
 
-    public function students()
-    {
-        return $this->belongsToMany('App\Model\Student');
-    }
 
     public function custodianStudent()
     {
-        return $this->hasOne('App\Models\CustodianStudent');
+        return $this->hasMany('App\Models\CustodianStudent');
     }
 
 }

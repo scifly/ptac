@@ -3,6 +3,7 @@ namespace App\Http\ViewComposers;
 
 use App\Models\Custodian;
 use App\Models\User;
+use App\Models\Student;
 use Illuminate\Contracts\View\View;
 
 class CustodianStudentComposer {
@@ -11,34 +12,38 @@ class CustodianStudentComposer {
 
     protected $user;
 
-    public function __construct(Custodian $custodian, User $user) {
+    public function __construct(Custodian $custodian, User $user, Student $student) {
 
         $this->custodian = $custodian;
         $this->user = $user;
+        $this->student = $student;
 
     }
 
     public function compose(View $view) {
 
-        $custodian = $this->custodian->pluck('user_id', 'id')->toArray();
-
-        $cus_name = [];
-
-        foreach ($custodian as $k=>$v)
+        $custodians =Custodian::with('user')->get()->toArray();
+        if(!empty($custodians))
         {
-            $user = $this->user->where('id',$v)->pluck('realname');
-
-            $cus_name[$k] = $user[0];
-
+            foreach ($custodians as $k=>$v)
+            {
+                $cus_name[$v['id']] = $v['user']['realname'];
+            }
+        }
+        $students = Student::with('user')->get()->toArray();
+        if(!empty($students))
+        {
+            foreach ($students as $k=>$v)
+            {
+                $student_name[$v['id']] = $v['user']['realname'];
+            }
         }
 
-        $view->with(['cus_name' => $cus_name ]);
+        $view->with([
+            'student_name' => $student_name,
+            'cus_name' => $cus_name]
+        );
 
-//        $view->with([
-//
-//            'squad' => $this->squad->pluck('name', 'id'),
-//
-//        ]);
 
 
     }

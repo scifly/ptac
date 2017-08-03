@@ -37,24 +37,16 @@ var crud = {
     },
     init: function(homeUrl, formId, ajaxUrl, requestType) {
         // Select2
-        console.log($('select'));
-        if($('select').select2()){
-            $('select').select2();
-
-        }
+        $('select').select2();
 
         // Switchery
-        var elems = Array.prototype.slice.call(document.querySelectorAll('.js-switch'));
-        elems.forEach(function (html) {
-            // noinspection JSUnusedLocalSymbols
-            var switchery = new Switchery(html, {size: 'small'});
-        });
+        Switcher.init();
 
         // Cancel button
         $('#cancel').on('click', function() { window.location = homeUrl; });
 
-        var $form = $('#' + formId);
         // Parsley
+        var $form = $('#' + formId);
         $form.parsley().on("form:validated", function () {
             if ($('.parsley-error').length === 0) {
                 crud.ajaxRequest(requestType, ajaxUrl, $form.serialize(), $form[0]);
@@ -76,21 +68,18 @@ var crud = {
         var id, $row;
 
         $(document).on('click', '.fa-trash', function () {
-            id = $(this).attr('id');
-            $row = $(this).parents().eq(1);
+            id = $(this).parents().eq(0).attr('id');
+            $row = $(this).parents().eq(2);
             $('#modal-dialog').modal({backdrop: true});
         });
-        $(document).on('click', '.fa-show', function () {
-            id = $(this).attr('id');
-            $row = $(this).parents().eq(1);
-
-            $('#modal-show-company').modal({backdrop: true});
-        });
-
-        $(document).on('click','.fa-eye',function () {
+        // $(document).on('click', '.fa-show', function () {
+        //     id = $(this).attr('id');
+        //     $row = $(this).parents().eq(1);
+        //
+        //     $('#modal-show-company').modal({backdrop: true});
+        // });
 
 
-        })
         $('#confirm-delete').on('click', function () {
             crud.ajaxRequest(
                 'DELETE', 'delete/' + id,

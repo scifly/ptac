@@ -10,6 +10,24 @@
                 </div>
             </div>
             <div class="form-group">
+                {!! Form::label('student_id', '学生姓名',['class' => 'col-sm-4 control-label']) !!}
+                <div class="col-sm-2">
+                    {!! Form::select('student_id', $student_name, null, ['class' => 'form-control']) !!}
+                </div>
+            </div>
+            <div class="form-group">
+                {!! Form::label('relationship', '关系',['class' => 'col-sm-4 control-label']) !!}
+                <div class="col-sm-2">
+                    {!! Form::text('relationship', null, [
+                    'class' => 'form-control',
+                    'placeholder' => '不能少于2个汉字',
+                    'data-parsley-required' => 'true',
+                    'data-parsley-minlength' => '2',
+
+                    ]) !!}
+                </div>
+            </div>
+            <div class="form-group">
                 <div class="col-sm-3 col-sm-offset-4">
                     {!! Form::radio('enabled', '1', true) !!}
                     {!! Form::label('enabled', '启用') !!}

@@ -2,13 +2,13 @@
 @section('header')
     <a href="{{ url('/') }}">Back to overview</a>
     <h2>
-        {{ $grade->name }}
+        {{ $examType->name }}
     </h2>
-    <a href="{{ url('grades/edit/' . $grade->id ) }}">
+    <a href="{{ url('exam_types/edit/' . $examType->id ) }}">
         <span class="glyphicon glyphicon-edit"></span>
         Edit
     </a>
-    <a href="{{ url('grades/delete/' . $grade->id ) }}">
+    <a href="{{ url('exam_types/delete/' . $examType->id ) }}">
         <span class="glyphicon glyphicon-trash"></span>
         Delete
     </a>
@@ -18,11 +18,7 @@
 
 
     <dl class="dl-horizontal">
-        <dt>所属学校：</dt><dd>{{ $grade->school->name }}</dd>
-        <br/>
-        <dt>教职员工组：</dt>
-        @foreach($educators as $v)
-            <dd>{{ $v['username'] }}</dd>
-            @endforeach
+        <dt>备注：</dt><dd>{{ $examType->remark }}</dd>
+
     </dl>
 @endsection
