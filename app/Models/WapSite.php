@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use App\Facades\DatatableFacade as Datatable;
 
 /**
  * App\Models\WapSite
@@ -28,7 +29,6 @@ use Illuminate\Database\Eloquent\Model;
  */
 class WapSite extends Model {
     //
-    protected $table = 'wap_site';
     protected $fillable = [
         'id',
         'school_id',
@@ -37,8 +37,45 @@ class WapSite extends Model {
         'created_at',
         'updated_at',
     ];
-    public function hasManyWsm()
+    public function wapsitemodule()
     {
         return $this->hasMany('App\Models\WapSiteModule','wap_site_id','id');
+    }
+    public function school()
+    {
+        return $this->belongsTo('App\Models\School ');
+    }
+
+    /**
+     * @return array
+     */
+    public function datatable() {
+
+        $columns = [
+            ['db' => 'WapSite.id', 'dt' => 0],
+            ['db' => 'School.name', 'dt' => 1],
+            ['db' => 'WapSite.site_title', 'dt' => 2],
+            ['db' => 'WapSite.created_at', 'dt' => 3],
+            ['db' => 'WapSite.updated_at', 'dt' => 4],
+
+            [
+                'db' => 'WapSite.enabled', 'dt' => 5,
+                'formatter' => function ($d, $row) {
+                    return Datatable::dtOps($this, $d, $row);
+                }
+            ]
+        ];
+        $joins = [
+            [
+                'table' => 'schools',
+                'alias' => 'School',
+                'type'  => 'INNER',
+                'conditions' => [
+                    'School.id = WapSite.school_id'
+                ]
+            ]
+        ];
+
+        return Datatable::simple($this,  $columns, $joins);
     }
 }

@@ -63,12 +63,17 @@ class GradeController extends Controller
     public function store(GradeRequest $request)
     {
         // request
+        $ids = $request->input('educator_ids');
+
         $data['name'] = $request->input('name');
         $data['school_id'] = $request->input('school_id');
-        $ids = $request->input('educator_ids');
         $data['educator_ids'] = implode(',', $ids);
         $data['enabled'] = $request->input('enabled');
-        $row = $this->grade->where(['school_id' => $data['school_id'], 'name' => $data['name']])->first();
+
+        $row = $this->grade->where([
+                    'school_id' => $data['school_id'],
+                    'name' => $data['name']
+                ])->first();
         if(!empty($row)){
             $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
             $this->result['message'] = '年级名称重复！';

@@ -61,21 +61,14 @@ Route::delete('subjects/delete/{id}', 'SubjectController@destroy');
 Route::get('subjects/query/{id}', 'SubjectController@query');
 
 // 科目次分类
-Route::get('subjectModules/index', 'SubjectModulesController@index');
-Route::get('subjectModules/create', 'SubjectModulesController@create');
-Route::post('subjectModules/store', 'SubjectModulesController@store');
-Route::get('subjectModules/show/{id}', 'SubjectModulesController@show');
-Route::get('subjectModules/edit/{id}', 'SubjectModulesController@edit');
-Route::put('subjectModules/update/{id}', 'SubjectModulesController@update');
-Route::delete('subjectModules/delete/{id}', 'SubjectModulesController@destroy');
-Route::get('subjects/index', 'SubjectController@index');
-Route::get('subjects/create', 'SubjectController@create');
-Route::post('subjects/store', 'SubjectController@store');
-Route::get('subjects/show/{id}', 'SubjectController@show');
-Route::get('subjects/edit/{id}', 'SubjectController@edit');
-Route::put('subjects/update/{id}', 'SubjectController@update');
-Route::delete('subjects/delete/{id}', 'SubjectController@destroy');
-Route::get('subjects/query/{id}', 'SubjectController@query');
+Route::get('subject_modules/index', 'SubjectModuleController@index');
+Route::get('subject_modules/create', 'SubjectModuleController@create');
+Route::post('subject_modules/store', 'SubjectModuleController@store');
+Route::get('subject_modules/show/{id}', 'SubjectModuleController@show');
+Route::get('subject_modules/edit/{id}', 'SubjectModuleController@edit');
+Route::put('subject_modules/update/{id}', 'SubjectModuleController@update');
+Route::delete('subject_modules/delete/{id}', 'SubjectModuleController@destroy');
+
 
 // 权限设置
 Route::get('groups/index', 'GroupController@index');
@@ -131,6 +124,24 @@ Route::get('educators/edit/{id}', 'EducatorController@edit');
 Route::put('educators/update/{id}', 'EducatorController@update');
 Route::delete('educators/delete/{id}', 'EducatorController@destroy');
 
+// 教职员工-班级
+Route::get('educators_classes/index', 'EducatorClassController@index');
+Route::get('educators_classes/create', 'EducatorClassController@create');
+Route::post('educators_classes/store', 'EducatorClassController@store');
+Route::get('educators_classes/show/{id}', 'EducatorClassController@show');
+Route::get('educators_classes/edit/{id}', 'EducatorClassController@edit');
+Route::put('educators_classes/update/{id}', 'EducatorClassController@update');
+Route::delete('educators_classes/delete/{id}', 'EducatorClassController@destroy');
+
+//监护人-学生
+Route::get('custodians_students/index', 'CustodianStudentController@index');
+Route::get('custodians_students/create', 'CustodianStudentController@create');
+Route::post('custodians_students/store', 'CustodianStudentController@store');
+Route::get('custodians_students/show/{id}', 'CustodianStudentController@show');
+Route::get('custodians_students/edit/{id}', 'CustodianStudentController@edit');
+Route::put('custodians_students/update/{id}', 'CustodianStudentController@update');
+Route::delete('custodians_students/delete/{id}', 'CustodianStudentController@destroy');
+
 // 学生设置
 Route::get('students/index', 'StudentController@index');
 Route::get('students/create', 'StudentController@create');
@@ -168,7 +179,7 @@ Route::get('score_ranges/edit/{id}', 'ScoreRangeController@edit');
 Route::put('score_ranges/update/{id}', 'ScoreRangeController@update');
 Route::delete('score_ranges/delete/{id}', 'ScoreRangeController@destroy');
 
-//总成绩设置
+// 总成绩设置
 Route::get('score_totals/index', 'ScoreTotalController@index');
 Route::get('score_totals/create', 'ScoreTotalController@create');
 Route::post('score_totals/store', 'ScoreTotalController@store');
@@ -177,6 +188,7 @@ Route::get('score_totals/edit/{id}', 'ScoreTotalController@edit');
 Route::put('score_totals/update/{id}', 'ScoreTotalController@update');
 Route::delete('score_totals/delete/{id}', 'ScoreTotalController@destroy');
 Route::get('score_totals/getExamSubjects/{id}', 'ScoreTotalController@getExamSubjects');
+
 
 # 考勤管理
 //考勤机设置
@@ -187,7 +199,6 @@ Route::get('attendance_machines/show/{id}', 'AttendanceMachineController@show');
 Route::get('attendance_machines/edit/{id}', 'AttendanceMachineController@edit');
 Route::put('attendance_machines/update/{id}', 'AttendanceMachineController@update');
 Route::delete('attendance_machines/delete/{id}', 'AttendanceMachineController@destroy');
-
 
 
 //流程类型设置
@@ -206,7 +217,7 @@ Route::post('procedures/store', 'ProcedureController@store');
 Route::get('procedures/show/{id}', 'ProcedureController@show');
 Route::get('procedures/edit/{id}', 'ProcedureController@edit');
 Route::put('procedures/update/{id}', 'ProcedureController@update');
-Route::delete('procedures/delete/{id}', 'ProcedureController@destroy');
+Route::delete('procedures/getSchoolEducators/{id}', 'ProcedureController@getSchoolEducators');
 
 //流程步骤设置
 Route::get('procedure_steps/index', 'ProcedureStepController@index');
@@ -216,7 +227,7 @@ Route::get('procedure_steps/show/{id}', 'ProcedureStepController@show');
 Route::get('procedure_steps/edit/{id}', 'ProcedureStepController@edit');
 Route::put('procedure_steps/update/{id}', 'ProcedureStepController@update');
 Route::delete('procedure_steps/delete/{id}', 'ProcedureStepController@destroy');
-Route::get('procedure_steps/getSchoolEducators/{id}', 'ProcedureStepController@getSchoolEducators');
+Route::get('procedure_steps/delete/{id}', 'ProcedureStepController@destroy');
 
 //流程日志
 Route::get('procedure_logs/index', 'ProcedureLogController@index');
@@ -240,3 +251,12 @@ Route::get('exams/show/{id}', 'ExamController@show');
 Route::get('exams/edit/{id}', 'ExamController@edit');
 Route::put('exams/update/{id}', 'ExamController@update');
 Route::delete('exams/delete/{id}', 'ExamController@destroy');
+
+//微网站管理
+Route::get('wapsites/index', 'WapSiteController@index');
+Route::get('wapsites/create', 'WapSiteController@create');
+Route::post('wapsites/store', 'WapSiteController@store');
+Route::get('wapsites/show/{id}', 'WapSiteController@show');
+Route::get('wapsites/edit/{id}', 'WapSiteController@edit');
+Route::put('wapsites/update/{id}', 'WapSiteController@update');
+Route::delete('wapsites/delete/{id}', 'WapSiteController@destroy');

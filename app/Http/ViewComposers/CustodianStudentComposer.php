@@ -22,33 +22,27 @@ class CustodianStudentComposer {
 
     public function compose(View $view) {
 
-        $custodian = $this->custodian->pluck('user_id','id')->toArray();
-
-        //去除数组冲重复的user_id值
-        $custodian = array_unique($custodian);
-        foreach ($custodian as $k=>$v)
+        $custodians =Custodian::with('user')->get()->toArray();
+        if(!empty($custodians))
         {
-            $user = $this->user->where('id',$v)->pluck('realname');
-
-            //$k为cunstodians表中的id
-            $cus_name[$k] = $user[0];
-
+            foreach ($custodians as $k=>$v)
+            {
+                $cus_name[$v['id']] = $v['user']['realname'];
+            }
         }
-        $view->with([ 'cus_name' => $cus_name ]);
-
-        $student = $this->student->pluck('user_id','id')->toArray();
-
-        $student = array_unique($student);
-
-        foreach ($student as $k=>$v)
+        $students = Student::with('user')->get()->toArray();
+        if(!empty($students))
         {
-            $user = $this->user->where('id',$v)->pluck('realname');
-            //$k为students表中的id
-            $student_name[$k] = $user[0];
-
+            foreach ($students as $k=>$v)
+            {
+                $student_name[$v['id']] = $v['user']['realname'];
+            }
         }
 
-        $view->with([ 'student_name' => $student_name ]);
+        $view->with([
+            'student_name' => $student_name,
+            'cus_name' => $cus_name]
+        );
 
 
 

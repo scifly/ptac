@@ -93,7 +93,6 @@ class GroupController extends Controller
      */
     public function edit($id)
     {
-
         return view('group.edit', [
             'js' => 'js/group/edit.js',
             'group' => $this->group->findOrFail($id),

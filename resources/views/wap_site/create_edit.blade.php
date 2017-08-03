@@ -2,31 +2,27 @@
     <div class="box-header"></div>
     <div class="box-body">
         <div class="form-horizontal">
-
             <div class="form-group">
-                {!! Form::label('custodian_id', '监护人姓名',['class' => 'col-sm-4 control-label']) !!}
-                <div class="col-sm-2">
-                    {!! Form::select('custodian_id', $cus_name, null, ['class' => 'form-control']) !!}
-                </div>
-            </div>
-            <div class="form-group">
-                {!! Form::label('student_id', '学生姓名',['class' => 'col-sm-4 control-label']) !!}
-                <div class="col-sm-2">
-                    {!! Form::select('student_id', $student_name, null, ['class' => 'form-control']) !!}
-                </div>
-            </div>
-            <div class="form-group">
-                {!! Form::label('relationship', '关系',['class' => 'col-sm-4 control-label']) !!}
-                <div class="col-sm-2">
-                    {!! Form::text('relationship', null, [
+                {!! Form::label('site_title', '首页抬头',['class' => 'col-sm-4 control-label']) !!}
+                <div class="col-sm-3">
+                    {!! Form::text('site_title', null, [
                     'class' => 'form-control',
-                    'placeholder' => '不能少于2个汉字',
+                    'placeholder' => '不能超过40个汉字',
                     'data-parsley-required' => 'true',
+                    'data-parsley-maxlength' => '40',
                     'data-parsley-minlength' => '2',
 
                     ]) !!}
                 </div>
             </div>
+            <div class="form-group">
+                {!! Form::label('school_id', '所属学校',['class' => 'col-sm-4 control-label']) !!}
+                <div class="col-sm-2">
+                    {!! Form::select('school_id', $schools, null, ['class' => 'form-control']) !!}
+                </div>
+            </div>
+
+
             <div class="form-group">
                 <div class="col-sm-3 col-sm-offset-4">
                     {!! Form::radio('enabled', '1', true) !!}

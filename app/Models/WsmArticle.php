@@ -46,7 +46,7 @@ class WsmArticle extends Model {
         'updated_at',
     ];
 
-    public function wapSiteModule()
+    public function wapsitemodule()
     {
         return $this->belongsTo('App\Models\WapSiteModule', 'wsm_id', 'id');
     }
