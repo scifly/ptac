@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ScoreRequest;
 use App\Models\Score;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
 
 class ScoreController extends Controller {
@@ -150,4 +151,74 @@ class ScoreController extends Controller {
         }
         return response()->json($this->result);
     }
+
+    public function statistics($exam_id){
+        $class_ids = DB::table('exams')->where('id', $exam_id)->value('class_ids');
+        $class = DB::table('classes')
+            ->whereIn('id', explode(',', $class_ids))
+            ->select('id', 'grade_id')
+            ->get();
+        //通过年级分组
+        $grades = [];
+        foreach($class as $item){
+            $grades[$item->grade_id][] = $item->id;
+        }
+        //循环每个年级
+        foreach ($grades as $class_ids_arr){
+            //查找此年级所有班级的学生的各科成绩
+            $score = DB::table('scores')
+                ->join('students', 'students.id', '=', 'scores.student_id')
+                ->whereIn('students.class_id',$class_ids_arr)
+                ->where('scores.exam_id', $exam_id)
+                ->select('scores.id', 'scores.student_id', 'scores.subject_id', 'scores.score', 'students.class_id')
+                ->orderBy('scores.score', 'desc')
+                ->get();
+            //通过科目分组
+            $subject = [];
+            foreach($score as $item){
+                $subject[$item->subject_id][] = $item;
+            }
+            //循环每个科目
+            foreach ($subject as $val){
+                $ranks = [];
+                foreach ($val as $k => $v){
+                    $v->grade_rank = $k+1;
+                    if($k>1){
+                        if($v->score == $ranks[$k-1]->score){
+                            $v->grade_rank = $ranks[$k-1]->grade_rank;
+                        }
+                    }
+                    $ranks []= $v;
+                }
+                //写入年级排名
+                foreach ($ranks as $grade_rank){
+                    DB::table('scores')->where('id', $grade_rank->id)->update(['grade_rank' => $grade_rank->grade_rank]);
+                }
+
+                //通过班级分组
+                $classes = [];
+                foreach($val as $item){
+                    $classes[$item->class_id][] = $item;
+                }
+                //循环每个班级
+                foreach ($classes as $v){
+                    $c_ranks = [];
+                    foreach ($v as $c_k => $c_v){
+                        $c_v->class_rank = $c_k+1;
+                        if($c_k>1){
+                            if($c_v->score == $c_ranks[$c_k-1]->score){
+                                $c_v->class_rank = $c_ranks[$c_k-1]->class_rank;
+                            }
+                        }
+                        $c_ranks []= $c_v;
+                    }
+                    //写入年级排名
+                    foreach ($c_ranks as $class_rank){
+                        DB::table('scores')->where('id', $class_rank->id)->update(['class_rank' => $class_rank->class_rank]);
+                    }
+                }
+            }
+        }
+    }
 }
+
