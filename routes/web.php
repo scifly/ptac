@@ -252,9 +252,7 @@ Route::get('exams/edit/{id}', 'ExamController@edit');
 Route::put('exams/update/{id}', 'ExamController@update');
 Route::delete('exams/delete/{id}', 'ExamController@destroy');
 
-<<<<<<< HEAD
 #问卷调查参与
-
 Route::group(['prefix' => 'pollQuestionnaireParticpation'],function(){
     Route::get('/', 'PqParticipantController@index');
     Route::get('/index', 'PqParticipantController@index');
@@ -262,7 +260,7 @@ Route::group(['prefix' => 'pollQuestionnaireParticpation'],function(){
     Route::put('/update', 'PqParticipantController@update')->name("pqp_update");
 
 });
-=======
+
 //微网站管理
 Route::get('wapsites/index', 'WapSiteController@index');
 Route::get('wapsites/create', 'WapSiteController@create');
@@ -289,4 +287,4 @@ Route::get('wsmarticles/show/{id}', 'WsmArticleController@show');
 Route::get('wsmarticles/edit/{id}', 'WsmArticleController@edit');
 Route::put('wsmarticles/update/{id}', 'WsmArticleController@update');
 Route::delete('wsmarticles/delete/{id}', 'WsmArticleController@destroy');
->>>>>>> origin
+
