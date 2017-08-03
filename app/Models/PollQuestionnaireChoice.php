@@ -17,6 +17,11 @@ class PollQuestionnaireChoice extends Model {
 
     public function pollquestionnaireSubject()
     {
-        return $this->belongsTo('App\Models\PollQuestionnaireSubject');
+        return $this->belongsTo('App\Models\PollQuestionnaireSubject'
+        ,'pqs_id'
+        ,'id');
     }
+
+
+
 }

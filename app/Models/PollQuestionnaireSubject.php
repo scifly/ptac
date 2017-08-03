@@ -30,6 +30,16 @@ class PollQuestionnaireSubject extends Model {
 
     public function pollquestionnaireAnswer()
     {
-        return $this->hasOne('App\Models\PollQuestionnaireAnswer');
+        return $this->hasOne('App\Models\PollQuestionnaireAnswer'
+        ,'pqs_id','id');
+    }
+    public function pollquestionnairechoice(){
+        return $this
+            ->hasMany("App\Models\PollQuestionnaireChoice"
+                ,'pqs_id','id');
+    }
+    public function pollquestionnaire(){
+        return $this->hasOne('App\Models\PollQuestionnaire'
+            ,'pq_id','id');
     }
 }

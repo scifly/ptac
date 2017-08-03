@@ -239,3 +239,13 @@ Route::get('exams/show/{id}', 'ExamController@show');
 Route::get('exams/edit/{id}', 'ExamController@edit');
 Route::put('exams/update/{id}', 'ExamController@update');
 Route::delete('exams/delete/{id}', 'ExamController@destroy');
+
+#问卷调查参与
+
+Route::group(['prefix' => 'pollQuestionnaireParticpation'],function(){
+    Route::get('/', 'PqParticipantController@index');
+    Route::get('/index', 'PqParticipantController@index');
+    Route::post('/show/{id}', 'PqParticipantController@show');
+    Route::put('/update', 'PqParticipantController@update')->name("pqp_update");
+
+});

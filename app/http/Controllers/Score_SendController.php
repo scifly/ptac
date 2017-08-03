@@ -6,8 +6,6 @@ use App\Models\Exam;
 use App\Models\School;
 //用到年级数据模型
 use App\Models\Grade;
-//班级数据模型
-use App\models\Classes as classes;
 //考试数据模型
 
 use App\Models\Score;
@@ -15,10 +13,7 @@ use App\Models\ScoreTotal;
 use App\Models\Squad;
 use App\Models\Student;
 use App\Models\Subject;
-use Illuminate\Support\Collection;
-use Illuminate\Http\Request;
 
-use Illuminate\Support\Facades\DB as DB;
 
 
 //成绩发送控制
@@ -135,6 +130,7 @@ class Score_SendController extends Controller
                 ->where('grade_id',$grade_id)
                 ->join('scores','students.id','scores.student_id')
                 ->join('exams','exams.id','scores.exam_id')
+                #获取当前考试
                 ->where('exams.id',$examId)
                 ->join('subjects','scores.subject_id','subjects.id')
                 ->join('users','students.user_id','users.id')
@@ -148,6 +144,7 @@ class Score_SendController extends Controller
                 ->join('classes','students.class_id','classes.id')
                 ->join('scores','students.id','scores.student_id')
                 ->join('exams','exams.id','scores.exam_id')
+                #获取当前考试
                 ->where('exams.id',$examId)
                 ->join('subjects','scores.subject_id','subjects.id')
                 ->join('users','students.user_id','users.id')
