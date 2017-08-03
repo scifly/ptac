@@ -90,16 +90,16 @@ class SubjectController extends Controller {
         
         $subject = $this->subject->findOrFail($id)->toArray();
         $ids = explode(',', $subject['grade_ids']);
-        $gradeId = [];
+        $selectedGrades = [];
         foreach ($ids as $id) {
             $grade = Grade::whereId($id)->toArray();
-            $gradeId[$id] = $grade['name'];
+            $selectedGrades[$id] = $grade['name'];
         }
         return view('subject.edit', [
             'js' => 'js/subject/edit.js',
             'form' => true,
             'subject' => $subject,
-            'gradeId' => $gradeId
+            'selectedGrades' => $selectedGrades
         ]);
         
     }
