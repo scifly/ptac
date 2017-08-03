@@ -34,6 +34,7 @@ class ComposerServiceProvider extends ServiceProvider {
         View::composer('exam.create_edit', 'App\Http\ViewComposers\ExamComposer');
         View::composer('action.create_edit', 'App\Http\ViewComposers\ActionComposer');
         View::composer('wap_site.create_edit', 'App\Http\ViewComposers\WapSiteComposer');
+        View::composer('score_total.create_edit', 'App\Http\ViewComposers\ScoreComposer');
 
     }
 
