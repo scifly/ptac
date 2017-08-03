@@ -73,7 +73,12 @@ class ScoreTotal extends Model {
             [
                 'db' => 'ScoreTotal.enabled', 'dt' => 9,
                 'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($this, $d, $row);
+
+                    $id = $row['id'];
+                    $showLink = sprintf(Datatable::DT_LINK_SHOW, $id);
+
+                    return Datatable::DT_SPACE . $showLink;
+
                 }
             ]
         ];

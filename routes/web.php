@@ -210,6 +210,7 @@ Route::get('procedure_types/edit/{id}', 'ProcedureTypeController@edit');
 Route::put('procedure_types/update/{id}', 'ProcedureTypeController@update');
 Route::delete('procedure_types/delete/{id}', 'ProcedureTypeController@destroy');
 
+
 //流程设置
 Route::get('procedures/index', 'ProcedureController@index');
 Route::get('procedures/create', 'ProcedureController@create');
@@ -217,7 +218,6 @@ Route::post('procedures/store', 'ProcedureController@store');
 Route::get('procedures/show/{id}', 'ProcedureController@show');
 Route::get('procedures/edit/{id}', 'ProcedureController@edit');
 Route::put('procedures/update/{id}', 'ProcedureController@update');
-Route::delete('procedures/getSchoolEducators/{id}', 'ProcedureController@getSchoolEducators');
 
 //流程步骤设置
 Route::get('procedure_steps/index', 'ProcedureStepController@index');
@@ -227,7 +227,7 @@ Route::get('procedure_steps/show/{id}', 'ProcedureStepController@show');
 Route::get('procedure_steps/edit/{id}', 'ProcedureStepController@edit');
 Route::put('procedure_steps/update/{id}', 'ProcedureStepController@update');
 Route::delete('procedure_steps/delete/{id}', 'ProcedureStepController@destroy');
-Route::get('procedure_steps/delete/{id}', 'ProcedureStepController@destroy');
+Route::get('procedure_steps/getSchoolEducators/{id}', 'ProcedureStepController@getSchoolEducators');
 
 //流程日志
 Route::get('procedure_logs/index', 'ProcedureLogController@index');
