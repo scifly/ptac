@@ -134,26 +134,26 @@ class ExamController extends Controller
         $classes = DB::table('classes')
             ->whereIn('id', $class )
             ->get(['id','name']);
-        $classIds = [];
+        $selectedClasses = [];
         foreach ($classes as $value) {
-            $classIds[$value->id] = $value->name;
+            $selectedClasses[$value->id] = $value->name;
         }
 
         $subject = explode(",", $exam->subject_ids);
         $subjects = DB::table('subjects')
             ->whereIn('id', $subject )
             ->get(['id','name']);
-        $subjectIds = [];
+        $selectedSubjects = [];
         foreach ($subjects as $value) {
-            $subjectIds[$value->id] = $value->name;
+            $selectedSubjects[$value->id] = $value->name;
         }
 
 
         return view('exam.edit', [
             'js' => 'js/exam/edit.js',
             'exam' => $exam,
-            'classIds' => $classIds,
-            'subjectIds' => $subjectIds,
+            'selectedClasses' => $selectedClasses,
+            'selectedSubjects' => $selectedSubjects,
             'form' => true
         ]);
     }
