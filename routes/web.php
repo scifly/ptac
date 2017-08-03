@@ -234,6 +234,16 @@ Route::get('procedure_logs/index', 'ProcedureLogController@index');
 Route::get('procedure_logs/show/{id}', 'ProcedureLogController@show');
 Route::delete('procedure_logs/delete/{id}', 'ProcedureLogController@destroy');
 
+
+//用户管理-用户设置
+Route::get('users/index', 'UserController@index');
+Route::get('users/create', 'UserController@create');
+Route::post('users/store', 'UserController@store');
+Route::get('users/show/{id}', 'UserController@show');
+Route::get('users/edit/{id}', 'UserController@edit');
+Route::put('users/update/{id}', 'UserController@update');
+Route::delete('users/delete/{id}', 'UserController@destroy');
+
 //考试类型设置
 Route::get('exam_types/index', 'ExamTypeController@index');
 Route::get('exam_types/create', 'ExamTypeController@create');
@@ -252,6 +262,19 @@ Route::get('exams/edit/{id}', 'ExamController@edit');
 Route::put('exams/update/{id}', 'ExamController@update');
 Route::delete('exams/delete/{id}', 'ExamController@destroy');
 
+#问卷调查参与
+
+Route::group(['prefix' => 'pollQuestionnaireParticpation'],function(){
+    Route::get('/', 'PqParticipantController@index');
+    Route::get('/index', 'PqParticipantController@index');
+    Route::post('/show/{id}', 'PqParticipantController@show');
+    Route::put('/update', 'PqParticipantController@update')->name("pqp_update");
+
+});
+<<<<<<< HEAD
+
+=======
+>>>>>>> refs/remotes/origin/master
 //微网站管理
 Route::get('wapsites/index', 'WapSiteController@index');
 Route::get('wapsites/create', 'WapSiteController@create');
@@ -278,3 +301,4 @@ Route::get('wsmarticles/show/{id}', 'WsmArticleController@show');
 Route::get('wsmarticles/edit/{id}', 'WsmArticleController@edit');
 Route::put('wsmarticles/update/{id}', 'WsmArticleController@update');
 Route::delete('wsmarticles/delete/{id}', 'WsmArticleController@destroy');
+

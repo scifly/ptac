@@ -115,9 +115,9 @@ class ProcedureStep extends Model {
 
         $educators = array();
         foreach ($user_ids as $auid) {
-//            $educator = Educator::find($auid);
-//            $userId = $educator->user_id;
-            $user = User::find($auid);
+            $educator = Educator::find($auid);
+            $userId = $educator->user_id;
+            $user = User::find($userId);
             $educators[$auid] = $user->username;
         }
 
