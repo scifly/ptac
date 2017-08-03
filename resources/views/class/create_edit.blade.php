@@ -29,8 +29,8 @@
                 <div class="col-sm-3">
                     <select multiple="multiple" name="educator_ids[]" id="educator_ids">
                         @foreach($educators as $key => $value)
-                            @if(isset($educatorIds))
-                                <option value="{{$key}}" @if(array_key_exists($key,$educatorIds))selected="selected"@endif>
+                            @if(isset($selectedEducators))
+                                <option value="{{$key}}" @if(array_key_exists($key,$selectedEducators))selected="selected"@endif>
                                     {{$value}}
                                 </option>
                             @else

@@ -234,6 +234,16 @@ Route::get('procedure_logs/index', 'ProcedureLogController@index');
 Route::get('procedure_logs/show/{id}', 'ProcedureLogController@show');
 Route::delete('procedure_logs/delete/{id}', 'ProcedureLogController@destroy');
 
+
+//用户管理-用户设置
+Route::get('users/index', 'UserController@index');
+Route::get('users/create', 'UserController@create');
+Route::post('users/store', 'UserController@store');
+Route::get('users/show/{id}', 'UserController@show');
+Route::get('users/edit/{id}', 'UserController@edit');
+Route::put('users/update/{id}', 'UserController@update');
+Route::delete('users/delete/{id}', 'UserController@destroy');
+
 //考试类型设置
 Route::get('exam_types/index', 'ExamTypeController@index');
 Route::get('exam_types/create', 'ExamTypeController@create');
@@ -271,6 +281,7 @@ Route::group(['prefix' => 'scoreSend'],function(){
     Route::Post('/getsubject/{id}', 'Score_SendController@getSubject');
     Route::post('/preview/{examId}/{classId}/{subjectIds}/{itemId}', 'Score_SendController@preview');
 });
+
 //微网站管理
 Route::get('wapsites/index', 'WapSiteController@index');
 Route::get('wapsites/create', 'WapSiteController@create');
