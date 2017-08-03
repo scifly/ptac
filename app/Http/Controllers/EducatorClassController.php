@@ -15,7 +15,6 @@ class EducatorClassController extends Controller
 
     protected $educator;
 
-    protected $message;
 
     /**
      * SubjectModulesController constructor.
@@ -25,10 +24,7 @@ class EducatorClassController extends Controller
     {
         $this->educatorClass = $educatorClass;
         $this->educator = $educator;
-        $this->message = [
-            'statusCode' => 200,
-            'message' => ''
-        ];
+
     }
 
     /**
@@ -75,21 +71,21 @@ class EducatorClassController extends Controller
             ->toArray();
         if($result!=null)
         {
-            $this->message['statusCode'] = self::MSG_BAD_REQUEST;
-            $this->message['message'] = '该条数据已经存在!';
+            $this->result['statusCode'] = self::MSG_BAD_REQUEST;
+            $this->result['message'] = '该条数据已经存在!';
         }else{
             if($this->educatorClass->create($data)){
-                $this->message['statusCode'] = self::HTTP_STATUSCODE_OK;
-                $this->message['message'] = self::MSG_CREATE_OK;
+                $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
+                $this->result['message'] = self::MSG_CREATE_OK;
 
             }else{
-                $this->message['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-                $this->message['message'] = '添加失败';
+                $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+                $this->result['message'] = '添加失败';
             }
         }
 
 
-        return response()->json($this->message);
+        return response()->json($this->result);
     }
 
     /**
@@ -135,21 +131,21 @@ class EducatorClassController extends Controller
 
         if(!empty($result)&&($result->educator_id!= $data['educator_id']))
         {
-            $this->message['statusCode'] = self::MSG_BAD_REQUEST;
-            $this->message['message'] = '同一个班级的同一个科目不能有两个老师教!';
+            $this->result['statusCode'] = self::MSG_BAD_REQUEST;
+            $this->result['message'] = '同一个班级的同一个科目不能有两个老师教!';
 
         }else{
             if ($this->educatorClass->findOrFail($id)->update($data))
             {
-                $this->message['statusCode'] = self::HTTP_STATUSCODE_OK;
-                $this->message['message'] = self::MSG_EDIT_OK;
+                $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
+                $this->result['message'] = self::MSG_EDIT_OK;
             } else {
-                $this->message['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-                $this->message['message'] = '更新失败';
+                $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+                $this->result['message'] = '更新失败';
             }
         }
 
-        return response()->json($this->message);
+        return response()->json($this->result);
 
     }
 
@@ -161,11 +157,11 @@ class EducatorClassController extends Controller
     public function destroy($id)
     {
         if ($this->educatorClass->findOrFail($id)->delete()) {
-            $this->message['message'] = self::MSG_DEL_OK;
+            $this->result['message'] = self::MSG_DEL_OK;
         } else {
-            $this->message['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->message['message'] = '删除失败';
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+            $this->result['message'] = '删除失败';
         }
-        return response()->json($this->message);
+        return response()->json($this->result);
     }
 }

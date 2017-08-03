@@ -49,8 +49,9 @@ class SubjectController extends Controller
 
     /**
      * 添加新科目
-     * @param  \Illuminate\Http\Request  $requestid
+     * @param SubjectRequest $request
      * @return \Illuminate\Http\Response
+     * @internal param \Illuminate\Http\Request $request
      */
     public function store(SubjectRequest $request){
 
@@ -70,8 +71,9 @@ class SubjectController extends Controller
 
     /**
      *科目详情
-     * @param  \App\Models\Subject  $subject
+     * @param $id
      * @return \Illuminate\Http\Response
+     * @internal param Subject $subject
      */
     public function show($id)
     {
@@ -80,8 +82,9 @@ class SubjectController extends Controller
 
     /**
      * 编辑
-     * @param  \App\Models\Subject  $subject
+     * @param $id
      * @return \Illuminate\Http\Response
+     * @internal param Subject $subject
      */
     public function edit($id){
 
@@ -104,9 +107,10 @@ class SubjectController extends Controller
     /**
      * 更新科目.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Subject  $subject
+     * @param SubjectRequest|\Illuminate\Http\Request $request
+     * @param $id
      * @return \Illuminate\Http\Response
+     * @internal param Subject $subject
      */
     public function update(SubjectRequest $request,$id)
     {
@@ -127,8 +131,9 @@ class SubjectController extends Controller
     /**
      * 删除科目.
      *
-     * @param  \App\Models\Subject  $subject
+     * @param $id
      * @return \Illuminate\Http\Response
+     * @internal param Subject $subject
      */
     public function destroy($id)
     {
