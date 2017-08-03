@@ -26,9 +26,10 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|AttendanceMachine whereSchoolId($value)
  * @method static Builder|AttendanceMachine whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property-read \App\Models\School $school
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\StudentAttendance[] $studentAttendances
  */
-class AttendanceMachine extends Model
-{
+class AttendanceMachine extends Model {
     protected $table = 'attendance_machines';
     protected $fillable = [
         'name',
@@ -37,26 +38,23 @@ class AttendanceMachine extends Model
         'machineid',
         'enabled'
     ];
-
+    
     /**
      * 考勤机与学校
      */
-    public function school()
-    {
+    public function school() {
         return $this->belongsTo('App\Models\School');
     }
-
+    
     /**
      * 考勤机与学生考勤
      */
-    public function studentAttendances()
-    {
+    public function studentAttendances() {
         return $this->hasMany('App\Models\StudentAttendance');
     }
-
-    public function datatable()
-    {
-
+    
+    public function datatable() {
+        
         $columns = [
             ['db' => 'AttendanceMachine.id', 'dt' => 0],
             ['db' => 'AttendanceMachine.name', 'dt' => 1],

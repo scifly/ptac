@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use App\Facades\DatatableFacade as Datatable;
 
 /**
  * App\Models\WsmArticle
@@ -30,6 +31,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|WsmArticle whereWsmId($value)
  * @mixin \Eloquent
  * 网站内容
+ * @property-read \App\Models\WapSiteModule $wapSiteModule
  */
 class WsmArticle extends Model {
 
@@ -45,9 +47,39 @@ class WsmArticle extends Model {
         'updated_at',
     ];
 
-    public function wapSiteModule()
+    public function wapsitemodule()
     {
         return $this->belongsTo('App\Models\WapSiteModule', 'wsm_id', 'id');
     }
+    /**
+     * @return array
+     */
+    public function datatable() {
 
+        $columns = [
+            ['db' => 'WsmArticle.id', 'dt' => 0],
+            ['db' => 'Wsm.name as wsmname', 'dt' => 1],
+            ['db' => 'WsmArticle.name', 'dt' => 2],
+            ['db' => 'WsmArticle.summary', 'dt' => 3],
+
+            [
+                'db' => 'WsmArticle.enabled', 'dt' => 4,
+                'formatter' => function ($d, $row) {
+                    return Datatable::dtOps($this, $d, $row);
+                }
+            ]
+        ];
+        $joins = [
+            [
+                'table' => 'wap_site_modules',
+                'alias' => 'Wsm',
+                'type'  => 'INNER',
+                'conditions' => [
+                    'Wsm.id = WsmArticle.wsm_id'
+                ]
+            ]
+        ];
+
+        return Datatable::simple($this,  $columns, $joins);
+    }
 }

@@ -4,7 +4,6 @@ namespace App\Http\ViewComposers;
 use App\Models\Squad;
 use App\Models\Subject;
 use App\Models\Educator;
-use App\Models\User;
 use Illuminate\Contracts\View\View;
 
 class EducatorClassComposer {
@@ -15,44 +14,34 @@ class EducatorClassComposer {
 
     protected $educator;
 
-    protected $user;
-
-    public function __construct(Squad $squad, Subject $subject, Educator $educator, User $user) {
-
-        $this->educator = $educator;
-        $this->user = $user;
+    public function __construct(Squad $squad, Subject $subject, Educator $educator, Educator $educator) {
         $this->squad = $squad;
         $this->subject = $subject;
+        $this->educator = $educator;
 
     }
 
     public function compose(View $view) {
 
-        $educator = $this->educator->pluck('user_id', 'id')->toArray();
-
-        $users = [];
-
-        foreach ($educator as $k=>$v)
+        $educators = Educator::with('user')->get()->toArray();
+        if(!empty($educators))
         {
-            $user = $this->user->where('id',$v)->pluck('realname');
-
-            $users[$k] = $user[0];
-
+            foreach ($educators  as $k=>$v)
+            {
+                $users[$v['id']] = $v['user']['realname'];
+            }
         }
-
-        $view->with(['users' => $users ]);
-
         $view->with([
+
+            'users' => $users,
 
             'squad' => $this->squad->pluck('name', 'id'),
-
-        ]);
-
-        $view->with([
 
             'subject' => $this->subject->pluck('name', 'id'),
 
         ]);
+
+
     }
 
 }

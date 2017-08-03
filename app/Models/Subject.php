@@ -32,6 +32,9 @@ use Symfony\Component\VarDumper\Cloner\Data;
  * @method static Builder|Subject whereSchoolId($value)
  * @method static Builder|Subject whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property-read \App\Models\Grade $grade
+ * @property-read \App\Models\School $school
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\SubjectModule[] $subjectModules
  */
 class Subject extends Model {
 
@@ -76,7 +79,13 @@ class Subject extends Model {
             ['db' => 'Subject.id', 'dt' => 0],
             ['db' => 'Subject.name', 'dt'=> 1],
             ['db' => 'School.name as schoolname', 'dt' => 2],
-            ['db' => 'Subject.isaux', 'dt'=> 3],
+            [
+                'db' => 'Subject.isaux', 'dt'=> 3,
+                'formatter' => function($d, $row) {
+                    $subject = Subject::whereId($d)->first();
+                    return $subject->isaux==1 ? '是' : '否' ;
+                }
+            ],
             ['db' => 'Subject.max_score', 'dt'=> 4],
             ['db' => 'Subject.pass_score', 'dt'=> 5],
             ['db' => 'Subject.created_at', 'dt' => 6],

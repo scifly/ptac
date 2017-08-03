@@ -62,10 +62,12 @@ class GroupController extends Controller
             return response()->json([
                 'statusCode' => self::HTTP_STATUSCODE_OK, 'message' => self::MSG_CREATE_OK,
             ]);
+        }else{
+            return response()->json([
+                'statusCode' => self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR, 'message' => '添加失败'
+            ]);
         }
-        return response()->json([
-            'statusCode' => self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR, 'message' => '添加失败'
-        ]);
+
 
     }
 
@@ -91,7 +93,6 @@ class GroupController extends Controller
      */
     public function edit($id)
     {
-
         return view('group.edit', [
             'js' => 'js/group/edit.js',
             'group' => $this->group->findOrFail($id),

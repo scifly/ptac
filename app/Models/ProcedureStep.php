@@ -28,6 +28,7 @@ use App\Facades\DatatableFacade as Datatable;
  * @method static Builder|ProcedureStep whereRemark($value)
  * @method static Builder|ProcedureStep whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property-read \App\Models\Procedure $procedure
  */
 class ProcedureStep extends Model {
     //
@@ -114,9 +115,9 @@ class ProcedureStep extends Model {
 
         $educators = array();
         foreach ($user_ids as $auid) {
-//            $educator = Educator::find($auid);
-//            $userId = $educator->user_id;
-            $user = Educator::find($auid);
+            $educator = Educator::find($auid);
+            $userId = $educator->user_id;
+            $user = User::find($userId);
             $educators[$auid] = $user->username;
         }
 

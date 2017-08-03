@@ -46,7 +46,7 @@ class EducatorClass extends Model {
 
     public function squad()
     {
-        return $this->belongsTo('App\Models\Squad');
+        return $this->belongsTo('App\Models\Squad','class_id','id');
     }
 
     public function datatable()
@@ -55,7 +55,6 @@ class EducatorClass extends Model {
         $columns = [
             ['db' => 'EducatorClass.id', 'dt' => 0],
             ['db' => 'User.realname as usersname', 'dt' => 1],
-//            ['db' => 'EducatorClass.educator_id', 'dt' => 1],
             ['db' => 'Squad.name as squadname', 'dt' => 2],
             ['db' => 'Subject.name as subjectname', 'dt' => 3],
             ['db' => 'EducatorClass.created_at', 'dt' => 4],
@@ -73,7 +72,7 @@ class EducatorClass extends Model {
                 'alias' => 'Squad',
                 'type' => 'INNER',
                 'conditions' => [
-                    'Squad.id = EducatorClass.educator_id'
+                    'Squad.id = EducatorClass.class_id'
                 ]
             ],
             [

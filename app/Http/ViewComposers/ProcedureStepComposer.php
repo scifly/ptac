@@ -29,7 +29,6 @@ class ProcedureStepComposer {
                 $educators[$v['id']] = $v['user']['realname'];
             }
         }
-
         $view->with([
             'procedures' => $this->procedures->pluck('name', 'id'),
             'educators' => $educators

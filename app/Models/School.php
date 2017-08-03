@@ -34,6 +34,12 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|School whereSmsUsed($value)
  * @method static Builder|School whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property-read \App\Models\Corp $corp
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Educator[] $educator
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Grade[] $grade
+ * @property-read \App\Models\SchoolType $schoolType
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Semester[] $semesters
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Subject[] $subject
  */
 class School extends Model {
     
@@ -76,6 +82,11 @@ class School extends Model {
     public function educator() {
 
         return $this->hasMany('App\Models\Educator');
+
+    }
+    public function wapsite() {
+
+        return $this->hasOne('App\Models\WapSite');
 
     }
     public function datatable() {

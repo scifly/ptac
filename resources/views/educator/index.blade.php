@@ -24,6 +24,7 @@
                     <th>可用短信条数</th>
                     <th>创建时间</th>
                     <th>更新时间</th>
+                    <th>状态</th>
                 </tr>
                 </thead>
                 <tbody></tbody>

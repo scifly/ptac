@@ -2,7 +2,7 @@
 @section('header')
     <div class="panel-heading">
         <div class="btn-group">
-            <a href="{{ url('educatorClasses/create') }}" class="btn btn-primary pull-right">
+            <a href="{{ url('educators_classes/create') }}" class="btn btn-primary pull-right">
                 添加教职员工
             </a>
         </div>

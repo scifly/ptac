@@ -14,9 +14,9 @@ class DatatableFacade extends Facade {
     const DT_LINK_EDIT = '<!--suppress HtmlUnknownTarget -->
 <a href="edit/%s" class="btn btn-success btn-icon btn-circle btn-xs"><i class="fa fa-edit"></i></a>';
     const DT_LINK_DEL = '<!--suppress HtmlUnknownAnchorTarget -->
-<a id="%s" href="#modal-dialog" class="btn btn-danger btn-icon btn-circle btn-xs fa-trash" data-toggle="modal"><i class="fa fa-times"></i></a>';
+<a id="%s" href="" class="btn btn-danger btn-icon btn-circle btn-xs" data-toggle="modal"><i class="fa fa-trash"></i></a>';
     const DT_LINK_SHOW = '<!--suppress HtmlUnknownAnchorTarget -->
-<a href="show/%s" class="btn btn-primary btn-icon btn-circle btn-xs"><i class="fa fa-eye"></i></a>';
+<a href="show/%s" class="btn btn-primary btn-icon btn-circle btn-xs"  data-toggle="modal"><i class="fa fa-eye"></i></a>';
     const DT_SPACE = '&nbsp;';
     const DT_PRIMARY = '<span class="badge badge-info">%s</span>';
     const DT_LOCK = '<i class="fa fa-lock"></i>&nbsp;已占用';

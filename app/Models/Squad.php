@@ -25,6 +25,8 @@ use Illuminate\Http\Request;
  * @method static Builder|Squad whereUpdatedAt($value)
  * @mixin \Eloquent
  * 班级
+ * @property-read \App\Models\Grade $grade
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Student[] $students
  */
 class Squad extends Model {
     
@@ -46,10 +48,21 @@ class Squad extends Model {
         return $this->belongsTo('App\Models\Grade');
     }
 
+
+
+
+
+//    public function educator()
+//    {
+//        return $this->belongsToMany('App\Models\Educator', 'educators_classes','class_id','educator_id');
+//
+//    }
+
     public function educatorClass()
     {
-        return $this->hasOne('App\Models\EducatorClass');
+        return $this->hasMany('App\Models\EducatorClass','class_id','id');
     }
+
 
     public function datatable() {
 

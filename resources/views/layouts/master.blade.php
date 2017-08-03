@@ -28,11 +28,15 @@
         <!-- Parsley style -->
         <link rel="stylesheet" href="{{ URL::asset('js/plugins/parsley/parsley.css') }}">
         <!-- switchery style -->
-        <link rel="stylesheet" href="{{ URL::asset('js/plugins/switchery/css/switchery.min.css') }}">
+        <link rel="stylesheet" href="{{ URL::asset('js/plugins/switchery/switchery.min.css') }}">
     @endisset
     @isset($datatable)
         <!-- DataTable style -->
         <link rel="stylesheet" href="{{ URL::asset('js/plugins/datatables/datatables.min.css') }}">
+    @endisset
+    <!-- 微网站 -->
+    @isset($ws)
+    <link rel="stylesheet" href="{{ URL::asset('css/wapSite.css') }}">
     @endisset
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -355,6 +359,9 @@
             @isset($dialog)
                 @include('partials.modal_dialog')
             @endif
+                @isset($show)
+                    @include('partials.modal_show')
+                @endif
             @yield('content')
         </section>
     </div>
@@ -564,11 +571,12 @@
     <!-- Select2 -->
     <script src="{{ URL::asset('js/plugins/select2/js/select2.min.js') }}"></script>
     <!-- switchery -->
-    <script src="{{ URL::asset('js/plugins/switchery/js/switchery.min.js') }}"></script>
+    <script src="{{ URL::asset('js/plugins/switchery/switchery.min.js') }}"></script>
+    <script src="{{ URL::asset('js/switcher.init.js') }}"></script>
 @endisset
 @isset($datatable)
     <!-- DataTable -->
-    <script src="{{ URL::asset('js/plugins/datatables/datatables.js') }}"></script>
+    <script src="{{ URL::asset('js/plugins/datatables/datatables.min.js') }}"></script>
 @endisset
 <!-- Custom JS -->
 <script src="{{ URL::asset('js/admin.crud.js') }}"></script>

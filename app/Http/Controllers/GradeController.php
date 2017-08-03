@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\GradeRequest;
+use App\Models\Educator;
 use App\Models\Grade;
 use App\Models\School;
 use App\Models\User;
@@ -62,12 +63,17 @@ class GradeController extends Controller
     public function store(GradeRequest $request)
     {
         // request
+        $ids = $request->input('educator_ids');
+
         $data['name'] = $request->input('name');
         $data['school_id'] = $request->input('school_id');
-        $ids = $request->input('educator_ids');
         $data['educator_ids'] = implode(',', $ids);
         $data['enabled'] = $request->input('enabled');
-        $row = $this->grade->where(['school_id' => $data['school_id'], 'name' => $data['name']])->first();
+
+        $row = $this->grade->where([
+                    'school_id' => $data['school_id'],
+                    'name' => $data['name']
+                ])->first();
         if(!empty($row)){
             $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
             $this->result['message'] = '年级名称重复！';
@@ -99,6 +105,7 @@ class GradeController extends Controller
                 $query->whereIn('id', $f);
 
         })->get(['id','username'])->toArray();
+
         return view('grade.show', [
             'grade' => $grade,
             'educators' => $educators
@@ -112,9 +119,22 @@ class GradeController extends Controller
      */
     public function edit($id) {
         $grade = $this->grade->whereId($id)->first();
+
+        $educators = User::whereHas('educator' , function($query) use ($grade) {
+
+            $f = explode(",", $grade->educator_ids);
+            $query->whereIn('id', $f);
+
+        })->get(['id','username'])->toArray();
+
+        $educatorIds = [];
+        foreach ($educators as $value) {
+            $educatorIds[$value['id']] = $value['username'];
+        }
         return view('grade.edit', [
             'js' => 'js/grade/edit.js',
             'grade' => $grade,
+            'educatorIds' => $educatorIds,
             'form' => true
         ]);
     }

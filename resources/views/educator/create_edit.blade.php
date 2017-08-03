@@ -12,7 +12,17 @@
             <div class="form-group">
                 {!! Form::label('team_ids', '所属组',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-2">
-                    {!! Form::select('team_ids[]', $teams, null, ['class' => 'form-control']) !!}
+                    <select multiple="multiple" name="team_ids[]" id="team_ids">
+                        @foreach($teams as $key => $value)
+                            @if(isset($teamIds))
+                                <option value="{{$key}}" @if(array_key_exists($key,$teamIds))selected="selected"@endif>
+                                    {{$value}}
+                                </option>
+                            @else
+                                <option value="{{$key}}">{{$value}}</option>
+                            @endif
+                        @endforeach
+                    </select>
                 </div>
             </div>
             <div class="form-group">
@@ -23,12 +33,8 @@
             </div>
             <div class="form-group">
                 {!! Form::label('sms_quote', '可用短信条数',['class' => 'col-sm-4 control-label']) !!}
-                {!! csrf_field() !!}
                 <div class="col-sm-2">
                     {!! Form::text('sms_quote', null, ['class' => 'form-control']) !!}
-                </div>
-                <div class="col-sm-5">
-                    <p class="form-control-static text-danger">{{ $errors->first('sms_quote') }}</p>
                 </div>
             </div>
             <div class="form-group">

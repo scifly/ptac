@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|PollQuestionnaireSubject whereSubjectType($value)
  * @method static Builder|PollQuestionnaireSubject whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property-read \App\Models\PollQuestionnaireAnswer $pollquestionnaireAnswer
  */
 class PollQuestionnaireSubject extends Model {
     //
@@ -30,6 +31,16 @@ class PollQuestionnaireSubject extends Model {
 
     public function pollquestionnaireAnswer()
     {
-        return $this->hasOne('App\Models\PollQuestionnaireAnswer');
+        return $this->hasOne('App\Models\PollQuestionnaireAnswer'
+        ,'pqs_id','id');
+    }
+    public function pollquestionnairechoice(){
+        return $this
+            ->hasMany("App\Models\PollQuestionnaireChoice"
+                ,'pqs_id','id');
+    }
+    public function pollquestionnaire(){
+        return $this->hasOne('App\Models\PollQuestionnaire'
+            ,'pq_id','id');
     }
 }

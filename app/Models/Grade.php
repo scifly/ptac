@@ -25,6 +25,9 @@ use App\Facades\DatatableFacade as Datatable;
  * @method static Builder|Grade whereUpdatedAt($value)
  * @mixin \Eloquent
  * 年级
+ * @property-read \App\Models\School $school
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Squad[] $squads
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Subject[] $subject
  */
 class Grade extends Model {
 
@@ -47,6 +50,22 @@ class Grade extends Model {
 
     public function subject() {
         return $this->hasMany('App\Models\Subject');
+    }
+
+    public function students()
+    {
+        #先获取班级对象集合
+        $classes=$this->squads()->get();
+
+        $students=[];
+        #循环班级对象集合
+        foreach ($classes as $class)
+        {
+            $stdents[]=Student::whereClassId($class->id);
+        }
+
+        return $students;
+
     }
 
     public function datatable() {

@@ -25,6 +25,7 @@ use App\Facades\DatatableFacade as Datatable;
  * @method static Builder|Educator whereUpdatedAt($value)
  * @method static Builder|Educator whereUserId($value)
  * @mixin \Eloquent
+ * @property-read \App\Models\School $school
  */
 class Educator extends Model
 {
@@ -46,6 +47,10 @@ class Educator extends Model
     public function school()
     {
         return $this->belongsTo('App\Models\School');
+    }
+    public function classes()
+    {
+        return $this->belongsToMany('App\Models\Squad', 'educators_classes','class_id','educator_id');
     }
 
     public function educatorClass()

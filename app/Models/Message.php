@@ -37,6 +37,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|Message whereUserId($value)
  * @method static Builder|Message whereUserIds($value)
  * @mixin \Eloquent
+ * @property-read \App\Models\MessageType $messageType
  */
 class Message extends Model {
     //
