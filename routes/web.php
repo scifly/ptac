@@ -272,8 +272,6 @@ Route::group(['prefix' => 'pollQuestionnaireParticpation'],function(){
     Route::put('/update', 'PqParticipantController@update')->name("pqp_update");
 
 });
-<<<<<<< HEAD
-=======
 #成绩发送
 Route::group(['prefix' => 'scoreSend'],function(){
     Route::get('/', 'Score_SendController@index');
@@ -285,7 +283,6 @@ Route::group(['prefix' => 'scoreSend'],function(){
     Route::post('/preview/{examId}/{classId}/{subjectIds}/{itemId}', 'Score_SendController@preview');
 });
 
->>>>>>> refs/remotes/origin/master
 //微网站管理
 Route::get('wapsites/index', 'WapSiteController@index');
 Route::get('wapsites/create', 'WapSiteController@create');
