@@ -129,45 +129,53 @@ class WapSiteController extends Controller
         return response()->json($this->result);
     }
 
-    public function uploadImage(Request $request){
-        $result = Array(
-            'success'   =>0,
-            'message'   =>'',
-        );
-        if ($request->isMethod('post')) {
-            $file = $request->file('media_ids');
-            if (empty($file)){
-                $result['success'] = 0;
+    /**
+     * @param Request $request
+     */
+    public function uploadImages(){
+
+        if (Request::isMethod('post')) {
+
+            $files = Request::file('img');
+            if (empty($files)){
+                $result['statusCode'] = 0;
                 $result['message'] = '您还未选择图片！';
                 return $result;
             }
-            $image=array();
-            foreach ($file as $key=>$value)
-            {
-                $image[]=$key;
-            }
-            $allowed_extensions = ["png", "jpg", "gif"];
-            if ($file->isValid()) {
-                if ($file->getClientOriginalExtension() && !in_array($file->getClientOriginalExtension(), $allowed_extensions)) {
-                    return ['error' => 'You may only upload png, jpg or gif.'];
-                    $result['success'] = 0;
-                    $result['message'] = '只能选择[png, jpg ,gif]类型图片！';
-                    return $result;
+            $result['data']=array();
+            foreach ($files  as $key=>$v){
+                if ($v->isValid()) {
+                    // 获取文件相关信息
+                    $originalName = $v->getClientOriginalName(); // 文件原名
+                    $ext = $v->getClientOriginalExtension();     // 扩展名//
+                    $realPath = $v->getRealPath();   //临时文件的绝对路径
+                    $type = $v->getClientMimeType();     // image/jpeg/
+//                    dd($originalName,$ext,$realPath);die;
+
+                    // 上传图片
+                    $filename = date('Y-m-d-H-i-s') . '-' . uniqid() . '.' . $ext;
+                    // 使用我们新建的uploads本地存储空间（目录）
+                    $init=0;
+                    $bool = Storage::disk('uploads')->put($filename,file_get_contents($realPath));
+                    $filePath = storage_path('app/uploads/').$filename;
+                    $data = [
+                        'path' => $filePath,
+                        'remark' => '微网站轮播图',
+                        'media_type_id' => '1',
+                        'enabled' => '1',
+                    ];
+                    $mediaId = Media::insertGetId($data);
+                    $mes[] = [
+                        'id' => $mediaId,
+                        'path' => $filePath,
+                    ];
                 }
-
-                // 获取文件相关信息
-                $originalName = $file->getClientOriginalName(); // 文件原名
-                $ext = $file->getClientOriginalExtension();     // 扩展名//
-                $realPath = $file->getRealPath();   //临时文件的绝对路径
-                $type = $file->getClientMimeType();     // image/jpeg/
-                // 上传图片
-                $filename = date('Y-m-d-H-i-s') . '-' . uniqid() . '.' . $ext;
-                // 使用我们新建的uploads本地存储空间（目录）
-                $init=0;
-                $bool = Storage::disk('uploads')->put($filename,file_get_contents($realPath));
-                $filePath = storage_path('app/uploads/').$filename;
-
             }
+            $result['statusCode'] = 1;
+            $result['message'] = '上传成功！';
+            $result['data'] = $mes;
+
+            return response()->json($result);
         }
 
     }

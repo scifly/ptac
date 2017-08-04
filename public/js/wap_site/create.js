@@ -14,7 +14,6 @@ $(function () {
         "language": 'zh',
         'theme': 'explorer',
         'maxFileCount': 5,
-
         'uploadUrl': '#',
         'showUpload': false,
         'fileActionSettings': {
@@ -24,18 +23,23 @@ $(function () {
         }
     });
     $('#upload').click(function () {
-        var data = new FormData();
+        var data = new FormData($( ".form-horizontal" )[0]);
         var imgInputElement = document.getElementById('uploadFile');
         var len = imgInputElement.files.length;
+
         for (var i = 0; i < len; i++) {
             data.append('img[]', imgInputElement.files[i]);
         }
+        data.append('_token',$('#csrf_token').attr('content'));
         if (len !== 0) {
             $.ajax({
                 type: 'post',
-                url: "#",
+                processData:false,
+                contentType:false,
+                dataType: 'json',
+                url: "../wapsites/uploadwapsite",
                 data: data,
-                success: function () {
+                success: function ($result) {
 
                 }
             })

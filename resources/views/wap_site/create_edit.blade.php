@@ -25,7 +25,7 @@
                 <div class="col-sm-6">
 
                     {{--<input type="file" id="media_ids" name="image_data[]" multiple>--}}
-                    <a href="javascript:" class="btn btn-primary" data-toggle="modal" data-target="#modalPic">上传</a>
+                    <button class="btn btn-primary" data-toggle="modal" data-target="#modalPic">上传</button>
                 </div>
             </div>
             <div class="form-group">
@@ -48,7 +48,7 @@
         </div>
     </div>
 </div>
-<div class="modal fade" id="modalPic" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal fade" id="modalPic">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -60,8 +60,8 @@
                 </h4>
             </div>
             <div class="modal-body">
-                <form action="#" class="form-horizontal">
-                    <input type="file" id="uploadFile" multiple>
+                <form action="#" class="form-horizontal" enctype="multipart/form-data">
+                    <input type="file" id="uploadFile" accept="image/jpeg,image/gif,image/png" multiple>
                 </form>
             </div>
             <div class="modal-footer">
