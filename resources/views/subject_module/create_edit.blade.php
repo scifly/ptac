@@ -22,6 +22,12 @@
                 </div>
             </div>
             <div class="form-group">
+                <label for="img" class="col-sm-4 control-label">图片：</label>
+                <div class="col-sm-2">
+                    <input type="file"  id="fileImg" accept="image/gif, image/jpeg,image/png"/>
+                </div>
+            </div>
+            <div class="form-group">
                 {!! Form::label('weight', '次分类权重',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-2">
                     {!! Form::text('weight', null, [
@@ -29,8 +35,6 @@
                     'placeholder' => '次分类权重是数字',
                     'data-parsley-required' => 'true',
                     'data-parsley-type' => 'integer',
-                    'data-parsley-maxlength' => '3',
-                    'data-parsley-minlength' => '1',
 
                     ]) !!}
                 </div>

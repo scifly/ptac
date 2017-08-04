@@ -94,20 +94,21 @@ class Student extends Model {
             ['db' => 'Student.id', 'dt' => 0],
             ['db' => 'User.realname as username', 'dt' => 1],
             ['db' => 'Squad.name as classname', 'dt' => 2],
-            ['db' => 'Student.card_number', 'dt' => 3],
+            ['db' => 'Student.student_number', 'dt' => 3],
+            ['db' => 'Student.card_number', 'dt' => 4],
             [
-                'db' => 'Student.oncampus', 'dt' => 4,
+                'db' => 'Student.oncampus', 'dt' => 5,
                 'formatter' => function($d) {
                     $student = Student::whereId($d)->first();
                     return $student->oncampus==1 ? '是' : '否' ;
                 }
             ],
-            ['db' => 'Student.birthday', 'dt' => 5],
-            ['db' => 'Student.remark', 'dt' => 6],
-            ['db' => 'Student.created_at', 'dt' => 7],
-            ['db' => 'Student.updated_at', 'dt' => 8],
+            ['db' => 'Student.birthday', 'dt' => 6],
+            ['db' => 'Student.remark', 'dt' => 7],
+            ['db' => 'Student.created_at', 'dt' => 8],
+            ['db' => 'Student.updated_at', 'dt' => 9],
             [
-                'db' => 'Student.enabled', 'dt' => 9,
+                'db' => 'Student.enabled', 'dt' => 10,
                 'formatter' => function($d, $row)
                 {
                     return Datatable::dtOps($this, $d ,$row);
