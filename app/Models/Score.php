@@ -34,8 +34,7 @@ use App\Facades\DatatableFacade as Datatable;
  * @property-read \App\Models\Student $student
  * @property-read \App\Models\Subject $subject
  */
-class Score extends Model
-{
+class Score extends Model {
 
     protected $fillable = [
         'student_id',
@@ -47,23 +46,19 @@ class Score extends Model
         'enabled'
     ];
 
-    public function student()
-    {
+    public function student() {
         return $this->belongsTo('App\Models\Student');
     }
 
-    public function subject()
-    {
+    public function subject() {
         return $this->belongsTo('App\Models\Subject');
     }
 
-    public function exam()
-    {
+    public function exam() {
         return $this->belongsTo('App\Models\Exam');
     }
 
-    public function datatable()
-    {
+    public function datatable() {
 
         $columns = [
             ['db' => 'Score.id', 'dt' => 0],
@@ -71,8 +66,16 @@ class Score extends Model
             ['db' => 'User.realname', 'dt' => 2],
             ['db' => 'Subject.name as subjectname', 'dt' => 3],
             ['db' => 'Exam.name as examname', 'dt' => 4],
-            ['db' => 'Score.class_rank', 'dt' => 5],
-            ['db' => 'Score.grade_rank', 'dt' => 6],
+            ['db' => 'Score.class_rank', 'dt' => 5,
+                'formatter' => function ($d) {
+                    return $d === 0 ? "未统计" : $d;
+                }
+            ],
+            ['db' => 'Score.grade_rank', 'dt' => 6,
+                'formatter' => function ($d) {
+                    return $d === 0 ? "未统计" : $d;
+                }
+            ],
             ['db' => 'Score.score', 'dt' => 7],
             ['db' => 'Score.created_at', 'dt' => 8],
             ['db' => 'Score.updated_at', 'dt' => 9],

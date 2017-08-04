@@ -127,14 +127,14 @@ class GradeController extends Controller
 
         })->get(['id','username'])->toArray();
 
-        $educatorIds = [];
+        $selectedEducators = [];
         foreach ($educators as $value) {
-            $educatorIds[$value['id']] = $value['username'];
+            $selectedEducators[$value['id']] = $value['username'];
         }
         return view('grade.edit', [
             'js' => 'js/grade/edit.js',
             'grade' => $grade,
-            'educatorIds' => $educatorIds,
+            'selectedEducators' => $selectedEducators,
             'form' => true
         ]);
     }

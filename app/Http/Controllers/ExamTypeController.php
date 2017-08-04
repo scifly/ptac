@@ -102,7 +102,6 @@ class ExamTypeController extends Controller
     {
         $examType = $this->examType->whereId($id)->first();
 
-
         return view('exam_type.edit', [
             'js' => 'js/exam_type/edit.js',
             'examType' => $examType,

@@ -38,8 +38,8 @@
                 <div class="col-sm-3">
                     <select multiple="multiple" name="class_ids[]" id="class_ids">
                         @foreach($classes as $key => $value)
-                            @if(isset($classIds))
-                                <option value="{{$key}}" @if(array_key_exists($key,$classIds))selected="selected"@endif>
+                            @if(isset($selectedClasses))
+                                <option value="{{$key}}" @if(array_key_exists($key,$selectedClasses))selected="selected"@endif>
                                     {{$value}}
                                 </option>
                             @else
@@ -54,8 +54,8 @@
                 <div class="col-sm-5">
                     <select multiple="multiple" name="subject_ids[]" id="subject_ids">
                         @foreach($subjects as $key => $value)
-                            @if(isset($subjectIds))
-                                <option value="{{$key}}" @if(array_key_exists($key,$subjectIds))selected="selected"@endif>
+                            @if(isset($selectedSubjects))
+                                <option value="{{$key}}" @if(array_key_exists($key,$selectedSubjects))selected="selected"@endif>
                                     {{$value}}
                                 </option>
                             @else

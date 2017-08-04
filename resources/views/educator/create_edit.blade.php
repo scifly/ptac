@@ -14,8 +14,8 @@
                 <div class="col-sm-2">
                     <select multiple="multiple" name="team_ids[]" id="team_ids">
                         @foreach($teams as $key => $value)
-                            @if(isset($teamIds))
-                                <option value="{{$key}}" @if(array_key_exists($key,$teamIds))selected="selected"@endif>
+                            @if(isset($selectedTeams))
+                                <option value="{{$key}}" @if(array_key_exists($key,$selectedTeams))selected="selected"@endif>
                                     {{$value}}
                                 </option>
                             @else

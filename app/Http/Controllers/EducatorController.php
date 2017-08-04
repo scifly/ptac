@@ -123,14 +123,14 @@ class EducatorController extends Controller
         $teams = DB::table('teams')
             ->whereIn('id', $ids )
             ->get(['id','name']);
-        $teamIds = [];
+        $selectedTeams = [];
         foreach ($teams as $value) {
-            $teamIds[$value->id] = $value->name;
+            $selectedTeams[$value->id] = $value->name;
         }
         return view('educator.edit', [
             'js' => 'js/educator/edit.js',
             'educator' => $educator,
-            'teamIds' => $teamIds,
+            'selectedTeams' => $selectedTeams,
             'form' => true
         ]);
     }
