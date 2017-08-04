@@ -172,7 +172,7 @@ Route::delete('scores/delete/{id}', 'ScoreController@destroy');
 Route::get('scores/statistics/{exam_id}', 'ScoreController@statistics');
 
 // 总成绩设置
-Route::get('score_totals/{exam_id}', 'ScoreTotalController@statistics');
+Route::get('score_totals/statistics/{exam_id}', 'ScoreTotalController@statistics');
 Route::get('score_totals/index', 'ScoreTotalController@index');
 Route::get('score_totals/create', 'ScoreTotalController@create');
 Route::post('score_totals/store', 'ScoreTotalController@store');

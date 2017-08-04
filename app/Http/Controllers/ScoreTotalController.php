@@ -57,9 +57,13 @@ class ScoreTotalController extends Controller {
     }
 
     public function statistics($exam_id){
-        $class_ids = DB::table('exams')->where('id', $exam_id)->value('class_ids');
+        //删除之前这场考试的统计
+        $this->score_total->where('exam_id', $exam_id)->delete();
+        //查询参与这场考试的所有班级和科目
+        $exam = DB::table('exams')->where('id', $exam_id)->select('class_ids','subject_ids')->first();
+
         $class = DB::table('classes')
-            ->whereIn('id', explode(',', $class_ids))
+            ->whereIn('id', explode(',', $exam->class_ids))
             ->select('id', 'grade_id')
             ->get();
         //通过年级分组
@@ -76,20 +80,22 @@ class ScoreTotalController extends Controller {
                 ->pluck('class_id', 'id');
             //循环学生
             foreach ($students as $student => $class_id){
+                //计算总成绩
                 $scores = DB::table('scores')
                     ->where(['student_id' => $student, 'exam_id' => $exam_id])
-                    ->pluck('score','id');
+                    ->pluck('score','subject_id');
                 $score = 0;
-                $na_subject_ids = '';
                 $subject_ids = '';
-                foreach ($scores as $id => $v){
-                    if($v == 0){
-                        $na_subject_ids .= ',' . $id;
+                $na_subject_ids = '';
+                foreach ( explode(',', $exam->subject_ids) as $v){
+                    if(isset($scores[$v]) && $scores[$v] != 0){
+                        $subject_ids .= ',' . $v;
+                        $score += $scores[$v];
                     }else{
-                        $subject_ids .= ',' . $id;
+                        $na_subject_ids .= ',' . $v;
                     }
-                    $score += $v;
                 }
+                //建立写入数据库的数组数据
                 $insert = [
                     'student_id' => $student,
                     'class_id' => $class_id,
@@ -100,15 +106,17 @@ class ScoreTotalController extends Controller {
                 ];
                 $data []=$insert;
             }
+
+            //根据总成绩排序
+            $score_sore = [];
             foreach ($data as $key => $row)
             {
                 $score_sore[$key]  = $row['score'];
             }
             array_multisort($score_sore, SORT_DESC, $data);
 
-
-            $grade_ranks = [];
             //计算年级排名
+            $grade_ranks = [];
             foreach ($data as $k => $v){
                 $v['grade_rank'] = $k+1;
                 if($k>0){
@@ -118,6 +126,7 @@ class ScoreTotalController extends Controller {
                 }
                 $grade_ranks []= $v;
             }
+            
             //通过班级分组
             $classes = [];
             foreach($grade_ranks as $item){
@@ -137,23 +146,7 @@ class ScoreTotalController extends Controller {
                     unset($c_v['class_id']);
                     $inserts []= $c_v;
                 }
-                $this->score_total->insert([[
-                    'student_id' => 1,
-                    'exam_id' => 1,
-                    'score' => 123,
-                    'subject_ids' => 1,
-                    'na_subject_ids' => 1,
-                    'class_rank' => 1,
-                    'grade_rank' => 1
-                ],[
-                    'student_id' => 1,
-                    'exam_id' => 1,
-                    'score' => 123,
-                    'subject_ids' => 1,
-                    'na_subject_ids' => 1,
-                    'class_rank' => 1,
-                    'grade_rank' => 1
-                ]]);
+                $this->score_total->insert($inserts);
             }
         }
     }
