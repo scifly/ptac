@@ -228,13 +228,13 @@ Route::post('procedure_steps/store', 'ProcedureStepController@store');
 Route::get('procedure_steps/show/{id}', 'ProcedureStepController@show');
 Route::get('procedure_steps/edit/{id}', 'ProcedureStepController@edit');
 Route::put('procedure_steps/update/{id}', 'ProcedureStepController@update');
-Route::delete('procedure_steps/delete/{id}', 'ProcedureStepController@destroy');
+Route::get('procedure_steps/delete/{id}', 'ProcedureStepController@destroy');
 Route::get('procedure_steps/getSchoolEducators/{id}', 'ProcedureStepController@getSchoolEducators');
 
 //流程日志
 Route::get('procedure_logs/index', 'ProcedureLogController@index');
 Route::get('procedure_logs/show/{id}', 'ProcedureLogController@show');
-Route::delete('procedure_logs/delete/{id}', 'ProcedureLogController@destroy');
+
 
 
 //用户管理-用户设置
