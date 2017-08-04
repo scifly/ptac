@@ -69,7 +69,7 @@ class WapSiteModuleController extends Controller
 //            ])->first();
 //        if(!empty($row)){
 //            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-//            $this->result['message'] = '年级名称重复！';
+//            $this->result['message'] = '名称重复！';
 //        }else{
             if($this->wapSiteModule->create($data))
             {
@@ -89,9 +89,18 @@ class WapSiteModuleController extends Controller
      * @param  \App\Models\WapSiteModule  $wapSiteModule
      * @return \Illuminate\Http\Response
      */
-    public function show(WapSiteModule $wapSiteModule)
+    public function show($id)
     {
-        //
+        $module = WapSiteModule::whereId($id)->first();
+        $f = explode(",", $module->media_ids);
+
+        $medias = Media::whereIn('id',$f)->get(['id','path']);
+
+        return view('wap_site_module.show', [
+            'module' => $module,
+            'medias' => $medias,
+            'ws' =>true
+        ]);
     }
 
     /**
