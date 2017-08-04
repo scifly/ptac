@@ -3,7 +3,6 @@
 namespace App\Http\ViewComposers;
 
 use App\Models\Educator;
-use App\Models\User;
 use App\Models\Procedure;
 use Illuminate\Contracts\View\View;
 

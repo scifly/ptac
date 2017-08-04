@@ -53,7 +53,7 @@ class ScoreRangeController extends Controller
     {
         //添加新数据
         $score_range = $request->all();
-        $score_range['subject_ids'] = implode('|',$score_range['subject_ids']);
+        $score_range['subject_ids'] = implode(',',$score_range['subject_ids']);
         $res = $this->scoreRange->create($score_range);
         if ($res) {
             return response()->json(['statusCode' => 200, 'message' => '创建成功！']);
