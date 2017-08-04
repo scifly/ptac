@@ -1,7 +1,7 @@
 <div class="box box-primary">
     <div class="box-header"></div>
     <div class="box-body">
-        <div class="form-horizontal">
+        <div class="form-horizontal" >
             <div class="form-group">
                 {!! Form::label('site_title', '首页抬头',['class' => 'col-sm-2 control-label']) !!}
                 <div class="col-sm-3">
@@ -23,8 +23,8 @@
             <div class="form-group">
                 {!! Form::label('media_ids', '轮播图',['class' => 'col-sm-2 control-label']) !!}
                 <div class="col-sm-6">
-                    <input type="file" id="media_ids" name="image_data[]" multiple>
-                </div>
+                    <input type="file" id="media_ids" name="media_ids[]" multiple>
+                <div>
             </div>
             <div class="form-group">
                 <div class="col-sm-3 col-sm-offset-2">
@@ -46,4 +46,3 @@
         </div>
     </div>
 </div>
-

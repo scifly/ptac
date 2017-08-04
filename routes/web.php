@@ -271,10 +271,7 @@ Route::group(['prefix' => 'pollQuestionnaireParticpation'],function(){
     Route::put('/update', 'PqParticipantController@update')->name("pqp_update");
 
 });
-<<<<<<< HEAD
 
-=======
->>>>>>> refs/remotes/origin/master
 //微网站管理
 Route::get('wapsites/index', 'WapSiteController@index');
 Route::get('wapsites/create', 'WapSiteController@create');
@@ -283,6 +280,7 @@ Route::get('wapsites/show/{id}', 'WapSiteController@show');
 Route::get('wapsites/edit/{id}', 'WapSiteController@edit');
 Route::put('wapsites/update/{id}', 'WapSiteController@update');
 Route::delete('wapsites/delete/{id}', 'WapSiteController@destroy');
+Route::post('wapsites/uploadwapsite', 'WapSiteController@uploadImage');
 
 //微网站管理-网站模块管理
 Route::get('wapsitemodules/index', 'WapSiteModuleController@index');

@@ -7,6 +7,11 @@ $(function () {
         "language":'zh',
         'theme': 'explorer',
         'maxFileCount': 5,
-        'uploadUrl': '#'
+        // 'uploadUrl': '../wapsites/uploadImage'
     });
+    var data = new FormData();
+    var imgInputElement=document.getElementById('media_ids');
+    for(var i=0; i<imgInputElement.files.length; i++){
+        data.append('media_ids[]', imgInputElement.files[i]);
+    }
 });
