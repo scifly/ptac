@@ -49,18 +49,26 @@ class SubjectModuleController extends Controller {
      */
     public function store(SubjectModuleRequest $request) {
         $data = $request->except('_token');
-        
-        if ($this->subjectModule->create($data)) {
-            return response()->json([
-                'statusCode' => self::HTTP_STATUSCODE_OK, 'message' => self::MSG_CREATE_OK,
-            ]);
-        } else {
-            return response()->json([
-                'statusCode' => self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR,
-                'message' => '添加失败'
-            ]);
-            
+        $result = $this->subjectModule
+            ->where('name',$data['name'])
+            ->where('subject_id',$data['subject_id'])
+            ->where('weight',$data['weight'])
+            ->first();
+        if (!empty($result)){
+            $this->result['statusCode'] = self::MSG_BAD_REQUEST;
+            $this->result['message'] = '该条数据已经存在,请勿重复添加!';
+        }else{
+            if ($this->subjectModule->create($data)) {
+                $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
+                $this->result['message'] = self::MSG_CREATE_OK;
+            }else{
+                $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+                $this->result['message'] = '添加失败!';
+            }
         }
+
+        return response()->json($this->result);
+
     }
     
     /**
@@ -100,14 +108,26 @@ class SubjectModuleController extends Controller {
      */
     public function update(SubjectModuleRequest $request, $id) {
         $data = $request->all();
-        $subject = $this->subjectModule->findOrFail($id);
-        if ($subject->update($data)) {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-            $this->result['message'] = self::MSG_EDIT_OK;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '更新失败';
+        $result = $this->subjectModule
+            ->where('name',$data['name'])
+            ->where('subject_id',$data['subject_id'])
+            ->where('weight',$data['weight'])
+            ->first();
+        if(!empty($result) && $result->id!=$id)
+        {
+            $this->result['statusCode'] = self::MSG_BAD_REQUEST;
+            $this->result['message'] = '该条数据已经存在,请勿重复添加!';
+        }else{
+            $subject = $this->subjectModule->findOrFail($id);
+            if ($subject->update($data)) {
+                $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
+                $this->result['message'] = self::MSG_EDIT_OK;
+            } else {
+                $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+                $this->result['message'] = '更新失败';
+            }
         }
+
         return response()->json($this->result);
     }
     

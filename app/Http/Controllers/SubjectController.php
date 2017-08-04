@@ -50,11 +50,12 @@ class SubjectController extends Controller {
      * 添加新科目
      * @param SubjectRequest $request
      * @return \Illuminate\Http\Response
-     * @internal param \Illuminate\Http\Request $requestid
+     * @internal param \Illuminate\Http\Request $request
      */
     public function store(SubjectRequest $request) {
         
         $data = $request->except('_token');
+
         $data['grade_ids'] = implode(',', $data['grade_ids']);
         
         if ($this->subject->create($data)) {
@@ -103,13 +104,14 @@ class SubjectController extends Controller {
         ]);
         
     }
-    
+
     /**
      * 更新科目.
      *
-     * @param SubjectRequest|\Illuminate\Http\Request $request
+     * @param SubjectRequest $request
      * @param $id
      * @return \Illuminate\Http\Response
+     * @internal param $SubjectRequest
      * @internal param Subject $subject
      */
     public function update(SubjectRequest $request, $id) {
