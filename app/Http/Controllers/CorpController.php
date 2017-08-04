@@ -51,10 +51,9 @@ class CorpController extends Controller {
      */
     public function store(CorpRequest $request) {
         $data = $request->all();
-        $record = $this->corp->where([
-            ['name', $data['name']],
-            ['company_id', $data['company_id']],
-        ])->first();
+        $record = $this->corp->where('name', $data['name'])
+            ->where('company_id', $data['company_id'])
+            ->first();
         if (!empty($record)) {
             $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
             $this->result['message'] = '已经有该记录';
@@ -103,10 +102,9 @@ class CorpController extends Controller {
      */
     public function update(CorpRequest $request, $id) {
         $data = $request->all();
-        $record = $this->corp->where([
-            ['name', $data['name']],
-            ['company_id', $data['company_id']],
-        ])->first();
+        $record = $this->corp->where('name', $data['name'])
+            ->where('company_id', $data['company_id'])
+            ->first();
         if (!empty($record) && ($record->id != $id)) {
             $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
             $this->result['message'] = '已有该记录';

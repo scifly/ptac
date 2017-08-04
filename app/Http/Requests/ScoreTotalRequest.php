@@ -22,24 +22,18 @@ class ScoreTotalRequest extends FormRequest {
     public function rules() {
         return [
             'score' => 'required|numeric|max:1000',
-            'subject_ids' =>'required',
-            'class_rank' => 'required|numeric|max:1000',
-            'grade_rank' => 'required|numeric|max:10000',
+            'subject_ids' =>'required|string',
         ];
     }
 
+
     public function messages() {
         return [
-            'class_rank.required' => '班级排名不能为空',
-            'class_rank.max' => '不超过5个数字',
-            'class_rank.numeric' => '不超过5个数字',
-            'grade_rank.required' => '年级排名不能为空',
-            'grade_rank.max' => '不超过5个数字',
-            'grade_rank.numeric' => '不超过5个数字',
             'score.required' => '成绩不能为空',
             'score.max' => '成绩不能超过3位数字',
             'score.numeric' => '成绩不能超过5位数字',
-            'subject_ids.required' => '请选择计入总成绩科目'
+            'subject_ids.required' => '请选择计入总成绩科目',
+            'subject_ids.string' => '必须是字符串'
         ];
     }
 
@@ -47,4 +41,11 @@ class ScoreTotalRequest extends FormRequest {
         return true;
     }
 
+//    protected function prepareForValidation() {
+//
+//        $input = $this->all();
+//        $input['subject_ids'] = implode(',', $input['subject_ids']);
+//        $this->replace($input);
+//        dd($input);
+//    }
 }
