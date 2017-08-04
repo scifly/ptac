@@ -28,7 +28,6 @@ $(function () {
         data.append('_token', $('#csrf_token').attr('content'));
         // 图片预览
         var $pre = $('.preview');
-        var img = '<img src="">';
         if (len !== 0) {
             $.ajax({
                 type: 'post',
@@ -39,13 +38,14 @@ $(function () {
                 data: data,
                 success: function ($result) {
                     var imgArr = $result.data;
-                    console.log($result.data);
-                    // 清空
-                    $('#uploadFile').fileinput('clear');
                     $.each(imgArr, function (index, obj) {
                         console.log(index + obj.id + obj.path);
                         $pre.append('<img src="../../' + obj.path + '" id="' + obj.id + '">');
-                    })
+                        $pre.append('<input type="hidden" name="media_ids[]" value="' + obj.id + '">');
+                    });
+                    // 清空，弹框关闭
+                    $('#uploadFile').fileinput('clear');
+                    $('#modalPic').modal('hide');
                 }
             })
         }
