@@ -74,7 +74,6 @@ class PqParticipantController extends Controller
                         ->orderBy('seq_no','asc')->each(
                         function ($choice){
                             #用于循环填空
-
                             $tempC=[];
                             #选项题ID
                             $tempC['id']=$choice->id ;
@@ -83,37 +82,34 @@ class PqParticipantController extends Controller
                             #选项题排列序号
                             $tempC['seq_no']=$choice->seq_no ;
                             #数据
-
                             #获取选项答案
                             #如果有答案
-
                             if($choice
                                 ->pollquestionnaireSubject
                                 ->pollquestionnaireAnswer)
                             {
-
                                 $answer = explode(',', $choice
                                     ->pollquestionnaireSubject
                                     ->pollquestionnaireAnswer->answer);
                                 #如果是填空
                                 if ($choice->pollquestionnaireSubject
                                         ->subject_type == 2) {
-
-                                    $tempC["answer"] = $answer[$this->count];
+                                    #如果有空数据处理
+                                    if(count($answer)>$this->count)
+                                        $tempC["answer"] = $answer[$this->count];
+                                    else
+                                        $tempC["answer"] = '';
                                     $this->count++;
                                 } else {
-
                                     #如果答案中存在此问卷项
                                     if (in_array($choice->id, $answer))
                                         $tempC["answer"] = "checked";
                                     else $tempC["answer"] = '';
-
                                 }
                             }
                             else{
                                 $tempC["answer"] = '';}
                             $this->tempChoice[] = $tempC;
-
                         }
                     );
                     #选项ID
@@ -183,8 +179,6 @@ class PqParticipantController extends Controller
            $Answer->answer=$var;
            if(!$hasObject)  $Answer->save();
            else $Answer->update();
-           $this->index();
-
        }
 
     }

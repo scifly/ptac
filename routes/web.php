@@ -169,6 +169,18 @@ Route::get('scores/show/{id}', 'ScoreController@show');
 Route::get('scores/edit/{id}', 'ScoreController@edit');
 Route::put('scores/update/{id}', 'ScoreController@update');
 Route::delete('scores/delete/{id}', 'ScoreController@destroy');
+Route::get('scores/statistics/{exam_id}', 'ScoreController@statistics');
+
+// 总成绩设置
+Route::get('score_totals/{exam_id}', 'ScoreTotalController@statistics');
+Route::get('score_totals/index', 'ScoreTotalController@index');
+Route::get('score_totals/create', 'ScoreTotalController@create');
+Route::post('score_totals/store', 'ScoreTotalController@store');
+Route::get('score_totals/show/{id}', 'ScoreTotalController@show');
+Route::get('score_totals/edit/{id}', 'ScoreTotalController@edit');
+Route::put('score_totals/update/{id}', 'ScoreTotalController@update');
+Route::delete('score_totals/delete/{id}', 'ScoreTotalController@destroy');
+Route::get('score_totals/getExamSubjects/{id}', 'ScoreTotalController@getExamSubjects');
 
 // 成绩统计项设置
 Route::get('score_ranges/index', 'ScoreRangeController@index');
@@ -178,16 +190,6 @@ Route::get('score_ranges/show/{id}', 'ScoreRangeController@show');
 Route::get('score_ranges/edit/{id}', 'ScoreRangeController@edit');
 Route::put('score_ranges/update/{id}', 'ScoreRangeController@update');
 Route::delete('score_ranges/delete/{id}', 'ScoreRangeController@destroy');
-
-// 总成绩设置
-Route::get('score_totals/index', 'ScoreTotalController@index');
-Route::get('score_totals/create', 'ScoreTotalController@create');
-Route::post('score_totals/store', 'ScoreTotalController@store');
-Route::get('score_totals/show/{id}', 'ScoreTotalController@show');
-Route::get('score_totals/edit/{id}', 'ScoreTotalController@edit');
-Route::put('score_totals/update/{id}', 'ScoreTotalController@update');
-Route::delete('score_totals/delete/{id}', 'ScoreTotalController@destroy');
-Route::get('score_totals/getExamSubjects/{id}', 'ScoreTotalController@getExamSubjects');
 
 
 # 考勤管理
@@ -210,6 +212,7 @@ Route::get('procedure_types/edit/{id}', 'ProcedureTypeController@edit');
 Route::put('procedure_types/update/{id}', 'ProcedureTypeController@update');
 Route::delete('procedure_types/delete/{id}', 'ProcedureTypeController@destroy');
 
+
 //流程设置
 Route::get('procedures/index', 'ProcedureController@index');
 Route::get('procedures/create', 'ProcedureController@create');
@@ -225,7 +228,6 @@ Route::post('procedure_steps/store', 'ProcedureStepController@store');
 Route::get('procedure_steps/show/{id}', 'ProcedureStepController@show');
 Route::get('procedure_steps/edit/{id}', 'ProcedureStepController@edit');
 Route::put('procedure_steps/update/{id}', 'ProcedureStepController@update');
-Route::delete('procedure_steps/delete/{id}', 'ProcedureStepController@destroy');
 Route::get('procedure_steps/delete/{id}', 'ProcedureStepController@destroy');
 Route::get('procedure_steps/getSchoolEducators/{id}', 'ProcedureStepController@getSchoolEducators');
 
@@ -271,6 +273,18 @@ Route::group(['prefix' => 'pollQuestionnaireParticpation'],function(){
     Route::put('/update', 'PqParticipantController@update')->name("pqp_update");
 
 });
+
+#成绩发送
+Route::group(['prefix' => 'scoreSend'],function(){
+    Route::get('/', 'Score_SendController@index');
+    Route::get('/index', 'Score_SendController@index@index');
+    Route::Post('/getgrade/{id}', 'Score_SendController@getGrade');
+    Route::Post('/getclass/{id}', 'Score_SendController@getClass');
+    Route::Post('/getexam/{id}', 'Score_SendController@getExam');
+    Route::Post('/getsubject/{id}', 'Score_SendController@getSubject');
+    Route::post('/preview/{examId}/{classId}/{subjectIds}/{itemId}', 'Score_SendController@preview');
+});
+
 
 //微网站管理
 Route::get('wapsites/index', 'WapSiteController@index');
