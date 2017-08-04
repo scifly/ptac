@@ -157,7 +157,8 @@ class WapSiteController extends Controller
                     // 使用我们新建的uploads本地存储空间（目录）
                     $init=0;
                     $bool = Storage::disk('uploads')->put($filename,file_get_contents($realPath));
-                    $filePath = storage_path('app/uploads/').$filename;
+//                    $filePath = storage_path('app/uploads/').$filename;
+                    $filePath = '/storage/app/uploads/'.$filename;
                     $data = [
                         'path' => $filePath,
                         'remark' => '微网站轮播图',
