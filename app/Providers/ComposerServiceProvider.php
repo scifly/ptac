@@ -31,6 +31,7 @@ class ComposerServiceProvider extends ServiceProvider {
         View::composer('score_range.create_edit', 'App\Http\ViewComposers\ScoreRangeComposer');
         View::composer('user.create_edit', 'App\Http\ViewComposers\UserComposer');
         View::composer('wap_site.create_edit', 'App\Http\ViewComposers\WapSiteComposer');
+        View::composer('wap_site_module.create_edit', 'App\Http\ViewComposers\WapSiteModuleComposer');
 
     }
 

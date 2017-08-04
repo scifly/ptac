@@ -5,18 +5,18 @@ namespace App\Http\Requests;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 
-class WapSiteRequest extends FormRequest
+class WapSiteModuleRequest extends FormRequest
 {
 
     protected $rules = [
-        'school_id' => 'required|integer',
-        'site_title' => 'required|string|max:255',
+        'wap_site_id' => 'required|integer',
+        'name' => 'required|string|max:255',
         'media_ids' => 'required|array',
         'enabled' => 'required|boolean'
     ];
     protected $strings_key = [
-        'school_id' => '所属学校',
-        'site_title' => '首页抬头',
+        'name' => '名称',
+        'wap_site_id' => '所属网站',
         'media_ids' => '轮播图',
         'enabled' => '是否启用'
     ];
@@ -24,8 +24,8 @@ class WapSiteRequest extends FormRequest
         'required'=> '为必填项',
         'string'=> '为字符串',
         'max'=> '最大为:max',
-        'array'=> '必须为数组',
         'integer'=> '必须为整数',
+        'array'=> '必须为数组',
         'boolean'=> '为0或1',
     ];
 

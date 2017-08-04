@@ -171,21 +171,23 @@ class ExamController extends Controller
     {
         // request
         $data = Exam::find($id);
+        $classIds = $examRequest->input('class_ids');
+        $subjectIds = $examRequest->input('subject_ids');
+
         $data->name = $examRequest->input('name');
         $data->remark = $examRequest->input('remark');
         $data->exam_type_id = $examRequest->input('exam_type_id');
-        $classIds = $examRequest->input('class_ids');
         $data->class_ids = implode(',', $classIds);
-
-        $subjectIds = $examRequest->input('subject_ids');
         $data->subject_ids = implode(',', $subjectIds);
-
         $data->max_scores = $examRequest->input('max_scores');
         $data->pass_scores = $examRequest->input('pass_scores');
         $data->start_date = $examRequest->input('start_date');
         $data->end_date = $examRequest->input('end_date');
         $data->enabled = $examRequest->input('enabled');
-        $row = $this->exam->where(['exam_type_id' => $data->exam_type_id, 'name' => $data->name])->first();
+        $row = $this->exam->where([
+                'exam_type_id' => $data->exam_type_id,
+                'name' => $data->name
+            ])->first();
         if(!empty($row) && $row->id != $id){
 
             $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;

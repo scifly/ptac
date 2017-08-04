@@ -1,10 +1,9 @@
 <style>
-    /*.preview img{*/
-        /*width: 100%;*/
-        /*height: 100px;*/
-        /*margin: 10px;*/
-    /*}*/
-    
+    .preview img{
+        width: 100%;
+        height: 100px;
+        margin: 10px;
+    }
 </style>
 <div class="box box-primary">
     <div class="box-header"></div>
@@ -33,8 +32,8 @@
                 <div class="col-sm-6">
                     @if(isset($medias))
                         @foreach($medias as $key => $value)
-                            <img src="../..{{$value->path}}">
-                            <input type="hidden" name="media_ids" value="{{$value->id}}"/>
+                            <img src="../../..{{$value->path}}">
+                            <input type="hidden" name="media_ids[]" value="{{$value->id}}"/>
                         @endforeach
                     @endif
                     <div class="preview" style="width: 100px;overflow: hidden;"></div>

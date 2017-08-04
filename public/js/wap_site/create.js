@@ -23,9 +23,9 @@ $(function () {
         var len = imgInputElement.files.length;
 
         for (var i = 0; i < len; i++) {
-            data.append('img[]', imgInputElement.files[i]);
+            data.append('img[]', imgInputElement.files[i]);//获取到选中的图片
         }
-        data.append('_token', $('#csrf_token').attr('content'));
+        data.append('_token', $('#csrf_token').attr('content'));//添加token
         // 图片预览
         var $pre = $('.preview');
         if (len !== 0) {
@@ -38,12 +38,12 @@ $(function () {
                 data: data,
                 success: function ($result) {
                     var imgArr = $result.data;
-                    $.each(imgArr, function (index, obj) {
+                    $.each(imgArr, function (index, obj) {//渲染选中的图片到表单
                         console.log(index + obj.id + obj.path);
                         $pre.append('<img src="../../' + obj.path + '" id="' + obj.id + '">');
-                        $pre.append('<input type="hidden" name="media_ids[]" value="' + obj.id + '">');
+                        $pre.append('<input name="media_ids[]" value="' + obj.id + '">');
                     });
-                    // 清空，弹框关闭
+                    // 清空,关闭弹框
                     $('#uploadFile').fileinput('clear');
                     $('#modalPic').modal('hide');
                 }

@@ -151,13 +151,16 @@ class GradeController extends Controller
         // find the record by id
         // update the record with the request data
         $data = Grade::find($id);
+        $ids = $gradeRequest->input('educator_ids');
 
         $data->name = $gradeRequest->input('name');
         $data->school_id = $gradeRequest->input('school_id');
-        $ids = $gradeRequest->input('educator_ids');
         $data->educator_ids = implode(',', $ids);
         $data->enabled = $gradeRequest->input('enabled');
-        $row = $this->grade->where(['school_id' => $data->school_id, 'name' => $data->name])->first();
+        $row = $this->grade->where([
+                'school_id' => $data->school_id,
+                'name' => $data->name
+            ])->first();
         if(!empty($row) && $row->id != $id){
 
             $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
