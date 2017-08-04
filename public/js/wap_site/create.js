@@ -3,12 +3,6 @@
  */
 $(crud.create('formWapSite', 'wapsites'));
 $(function () {
-    // $('#media_ids').fileinput({
-    //     "language":'zh',
-    //     'theme': 'explorer',
-    //     'maxFileCount': 5,
-    //     'uploadUrl': '#'
-    // });
     // 初始化
     $('#uploadFile').fileinput({
         "language": 'zh',
@@ -16,6 +10,7 @@ $(function () {
         'maxFileCount': 5,
         'uploadUrl': '#',
         'showUpload': false,
+        'allowedFileExtensions': ['jpg', 'gif', 'png'],//接收的文件后缀
         'fileActionSettings': {
             showRemove: true,
             showUpload: false,
@@ -23,24 +18,35 @@ $(function () {
         }
     });
     $('#upload').click(function () {
-        var data = new FormData($( ".form-horizontal" )[0]);
+        var data = new FormData($(".form-horizontal")[0]);
         var imgInputElement = document.getElementById('uploadFile');
         var len = imgInputElement.files.length;
 
         for (var i = 0; i < len; i++) {
-            data.append('img[]', imgInputElement.files[i]);
+            data.append('img[]', imgInputElement.files[i]);//获取到选中的图片
         }
-        data.append('_token',$('#csrf_token').attr('content'));
+        data.append('_token', $('#csrf_token').attr('content'));//添加token
+        // 图片预览
+        var $pre = $('.preview');
+        var img = '<img src="">';
         if (len !== 0) {
             $.ajax({
                 type: 'post',
-                processData:false,
-                contentType:false,
+                processData: false,
+                contentType: false,
                 dataType: 'json',
                 url: "../wapsites/uploadwapsite",
                 data: data,
                 success: function ($result) {
-
+                    var imgArr = $result.data;
+                    console.log($result.data);
+                    // 清空
+                    $('#uploadFile').fileinput('clear');
+                    $.each(imgArr, function (index, obj) {//渲染选中的图片到表单
+                        console.log(index + obj.id + obj.path);
+                        $pre.append('<img src="../../' + obj.path + '" id="' + obj.id + '">');
+                        $pre.append('<input name="media_ids[]" value="' + obj.id + '">');
+                    })
                 }
             })
         }

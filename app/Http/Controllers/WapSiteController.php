@@ -133,21 +133,23 @@ class WapSiteController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\WapSite  $wapSite
+     * @param WapSiteRequest $siteRequest
+     * @param $id
      * @return \Illuminate\Http\Response
+     * @internal param \Illuminate\Http\Request $request
+     * @internal param WapSite $wapSite
      */
     public function update( WapSiteRequest $siteRequest, $id)
     {
         $data = WapSite::find($id);
         $media_ids = $siteRequest->input('media_ids');
 
-        $data->school_id = $siteRequest->input('name');
-        $data->site_title = $siteRequest->input('grade_id');
+        $data->school_id = $siteRequest->input('school_id');
+        $data->site_title = $siteRequest->input('site_title');
         $data->media_ids = implode(',', $media_ids);
         $data->enabled = $siteRequest->input('enabled');
 
-        $row = $this->squad->where([
+        $row = $this->wapSite->where([
             'school_id' => $data->school_id,
         ])->first();
         if(!empty($row) && $row->id != $id){
@@ -213,6 +215,7 @@ class WapSiteController extends Controller
                     // 使用我们新建的uploads本地存储空间（目录）
                     $init=0;
                     $bool = Storage::disk('uploads')->put($filename,file_get_contents($realPath));
+
                     $filePath = '/storage/app/uploads/'.$filename;
                     $data = [
                         'path' => $filePath,

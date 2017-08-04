@@ -13,21 +13,17 @@ use Illuminate\Support\Facades\DB;
 
 class WapSiteModuleComposer {
 
-    protected $school;
     protected $wapSite;
 
-    public function __construct(School $school, WapSite $wapSite) {
+    public function __construct(WapSite $wapSite) {
 
-        $this->school = $school;
         $this->wapSite = $wapSite;
 
     }
 
     public function compose(View $view) {
 
-
         $view->with([
-            'schools' => $this->school->pluck('name', 'id'),
             'wapSites' => $this->wapSite->pluck('site_title', 'id'),
         ]);
     }
