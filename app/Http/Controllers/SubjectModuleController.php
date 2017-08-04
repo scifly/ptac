@@ -49,7 +49,6 @@ class SubjectModuleController extends Controller {
      */
     public function store(SubjectModuleRequest $request) {
         $data = $request->except('_token');
-        dd($data);
         $result = $this->subjectModule
             ->where('name',$data['name'])
             ->where('subject_id',$data['subject_id'])
