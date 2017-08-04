@@ -64,6 +64,7 @@ class ProcedureStep extends Model {
                    foreach(array_keys($users) as $uid) {
                        $data .= $users[$uid]. ', ';
                    }
+                   substr($data,0,strlen($data)-1);
                    return $data;
                }
            ],
@@ -75,6 +76,7 @@ class ProcedureStep extends Model {
                    foreach(array_keys($users) as $uid) {
                        $data .= $users[$uid]. ', ';
                    }
+                   substr($data,0,strlen($data)-1);
                    return $data;
                }
            ],

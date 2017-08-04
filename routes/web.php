@@ -228,13 +228,13 @@ Route::post('procedure_steps/store', 'ProcedureStepController@store');
 Route::get('procedure_steps/show/{id}', 'ProcedureStepController@show');
 Route::get('procedure_steps/edit/{id}', 'ProcedureStepController@edit');
 Route::put('procedure_steps/update/{id}', 'ProcedureStepController@update');
-Route::delete('procedure_steps/delete/{id}', 'ProcedureStepController@destroy');
+Route::get('procedure_steps/delete/{id}', 'ProcedureStepController@destroy');
 Route::get('procedure_steps/getSchoolEducators/{id}', 'ProcedureStepController@getSchoolEducators');
 
 //流程日志
 Route::get('procedure_logs/index', 'ProcedureLogController@index');
 Route::get('procedure_logs/show/{id}', 'ProcedureLogController@show');
-Route::delete('procedure_logs/delete/{id}', 'ProcedureLogController@destroy');
+
 
 
 //用户管理-用户设置
@@ -273,6 +273,8 @@ Route::group(['prefix' => 'pollQuestionnaireParticpation'],function(){
     Route::put('/update', 'PqParticipantController@update')->name("pqp_update");
 
 });
+
+
 #成绩发送
 Route::group(['prefix' => 'scoreSend'],function(){
     Route::get('/', 'Score_SendController@index');
@@ -284,6 +286,7 @@ Route::group(['prefix' => 'scoreSend'],function(){
     Route::post('/preview/{examId}/{classId}/{subjectIds}/{itemId}', 'Score_SendController@preview');
 });
 
+
 //微网站管理
 Route::get('wapsites/index', 'WapSiteController@index');
 Route::get('wapsites/create', 'WapSiteController@create');
@@ -292,6 +295,7 @@ Route::get('wapsites/show/{id}', 'WapSiteController@show');
 Route::get('wapsites/edit/{id}', 'WapSiteController@edit');
 Route::put('wapsites/update/{id}', 'WapSiteController@update');
 Route::delete('wapsites/delete/{id}', 'WapSiteController@destroy');
+Route::post('wapsites/uploadwapsite', 'WapSiteController@uploadImage');
 
 //微网站管理-网站模块管理
 Route::get('wapsitemodules/index', 'WapSiteModuleController@index');

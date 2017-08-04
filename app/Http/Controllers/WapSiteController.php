@@ -9,6 +9,8 @@ use App\Models\Media;
 use App\Models\WapSite;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\Storage;
+
 class WapSiteController extends Controller
 {
     protected $wapSite;
@@ -56,12 +58,13 @@ class WapSiteController extends Controller
      */
     public function store(WapSiteRequest $request)
     {
-        $res = $this->wapSite->save($request->all());
-
-        $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-        $this->result['message'] = self::MSG_CREATE_OK;
-
-        return response()->json($this->result);
+        dd($request->all());die;
+//        $res = $this->wapSite->save($request->all());
+//
+//        $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
+//        $this->result['message'] = self::MSG_CREATE_OK;
+//
+//        return response()->json($this->result);
     }
 
     /**
@@ -124,6 +127,49 @@ class WapSiteController extends Controller
             $this->result['message'] = '';
         }
         return response()->json($this->result);
+    }
+
+    public function uploadImage(Request $request){
+        $result = Array(
+            'success'   =>0,
+            'message'   =>'',
+        );
+        if ($request->isMethod('post')) {
+            $file = $request->file('media_ids');
+            if (empty($file)){
+                $result['success'] = 0;
+                $result['message'] = '您还未选择图片！';
+                return $result;
+            }
+            $image=array();
+            foreach ($file as $key=>$value)
+            {
+                $image[]=$key;
+            }
+            $allowed_extensions = ["png", "jpg", "gif"];
+            if ($file->isValid()) {
+                if ($file->getClientOriginalExtension() && !in_array($file->getClientOriginalExtension(), $allowed_extensions)) {
+                    return ['error' => 'You may only upload png, jpg or gif.'];
+                    $result['success'] = 0;
+                    $result['message'] = '只能选择[png, jpg ,gif]类型图片！';
+                    return $result;
+                }
+
+                // 获取文件相关信息
+                $originalName = $file->getClientOriginalName(); // 文件原名
+                $ext = $file->getClientOriginalExtension();     // 扩展名//
+                $realPath = $file->getRealPath();   //临时文件的绝对路径
+                $type = $file->getClientMimeType();     // image/jpeg/
+                // 上传图片
+                $filename = date('Y-m-d-H-i-s') . '-' . uniqid() . '.' . $ext;
+                // 使用我们新建的uploads本地存储空间（目录）
+                $init=0;
+                $bool = Storage::disk('uploads')->put($filename,file_get_contents($realPath));
+                $filePath = storage_path('app/uploads/').$filename;
+
+            }
+        }
+
     }
 }
 
