@@ -10,6 +10,10 @@ $(function () {
         'maxFileCount': 5,
         'uploadUrl': '#',
         'showUpload': false,
+        'minImageWidth': 50, //图片的最小宽度
+        'minImageHeight': 50,//图片的最小高度
+        'maxImageWidth': 1000,//图片的最大宽度
+        'maxImageHeight': 1000,//图片的最大高度
         'allowedFileExtensions': ['jpg', 'gif', 'png'],//接收的文件后缀
         'fileActionSettings': {
             showRemove: true,
@@ -35,13 +39,14 @@ $(function () {
                 contentType: false,
                 dataType: 'json',
                 url: "../wapsites/uploadwapsite",
+
                 data: data,
                 success: function ($result) {
                     var imgArr = $result.data;
                     $.each(imgArr, function (index, obj) {//渲染选中的图片到表单
                         console.log(index + obj.id + obj.path);
                         $pre.append('<img src="../../' + obj.path + '" id="' + obj.id + '">');
-                        $pre.append('<input name="media_ids[]" value="' + obj.id + '">');
+                        $pre.append('<input type="hidden" name="media_ids[]" value="' + obj.id + '">');
                     });
                     // 清空,关闭弹框
                     $('#uploadFile').fileinput('clear');
