@@ -217,7 +217,6 @@ Route::post('procedures/store', 'ProcedureController@store');
 Route::get('procedures/show/{id}', 'ProcedureController@show');
 Route::get('procedures/edit/{id}', 'ProcedureController@edit');
 Route::put('procedures/update/{id}', 'ProcedureController@update');
-Route::delete('procedures/getSchoolEducators/{id}', 'ProcedureController@getSchoolEducators');
 
 //流程步骤设置
 Route::get('procedure_steps/index', 'ProcedureStepController@index');
@@ -228,11 +227,12 @@ Route::get('procedure_steps/edit/{id}', 'ProcedureStepController@edit');
 Route::put('procedure_steps/update/{id}', 'ProcedureStepController@update');
 Route::delete('procedure_steps/delete/{id}', 'ProcedureStepController@destroy');
 Route::get('procedure_steps/delete/{id}', 'ProcedureStepController@destroy');
+Route::get('procedure_steps/getSchoolEducators/{id}', 'ProcedureStepController@getSchoolEducators');
 
 //流程日志
 Route::get('procedure_logs/index', 'ProcedureLogController@index');
 Route::get('procedure_logs/show/{id}', 'ProcedureLogController@show');
-Route::delete('procedure_logs/delete/{id}', 'ProcedureLogController@destroy');
+
 
 
 //用户管理-用户设置
@@ -271,10 +271,7 @@ Route::group(['prefix' => 'pollQuestionnaireParticpation'],function(){
     Route::put('/update', 'PqParticipantController@update')->name("pqp_update");
 
 });
-<<<<<<< HEAD
 
-=======
->>>>>>> refs/remotes/origin/master
 //微网站管理
 Route::get('wapsites/index', 'WapSiteController@index');
 Route::get('wapsites/create', 'WapSiteController@create');
