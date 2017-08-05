@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\AppRequest;
-use App\Models\App;
+use App\Http\Requests\TabRequest;
+use App\Models\Tab;
 use Illuminate\Support\Facades\Request;
 
-class AppController extends Controller {
+class TabController extends Controller {
     
-    protected $app;
+    protected $tab;
     
-    function __construct(App $app) { $this->app = $app; }
+    function __construct(Tab $tab) { $this->tab = $tab; }
     
     /**
      * Display a listing of the resource.
@@ -20,13 +20,14 @@ class AppController extends Controller {
     public function index() {
         
         if (Request::get('draw')) {
-            return response()->json($this->app->datatable());
+            return response()->json($this->tab->datatable());
         }
-        return view('app.index', [
-            'js' => 'js/app/index.js',
-            'dialog' => true,
-            'datatable' => true
+        return view('tab.index', [
+            'js' => 'js/tab/index.js',
+            'datatable' => true,
+            'dialog' => true
         ]);
+        
     }
     
     /**
@@ -36,8 +37,8 @@ class AppController extends Controller {
      */
     public function create() {
         
-        return view('app.create', [
-            'js' => 'js/app/create.js',
+        return view('tab.create', [
+            'js' => 'js/action/create.js',
             'form' => true
         ]);
         
@@ -45,60 +46,62 @@ class AppController extends Controller {
     
     /**
      * Store a newly created resource in storage.
-     * @param AppRequest $request
-     * @return \Illuminate\Http\Response
-     * @internal param \Illuminate\Http\Request|Request $request
+     *
+     * @param TabRequest $request
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function store(AppRequest $request) {
+    public function store(TabRequest $request) {
         
-        //添加新数据
-        $this->app->create($request->all());
-        $this->result['message'] = self::MSG_CREATE_OK;
+        if ($this->tab->create($request->all())) {
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
+            $this->result['message'] = self::MSG_CREATE_OK;
+        } else {
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+            $this->result['message'] = 'Oops';
+        }
         return response()->json($this->result);
-
+        
     }
     
     /**
      * Display the specified resource.
-     * @param $id
+     *
+     * @param  int $id
      * @return \Illuminate\Http\Response
-     * @internal param App $app
      */
     public function show($id) {
         
-        // find the record by $id
-        return view('app.show', [
-            'app' => $this->app->findOrFail($id)
-        ]);
+        $tab = $this->tab->findOrFail($id);
+        return view('action.show', ['tab' => $tab]);
         
     }
     
     /**
      * Show the form for editing the specified resource.
      *
-     * @param $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
-     * @internal param App $app
      */
     public function edit($id) {
         
-        // find the record by $id
-        return view('app.edit', [
-            'js' => 'js/app/edit.js',
-            'app' => $this->app->findOrFail($id),
+        return view('tab.edit', [
+            'js' => 'js/tab/edit.js',
+            'tab' => $this->tab->findOrFail($id),
             'form' => true
         ]);
+        
     }
     
     /**
      * Update the specified resource in storage.
-     * @param AppRequest $request
-     * @param $id
+     *
+     * @param TabRequest $request
+     * @param  int $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function update(AppRequest $request, $id) {
+    public function update(TabRequest $request, $id) {
         
-        $this->app->findOrFail($id)->update($request->all());
+        $this->tab->findOrFail($id)->update($request->all());
         $this->result['message'] = self::MSG_EDIT_OK;
         
         return response()->json($this->result);
@@ -108,13 +111,12 @@ class AppController extends Controller {
     /**
      * Remove the specified resource from storage.
      *
-     * @param $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
-     * @internal param App $app
      */
     public function destroy($id) {
         
-        $this->app->findOrFail($id)->delete();
+        $this->tab->findOrFail($id)->delete();
         $this->result['message'] = self::MSG_DEL_OK;
         
         return response()->json($this->result);

@@ -12,12 +12,12 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
-
 # Auth::routes();
 # Route::get('/', function() { return 'Dashboard'; });
 # Route::get('/', 'HomeController@index');
 # Route::get('/home', 'HomeController@index')->name('home');
-# Route::get('test/index', 'TestController@index');
+Route::get('test/index', 'TestController@index');
+Route::get('test/create', 'TestController@create');
 # Route::get('/', 'HomeController@index');
 
 # 菜单管理
@@ -29,7 +29,23 @@ Route::get('actions/show/{id}', 'ActionController@show');
 Route::get('actions/edit/{id}', 'ActionController@edit');
 Route::put('actions/update/{id}', 'ActionController@update');
 Route::delete('actions/delete/{id}', 'ActionController@destroy');
-
+// 卡片管理
+Route::get('tabs/index', 'TabController@index');
+Route::get('tabs/create', 'TabController@create');
+Route::post('tabs/store', 'TabController@store');
+Route::get('tabs/show/{id}', 'TabController@show');
+Route::get('tabs/edit/{id}', 'TabController@edit');
+Route::put('tabs/update/{id}', 'TabController@update');
+Route::delete('tabs/delete/{id}', 'TabController@destroy');
+// 菜单设置
+Route::get('menus/index', 'MenuController@index');
+Route::post('menus/index', 'MenuController@index');
+Route::get('menus/create', 'MenuController@create');
+Route::post('menus/store', 'MenuController@store');
+Route::get('menus/show/{id}', 'MenuController@show');
+Route::get('menus/edit/{id}', 'MenuController@edit');
+Route::put('menus/update/{id}', 'MenuController@update');
+Route::delete('menus/delete/{id}', 'MenuController@destroy');
 
 # 系统设置
 // 学校设置

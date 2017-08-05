@@ -36,8 +36,18 @@
     @endisset
     <!-- 微网站 -->
     @isset($ws)
-    <link rel="stylesheet" href="{{ URL::asset('css/wapSite.css') }}">
+        <link rel="stylesheet" href="{{ URL::asset('css/wapSite.css') }}">
     @endisset
+
+<!-- 菜单测试 -->
+    <link rel="stylesheet" href="{{ URL::asset('js/plugins/jstree/dist/themes/default/style.min.css') }}">
+    <!-- select2 style -->
+    <link rel="stylesheet" href="{{ URL::asset('js/plugins/select2/css/select2.min.css') }}">
+    <!-- Parsley style -->
+    <link rel="stylesheet" href="{{ URL::asset('js/plugins/parsley/parsley.css') }}">
+    <!-- switchery style -->
+    <link rel="stylesheet" href="{{ URL::asset('js/plugins/switchery/switchery.min.css') }}">
+
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -583,6 +593,18 @@
 @isset($js)
     <script src="{{ URL::asset($js) }}"></script>
 @endisset
+
+<!-- 菜单测试 -->
+<script src="{{ URL::asset('js/plugins/jstree/dist/jstree.min.js') }}"></script>
+<script src="{{ URL::asset('js/menu/index.js') }}"></script>
+<script src="{{ URL::asset('js/plugins/parsley/parsley.min.js') }}"></script>
+<script src="{{ URL::asset('js/plugins/parsley/i18n/zh_cn.js') }}"></script>
+<script src="{{ URL::asset('js/plugins/parsley/i18n/zh_cn.extra.js') }}"></script>
+<script src="{{ URL::asset('js/plugins/select2/js/select2.min.js') }}"></script>
+<script src="{{ URL::asset('js/plugins/switchery/switchery.min.js') }}"></script>
+<script src="{{ URL::asset('js/switcher.init.js') }}"></script>
+
+
 <!-- AdminLTE for demo purposes -->
 <script src="{{ URL::asset('js/demo.js') }}"></script>
 </body>
