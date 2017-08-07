@@ -148,10 +148,10 @@ class EducatorController extends Controller
         // find the record by id
         // update the record with the request data
         $data = Educator::find($id);
+        $ids = $request->input('team_ids');
 
         $data->user_id = $request->input('user_id');
         $data->school_id = $request->input('school_id');
-        $ids = $request->input('team_ids');
         $data->team_ids = implode(',', $ids);
         $data->sms_quote = $request->input('sms_quote');
 

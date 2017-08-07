@@ -35,7 +35,6 @@ class WapSiteModule extends Model {
         'id',
         'wap_site_id',
         'name',
-        'summary',
         'media_id',
         'created_at',
         'updated_at',

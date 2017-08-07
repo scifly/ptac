@@ -36,6 +36,7 @@ class WapSite extends Model {
         'media_ids',
         'created_at',
         'updated_at',
+        'enabled',
     ];
     public function wapsitemodule()
     {

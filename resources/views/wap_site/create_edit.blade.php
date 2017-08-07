@@ -1,3 +1,10 @@
+<style>
+    .preview img{
+        width: 100%;
+        height: 100px;
+        margin: 10px;
+    }
+</style>
 <div class="box box-primary">
     <div class="box-header"></div>
     <div class="box-body">
@@ -23,9 +30,14 @@
             <div class="form-group">
                 {!! Form::label('media_ids', '轮播图',['class' => 'col-sm-2 control-label']) !!}
                 <div class="col-sm-6">
-
-                    {{--<input type="file" id="media_ids" name="image_data[]" multiple>--}}
-                    <a href="javascript:" class="btn btn-primary" data-toggle="modal" data-target="#modalPic">上传</a>
+                    @if(isset($medias))
+                        @foreach($medias as $key => $value)
+                            <img src="../../..{{$value->path}}">
+                            <input type="hidden" name="media_ids[]" value="{{$value->id}}"/>
+                        @endforeach
+                    @endif
+                    <div class="preview" style="width: 100px;overflow: hidden;"></div>
+                    <a class="btn btn-primary" data-toggle="modal" data-target="#modalPic">上传</a>
                 </div>
             </div>
             <div class="form-group">
@@ -48,7 +60,7 @@
         </div>
     </div>
 </div>
-<div class="modal fade" id="modalPic" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal fade" id="modalPic">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -60,8 +72,8 @@
                 </h4>
             </div>
             <div class="modal-body">
-                <form action="#" class="form-horizontal">
-                    <input type="file" id="uploadFile" multiple>
+                <form action="#" class="form-horizontal" enctype="multipart/form-data">
+                    <input type="file" id="uploadFile" accept="image/jpeg,image/gif,image/png" multiple>
                 </form>
             </div>
             <div class="modal-footer">

@@ -237,8 +237,6 @@ Route::get('procedure_steps/getSchoolEducators/{id}', 'ProcedureStepController@g
 Route::get('procedure_logs/index', 'ProcedureLogController@index');
 Route::get('procedure_logs/show/{id}', 'ProcedureLogController@show');
 
-
-
 //用户管理-用户设置
 Route::get('users/index', 'UserController@index');
 Route::get('users/create', 'UserController@create');
@@ -267,7 +265,6 @@ Route::put('exams/update/{id}', 'ExamController@update');
 Route::delete('exams/delete/{id}', 'ExamController@destroy');
 
 #问卷调查参与
-
 Route::group(['prefix' => 'pollQuestionnaireParticpation'],function(){
     Route::get('/', 'PqParticipantController@index');
     Route::get('/index', 'PqParticipantController@index');
@@ -275,7 +272,6 @@ Route::group(['prefix' => 'pollQuestionnaireParticpation'],function(){
     Route::put('/update', 'PqParticipantController@update')->name("pqp_update");
 
 });
-
 
 #成绩发送
 Route::group(['prefix' => 'scoreSend'],function(){
@@ -297,7 +293,7 @@ Route::get('wapsites/show/{id}', 'WapSiteController@show');
 Route::get('wapsites/edit/{id}', 'WapSiteController@edit');
 Route::put('wapsites/update/{id}', 'WapSiteController@update');
 Route::delete('wapsites/delete/{id}', 'WapSiteController@destroy');
-Route::post('wapsites/uploadwapsite', 'WapSiteController@uploadImage');
+Route::any('wapsites/uploadwapsite', 'WapSiteController@uploadImages');
 
 //微网站管理-网站模块管理
 Route::get('wapsitemodules/index', 'WapSiteModuleController@index');
