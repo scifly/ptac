@@ -56,14 +56,12 @@ class WapSiteModuleController extends Controller
     public function store(WapSiteModuleRequest $request)
     {
         // request
-        $media_ids = $request->input('media_ids');
         $data = [
             'name' => $request->input('name'),
             'wap_site_id' => $request->input('wap_site_id'),
-            'media_ids' => implode(',', $media_ids),
+            'media_id' => $request->input('media_id'),
             'enabled' => $request->input('enabled')
         ];
-
 //        $row = $this->wapSiteModule->where([
 //                'name' => $data['name']
 //            ])->first();
@@ -92,13 +90,9 @@ class WapSiteModuleController extends Controller
     public function show($id)
     {
         $module = WapSiteModule::whereId($id)->first();
-        $f = explode(",", $module->media_ids);
-
-        $medias = Media::whereIn('id',$f)->get(['id','path']);
 
         return view('wap_site_module.show', [
             'module' => $module,
-            'medias' => $medias,
             'ws' =>true
         ]);
     }
@@ -109,9 +103,15 @@ class WapSiteModuleController extends Controller
      * @param  \App\Models\WapSiteModule  $wapSiteModule
      * @return \Illuminate\Http\Response
      */
-    public function edit(WapSiteModule $wapSiteModule)
+    public function edit($id)
     {
-        //
+        $module = $this->wapSiteModule->whereId($id)->first();
+        return view('wap_site_module.edit', [
+            'js' => 'js/wap_site_module/edit.js',
+            'module' => $module,
+            'form' => true
+
+        ]);
     }
 
     /**
@@ -121,9 +121,34 @@ class WapSiteModuleController extends Controller
      * @param  \App\Models\WapSiteModule  $wapSiteModule
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, WapSiteModule $wapSiteModule)
+    public function update(WapSiteModuleRequest $request, $id)
     {
-        //
+        $data = WapSiteModule::find($id);
+
+        $data->wap_site_id = $request->input('wap_site_id');
+        $data->name = $request->input('name');
+        $data->media_id = $request->input('media_id');
+        $data->enabled = $request->input('enabled');
+
+//        $row = $this->wapSiteModule->where([
+//            'school_id' => $data->school_id,
+//        ])->first();
+//        if(!empty($row) && $row->id != $id){
+//
+//            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+//            $this->result['message'] = '所属学校重复！';
+//
+//        }else{
+            if($data->save())
+            {
+                $this->result['message'] = self::MSG_EDIT_OK;
+            } else {
+                $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+                $this->result['message'] = '';
+
+            }
+//        }
+        return response()->json($this->result);
     }
 
     /**

@@ -38,6 +38,7 @@ class WapSiteModule extends Model {
         'media_id',
         'created_at',
         'updated_at',
+        'enabled',
     ];
     public function wsmarticles()
     {
@@ -46,6 +47,10 @@ class WapSiteModule extends Model {
     public function wapsite()
     {
         return $this->belongsTo('App\Models\WapSite', 'wap_site_id', 'id');
+
+    }
+    public function media(){
+        return $this->belongsTo('App\Models\Media');
 
     }
 
