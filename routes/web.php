@@ -183,6 +183,8 @@ Route::delete('score_totals/delete/{id}', 'ScoreTotalController@destroy');
 Route::get('score_totals/getExamSubjects/{id}', 'ScoreTotalController@getExamSubjects');
 
 // 成绩统计项设置
+Route::get('score_ranges/statistics_show', 'ScoreRangeController@statisticsShow');
+Route::get('score_ranges/statistics', 'ScoreRangeController@statistics');
 Route::get('score_ranges/index', 'ScoreRangeController@index');
 Route::get('score_ranges/create', 'ScoreRangeController@create');
 Route::post('score_ranges/store', 'ScoreRangeController@store');

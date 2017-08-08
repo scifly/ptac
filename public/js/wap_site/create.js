@@ -10,6 +10,10 @@ $(function () {
         'maxFileCount': 5,
         'uploadUrl': '#',
         'showUpload': false,
+        'minImageWidth': 50, //图片的最小宽度
+        'minImageHeight': 50,//图片的最小高度
+        'maxImageWidth': 1000,//图片的最大宽度
+        'maxImageHeight': 1000,//图片的最大高度
         'allowedFileExtensions': ['jpg', 'gif', 'png'],//接收的文件后缀
         'fileActionSettings': {
             showRemove: true,
@@ -35,6 +39,7 @@ $(function () {
                 contentType: false,
                 dataType: 'json',
                 url: "../wapsites/uploadwapsite",
+
                 data: data,
                 success: function ($result) {
                     var imgArr = $result.data;
