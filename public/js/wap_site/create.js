@@ -41,7 +41,7 @@ $(function () {
                     $.each(imgArr, function (index, obj) {//渲染选中的图片到表单
                         console.log(index + obj.id + obj.path);
                         $pre.append('<img src="../../' + obj.path + '" id="' + obj.id + '">');
-                        $pre.append('<input name="media_ids[]" value="' + obj.id + '">');
+                        $pre.append('<input type="hidden" name="media_ids[]" value="' + obj.id + '">');
                     });
                     // 清空,关闭弹框
                     $('#uploadFile').fileinput('clear');

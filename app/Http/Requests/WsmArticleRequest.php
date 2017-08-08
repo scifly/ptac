@@ -5,19 +5,25 @@ namespace App\Http\Requests;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 
-class WapSiteModuleRequest extends FormRequest
+class WsmArticleRequest extends FormRequest
 {
 
     protected $rules = [
-        'wap_site_id' => 'required|integer',
-        'name' => 'required|string|max:255',
-        'media_id' => 'required|integer',
+        'wsm_id' => 'required|integer',
+        'name' => 'required|string|max:120',
+        'summary' => 'required|string|max:255',
+        'thumbnail_media_id' => 'required|integer',
+        'content' => 'required|string',
+        'media_ids' => 'required|integer',
         'enabled' => 'required|boolean'
     ];
     protected $strings_key = [
+        'wsm_id' => '所属网站模块',
         'name' => '名称',
-        'wap_site_id' => '所属网站',
-        'media_id' => '轮播图',
+        'summary' => '文章摘要',
+        'thumbnail_media_id' => '缩略图',
+        'content' => '文章内容',
+        'media_ids' => '轮播图',
         'enabled' => '是否启用'
     ];
     protected $strings_val = [
