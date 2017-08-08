@@ -1,1 +1,1 @@
-$(crud.edit('formWapSite'))
+$(crud.edit('formWapSite'));
