@@ -180,6 +180,8 @@ class PqParticipantController extends Controller
            if(!$hasObject)  $Answer->save();
            else $Answer->update();
        }
+       return response()->json(['msg'=>'提交成功',''=>self::HTTP_STATUSCODE_OK]);
+
 
     }
 }

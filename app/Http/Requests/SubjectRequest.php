@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 
 class SubjectRequest extends FormRequest
@@ -25,10 +24,10 @@ class SubjectRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|string|max:255|min:2',
-//            'max_score' => 'required|integer|max:3',
+            'name' => 'required|string|max:20|min:2',
+            'max_score' => 'required|integer|min:3',
             'pass_score' => 'required|integer|min:1',
-
+            'grade_ids' => 'required',
             'enabled' => 'required|boolean'
 
         ];
@@ -37,11 +36,13 @@ class SubjectRequest extends FormRequest
     public function messages() {
         return [
             'name.required' => '科目名称不能为空',
-            'name.min' => '科目名称不能少于四个字符',
+            'name.min' => '科目名称不能少于两个字符',
+            'max_score.required' => '最高分不能为空!',
+            'pass_score.required' => '及格分不能为空!',
+            'grade_ids.required' => '年级名称不能为空!'
+
         ];
     }
 
-    protected function formatErrors(Validator $validator) {
-        return $validator->errors()->all();
-    }
+
 }

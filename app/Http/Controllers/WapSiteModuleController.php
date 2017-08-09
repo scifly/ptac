@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\WapSiteModuleRequest;
+use App\Http\Requests\WapSiteRequest;
 use App\Models\WapSiteModule;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
@@ -51,9 +53,32 @@ class WapSiteModuleController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(WapSiteModuleRequest $request)
     {
-        //
+        // request
+        $data = [
+            'name' => $request->input('name'),
+            'wap_site_id' => $request->input('wap_site_id'),
+            'media_id' => $request->input('media_id'),
+            'enabled' => $request->input('enabled')
+        ];
+//        $row = $this->wapSiteModule->where([
+//                'name' => $data['name']
+//            ])->first();
+//        if(!empty($row)){
+//            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+//            $this->result['message'] = '名称重复！';
+//        }else{
+            if($this->wapSiteModule->create($data))
+            {
+                $this->result['message'] = self::MSG_CREATE_OK;
+            } else {
+                $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+                $this->result['message'] = '';
+            }
+//        }
+
+        return response()->json($this->result);
     }
 
     /**
@@ -62,9 +87,14 @@ class WapSiteModuleController extends Controller
      * @param  \App\Models\WapSiteModule  $wapSiteModule
      * @return \Illuminate\Http\Response
      */
-    public function show(WapSiteModule $wapSiteModule)
+    public function show($id)
     {
-        //
+        $module = WapSiteModule::whereId($id)->first();
+
+        return view('wap_site_module.show', [
+            'module' => $module,
+            'ws' =>true
+        ]);
     }
 
     /**
@@ -73,9 +103,15 @@ class WapSiteModuleController extends Controller
      * @param  \App\Models\WapSiteModule  $wapSiteModule
      * @return \Illuminate\Http\Response
      */
-    public function edit(WapSiteModule $wapSiteModule)
+    public function edit($id)
     {
-        //
+        $module = $this->wapSiteModule->whereId($id)->first();
+        return view('wap_site_module.edit', [
+            'js' => 'js/wap_site_module/edit.js',
+            'module' => $module,
+            'form' => true
+
+        ]);
     }
 
     /**
@@ -85,9 +121,34 @@ class WapSiteModuleController extends Controller
      * @param  \App\Models\WapSiteModule  $wapSiteModule
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, WapSiteModule $wapSiteModule)
+    public function update(WapSiteModuleRequest $request, $id)
     {
-        //
+        $data = WapSiteModule::find($id);
+
+        $data->wap_site_id = $request->input('wap_site_id');
+        $data->name = $request->input('name');
+        $data->media_id = $request->input('media_id');
+        $data->enabled = $request->input('enabled');
+
+//        $row = $this->wapSiteModule->where([
+//            'school_id' => $data->school_id,
+//        ])->first();
+//        if(!empty($row) && $row->id != $id){
+//
+//            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+//            $this->result['message'] = '所属学校重复！';
+//
+//        }else{
+            if($data->save())
+            {
+                $this->result['message'] = self::MSG_EDIT_OK;
+            } else {
+                $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+                $this->result['message'] = '';
+
+            }
+//        }
+        return response()->json($this->result);
     }
 
     /**

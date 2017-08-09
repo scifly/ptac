@@ -49,20 +49,23 @@ class StudentController extends Controller
     public function store(StudentRequest $request)
     {
         $data = $request->except('_token');
-
         $result = $this->student
             ->where('user_id',$data['user_id'])
             ->where('class_id',$data['class_id'])
             ->where('student_number',$data['student_number'])
             ->first();
-        dd($result);
-
-        if ($this->student->create($data)) {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-            $this->result['message'] = self::MSG_CREATE_OK;
+        if(!empty($result))
+        {
+            $this->result['statusCode'] = self::MSG_BAD_REQUEST;
+            $this->result['message'] = '该学生已经存在,请勿重复添加!';
         }else{
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = self::添加失败;
+            if ($this->student->create($data)) {
+                $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
+                $this->result['message'] = self::MSG_CREATE_OK;
+            }else{
+                $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+                $this->result['message'] = '添加失败!';
+            }
         }
 
         return response()->json($this->result);
@@ -102,14 +105,26 @@ class StudentController extends Controller
      * @internal param \Illuminate\Http\Request $request
      */
     public function update(StudentRequest $request, $id){
-
-        if ($this->student->findOrFail($id)->update($request->all())) {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-            $this->result['message'] = self::MSG_EDIT_OK;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '更新失败';
+        $data = $request->except('_token');
+        $result = $this->student
+            ->where('user_id',$data['user_id'])
+            ->where('class_id',$data['class_id'])
+            ->where('student_number',$data['student_number'])
+            ->first();
+        if(!empty($result) && $result->id!= $id)
+        {
+            $this->result['statusCode'] = self::MSG_BAD_REQUEST;
+            $this->result['message'] = '该学生已经存在,请勿重复添加!';
+        }else{
+            if ($this->student->findOrFail($id)->update($data)) {
+                $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
+                $this->result['message'] = self::MSG_EDIT_OK;
+            } else {
+                $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+                $this->result['message'] = '更新失败';
+            }
         }
+
         return response()->json($this->result);
 
 

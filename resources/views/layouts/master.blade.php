@@ -38,10 +38,9 @@
     @isset($ws)
     <link rel="stylesheet" href="{{ URL::asset('css/wapSite.css') }}">
     @endisset
-
     <!-- fileinput-->
     <link rel="stylesheet" href="{{ URL::asset('js/plugins/fileinput/css/fileinput.min.css') }}">
-
+    <link rel="stylesheet" href="{{ URL::asset('js/plugins/fileinput/themes/explorer/theme.css') }}">
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -585,9 +584,12 @@
 @isset($js)
     <script src="{{ URL::asset($js) }}"></script>
 @endisset
+<!-- chartJs -->
+<script src="{{ URL::asset('js/plugins/chartJs/js/Chart.min.js') }}"></script>
 <!-- fileinput-->
 <script src="{{ URL::asset('js/plugins/fileinput/js/fileinput.min.js') }}"></script>
 <script src="{{ URL::asset('js/plugins/fileinput/js/locales/zh.js') }}"></script>
+<script src="{{ URL::asset('js/plugins/fileinput/themes/explorer/theme.js') }}"></script>
 <!-- AdminLTE for demo purposes -->
 <script src="{{ URL::asset('js/demo.js') }}"></script>
 </body>

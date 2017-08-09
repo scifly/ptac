@@ -112,7 +112,7 @@ class CustodianStudentController extends Controller
 
     /**
      * 更改监护人和学生之间的关系
-     * @param CustodianStudentRequest|\Illuminate\Http\Request $request
+     * @param CustodianStudentRequest $request
      * @param $id
      * @return \Illuminate\Http\Response
      * @internal param CustodianStudent $custodianStudent

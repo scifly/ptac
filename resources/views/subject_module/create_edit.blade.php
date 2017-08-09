@@ -18,7 +18,7 @@
             <div class="form-group">
                 {!! Form::label('subject_id', '科目名称',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-2">
-                    {!! Form::select('subject_id', $subject, null, ['class' => 'form-control']) !!}
+                    {!! Form::select('subject_id', $subjects, null, ['class' => 'form-control']) !!}
                 </div>
             </div>
             <div class="form-group">
@@ -29,8 +29,6 @@
                     'placeholder' => '次分类权重是数字',
                     'data-parsley-required' => 'true',
                     'data-parsley-type' => 'integer',
-                    'data-parsley-maxlength' => '3',
-                    'data-parsley-minlength' => '1',
 
                     ]) !!}
                 </div>

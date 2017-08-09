@@ -173,7 +173,7 @@ class ProcedureStepController extends Controller {
      */
     public function getSchoolEducators($id) {
         $temp = Procedure::whereId($id)->first(['school_id']);
-        $data =Educator::with('user')->where('school_id',$temp->school_id)->get()->toArray();
+        $data = Educator::with('user')->where('school_id',$temp->school_id)->get()->toArray();
         $educators = [];
         if (!empty($data)){
             foreach ($data as $v){

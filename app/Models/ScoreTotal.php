@@ -58,7 +58,7 @@ class ScoreTotal extends Model {
         return $this->belongsTo('App\Models\Subject');
     }
 
-    public function datatable() {
+    public function  datatable() {
 
         $columns = [
             ['db' => 'ScoreTotal.id', 'dt' => 0],
@@ -69,12 +69,13 @@ class ScoreTotal extends Model {
             ['db' => 'ScoreTotal.class_rank', 'dt' => 5],
             ['db' => 'ScoreTotal.grade_rank', 'dt' => 6],
             ['db' => 'ScoreTotal.created_at', 'dt' => 7],
-            ['db' => 'ScoreTotal.updated_at', 'dt' => 8],
             [
-                'db' => 'ScoreTotal.enabled', 'dt' => 9,
-                'formatter' => function ($row) {
+                'db' => 'ScoreTotal.updated_at', 'dt' => 8,
+                'formatter' => function ($d, $row) {
+
                     $id = $row['id'];
-                    $showLink = sprintf(Datatable::DT_LINK_SHOW, $id);
+                    $showLink = $d . sprintf(Datatable::DT_LINK_SHOW, $id);
+
                     return Datatable::DT_SPACE . $showLink;
 
                 }
