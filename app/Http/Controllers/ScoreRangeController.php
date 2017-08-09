@@ -141,7 +141,10 @@ class ScoreRangeController extends Controller
     }
 
     public function statisticsShow(){
+        $grades = DB::table('grades')->pluck('name', 'id');
         return view('score_range.statistics_show',[
+            'js' => 'js/score_range/statistics_show.js',
+            'grades' => $grades,
             'form' => true
         ]);
     }

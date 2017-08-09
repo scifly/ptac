@@ -11,21 +11,23 @@
                     <!--表单-->
                     <form action="#" class="form-inline">
                         <div class="form-group" style="margin-right: 50px">
-                            <label class="control-label">请选择班级/年级：</label>
+                            <label class="control-label">请选择统计范围：</label>
                             <div class="form-control" style="border: none;">
-                                <input type="radio" name="choose" id="grade">
+                                <input type="radio" name="choose" id="grade" value="grade" checked>
                                 <label for="grade">年级</label>
-                                <input type="radio" name="choose" id="school">
+                                <input type="radio" name="choose" value="class" id="school">
                                 <label for="school">班级</label>
                             </div>
                         </div>
                         <div class="form-group" style="margin-right: 50px">
-                            <label class="control-label" for="select1">请选择统计范围：</label>
-                            <select name="" id="select1" class="form-control" style="margin-right: 10px">
-                                <option value="1">1</option>
-                                <option value="2">2</option>
-                                <option value="3">3</option>
-                            </select>
+                            <label class="control-label" for="select1">请选择班级/年级：</label>
+
+                            {!! Form::select('id', $grades, null, ['class' => 'form-control']) !!}
+                            {{--<select name="" id="select1" class="form-control" style="margin-right: 10px">--}}
+                                {{--<option value="1">1</option>--}}
+                                {{--<option value="2">2</option>--}}
+                                {{--<option value="3">3</option>--}}
+                            {{--</select>--}}
                         </div>
                         <div class="form-group" style="margin-right: 50px">
                             <label class="control-label" for="select2">请选择考试：</label>
@@ -73,7 +75,7 @@
         <div class="col-xs-12">
             <div class="box box-primary">
                 <div class="box-header">
-                    chart
+                    %
                 </div>
                 <div class="box-body">
                     <div class="chart">
