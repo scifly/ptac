@@ -362,9 +362,6 @@
             @isset($dialog)
                 @include('partials.modal_dialog')
             @endif
-                @isset($show)
-                    @include('partials.modal_show')
-                @endif
             @yield('content')
         </section>
     </div>
@@ -587,6 +584,8 @@
 @isset($js)
     <script src="{{ URL::asset($js) }}"></script>
 @endisset
+<!-- chartJs -->
+<script src="{{ URL::asset('js/plugins/chartJs/js/Chart.min.js') }}"></script>
 <!-- fileinput-->
 <script src="{{ URL::asset('js/plugins/fileinput/js/fileinput.min.js') }}"></script>
 <script src="{{ URL::asset('js/plugins/fileinput/js/locales/zh.js') }}"></script>

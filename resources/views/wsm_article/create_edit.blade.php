@@ -36,7 +36,6 @@
             </div>
 
 
-
             <div class="form-group">
                 {!! Form::label('media_ids', '轮播图',['class' => 'col-sm-2 control-label']) !!}
                 <div class="col-sm-6">

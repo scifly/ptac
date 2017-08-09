@@ -6,7 +6,6 @@ use App\Http\Requests\CompanyRequest;
 use App\Models\Company;
 use Illuminate\Support\Facades\Request;
 
-
 class CompanyController extends Controller {
 
     protected $company;
@@ -30,6 +29,7 @@ class CompanyController extends Controller {
             'js' => 'js/company/index.js',
             'dialog' => true,
             'datatable' => true,
+            'show' => true
         ]);
     }
 
@@ -75,7 +75,17 @@ class CompanyController extends Controller {
      * @internal param Company $company
      */
     public function show($id) {
-        return view('company.show', ['company' => $this->company->findOrFail($id)]);
+        //return view('company.show', ['company' => $this->company->findOrFail($id)]);
+        $showData = $this->company->whereId($id)->first(['name','remark','corpid','created_at','updated_at','enabled']);
+        if($showData->enabled = ($showData->enabled == 0 ? "已禁用" : "已启用"));
+        if ($showData) {
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
+            $this->result['showData'] = $showData;
+        } else {
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+            $this->result['message'] = '';
+        }
+        return response()->json($this->result);
     }
 
     /**
