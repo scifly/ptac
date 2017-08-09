@@ -25,8 +25,9 @@ class SubjectRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:20|min:2',
-           'max_score' => 'required|integer|min:3',
+            'max_score' => 'required|integer|min:3',
             'pass_score' => 'required|integer|min:1',
+            'grade_ids' => 'required',
             'enabled' => 'required|boolean'
 
         ];
@@ -37,8 +38,8 @@ class SubjectRequest extends FormRequest
             'name.required' => '科目名称不能为空',
             'name.min' => '科目名称不能少于两个字符',
             'max_score.required' => '最高分不能为空!',
-//            'max_score.integer' => '分数只能为数字!',
             'pass_score.required' => '及格分不能为空!',
+            'grade_ids.required' => '年级名称不能为空!'
 
         ];
     }

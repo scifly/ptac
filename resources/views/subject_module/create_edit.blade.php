@@ -18,13 +18,7 @@
             <div class="form-group">
                 {!! Form::label('subject_id', '科目名称',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-2">
-                    {!! Form::select('subject_id', $subject, null, ['class' => 'form-control']) !!}
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="img" class="col-sm-4 control-label">图片：</label>
-                <div class="col-sm-2">
-                    <input type="file"  id="fileImg" accept="image/gif, image/jpeg,image/png"/>
+                    {!! Form::select('subject_id', $subjects, null, ['class' => 'form-control']) !!}
                 </div>
             </div>
             <div class="form-group">

@@ -19,7 +19,7 @@ class SubjectModuleComposer {
 
         $view->with([
 
-            'subject' => $this->subject->pluck('name', 'id'),
+            'subjects' => $this->subject->pluck('name', 'id'),
 
         ]);
     }
