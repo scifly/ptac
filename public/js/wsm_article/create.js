@@ -1,13 +1,13 @@
 /**
  * Created by Administrator on 2017-07-21 0021.
  */
-$(crud.create('formWapSiteModule'));
+$(crud.create('formWsmArticle'));
 $(function () {
     // 初始化
     $('#uploadFile').fileinput({
         "language": 'zh',
         'theme': 'explorer',
-        'maxFileCount': 1,
+        'maxFileCount': 5,
         'uploadUrl': '#',
         'showUpload': false,
         'allowedFileExtensions': ['jpg', 'gif', 'png'],//接收的文件后缀
@@ -41,7 +41,7 @@ $(function () {
                     $.each(imgArr, function (index, obj) {//渲染选中的图片到表单
                         console.log(index + obj.id + obj.path);
                         $pre.append('<img src="../../' + obj.path + '" id="' + obj.id + '">');
-                        $pre.append('<input type="hidden" name="media_id" value="' + obj.id + '">');
+                        $pre.append('<input type="hidden" name="media_ids[]" value="' + obj.id + '">');
                     });
                     // 清空,关闭弹框
                     $('#uploadFile').fileinput('clear');
@@ -51,3 +51,4 @@ $(function () {
         }
     })
 });
+

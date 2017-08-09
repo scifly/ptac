@@ -19,6 +19,7 @@ class ComposerServiceProvider extends ServiceProvider {
         View::composer('class.create_edit', 'App\Http\ViewComposers\SquadComposer');
         View::composer('educator.create_edit', 'App\Http\ViewComposers\EducatorComposer');
         View::composer('educator_class.create_edit', 'App\Http\ViewComposers\EducatorClassComposer');
+        View::composer('custodian_student.create_edit', 'App\Http\ViewComposers\CustodianStudentComposer');
         View::composer('score.create_edit', 'App\Http\ViewComposers\ScoreComposer');
         View::composer('subject.create_edit', 'App\Http\ViewComposers\SubjectComposer');
         View::composer('subject_module.create_edit', 'App\Http\ViewComposers\SubjectModuleComposer');
@@ -32,6 +33,7 @@ class ComposerServiceProvider extends ServiceProvider {
         View::composer('user.create_edit', 'App\Http\ViewComposers\UserComposer');
         View::composer('wap_site.create_edit', 'App\Http\ViewComposers\WapSiteComposer');
         View::composer('wap_site_module.create_edit', 'App\Http\ViewComposers\WapSiteModuleComposer');
+        View::composer('wsm_article.create_edit', 'App\Http\ViewComposers\WsmArticleComposer');
 
     }
 
