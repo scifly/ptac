@@ -21,6 +21,9 @@ $(function () {
             showDrag: false
         }
     });
+    $('#uploadFile').on('filepreremove', function(event, id, index) {
+        console.log('id = ' + id + ', index = ' + index);
+    });
     $('#upload').click(function () {
         var data = new FormData($(".form-horizontal")[0]);
         var imgInputElement = document.getElementById('uploadFile');

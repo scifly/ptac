@@ -293,8 +293,7 @@ Route::get('wapsites/show/{id}', 'WapSiteController@show');
 Route::get('wapsites/edit/{id}', 'WapSiteController@edit');
 Route::put('wapsites/update/{id}', 'WapSiteController@update');
 Route::delete('wapsites/delete/{id}', 'WapSiteController@destroy');
-Route::any('wapsites/uploadwapsite', 'WapSiteController@uploadImages');
-Route::any('wapsites/delimage', 'WapSiteController@delImage');
+Route::any('wapsites/uploadImages', 'WapSiteController@uploadImages');
 
 //微网站管理-网站模块管理
 Route::get('wapsitemodules/index', 'WapSiteModuleController@index');
