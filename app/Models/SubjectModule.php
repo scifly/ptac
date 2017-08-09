@@ -80,4 +80,18 @@ class SubjectModule extends Model {
         return Datatable::simple($this, $columns,$joins);
 
     }
+
+    protected function prepareForValidation() {
+
+        $input = $this->all();
+
+        if (isset($input['enabled']) && $input['enabled'] === 'on') {
+            $input['enabled'] = 1;
+        }
+        if (!isset($input['enabled'])) {
+            $input['enabled'] = 0;
+        }
+
+        $this->replace($input);
+    }
 }
