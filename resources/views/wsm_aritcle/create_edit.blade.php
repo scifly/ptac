@@ -42,7 +42,6 @@
             </div>
 
 
-
             <div class="form-group">
                 <div class="col-sm-3 col-sm-offset-4">
                     {!! Form::radio('enabled', '1', true) !!}

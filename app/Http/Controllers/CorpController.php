@@ -28,7 +28,8 @@ class CorpController extends Controller {
             'js' => 'js/corp/index.js',
             'dialog' => true,
             'datatable' => true,
-            'form' => true
+            'form' => true,
+            'show' => true
         ]);
     }
 
@@ -76,7 +77,18 @@ class CorpController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function show($id) {
-        return view('corp.show', ['corp' => $this->corp->findOrFail($id)]);
+        //return view('corp.show', ['corp' => $this->corp->findOrFail($id)]);
+        $showData = $this->corp->whereId($id)->first(['name','company_id','corpid','created_at','updated_at','enabled']);
+        if($showData->enabled = ($showData->enabled == 0 ? "已禁用" : "已启用"));
+        $showData->company_id = $showData->company->name;
+        if ($showData) {
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
+            $this->result['showData'] = $showData;
+        } else {
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+            $this->result['message'] = '';
+        }
+        return response()->json($this->result);
     }
 
     /**

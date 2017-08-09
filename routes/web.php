@@ -188,8 +188,6 @@ Route::get('score_totals/show/{id}', 'ScoreTotalController@show');
 Route::get('score_totals/edit/{id}', 'ScoreTotalController@edit');
 Route::put('score_totals/update/{id}', 'ScoreTotalController@update');
 Route::delete('score_totals/delete/{id}', 'ScoreTotalController@destroy');
-Route::get('score_totals/getExamSubjects/{id}', 'ScoreTotalController@getExamSubjects');
-
 
 # 考勤管理
 //考勤机设置
@@ -244,6 +242,12 @@ Route::get('users/show/{id}', 'UserController@show');
 Route::get('users/edit/{id}', 'UserController@edit');
 Route::put('users/update/{id}', 'UserController@update');
 Route::delete('users/delete/{id}', 'UserController@destroy');
+
+#用户中心
+//个人信息管理
+Route::get('personal_info/edit/{id}', 'PersonalInfoController@edit');
+Route::put('personal_info/update/{id}', 'PersonalInfoController@update');
+Route::post('personal_info/upload_ava', 'PersonalInfoController@uploadAvatar');
 
 //考试类型设置
 Route::get('exam_types/index', 'ExamTypeController@index');

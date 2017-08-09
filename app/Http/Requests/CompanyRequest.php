@@ -39,6 +39,19 @@ class CompanyRequest extends FormRequest {
         ];
     }
 
-    public function wantsJson() { return true; }
+    public function wantsJson() {
+        return true;
+    }
 
+    protected function prepareForValidation() {
+
+        $input = $this->all();
+        if (isset($input['enabled']) && $input['enabled'] === 'on') {
+            $input['enabled'] = 1;
+        }
+        if (!isset($input['enabled'])) {
+            $input['enabled'] = 0;
+        }
+        $this->replace($input);
+    }
 }
