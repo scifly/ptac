@@ -93,7 +93,7 @@ class SubjectController extends Controller {
         $ids = explode(',', $subject['grade_ids']);
         $selectedGrades = [];
         foreach ($ids as $id) {
-            $grade = Grade::whereId($id)->toArray();
+            $grade = Grade::whereId($id)->first();
             $selectedGrades[$id] = $grade['name'];
         }
         return view('subject.edit', [
@@ -147,8 +147,7 @@ class SubjectController extends Controller {
     }
     
     /**
-     * 根据条件查询科目.
-     *
+     * 根据条件查询科目
      * @param $school_id
      * @return \Illuminate\Http\Response
      * @internal param Subject $subject
