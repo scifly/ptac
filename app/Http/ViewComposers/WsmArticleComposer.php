@@ -8,23 +8,26 @@ use App\Models\School;
 use App\Models\SchoolType;
 use App\Models\User;
 use App\Models\WapSite;
+use App\Models\WapSiteModule;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\DB;
 
-class WapSiteModuleComposer {
+class WsmArticleComposer {
 
-    protected $wapSite;
+    protected $wsms;
 
-    public function __construct(WapSite $wapSite) {
+    public function __construct(WapSiteModule $wsms) {
 
-        $this->wapSite = $wapSite;
+        $this->wsms = $wsms;
 
     }
 
+    /**
+     * @param View $view
+     */
     public function compose(View $view) {
-
         $view->with([
-            'wapSites' => $this->wapSite->pluck('site_title', 'id'),
+            'wsms' => $this->wsms->pluck('name', 'id'),
         ]);
     }
 

@@ -183,6 +183,8 @@ Route::delete('score_totals/delete/{id}', 'ScoreTotalController@destroy');
 Route::get('score_totals/getExamSubjects/{id}', 'ScoreTotalController@getExamSubjects');
 
 // 成绩统计项设置
+Route::get('score_ranges/statistics_show', 'ScoreRangeController@statisticsShow');
+Route::get('score_ranges/statistics', 'ScoreRangeController@statistics');
 Route::get('score_ranges/index', 'ScoreRangeController@index');
 Route::get('score_ranges/create', 'ScoreRangeController@create');
 Route::post('score_ranges/store', 'ScoreRangeController@store');
@@ -291,7 +293,8 @@ Route::get('wapsites/show/{id}', 'WapSiteController@show');
 Route::get('wapsites/edit/{id}', 'WapSiteController@edit');
 Route::put('wapsites/update/{id}', 'WapSiteController@update');
 Route::delete('wapsites/delete/{id}', 'WapSiteController@destroy');
-Route::post('wapsites/uploadwapsite', 'WapSiteController@uploadImage');
+Route::any('wapsites/uploadwapsite', 'WapSiteController@uploadImages');
+Route::any('wapsites/delimage', 'WapSiteController@delImage');
 
 //微网站管理-网站模块管理
 Route::get('wapsitemodules/index', 'WapSiteModuleController@index');

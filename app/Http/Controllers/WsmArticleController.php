@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\WsmArticleRequest;
 use App\Models\WsmArticle;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
@@ -23,8 +24,8 @@ class WsmArticleController extends Controller
         if (Request::get('draw')) {
             return response()->json($this->article->datatable());
         }
-        return view('wsm_aritcle.index' , [
-            'js' => 'js/wsm_aritcle/index.js',
+        return view('wsm_article.index' , [
+            'js' => 'js/wsm_article/index.js',
             'dialog' => true,
             'datatable' => true,
             'form' => true,
@@ -38,8 +39,8 @@ class WsmArticleController extends Controller
      */
     public function create()
     {
-        return view('wsm_aritcle.create',[
-            'js' => 'js/wsm_aritcle/create.js',
+        return view('wsm_article.create',[
+            'js' => 'js/wsm_article/create.js',
             'form' => true
         ]);
     }
@@ -50,31 +51,75 @@ class WsmArticleController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(WsmArticleRequest $request)
     {
-        //
+        // request
+        $media_ids = $request->input('media_ids');
+
+        $data = [
+            'wsm_id' => $request->input('wsm_id'),
+            'name' => $request->input('name'),
+            'summary' => $request->input('wap_site_id'),
+            'thumbnail_media_id' => $request->input('thumbnail_media_id'),
+            'content' => $request->input('content'),
+            'media_ids' => $media_ids,
+            'enabled' => $request->input('enabled')
+        ];
+
+        if($this->article->create($data))
+        {
+            $this->result['message'] = self::MSG_CREATE_OK;
+        } else {
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+            $this->result['message'] = '';
+        }
+
+        return response()->json($this->result);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\WsmArticle  $wsmArticle
+     * @param $id
      * @return \Illuminate\Http\Response
+     * @internal param WsmArticle $wsmArticle
      */
-    public function show(WsmArticle $wsmArticle)
+    public function show($id)
     {
-        //
+        $article = WsmArticle::whereId($id)->first();
+        $f = explode(",", $article->media_ids);
+
+        $medias = Media::whereIn('id',$f)->get(['id','path']);
+
+        return view('wsm_article.show', [
+            'article' => $article,
+            'medias' => $medias,
+            'ws' =>true
+        ]);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\WsmArticle  $wsmArticle
+     * @param $id
      * @return \Illuminate\Http\Response
+     * @internal param WsmArticle $wsmArticle
      */
-    public function edit(WsmArticle $wsmArticle)
+    public function edit($id)
     {
-        //
+        $article = $this->article->whereId($id)->first();
+
+        $f = explode(",", $article->media_ids);
+
+        $medias = Media::whereIn('id',$f)->get(['id','path']);
+
+        return view('wsm_article.edit', [
+            'js' => 'js/wsm_article/edit.js',
+            'article' => $article,
+            'medias' => $medias,
+            'form' => true
+
+        ]);
     }
 
     /**
@@ -84,7 +129,7 @@ class WsmArticleController extends Controller
      * @param  \App\Models\WsmArticle  $wsmArticle
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, WsmArticle $wsmArticle)
+    public function update(WsmArticleRequest $request, $id)
     {
         //
     }
@@ -92,8 +137,9 @@ class WsmArticleController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\WsmArticle  $wsmArticle
+     * @param $id
      * @return \Illuminate\Http\Response
+     * @internal param WsmArticle $wsmArticle
      */
     public function destroy($id)
     {

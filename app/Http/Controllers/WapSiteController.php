@@ -58,13 +58,31 @@ class WapSiteController extends Controller
      */
     public function store(WapSiteRequest $request)
     {
-        dd($request->all());die;
-//        $res = $this->wapSite->save($request->all());
-//
-//        $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-//        $this->result['message'] = self::MSG_CREATE_OK;
-//
-//        return response()->json($this->result);
+
+        $media_ids = $request->input('media_ids');
+        $data = [
+            'school_id' => $request->input('school_id'),
+            'site_title' => $request->input('site_title'),
+            'media_ids' => implode(',', $media_ids),
+            'enabled' => $request->input('enabled')
+        ];
+
+        $row = $this->wapSite->where([
+                'school_id' => $data['school_id']
+            ])->first();
+        if(!empty($row)){
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+            $this->result['message'] = '该学校已存在微网站！';
+        }else{
+            if($this->wapSite->create($data))
+            {
+                $this->result['message'] = self::MSG_CREATE_OK;
+            } else {
+                $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+                $this->result['message'] = '';
+            }
+        }
+        return response()->json($this->result);
     }
 
     /**
@@ -95,21 +113,61 @@ class WapSiteController extends Controller
      * @param  \App\Models\WapSite  $wapSite
      * @return \Illuminate\Http\Response
      */
-    public function edit(WapSite $wapSite)
+    public function edit( $id)
     {
+        $wapsite = $this->wapSite->whereId($id)->first();
 
+        $f = explode(",", $wapsite->media_ids);
+
+        $medias = Media::whereIn('id',$f)->get(['id','path']);
+
+        return view('wap_site.edit', [
+            'js' => 'js/wap_site/edit.js',
+            'wapsite' => $wapsite,
+            'medias' => $medias,
+            'form' => true
+
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\WapSite  $wapSite
+     * @param WapSiteRequest $siteRequest
+     * @param $id
      * @return \Illuminate\Http\Response
+     * @internal param \Illuminate\Http\Request $request
+     * @internal param WapSite $wapSite
      */
-    public function update(Request $request, WapSite $wapSite)
+    public function update( WapSiteRequest $siteRequest, $id)
     {
-        //
+        $data = WapSite::find($id);
+        $media_ids = $siteRequest->input('media_ids');
+
+        $data->school_id = $siteRequest->input('school_id');
+        $data->site_title = $siteRequest->input('site_title');
+        $data->media_ids = implode(',', $media_ids);
+        $data->enabled = $siteRequest->input('enabled');
+
+        $row = $this->wapSite->where([
+            'school_id' => $data->school_id,
+        ])->first();
+        if(!empty($row) && $row->id != $id){
+
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+            $this->result['message'] = '所属学校重复！';
+
+        }else{
+            if($data->save())
+            {
+                $this->result['message'] = self::MSG_EDIT_OK;
+            } else {
+                $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+                $this->result['message'] = '';
+
+            }
+        }
+        return response()->json($this->result);
     }
 
     /**
@@ -129,47 +187,77 @@ class WapSiteController extends Controller
         return response()->json($this->result);
     }
 
-    public function uploadImage(Request $request){
-        $result = Array(
-            'success'   =>0,
-            'message'   =>'',
-        );
-        if ($request->isMethod('post')) {
-            $file = $request->file('media_ids');
-            if (empty($file)){
-                $result['success'] = 0;
+    /**
+     * @param Request $request
+     */
+    public function uploadImages(){
+
+        if (Request::isMethod('post')) {
+
+            $files = Request::file('img');
+            if (empty($files)){
+                $result['statusCode'] = 0;
                 $result['message'] = '您还未选择图片！';
                 return $result;
             }
-            $image=array();
-            foreach ($file as $key=>$value)
-            {
-                $image[]=$key;
-            }
-            $allowed_extensions = ["png", "jpg", "gif"];
-            if ($file->isValid()) {
-                if ($file->getClientOriginalExtension() && !in_array($file->getClientOriginalExtension(), $allowed_extensions)) {
-                    return ['error' => 'You may only upload png, jpg or gif.'];
-                    $result['success'] = 0;
-                    $result['message'] = '只能选择[png, jpg ,gif]类型图片！';
-                    return $result;
+            $result['data']=array();
+            foreach ($files  as $key=>$v){
+                if ($v->isValid()) {
+                    // 获取文件相关信息
+                    $originalName = $v->getClientOriginalName(); // 文件原名
+                    $ext = $v->getClientOriginalExtension();     // 扩展名//
+                    $realPath = $v->getRealPath();   //临时文件的绝对路径
+                    $type = $v->getClientMimeType();     // image/jpeg/
+//                    dd($originalName,$ext,$realPath);die;
+
+                    // 上传图片
+                    $filename = date('Y-m-d-H-i-s') . '-' . uniqid() . '.' . $ext;
+                    // 使用我们新建的uploads本地存储空间（目录）
+                    $init=0;
+                    $bool = Storage::disk('uploads')->put($filename,file_get_contents($realPath));
+
+                    $filePath = '/storage/app/uploads/'.$filename;
+                    $data = [
+                        'path' => $filePath,
+                        'remark' => '微网站轮播图',
+                        'media_type_id' => '1',
+                        'enabled' => '1',
+                    ];
+                    $mediaId = Media::insertGetId($data);
+                    $mes[] = [
+                        'id' => $mediaId,
+                        'path' => $filePath,
+                    ];
                 }
-
-                // 获取文件相关信息
-                $originalName = $file->getClientOriginalName(); // 文件原名
-                $ext = $file->getClientOriginalExtension();     // 扩展名//
-                $realPath = $file->getRealPath();   //临时文件的绝对路径
-                $type = $file->getClientMimeType();     // image/jpeg/
-                // 上传图片
-                $filename = date('Y-m-d-H-i-s') . '-' . uniqid() . '.' . $ext;
-                // 使用我们新建的uploads本地存储空间（目录）
-                $init=0;
-                $bool = Storage::disk('uploads')->put($filename,file_get_contents($realPath));
-                $filePath = storage_path('app/uploads/').$filename;
-
             }
+            $result['statusCode'] = 1;
+            $result['message'] = '上传成功！';
+            $result['data'] = $mes;
+
+            return response()->json($result);
         }
 
+    }
+
+    /**
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function delImage(){
+        $imageId = Request::get('id');
+
+        $media = Media::find($imageId)->first();
+
+        if($media){
+            $file = explode('uploads/');
+            $filename = $file[1];
+            Storage::disk('uploads')->delete($filename);
+            Media::destroy($imageId);
+
+            $result['statusCode'] = 1;
+            $result['message'] = '删除成功！';
+
+            return response()->json($result);
+        }
     }
 }
 

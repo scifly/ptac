@@ -4,6 +4,6 @@
 @endsection
 @section('content')
     {!! Form::open(['method' => 'post','id' => 'formWsmArticle','data-parsley-validate' => 'true']) !!}
-    @include('wsm_aritcle.create_edit')
+    @include('wsm_article.create_edit')
     {!! Form::close() !!}
 @endsection
