@@ -72,7 +72,7 @@
                 </h4>
             </div>
             <div class="modal-body">
-                <form action="#" class="form-horizontal" enctype="multipart/form-data">
+                <form action="#" class="form-horizontal" >
                     <input type="file" id="uploadFile" accept="image/jpeg,image/gif,image/png" multiple>
                 </form>
             </div>

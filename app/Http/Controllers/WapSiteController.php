@@ -239,25 +239,6 @@ class WapSiteController extends Controller
 
     }
 
-    /**
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function delImage(){
-        $imageId = Request::get('id');
 
-        $media = Media::find($imageId)->first();
-
-        if($media){
-            $file = explode('uploads/');
-            $filename = $file[1];
-            Storage::disk('uploads')->delete($filename);
-            Media::destroy($imageId);
-
-            $result['statusCode'] = 1;
-            $result['message'] = '删除成功！';
-
-            return response()->json($result);
-        }
-    }
 }
 

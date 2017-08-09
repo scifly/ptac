@@ -180,7 +180,6 @@ Route::get('score_totals/show/{id}', 'ScoreTotalController@show');
 Route::get('score_totals/edit/{id}', 'ScoreTotalController@edit');
 Route::put('score_totals/update/{id}', 'ScoreTotalController@update');
 Route::delete('score_totals/delete/{id}', 'ScoreTotalController@destroy');
-Route::get('score_totals/getExamSubjects/{id}', 'ScoreTotalController@getExamSubjects');
 
 // 成绩统计项设置
 Route::get('score_ranges/statistics_show', 'ScoreRangeController@statisticsShow');
@@ -246,6 +245,12 @@ Route::get('users/edit/{id}', 'UserController@edit');
 Route::put('users/update/{id}', 'UserController@update');
 Route::delete('users/delete/{id}', 'UserController@destroy');
 
+#用户中心
+//个人信息管理
+Route::get('personal_info/edit/{id}', 'PersonalInfoController@edit');
+Route::put('personal_info/update/{id}', 'PersonalInfoController@update');
+Route::post('personal_info/upload_ava', 'PersonalInfoController@uploadAvatar');
+
 //考试类型设置
 Route::get('exam_types/index', 'ExamTypeController@index');
 Route::get('exam_types/create', 'ExamTypeController@create');
@@ -293,8 +298,7 @@ Route::get('wapsites/show/{id}', 'WapSiteController@show');
 Route::get('wapsites/edit/{id}', 'WapSiteController@edit');
 Route::put('wapsites/update/{id}', 'WapSiteController@update');
 Route::delete('wapsites/delete/{id}', 'WapSiteController@destroy');
-Route::any('wapsites/uploadwapsite', 'WapSiteController@uploadImages');
-Route::any('wapsites/delimage', 'WapSiteController@delImage');
+Route::any('wapsites/uploadImages', 'WapSiteController@uploadImages');
 
 //微网站管理-网站模块管理
 Route::get('wapsitemodules/index', 'WapSiteModuleController@index');
