@@ -24,7 +24,6 @@ class EducatorClassController extends Controller
     {
         $this->educatorClass = $educatorClass;
         $this->educator = $educator;
-
     }
 
     /**
@@ -58,7 +57,8 @@ class EducatorClassController extends Controller
 
     /**
      *添加.
-     * @param  \Illuminate\Http\Request  $request
+     *
+     * @param EducatorClassRequest $request
      * @return \Illuminate\Http\Response
      */
     public function store(EducatorClassRequest $request)
@@ -90,8 +90,9 @@ class EducatorClassController extends Controller
 
     /**
      * Display the specified resource.
-     * @param  \App\Models\EducatorClass  $educatorClass
+     * @param $id
      * @return \Illuminate\Http\Response
+     * @internal param EducatorClass $educatorClass
      */
     public function show($id)
     {
@@ -100,8 +101,9 @@ class EducatorClassController extends Controller
 
     /**
      * Show the form for editing the specified resource.
-     * @param  \App\Models\EducatorClass  $educatorClass
+     * @param $id
      * @return \Illuminate\Http\Response
+     * @internal param EducatorClass $educatorClass
      */
     public function edit($id)
     {

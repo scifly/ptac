@@ -17,12 +17,12 @@ class CustodianStudentComposer {
         $this->custodian = $custodian;
         $this->user = $user;
         $this->student = $student;
-
     }
 
-    public function compose(View $view) {
-
+    public function compose(View $view)
+    {
         $custodians =Custodian::with('user')->get()->toArray();
+
         if(!empty($custodians))
         {
             foreach ($custodians as $k=>$v)
@@ -30,6 +30,7 @@ class CustodianStudentComposer {
                 $custodianName[$v['id']] = $v['user']['realname'];
             }
         }
+ 
         $students = Student::with('user')->get()->toArray();
         if(!empty($students))
         {
@@ -41,11 +42,8 @@ class CustodianStudentComposer {
 
         $view->with([
             'studentName' => $studentName,
-            'cusName' => $custodianName]
-        );
-
-
-
+            'custodianName' => $custodianName
+            ]);
     }
 
 }
