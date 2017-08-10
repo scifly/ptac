@@ -35,6 +35,15 @@
                 </div>
             </div>
 
+            <div class="form-group">
+                {!! Form::label('thumbnail_media_id', '缩略图',['class' => 'col-sm-4 control-label']) !!}
+                <div class="col-sm-3">
+                    {!! Form::text('thumbnail_media_id', null, [
+                    'class' => 'form-control',
+
+                    ]) !!}
+                </div>
+            </div>
 
             <div class="form-group">
                 {!! Form::label('media_ids', '轮播图',['class' => 'col-sm-2 control-label']) !!}
@@ -49,6 +58,17 @@
                     <a class="btn btn-primary" data-toggle="modal" data-target="#modalPic">上传</a>
                 </div>
             </div>
+            <div class="form-group">
+                {!! Form::label('content', '文章内容',['class' => 'col-sm-2 control-label']) !!}
+                <div class="col-sm-6">
+                    <script id="container" name="content" type="text/plain" >
+                        @if(isset($article->content))
+                            {!!($article->content)!!}
+                        @endif
+                    </script>
+                </div>
+            </div>
+
             <div class="form-group">
                 <div class="col-sm-3 col-sm-offset-4">
                     {!! Form::radio('enabled', '1', true) !!}
