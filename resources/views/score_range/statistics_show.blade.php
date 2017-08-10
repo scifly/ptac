@@ -60,15 +60,10 @@
             </div>
         </div>
         <!--chart-->
-        <div class="col-xs-12">
+        <div class="col-xs-12 chart" style="display: none">
             <div class="box box-primary">
-                <div class="box-header">
-                    %
-                </div>
                 <div class="box-body">
-                    <div class="chart">
-                        <canvas id="barChart" style="height:330px"></canvas>
-                    </div>
+                    <div id="barChart" style="height: 400px;"></div>
                 </div>
             </div>
         </div>
