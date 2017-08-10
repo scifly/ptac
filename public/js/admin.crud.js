@@ -73,7 +73,7 @@ var crud = {
             $('#modal-dialog').modal({backdrop: true});
         });
 
-       /* var $name = [];
+        var $name = [];
         $(document).on('click', '.fa-eye', function () {
             var $showdl = $(".dl-horizontal");
             var $showdt = $(".dl-horizontal dt");
@@ -109,7 +109,7 @@ var crud = {
                     }
                 }
             });
-        });*/
+        });
 
         $('#confirm-delete').on('click', function () {
             crud.ajaxRequest(

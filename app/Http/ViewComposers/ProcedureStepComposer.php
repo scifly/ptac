@@ -18,7 +18,7 @@ class ProcedureStepComposer {
 
     public function compose(View $view) {
 
-        $data =  Educator::with('user')->get()->toArray();
+        /*$data =  Educator::with('user')->get()->toArray();
 
         $educators=array();
 
@@ -27,10 +27,9 @@ class ProcedureStepComposer {
             foreach ($data as $v){
                 $educators[$v['id']] = $v['user']['realname'];
             }
-        }
+        }*/
         $view->with([
             'procedures' => $this->procedures->pluck('name', 'id'),
-            'educators' => $educators
         ]);
     }
 

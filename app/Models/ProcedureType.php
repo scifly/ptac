@@ -33,6 +33,7 @@ class ProcedureType extends Model {
         'remark',
         'created_at',
         'updated_at',
+        'enabled'
     ];
 
     public function procedures() {
