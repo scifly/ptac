@@ -48,27 +48,37 @@ class ProcedureStepController extends Controller {
      * @internal param \Illuminate\Http\Request|Request $request
      */
     public function store(ProcedureStepRequest $request) {
+
         $procedureStep = $request->all();
+
         if (!isset($request->approver_user_ids))
             return response()->json(['statusCode' => 500, 'message' => '请选择审批人！']);
+
         if (!isset($request->related_user_ids))
             return response()->json(['statusCode' => 500, 'message' => '请选择相关人！']);
+
         $procedureStep['approver_user_ids'] = $this->procedureStep->join_ids($request->approver_user_ids);
         $procedureStep['related_user_ids'] = $this->procedureStep->join_ids($request->related_user_ids);
+
         $record = $this->procedureStep->where('procedure_id', $procedureStep['procedure_id'])
             ->where('name', $procedureStep['name'])
             ->where('approver_user_ids', $procedureStep['approver_user_ids'])
             ->first();
+
         if (!empty($record)) {
             $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
             $this->result['message'] = '已经有该记录';
+
         } else {
+
             if ($this->procedureStep->create($procedureStep)) {
                 $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
                 $this->result['message'] = self::MSG_CREATE_OK;
+
             } else {
                 $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
                 $this->result['message'] = '添加失败';
+
             }
         }
         return response()->json($this->result);
@@ -145,6 +155,18 @@ class ProcedureStepController extends Controller {
             return response()->json(['statusCode' => 500, 'message' => '请选择审批人！']);
         if (!isset($request->related_user_ids))
             return response()->json(['statusCode' => 500, 'message' => '请选择相关人！']);
+
+        $procedureStep =$this->procedureStep->findOrFail($id);
+        $procedureStep->procedure_id = $request->procedure_id;
+        $procedureStep->name = $request->name;
+        $procedureStep->approver_user_ids = $procedureStep->join_ids($request->approver_user_ids);
+        $procedureStep->related_user_ids = $procedureStep->join_ids($request->related_user_ids);
+        $procedureStep->remark = $request->remark;
+        $procedureStep->enabled = $request->enabled;
+        if ($procedureStep->save()) {
+            return response()->json(['statusCode' => 200, 'message' => '更新成功！']);
+        }
+
         $procedureStep['approver_user_ids'] = $this->procedureStep->join_ids($request->approver_user_ids);
         $procedureStep['related_user_ids'] = $this->procedureStep->join_ids($request->related_user_ids);
         $record = $this->procedureStep->where('procedure_id', $procedureStep['procedure_id'])
