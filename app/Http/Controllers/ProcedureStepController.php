@@ -128,7 +128,7 @@ class ProcedureStepController extends Controller {
         if (!isset($request->related_user_ids))
             return response()->json(['statusCode' => 500, 'message' => '请选择相关人！']);
 
-        $procedureStep =$this->procedureStep->whereId($id)->first();
+        $procedureStep =$this->procedureStep->findOrFail($id);
         $procedureStep->procedure_id = $request->procedure_id;
         $procedureStep->name = $request->name;
         $procedureStep->approver_user_ids = $procedureStep->join_ids($request->approver_user_ids);
