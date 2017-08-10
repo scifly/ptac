@@ -72,7 +72,6 @@ class CompanyController extends Controller {
      * 显示运营者公司记录详情
      * @param $id
      * @return \Illuminate\Http\Response
-     * @internal param Company $company
      */
     public function show($id) {
         //return view('company.show', ['company' => $this->company->findOrFail($id)]);
@@ -119,7 +118,7 @@ class CompanyController extends Controller {
             $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
             $this->result['message'] = '已有该记录';
         } else {
-            if ($this->company->findOrFail($id)->update($request->all())) {
+            if ($this->company->findOrFail($id)->update($data)) {
                 $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
                 $this->result['message'] = self::MSG_EDIT_OK;
             } else {

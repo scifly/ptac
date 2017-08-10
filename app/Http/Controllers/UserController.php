@@ -6,6 +6,7 @@ use App\Http\Requests\UserRequest;
 use App\Models\Group;
 use App\Models\User;
 use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller {
     protected $user;
@@ -55,7 +56,7 @@ class UserController extends Controller {
         $user->group_id = $request->group_id;
         $user->username = $request->username;
         //TODO:remeber_token、password 需要特殊处理
-//        $user->remember_token = $request->remember_token;
+        $user->remember_token = $request->remember_token;
 //        $user->password = $request->password;
         $user->email = $request->email;
         $user->gender = $request->gender;
@@ -155,5 +156,67 @@ class UserController extends Controller {
 //        }
 
         return response()->json(['statusCode' => 500, 'message' => '，关联数据较多，暂不做处理！']);
+    }
+
+    /**
+     * 上传头像
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function uploadAvatar(){
+
+        if (Request::isMethod('post')) {
+
+            $files = Request::file('img');
+            if (empty($files)){
+                $result['statusCode'] = 0;
+                $result['message'] = '您还未选择图片！';
+                return $result;
+            }
+            $result['data']=array();
+            $mes = array();
+            foreach ($files  as $key=>$v){
+                if ($v->isValid()) {
+                    // 获取文件相关信息
+                    $originalName = $v->getClientOriginalName(); // 文件原名
+                    $ext = $v->getClientOriginalExtension();     // 扩展名//
+                    $realPath = $v->getRealPath();   //临时文件的绝对路径
+                    $type = $v->getClientMimeType();     // image/jpeg/
+
+                    // 上传图片
+                    $filename = date('Y-m-d-H-i-s') . '-' . uniqid() . '.' . $ext;
+                    // 使用我们新建的uploads本地存储空间（目录）
+                    $init=0;
+                    $bool = Storage::disk('uploads')->put($filename,file_get_contents($realPath));
+
+                    $filePath = '/storage/app/uploads/'.$filename;
+
+                    $mes[] = [
+                        'path' => $filePath,
+                    ];
+                }
+            }
+            $result['statusCode'] = 1;
+            $result['message'] = '上传成功！';
+            $result['data'] = $mes;
+
+            return response()->json($result);
+        }
+    }
+
+    /**
+     * 头像文件删除
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function delAvatar(){
+        $imagePath = Request::get('avatar_url');
+
+        $file = explode('uploads/',$imagePath);
+        $filename = $file[1];
+        Storage::disk('uploads')->delete($filename);
+
+        $result['statusCode'] = 1;
+        $result['message'] = '删除成功！';
+
+        return response()->json($result);
     }
 }

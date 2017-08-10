@@ -114,7 +114,6 @@ class ScoreController extends Controller {
      */
     public function update(ScoreRequest $request, $id) {
         $data = $request->all();
-        dd($data);
         $record = $this->score->where('student_id', $data['student_id'])
             ->where('subject_id', $data['subject_id'])
             ->where('exam_id', $data['exam_id'])

@@ -3,7 +3,7 @@
     <div class="panel-heading">
         <div class="btn-group">
             <a href="{{ url('procedure_types/create') }}" class="btn btn-primary pull-right">
-                添加流程
+                添加新流程类型
             </a>
         </div>
     </div>
