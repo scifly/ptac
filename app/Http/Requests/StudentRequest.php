@@ -49,4 +49,26 @@ class StudentRequest extends FormRequest
         return true;
 
     }
+
+    protected function prepareForValidation() {
+
+        $input = $this->all();
+
+        if (isset($input['oncampus']) && $input['oncampus'] === 'on') {
+            $input['oncampus'] = 1;
+        }
+        if (!isset($input['oncampus'])) {
+            $input['oncampus'] = 0;
+        }
+
+
+        if (isset($input['enabled']) && $input['enabled'] === 'on') {
+            $input['enabled'] = 1;
+        }
+        if (!isset($input['enabled'])) {
+            $input['enabled'] = 0;
+        }
+
+        $this->replace($input);
+    }
 }

@@ -27,19 +27,16 @@
                     ]) !!}
                 </div>
             </div>
-            {{--<div class="form-group">--}}
-                {{--<label for="enabled" class="col-sm-4 control-label">启用</label>--}}
-                {{--<div class="col-sm-3" style="padding-top: 5px;">--}}
-                    {{--<input id="enabled" name="enabled" type="checkbox" class="form-control js-switch" checked />--}}
-                {{--</div>--}}
-            {{--</div>--}}
+
             <div class="form-group">
-                {!! Form::label('enabled', '启用',['class' => 'col-sm-4 control-label']) !!}
-                <div class="col-sm-2">
-                    {!! Form::radio('enabled', '1', true) !!}
-                    {!! Form::label('enabled', '是') !!}
-                    {!! Form::radio('enabled', '0') !!}
-                    {!! Form::label('enabled', '否') !!}
+                {!! Form::label('enabled', '是否启用', [
+                    'class' => 'col-sm-4 control-label'
+                ]) !!}
+                <div class="col-sm-6" style="margin-top: 5px;">
+                    <input id="enabled" type="checkbox" name="enabled" data-render="switchery"
+                           data-theme="default" data-switchery="true"
+                           @if(!empty($group['enabled'])) checked @endif
+                           data-classname="switchery switchery-small"/>
                 </div>
             </div>
 

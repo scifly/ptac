@@ -29,7 +29,6 @@ class SubjectRequest extends FormRequest
             'pass_score' => 'required|integer|min:1',
             'grade_ids' => 'required',
             'enabled' => 'required|boolean'
-
         ];
     }
 
@@ -42,6 +41,25 @@ class SubjectRequest extends FormRequest
             'grade_ids.required' => '年级名称不能为空!'
 
         ];
+    }
+
+    protected function prepareForValidation() {
+
+        $input = $this->all();
+        if (isset($input['isaux']) && $input['isaux'] === 'on') {
+            $input['isaux'] = 1;
+        }
+        if (!isset($input['isaux'])) {
+            $input['isaux'] = 0;
+        }
+        if (isset($input['enabled']) && $input['enabled'] === 'on') {
+            $input['enabled'] = 1;
+        }
+        if (!isset($input['enabled'])) {
+            $input['enabled'] = 0;
+        }
+
+        $this->replace($input);
     }
 
 

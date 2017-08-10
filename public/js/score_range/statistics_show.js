@@ -3,8 +3,7 @@ $(function () {
     var barChartCanvas = $('#barChart').get(0).getContext('2d');
     var barChart = new Chart(barChartCanvas);
     var barChartData = {
-//            数据
-        labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+        labels: [0],
         datasets: [
             {
                 label: 'Digital Goods',
@@ -14,8 +13,7 @@ $(function () {
                 pointStrokeColor: 'rgba(60,141,188,1)',
                 pointHighlightFill: '#fff',
                 pointHighlightStroke: 'rgba(60,141,188,1)',
-//                    数据
-                data: [28, 48, 40, 19, 86, 27, 90]
+                data: [0]
             }
         ]
     };
@@ -35,5 +33,50 @@ $(function () {
         maintainAspectRatio: true
     };
     barChartOptions.datasetFill = false;
-    barChart.Bar(barChartData, barChartOptions)
+    barChart.Bar(barChartData, barChartOptions);
+
+
+    //年级班级联动显示
+    $('#class').click(function () {
+        $('.class_div').show();
+        $('.grade_div').hide();
+    });
+    $('#grade').click(function () {
+        $('.grade_div').show();
+        $('.class_div').hide();
+    });
+
+    //提交表单
+    $('#submit').click(function () {
+        var $tbody = $('#data-table tbody')
+        $tbody.html('');
+        data = $('#form').serialize();
+        barChartData.labels = [];
+        barChartData.datasets[0].data = [];
+        var labels = [];
+        var dataset = [];
+        $.ajax({
+            type: 'POST',
+            url: 'statistics',
+            dataType: 'json',
+            data: data,
+            success: function(result) {
+                $.each(result, function () {
+                    $tbody.append("<tr><td>"+this.id+"</td><td>"+this.name+"</td><td>"+this.number+"</td><td>"+this.precentage+"</td></tr>");
+                    labels.push(this.name+' 统计人数'+this.number);
+                    dataset.push(this.precentage);
+                });
+                barChartData.labels = labels;
+                barChartData.datasets[0].data = dataset;
+                console.log(barChartData);
+                barChart.Bar(barChartData, barChartOptions);
+
+                return false;
+            },
+            error: function(e) {
+                var obj = JSON.parse(e.responseText);
+                crud.inform('出现异常', obj['message'], crud.failure);
+            }
+        });
+    })
 });

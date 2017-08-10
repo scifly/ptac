@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\WsmArticleRequest;
+use App\Models\Media;
 use App\Models\WsmArticle;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
@@ -41,7 +42,8 @@ class WsmArticleController extends Controller
     {
         return view('wsm_article.create',[
             'js' => 'js/wsm_article/create.js',
-            'form' => true
+            'form' => true,
+            'ueditor' => true,
         ]);
     }
 
@@ -59,13 +61,13 @@ class WsmArticleController extends Controller
         $data = [
             'wsm_id' => $request->input('wsm_id'),
             'name' => $request->input('name'),
-            'summary' => $request->input('wap_site_id'),
+            'summary' => $request->input('summary'),
             'thumbnail_media_id' => $request->input('thumbnail_media_id'),
             'content' => $request->input('content'),
-            'media_ids' => $media_ids,
+            'media_ids' => implode(',',$media_ids),
             'enabled' => $request->input('enabled')
         ];
-
+//dd($data);die;
         if($this->article->create($data))
         {
             $this->result['message'] = self::MSG_CREATE_OK;
@@ -117,7 +119,9 @@ class WsmArticleController extends Controller
             'js' => 'js/wsm_article/edit.js',
             'article' => $article,
             'medias' => $medias,
-            'form' => true
+            'form' => true,
+            'ueditor' => true,
+
 
         ]);
     }
@@ -131,7 +135,27 @@ class WsmArticleController extends Controller
      */
     public function update(WsmArticleRequest $request, $id)
     {
-        //
+        $data = WsmArticle::find($id);
+        $media_ids = $request->input('media_ids');
+
+        $data->wsm_id = $request->input('wsm_id');
+        $data->name = $request->input('name');
+        $data->summary = $request->input('summary');
+        $data->thumbnail_media_id = $request->input('thumbnail_media_id');
+        $data->content = $request->input('content');
+        $data->media_ids = implode(',', $media_ids);
+        $data->enabled = $request->input('enabled');
+
+
+        if($data->save())
+        {
+            $this->result['message'] = self::MSG_EDIT_OK;
+        } else {
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+            $this->result['message'] = '';
+
+        }
+        return response()->json($this->result);
     }
 
     /**

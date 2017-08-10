@@ -14,7 +14,7 @@ class WsmArticleRequest extends FormRequest
         'summary' => 'required|string|max:255',
         'thumbnail_media_id' => 'required|integer',
         'content' => 'required|string',
-        'media_ids' => 'required|integer',
+        'media_ids' => 'required|array',
         'enabled' => 'required|boolean'
     ];
     protected $strings_key = [
@@ -32,6 +32,7 @@ class WsmArticleRequest extends FormRequest
         'max'=> '最大为:max',
         'integer'=> '必须为整数',
         'boolean'=> '为0或1',
+        'array'=> '为数组',
     ];
 
 

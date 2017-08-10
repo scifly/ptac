@@ -28,6 +28,7 @@ class SubjectModuleController extends Controller {
             'dialog' => true,
             'datatable' => true,
             'form' => true,
+            'show' => true,
         ]);
     }
     
@@ -78,9 +79,21 @@ class SubjectModuleController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function show($id) {
-        return view('subject_module.show',[
-            'subjectModule' => $this->subjectModule->FindOrfail($id)
-        ]);
+        $subjectModule = $this->subjectModule->whereId($id)
+            ->first(['subject_id','name','weight','created_at','updated_at','enabled']);
+        $subjectModule->subject_id = $subjectModule->subject->name;
+        $subjectModule->enabled = $subjectModule->enabled==1 ? '已启用' : '已禁用' ;
+        if ($subjectModule) {
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
+            $this->result['showData'] = $subjectModule;
+        } else {
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+            $this->result['message'] = '';
+        }
+        return response()->json($this->result);
+//        return view('subject_module.show',[
+//            'subjectModule' => $this->subjectModule->FindOrfail($id)
+//        ]);
     }
     
     /**
