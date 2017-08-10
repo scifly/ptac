@@ -195,13 +195,17 @@ class WapSiteController extends Controller
         if (Request::isMethod('post')) {
 
             $files = Request::file('img');
+
             if (empty($files)){
                 $result['statusCode'] = 0;
                 $result['message'] = '您还未选择图片！';
                 return $result;
-            }
+            }else{
             $result['data']=array();
-            foreach ($files  as $key=>$v){
+            $mes = [];
+
+                foreach ($files  as $key=>$v){
+
                 if ($v->isValid()) {
                     // 获取文件相关信息
                     $originalName = $v->getClientOriginalName(); // 文件原名
@@ -224,7 +228,7 @@ class WapSiteController extends Controller
                         'enabled' => '1',
                     ];
                     $mediaId = Media::insertGetId($data);
-                    $mes[] = [
+                    $mes [] = [
                         'id' => $mediaId,
                         'path' => $filePath,
                     ];
@@ -233,7 +237,7 @@ class WapSiteController extends Controller
             $result['statusCode'] = 1;
             $result['message'] = '上传成功！';
             $result['data'] = $mes;
-
+            }
             return response()->json($result);
         }
 

@@ -1,5 +1,5 @@
 <style>
-    .preview img{
+    .preview img {
         width: 100%;
         height: 100px;
         margin: 10px;
@@ -8,7 +8,7 @@
 <div class="box box-primary">
     <div class="box-header"></div>
     <div class="box-body">
-        <div class="form-horizontal" >
+        <div class="form-horizontal">
             <div class="form-group">
                 {!! Form::label('site_title', '首页抬头',['class' => 'col-sm-2 control-label']) !!}
                 <div class="col-sm-3">
@@ -53,7 +53,7 @@
     <div class="box-footer">
         {{--button--}}
         <div class="form-group">
-            <div class="col-sm-6 col-sm-offset-2">
+            <div class="col-sm-3 col-sm-offset-2">
                 {!! Form::submit('保存', ['class' => 'btn btn-primary pull-left', 'id' => 'save']) !!}
                 {!! Form::reset('取消', ['class' => 'btn btn-default pull-right', 'id' => 'cancel']) !!}
             </div>
@@ -72,16 +72,11 @@
                 </h4>
             </div>
             <div class="modal-body">
-                <form action="#" class="form-horizontal" >
-                    <input type="file" id="uploadFile" accept="image/jpeg,image/gif,image/png" multiple>
-                </form>
+                <input type="file" name="img[]" id="uploadFile" accept="image/jpeg,image/gif,image/png" multiple>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default"
                         data-dismiss="modal">关闭
-                </button>
-                <button type="button" class="btn btn-primary" id="upload">
-                    上传
                 </button>
             </div>
         </div>
