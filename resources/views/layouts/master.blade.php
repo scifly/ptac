@@ -362,9 +362,6 @@
             @isset($dialog)
                 @include('partials.modal_dialog')
             @endif
-                @isset($show)
-                    @include('partials.modal_show')
-                @endif
             @yield('content')
         </section>
     </div>
@@ -587,11 +584,23 @@
 @isset($js)
     <script src="{{ URL::asset($js) }}"></script>
 @endisset
+<!-- chartJs -->
+<script src="{{ URL::asset('js/plugins/chartJs/js/Chart.min.js') }}"></script>
 <!-- fileinput-->
 <script src="{{ URL::asset('js/plugins/fileinput/js/fileinput.min.js') }}"></script>
 <script src="{{ URL::asset('js/plugins/fileinput/js/locales/zh.js') }}"></script>
 <script src="{{ URL::asset('js/plugins/fileinput/themes/explorer/theme.js') }}"></script>
 <!-- AdminLTE for demo purposes -->
 <script src="{{ URL::asset('js/demo.js') }}"></script>
+
+@isset($ueditor)
+<script type="text/javascript" src="{{ URL::asset('js/UEditor/ueditor.config.js') }}"></script>
+<!-- 编辑器源码文件 -->
+<script type="text/javascript" src="{{ URL::asset('js/UEditor/ueditor.all.js') }}"></script>
+<!-- 实例化编辑器 -->
+<script type="text/javascript">
+    var editor = UE.getEditor('container');
+</script>
+@endisset
 </body>
 </html>

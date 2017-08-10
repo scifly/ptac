@@ -43,8 +43,10 @@ class WsmArticle extends Model {
         'summary',
         'thumbnail_media_id',
         'content',
+        'media_ids',
         'created_at',
         'updated_at',
+        'enabled',
     ];
 
     public function wapsitemodule()
@@ -61,9 +63,11 @@ class WsmArticle extends Model {
             ['db' => 'Wsm.name as wsmname', 'dt' => 1],
             ['db' => 'WsmArticle.name', 'dt' => 2],
             ['db' => 'WsmArticle.summary', 'dt' => 3],
+            ['db' => 'WsmArticle.created_at', 'dt' => 4],
+            ['db' => 'WsmArticle.updated_at', 'dt' => 5],
 
             [
-                'db' => 'WsmArticle.enabled', 'dt' => 4,
+                'db' => 'WsmArticle.enabled', 'dt' => 6,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
                 }

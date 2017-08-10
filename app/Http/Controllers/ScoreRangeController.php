@@ -141,27 +141,32 @@ class ScoreRangeController extends Controller
     }
 
     public function statisticsShow(){
-        return view('score_range.statistics_show');
+        $grades = DB::table('grades')->pluck('name', 'id');
+        $classes = DB::table('classes')->pluck('name', 'id');
+        $exams = DB::table('exams')->pluck('name', 'id');
+        return view('score_range.statistics_show',[
+            'js' => 'js/score_range/statistics_show.js',
+            'grades' => $grades,
+            'classes' => $classes,
+            'exams' => $exams,
+            'form' => true
+        ]);
     }
 
-    public function statistics(){
+    public function statistics(HttpRequest $request){
         //获取请求参数
-        $type = 'grade';
-        $id = 1;
-        $exam_id = 1;
-
+        $request = $request->all();
         //查询班级
-        if($type == 'grade'){
-            $classes = DB::table('classes')->where('grade_id', $id)->select('id', 'grade_id')->pluck('id')->toArray();
+        if($request['type'] == 'grade'){
+            $classes = DB::table('classes')->where('grade_id', $request['grade_id'])->select('id', 'grade_id')->pluck('id')->toArray();
         }else{
-            $classes = [$id];
+            $classes = [$request['class_id']];
         }
-
         //查找符合条件的所有成绩
         $score = DB::table('scores')
             ->join('students', 'students.id', '=', 'scores.student_id')
             ->whereIn('students.class_id',$classes)
-            ->where('scores.exam_id', $exam_id)
+            ->where('scores.exam_id', $request['exam_id'])
             ->select('scores.id', 'scores.student_id', 'scores.subject_id', 'scores.score')
             ->orderBy('scores.score', 'desc')
             ->get();
@@ -190,7 +195,11 @@ class ScoreRangeController extends Controller
                     $v->number ++;
                 }
             }
+            if(count($item) != 0){
+                $v->precentage = round( $v->number/count($item) * 100 , 2);
+            }
+
         }
-        dump($score_range);
+        return response()->json($score_range);
     }
 }

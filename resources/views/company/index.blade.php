@@ -30,4 +30,7 @@
             </table>
         </div>
     </div>
+    @isset($show)
+        @include('company.show')
+    @endif
 @endsection
