@@ -15,6 +15,16 @@ class ProcedureStepComposer {
 
     public function compose(View $view) {
 
+        /*$data =  Educator::with('user')->get()->toArray();
+
+        $educators=array();
+
+        if(!empty( $data ))
+        {
+            foreach ($data as $v){
+                $educators[$v['id']] = $v['user']['realname'];
+            }
+        }*/
         $view->with([
             'procedures' => $this->procedures->pluck('name', 'id'),
         ]);

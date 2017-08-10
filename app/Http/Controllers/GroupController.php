@@ -33,7 +33,8 @@ class GroupController extends Controller
         return view('group.index', [
             'js' => 'js/group/index.js',
             'datatable' => true,
-            'dialog' => true
+            'dialog' => true,
+            'show' => true
         ]);
 
     }
@@ -89,9 +90,21 @@ class GroupController extends Controller
      */
     public function show($id)
     {
-        return view('group.show', [
-            'group' => $this->group->findOrFail($id)
-        ]);
+        $groups = $this->group->whereId($id)
+            ->first(['name','remark','created_at','updated_at','enabled']);
+
+        $groups->enabled = $groups->enabled==1 ? '已启用' : '已禁用' ;
+        if ($groups) {
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
+            $this->result['showData'] = $groups;
+        } else {
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+            $this->result['message'] = '';
+        }
+        return response()->json($this->result);
+//        return view('group.show', [
+//            'group' => $this->group->findOrFail($id)
+//        ]);
 
     }
 

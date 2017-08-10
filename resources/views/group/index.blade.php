@@ -29,4 +29,7 @@
             </table>
         </div>
     </div>
+    @isset($show)
+       @include('group.show')
+    @endif
 @endsection
