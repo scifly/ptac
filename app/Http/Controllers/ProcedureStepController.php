@@ -104,8 +104,6 @@ class ProcedureStepController extends Controller {
         return view('procedure_step.edit', [
             'js' => 'js/procedure_step/edit.js',
             'procedureStep' => $procedureStep,
-//            'approver_user_ids' => $approver_user_ids,
-//            'related_user_ids' => $related_user_ids,
             'form' => true
         ]);
     }

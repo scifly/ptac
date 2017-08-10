@@ -245,6 +245,8 @@ Route::get('users/show/{id}', 'UserController@show');
 Route::get('users/edit/{id}', 'UserController@edit');
 Route::put('users/update/{id}', 'UserController@update');
 Route::delete('users/delete/{id}', 'UserController@destroy');
+Route::any('users/uploadavatar', 'UserController@uploadAvatar');
+Route::any('users/delavatar', 'UserController@delAvatar');
 
 //考试类型设置
 Route::get('exam_types/index', 'ExamTypeController@index');
