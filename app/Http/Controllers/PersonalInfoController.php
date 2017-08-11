@@ -20,12 +20,12 @@ class personalInfoController extends Controller {
      *
      * @return \Illuminate\Http\Response
      */
-   /* public function show($id) {
+    /* public function show($id) {
 
-        $info = $this->user->whereId($id)->first();
-        $group = $info->group()->whereId($info->group_id)->first();
-        return view('personal_info.show', ['info' => $info, 'group' => $group]);
-    }*/
+         $info = $this->user->whereId($id)->first();
+         $group = $info->group()->whereId($info->group_id)->first();
+         return view('personal_info.show', ['info' => $info, 'group' => $group]);
+     }*/
 
     /**
      * 修改个人信息的表单
@@ -55,27 +55,7 @@ class personalInfoController extends Controller {
      * @internal param User $user
      */
     public function update(PersonalInfoRequest $request, $id) {
-        $input = $request->except(['group_id']);
-        //从session中取出上传成功后图片的数组（二维数组）
-        $data = Session::pull('imgPath');
-        if (!empty($data)) {
-            //判断删除上传的多张图片,排除将要保存的图片
-            foreach ($data as $value) {
-                if ($value[0] !== $input['avatar_url']) {
-                    $removePath = storage_path('app/avauploads/') . $value[0];
-                    unlink($removePath);
-                }
-            }
-        }
-        $personalOldImg = $this->user->whereId($id)->first(['avatar_url']);
-        //判断删除该条记录数据库地址对应的原图片
-        if ($input['avatar_url'] !== $personalOldImg->avatar_url) {
-            $removeOldImg = storage_path('app/avauploads/') . $personalOldImg->avatar_url;
-            if (is_file($removeOldImg)) {
-                unlink($removeOldImg);
-            }
-        }
-        //更新表单传过来的数据
+        $input = $request->except(['group_id', 'avatar_url']);
         if ($this->user->findOrFail($id)->update($input)) {
             $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
             $this->result['message'] = self::MSG_EDIT_OK;
@@ -89,33 +69,51 @@ class personalInfoController extends Controller {
     /**
      * 上传头像处理
      */
-    public function uploadAvatar() {
-        $imgPath = [];
+    public function uploadAvatar($id) {
         $file = Request::file('avatar');
         $check = $this->checkFile($file);
         if (!$check['status']) {
             return response()->json(['statusCode' => self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR, 'message' => $check['msg']]);
         }
-        // 存放路径
-        $path = storage_path('app/avauploads');
+        // 存项目路径
+        $ymd = date("Ymd");
+        $path = storage_path('app/avauploads/') . $ymd . "/";
         // 获取后缀名
         $postfix = $file->getClientOriginalExtension();
-        // 拼装文件名
-        $fileName = md5(time() . rand(0, 10000)) . '.' . $postfix;
+        // 存数据库url路径+文件名：/年月日/文件.jpg
+        $fileName = $ymd . "/" . date("YmdHis") . '_' . str_random(5) . '.' . $postfix;
+        // 判断是否存在路径
+        if (!file_exists($path)) {
+            mkdir($path, 0777, true);
+        }
         // 移动
         if (!$file->move($path, $fileName)) {
-            return response()->json(['statusCode' => self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR, 'message' => '文件保存失败']);
+            return response()->json(['statusCode' => self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR, 'message' => '头像保存失败']);
         }
-        $imgPath[] = $fileName;
-        //将上传移动成功的图片名称存入session
-        Session::push('imgPath', $imgPath);
+        $personalImg = $this->user->whereId($id)->first();
+        //判断数据库头像是否相同
+        if ($fileName !== $personalImg->avatar_url) {
+            $removeOldImg = storage_path('app/avauploads/') . $personalImg->avatar_url;
+            if (is_file($removeOldImg)) {
+                unlink($removeOldImg);
+            }
+            $personalImg->avatar_url = $fileName;
+            if ($personalImg->save()) {
+                $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
+                $this->result['fileName'] = $fileName;
+            } else {
+                $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+                $this->result['message'] = '头像保存失败';
+            }
+        }
         return response()->json(['statusCode' => '200', 'fileName' => $fileName]);
     }
 
     /**
      * 验证上传文件是否成功
      */
-    private function checkFile($file) {
+    private
+    function checkFile($file) {
         if (!$file->isValid()) {
             return ['status' => false, 'msg' => '文件上传失败'];
         }

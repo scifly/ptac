@@ -235,6 +235,10 @@ Route::get('procedure_steps/getSchoolEducators/{id}', 'ProcedureStepController@g
 //流程日志
 Route::get('procedure_logs/index', 'ProcedureLogController@index');
 Route::get('procedure_logs/show/{id}', 'ProcedureLogController@show');
+Route::get('procedure_logs/procedure_info', 'ProcedureLogController@procedureInfo');
+Route::get('procedure_logs/my_rocedure', 'ProcedureLogController@myProcedure');
+Route::get('procedure_logs/pending', 'ProcedureLogController@pending');
+
 
 //用户管理-用户设置
 Route::get('users/index', 'UserController@index');
@@ -251,7 +255,7 @@ Route::any('users/delavatar', 'UserController@delAvatar');
 //个人信息管理
 Route::get('personal_info/edit/{id}', 'PersonalInfoController@edit');
 Route::put('personal_info/update/{id}', 'PersonalInfoController@update');
-Route::post('personal_info/upload_ava', 'PersonalInfoController@uploadAvatar');
+Route::post('personal_info/upload_ava/{id}', 'PersonalInfoController@uploadAvatar');
 
 //考试类型设置
 Route::get('exam_types/index', 'ExamTypeController@index');

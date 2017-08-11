@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ProcedureLog;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
 
 class ProcedureLogController extends Controller {
@@ -11,6 +12,108 @@ class ProcedureLogController extends Controller {
     function __construct(ProcedureLog $procedureLog) {
         $this->procedureLog = $procedureLog;
     }
+
+
+    /**
+     * 发起申请页
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        return view('procedure_log.create',[
+            'js' => 'js/procedure_log/create.js',
+            'form' => true
+        ]);
+    }
+
+    /**
+     * 添加申请信息
+     */
+    public function store()
+    {
+
+    }
+
+    /**
+     * 我发起的流程列表
+     */
+    public function myProcedure(){
+        $user_id = 6;
+        //查询我发布的流程最后一条log记录
+        $ids = $this->procedureLog->select(DB::raw('max(procedure_logs.id) as id'))->where('initiator_user_id',$user_id)->groupBy('first_log_id')->pluck('id')->toArray();
+        //根据IDs查询数据
+        $data = $this->procedureLog
+            ->join('procedures', 'procedures.id', '=', 'procedure_logs.procedure_id')
+            ->join('procedure_steps', 'procedure_steps.id', '=', 'procedure_logs.procedure_step_id')
+            ->whereIn('procedure_logs.id', $ids)
+            ->orderBy('id', 'desc')
+            ->select('procedure_logs.id', 'procedure_logs.first_log_id', 'procedures.name', 'procedure_logs.procedure_step_id', 'procedure_steps.name as step_name', 'procedure_logs.initiator_msg', 'procedure_logs.step_status')
+            ->get();
+        return response()->json($data);
+        $sql = 'select max(id) as id,`first_log_id`,`procedure_id`,`initiator_user_id`, `initiator_msg`, `step_status` from procedure_logs group by `first_log_id` order by id desc ';
+    }
+
+
+    /**
+     * 待审核的流程列表
+     */
+    public function pending(){
+        $user_id = 3;
+        //查询待审核的流程最后一条log记录
+        $ids = $this->procedureLog->select(DB::raw('max(procedure_logs.id) as id'))->where('step_status',2)->groupBy('first_log_id')->pluck('id')->toArray();
+        //根据IDs查询数据
+        $data = $this->procedureLog
+            ->join('procedures', 'procedures.id', '=', 'procedure_logs.procedure_id')
+            ->join('procedure_steps', 'procedure_steps.id', '=', 'procedure_logs.procedure_step_id')
+            ->join('users', 'users.id', '=', 'procedure_logs.initiator_user_id')
+            ->whereIn('procedure_logs.id', $ids)
+            ->orderBy('id', 'desc')
+            ->select('procedure_logs.id', 'procedure_logs.first_log_id', 'users.realname', 'procedures.name', 'procedure_logs.procedure_step_id', 'procedure_steps.name as step_name', 'procedure_steps.approver_user_ids', 'procedure_logs.initiator_msg', 'procedure_logs.step_status')
+            ->get();
+        $result = [];
+        foreach ($data as $val){
+            if(in_array($user_id, explode(',',$val->approver_user_ids))){
+                $result[]=$val;
+            }
+        }
+        return response()->json($result);
+    }
+
+    /**
+     *流程详情页
+     */
+    public function procedureInfo($first_log_id){
+        //根据IDs查询数据
+        $data = $this->procedureLog
+            ->join('procedures', 'procedures.id', '=', 'procedure_logs.procedure_id')
+            ->join('procedure_steps', 'procedure_steps.id', '=', 'procedure_logs.procedure_step_id')
+            ->join('users', 'users.id', '=', 'procedure_logs.initiator_user_id')
+            ->where('procedure_logs.first_log_id', $first_log_id)
+            ->orderBy('id', 'desc')
+            ->select('procedure_logs.id', 'procedure_logs.first_log_id', 'users.realname', 'procedures.name', 'procedure_logs.procedure_step_id', 'procedure_steps.name as step_name', 'procedure_steps.approver_user_ids', 'procedure_logs.initiator_msg', 'procedure_logs.step_status')
+            ->get();
+        $result = [
+            [
+                'name' => '班级审批',
+                'status' => 0,
+            ],
+            [
+                'name' => '年级审批',
+                'status' => 1,
+            ],
+            [
+                'name' => '校级审批',
+                'status' => 2,
+            ],
+        ];
+        return view('procedure_log.procedure_info',[
+            'js' => 'js/procedure_log/procedure_info.js',
+            'data' => $result
+        ]);
+    }
+
+
 
     /**
      * Display a listing of the resource.
