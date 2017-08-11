@@ -235,6 +235,8 @@ Route::get('procedure_steps/getSchoolEducators/{id}', 'ProcedureStepController@g
 //流程日志
 Route::get('procedure_logs/index', 'ProcedureLogController@index');
 Route::get('procedure_logs/show/{id}', 'ProcedureLogController@show');
+Route::get('procedure_logs/procedure_info', 'ProcedureLogController@procedureInfo');
+
 
 //用户管理-用户设置
 Route::get('users/index', 'UserController@index');
@@ -244,6 +246,8 @@ Route::get('users/show/{id}', 'UserController@show');
 Route::get('users/edit/{id}', 'UserController@edit');
 Route::put('users/update/{id}', 'UserController@update');
 Route::delete('users/delete/{id}', 'UserController@destroy');
+Route::any('users/uploadavatar', 'UserController@uploadAvatar');
+Route::any('users/delavatar', 'UserController@delAvatar');
 
 #用户中心
 //个人信息管理

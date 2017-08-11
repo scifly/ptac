@@ -62,7 +62,7 @@ class WsmArticleController extends Controller
             'wsm_id' => $request->input('wsm_id'),
             'name' => $request->input('name'),
             'summary' => $request->input('summary'),
-            'thumbnail_media_id' => $request->input('thumbnail_media_id'),
+            'thumbnail_media_id' => $media_ids[0],
             'content' => $request->input('content'),
             'media_ids' => implode(',',$media_ids),
             'enabled' => $request->input('enabled')

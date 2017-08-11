@@ -40,13 +40,14 @@ class WapSite extends Model {
     ];
     public function wapsitemodule()
     {
-        return $this->hasMany('App\Models\WapSiteModule','wap_site_id','id');
-    }
-    public function school()
-    {
-        return $this->belongsTo('App\Models\School ');
+        return $this->hasMany('App\Models\WapSiteModule');
     }
 
+    public function school() {
+
+        return $this->belongsTo('App\Models\School');
+
+    }
     /**
      * @return array
      */

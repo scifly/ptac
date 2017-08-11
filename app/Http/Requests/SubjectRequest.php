@@ -46,7 +46,12 @@ class SubjectRequest extends FormRequest
     protected function prepareForValidation() {
 
         $input = $this->all();
-
+        if (isset($input['isaux']) && $input['isaux'] === 'on') {
+            $input['isaux'] = 1;
+        }
+        if (!isset($input['isaux'])) {
+            $input['isaux'] = 0;
+        }
         if (isset($input['enabled']) && $input['enabled'] === 'on') {
             $input['enabled'] = 1;
         }

@@ -46,7 +46,7 @@ class WapSiteModule extends Model {
     }
     public function wapsite()
     {
-        return $this->belongsTo('App\Models\WapSite', 'wap_site_id', 'id');
+        return $this->belongsTo('App\Models\WapSite');
 
     }
     public function media(){

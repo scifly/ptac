@@ -14,26 +14,25 @@ class ProcedureLogController extends Controller {
 
 
     /**
-     * Show the form for creating a new resource.
+     * 发起申请页
      *
      * @return \Illuminate\Http\Response
      */
     public function create()
     {
         return view('procedure_log.create',[
-            'js' => 'js/score_range/create.js',
+            'js' => 'js/procedure_log/create.js',
             'form' => true
         ]);
     }
 
     /**
-     * 添加流程信息
+     * 添加申请信息
      */
     public function store()
     {
 
     }
-
 
     /**
      * 我发起的流程列表
@@ -51,7 +50,29 @@ class ProcedureLogController extends Controller {
 
     }
 
-
+    /**
+     *流程详情页
+     */
+    public function procedureInfo(){
+        $result = [
+            [
+                'name' => '班级审批',
+                'status' => 0,
+            ],
+            [
+                'name' => '年级审批',
+                'status' => 1,
+            ],
+            [
+                'name' => '校级审批',
+                'status' => 2,
+            ],
+        ];
+        return view('procedure_log.procedure_info',[
+            'js' => 'js/procedure_log/procedure_info.js',
+            'data' => $result
+        ]);
+    }
 
 
 
@@ -81,7 +102,7 @@ class ProcedureLogController extends Controller {
     public function show($id) {
 
         //根据id 查找单条记录
-        $procedureLog = ProcedureLog::whereId($id)->first();
+        $procedureLog = $this->procedureLog->whereId($id)->first();
         $initiator_medias = $procedureLog->operate_ids($procedureLog->initiator_media_ids);
         $operator_medias = $procedureLog->operate_ids($procedureLog->operator_media_ids);
         $initiator_user = $procedureLog->get_user($procedureLog->initiator_user_id);
@@ -110,12 +131,21 @@ class ProcedureLogController extends Controller {
         //根据id查找需要删除的数据
         //进行删除操作
         //返回json 格式的操作结果
-        $procedureLog = ProcedureLog::whereId($id)->first();
-
-        if ($procedureLog->delete()) {
-            return response()->json(['statusCode' => 200, 'message' => '删除成功！']);
+        if ($this->procedureLog->findOrFail($id)->delete()) {
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
+            $this->result['message'] = self::MSG_DEL_OK;
+        } else {
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+            $this->result['message'] = '删除失败';
         }
+        return response()->json($this->result);
 
-        return response()->json(['statusCode' => 500, 'message' => '删除失败！']);
+        /*  $procedureLog = ProcedureLog::whereId($id)->first();
+          if ($procedureLog->delete()) {
+              return response()->json(['statusCode' => 200, 'message' => '删除成功！']);
+          }
+
+          return response()->json(['statusCode' => 500, 'message' => '删除失败！']);
+      }*/
     }
 }

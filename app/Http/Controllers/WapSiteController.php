@@ -99,7 +99,6 @@ class WapSiteController extends Controller
         $f = explode(",", $wapsite->media_ids);
 
         $medias = Media::whereIn('id',$f)->get(['id','path']);
-
         return view('wap_site.show', [
             'wapsite' => $wapsite,
             'medias' => $medias,
@@ -195,13 +194,17 @@ class WapSiteController extends Controller
         if (Request::isMethod('post')) {
 
             $files = Request::file('img');
+
             if (empty($files)){
                 $result['statusCode'] = 0;
                 $result['message'] = '您还未选择图片！';
                 return $result;
-            }
+            }else{
             $result['data']=array();
-            foreach ($files  as $key=>$v){
+            $mes = [];
+
+                foreach ($files  as $key=>$v){
+
                 if ($v->isValid()) {
                     // 获取文件相关信息
                     $originalName = $v->getClientOriginalName(); // 文件原名
@@ -211,12 +214,12 @@ class WapSiteController extends Controller
 //                    dd($originalName,$ext,$realPath);die;
 
                     // 上传图片
-                    $filename = date('Y-m-d-H-i-s') . '-' . uniqid() . '.' . $ext;
+                    $filename =  uniqid() . '.' . $ext;
                     // 使用我们新建的uploads本地存储空间（目录）
                     $init=0;
                     $bool = Storage::disk('uploads')->put($filename,file_get_contents($realPath));
 
-                    $filePath = '/storage/app/uploads/'.$filename;
+                    $filePath = '/storage/app/uploads/'.date('Y-m-d').'/'.$filename;
                     $data = [
                         'path' => $filePath,
                         'remark' => '微网站轮播图',
@@ -224,7 +227,7 @@ class WapSiteController extends Controller
                         'enabled' => '1',
                     ];
                     $mediaId = Media::insertGetId($data);
-                    $mes[] = [
+                    $mes [] = [
                         'id' => $mediaId,
                         'path' => $filePath,
                     ];
@@ -233,12 +236,11 @@ class WapSiteController extends Controller
             $result['statusCode'] = 1;
             $result['message'] = '上传成功！';
             $result['data'] = $mes;
-
+            }
             return response()->json($result);
         }
 
     }
-
 
 }
 

@@ -64,7 +64,12 @@ class ProcedureStep extends Model {
                    foreach(array_keys($users) as $uid) {
                        $data .= $users[$uid]. ', ';
                    }
-                   substr($data,0,strlen($data)-1);
+
+                   $data = trim($data);
+                   $len = strlen($data);
+                   $len = $len -1;
+
+                   $data = substr($data,0,$len);
                    return $data;
                }
            ],
@@ -76,7 +81,13 @@ class ProcedureStep extends Model {
                    foreach(array_keys($users) as $uid) {
                        $data .= $users[$uid]. ', ';
                    }
-                   substr($data,0,strlen($data)-1);
+
+                   $data = trim($data);
+                   $len = strlen($data);
+                   $len = $len -1;
+
+                   $data = substr($data,0,$len);
+
                    return $data;
                }
            ],
@@ -117,9 +128,7 @@ class ProcedureStep extends Model {
 
         $educators = array();
         foreach ($user_ids as $auid) {
-            $educator = Educator::find($auid);
-            $userId = $educator->user_id;
-            $user = User::find($userId);
+            $user = User::find($auid);
             $educators[$auid] = $user->username;
         }
 
