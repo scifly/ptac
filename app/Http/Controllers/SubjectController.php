@@ -31,6 +31,7 @@ class SubjectController extends Controller {
             'dialog' => true,
             'datatable' => true,
             'form' => true,
+            'show' => true
         ]);
         
     }
@@ -76,8 +77,20 @@ class SubjectController extends Controller {
      * @internal param Subject $subject
      */
     public function show($id) {
-        
-        return view('subject.show', ['subject' => $this->subject->findOrFail($id)]);
+        $subjects = $this->subject->whereId($id)
+            ->first(['name','school_id','isaux','max_score','pass_score','enabled']);
+        $subjects->school_id = $subjects->school->name;
+        $subjects->isaux = $subjects->isaux==1 ? '是' : '否' ;
+        $subjects->enabled = $subjects->enabled==1 ? '已启用' : '已禁用' ;
+        if ($subjects) {
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
+            $this->result['showData'] = $subjects;
+        } else {
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+            $this->result['message'] = '';
+        }
+        return response()->json($this->result);
+//        return view('subject.show', ['subject' => $this->subject->findOrFail($id)]);
         
     }
     

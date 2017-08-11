@@ -32,4 +32,7 @@
             </table>
         </div>
     </div>
+    @isset($show)
+    @include('subject.show')
+    @endif
 @endsection

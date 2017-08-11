@@ -142,9 +142,13 @@ class ScoreRangeController extends Controller
 
     public function statisticsShow(){
         $grades = DB::table('grades')->pluck('name', 'id');
+        $classes = DB::table('classes')->pluck('name', 'id');
+        $exams = DB::table('exams')->pluck('name', 'id');
         return view('score_range.statistics_show',[
             'js' => 'js/score_range/statistics_show.js',
             'grades' => $grades,
+            'classes' => $classes,
+            'exams' => $exams,
             'form' => true
         ]);
     }
@@ -154,11 +158,10 @@ class ScoreRangeController extends Controller
         $request = $request->all();
         //查询班级
         if($request['type'] == 'grade'){
-            $classes = DB::table('classes')->where('grade_id', $request['id'])->select('id', 'grade_id')->pluck('id')->toArray();
+            $classes = DB::table('classes')->where('grade_id', $request['grade_id'])->select('id', 'grade_id')->pluck('id')->toArray();
         }else{
-            $classes = [$request['id']];
+            $classes = [$request['class_id']];
         }
-
         //查找符合条件的所有成绩
         $score = DB::table('scores')
             ->join('students', 'students.id', '=', 'scores.student_id')
@@ -192,8 +195,11 @@ class ScoreRangeController extends Controller
                     $v->number ++;
                 }
             }
-            $v->precentage = round( $v->number/count($item) * 100 , 2) . "％";
+            if(count($item) != 0){
+                $v->precentage = round( $v->number/count($item) * 100 , 2);
+            }
+
         }
-        dump($score_range);
+        return response()->json($score_range);
     }
 }
