@@ -293,30 +293,33 @@ Route::group(['prefix' => 'scoreSend'],function(){
 
 
 //微网站管理
-Route::get('wapsites/index', 'WapSiteController@index');
-Route::get('wapsites/create', 'WapSiteController@create');
-Route::post('wapsites/store', 'WapSiteController@store');
-Route::get('wapsites/show/{id}', 'WapSiteController@show');
-Route::get('wapsites/edit/{id}', 'WapSiteController@edit');
-Route::put('wapsites/update/{id}', 'WapSiteController@update');
-Route::delete('wapsites/delete/{id}', 'WapSiteController@destroy');
-Route::any('wapsites/uploadImages', 'WapSiteController@uploadImages');
+Route::get('wap_sites/index', 'WapSiteController@index');
+Route::get('wap_sites/create', 'WapSiteController@create');
+Route::post('wap_sites/store', 'WapSiteController@store');
+Route::get('wap_sites/show/{id}', 'WapSiteController@show');
+Route::get('wap_sites/edit/{id}', 'WapSiteController@edit');
+Route::put('wap_sites/update/{id}', 'WapSiteController@update');
+Route::delete('wap_sites/delete/{id}', 'WapSiteController@destroy');
+Route::any('wap_sites/uploadImages', 'WapSiteController@uploadImages');
+
+Route::get('wap_sites/webindex', 'WapSiteController@webindex');
+
 
 //微网站管理-网站模块管理
-Route::get('wapsitemodules/index', 'WapSiteModuleController@index');
-Route::get('wapsitemodules/create', 'WapSiteModuleController@create');
-Route::post('wapsitemodules/store', 'WapSiteModuleController@store');
-Route::get('wapsitemodules/show/{id}', 'WapSiteModuleController@show');
-Route::get('wapsitemodules/edit/{id}', 'WapSiteModuleController@edit');
-Route::put('wapsitemodules/update/{id}', 'WapSiteModuleController@update');
-Route::delete('wapsitemodules/delete/{id}', 'WapSiteModuleController@destroy');
+Route::get('wap_site_modules/index', 'WapSiteModuleController@index');
+Route::get('wap_site_modules/create', 'WapSiteModuleController@create');
+Route::post('wap_site_modules/store', 'WapSiteModuleController@store');
+Route::get('wap_site_modules/show/{id}', 'WapSiteModuleController@show');
+Route::get('wap_site_modules/edit/{id}', 'WapSiteModuleController@edit');
+Route::put('wap_site_modules/update/{id}', 'WapSiteModuleController@update');
+Route::delete('wap_site_modules/delete/{id}', 'WapSiteModuleController@destroy');
 
 //微网站管理-文章管理
-Route::get('wsmarticles/index', 'WsmArticleController@index');
-Route::get('wsmarticles/create', 'WsmArticleController@create');
-Route::post('wsmarticles/store', 'WsmArticleController@store');
-Route::get('wsmarticles/show/{id}', 'WsmArticleController@show');
-Route::get('wsmarticles/edit/{id}', 'WsmArticleController@edit');
-Route::put('wsmarticles/update/{id}', 'WsmArticleController@update');
-Route::delete('wsmarticles/delete/{id}', 'WsmArticleController@destroy');
+Route::get('wsm_articles/index', 'WsmArticleController@index');
+Route::get('wsm_articles/create', 'WsmArticleController@create');
+Route::post('wsm_articles/store', 'WsmArticleController@store');
+Route::get('wsm_articles/show/{id}', 'WsmArticleController@show');
+Route::get('wsm_articles/edit/{id}', 'WsmArticleController@edit');
+Route::put('wsm_articles/update/{id}', 'WsmArticleController@update');
+Route::delete('wsm_articles/delete/{id}', 'WsmArticleController@destroy');
 

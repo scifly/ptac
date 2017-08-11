@@ -32,7 +32,7 @@
                 <div class="col-sm-6">
                     @if(isset($medias))
                         @foreach($medias as $key => $value)
-                            <img src="../../..{{$value->path}}">
+                            <img src="../../{{$value->path}}">
                             <input type="hidden" name="media_ids[]" value="{{$value->id}}"/>
                         @endforeach
                     @endif
