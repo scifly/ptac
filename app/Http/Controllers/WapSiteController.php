@@ -99,7 +99,6 @@ class WapSiteController extends Controller
         $f = explode(",", $wapsite->media_ids);
 
         $medias = Media::whereIn('id',$f)->get(['id','path']);
-
         return view('wap_site.show', [
             'wapsite' => $wapsite,
             'medias' => $medias,
@@ -211,12 +210,12 @@ class WapSiteController extends Controller
 //                    dd($originalName,$ext,$realPath);die;
 
                     // 上传图片
-                    $filename = date('Y-m-d-H-i-s') . '-' . uniqid() . '.' . $ext;
+                    $filename =  uniqid() . '.' . $ext;
                     // 使用我们新建的uploads本地存储空间（目录）
                     $init=0;
                     $bool = Storage::disk('uploads')->put($filename,file_get_contents($realPath));
 
-                    $filePath = '/storage/app/uploads/'.$filename;
+                    $filePath = '/storage/app/uploads/'.date('Y-m-d').'/'.$filename;
                     $data = [
                         'path' => $filePath,
                         'remark' => '微网站轮播图',
@@ -238,7 +237,6 @@ class WapSiteController extends Controller
         }
 
     }
-
 
 }
 

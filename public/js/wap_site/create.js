@@ -41,7 +41,7 @@ $(function () {
                 processData: false,
                 contentType: false,
                 dataType: 'json',
-                url: "../wapsites/uploadwapsite",
+                url: "../wapsites/uploadImages",
 
                 data: data,
                 success: function ($result) {

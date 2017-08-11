@@ -36,6 +36,7 @@ class Educator extends Model
         'team_ids',
         'school_id',
         'sms_quote',
+        'enabled',
 
     ];
 
