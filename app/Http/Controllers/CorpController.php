@@ -28,8 +28,7 @@ class CorpController extends Controller {
             'js' => 'js/corp/index.js',
             'dialog' => true,
             'datatable' => true,
-            'form' => true,
-            'show' => true
+            'form' => true
         ]);
     }
 

@@ -28,8 +28,7 @@ class CompanyController extends Controller {
         return view('company.index', [
             'js' => 'js/company/index.js',
             'dialog' => true,
-            'datatable' => true,
-            'show' => true
+            'datatable' => true
         ]);
     }
 
