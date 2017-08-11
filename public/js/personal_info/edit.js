@@ -5,8 +5,10 @@ $(function () {
         var formData = new FormData();
         formData.append('avatar', $('#avatar_upload')[0].files[0]);
         formData.append('_token', $('#csrf_token').attr('content'));
+        var id = $('input[name=avatar_url]').attr("id");
+
         $.ajax({
-            url: "../upload_ava",
+            url: "../upload_ava/" + id,
             data: formData,
             type: 'POST',
             dataType: 'json',

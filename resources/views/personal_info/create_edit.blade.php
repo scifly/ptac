@@ -20,7 +20,7 @@
                         <img id="avatar_thumb_img"
                              src='{{asset("../storage/app/avauploads/{$personalInfo->avatar_url}")}}'
                              style="width:100px; height: 100px;max-width: 100px;max-height: 100px; border-radius:50%; overflow:hidden;"/>
-                        <input type="text" size="50" name="avatar_url" class="hide" value="{{$personalInfo->avatar_url}}"/>
+                        <input id="{{$personalInfo->id}}" type="text" size="50" name="avatar_url" class="hide" value="{{$personalInfo->avatar_url}}"/>
                         <a class="btn btn-primary btn-upload" style=" position: relative; overflow: hidden;">
                             <span>更改头像</span>
                             <input id="avatar_upload" type="file" name="file" multiple="multiple" style="position: absolute; top: 0; right: 0; margin: 0; padding: 0; font-size: 20px; cursor: pointer; opacity: 0; filter: alpha(opacity=0);"/>
