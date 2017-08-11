@@ -12,7 +12,7 @@ class WsmArticleRequest extends FormRequest
         'wsm_id' => 'required|integer',
         'name' => 'required|string|max:120',
         'summary' => 'required|string|max:255',
-        'thumbnail_media_id' => 'required|integer',
+//        'thumbnail_media_id' => 'required|integer',
         'content' => 'required|string',
         'media_ids' => 'required|array',
         'enabled' => 'required|boolean'
@@ -21,7 +21,7 @@ class WsmArticleRequest extends FormRequest
         'wsm_id' => '所属网站模块',
         'name' => '名称',
         'summary' => '文章摘要',
-        'thumbnail_media_id' => '缩略图',
+//        'thumbnail_media_id' => '缩略图',
         'content' => '文章内容',
         'media_ids' => '轮播图',
         'enabled' => '是否启用'
@@ -70,5 +70,15 @@ class WsmArticleRequest extends FormRequest
         return $array;
     }
     public function wantsJson() { return true; }
+    protected function prepareForValidation() {
 
+        $input = $this->all();
+        if (isset($input['enabled']) && $input['enabled'] === 'on') {
+            $input['enabled'] = 1;
+        }
+        if (!isset($input['enabled'])) {
+            $input['enabled'] = 0;
+        }
+        $this->replace($input);
+    }
 }

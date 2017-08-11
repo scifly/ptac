@@ -235,6 +235,8 @@ Route::get('procedure_steps/getSchoolEducators/{id}', 'ProcedureStepController@g
 //流程日志
 Route::get('procedure_logs/index', 'ProcedureLogController@index');
 Route::get('procedure_logs/show/{id}', 'ProcedureLogController@show');
+Route::get('procedure_logs/procedure_info', 'ProcedureLogController@procedureInfo');
+
 
 //用户管理-用户设置
 Route::get('users/index', 'UserController@index');

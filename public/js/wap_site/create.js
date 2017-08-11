@@ -35,6 +35,7 @@ $(function () {
             $pre.append('<input type="hidden" name="media_ids[]" value="' + obj.id + '">');
         });
     });
+
     // modal关闭，内容清空
     $('#modalPic').on('hide.bs.modal', function () {
         $uploadFile.fileinput('clear');
