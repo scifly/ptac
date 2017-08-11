@@ -38,6 +38,8 @@
     @isset($ws)
     <link rel="stylesheet" href="{{ URL::asset('css/wapSite.css') }}">
     @endisset
+    {{--审核详情--}}
+    <link rel="stylesheet" href="{{ URL::asset('css/procedure_info.css') }}">
     <!-- fileinput-->
     <link rel="stylesheet" href="{{ URL::asset('js/plugins/fileinput/css/fileinput.min.css') }}">
     <link rel="stylesheet" href="{{ URL::asset('js/plugins/fileinput/themes/explorer/theme.css') }}">
