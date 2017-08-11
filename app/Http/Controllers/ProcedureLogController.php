@@ -12,6 +12,49 @@ class ProcedureLogController extends Controller {
         $this->procedureLog = $procedureLog;
     }
 
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        return view('procedure_log.create',[
+            'js' => 'js/score_range/create.js',
+            'form' => true
+        ]);
+    }
+
+    /**
+     * 添加流程信息
+     */
+    public function store()
+    {
+
+    }
+
+
+    /**
+     * 我发起的流程列表
+     */
+    public function myProcedure(){
+        $user_id = 6;
+        $sql = 'select max(id) as id,`first_log_id`,`procedure_id`,`initiator_user_id`, `initiator_msg`, `step_status` from procedure_logs group by `first_log_id` order by id desc ';
+    }
+
+
+    /**
+     * 待审核的流程列表
+     */
+    public function pending(){
+
+    }
+
+
+
+
+
     /**
      * Display a listing of the resource.
      *

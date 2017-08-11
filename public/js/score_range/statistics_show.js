@@ -68,7 +68,6 @@ $(function () {
                 });
                 barChartData.labels = labels;
                 barChartData.datasets[0].data = dataset;
-                console.log(barChartData);
                 barChart.Bar(barChartData, barChartOptions);
 
                 return false;
