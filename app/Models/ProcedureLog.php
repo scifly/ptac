@@ -34,6 +34,9 @@ use App\Facades\DatatableFacade as Datatable;
  * @method static Builder|ProcedureLog whereStepStatus($value)
  * @method static Builder|ProcedureLog whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property-read \App\Models\Procedure $procedure
+ * @property-read \App\Models\ProcedureStep $procedureStep
+ * @property-read \App\Models\User $user
  */
 class ProcedureLog extends Model {
 

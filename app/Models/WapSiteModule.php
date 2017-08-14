@@ -26,6 +26,8 @@ use Illuminate\Database\Eloquent\Model;
  * 网站类型
  * @property-read \App\Models\WapSite $belongsToWs
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\WsmArticle[] $hasManyArticle
+ * @property-read \App\Models\WapSite $wapsite
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\WsmArticle[] $wsmarticles
  */
 class WapSiteModule extends Model {
     //

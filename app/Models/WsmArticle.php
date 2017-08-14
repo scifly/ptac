@@ -31,6 +31,7 @@ use Illuminate\Database\Eloquent\Model;
  * @mixin \Eloquent
  * 网站内容
  * @property-read \App\Models\WapSiteModule $wapSiteModule
+ * @property-read \App\Models\WapSiteModule $wapsitemodule
  */
 class WsmArticle extends Model {
 

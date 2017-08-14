@@ -40,6 +40,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read \App\Models\SchoolType $schoolType
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Semester[] $semesters
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Subject[] $subject
+ * @property-read \App\Models\WapSite $wapsite
  */
 class School extends Model {
     

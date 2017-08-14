@@ -61,7 +61,7 @@ $factory->define(App\Models\Grade::class, function (Faker\Generator $faker) {
     return [
         'name' => $faker->name,
         'school_id' => 1,
-        'educator_ids' => 'abc',
+        'educator_ids' => 'requestType',
         'enabled' => 1
     ];
 
@@ -71,7 +71,7 @@ $factory->define(App\Models\Educator::class, function (Faker\Generator $faker) {
 
     return [
         'user_id' => rand(1,5),
-        'team_ids' => 'abc',
+        'team_ids' => 'requestType',
         'school_id' => 1,
         'sms_quote' => 100,
         'enabled' => 1

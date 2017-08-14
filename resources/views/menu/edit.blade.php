@@ -1,3 +1,8 @@
-{!! Form::model($action, ['method' => 'put', 'id' => 'formMenu', 'data-parsley-validate' => 'true']) !!}
+{!! Form::model($menu, [
+    'method' => 'put',
+    'id' => 'formMenu',
+    'class' => 'form-horizontal form-borderd',
+    'data-parsley-validate' => 'true'
+]) !!}
 @include('menu.create_edit')
 {!! Form::close() !!}

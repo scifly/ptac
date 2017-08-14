@@ -26,6 +26,10 @@ use App\Facades\DatatableFacade as Datatable;
  * @method static Builder|Educator whereUserId($value)
  * @mixin \Eloquent
  * @property-read \App\Models\School $school
+ * @property int $enabled
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Squad[] $classes
+ * @property-read \App\Models\EducatorClass $educatorClass
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Educator whereEnabled($value)
  */
 class Educator extends Model
 {

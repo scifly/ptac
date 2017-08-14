@@ -28,6 +28,7 @@ use App\Facades\DatatableFacade as Datatable;
  * @property-read \App\Models\Subject $belongsToWs
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\SubjectModule whereMediaId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\SubjectModule whereWapSiteId($value)
+ * @property-read \App\Models\Subject $subject
  */
 class SubjectModule extends Model {
     //

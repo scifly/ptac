@@ -44,7 +44,9 @@ Route::get('menus/create', 'MenuController@create');
 Route::post('menus/store', 'MenuController@store');
 Route::get('menus/show/{id}', 'MenuController@show');
 Route::get('menus/edit/{id}', 'MenuController@edit');
+Route::post('menus/sort', 'MenuController@sort');
 Route::put('menus/update/{id}', 'MenuController@update');
+Route::get('menus/move/{id}/{parentId}', 'MenuController@move');
 Route::delete('menus/delete/{id}', 'MenuController@destroy');
 
 # 系统设置
@@ -129,6 +131,23 @@ Route::get('apps/show/{id}', 'AppController@show');
 Route::get('apps/edit/{id}', 'AppController@edit');
 Route::put('apps/update/{id}', 'AppController@update');
 Route::delete('apps/delete/{id}', 'AppController@destroy');
+
+// 菜单/卡片图标设置
+Route::get('icons/index', 'IconController@index');
+Route::get('icons/create', 'IconController@create');
+Route::post('icons/store', 'IconController@store');
+Route::get('icons/show/{id}', 'IconController@show');
+Route::get('icons/edit/{id}', 'IconController@edit');
+Route::put('icons/update/{id}', 'IconController@update');
+Route::delete('icons/delete/{id}', 'IconController@destroy');
+
+Route::get('icon_types/index', 'IconTypeController@index');
+Route::get('icon_types/create', 'IconTypeController@create');
+Route::post('icon_types/store', 'IconTypeController@store');
+Route::get('icon_types/show/{id}', 'IconTypeController@show');
+Route::get('icon_types/edit/{id}', 'IconTypeController@edit');
+Route::put('icon_types/update/{id}', 'IconTypeController@update');
+Route::delete('icon_types/delete/{id}', 'IconTypeController@destroy');
 
 // 用户/通信管理
 // 教职员工

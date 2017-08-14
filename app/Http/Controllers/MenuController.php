@@ -13,22 +13,35 @@ class MenuController extends Controller {
     function __construct(Menu $menu) { $this->menu = $menu; }
     
     public function index() {
-    
+        
         if (Request::ajax()) {
-            $menus = $this->menu->get(['id', 'parent_id', 'name']);
+            $menus = $this->menu->get(['id', 'parent_id', 'name', 'position'])
+                ->sortBy(['position'])->toArray();
             $data = [];
             foreach ($menus as $menu) {
-                $parentId = isset($menu->parent_id) ? $menu->parent_id : '#';
+                if (isset($menu['parent_id'])) {
+                    $m = $this->menu->find($menu['id']);
+                    $icon = $m->icon;
+                    $menu['name'] = ($icon ? '<i class="' . $icon->name . '"></i>' : '<i class="fa fa-circle-o"></i>') .
+                        '&nbsp;' . $menu['name'];
+                }
+                $parentId = isset($menu['parent_id']) ? $menu['parent_id'] : '#';
                 $data[] = [
-                    'id' => $menu->id,
+                    'id' => $menu['id'],
                     'parent' => $parentId,
-                    'text' => $menu->name
+                    'text' => $menu['name']
                 ];
             }
             return response()->json($data);
         }
-        return view('menu.index');
-    
+        return view('menu.index', [
+            'dialog' => true,
+            'js' => 'js/menu/index.js',
+            'jstree' => true,
+            'form' => true,
+            'menus' => $this->menu->leaves(1)
+        ]);
+        
     }
     
     /**
@@ -39,13 +52,11 @@ class MenuController extends Controller {
     public function create() {
         
         if (Request::ajax()) {
-            return response()->json([
-                'html' => view('menu.create')->render()
-            ]);
+            return response()->json(['html' => view('menu.create')->render()]);
         }
         return view('menu.create', [
             'js' => 'js/action/create.js',
-            'form' => true
+            'form' => true,
         ]);
         
     }
@@ -57,8 +68,8 @@ class MenuController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(MenuRequest $request) {
-    
-        if ($this->menu->create($request->all())) {
+        
+        if ($this->menu->store($request)) {
             $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
             $this->result['message'] = self::MSG_CREATE_OK;
         } else {
@@ -66,7 +77,7 @@ class MenuController extends Controller {
             $this->result['message'] = '';
         }
         return response()->json($this->result);
-    
+        
     }
     
     /**
@@ -88,12 +99,22 @@ class MenuController extends Controller {
      *
      * @param $id
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @internal param null $parentId
      */
     public function edit($id) {
         
         if (Request::ajax()) {
+            $menu = $this->menu->find($id);
+            $menuTabs = $menu->tabs;
+            $selectedTabs = [];
+            foreach ($menuTabs as $tab) {
+                $selectedTabs[$tab->id] = $tab->name;
+            }
             return response()->json([
-                'html' => view('menu.edit')->render()
+                'html' => view('menu.edit', [
+                    'selectedTabs' => $selectedTabs,
+                    'menu' => $menu
+                ])->render()
             ]);
         }
         return view('menu.edit', [
@@ -108,13 +129,39 @@ class MenuController extends Controller {
      * 更新指定的菜单记录
      *
      * @param MenuRequest $request
-     * @param $id
+     * @param integer $id 菜单ID
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(MenuRequest $request, $id) {
         
-        $this->menu->findOrFail($id)->update($request->all());
-        $this->result['message'] = self::MSG_EDIT_OK;
+        if ($this->menu->modify($request, $id)) {
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
+            $this->result['message'] = self::MSG_EDIT_OK;
+        } else {
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+            $this->result['message'] = '修改失败';
+        }
+        
+        return response()->json($this->result);
+        
+    }
+    
+    /**
+     * 更新菜单所处位置
+     *
+     * @param $id
+     * @param $parentId
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function move($id, $parentId) {
+    
+        if ($this->menu->move($id, $parentId)) {
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
+            $this->result['message'] = '菜单位置更新成功';
+        } else {
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+            $this->result['message'] = '菜单位置更新失败';
+        }
         
         return response()->json($this->result);
         
@@ -127,16 +174,30 @@ class MenuController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
-    
-        if ($this->menu->findOrFail($id)->delete()) {
+        
+        if ($this->menu->remove($id)) {
             $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
             $this->result['message'] = self::MSG_DEL_OK;
         } else {
             $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '';
+            $this->result['message'] = '删除失败';
         }
         return response()->json($this->result);
         
+    }
+    
+    /** 保存菜单的顺序 */
+    public function sort() {
+        
+        $positions = Request::get('data');
+        foreach ($positions as $id => $pos) {
+            $menu = $this->menu->find($id);
+            if (isset($menu)) {
+                $menu->position = $pos;
+                $menu->save();
+            }
+        }
+    
     }
     
 }

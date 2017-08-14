@@ -36,7 +36,8 @@ class ComposerServiceProvider extends ServiceProvider {
         View::composer('wap_site.create_edit', 'App\Http\ViewComposers\WapSiteComposer');
         View::composer('score_total.create_edit', 'App\Http\ViewComposers\ScoreComposer');
         View::composer('menu.create_edit', 'App\Http\ViewComposers\MenuComposer');
-
+        View::composer('icon.create_edit', 'App\Http\ViewComposers\IconComposer');
+        View::composer('tab.create_edit', 'App\Http\ViewComposers\TabComposer');
     }
 
     /**

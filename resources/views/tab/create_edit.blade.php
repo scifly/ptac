@@ -37,9 +37,35 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        {!! Form::label('enabled', '是否启用', [
-                            'class' => 'col-sm-3 control-label'
-                        ]) !!}
+                        <label for="icon_id" class="col-sm-3 control-label">
+                            图标
+                        </label>
+                        <div class="col-sm-6"
+                             style="
+                                overflow-y: scroll;
+                                height: 200px;
+                                border: 1px solid gray;
+                                margin-left: 15px;
+                                width: 393px;
+                            "
+                        >
+                            @foreach($icons as $group => $_icons)
+                                @foreach ($_icons as $key => $value)
+                                    <label for="icon_id">
+                                        <input id="icon_id" type="radio" name="icon_id"
+                                               value="{{ $key }}" class="minimal"
+                                               @if(isset($menu) && $menu['icon_id'] == $key)
+                                               checked
+                                                @endif
+                                        >
+                                    </label>
+                                    <i class="{{ $value }}" style="margin-left: 10px;">&nbsp; {{ $value }}</i><br />
+                                @endforeach
+                            @endforeach
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="enabled" class="col-sm-3 control-label">是否启用</label>
                         <div class="col-sm-6" style="margin-top: 5px;">
                             <input id="enabled" type="checkbox" name="enabled" data-render="switchery"
                                    data-theme="default" data-switchery="true"

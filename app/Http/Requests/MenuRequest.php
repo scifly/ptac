@@ -26,10 +26,10 @@ class MenuRequest extends FormRequest {
             'name' => 'required|string|max:30',
             'remark' => 'string|max:255',
             'school_id' => 'required|integer',
-            'lft' => 'integer',
-            'rght' => 'integer',
             'media_id' => 'integer',
             'action_id' => 'integer',
+            'icon_id' => 'integer',
+            'position' => 'integer',
             'enabled' => 'required|boolean'
         ];
         

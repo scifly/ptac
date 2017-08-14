@@ -27,6 +27,7 @@ use Illuminate\Http\Request;
  * 班级
  * @property-read \App\Models\Grade $grade
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Student[] $students
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\EducatorClass[] $educatorClass
  */
 class Squad extends Model {
     

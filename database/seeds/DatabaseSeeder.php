@@ -33,6 +33,7 @@ class DatabaseSeeder extends Seeder {
 //        $this->call(EducatorClassSeeder::class);
 //        $this->call(CustodianStudentSeeder::class);
 //        $this->call(TabSeeder::class);
-    
+        $this->call(IconSeeder::class);
+        $this->call(IconTypeSeeder::class);
     }
 }

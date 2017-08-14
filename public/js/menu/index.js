@@ -1,100 +1,104 @@
-var formUrl = '', currentJsTree;
-$(function() {
-    var $treeview = $('#jstree-menu');
+var siteRoot = '/urlshortener/public/';
+var formUrl = '', currentJsTree, requestType;
+var csrfToken = $('#csrf_token').attr('content');
+var ajaxLoader = "<img alt='' src='" + siteRoot + "/img/throbber.gif' style='vertical-align: middle;'/>&nbsp;" +
+    "<span>表单加载中 ...</span>";
+var nodeid; // id of the node to be deleted
+var $boxBody = $('.box-body'); // the div that holds the form
+var $dialog = $('#modal-dialog');
+var $menuTree = $('#jstree-menu');
+var $formContainer = $('#form_container');
+var $confirmDelete = $('#confirm-delete');
 
-    /*$('select').select2();
-    Switcher.init();*/
-    // 表单提交
-    $('#save').click(function(){
-        var $jstree = $('#jstree-menu');
-        $('#formMenu').parsley().on('form:validated', function() {
-            $.ajax({
-                type: 'PUT',
-                dataType: 'json',
-                url: formUrl,
-                data: $('#formMenu').serialize(),
-                success: function(result) {
-                    $.gritter.add({
-                        title: '操作结果',
-                        text: result.message
-                    });
-                    $('#menuFormData').hide();
-                    $jstree.removeClass('col-md-6').addClass('col-md-12');
-                    $jstree.jstree().refresh();
-                }
-            });
-        });
-    });
+// URLs used on the page
+var urlIndex = siteRoot + 'menus/index';
+var urlSort = siteRoot + 'menus/sort';
+var urlCreate = siteRoot + 'menus/create';
+var urlStore = siteRoot + 'menus/store';
+var urlEdit = siteRoot + 'menus/edit/';
+var urlUpdate = siteRoot + 'menus/update/';
+var urlMove = siteRoot + 'menus/move/';
+var urlDelete = siteRoot + 'menus/delete/';
 
-    $('#cancel').on('click', function() {
-        $('#menuFormData').hide();
-        $('#jstree-menu').removeClass('col-md-6').addClass('col-md-12');
-    });
-
-    // 文件上传
-    /*
-    $('#buttonUpload').click(function() {
-        var image_id = $('#nodepic').val();
-        $.ajaxFileUpload({
-            url: '/categories/upload' + (image_id.length ? '/' + image_id : ''),
-            secureuri: false,
-            fileElementId: 'nodepicupload',
+// helper functions for menu management
+var menu = {
+    sort: function() {
+        // save positions of all nodes
+        var $nodes = $("li[role='treeitem']");
+        console.log($nodes);
+        var positions = {};
+        for (var i = 0; i < $nodes.length; i++) {
+            positions[$nodes[i].id] = i;
+        }
+        return $.ajax({
+            type: 'POST',
             dataType: 'json',
-            success: function(data) {
-                if (data['image_url'] != '') {
-                    $('#picDiv').show();
-                    $('#showPicture').html('<img src="' + data['image_url'] + '" style="max-width:300px"/>');
-                    $('#nodepic').val(data['image_id']);
-                } else {
-                    $.gritter.add({
-                        title: "上传失败",
-                        text: '文件上传失败，请稍后再试'
-                    });
+            url: urlSort,
+            data: { data: positions, _token: csrfToken }
+        });
+    },
+    showTree: function() {
+        $formContainer.hide();
+        $menuTree.show();
+        return $.ajax($menuTree.jstree().refresh());
+    },
+    showForm: function() {
+        $menuTree.hide();
+        $formContainer.show();
+    },
+    getForm: function(id, url, action) {
+        var $form, $save, $cancel;
+
+        menu.showForm();
+        $boxBody.html(ajaxLoader);
+        return $.ajax({
+            type: 'GET',
+            dataType: 'json',
+            url: url,
+            success: function(result) {
+                $boxBody.html(result.html);
+                $save = $('#save');
+                $cancel = $('#cancel');
+                if (action === 'create') {
+                    $('#parent_id').val(id);
                 }
-            },
-            error: function() {
-                $.gritter.add({
-                    title: "网络异常",
-                    text: '文件上传失败，不能连接到上传服务器，请检查网络'
+                $('select').select2();
+                Switcher.init();
+                $('input[type="checkbox"].minimal, input[type="radio"].minimal').iCheck({
+                    checkboxClass: 'icheckbox_minimal-blue',
+                    radioClass: 'iradio_minimal-blue'
                 });
+                $form = $('#formMenu');
+                $form.parsley().on('form:validated', function() {
+                    if ($('.parsley-error').length === 0) {
+                        $.ajax({
+                            type: requestType,
+                            dataType: 'json',
+                            url: formUrl,
+                            data: $form.serialize(),
+                            success: function(result) {
+                                $.gritter.add({
+                                    title: '操作结果',
+                                    text: result.message
+                                });
+                                menu.showTree();
+                                setTimeout(function() {menu.sort()}, 5000);
+                            }
+                        });
+                    }
+                }).on('form:submit', function() { return false; });
+                $save.on('click', function() { $form.trigger('form:validate'); });
+                $cancel.on('click', function() { menu.showTree(); });
             }
         });
-    });
-    */
+    },
+    getSelector: function(node) {
+        return $.jstree.reference(node.reference).get_node(node.reference);
+    }
+};
+$(function() {
 
-    // 初始化SELECT选项
-    /*$.post('/providers/index?source=select', {}, function(data){
-        $.each(data.items, function(index, value) {
-            $('#nodeprovider').append(
-                '<option value="' +
-                data.items[index].id + '">' +
-                data.items[index].text + '</option>'
-            );
-        });
-        $('#nodeprovider').select2({
-            placeholder: "请选择分类所属商家",
-            minimumInputLength: 0,
-            allowClear: true,
-            language: "zh-CN",
-            width: '100%',
-            ajax: {
-                url: '/providers/index?source=select',
-                dataType: 'json',
-                data: function(params) {
-                    return {
-                        q: params.term,
-                        page: params.page
-                    };
-                },
-                processResults: function(data) {
-                    return { results: data.items };
-                },
-                cache: false
-            }
-        });
-    }, 'json');*/
-
-    currentJsTree = $treeview.jstree({
+    currentJsTree = $menuTree.jstree({
         core: {
             themes: {
                 variant: 'large',
@@ -107,115 +111,72 @@ $(function() {
             multiple: false,
             animation: 0,
             data: {
-                url: '/urlshortener/public/menus/index',
-                type: 'POST',
+                url: urlIndex,
+                type: 'GET',
                 dataType: 'json',
-                // contentType: 'application/json;',
                 data: function(node) {
-                    return { id: node.id, _token: $('#csrf_token').attr('content') };
+                    return { id: node.id, _token: csrfToken };
                 }
             }
         },
         plugins: ['contextmenu', 'dnd', 'wholerow'],
         contextmenu: { items: customMenu }
     }).on('loaded.jstree', function() {
-        $treeview.jstree('open_all')
+        $menuTree.jstree('open_all');
+        menu.sort();
     }).on('move_node.jstree', function(e, data){
-        console.info(e);
-        console.info(data);
-        $.post('/urlshortener/public/menus/update?type=move', {
-            Menu: {
-                id: data.node.id,
-                parent_id: data.node.parent
+        $.ajax({
+            type: 'GET',
+            dataType: 'json',
+            url: urlMove + data.node.id + '/' + data.node.parent,
+            data: { _token: csrfToken },
+            success: function() { menu.sort(); }
+        });
+    });
+
+    $confirmDelete.on('click', function() {
+        $.ajax({
+            type: 'DELETE',
+            dataType: 'json',
+            url: urlDelete + nodeid,
+            data: { _token: csrfToken },
+            success: function(result) {
+                $.gritter.add({
+                    title: "删除结果",
+                    text: result.message
+                });
+                $.when(menu.sort()).done($menuTree.jstree().refresh());
             }
-        }, function(data){}, 'json');
+        });
     });
 });
 
 function customMenu() {
+
     return {
         createItem: {
             label: '创建',
             action: function(node) {
-                var selector = $.jstree.reference(node.reference).get_node(node.reference);
-                var $treeview = $('#jstree-menu');
-                var $nodeid = $('#nodeid');
-                formUrl = '/urlshortener/public/menus/store';
-                $nodeid.val('');
-                $('#nodename').val('');
-                $('#nodemaker').val('');
-                $('#nodestatus').find('option').removeAttr('selected');
-                $('#nodepic').val('');
-                $('#showPicture').html('');
-                $('#picDiv').hide();
-                $treeview.removeClass('col-md-12').addClass('col-md-6');
-                $nodeid.after('<input type="hidden" name="Menu[parent_id]" id="nodeparentid" />');
-                $('#nodeparentid').val(selector.id);
-                $('#menuFormData').show();
+                formUrl = urlStore;
+                requestType = 'POST';
+                menu.getForm(menu.getSelector(node).id, urlCreate, 'create');
             }
         },
         renameItem: {
             label: '修改',
             action: function(node){
-                var selector = $.jstree.reference(node.reference).get_node(node.reference);
-                // 获取选择节点的所有详细信息
-                var $nodeid = $('#nodeid');
-                var $nodestatus = $('#nodestatus').find('option');
-                var $treeview = $('#jstree-menu');
+                var selector = menu.getSelector(node);
 
-                formUrl = '/urlshortener/public/menus/edit';
-                $treeview.removeClass('col-md-12').addClass('col-md-6');
-                $.post('/urlshortener/public/menus/update?type=view', {id: selector.id}, function(data){
-                    $('#menuFormData').show();
-                    $('#nodename').val(data.Menu.name);
-                    $nodeid.val(data.Menu.id);
-                    $('#nodepic').val(data.Menu['media_id']);
-                    $('#nodemaker').val(data.Menu['remark']);
-                    // $('#nodeprovider').select2('val', data.Category['provider_id']);
-                    $nodeid.val(data.Menu.id);
-                    $('#nodeparentid').remove();
-                    if (data.Menu.enabled === false) {
-                        $nodestatus.eq(0).attr('selected', 'selected');
-                    } else {
-                        $nodestatus.eq(1).attr('selected', 'selected');
-                    }
-
-                    if (data.Menu['media_id'] !== null) {
-                        $('#showPicture').html(
-                            '<img src="' +
-                            data.Image['image_url'] +
-                            '" style="max-width:300px;" />'
-                        );
-                        $('#picDiv').show();
-                    } else {
-                        $('#picDiv').hide();
-                        $('#showPicture').html('');
-                    }
-                }, 'json');
-
+                formUrl = urlUpdate + selector.id;
+                requestType = 'PUT';
+                menu.getForm(selector.id, urlEdit + selector.id, 'edit');
             }
         },
         deleteItem: {
             label: '删除',
             action: function(node){
-                var selector = $.jstree.reference(node.reference).get_node(node.reference);
-                var $dialog = $('#modal-dialog');
-
                 $dialog.modal({ backdrop: true });
-                $dialog.find('#confirm-delete').on('click', function() {
-                    $.ajax({
-                        type: 'POST',
-                        dataType: 'json',
-                        url: '/urlshortener/public/menus/delete/' + selector.id,
-                        success: function(result) {
-                            $.gritter.add({
-                                title: "删除结果",
-                                text: result.message
-                            });
-                            return false;
-                        }
-                    });
-                });
+                nodeid = menu.getSelector(node).id;
             }
         }
     };

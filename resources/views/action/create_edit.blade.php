@@ -10,7 +10,7 @@
             <div class="box-body">
                 <div class="form-horizontal">
                     <div class="form-group">
-                        {!! Form::label('name', 'Action名称',[
+                        {!! Form::label('name', 'Action名称', [
                             'class' => 'col-sm-3 control-label'
                         ]) !!}
                         <div class="col-sm-6">
@@ -89,9 +89,9 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        {!! Form::label('datatable', '是否使用datatable插件',[
-                            'class' => 'col-sm-3 control-label'
-                        ]) !!}
+                        <label for="datatable" class="col-sm-3 control-label">
+                            是否使用datatable插件
+                        </label>
                         <div class="col-sm-6" style="margin-top: 5px;">
                             <input id="datatable" type="checkbox" name="datatable"
                                    @if(!empty($action['datatable'])) checked @endif
@@ -100,9 +100,9 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        {!! Form::label('parsley', '是否使用parsley插件',[
-                            'class' => 'col-sm-3 control-label'
-                        ]) !!}
+                        <label for="parsley" class="col-sm-3 control-label">
+                            是否使用parsley插件
+                        </label>
                         <div class="col-sm-6" style="margin-top: 5px;">
                             <input id="parsley" type="checkbox" name="parsley"
                                    @if(!empty($action['parsley'])) checked @endif
@@ -111,9 +111,9 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        {!! Form::label('select2', '是否使用select2插件',[
-                            'class' => 'col-sm-3 control-label'
-                        ]) !!}
+                        <label for="select2" class="col-sm-3 control-label">
+                            是否使用select2插件
+                        </label>
                         <div class="col-sm-6" style="margin-top: 5px;">
                             <input id="select2" type="checkbox" name="select2"
                                    @if(!empty($action['select2'])) checked @endif
@@ -122,9 +122,9 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        {!! Form::label('chart', '是否使用chart插件',[
-                            'class' => 'col-sm-3 control-label'
-                        ]) !!}
+                        <label for="chart" class="col-sm-3 control-label">
+                            是否使用chart插件
+                        </label>
                         <div class="col-sm-6" style="margin-top: 5px;">
                             <input id="chart" type="checkbox" name="chart"
                                    @if(!empty($action['chart'])) checked @endif
@@ -133,9 +133,9 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        {!! Form::label('map', '是否使用map插件', [
-                            'class' => 'col-sm-3 control-label'
-                        ]) !!}
+                        <label for="map" class="col-sm-3 control-label">
+                            是否使用map插件
+                        </label>
                         <div class="col-sm-6" style="margin-top: 5px;">
                             <input id="map" type="checkbox" name="map"
                                    @if(!empty($action['map'])) checked @endif
@@ -152,7 +152,11 @@
                             <select name="action_type_ids[]" id="action_type_ids" multiple class="col-sm-3">
                                 @foreach($actionTypes as $key => $value)
                                     @if(isset($selectedActionTypes))
-                                        <option value="{{$key}}" @if(array_key_exists($key, $selectedActionTypes)) selected @endif>
+                                        <option value="{{$key}}"
+                                                @if(array_key_exists($key, $selectedActionTypes))
+                                                    selected
+                                                @endif
+                                        >
                                             {{$value}}
                                         </option>
                                     @else
@@ -163,9 +167,9 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        {!! Form::label('enabled', '是否启用', [
-                            'class' => 'col-sm-3 control-label'
-                        ]) !!}
+                        <label for="enabled" class="col-sm-3 control-label">
+                            是否启用
+                        </label>
                         <div class="col-sm-6" style="margin-top: 5px;">
                             <input id="enabled" type="checkbox" name="enabled" data-render="switchery"
                                    data-theme="default" data-switchery="true"

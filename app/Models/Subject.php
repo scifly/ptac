@@ -35,6 +35,7 @@ use Symfony\Component\VarDumper\Cloner\Data;
  * @property-read \App\Models\Grade $grade
  * @property-read \App\Models\School $school
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\SubjectModule[] $subjectModules
+ * @property-read \App\Models\EducatorClass $educatorClass
  */
 class Subject extends Model {
 

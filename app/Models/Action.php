@@ -47,6 +47,7 @@ use ReflectionClass;
  * @method static Builder|Action whereUpdatedAt($value)
  * @method static Builder|Action whereView($value)
  * @mixin \Eloquent
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tab[] $tabs
  */
 class Action extends Model {
     
@@ -115,6 +116,23 @@ class Action extends Model {
         return $this->belongsToMany('App\Models\Tab', 'tabs_actions')
             ->withPivot('default', 'enabled')
             ->withTimestamps();
+    }
+    
+    /**
+     * 返回action列表
+     *
+     * @return array
+     */
+    public function actions() {
+    
+        $data = $this->whereEnabled(1)->get(['controller', 'name', 'id']);
+        $actions = [];
+        foreach ($data as $action) {
+            $actions[$action->controller][$action->id] = $action['name'];
+        }
+        ksort($actions);
+        return $actions;
+        
     }
     
     public function datatable() {
