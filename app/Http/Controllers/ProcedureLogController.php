@@ -44,14 +44,11 @@ class ProcedureLogController extends Controller {
         $ids = $this->procedureLog->select(DB::raw('max(procedure_logs.id) as id'))->where('initiator_user_id',$user_id)->groupBy('first_log_id')->pluck('id')->toArray();
         //根据IDs查询数据
         $data = $this->procedureLog
-            ->join('procedures', 'procedures.id', '=', 'procedure_logs.procedure_id')
-            ->join('procedure_steps', 'procedure_steps.id', '=', 'procedure_logs.procedure_step_id')
-            ->whereIn('procedure_logs.id', $ids)
+            ->with('procedure', 'procedure_step')
+            ->whereIn('id', $ids)
             ->orderBy('id', 'desc')
-            ->select('procedure_logs.id', 'procedure_logs.first_log_id', 'procedures.name', 'procedure_logs.procedure_step_id', 'procedure_steps.name as step_name', 'procedure_logs.initiator_msg', 'procedure_logs.step_status')
             ->get();
         return response()->json($data);
-        $sql = 'select max(id) as id,`first_log_id`,`procedure_id`,`initiator_user_id`, `initiator_msg`, `step_status` from procedure_logs group by `first_log_id` order by id desc ';
     }
 
 
@@ -64,16 +61,13 @@ class ProcedureLogController extends Controller {
         $ids = $this->procedureLog->select(DB::raw('max(procedure_logs.id) as id'))->where('step_status',2)->groupBy('first_log_id')->pluck('id')->toArray();
         //根据IDs查询数据
         $data = $this->procedureLog
-            ->join('procedures', 'procedures.id', '=', 'procedure_logs.procedure_id')
-            ->join('procedure_steps', 'procedure_steps.id', '=', 'procedure_logs.procedure_step_id')
-            ->join('users', 'users.id', '=', 'procedure_logs.initiator_user_id')
+            ->with('procedure', 'procedure_step', 'initiator_user')
             ->whereIn('procedure_logs.id', $ids)
             ->orderBy('id', 'desc')
-            ->select('procedure_logs.id', 'procedure_logs.first_log_id', 'users.realname', 'procedures.name', 'procedure_logs.procedure_step_id', 'procedure_steps.name as step_name', 'procedure_steps.approver_user_ids', 'procedure_logs.initiator_msg', 'procedure_logs.step_status')
             ->get();
         $result = [];
         foreach ($data as $val){
-            if(in_array($user_id, explode(',',$val->approver_user_ids))){
+            if(in_array($user_id, explode(',',$val->procedure_step->approver_user_ids))){
                 $result[]=$val;
             }
         }
@@ -86,13 +80,12 @@ class ProcedureLogController extends Controller {
     public function procedureInfo($first_log_id){
         //根据IDs查询数据
         $data = $this->procedureLog
-            ->join('procedures', 'procedures.id', '=', 'procedure_logs.procedure_id')
-            ->join('procedure_steps', 'procedure_steps.id', '=', 'procedure_logs.procedure_step_id')
-            ->join('users', 'users.id', '=', 'procedure_logs.initiator_user_id')
-            ->where('procedure_logs.first_log_id', $first_log_id)
-            ->orderBy('id', 'desc')
-            ->select('procedure_logs.id', 'procedure_logs.first_log_id', 'users.realname', 'procedures.name', 'procedure_logs.procedure_step_id', 'procedure_steps.name as step_name', 'procedure_steps.approver_user_ids', 'procedure_logs.initiator_msg', 'procedure_logs.step_status')
+            ->with('procedure', 'procedure_step', 'initiator_user', 'operator_user')
+            ->where('first_log_id', $first_log_id)
+            ->orderBy('id', 'asc')
             ->get();
+
+        return response()->json($data);
         $result = [
             [
                 'name' => '班级审批',
