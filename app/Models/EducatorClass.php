@@ -56,7 +56,6 @@ class EducatorClass extends Model {
 
     public function datatable()
     {
-
         $columns = [
             ['db' => 'EducatorClass.id', 'dt' => 0],
             ['db' => 'User.realname as usersname', 'dt' => 1],

@@ -99,7 +99,7 @@ class ProcedureLog extends Model {
             case 0: return '通过';
             case 1: return '拒绝';
             case 2: return '待定';
-            default: return '通过';
+            default: return '错误';
         }
     }
 

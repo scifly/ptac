@@ -33,13 +33,15 @@ class GroupController extends Controller
         return view('group.index', [
             'js' => 'js/group/index.js',
             'datatable' => true,
-            'dialog' => true
+            'dialog' => true,
+            'show' => true
         ]);
 
     }
 
     /**
      * 新建角色页面
+     *
      * @return \Illuminate\Http\Response
      */
     public function create()
@@ -58,15 +60,25 @@ class GroupController extends Controller
      */
     public function store(GroupRequest $request)
     {
-        if ($this->group->create($request->all())) {
-            return response()->json([
-                'statusCode' => self::HTTP_STATUSCODE_OK, 'message' => self::MSG_CREATE_OK,
-            ]);
+        $data = $request->all();
+        $result = $this->group->where('name',$data['name'])->first();
+        if (!empty($result))
+        {
+            $this->result['statusCode'] = self::MSG_BAD_REQUEST;
+            $this->result['message'] = '该角色已经存在,请勿重复添加!';
         }else{
-            return response()->json([
-                'statusCode' => self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR, 'message' => '添加失败'
-            ]);
+            if ($this->group->create($data))
+            {
+                $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
+                $this->result['message'] = self::MSG_CREATE_OK;
+            }else{
+                $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+                $this->result['message'] = '添加失败';
+            }
         }
+
+        return response()->json($this->result);
+
 
 
     }
@@ -78,15 +90,26 @@ class GroupController extends Controller
      */
     public function show($id)
     {
-        return view('group.show', [
-            'group' => $this->group->findOrFail($id)
-        ]);
+        $groups = $this->group->whereId($id)
+            ->first(['name','remark','created_at','updated_at','enabled']);
+
+        $groups->enabled = $groups->enabled==1 ? '已启用' : '已禁用' ;
+        if ($groups) {
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
+            $this->result['showData'] = $groups;
+        } else {
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+            $this->result['message'] = '';
+        }
+        return response()->json($this->result);
+//        return view('group.show', [
+//            'group' => $this->group->findOrFail($id)
+//        ]);
 
     }
 
     /**
      * Show the form for editing the specified resource.
-     *
      * @param $id
      * @return \Illuminate\Http\Response
      * @internal param Group $group
@@ -102,24 +125,31 @@ class GroupController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
-     *
+     * 更改角色
+     * @param GroupRequest $request
      * @param $id
      * @return \Illuminate\Http\Response
      * @internal param Group $group
      */
-    public function update($id)
+    public function update(GroupRequest $request, $id)
     {
-
-        if ($this->group->findOrFail($id)->update(Request::all())) {
-            return response()->json([
-                'statusCode' => 200, 'message' => '更改成功',
-            ]);
+        $data = $request->all();
+        $result = $this->group->where('name',$data['name'])->first();
+        if(!empty($result) && $result->id!= $id)
+        {
+            $this->result['statusCode'] = self::MSG_BAD_REQUEST;
+            $this->result['message'] = '该角色已经存在!';
+        }else{
+            if ($this->group->findOrFail($id)->update($data)){
+                $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
+                $this->result['message'] = self::MSG_EDIT_OK;
+            } else {
+                $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+                $this->result['message'] = '更新失败';
+            }
         }
 
-        return response()->json([
-            'statusCode' => 500, 'message' => '更改失败'
-        ]);
+        return response()->json($this->result);
 
     }
 
@@ -132,14 +162,14 @@ class GroupController extends Controller
     public function destroy($id)
     {
 
-        if ($this->group->findOrFail($id)->delete()) {
-            return response()->json([
-                'statusCode' => 200, 'message' => '删除成功',
-            ]);
+        if ($this->group->findOrFail($id)->delete())
+        {
+            $this->result['message'] = self::MSG_DEL_OK;
+        } else {
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+            $this->result['message'] = '删除失败';
         }
-        return response()->json([
-            'statusCode' => 500, 'message' => '删除失败'
-        ]);
+        return response()->json($this->result);
 
     }
 

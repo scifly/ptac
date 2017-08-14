@@ -32,6 +32,11 @@
         <link rel="stylesheet" href="{{ URL::asset('css/wapSite.css') }}">
     @endisset
 
+    {{--审核详情--}}
+    <link rel="stylesheet" href="{{ URL::asset('css/procedure_info.css') }}">
+    <!-- fileinput-->
+    <link rel="stylesheet" href="{{ URL::asset('js/plugins/fileinput/css/fileinput.min.css') }}">
+    <link rel="stylesheet" href="{{ URL::asset('js/plugins/fileinput/themes/explorer/theme.css') }}">
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -353,9 +358,6 @@
             @isset($dialog)
                 @include('partials.modal_dialog')
             @endif
-                @isset($show)
-                    @include('partials.modal_show')
-                @endif
             @yield('content')
         </section>
     </div>
@@ -554,6 +556,7 @@
 @endisset
 @isset($datatable)
     <script src="{{ URL::asset('js/plugins/datatables/datatables.min.js') }}"></script>
+    <script src="{{ URL::asset('js/plugins/datatables/dataTables.checkboxes.min.js') }}"></script>
 @endisset
 @isset($map)
     <script src="{{ URL::asset('js/jquery-jvectormap-1.2.2.min.js') }}"></script>
@@ -566,6 +569,24 @@
 <script src="{{ URL::asset('js/demo.js') }}"></script>
 @isset($js)
     <script src="{{ URL::asset($js) }}"></script>
+@endisset
+{{--echarts--}}
+<script src="{{ URL::asset('js/plugins/echarts/echarts.common.min.js') }}"></script>
+<!-- fileinput-->
+<script src="{{ URL::asset('js/plugins/fileinput/js/fileinput.min.js') }}"></script>
+<script src="{{ URL::asset('js/plugins/fileinput/js/locales/zh.js') }}"></script>
+<script src="{{ URL::asset('js/plugins/fileinput/themes/explorer/theme.js') }}"></script>
+<!-- AdminLTE for demo purposes -->
+<script src="{{ URL::asset('js/demo.js') }}"></script>
+
+@isset($ueditor)
+    <script type="text/javascript" src="{{ URL::asset('js/UEditor/ueditor.config.js') }}"></script>
+    <!-- 编辑器源码文件 -->
+    <script type="text/javascript" src="{{ URL::asset('js/UEditor/ueditor.all.js') }}"></script>
+    <!-- 实例化编辑器 -->
+    <script type="text/javascript">
+        var editor = UE.getEditor('container');
+    </script>
 @endisset
 </body>
 </html>

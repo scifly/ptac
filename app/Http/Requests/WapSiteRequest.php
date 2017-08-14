@@ -10,21 +10,21 @@ class WapSiteRequest extends FormRequest
 
     protected $rules = [
         'school_id' => 'required|integer',
-        'site_titile' => 'required|string|max:255',
-//        'media_ids' => 'required|array',
+        'site_title' => 'required|string|max:255',
+        'media_ids' => 'required|array',
         'enabled' => 'required|boolean'
     ];
     protected $strings_key = [
         'school_id' => '所属学校',
-        'site_titile' => '首页抬头',
-//        'media_ids' => '首页幻灯片',
+        'site_title' => '首页抬头',
+        'media_ids' => '轮播图',
         'enabled' => '是否启用'
     ];
     protected $strings_val = [
         'required'=> '为必填项',
         'string'=> '为字符串',
         'max'=> '最大为:max',
-//        'array'=> '必须为数组',
+        'array'=> '必须为数组',
         'integer'=> '必须为整数',
         'boolean'=> '为0或1',
     ];
@@ -64,5 +64,15 @@ class WapSiteRequest extends FormRequest
         return $array;
     }
     public function wantsJson() { return true; }
+    protected function prepareForValidation() {
 
+        $input = $this->all();
+        if (isset($input['enabled']) && $input['enabled'] === 'on') {
+            $input['enabled'] = 1;
+        }
+        if (!isset($input['enabled'])) {
+            $input['enabled'] = 0;
+        }
+        $this->replace($input);
+    }
 }

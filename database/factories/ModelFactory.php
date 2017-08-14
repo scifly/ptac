@@ -185,6 +185,7 @@ $factory->define(App\Models\Student::class, function (Faker\Generator $faker) {
         'oncampus' => 1,
         'birthday' => $faker->date(),
         'remark' => $faker->sentence(10),
+        'enabled' => 1
     ];
 });
 

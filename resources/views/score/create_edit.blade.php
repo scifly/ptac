@@ -21,30 +21,6 @@
                 </div>
             </div>
             <div class="form-group">
-                {!! Form::label('class_rank', '班级排名',['class' => 'col-sm-4 control-label']) !!}
-                <div class="col-sm-3">
-                    {!! Form::text('class_rank', null, [
-                        'class' => 'form-control',
-                        'placeholder' => '(不超过5个数字)',
-                        'data-parsley-required' => 'true',
-                        'data-parsley-type' => "number",
-                        'data-parsley-maxlength' => '5'
-                    ]) !!}
-                </div>
-            </div>
-            <div class="form-group">
-                {!! Form::label('grade_rank', '年级排名',['class' => 'col-sm-4 control-label']) !!}
-                <div class="col-sm-3">
-                    {!! Form::text('grade_rank', null, [
-                        'class' => 'form-control',
-                        'placeholder' => '(不超过5个数字)',
-                        'data-parsley-required' => 'true',
-                        'data-parsley-type' => "number",
-                        'data-parsley-maxlength' => '5'
-                        ]) !!}
-                </div>
-            </div>
-            <div class="form-group">
                 {!! Form::label('score', '分数',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-3">
                     {!! Form::text('score', null, [
@@ -57,11 +33,14 @@
                 </div>
             </div>
             <div class="form-group">
-                <div class="col-sm-3 col-sm-offset-4">
-                    {!! Form::radio('enabled', '1', true) !!}
-                    {!! Form::label('enabled', '启用') !!}
-                    {!! Form::radio('enabled', '0') !!}
-                    {!! Form::label('enabled', '禁用') !!}
+                {!! Form::label('enabled', '是否启用', [
+                    'class' => 'col-sm-4 control-label'
+                ]) !!}
+                <div class="col-sm-6" style="margin-top: 5px;">
+                    <input id="enabled" type="checkbox" name="enabled" data-render="switchery"
+                           data-theme="default" data-switchery="true"
+                           @if(!empty($score['enabled'])) checked @endif
+                           data-classname="switchery switchery-small"/>
                 </div>
             </div>
         </div>

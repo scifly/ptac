@@ -6,7 +6,6 @@ use App\Http\Requests\CompanyRequest;
 use App\Models\Company;
 use Illuminate\Support\Facades\Request;
 
-
 class CompanyController extends Controller {
 
     protected $company;
@@ -29,7 +28,7 @@ class CompanyController extends Controller {
         return view('company.index', [
             'js' => 'js/company/index.js',
             'dialog' => true,
-            'datatable' => true,
+            'datatable' => true
         ]);
     }
 
@@ -50,10 +49,9 @@ class CompanyController extends Controller {
      */
     public function store(CompanyRequest $request) {
         $data = $request->all();
-        $record = $this->company->where([
-            ['name', $data['name']],
-            ['corpid', $data['corpid']],
-        ])->first();
+        $record = $this->company->where('name', $data['name'])
+            ->where('corpid', $data['corpid'])
+            ->first();
         if (!empty($record)) {
             $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
             $this->result['message'] = '已经有该记录';
@@ -73,10 +71,19 @@ class CompanyController extends Controller {
      * 显示运营者公司记录详情
      * @param $id
      * @return \Illuminate\Http\Response
-     * @internal param Company $company
      */
     public function show($id) {
-        return view('company.show', ['company' => $this->company->findOrFail($id)]);
+        //return view('company.show', ['company' => $this->company->findOrFail($id)]);
+        $showData = $this->company->whereId($id)->first(['name','remark','corpid','created_at','updated_at','enabled']);
+        if($showData->enabled = ($showData->enabled == 0 ? "已禁用" : "已启用"));
+        if ($showData) {
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
+            $this->result['showData'] = $showData;
+        } else {
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+            $this->result['message'] = '';
+        }
+        return response()->json($this->result);
     }
 
     /**
@@ -103,15 +110,14 @@ class CompanyController extends Controller {
      */
     public function update(CompanyRequest $request, $id) {
         $data = $request->all();
-        $record = $this->company->where([
-            ['name', $data['name']],
-            ['corpid', $data['corpid']],
-        ])->first();
+        $record = $this->company->where('name', $data['name'])
+            ->where('corpid', $data['corpid'])
+            ->first();
         if (!empty($record) && ($record->id != $id)) {
             $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
             $this->result['message'] = '已有该记录';
         } else {
-            if ($this->company->findOrFail($id)->update($request->all())) {
+            if ($this->company->findOrFail($id)->update($data)) {
                 $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
                 $this->result['message'] = self::MSG_EDIT_OK;
             } else {

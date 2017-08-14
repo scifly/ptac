@@ -30,4 +30,5 @@
             </table>
         </div>
     </div>
+        @include('corp.show')
 @endsection

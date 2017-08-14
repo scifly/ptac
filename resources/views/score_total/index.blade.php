@@ -1,12 +1,6 @@
 @extends('layouts.master')
 @section('header')
-    <div class="panel-heading">
-        <div class="btn-group">
-            <a href="{{ url('score_totals/create') }}" class="btn btn-primary pull-right">
-                添加新成绩
-            </a>
-        </div>
-    </div>
+    <h1>总成绩列表</h1>
 @endsection
 @section('breadcrumb')
     成绩管理/成绩管理
@@ -26,7 +20,6 @@
                     <th>年级排名</th>
                     <th>创建时间</th>
                     <th>更新时间</th>
-                    <th>状态</th>
                 </tr>
                 </thead>
                 <tbody></tbody>

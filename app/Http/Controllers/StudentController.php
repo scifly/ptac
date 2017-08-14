@@ -42,18 +42,30 @@ class StudentController extends Controller
 
     /**
      * 添加学生
-     * @param \Illuminate\Http\Request|Request $request
+     * @param StudentRequest $request
      * @return \Illuminate\Http\Response
+     * @internal param $StudentRequest
      */
     public function store(StudentRequest $request)
     {
-
-        if ($this->student->create($request->except('_token'))) {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-            $this->result['message'] = self::MSG_CREATE_OK;
+        $data = $request->except('_token');
+        $result = $this->student
+            ->where('user_id',$data['user_id'])
+            ->where('class_id',$data['class_id'])
+            ->where('student_number',$data['student_number'])
+            ->first();
+        if(!empty($result))
+        {
+            $this->result['statusCode'] = self::MSG_BAD_REQUEST;
+            $this->result['message'] = '该学生已经存在,请勿重复添加!';
         }else{
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = self::添加失败;
+            if ($this->student->create($data)) {
+                $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
+                $this->result['message'] = self::MSG_CREATE_OK;
+            }else{
+                $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+                $this->result['message'] = '添加失败!';
+            }
         }
 
         return response()->json($this->result);
@@ -61,8 +73,9 @@ class StudentController extends Controller
 
     /**
      * 学生详情页面.
-     * @param  \App\Models\Student  $student
+     * @param $id
      * @return \Illuminate\Http\Response
+     * @internal param Student $student
      */
     public function show($id){
 
@@ -86,19 +99,32 @@ class StudentController extends Controller
 
     /**
      * 更新指定学生的信息
+     * @param StudentRequest $request
+     * @param $id
      * @return \Illuminate\Http\Response
      * @internal param \Illuminate\Http\Request $request
-     * @internal param Company $company
      */
     public function update(StudentRequest $request, $id){
-
-        if ($this->student->findOrFail($id)->update($request->all())) {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-            $this->result['message'] = self::MSG_EDIT_OK;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '更新失败';
+        $data = $request->except('_token');
+        $result = $this->student
+            ->where('user_id',$data['user_id'])
+            ->where('class_id',$data['class_id'])
+            ->where('student_number',$data['student_number'])
+            ->first();
+        if(!empty($result) && $result->id!= $id)
+        {
+            $this->result['statusCode'] = self::MSG_BAD_REQUEST;
+            $this->result['message'] = '该学生已经存在,请勿重复添加!';
+        }else{
+            if ($this->student->findOrFail($id)->update($data)) {
+                $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
+                $this->result['message'] = self::MSG_EDIT_OK;
+            } else {
+                $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+                $this->result['message'] = '更新失败';
+            }
         }
+
         return response()->json($this->result);
 
 
@@ -106,8 +132,9 @@ class StudentController extends Controller
 
     /**
      * 删除学生
-     * @param  \App\Models\Student  $student
+     * @param $id
      * @return \Illuminate\Http\Response
+     * @internal param Student $student
      */
     public function destroy($id){
 

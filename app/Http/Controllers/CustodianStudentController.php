@@ -50,8 +50,9 @@ class CustodianStudentController extends Controller
 
     /**
      * 创建监护人和学生之间的关系
-     * @param  \Illuminate\Http\Request  $request
+     * @param CustodianStudentRequest $request
      * @return \Illuminate\Http\Response
+     * @internal param $CustodianStudentRequest
      */
     public function store(CustodianStudentRequest $request)
     {
@@ -80,8 +81,9 @@ class CustodianStudentController extends Controller
 
     /**
      * Display the specified resource.
-     * @param  \App\Models\CustodianStudent  $custodianStudent
+     * @param $id
      * @return \Illuminate\Http\Response
+     * @internal param CustodianStudent $custodianStudent
      */
     public function show($id)
     {
@@ -92,8 +94,9 @@ class CustodianStudentController extends Controller
 
     /**
      * Show the form for editing the specified resource.
-     * @param  \App\Models\CustodianStudent  $custodianStudent
+     * @param $id
      * @return \Illuminate\Http\Response
+     * @internal param CustodianStudent $custodianStudent
      */
     public function edit($id)
     {
@@ -109,9 +112,10 @@ class CustodianStudentController extends Controller
 
     /**
      * 更改监护人和学生之间的关系
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\CustodianStudent  $custodianStudent
+     * @param CustodianStudentRequest $request
+     * @param $id
      * @return \Illuminate\Http\Response
+     * @internal param CustodianStudent $custodianStudent
      */
     public function update(CustodianStudentRequest $request, $id)
     {
@@ -142,8 +146,9 @@ class CustodianStudentController extends Controller
 
     /**
      * 删除监护人和学生之间的关系
-     * @param  \App\Models\CustodianStudent  $custodianStudent
+     * @param $id
      * @return \Illuminate\Http\Response
+     * @internal param CustodianStudent $custodianStudent
      */
     public function destroy($id)
     {

@@ -30,4 +30,7 @@
             </table>
         </div>
     </div>
+    @isset($show)
+       @include('subject_module.show')
+    @endif
 @endsection

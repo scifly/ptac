@@ -61,7 +61,7 @@ var crud = {
             return false;
         });
     },
-    index: function () {
+    index: function (showId) {
         $('#data-table').dataTable({
             processing: true,
             serverSide: true,
@@ -72,19 +72,50 @@ var crud = {
         });
 
         var id, $row;
-
+        var $showId = $('#'+showId);
         $(document).on('click', '.fa-trash', function () {
             id = $(this).parents().eq(0).attr('id');
             $row = $(this).parents().eq(2);
             $('#modal-dialog').modal({backdrop: true});
         });
-        // $(document).on('click', '.fa-show', function () {
-        //     id = $(this).attr('id');
-        //     $row = $(this).parents().eq(1);
-        //
-        //     $('#modal-show-company').modal({backdrop: true});
-        // });
 
+        var $name = [];
+        $(document).on('click', '.fa-eye', function () {
+            var $showdl = $(".dl-horizontal");
+            var $showdt = $(".dl-horizontal dt");
+            var $showdd = $(".dl-horizontal dd");
+            id = $(this).parents().eq(0).attr('id');
+            if($name.length === 0 ){
+                $showdt.each(function(){
+                    $name.push($(this).text());
+                });
+            }
+            $showdt.remove();
+            $showdd.remove();
+            $.ajax({
+                type: 'GET',
+                url:'show/' + id,
+                success: function (result){
+                    if(result.statusCode === 200){
+                        var $value = [];
+                        var $rst = {};
+                        var $obj = eval(result.showData);
+                        for (var objKey in $obj) {
+                            $value.push($obj[objKey]);
+                        }
+                        for (var i = 0; i < $name.length; i++) {
+                            $rst[$name[i]] = $value[i];
+                        }
+                        for(var key in $rst){
+                            $showdl.append("<dt>"+key+"<dt>" +"<dd>"+$rst[key]+"<dd>");
+                        }
+                        $showId.modal({backdrop: true});
+                    }else{
+                        crud.inform('出现异常', result.message, crud.failure);
+                    }
+                }
+            });
+        });
 
         $('#confirm-delete').on('click', function () {
             crud.ajaxRequest(

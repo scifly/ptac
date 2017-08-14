@@ -126,14 +126,14 @@ class SquadController extends Controller
 
         })->get(['id','username'])->toArray();
 
-        $educatorIds = [];
+        $selectedEducators = [];
         foreach ($educators as $value) {
-            $educatorIds[$value['id']] = $value['username'];
+            $selectedEducators[$value['id']] = $value['username'];
         }
         return view('class.edit', [
             'js' => 'js/class/edit.js',
             'squad' => $squad,
-            'educatorIds' => $educatorIds,
+            'selectedEducators' => $selectedEducators,
             'form' => true
 
         ]);
@@ -151,14 +151,17 @@ class SquadController extends Controller
     public function update(SquadRequest $squadRequest, $id)
     {
         $data = Squad::find($id);
+        $ids = $squadRequest->input('educator_ids');
 
         $data->name = $squadRequest->input('name');
         $data->grade_id = $squadRequest->input('grade_id');
-        $ids = $squadRequest->input('educator_ids');
         $data->educator_ids = implode(',', $ids);
         $data->enabled = $squadRequest->input('enabled');
 
-        $row = $this->squad->where(['grade_id' => $data->grade_id, 'name' => $data->name])->first();
+        $row = $this->squad->where([
+                'grade_id' => $data->grade_id,
+                'name' => $data->name
+            ])->first();
         if(!empty($row) && $row->id != $id){
 
             $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;

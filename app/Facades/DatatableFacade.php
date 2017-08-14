@@ -17,6 +17,7 @@ class DatatableFacade extends Facade {
 <a id="%s" href="" class="btn btn-danger btn-icon btn-circle btn-xs" data-toggle="modal"><i class="fa fa-trash"></i></a>';
     const DT_LINK_SHOW = '<!--suppress HtmlUnknownAnchorTarget -->
 <a href="show/%s" class="btn btn-primary btn-icon btn-circle btn-xs"  data-toggle="modal"><i class="fa fa-eye"></i></a>';
+/*<a id="%s" href="" class="btn btn-primary btn-icon btn-circle btn-xs"  data-toggle="modal"><i class="fa fa-eye"></i></a>';*/
     const DT_SPACE = '&nbsp;';
     const DT_PRIMARY = '<span class="badge badge-info">%s</span>';
     const DT_LOCK = '<i class="fa fa-lock"></i>&nbsp;已占用';

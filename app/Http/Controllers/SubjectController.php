@@ -31,6 +31,7 @@ class SubjectController extends Controller {
             'dialog' => true,
             'datatable' => true,
             'form' => true,
+            'show' => true
         ]);
         
     }
@@ -50,11 +51,12 @@ class SubjectController extends Controller {
      * 添加新科目
      * @param SubjectRequest $request
      * @return \Illuminate\Http\Response
-     * @internal param \Illuminate\Http\Request $requestid
+     * @internal param \Illuminate\Http\Request $request
      */
     public function store(SubjectRequest $request) {
         
         $data = $request->except('_token');
+
         $data['grade_ids'] = implode(',', $data['grade_ids']);
         
         if ($this->subject->create($data)) {
@@ -75,8 +77,20 @@ class SubjectController extends Controller {
      * @internal param Subject $subject
      */
     public function show($id) {
-        
-        return view('subject.show', ['subject' => $this->subject->findOrFail($id)]);
+        $subjects = $this->subject->whereId($id)
+            ->first(['name','school_id','isaux','max_score','pass_score','enabled']);
+        $subjects->school_id = $subjects->school->name;
+        $subjects->isaux = $subjects->isaux==1 ? '是' : '否' ;
+        $subjects->enabled = $subjects->enabled==1 ? '已启用' : '已禁用' ;
+        if ($subjects) {
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
+            $this->result['showData'] = $subjects;
+        } else {
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+            $this->result['message'] = '';
+        }
+        return response()->json($this->result);
+//        return view('subject.show', ['subject' => $this->subject->findOrFail($id)]);
         
     }
     
@@ -92,7 +106,7 @@ class SubjectController extends Controller {
         $ids = explode(',', $subject['grade_ids']);
         $selectedGrades = [];
         foreach ($ids as $id) {
-            $grade = Grade::whereId($id)->toArray();
+            $grade = Grade::whereId($id)->first();
             $selectedGrades[$id] = $grade['name'];
         }
         return view('subject.edit', [
@@ -103,13 +117,14 @@ class SubjectController extends Controller {
         ]);
         
     }
-    
+
     /**
      * 更新科目.
      *
-     * @param SubjectRequest|\Illuminate\Http\Request $request
+     * @param SubjectRequest $request
      * @param $id
      * @return \Illuminate\Http\Response
+     * @internal param $SubjectRequest
      * @internal param Subject $subject
      */
     public function update(SubjectRequest $request, $id) {
@@ -145,8 +160,7 @@ class SubjectController extends Controller {
     }
     
     /**
-     * 根据条件查询科目.
-     *
+     * 根据条件查询科目
      * @param $school_id
      * @return \Illuminate\Http\Response
      * @internal param Subject $subject

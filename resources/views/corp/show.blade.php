@@ -1,3 +1,4 @@
+{{--
 @extends('layouts.master')
 @section('header')
     <a href="{{ url('/corps/index') }}">Back to overview</a>
@@ -16,4 +17,36 @@
 @endsection
 @section('content')
     <p>所属运营者：{{$corp->company->name}}</p>
-@endsection
+@endsection--}}
+<div class="modal fade" id="modal-show-corp">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title" id="myModalLabel">
+                    企业详情
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <dl class="dl-horizontal">
+                            <dt>企业名称：</dt>
+                            <dt>所属运营者：</dt>
+                            <dt>企业号ID：</dt>
+                            <dt>创建时间：</dt>
+                            <dt>更新时间：</dt>
+                            <dt>状态：</dt>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭
+                </button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>

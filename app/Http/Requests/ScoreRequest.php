@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ScoreRequest extends FormRequest
@@ -25,24 +24,29 @@ class ScoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'class_rank' => 'required|numeric|max:1000',
-            'grade_rank' => 'required|numeric|max:10000',
-            'score' => 'required|numeric|max:1000'
+            'score' => 'required|numeric'
         ];
     }
 
     public function messages() {
         return [
-            'class_rank.required' => '班级排名不能为空',
-            'class_rank.max' => '不超过5个数字',
-            'class_rank.numeric' => '不超过5个数字',
-            'grade_rank.required' => '年级排名不能为空',
-            'grade_rank.max' => '不超过5个数字',
-            'grade_rank.numeric' => '不超过5个数字',
             'score.required' => '分数不能为空',
             'score.max' => '分数不能超过3位数字',
             'score.numeric' => '分数不能超过5位数字'
         ];
     }
     public function wantsJson() { return true; }
+
+    protected function prepareForValidation() {
+
+        $input = $this->all();
+        if (isset($input['enabled']) && $input['enabled'] === 'on') {
+            $input['enabled'] = 1;
+        }
+        if (!isset($input['enabled'])) {
+            $input['enabled'] = 0;
+        }
+        $this->replace($input);
+    }
+
 }

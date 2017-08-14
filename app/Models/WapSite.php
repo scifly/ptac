@@ -38,9 +38,10 @@ class WapSite extends Model {
         'media_ids',
         'created_at',
         'updated_at',
+        'enabled',
     ];
     
-    public function wapsiteModules() {
+    public function wapSiteModules() {
         return $this->hasMany('App\Models\WapSiteModule', 'wap_site_id', 'id');
     }
     

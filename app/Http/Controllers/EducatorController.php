@@ -35,8 +35,7 @@ class EducatorController extends Controller
         return view('educator.index' , [
             'js' => 'js/educator/index.js',
             'dialog' => true,
-            'datatable' => true,
-            'form' => true,
+            'datatable' => true
             ]);
 
     }
@@ -70,6 +69,7 @@ class EducatorController extends Controller
         $data['team_ids'] = implode(',', $ids);
         $data['school_id'] = $educatorRequest->input('school_id');
         $data['sms_quote'] = $educatorRequest->input('sms_quote');
+        $data['enabled'] = $educatorRequest->input('enabled');
 
         if($this->educator->create($data))
         {
@@ -124,14 +124,14 @@ class EducatorController extends Controller
         $teams = DB::table('teams')
             ->whereIn('id', $ids )
             ->get(['id','name']);
-        $teamIds = [];
+        $selectedTeams = [];
         foreach ($teams as $value) {
-            $teamIds[$value->id] = $value->name;
+            $selectedTeams[$value->id] = $value->name;
         }
         return view('educator.edit', [
             'js' => 'js/educator/edit.js',
             'educator' => $educator,
-            'teamIds' => $teamIds,
+            'selectedTeams' => $selectedTeams,
             'form' => true
         ]);
     }
@@ -149,12 +149,13 @@ class EducatorController extends Controller
         // find the record by id
         // update the record with the request data
         $data = Educator::find($id);
+        $ids = $request->input('team_ids');
 
         $data->user_id = $request->input('user_id');
         $data->school_id = $request->input('school_id');
-        $ids = $request->input('team_ids');
         $data->team_ids = implode(',', $ids);
         $data->sms_quote = $request->input('sms_quote');
+        $data->enabled = $request->input('enabled');
 
         if($data->save())
         {

@@ -14,8 +14,8 @@
                 <div class="col-sm-2">
                     <select multiple="multiple" name="team_ids[]" id="team_ids">
                         @foreach($teams as $key => $value)
-                            @if(isset($teamIds))
-                                <option value="{{$key}}" @if(array_key_exists($key,$teamIds))selected="selected"@endif>
+                            @if(isset($selectedTeams))
+                                <option value="{{$key}}" @if(array_key_exists($key,$selectedTeams))selected="selected"@endif>
                                     {{$value}}
                                 </option>
                             @else
@@ -33,20 +33,19 @@
             </div>
             <div class="form-group">
                 {!! Form::label('sms_quote', '可用短信条数',['class' => 'col-sm-4 control-label']) !!}
-                {!! csrf_field() !!}
                 <div class="col-sm-2">
                     {!! Form::text('sms_quote', null, ['class' => 'form-control']) !!}
                 </div>
-                <div class="col-sm-5">
-                    <p class="form-control-static text-danger">{{ $errors->first('sms_quote') }}</p>
-                </div>
             </div>
             <div class="form-group">
-                <div class="col-sm-3 col-sm-offset-4">
-                    {!! Form::radio('enabled', '1', true) !!}
-                    {!! Form::label('enabled', '启用') !!}
-                    {!! Form::radio('enabled', '0') !!}
-                    {!! Form::label('enabled', '禁用') !!}
+                {!! Form::label('enabled', '是否启用', [
+                    'class' => 'col-sm-4 control-label'
+                ]) !!}
+                <div class="col-sm-6" style="margin-top: 5px;">
+                    <input id="enabled" type="checkbox" name="enabled" data-render="switchery"
+                           data-theme="default" data-switchery="true"
+                           @if(!empty($educator['enabled'])) checked @endif
+                           data-classname="switchery switchery-small"/>
                 </div>
             </div>
 

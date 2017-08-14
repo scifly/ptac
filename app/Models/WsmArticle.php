@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use App\Facades\DatatableFacade as Datatable;
 
 /**
  * App\Models\WsmArticle
@@ -43,13 +44,47 @@ class WsmArticle extends Model {
         'summary',
         'thumbnail_media_id',
         'content',
+        'media_ids',
         'created_at',
         'updated_at',
+        'enabled',
     ];
 
     public function wapsitemodule()
     {
         return $this->belongsTo('App\Models\WapSiteModule', 'wsm_id', 'id');
     }
+    /**
+     * @return array
+     */
+    public function datatable() {
 
+        $columns = [
+            ['db' => 'WsmArticle.id', 'dt' => 0],
+            ['db' => 'Wsm.name as wsmname', 'dt' => 1],
+            ['db' => 'WsmArticle.name', 'dt' => 2],
+            ['db' => 'WsmArticle.summary', 'dt' => 3],
+            ['db' => 'WsmArticle.created_at', 'dt' => 4],
+            ['db' => 'WsmArticle.updated_at', 'dt' => 5],
+
+            [
+                'db' => 'WsmArticle.enabled', 'dt' => 6,
+                'formatter' => function ($d, $row) {
+                    return Datatable::dtOps($this, $d, $row);
+                }
+            ]
+        ];
+        $joins = [
+            [
+                'table' => 'wap_site_modules',
+                'alias' => 'Wsm',
+                'type'  => 'INNER',
+                'conditions' => [
+                    'Wsm.id = WsmArticle.wsm_id'
+                ]
+            ]
+        ];
+
+        return Datatable::simple($this,  $columns, $joins);
+    }
 }

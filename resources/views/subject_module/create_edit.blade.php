@@ -18,7 +18,7 @@
             <div class="form-group">
                 {!! Form::label('subject_id', '科目名称',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-2">
-                    {!! Form::select('subject_id', $subject, null, ['class' => 'form-control']) !!}
+                    {!! Form::select('subject_id', $subjects, null, ['class' => 'form-control']) !!}
                 </div>
             </div>
             <div class="form-group">
@@ -29,18 +29,19 @@
                     'placeholder' => '次分类权重是数字',
                     'data-parsley-required' => 'true',
                     'data-parsley-type' => 'integer',
-                    'data-parsley-maxlength' => '3',
-                    'data-parsley-minlength' => '1',
 
                     ]) !!}
                 </div>
             </div>
             <div class="form-group">
-                <div class="col-sm-3 col-sm-offset-4">
-                    {!! Form::radio('enabled', '1', true) !!}
-                    {!! Form::label('enabled', '启用') !!}
-                    {!! Form::radio('enabled', '0') !!}
-                    {!! Form::label('enabled', '禁用') !!}
+                {!! Form::label('enabled', '是否启用', [
+                    'class' => 'col-sm-4 control-label'
+                ]) !!}
+                <div class="col-sm-6" style="margin-top: 5px;">
+                    <input id="enabled" type="checkbox" name="enabled" data-render="switchery"
+                           data-theme="default" data-switchery="true"
+                           @if(!empty($subjectModules['enabled'])) checked @endif
+                           data-classname="switchery switchery-small"/>
                 </div>
             </div>
         </div>

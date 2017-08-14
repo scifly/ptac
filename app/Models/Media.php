@@ -34,4 +34,13 @@ class Media extends Model {
     {
         return $this->belongsTo('App\Models\MediaType');
     }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function wapsitemoudle(){
+
+        return $this->hasOne('App\Models\WapSiteModule');
+
+    }
 }
