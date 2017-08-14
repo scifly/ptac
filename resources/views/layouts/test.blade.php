@@ -14,8 +14,38 @@
     <link rel="stylesheet" href="{{ URL::asset('css/AdminLTE.min.css') }}">
     <link rel="stylesheet" href="{{ URL::asset('css/skins/_all-skins.min.css') }}">
 </head>
-<body>
-@yield('content')
+<body class="hold-transition skin-blue sidebar-mini">
+<div class="wrapper">
+    <header class="main-header"></header>
+    <aside class="main-sidebar"></aside>
+    <div class="content-wrapper">
+        <section class="content-header"></section>
+        <section class="content" id="testcontent">
+            @if(isset($tabs))
+                <div class="col-lg-12">
+                    <div class="nav-tabs-custom">
+                        <ul class="nav nav-tabs">
+                        @foreach ($tabs as $tab)
+                            <li @if($tab['active']) class="active" @endif>
+                                <a href="#{{ $tab['id'] }}" data-toggle="tab" data-url="{{ $tab['url'] }}" class="tab">
+                                    {{ $tab['name'] }}
+                                </a>
+                            </li>
+                        @endforeach
+                        </ul>
+                        <div class="tab-content">
+                            @foreach ($tabs as $tab)
+                                <div class="@if($tab['active']) active @endif tab-pane" id="{{ $tab['id'] }}"></div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+            @endif
+        </section>
+    </div>
+    <aside class="control-sidebar control-sidebar-dark"></aside>
+    <div class="control-sidebar-bg"></div>
+</div>
 <!-- jQuery 3 -->
 <script src="{{ URL::asset('js/jquery.min.js') }}"></script>
 <!-- Bootstrap 3.3.7 -->

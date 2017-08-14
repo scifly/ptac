@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use App\Facades\DatatableFacade as Datatable;
 
 /**
  * App\Models\Corp
@@ -27,36 +27,32 @@ use App\Facades\DatatableFacade as Datatable;
  * @property int $company_id 所属运营者公司ID
  * @property-read \App\Models\Company $company
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Department[] $departments
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Corp whereCompanyId($value)
+ * @method static Builder|Corp whereCompanyId($value)
  */
-class Corp extends Model
-{
-
+class Corp extends Model {
+    
     protected $fillable = [
         'name',
         'company_id',
         'corpid',
         'enabled'
     ];
-
-
-    public function departments()
-    {
+    
+    
+    public function departments() {
         return $this->hasMany('App\Models\Department');
     }
-
-    public function company()
-    {
-
+    
+    public function company() {
+        
         return $this->belongsTo('App\Models\Company');
     }
-
+    
     /**
      * @return mixed
      */
-    public function datatable()
-    {
-
+    public function datatable() {
+        
         $columns = [
             ['db' => 'Corp.id', 'dt' => 0],
             ['db' => 'Corp.name', 'dt' => 1],

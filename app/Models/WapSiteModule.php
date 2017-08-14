@@ -27,6 +27,9 @@ use App\Facades\DatatableFacade as Datatable;
  * 网站类型
  * @property-read \App\Models\WapSite $belongsToWs
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\WsmArticle[] $hasManyArticle
+ * @property-read \App\Models\WapSite $wapsite
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\WsmArticle[] $wsmarticles
+ * @property-read \App\Models\Media $media
  */
 class WapSiteModule extends Model {
     //

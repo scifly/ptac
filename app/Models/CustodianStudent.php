@@ -23,6 +23,10 @@ use App\Models\Student as Student;
  * @method static Builder|CustodianStudent whereStudentId($value)
  * @method static Builder|CustodianStudent whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property int $enabled 是否启用
+ * @property-read \App\Models\Custodian $custodian
+ * @property-read \App\Models\Student $student
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\CustodianStudent whereEnabled($value)
  */
 class CustodianStudent extends Model
 {

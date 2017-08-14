@@ -12,12 +12,12 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
-
 # Auth::routes();
 # Route::get('/', function() { return 'Dashboard'; });
 # Route::get('/', 'HomeController@index');
 # Route::get('/home', 'HomeController@index')->name('home');
-# Route::get('test/index', 'TestController@index');
+Route::get('test/index', 'TestController@index');
+Route::get('test/create', 'TestController@create');
 # Route::get('/', 'HomeController@index');
 
 # 菜单管理
@@ -29,7 +29,25 @@ Route::get('actions/show/{id}', 'ActionController@show');
 Route::get('actions/edit/{id}', 'ActionController@edit');
 Route::put('actions/update/{id}', 'ActionController@update');
 Route::delete('actions/delete/{id}', 'ActionController@destroy');
-
+// 卡片管理
+Route::get('tabs/index', 'TabController@index');
+Route::get('tabs/create', 'TabController@create');
+Route::post('tabs/store', 'TabController@store');
+Route::get('tabs/show/{id}', 'TabController@show');
+Route::get('tabs/edit/{id}', 'TabController@edit');
+Route::put('tabs/update/{id}', 'TabController@update');
+Route::delete('tabs/delete/{id}', 'TabController@destroy');
+// 菜单设置
+Route::get('menus/index', 'MenuController@index');
+Route::post('menus/index', 'MenuController@index');
+Route::get('menus/create', 'MenuController@create');
+Route::post('menus/store', 'MenuController@store');
+Route::get('menus/show/{id}', 'MenuController@show');
+Route::get('menus/edit/{id}', 'MenuController@edit');
+Route::post('menus/sort', 'MenuController@sort');
+Route::put('menus/update/{id}', 'MenuController@update');
+Route::get('menus/move/{id}/{parentId}', 'MenuController@move');
+Route::delete('menus/delete/{id}', 'MenuController@destroy');
 
 # 系统设置
 // 学校设置
@@ -113,6 +131,23 @@ Route::get('apps/show/{id}', 'AppController@show');
 Route::get('apps/edit/{id}', 'AppController@edit');
 Route::put('apps/update/{id}', 'AppController@update');
 Route::delete('apps/delete/{id}', 'AppController@destroy');
+
+// 菜单/卡片图标设置
+Route::get('icons/index', 'IconController@index');
+Route::get('icons/create', 'IconController@create');
+Route::post('icons/store', 'IconController@store');
+Route::get('icons/show/{id}', 'IconController@show');
+Route::get('icons/edit/{id}', 'IconController@edit');
+Route::put('icons/update/{id}', 'IconController@update');
+Route::delete('icons/delete/{id}', 'IconController@destroy');
+
+Route::get('icon_types/index', 'IconTypeController@index');
+Route::get('icon_types/create', 'IconTypeController@create');
+Route::post('icon_types/store', 'IconTypeController@store');
+Route::get('icon_types/show/{id}', 'IconTypeController@show');
+Route::get('icon_types/edit/{id}', 'IconTypeController@edit');
+Route::put('icon_types/update/{id}', 'IconTypeController@update');
+Route::delete('icon_types/delete/{id}', 'IconTypeController@destroy');
 
 // 用户/通信管理
 // 教职员工
@@ -297,30 +332,33 @@ Route::group(['prefix' => 'scoreSend'],function(){
 
 
 //微网站管理
-Route::get('wapsites/index', 'WapSiteController@index');
-Route::get('wapsites/create', 'WapSiteController@create');
-Route::post('wapsites/store', 'WapSiteController@store');
-Route::get('wapsites/show/{id}', 'WapSiteController@show');
-Route::get('wapsites/edit/{id}', 'WapSiteController@edit');
-Route::put('wapsites/update/{id}', 'WapSiteController@update');
-Route::delete('wapsites/delete/{id}', 'WapSiteController@destroy');
-Route::any('wapsites/uploadImages', 'WapSiteController@uploadImages');
+Route::get('wap_sites/index', 'WapSiteController@index');
+Route::get('wap_sites/create', 'WapSiteController@create');
+Route::post('wap_sites/store', 'WapSiteController@store');
+Route::get('wap_sites/show/{id}', 'WapSiteController@show');
+Route::get('wap_sites/edit/{id}', 'WapSiteController@edit');
+Route::put('wap_sites/update/{id}', 'WapSiteController@update');
+Route::delete('wap_sites/delete/{id}', 'WapSiteController@destroy');
+Route::any('wap_sites/uploadImages', 'WapSiteController@uploadImages');
+
+Route::get('wap_sites/webindex', 'WapSiteController@webindex');
+
 
 //微网站管理-网站模块管理
-Route::get('wapsitemodules/index', 'WapSiteModuleController@index');
-Route::get('wapsitemodules/create', 'WapSiteModuleController@create');
-Route::post('wapsitemodules/store', 'WapSiteModuleController@store');
-Route::get('wapsitemodules/show/{id}', 'WapSiteModuleController@show');
-Route::get('wapsitemodules/edit/{id}', 'WapSiteModuleController@edit');
-Route::put('wapsitemodules/update/{id}', 'WapSiteModuleController@update');
-Route::delete('wapsitemodules/delete/{id}', 'WapSiteModuleController@destroy');
+Route::get('wap_site_modules/index', 'WapSiteModuleController@index');
+Route::get('wap_site_modules/create', 'WapSiteModuleController@create');
+Route::post('wap_site_modules/store', 'WapSiteModuleController@store');
+Route::get('wap_site_modules/show/{id}', 'WapSiteModuleController@show');
+Route::get('wap_site_modules/edit/{id}', 'WapSiteModuleController@edit');
+Route::put('wap_site_modules/update/{id}', 'WapSiteModuleController@update');
+Route::delete('wap_site_modules/delete/{id}', 'WapSiteModuleController@destroy');
 
 //微网站管理-文章管理
-Route::get('wsmarticles/index', 'WsmArticleController@index');
-Route::get('wsmarticles/create', 'WsmArticleController@create');
-Route::post('wsmarticles/store', 'WsmArticleController@store');
-Route::get('wsmarticles/show/{id}', 'WsmArticleController@show');
-Route::get('wsmarticles/edit/{id}', 'WsmArticleController@edit');
-Route::put('wsmarticles/update/{id}', 'WsmArticleController@update');
-Route::delete('wsmarticles/delete/{id}', 'WsmArticleController@destroy');
+Route::get('wsm_articles/index', 'WsmArticleController@index');
+Route::get('wsm_articles/create', 'WsmArticleController@create');
+Route::post('wsm_articles/store', 'WsmArticleController@store');
+Route::get('wsm_articles/show/{id}', 'WsmArticleController@show');
+Route::get('wsm_articles/edit/{id}', 'WsmArticleController@edit');
+Route::put('wsm_articles/update/{id}', 'WsmArticleController@update');
+Route::delete('wsm_articles/delete/{id}', 'WsmArticleController@destroy');
 

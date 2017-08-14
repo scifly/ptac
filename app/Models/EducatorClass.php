@@ -22,6 +22,11 @@ use App\Facades\DatatableFacade as Datatable;
  * @method static Builder|EducatorClass whereSubjectId($value)
  * @method static Builder|EducatorClass whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property int $enabled 是否启用
+ * @property-read \App\Models\Educator $educator
+ * @property-read \App\Models\Squad $squad
+ * @property-read \App\Models\Subject $subject
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\EducatorClass whereEnabled($value)
  */
 class EducatorClass extends Model {
     

@@ -23,6 +23,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Media wherePath($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Media whereRemark($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Media whereUpdatedAt($value)
+ * @property-read \App\Models\WapSiteModule $wapsitemoudle
  */
 class Media extends Model {
     //

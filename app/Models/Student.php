@@ -31,6 +31,13 @@ use App\Facades\DatatableFacade as Datatable;
  * @method static Builder|Student whereUpdatedAt($value)
  * @method static Builder|Student whereUserId($value)
  * @mixin \Eloquent
+ * @property int $enabled
+ * @property-read \App\Models\Squad $beLongsToSquad
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\CustodianStudent[] $custodianStudent
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Score[] $score
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\ScoreTotal[] $scoreTotal
+ * @property-read \App\Models\Squad $squad
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Student whereEnabled($value)
  */
 class Student extends Model {
 

@@ -42,6 +42,12 @@ var crud = {
         // Switchery
         Switcher.init();
 
+        // iCheck
+        $('input[type="checkbox"].minimal, input[type="radio"].minimal').iCheck({
+            checkboxClass: 'icheckbox_minimal-blue',
+            radioClass: 'iradio_minimal-blue'
+        });
+
         // Cancel button
         $('#cancel').on('click', function() { window.location = homeUrl; });
 

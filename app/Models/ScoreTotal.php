@@ -31,6 +31,11 @@ use App\Facades\DatatableFacade as Datatable;
  * @method static Builder|ScoreTotal whereUpdatedAt($value)
  * @mixin \Eloquent
  * 总分数
+ * @property int $enabled
+ * @property-read \App\Models\Exam $exam
+ * @property-read \App\Models\Student $student
+ * @property-read \App\Models\Subject $subjects
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ScoreTotal whereEnabled($value)
  */
 class ScoreTotal extends Model {
 

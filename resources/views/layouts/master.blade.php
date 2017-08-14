@@ -7,37 +7,31 @@
     <title>家校通</title>
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
-    <!-- Bootstrap 3.3.7 -->
     <link rel="stylesheet" href="{{ URL::asset('css/bootstrap.min.css') }}">
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="{{ URL::asset('css/font-awesome.min.css') }}">
-    <!-- Ionicons -->
     <link rel="stylesheet" href="{{ URL::asset('css/ionicons.min.css') }}">
-    <!-- gritter style -->
     <link rel="stylesheet" href="{{ URL::asset('js/plugins/gritter/css/jquery.gritter.css') }}">
-    @isset($map)
-        <!-- jvectormap -->
-        <link rel="stylesheet" href="{{ URL::asset('css/jquery-jvectormap.css') }}">
-    @endisset
-    <!-- Theme style -->
     <link rel="stylesheet" href="{{ URL::asset('css/AdminLTE.min.css') }}">
     <link rel="stylesheet" href="{{ URL::asset('css/skins/_all-skins.min.css') }}">
+    <link rel="stylesheet" href="{{ URL::asset('js/plugins/icheck/all.css') }}">
+    @isset($jstree)
+        <link rel="stylesheet" href="{{ URL::asset('js/plugins/jstree/dist/themes/default/style.min.css') }}">
+    @endisset
+    @isset($map)
+        <link rel="stylesheet" href="{{ URL::asset('css/jquery-jvectormap.css') }}">
+    @endisset
     @isset($form)
-        <!-- select2 style -->
         <link rel="stylesheet" href="{{ URL::asset('js/plugins/select2/css/select2.min.css') }}">
-        <!-- Parsley style -->
         <link rel="stylesheet" href="{{ URL::asset('js/plugins/parsley/parsley.css') }}">
-        <!-- switchery style -->
         <link rel="stylesheet" href="{{ URL::asset('js/plugins/switchery/switchery.min.css') }}">
     @endisset
     @isset($datatable)
-        <!-- DataTable style -->
         <link rel="stylesheet" href="{{ URL::asset('js/plugins/datatables/datatables.min.css') }}">
     @endisset
-    <!-- 微网站 -->
     @isset($ws)
-    <link rel="stylesheet" href="{{ URL::asset('css/wapSite.css') }}">
+        <link rel="stylesheet" href="{{ URL::asset('css/wapSite.css') }}">
     @endisset
+
     {{--审核详情--}}
     <link rel="stylesheet" href="{{ URL::asset('css/procedure_info.css') }}">
     <!-- fileinput-->
@@ -212,7 +206,7 @@
             </form>
             <!--左侧菜单-->
             <ul class="sidebar-menu" data-widget="tree">
-                <li class="header">菜单</li>
+                {{--<li class="header">菜单</li>--}}
                 <li><a href="#"><i class="fa fa-home"></i> 首页</a></li>
                 <!--用户通讯录-->
                 <li class="treeview">
@@ -542,47 +536,37 @@
     <!-- 添加侧边栏的背景。 这个div必须紧接着侧边栏 -->
     <div class="control-sidebar-bg"></div>
 </div>
-<!-- jQuery 3 -->
+<!-- jQuery 3 / Bootstrap 3.3.7 / AdminLTE App / Gritter / Admin.CRUD / Demo -->
 <script src="{{ URL::asset('js/jquery.min.js') }}"></script>
-<!-- Bootstrap 3.3.7 -->
 <script src="{{ URL::asset('js/bootstrap.min.js') }}"></script>
-<!-- AdminLTE App -->
 <script src="{{ URL::asset('js/adminlte.min.js') }}"></script>
-<!-- FastClick -->
-{{-- <script src="{{ URL::asset('js/fastclick.js') }}"></script> --}}
-<!-- Sparkline -->
-{{--<script src="{{ URL::asset('js/jquery.sparkline.min.js') }}"></script>--}}
-<!-- SlimScroll -->
-{{--<script src="{{ URL::asset('js/jquery.slimscroll.min.js') }}"></script>--}}
-<!-- Gritter -->
 <script src="{{ URL::asset('js/plugins/gritter/js/jquery.gritter.js') }}"></script>
-@isset($map)
-    <!-- jvectormap  -->
-    <script src="{{ URL::asset('js/jquery-jvectormap-1.2.2.min.js') }}"></script>
-    <script src="{{ URL::asset('js/jquery-jvectormap-world-mill-en.js') }}"></script>
-@endisset
-@isset($chart)
-    <!-- ChartJS -->
-    <script src="{{ URL::asset('js/Chart.min.js') }}"></script>
+<script src="{{ URL::asset('js/plugins/icheck/icheck.min.js') }}"></script>
+@isset($jstree)
+    <script src="{{ URL::asset('js/plugins/jstree/dist/jstree.min.js') }}"></script>
 @endisset
 @isset($form)
-    <!-- Parsley -->
+    <!-- Parsley / Select2 / Switchery -->
     <script src="{{ URL::asset('js/plugins/parsley/parsley.min.js') }}"></script>
     <script src="{{ URL::asset('js/plugins/parsley/i18n/zh_cn.js') }}"></script>
     <script src="{{ URL::asset('js/plugins/parsley/i18n/zh_cn.extra.js') }}"></script>
-    <!-- Select2 -->
     <script src="{{ URL::asset('js/plugins/select2/js/select2.min.js') }}"></script>
-    <!-- switchery -->
     <script src="{{ URL::asset('js/plugins/switchery/switchery.min.js') }}"></script>
     <script src="{{ URL::asset('js/switcher.init.js') }}"></script>
 @endisset
 @isset($datatable)
-    <!-- DataTable -->
     <script src="{{ URL::asset('js/plugins/datatables/datatables.min.js') }}"></script>
     <script src="{{ URL::asset('js/plugins/datatables/dataTables.checkboxes.min.js') }}"></script>
 @endisset
-<!-- Custom JS -->
+@isset($map)
+    <script src="{{ URL::asset('js/jquery-jvectormap-1.2.2.min.js') }}"></script>
+    <script src="{{ URL::asset('js/jquery-jvectormap-world-mill-en.js') }}"></script>
+@endisset
+@isset($chart)
+    <script src="{{ URL::asset('js/Chart.min.js') }}"></script>
+@endisset
 <script src="{{ URL::asset('js/admin.crud.js') }}"></script>
+<script src="{{ URL::asset('js/demo.js') }}"></script>
 @isset($js)
     <script src="{{ URL::asset($js) }}"></script>
 @endisset
@@ -596,13 +580,13 @@
 <script src="{{ URL::asset('js/demo.js') }}"></script>
 
 @isset($ueditor)
-<script type="text/javascript" src="{{ URL::asset('js/UEditor/ueditor.config.js') }}"></script>
-<!-- 编辑器源码文件 -->
-<script type="text/javascript" src="{{ URL::asset('js/UEditor/ueditor.all.js') }}"></script>
-<!-- 实例化编辑器 -->
-<script type="text/javascript">
-    var editor = UE.getEditor('container');
-</script>
+    <script type="text/javascript" src="{{ URL::asset('js/UEditor/ueditor.config.js') }}"></script>
+    <!-- 编辑器源码文件 -->
+    <script type="text/javascript" src="{{ URL::asset('js/UEditor/ueditor.all.js') }}"></script>
+    <!-- 实例化编辑器 -->
+    <script type="text/javascript">
+        var editor = UE.getEditor('container');
+    </script>
 @endisset
 </body>
 </html>
