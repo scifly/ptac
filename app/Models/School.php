@@ -40,6 +40,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read \App\Models\SchoolType $schoolType
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Semester[] $semesters
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Subject[] $subject
+ * @property-read \App\Models\WapSite $wapsite
  */
 class School extends Model {
     
@@ -54,14 +55,15 @@ class School extends Model {
     public function semesters() {
         
         return $this->hasMany('App\Models\Semester', 'school_id', 'id');
-    
+        
     }
     
-    public function subject(){
-
+    public function subject() {
+        
         return $this->hasMany('App\Models\Subject');
-
+        
     }
+    
     public function schoolType() {
         
         return $this->belongsTo('App\Models\SchoolType');
@@ -73,21 +75,24 @@ class School extends Model {
         return $this->belongsTo('App\Models\Corp');
         
     }
+    
     public function grade() {
-
+        
         return $this->hasMany('App\Models\Grade', 'school_id', 'id');
-
-
+        
+        
     }
+    
     public function educator() {
-
+        
         return $this->hasMany('App\Models\Educator');
-
+        
     }
-    public function wapsite()
-    {
+    
+    public function wapsite() {
         return $this->hasOne('App\Models\WapSite');
     }
+    
     public function datatable() {
         
         $columns = [

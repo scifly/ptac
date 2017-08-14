@@ -42,8 +42,8 @@ use Illuminate\Database\Eloquent\Model;
 class Message extends Model {
     //
     protected $table = 'messages';
-
-    protected $fillable =[
+    
+    protected $fillable = [
         'content',
         'serviceid',
         'message_id',
@@ -56,10 +56,9 @@ class Message extends Model {
         'recipient_count',
         'created_at',
         'updated_at',
-       ];
-
-    public function messageType()
-    {
+    ];
+    
+    public function messageType() {
         return $this->belongsTo('App\Models\MessageType');
     }
 }

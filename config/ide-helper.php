@@ -41,8 +41,8 @@ return array(
     | Helper files to include
     |--------------------------------------------------------------------------
     |
-    | Include helper files. By default not included, but can be toggled with the
-    | -- helpers (-H) option. Extra helper files can be included.
+    | Include menu files. By default not included, but can be toggled with the
+    | -- helpers (-H) option. Extra menu files can be included.
     |
     */
 

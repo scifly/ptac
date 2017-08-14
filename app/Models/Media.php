@@ -23,24 +23,24 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Media wherePath($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Media whereRemark($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Media whereUpdatedAt($value)
+ * @property-read \App\Models\WapSiteModule $wapsitemoudle
  */
 class Media extends Model {
     //
-    protected $table='medias';
-
-    protected $fillable=['path','remark','media_type_id','created_at','updated_at','enabled'];
-
-    public function mediaType()
-    {
+    protected $table = 'medias';
+    
+    protected $fillable = ['path', 'remark', 'media_type_id', 'created_at', 'updated_at', 'enabled'];
+    
+    public function mediaType() {
         return $this->belongsTo('App\Models\MediaType');
     }
-
+    
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function wapsitemoudle(){
-
+    public function wapsitemoudle() {
+        
         return $this->hasOne('App\Models\WapSiteModule');
-
+        
     }
 }

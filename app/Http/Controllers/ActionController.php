@@ -75,7 +75,7 @@ class ActionController extends Controller {
     public function show($id) {
         
         $action = $this->action->findOrFail($id);
-        return view('action.show', ['score' => $action]);
+        return view('action.show', ['action' => $action]);
         
     }
     
@@ -105,6 +105,22 @@ class ActionController extends Controller {
             'action' => $action,
             'selectedActionTypes' => $selectedActionTypes
         ]);
+        
+    }
+    
+    /**
+     * 更新指定的action记录
+     *
+     * @param ActionRequest $request
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function update(ActionRequest $request, $id) {
+        
+        $this->action->findOrFail($id)->update($request->all());
+        $this->result['message'] = self::MSG_EDIT_OK;
+        
+        return response()->json($this->result);
         
     }
     

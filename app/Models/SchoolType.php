@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use App\Facades\DatatableFacade as Datatable;
 
 /**
  * App\Models\SchoolType
@@ -25,8 +25,8 @@ use App\Facades\DatatableFacade as Datatable;
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\School[] $schools
  */
 class SchoolType extends Model {
-
-    protected $fillable =[
+    
+    protected $fillable = [
         'name',
         'remark',
         'created_at',

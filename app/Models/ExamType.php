@@ -2,9 +2,10 @@
 
 namespace App\Models;
 
+use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use App\Facades\DatatableFacade as Datatable;
+
 /**
  * App\Models\ExamType
  *
@@ -25,23 +26,23 @@ use App\Facades\DatatableFacade as Datatable;
  */
 class ExamType extends Model {
     //
-    protected $table='exam_types';
-
-    protected $fillable=['name','remark','created_at','updated_at','enabled'];
-
-    public function Exam()
-    {
+    protected $table = 'exam_types';
+    
+    protected $fillable = ['name', 'remark', 'created_at', 'updated_at', 'enabled'];
+    
+    public function Exam() {
         return $this->hasMany('App\Models\Exam');
     }
+    
     public function datatable() {
-
+        
         $columns = [
             ['db' => 'ExamType.id', 'dt' => 0],
             ['db' => 'ExamType.name', 'dt' => 1],
             ['db' => 'ExamType.remark', 'dt' => 2],
             ['db' => 'ExamType.created_at', 'dt' => 3],
             ['db' => 'ExamType.updated_at', 'dt' => 4],
-
+            
             [
                 'db' => 'ExamType.enabled', 'dt' => 5,
                 'formatter' => function ($d, $row) {
@@ -49,7 +50,7 @@ class ExamType extends Model {
                 }
             ]
         ];
-
+        
         return Datatable::simple($this, $columns);
     }
 }

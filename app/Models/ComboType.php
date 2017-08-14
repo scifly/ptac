@@ -29,8 +29,7 @@ use Illuminate\Database\Eloquent\Model;
  * @mixin \Eloquent
  * @property-read \App\Models\School $schools
  */
-class ComboType extends Model
-{
+class ComboType extends Model {
     protected $table = 'combo_types';
     protected $fillable = [
         'name',
@@ -40,12 +39,11 @@ class ComboType extends Model
         'months',
         'enabled'
     ];
-
+    
     /**
      * 套餐与学校
      */
-    public function schools()
-    {
+    public function schools() {
         return $this->belongsTo('App\Models\school');
     }
 }

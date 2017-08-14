@@ -27,7 +27,7 @@ class DatatableFacade extends Facade {
     
     /**
      * Perform the SQL queries needed for an server-side processing requested,
-     * utilising the helper functions of this class, limit(), order() and
+     * utilising the menu functions of this class, limit(), order() and
      * filter() among others. The returned array is ready to be encoded as JSON
      * in response to an SSP request, or can be modified if needed before
      * sending back to the client.
@@ -363,11 +363,11 @@ class DatatableFacade extends Facade {
             $_data = (array)$data[$i];
             $j = 0;
             foreach ($_data as $name => $value) {
-                if (in_array($name, ['created_at', 'updated_at'])) {
+                /*if (in_array($name, ['created_at', 'updated_at'])) {
                     $dt = Carbon::createFromFormat('Y-m-d H:i:s', $value);
                     
                     $value = $dt->diffForhumans();
-                }
+                }*/
                 $column = $columns[$j];
                 if (isset($column['formatter'])) {
                     $row[$column['dt']] = $column['formatter']($value, $_data);

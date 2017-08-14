@@ -29,18 +29,16 @@ use Illuminate\Database\Eloquent\Model;
 class Operator extends Model {
     //
     protected $table = 'operators';
-
-    protected $fillable = ['company_id','user_id','school_id','type','created_at','updated_at'];
-
-    public function company()
-    {
+    
+    protected $fillable = ['company_id', 'user_id', 'school_id', 'type', 'created_at', 'updated_at'];
+    
+    public function company() {
         return $this->belongsTo('App\Models\Company');
     }
-
-    public function user()
-    {
+    
+    public function user() {
         return $this->belongsTo('App\Models\User');
     }
-
-
+    
+    
 }

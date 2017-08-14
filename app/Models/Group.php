@@ -1,9 +1,10 @@
 <?php
+
 namespace App\Models;
 
+use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use App\Facades\DatatableFacade as Datatable;
 
 /**
  * App\Models\Group
@@ -24,18 +25,18 @@ use App\Facades\DatatableFacade as Datatable;
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\User[] $users
  */
 class Group extends Model {
-
-    protected $table='groups';
+    
+    protected $table = 'groups';
     
     protected $fillable = [
         'name', 'remark', 'enabled'
     ];
     
     public function users() { return $this->hasMany('App\Models\User'); }
-
-
+    
+    
     public function datatable() {
-
+        
         $columns = [
             ['db' => 'Groups.id', 'dt' => 0],
             ['db' => 'Groups.name', 'dt' => 1],
@@ -44,15 +45,14 @@ class Group extends Model {
             ['db' => 'Groups.updated_at', 'dt' => 4],
             [
                 'db' => 'Groups.enabled', 'dt' => 5,
-                'formatter' => function($d, $row)
-                {
-                    return Datatable::dtOps($this, $d ,$row);
+                'formatter' => function ($d, $row) {
+                    return Datatable::dtOps($this, $d, $row);
                 }
             ]
-
+        
         ];
-
+        
         return Datatable::simple($this, $columns);
-
+        
     }
 }
