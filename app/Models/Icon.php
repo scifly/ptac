@@ -25,6 +25,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|Icon whereRemark($value)
  * @method static Builder|Icon whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Menu[] $menus
  */
 class Icon extends Model {
     

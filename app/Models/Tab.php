@@ -26,6 +26,7 @@ use App\Facades\DatatableFacade as Datatable;
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Menu[] $menus
  * @property int|null $icon_id 图标ID
  * @method static Builder|Tab whereIconId($value)
+ * @property-read \App\Models\Icon|null $icon
  */
 class Tab extends Model {
     

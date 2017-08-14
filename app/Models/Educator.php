@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use App\Facades\DatatableFacade as Datatable;
 
 /**
  * App\Models\Educator
@@ -29,11 +29,10 @@ use App\Facades\DatatableFacade as Datatable;
  * @property int $enabled
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Squad[] $classes
  * @property-read \App\Models\EducatorClass $educatorClass
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Educator whereEnabled($value)
+ * @method static Builder|Educator whereEnabled($value)
  */
-class Educator extends Model
-{
-
+class Educator extends Model {
+    
     protected $fillable = [
         'id',
         'user_id',
@@ -41,31 +40,27 @@ class Educator extends Model
         'school_id',
         'sms_quote',
         'enabled',
-
+    
     ];
-
-    public function user()
-    {
+    
+    public function user() {
         return $this->belongsTo('App\Models\User');
     }
-
-    public function school()
-    {
+    
+    public function school() {
         return $this->belongsTo('App\Models\School');
     }
-    public function classes()
-    {
-        return $this->belongsToMany('App\Models\Squad', 'educators_classes','class_id','educator_id');
+    
+    public function classes() {
+        return $this->belongsToMany('App\Models\Squad', 'educators_classes', 'class_id', 'educator_id');
     }
-
-    public function educatorClass()
-    {
+    
+    public function educatorClass() {
         return $this->hasOne('App\Models\EducatorClass');
     }
-
-    public function datatable()
-    {
-
+    
+    public function datatable() {
+        
         $columns = [
             ['db' => 'Educator.id', 'dt' => 0],
             ['db' => 'User.username', 'dt' => 1],
@@ -74,7 +69,7 @@ class Educator extends Model
             ['db' => 'Educator.sms_quote', 'dt' => 4],
             ['db' => 'Educator.created_at', 'dt' => 5],
             ['db' => 'Educator.updated_at', 'dt' => 6],
-
+            
             [
                 'db' => 'Educator.enabled', 'dt' => 7,
                 'formatter' => function ($d, $row) {
@@ -100,9 +95,9 @@ class Educator extends Model
                 ]
             ]
         ];
-
+        
         return Datatable::simple($this, $columns, $joins);
     }
-
+    
 }
 

@@ -28,6 +28,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\WapSiteModule[] $hasManyWsm
  * @property-read \App\Models\School $school
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\WapSiteModule[] $wapsiteModules
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\WapSiteModule[] $wapSiteModules
  */
 class WapSite extends Model {
     //
