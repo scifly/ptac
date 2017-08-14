@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use App\Facades\DatatableFacade as Datatable;
 
 /**
  * App\Models\App
@@ -48,7 +48,7 @@ use App\Facades\DatatableFacade as Datatable;
  * @mixin \Eloquent
  */
 class App extends Model {
-
+    
     protected $fillable = [
         'name',
         'description',
@@ -66,10 +66,10 @@ class App extends Model {
         'menu',
         'enabled'
     ];
-
-
+    
+    
     public function datatable() {
-
+        
         $columns = [
             ['db' => 'App.id', 'dt' => 0],
             ['db' => 'App.name', 'dt' => 1],
@@ -81,13 +81,13 @@ class App extends Model {
             ['db' => 'App.updated_at', 'dt' => 7],
             [
                 'db' => 'App.enabled', 'dt' => 8,
-                'formatter' => function($d, $row) {
+                'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
                 }
             ]
         ];
         return Datatable::simple($this, $columns);
-
+        
     }
-
+    
 }

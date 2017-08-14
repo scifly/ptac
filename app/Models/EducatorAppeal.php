@@ -45,30 +45,29 @@ class EducatorAppeal extends Model {
         'reated_educator_ids',
         'status'
     ];
-
+    
     /**
      * 教职工申诉与教职工
      */
-    public function educator(){
+    public function educator() {
         return $this->belongsTo('App\Models\Educator');
     }
-
+    
     /**
      * 教职工申诉与考勤记录
      */
-    public function educatorAttendance(){
-        return $this->belongsTo('App\Models\Educator','ea_ids');
+    public function educatorAttendance() {
+        return $this->belongsTo('App\Models\Educator', 'ea_ids');
     }
-
+    
     /**
      * 教职工申诉与流程日志
      */
-    public function procedureLog(){
-        return $this->belongsTo('App\Models\ProcedureLog','procedure_log_id');
+    public function procedureLog() {
+        return $this->belongsTo('App\Models\ProcedureLog', 'procedure_log_id');
     }
-
-    public function datatable()
-    {
+    
+    public function datatable() {
         $columns = [
             ['db' => 'EducatorAppeal.id', 'dt' => 0],
             ['db' => 'Educator.name as educatorname', 'dt' => 1],
@@ -83,7 +82,7 @@ class EducatorAppeal extends Model {
                 }
             ],
         ];
-
+        
         $joins = [
             [
                 'table' => 'educators',
@@ -96,7 +95,6 @@ class EducatorAppeal extends Model {
         ];
         return Datatable::simple($this, $columns, $joins);
     }
-
-
-
+    
+    
 }

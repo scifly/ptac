@@ -35,26 +35,22 @@ use Illuminate\Database\Eloquent\Model;
 class PollQuestionnaire extends Model {
     //
     protected $table = 'poll_questionnaires';
-
-    protected $fillable = ['school_id','user_id','name','start','end','created_at','updated-at','enabled'];
-
-    public function school()
-    {
+    
+    protected $fillable = ['school_id', 'user_id', 'name', 'start', 'end', 'created_at', 'updated-at', 'enabled'];
+    
+    public function school() {
         return $this->belongsTo('App\Models\School');
     }
-
-    public function user()
-    {
+    
+    public function user() {
         return $this->belongsTo('App\Models\User');
     }
-
-    public function pollquestionnaireAnswer()
-    {
+    
+    public function pollquestionnaireAnswer() {
         return $this->hasOne('App\Models\PollQuestionnaireAnswer');
     }
-
-    public function pollquestionnairePartcipant()
-    {
+    
+    public function pollquestionnairePartcipant() {
         return $this->hasOne('App\Models\PollQuestionnaireParticipant');
     }
 }

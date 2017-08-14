@@ -77,21 +77,6 @@ class Menu extends Model {
     }
     
     /**
-     * 获取所有子菜单
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function children() {
-        
-        return $this->hasMany(
-            'App\Models\Menu',
-            'parent_id',
-            'id'
-        );
-        
-    }
-    
-    /**
      * 获取上级菜单
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -127,7 +112,7 @@ class Menu extends Model {
         $leaves = [];
         $leafPath = [];
         $nodes = isset($schoolId) ? $this::whereSchoolId($schoolId)->get() : $this::all();
-        foreach($nodes as $node) {
+        foreach ($nodes as $node) {
             /** @noinspection PhpUndefinedMethodInspection */
             if (empty($node->children()->count())) {
                 $path = $this->leafPath($node->id, $leafPath);
@@ -136,7 +121,22 @@ class Menu extends Model {
             }
         }
         return $leaves;
+        
+    }
     
+    /**
+     * 获取所有子菜单
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function children() {
+        
+        return $this->hasMany(
+            'App\Models\Menu',
+            'parent_id',
+            'id'
+        );
+        
     }
     
     /**
@@ -149,7 +149,9 @@ class Menu extends Model {
     public function leafPath($id, array &$path) {
         
         $menu = $this->find($id);
-        if (!isset($menu)) { return ''; }
+        if (!isset($menu)) {
+            return '';
+        }
         $path[] = $menu->name;
         if (isset($menu->parent_id)) {
             $this->leafPath($menu->parent_id, $path);
@@ -166,10 +168,10 @@ class Menu extends Model {
      * @return bool|mixed
      */
     public function store(MenuRequest $request) {
-    
+        
         # 创建新的Menu记录及卡片绑定记录
         try {
-            $exception = DB::transaction(function() use($request) {
+            $exception = DB::transaction(function () use ($request) {
                 $m = $this->create($request->all());
                 $menuTab = new MenuTab();
                 $tabIds = $request->input('tab_ids', []);
@@ -192,9 +194,11 @@ class Menu extends Model {
     public function modify(MenuRequest $request, $menuId) {
         
         $menu = $this->find($menuId);
-        if (!isset($menu)) { return false; }
+        if (!isset($menu)) {
+            return false;
+        }
         try {
-            $exception = DB::transaction(function() use($request, $menuId, $menu) {
+            $exception = DB::transaction(function () use ($request, $menuId, $menu) {
                 # 更新指定Menu记录
                 $menu->update($request->all());
                 # 更新与指定Menu记录绑定的卡片记录
@@ -225,9 +229,11 @@ class Menu extends Model {
     public function remove($menuId) {
         
         $menu = $this->find($menuId);
-        if (!isset($menu)) { return false; }
+        if (!isset($menu)) {
+            return false;
+        }
         try {
-            $exception = DB::transaction(function() use($menuId, $menu) {
+            $exception = DB::transaction(function () use ($menuId, $menu) {
                 # 删除指定的Menu记录
                 $menu->delete();
                 # 移除指定菜单与卡片的绑定记录
@@ -256,7 +262,9 @@ class Menu extends Model {
     public function move($id, $parentId) {
         
         $menu = $this->find($id);
-        if (!isset($menu)) { return false; }
+        if (!isset($menu)) {
+            return false;
+        }
         $menu->parent_id = $parentId === '#' ? NULL : intval($parentId);
         
         return $menu->save();

@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
+use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use App\Facades\DatatableFacade as Datatable;
-use Illuminate\Http\Request;
+
 /**
  * App\Models\Squad
  *
@@ -39,13 +39,12 @@ class Squad extends Model {
         'educator_ids',
         'enabled',
     ];
-    public function students()
-    {
-        return $this->hasMany('App\Models\Student','class_id','id');
+    
+    public function students() {
+        return $this->hasMany('App\Models\Student', 'class_id', 'id');
     }
-
-    public function grade()
-    {
+    
+    public function grade() {
         return $this->belongsTo('App\Models\Grade');
     }
 
@@ -58,15 +57,14 @@ class Squad extends Model {
 //        return $this->belongsToMany('App\Models\Educator', 'educators_classes','class_id','educator_id');
 //
 //    }
-
-    public function educatorClass()
-    {
-        return $this->hasMany('App\Models\EducatorClass','class_id','id');
+    
+    public function educatorClass() {
+        return $this->hasMany('App\Models\EducatorClass', 'class_id', 'id');
     }
-
-
+    
+    
     public function datatable() {
-
+        
         $columns = [
             ['db' => 'Squad.id', 'dt' => 0],
             ['db' => 'Squad.name', 'dt' => 1],
@@ -74,7 +72,7 @@ class Squad extends Model {
             ['db' => 'Squad.educator_ids', 'dt' => 3],
             ['db' => 'Squad.created_at', 'dt' => 4],
             ['db' => 'Squad.updated_at', 'dt' => 5],
-
+            
             [
                 'db' => 'Squad.enabled', 'dt' => 6,
                 'formatter' => function ($d, $row) {
@@ -86,14 +84,14 @@ class Squad extends Model {
             [
                 'table' => 'grades',
                 'alias' => 'Grade',
-                'type'  => 'INNER',
+                'type' => 'INNER',
                 'conditions' => [
                     'Grade.id = Squad.grade_id'
                 ]
             ]
         ];
-
-        return Datatable::simple($this,  $columns, $joins);
+        
+        return Datatable::simple($this, $columns, $joins);
     }
     
 }

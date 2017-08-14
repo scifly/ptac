@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use App\Facades\DatatableFacade as Datatable;
 
 /**
  * App\Models\Tab
@@ -63,7 +63,7 @@ class Tab extends Model {
             ['db' => 'Tab.name', 'dt' => 1],
             [
                 'db' => 'Icon.name as iconname', 'dt' => 2,
-                'formatter' => function($d) {
+                'formatter' => function ($d) {
                     return isset($d) ? '<i class="' . $d . '"></i>&nbsp;' . $d : '[n/a]';
                 }
             ],
@@ -72,7 +72,7 @@ class Tab extends Model {
             ['db' => 'Tab.updated_at', 'dt' => 5],
             [
                 'db' => 'Tab.enabled', 'dt' => 6,
-                'formatter' => function($d, $row) {
+                'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
                 }
             ]
@@ -85,7 +85,7 @@ class Tab extends Model {
                 'conditions' => [
                     'Icon.id = Tab.icon_id'
                 ]
-                
+            
             ]
         ];
         

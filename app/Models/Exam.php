@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use App\Facades\DatatableFacade as Datatable;
 
 /**
  * App\Models\Exam
@@ -39,10 +39,10 @@ use App\Facades\DatatableFacade as Datatable;
  * @property-read \App\Models\ExamType $examType
  */
 class Exam extends Model {
-
-    protected $table='exams';
-
-    protected $fillable=[
+    
+    protected $table = 'exams';
+    
+    protected $fillable = [
         'name',
         'remark',
         'exam_type_id',
@@ -56,25 +56,24 @@ class Exam extends Model {
         'updated_at',
         'enabled'
     ];
-
-    public function examType()
-    {
+    
+    public function examType() {
         return $this->belongsTo('App\models\ExamType');
     }
-
-
+    
+    
     //获取当前考试班级
     public function examClasses($classIds) {
-
+        
         $class_ids = explode(',', $classIds);
         $classes = [];
         foreach ($class_ids as $class_id) {
             $classes[] = Squad::whereId($class_id)->first();
         }
         return $classes;
-
+        
     }
-
+    
     /**
      * 返回班级相关的所有考试
      *
@@ -82,7 +81,7 @@ class Exam extends Model {
      * @return array
      */
     public function examsByClassId($class_id) {
-
+        
         $exams = $this::all();
         $_exams = [];
         foreach ($exams as $exam) {
@@ -91,33 +90,32 @@ class Exam extends Model {
                 $_exams[] = $exam;
             }
         }
-
+        
         return $_exams;
-
+        
     }
-
-
-
+    
+    
     /**
      * 获取当前考试的科目
      * @param $subjectIds
      * @return array
      */
     public function subjectsByExamId($examId) {
-
-
-        $subjectIds=self::whereid($examId)->first(["subject_ids"])->toArray();
+        
+        
+        $subjectIds = self::whereid($examId)->first(["subject_ids"])->toArray();
         $subject_ids = explode(',', $subjectIds['subject_ids']);
         $subjects = [];
         foreach ($subject_ids as $subject_id) {
-            $subjects[]=Subject::whereId($subject_id)->first(['id','name']);
+            $subjects[] = Subject::whereId($subject_id)->first(['id', 'name']);
         }
         return $subjects;
     }
-
-
+    
+    
     public function datatable() {
-
+        
         $columns = [
             ['db' => 'Exam.id', 'dt' => 0],
             ['db' => 'Exam.name', 'dt' => 1],
@@ -129,7 +127,7 @@ class Exam extends Model {
             ['db' => 'Exam.end_date', 'dt' => 7],
             ['db' => 'Exam.created_at', 'dt' => 8],
             ['db' => 'Exam.updated_at', 'dt' => 9],
-
+            
             [
                 'db' => 'Exam.enabled', 'dt' => 10,
                 'formatter' => function ($d, $row) {
@@ -141,15 +139,15 @@ class Exam extends Model {
             [
                 'table' => 'exam_types',
                 'alias' => 'ExamType',
-                'type'  => 'INNER',
+                'type' => 'INNER',
                 'conditions' => [
                     'ExamType.id = Exam.exam_type_id'
                 ]
-
+            
             ]
         ];
-
+        
         return Datatable::simple($this, $columns, $joins);
     }
-
+    
 }

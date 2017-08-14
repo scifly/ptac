@@ -38,9 +38,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\ConferenceParticipant[] $conferenceParticipants
  * @property-read \App\Models\ConferenceRoom $conferenceRoom
  */
-class ConferenceQueue extends Model
-{
-
+class ConferenceQueue extends Model {
+    
     protected $table = 'conference_queues';
     protected $fillable = [
         'name',
@@ -54,20 +53,18 @@ class ConferenceQueue extends Model
         'attendance_qrcode_url',
         'event_id'
     ];
-
+    
     /**
      * 会议与会议参与者
      */
-    public function conferenceParticipants()
-    {
+    public function conferenceParticipants() {
         return $this->hasMany('App\Models\ConferenceParticipant');
     }
-
+    
     /**
      * 会议与会议地址
      */
-    public function conferenceRoom()
-    {
+    public function conferenceRoom() {
         return $this->belongsTo('App\Models\ConferenceRoom');
     }
 }

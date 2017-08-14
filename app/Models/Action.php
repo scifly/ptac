@@ -3,9 +3,9 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Models\ActionType as ActionType;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\ActionType as ActionType;
 use Illuminate\Support\Facades\Route;
 use ReflectionClass;
 
@@ -87,6 +87,79 @@ class Action extends Model {
     protected $dir = '/media/sf_sandbox/urlshortener/app/Http/Controllers';
     
     /**
+     * 返回当前action包含的卡片
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function tabs() {
+        
+        return $this->belongsToMany('App\Models\Tab', 'tabs_actions')
+            ->withPivot('default', 'enabled')
+            ->withTimestamps();
+    }
+    
+    /**
+     * 返回action列表
+     *
+     * @return array
+     */
+    public function actions() {
+        
+        $data = $this->whereEnabled(1)->get(['controller', 'name', 'id']);
+        $actions = [];
+        foreach ($data as $action) {
+            $actions[$action->controller][$action->id] = $action['name'];
+        }
+        ksort($actions);
+        return $actions;
+        
+    }
+    
+    public function datatable() {
+        
+        $columns = [
+            ['db' => 'Action.id', 'dt' => 0],
+            [
+                'db' => 'Action.name', 'dt' => 1,
+                'formatter' => function ($d) {
+                    return empty($d) ? self::NOT_SET : $d;
+                }
+            ],
+            ['db' => 'Action.method', 'dt' => 2],
+            ['db' => 'Action.controller', 'dt' => 3],
+            [
+                'db' => 'Action.view', 'dt' => 4,
+                'formatter' => function ($d) {
+                    return empty($d) ? self::NOT_SET : $d;
+                }
+            ],
+            [
+                'db' => 'Action.js', 'dt' => 5,
+                'formatter' => function ($d) {
+                    return empty($d) ? self::NOT_SET : $d;
+                }
+            ],
+            ['db' => 'Action.created_at', 'dt' => 6],
+            ['db' => 'Action.updated_at', 'dt' => 7],
+            [
+                'db' => 'Action.action_type_ids', 'dt' => 8,
+                'formatter' => function ($d) {
+                    return $this->actionTypes($d);
+                }
+            ],
+            [
+                'db' => 'Action.enabled', 'dt' => 9,
+                'formatter' => function ($d, $row) {
+                    return Datatable::dtOps($this, $d, $row);
+                }
+            ]
+        ];
+        
+        return Datatable::simple($this, $columns);
+        
+    }
+    
+    /**
      * 根据ActionType IDs返回Http action名称
      *
      * @param $action_type_ids
@@ -106,81 +179,8 @@ class Action extends Model {
         
     }
     
-    /**
-     * 返回当前action包含的卡片
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-     */
-    public function tabs() {
-        
-        return $this->belongsToMany('App\Models\Tab', 'tabs_actions')
-            ->withPivot('default', 'enabled')
-            ->withTimestamps();
-    }
-    
-    /**
-     * 返回action列表
-     *
-     * @return array
-     */
-    public function actions() {
-    
-        $data = $this->whereEnabled(1)->get(['controller', 'name', 'id']);
-        $actions = [];
-        foreach ($data as $action) {
-            $actions[$action->controller][$action->id] = $action['name'];
-        }
-        ksort($actions);
-        return $actions;
-        
-    }
-    
-    public function datatable() {
-        
-        $columns = [
-            ['db' => 'Action.id', 'dt' => 0],
-            [
-                'db' => 'Action.name', 'dt' => 1,
-                'formatter' => function($d) {
-                    return empty($d) ? self::NOT_SET : $d;
-                }
-            ],
-            ['db' => 'Action.method', 'dt' => 2],
-            ['db' => 'Action.controller', 'dt' => 3],
-            [
-                'db' => 'Action.view', 'dt' => 4,
-                'formatter' => function($d) {
-                    return empty($d) ? self::NOT_SET : $d;
-                }
-            ],
-            [
-                'db' => 'Action.js', 'dt' => 5,
-                'formatter' => function($d) {
-                    return empty($d) ? self::NOT_SET : $d;
-                }
-            ],
-            ['db' => 'Action.created_at', 'dt' => 6],
-            ['db' => 'Action.updated_at', 'dt' => 7],
-            [
-                'db' => 'Action.action_type_ids', 'dt' => 8,
-                'formatter' => function($d) {
-                    return $this->actionTypes($d);
-                }
-            ],
-            [
-                'db' => 'Action.enabled', 'dt' => 9,
-                'formatter' => function($d, $row) {
-                    return Datatable::dtOps($this, $d, $row);
-                }
-            ]
-        ];
-        
-        return Datatable::simple($this, $columns);
-        
-    }
-    
     public function scan() {
-    
+        
         $actionType = new ActionType();
         $this->actionTypes = $actionType->pluck('id', 'name')->toArray();
         $this->routes = Route::getRoutes()->getRoutes();
@@ -322,19 +322,6 @@ class Action extends Model {
     }
     
     /**
-     * 返回去除名字空间路径的控制器名称
-     *
-     * @param $controller
-     * @return mixed
-     */
-    private function getControllerName($controller) {
-    
-        $nameSpacePaths = explode('\\', $controller);
-        return $nameSpacePaths[sizeof($nameSpacePaths) - 1];
-        
-    }
-    
-    /**
      * 返回去除名字空间路径的控制器名称数组
      *
      * @param $controllers
@@ -345,19 +332,9 @@ class Action extends Model {
         $controllerNames = [];
         foreach ($controllers as $controller) {
             $paths = explode('\\', $controller);
-            $controllerNames[] = $paths[sizeof($paths) -1];
+            $controllerNames[] = $paths[sizeof($paths) - 1];
         }
         return $controllerNames;
-        
-    }
-    
-    private function getMethodNames($methods) {
-        
-        $methodNames = [];
-        foreach ($methods as $method) {
-            $methodNames[] = $method->getName();
-        }
-        return $methodNames;
         
     }
     
@@ -368,7 +345,7 @@ class Action extends Model {
      * @param $className
      */
     private function delNonExistingMethods($methods, $className) {
-    
+        
         // remove non-existing methods of current controller
         $currentMethods = $this->getMethodNames($methods);
         $existingMethods = [];
@@ -384,6 +361,29 @@ class Action extends Model {
                 ['method', $method]
             ])->delete();
         }
+        
+    }
+    
+    private function getMethodNames($methods) {
+        
+        $methodNames = [];
+        foreach ($methods as $method) {
+            $methodNames[] = $method->getName();
+        }
+        return $methodNames;
+        
+    }
+    
+    /**
+     * 返回去除名字空间路径的控制器名称
+     *
+     * @param $controller
+     * @return mixed
+     */
+    private function getControllerName($controller) {
+        
+        $nameSpacePaths = explode('\\', $controller);
+        return $nameSpacePaths[sizeof($nameSpacePaths) - 1];
         
     }
     
@@ -413,28 +413,25 @@ class Action extends Model {
     }
     
     /**
-     * 返回指定action的HTTP请求类型名称
+     * 根据控制器名称返回表名称
      *
-     * @param $controller
-     * @param $action
-     * @return null|string
+     * @param $controller string 控制器类名
+     * @return string 数据表名称
      */
-    private function getActionTypeIds($controller, $action) {
+    private function getTableName($controller) {
         
-        $action = ($action == 'destroy' ? 'delete' : $action);
-        if (!in_array($controller, $this->excludedControllers)) {
-            $route = $this->getTableName($controller) . '/' . $action;
-            $actionTypeIds = [];
-            foreach ($this->routes as $r) {
-                if (strpos($r->uri, $route) === 0) {
-                    foreach ($r->methods as $method) {
-                        $actionTypeIds[] = $this->actionTypes[$method];
-                    }
-                }
-            }
-            return implode(',', $actionTypeIds);
+        $modelName = substr($controller, 0, strlen($controller) - strlen('Controller'));
+        $modelName = 'App\\Models\\' . $modelName;
+        if ($modelName === 'App\\Models\\Action') {
+            $tableName = $this->getTable();
+        } else {
+            $model = new $modelName;
+            /** @noinspection PhpUndefinedMethodInspection */
+            $tableName = $model->getTable();
+            unset($model);
         }
-        return NULL;
+        
+        return $tableName;
         
     }
     
@@ -461,25 +458,28 @@ class Action extends Model {
     }
     
     /**
-     * 根据控制器名称返回表名称
+     * 返回指定action的HTTP请求类型名称
      *
-     * @param $controller string 控制器类名
-     * @return string 数据表名称
+     * @param $controller
+     * @param $action
+     * @return null|string
      */
-    private function getTableName($controller) {
+    private function getActionTypeIds($controller, $action) {
         
-        $modelName = substr($controller, 0, strlen($controller) - strlen('Controller'));
-        $modelName = 'App\\Models\\' . $modelName;
-        if ($modelName === 'App\\Models\\Action') {
-            $tableName = $this->getTable();
-        } else {
-            $model = new $modelName;
-            /** @noinspection PhpUndefinedMethodInspection */
-            $tableName = $model->getTable();
-            unset($model);
+        $action = ($action == 'destroy' ? 'delete' : $action);
+        if (!in_array($controller, $this->excludedControllers)) {
+            $route = $this->getTableName($controller) . '/' . $action;
+            $actionTypeIds = [];
+            foreach ($this->routes as $r) {
+                if (strpos($r->uri, $route) === 0) {
+                    foreach ($r->methods as $method) {
+                        $actionTypeIds[] = $this->actionTypes[$method];
+                    }
+                }
+            }
+            return implode(',', $actionTypeIds);
         }
-        
-        return $tableName;
+        return NULL;
         
     }
     

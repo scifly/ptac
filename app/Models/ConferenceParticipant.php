@@ -26,9 +26,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read \App\Models\ConferenceQueue $conferenceQueues
  * @property-read \App\Models\Educator $educator
  */
-class ConferenceParticipant extends Model
-{
-
+class ConferenceParticipant extends Model {
+    
     //
     protected $tabled = 'conference_participants';
     protected $fillable = [
@@ -37,20 +36,19 @@ class ConferenceParticipant extends Model
         'conference_queue_id',
         'status'
     ];
-
+    
     /**
      * 会议参与者与教师
      */
-    public function educator()
-    {
+    public function educator() {
         return $this->belongsTo('\App\Models\Educator');
     }
-
+    
     /**
      * 会议参与者与会议
      */
-    public function conferenceQueues(){
+    public function conferenceQueues() {
         return $this->belongsTo('App\Models\ConferenceQueue');
     }
-
+    
 }

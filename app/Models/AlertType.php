@@ -23,7 +23,7 @@ use Illuminate\Database\Eloquent\Model;
  * @mixin \Eloquent
  */
 class AlertType extends Model {
-
+    
     protected $table = 'alert_types';
     protected $fillable = [
         'name',

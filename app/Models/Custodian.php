@@ -23,23 +23,20 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Student[] $students
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\CustodianStudent[] $custodianStudent
  */
-class Custodian extends Model
-{
+class Custodian extends Model {
     protected $table = 'custodians';
     protected $fillable = [
         'user_id',
         'expiry'
     ];
-
-    public function user()
-    {
+    
+    public function user() {
         return $this->belongsTo('App\Models\User');
     }
-
-
-    public function custodianStudent()
-    {
+    
+    
+    public function custodianStudent() {
         return $this->hasMany('App\Models\CustodianStudent');
     }
-
+    
 }

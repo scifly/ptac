@@ -28,21 +28,22 @@ use Illuminate\Database\Eloquent\Model;
 class PollQuestionnaireSubject extends Model {
     //
     protected $table = 'poll_questionnaire_subjects';
-
-    protected $fillable = ['subject','pq_id','subject_type','created_at','updated_at'];
-
-    public function pollquestionnaireAnswer()
-    {
+    
+    protected $fillable = ['subject', 'pq_id', 'subject_type', 'created_at', 'updated_at'];
+    
+    public function pollquestionnaireAnswer() {
         return $this->hasOne('App\Models\PollQuestionnaireAnswer'
-        ,'pqs_id','id');
+            , 'pqs_id', 'id');
     }
-    public function pollquestionnairechoice(){
+    
+    public function pollquestionnairechoice() {
         return $this
             ->hasMany("App\Models\PollQuestionnaireChoice"
-                ,'pqs_id','id');
+                , 'pqs_id', 'id');
     }
-    public function pollquestionnaire(){
+    
+    public function pollquestionnaire() {
         return $this->hasOne('App\Models\PollQuestionnaire'
-            ,'pq_id','id');
+            , 'pq_id', 'id');
     }
 }

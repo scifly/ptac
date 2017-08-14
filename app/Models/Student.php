@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use App\Facades\DatatableFacade as Datatable;
 
 /**
  * App\Models\Student
@@ -40,9 +40,9 @@ use App\Facades\DatatableFacade as Datatable;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Student whereEnabled($value)
  */
 class Student extends Model {
-
+    
     protected $table = 'students';
-
+    
     protected $fillable = [
         'user_id',
         'class_id',
@@ -53,50 +53,45 @@ class Student extends Model {
         'remark',
         'enabled'
     ];
-
-
-
-    public function squad()
-    {
-        return $this->belongsTo('App\Models\Squad','class_id','id');
+    
+    
+    public function squad() {
+        return $this->belongsTo('App\Models\Squad', 'class_id', 'id');
     }
-
-
+    
+    
     public function beLongsToSquad() {
-        return $this->belongsTo('App\Models\Squad','class_id','id');
-
+        return $this->belongsTo('App\Models\Squad', 'class_id', 'id');
+        
     }
-
-    public function custodianStudent()
-    {
+    
+    public function custodianStudent() {
         return $this->hasMany('App\Models\CustodianStudent');
-
+        
     }
-
-    public function user()
-    {
+    
+    public function user() {
         return $this->belongsTo('App\Models\User');
     }
+    
     /**
      * 获取学生所有分数
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function score()
-    {
+    public function score() {
         return $this->hasMany('App\Models\Score');
     }
-
+    
     /**
      * 获取学生总分
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function scoreTotal()
-    {
+    public function scoreTotal() {
         return $this->hasMany('App\Models\ScoreTotal');
     }
-
+    
     public function datatable() {
-
+        
         $columns = [
             ['db' => 'Student.id', 'dt' => 0],
             ['db' => 'User.realname as username', 'dt' => 1],
@@ -105,9 +100,9 @@ class Student extends Model {
             ['db' => 'Student.card_number', 'dt' => 4],
             [
                 'db' => 'Student.oncampus', 'dt' => 5,
-                'formatter' => function($d) {
+                'formatter' => function ($d) {
                     $student = Student::whereId($d)->first();
-                    return $student->oncampus==1 ? '是' : '否' ;
+                    return $student->oncampus == 1 ? '是' : '否';
                 }
             ],
             ['db' => 'Student.birthday', 'dt' => 6],
@@ -116,15 +111,14 @@ class Student extends Model {
             ['db' => 'Student.updated_at', 'dt' => 9],
             [
                 'db' => 'Student.enabled', 'dt' => 10,
-                'formatter' => function($d, $row)
-                {
-                    return Datatable::dtOps($this, $d ,$row);
+                'formatter' => function ($d, $row) {
+                    return Datatable::dtOps($this, $d, $row);
                 }
             ],
-
-
+        
+        
         ];
-
+        
         $joins = [
             [
                 'table' => 'users',
@@ -142,21 +136,13 @@ class Student extends Model {
                     'Squad.id = Student.class_id'
                 ]
             ]
-
+        
         ];
-
-
-
-        return Datatable::simple($this, $columns,$joins);
-
+        
+        
+        return Datatable::simple($this, $columns, $joins);
+        
     }
-
-
-
-
-
-
-
-
-
+    
+    
 }

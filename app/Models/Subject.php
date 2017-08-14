@@ -2,11 +2,9 @@
 
 namespace App\Models;
 
+use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use App\Facades\DatatableFacade as Datatable;
-use Illuminate\Http\Request;
-use Symfony\Component\VarDumper\Cloner\Data;
 
 /**
  * App\Models\Subject
@@ -38,9 +36,9 @@ use Symfony\Component\VarDumper\Cloner\Data;
  * @property-read \App\Models\EducatorClass $educatorClass
  */
 class Subject extends Model {
-
-    protected $table='subjects';
-    protected $fillable=[
+    
+    protected $table = 'subjects';
+    protected $fillable = [
         'school_id',
         'name',
         'isaux',
@@ -48,58 +46,52 @@ class Subject extends Model {
         'pass_score',
         'grade_ids',
         'enabled'
-
+    
     ];
-
-    public function subjectModules()
-    {
+    
+    public function subjectModules() {
         return $this->hasOne('App\Models\SubjectModule');
     }
-
-
-    public function school()
-    {
+    
+    
+    public function school() {
         return $this->belongsTo('App\Models\School');
     }
-
-    public function grade()
-    {
-        return $this->belongsTo('App\Models\Grade','grade_ids');
+    
+    public function grade() {
+        return $this->belongsTo('App\Models\Grade', 'grade_ids');
     }
-
-    public function educatorClass()
-    {
+    
+    public function educatorClass() {
         return $this->hasOne('App\Models\EducatorClass');
     }
-
-    public function datatable()
-    {
-
+    
+    public function datatable() {
+        
         $columns = [
-
+            
             ['db' => 'Subject.id', 'dt' => 0],
-            ['db' => 'Subject.name', 'dt'=> 1],
+            ['db' => 'Subject.name', 'dt' => 1],
             ['db' => 'School.name as schoolname', 'dt' => 2],
             [
-                'db' => 'Subject.isaux', 'dt'=> 3,
-                'formatter' => function($d, $row) {
+                'db' => 'Subject.isaux', 'dt' => 3,
+                'formatter' => function ($d, $row) {
                     $subject = Subject::whereId($d)->first();
-                    return $subject->isaux==1 ? '是' : '否' ;
+                    return $subject->isaux == 1 ? '是' : '否';
                 }
             ],
-            ['db' => 'Subject.max_score', 'dt'=> 4],
-            ['db' => 'Subject.pass_score', 'dt'=> 5],
+            ['db' => 'Subject.max_score', 'dt' => 4],
+            ['db' => 'Subject.pass_score', 'dt' => 5],
             ['db' => 'Subject.created_at', 'dt' => 6],
             ['db' => 'Subject.updated_at', 'dt' => 7],
             [
                 'db' => 'Subject.enabled', 'dt' => 8,
-                'formatter' => function($d, $row)
-                {
-                    return Datatable::dtOps($this, $d ,$row);
+                'formatter' => function ($d, $row) {
+                    return Datatable::dtOps($this, $d, $row);
                 }
             ]
         ];
-
+        
         $joins = [
             [
                 'table' => 'schools',
@@ -109,12 +101,11 @@ class Subject extends Model {
                     'School.id = Subject.school_id'
                 ]
             ]
-
-
+        
+        
         ];
         return Datatable::simple($this, $columns, $joins);
     }
-
-
-
+    
+    
 }

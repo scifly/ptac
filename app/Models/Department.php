@@ -32,8 +32,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read \App\Models\Corp $corp
  * @property-read \App\Models\School $school
  */
-class Department extends Model
-{
+class Department extends Model {
     //
     protected $table = 'departments';
     protected $fillable = [
@@ -45,19 +44,18 @@ class Department extends Model
         'order',
         'enabled'
     ];
-
+    
     /**
      * 部门与所属企业
      */
-    public function corp()
-    {
+    public function corp() {
         return $this->belongsTo('App\Models\Corp');
     }
-
+    
     /**
      * 部门与所属学校
      */
-    public function school(){
+    public function school() {
         return $this->belongsTo('App\Models\School');
     }
 }

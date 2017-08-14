@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use App\Facades\DatatableFacade as Datatable;
 
 /**
  * App\Models\EducatorClass
@@ -31,31 +31,27 @@ use App\Facades\DatatableFacade as Datatable;
 class EducatorClass extends Model {
     
     protected $table = 'educators_classes';
-
+    
     protected $fillable = [
         'educator_id',
         'class_id',
         'subject_id',
         'enabled'
     ];
-
-    public function educator()
-    {
+    
+    public function educator() {
         return $this->belongsTo('App\Models\Educator');
     }
-
-    public function subject()
-    {
+    
+    public function subject() {
         return $this->belongsTo('App\Models\Subject');
     }
-
-    public function squad()
-    {
-        return $this->belongsTo('App\Models\Squad','class_id','id');
+    
+    public function squad() {
+        return $this->belongsTo('App\Models\Squad', 'class_id', 'id');
     }
-
-    public function datatable()
-    {
+    
+    public function datatable() {
         $columns = [
             ['db' => 'EducatorClass.id', 'dt' => 0],
             ['db' => 'User.realname as usersname', 'dt' => 1],
@@ -87,7 +83,7 @@ class EducatorClass extends Model {
                     'Subject.id = EducatorClass.subject_id'
                 ]
             ],
-
+            
             [
                 'table' => 'educators',
                 'alias' => 'Educator',
@@ -105,9 +101,9 @@ class EducatorClass extends Model {
                 ]
             ]
         ];
-
-        return Datatable::simple($this, $columns,$joins);
+        
+        return Datatable::simple($this, $columns, $joins);
     }
-
-
+    
+    
 }

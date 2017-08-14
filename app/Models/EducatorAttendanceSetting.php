@@ -28,8 +28,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\EducatorAttendance[] $educatorAttendance
  * @property-read \App\Models\School $schools
  */
-class EducatorAttendanceSetting extends Model
-{
+class EducatorAttendanceSetting extends Model {
     //
     protected $table = 'educator_attendance_settings';
     protected $fillable = [
@@ -39,19 +38,18 @@ class EducatorAttendanceSetting extends Model
         'end',
         'inorout'
     ];
-
+    
     /**
      * 教职工考勤设置与教职工考勤
      */
-    public function educatorAttendance()
-    {
-        return $this->hasMany('App\Models\EducatorAttendance','eas_id');
+    public function educatorAttendance() {
+        return $this->hasMany('App\Models\EducatorAttendance', 'eas_id');
     }
-
+    
     /**
      * 教职工考勤设置与学校
      */
-    public function schools(){
+    public function schools() {
         return $this->belongsTo('App\Models\School');
     }
 }

@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
 use App\Facades\DatatableFacade as Datatable;
 use App\Models\Student as Student;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 
 /**
  * App\Models\CustodianStudent
@@ -28,9 +28,8 @@ use App\Models\Student as Student;
  * @property-read \App\Models\Student $student
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\CustodianStudent whereEnabled($value)
  */
-class CustodianStudent extends Model
-{
-
+class CustodianStudent extends Model {
+    
     protected $table = 'custodians_students';
     protected $fillable = [
         'custodian_id',
@@ -38,26 +37,24 @@ class CustodianStudent extends Model
         'relationship',
         'enabled'
     ];
-
-    public function custodian()
-    {
+    
+    public function custodian() {
         return $this->belongsTo('App\Models\Custodian');
     }
-
-    public function student()
-    {
+    
+    public function student() {
         return $this->belongsTo('App\Models\Student');
     }
-
+    
     public function datatable() {
-
+        
         $columns = [
             ['db' => 'CustodianStudent.id', 'dt' => 0],
 //            ['db' => 'User.realname as studentname', 'dt' => 2],
             ['db' => 'User.realname as custodianname', 'dt' => 1],
             [
                 'db' => 'Student.id as studentname', 'dt' => 2,
-                'formatter' => function($d, $row) {
+                'formatter' => function ($d, $row) {
                     $student = Student::whereId($d)->first();
                     return $student->user->realname;
                 }
@@ -67,14 +64,13 @@ class CustodianStudent extends Model
             ['db' => 'CustodianStudent.updated_at', 'dt' => 5],
             [
                 'db' => 'CustodianStudent.enabled', 'dt' => 6,
-                'formatter' => function($d, $row)
-                {
-                    return Datatable::dtOps($this, $d ,$row);
+                'formatter' => function ($d, $row) {
+                    return Datatable::dtOps($this, $d, $row);
                 }
             ],
-
+        
         ];
-
+        
         $joins = [
             [
                 'table' => 'custodians',
@@ -92,7 +88,7 @@ class CustodianStudent extends Model
                     'User.id = Custodian.user_id'
                 ]
             ],
-
+            
             [
                 'table' => 'students',
                 'alias' => 'Student',
@@ -109,11 +105,11 @@ class CustodianStudent extends Model
 //                    'Student.user_id = User.id'
 //                ]
 //            ],
-
+        
         ];
-
-        return Datatable::simple($this, $columns,$joins);
-
+        
+        return Datatable::simple($this, $columns, $joins);
+        
     }
-
+    
 }

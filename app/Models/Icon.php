@@ -54,7 +54,7 @@ class Icon extends Model {
      * @return array
      */
     public function icons() {
-    
+        
         $data = $this->whereEnabled(1)->get();
         $icons = [];
         foreach ($data as $icon) {
@@ -81,7 +81,7 @@ class Icon extends Model {
             ['db' => 'Icon.updated_at', 'dt' => 5],
             [
                 'db' => 'Icon.enabled', 'dt' => 6,
-                'formatter' => function($d, $row) {
+                'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
                 }
             ]

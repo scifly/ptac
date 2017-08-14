@@ -1,9 +1,10 @@
 <?php
+
 namespace App\Models;
 
+use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use App\Facades\DatatableFacade as Datatable;
 
 /**
  * App\Models\SubjectModule
@@ -39,15 +40,14 @@ class SubjectModule extends Model {
         'weight',
         'enabled',
     ];
-
-    public function subject()
-    {
-        return $this->belongsTo('App\Models\Subject','subject_id','id');
-
+    
+    public function subject() {
+        return $this->belongsTo('App\Models\Subject', 'subject_id', 'id');
+        
     }
-
+    
     public function datatable() {
-
+        
         $columns = [
             ['db' => 'SubjectModule.id', 'dt' => 0],
             ['db' => 'Subject.name as subjectname', 'dt' => 1],
@@ -57,15 +57,14 @@ class SubjectModule extends Model {
             ['db' => 'SubjectModule.updated_at', 'dt' => 5],
             [
                 'db' => 'SubjectModule.enabled', 'dt' => 6,
-                'formatter' => function($d, $row)
-                {
-                    return Datatable::dtOps($this, $d ,$row);
+                'formatter' => function ($d, $row) {
+                    return Datatable::dtOps($this, $d, $row);
                 }
             ],
-
-
+        
+        
         ];
-
+        
         $joins = [
             [
                 'table' => 'subjects',
@@ -75,24 +74,24 @@ class SubjectModule extends Model {
                     'Subject.id = SubjectModule.subject_id'
                 ]
             ],
-
+        
         ];
-
-        return Datatable::simple($this, $columns,$joins);
-
+        
+        return Datatable::simple($this, $columns, $joins);
+        
     }
-
+    
     protected function prepareForValidation() {
-
+        
         $input = $this->all();
-
+        
         if (isset($input['enabled']) && $input['enabled'] === 'on') {
             $input['enabled'] = 1;
         }
         if (!isset($input['enabled'])) {
             $input['enabled'] = 0;
         }
-
+        
         $this->replace($input);
     }
 }
