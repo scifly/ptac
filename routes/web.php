@@ -235,7 +235,7 @@ Route::get('procedure_steps/getSchoolEducators/{id}', 'ProcedureStepController@g
 //流程日志
 Route::get('procedure_logs/index', 'ProcedureLogController@index');
 Route::get('procedure_logs/show/{id}', 'ProcedureLogController@show');
-Route::get('procedure_logs/procedure_info', 'ProcedureLogController@procedureInfo');
+Route::get('procedure_logs/procedure_info/{first_log_id}', 'ProcedureLogController@procedureInfo');
 Route::get('procedure_logs/my_rocedure', 'ProcedureLogController@myProcedure');
 Route::get('procedure_logs/pending', 'ProcedureLogController@pending');
 

@@ -56,11 +56,19 @@ class ProcedureLog extends Model {
     ];
 
     /**
-     * 流程日志与用户
+     * 流程日志发起人
      */
-    public function user() {
-        return $this->belongsTo('App\Models\User');
+    public function initiator_user() {
+        return $this->belongsTo('App\Models\User')->select('id', 'realname');
     }
+
+    /**
+     * 流程日志操作者
+     */
+    public function operator_user() {
+        return $this->belongsTo('App\Models\User')->select('id', 'realname');
+    }
+
 
     /**
      * 流程日志与流程
@@ -70,9 +78,9 @@ class ProcedureLog extends Model {
     }
 
     /**
-     * 日志与流程步骤
+     * 流程日志与流程步骤
      */
-    public function procedureStep() {
+    public function procedure_step() {
         return $this->belongsTo('App\Models\ProcedureStep');
     }
 
