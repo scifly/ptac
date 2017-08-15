@@ -15,7 +15,7 @@
             </div>
             <div class="form-group">
                 {!! Form::label('avatar_url', '头像',['class' => 'col-sm-4 control-label']) !!}
-                <div class="col-sm-3">
+                <div class="col-sm-7">
                     <div id="preview" style="display: block">
                         <img id="avatar_thumb_img"
                              src='{{asset("../storage/app/avauploads/{$personalInfo->avatar_url}")}}'

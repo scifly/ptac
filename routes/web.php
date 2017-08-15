@@ -288,9 +288,9 @@ Route::any('users/delavatar', 'UserController@delAvatar');
 
 #用户中心
 //个人信息管理
-Route::get('personal_info/edit/{id}', 'PersonalInfoController@edit');
-Route::put('personal_info/update/{id}', 'PersonalInfoController@update');
-Route::post('personal_info/upload_ava/{id}', 'PersonalInfoController@uploadAvatar');
+Route::get('personal_infos/edit/{id}', 'PersonalInfoController@edit');
+Route::put('personal_infos/update/{id}', 'PersonalInfoController@update');
+Route::post('personal_infos/upload_ava/{id}', 'PersonalInfoController@uploadAvatar');
 
 //考试类型设置
 Route::get('exam_types/index', 'ExamTypeController@index');
