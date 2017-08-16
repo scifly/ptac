@@ -6,7 +6,7 @@ use App\Http\Requests\PersonalInfoRequest;
 use App\Models\User;
 use Illuminate\Support\Facades\Request;
 
-class personalInfoController extends Controller {
+class PersonalInfoController extends Controller {
     protected $user;
     public $imgPath = array();
 

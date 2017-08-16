@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use App\Facades\DatatableFacade as Datatable;
 
 /**
  * App\Models\MessageType
@@ -31,5 +32,27 @@ class MessageType extends Model {
     
     public function message() {
         return $this->hasMany('App\Models\Message');
+    }
+    /**
+     * @return array
+     */
+    public function datatable() {
+
+        $columns = [
+            ['db' => 'MessageType.id', 'dt' => 0],
+            ['db' => 'MessageType.name', 'dt' => 1],
+            ['db' => 'MessageType.remark', 'dt' => 2],
+            ['db' => 'MessageType.created_at', 'dt' => 3],
+            ['db' => 'MessageType.updated_at', 'dt' => 4],
+
+            [
+                'db' => 'MessageType.enabled', 'dt' => 5,
+                'formatter' => function ($d, $row) {
+                    return Datatable::dtOps($this, $d, $row);
+                }
+            ]
+        ];
+
+        return Datatable::simple($this, $columns);
     }
 }

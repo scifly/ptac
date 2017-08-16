@@ -288,9 +288,9 @@ Route::any('users/delavatar', 'UserController@delAvatar');
 
 #用户中心
 //个人信息管理
-Route::get('personal_info/edit/{id}', 'PersonalInfoController@edit');
-Route::put('personal_info/update/{id}', 'PersonalInfoController@update');
-Route::post('personal_info/upload_ava/{id}', 'PersonalInfoController@uploadAvatar');
+Route::get('personal_infos/edit/{id}', 'PersonalInfoController@edit');
+Route::put('personal_infos/update/{id}', 'PersonalInfoController@update');
+Route::post('personal_infos/upload_ava/{id}', 'PersonalInfoController@uploadAvatar');
 
 //考试类型设置
 Route::get('exam_types/index', 'ExamTypeController@index');
@@ -362,3 +362,20 @@ Route::get('wsm_articles/edit/{id}', 'WsmArticleController@edit');
 Route::put('wsm_articles/update/{id}', 'WsmArticleController@update');
 Route::delete('wsm_articles/delete/{id}', 'WsmArticleController@destroy');
 
+//消息中心-消息管理
+Route::get('messages/index', 'MessageController@index');
+Route::get('messages/create', 'MessageController@create');
+Route::post('messages/store', 'MessageController@store');
+Route::get('messages/show/{id}', 'MessageController@show');
+Route::get('messages/edit/{id}', 'MessageController@edit');
+Route::put('messages/update/{id}', 'MessageController@update');
+Route::delete('messages/delete/{id}', 'MessageController@destroy');
+
+//消息中心-消息类型管理
+Route::get('message_types/index', 'MessageTypeController@index');
+Route::get('message_types/create', 'MessageTypeController@create');
+Route::post('message_types/store', 'MessageTypeController@store');
+Route::get('message_types/show/{id}', 'MessageTypeController@show');
+Route::get('message_types/edit/{id}', 'MessageTypeController@edit');
+Route::put('message_types/update/{id}', 'MessageTypeController@update');
+Route::delete('message_types/delete/{id}', 'MessageTypeController@destroy');
