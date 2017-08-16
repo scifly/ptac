@@ -36,7 +36,7 @@
                             @endforeach
                         @endif
                     </div>
-                    <input type="hidden" name="del_ids" id="del_ids">
+                    {{--<input type="hidden" name="del_ids[]" id="del_ids">--}}
                     <a class="btn btn-primary" data-toggle="modal" data-target="#modalPic">上传</a>
                 </div>
             </div>
