@@ -157,7 +157,7 @@ class WapSiteController extends Controller
             $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
             $this->result['message'] = '所属学校重复！';
 
-        }else{                 
+        }else{
             //删除原有的图片
             $f = explode(",", $siteRequest->input('del_ids'));
             $medias = Media::whereIn('id',$f)->get(['id','path']);
