@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use App\Facades\DatatableFacade as Datatable;
 
 /**
  * App\Models\ScoreTotal
@@ -31,9 +31,14 @@ use App\Facades\DatatableFacade as Datatable;
  * @method static Builder|ScoreTotal whereUpdatedAt($value)
  * @mixin \Eloquent
  * 总分数
+ * @property int $enabled
+ * @property-read \App\Models\Exam $exam
+ * @property-read \App\Models\Student $student
+ * @property-read \App\Models\Subject $subjects
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ScoreTotal whereEnabled($value)
  */
 class ScoreTotal extends Model {
-
+    
     protected $table = 'score_totals';
     protected $fillable = [
         'student_id',
@@ -45,21 +50,21 @@ class ScoreTotal extends Model {
         'grade_rank',
         'enabled'
     ];
-
+    
     public function student() {
         return $this->belongsTo('App\Models\Student');
     }
-
+    
     public function exam() {
         return $this->belongsTo('App\Models\Exam');
     }
-
+    
     function subjects() {
         return $this->belongsTo('App\Models\Subject');
     }
-
-    public function  datatable() {
-
+    
+    public function datatable() {
+        
         $columns = [
             ['db' => 'ScoreTotal.id', 'dt' => 0],
             ['db' => 'Student.student_number', 'dt' => 1],
@@ -72,12 +77,12 @@ class ScoreTotal extends Model {
             [
                 'db' => 'ScoreTotal.updated_at', 'dt' => 8,
                 'formatter' => function ($d, $row) {
-
+                    
                     $id = $row['id'];
                     $showLink = $d . sprintf(Datatable::DT_LINK_SHOW, $id);
-
+                    
                     return Datatable::DT_SPACE . $showLink;
-
+                    
                 }
             ]
         ];
@@ -109,5 +114,5 @@ class ScoreTotal extends Model {
         ];
         return Datatable::simple($this, $columns, $joins);
     }
-
+    
 }

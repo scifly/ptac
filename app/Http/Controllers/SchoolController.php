@@ -54,11 +54,13 @@ class SchoolController extends Controller {
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\School $school
+     * @param $id
      * @return \Illuminate\Http\Response
      */
-    public function show(School $school) {
-        //
+    public function show($id) {
+    
+    
+    
     }
     
     /**

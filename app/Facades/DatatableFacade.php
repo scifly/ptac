@@ -16,8 +16,8 @@ class DatatableFacade extends Facade {
     const DT_LINK_DEL = '<!--suppress HtmlUnknownAnchorTarget -->
 <a id="%s" href="" class="btn btn-danger btn-icon btn-circle btn-xs" data-toggle="modal"><i class="fa fa-trash"></i></a>';
     const DT_LINK_SHOW = '<!--suppress HtmlUnknownAnchorTarget -->
-<a href="show/%s" class="btn btn-primary btn-icon btn-circle btn-xs"  data-toggle="modal"><i class="fa fa-eye"></i></a>';
-/*<a id="%s" href="" class="btn btn-primary btn-icon btn-circle btn-xs"  data-toggle="modal"><i class="fa fa-eye"></i></a>';*/
+<a id="%s" href="" class="btn btn-primary btn-icon btn-circle btn-xs"  data-toggle="modal"><i class="fa fa-eye"></i></a>';
+/*<a href="show/%s" class="btn btn-primary btn-icon btn-circle btn-xs"  data-toggle="modal"><i class="fa fa-eye"></i></a>';*/
     const DT_SPACE = '&nbsp;';
     const DT_PRIMARY = '<span class="badge badge-info">%s</span>';
     const DT_LOCK = '<i class="fa fa-lock"></i>&nbsp;已占用';
@@ -27,7 +27,7 @@ class DatatableFacade extends Facade {
     
     /**
      * Perform the SQL queries needed for an server-side processing requested,
-     * utilising the helper functions of this class, limit(), order() and
+     * utilising the menu functions of this class, limit(), order() and
      * filter() among others. The returned array is ready to be encoded as JSON
      * in response to an SSP request, or can be modified if needed before
      * sending back to the client.
@@ -363,11 +363,11 @@ class DatatableFacade extends Facade {
             $_data = (array)$data[$i];
             $j = 0;
             foreach ($_data as $name => $value) {
-                if (in_array($name, ['created_at', 'updated_at'])) {
+                /*if (in_array($name, ['created_at', 'updated_at'])) {
                     $dt = Carbon::createFromFormat('Y-m-d H:i:s', $value);
                     
                     $value = $dt->diffForhumans();
-                }
+                }*/
                 $column = $columns[$j];
                 if (isset($column['formatter'])) {
                     $row[$column['dt']] = $column['formatter']($value, $_data);

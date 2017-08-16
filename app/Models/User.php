@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
+use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use App\Facades\DatatableFacade as Datatable;
 
 /**
  * App\User
@@ -67,10 +67,10 @@ use App\Facades\DatatableFacade as Datatable;
  * @property-read \App\Models\PollQuestionnaire $pollquestionnaires
  */
 class User extends Authenticatable {
-
+    
     use Notifiable;
     protected $table = 'users';
-
+    
     /**
      * The attributes that are mass assignable.
      *
@@ -87,7 +87,7 @@ class User extends Authenticatable {
         'wechatid',
         'enabled',
     ];
-
+    
     /**
      * The attributes that should be hidden for arrays.
      *
@@ -96,27 +96,27 @@ class User extends Authenticatable {
     protected $hidden = [
         'password', 'remember_token',
     ];
-
+    
     public function custodian() { return $this->hasOne('App\Models\Custodian'); }
-
+    
     public function educator() { return $this->hasOne('App\Models\Educator'); }
-
+    
     public function student() { return $this->hasOne('App\Models\Student'); }
-
+    
     public function group() { return $this->belongsTo('App\Models\Group'); }
-
-    public function operator(){ return $this->hasOne('App\Models\Operator'); }
-
-    public function order(){ return $this->hasOne('App\Models\Order'); }
-
-    public function pollquestionnaires(){ return $this->hasOne('App\Models\PollQuestionnaire'); }
-
-    public function pollquestionnaireAnswer(){ return $this->hasOne('App\Models\PollQuestionnaireAnswer'); }
-
-    public function pollquestionnairePartcipant(){ return $this->hasOne('App\Models\PollQuestionnaireParticipant'); }
-
+    
+    public function operator() { return $this->hasOne('App\Models\Operator'); }
+    
+    public function order() { return $this->hasOne('App\Models\Order'); }
+    
+    public function pollquestionnaires() { return $this->hasOne('App\Models\PollQuestionnaire'); }
+    
+    public function pollquestionnaireAnswer() { return $this->hasOne('App\Models\PollQuestionnaireAnswer'); }
+    
+    public function pollquestionnairePartcipant() { return $this->hasOne('App\Models\PollQuestionnaireParticipant'); }
+    
     public function datatable() {
-
+        
         $columns = [
             ['db' => 'User.id', 'dt' => 0],
             ['db' => 'Groups.name as grapname', 'dt' => 1],
@@ -126,7 +126,7 @@ class User extends Authenticatable {
             [
                 'db' => 'User.gender', 'dt' => 5,
                 'formatter' => function ($d, $row) {
-                    return $d?'女':'男';
+                    return $d ? '女' : '男';
                 }
             ],
             ['db' => 'User.email', 'dt' => 6],
@@ -139,7 +139,7 @@ class User extends Authenticatable {
                 }
             ],
         ];
-
+        
         $joins = [
             [
                 'table' => 'groups',
@@ -150,7 +150,7 @@ class User extends Authenticatable {
                 ]
             ]
         ];
-
+        
         return Datatable::simple($this, $columns, $joins);
     }
 }

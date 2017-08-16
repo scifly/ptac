@@ -41,18 +41,18 @@ class EducatorAttendance extends Model {
         'inorout',
         'eas_id'
     ];
-
+    
     /**
      * 教职工考勤与教职工申诉
      */
-    public function educatorAppeal(){
-        return $this->hasOne('App\Models\EducatorAppeal','ea_ids');
+    public function educatorAppeal() {
+        return $this->hasOne('App\Models\EducatorAppeal', 'ea_ids');
     }
-
+    
     /**
      * 教职工考勤与考勤设置
      */
-    public function educatorAttendanceSetting(){
-        return $this->belongsTo('App\Models\EducatorAttendanceSetting','eas_id');
+    public function educatorAttendanceSetting() {
+        return $this->belongsTo('App\Models\EducatorAttendanceSetting', 'eas_id');
     }
 }

@@ -35,7 +35,7 @@ use Illuminate\Database\Eloquent\Model;
 class Order extends Model {
     //
     protected $table = 'orders';
-
+    
     protected $fillable = ['ordersn',
         'user_id',
         'pay_user_id',
@@ -46,14 +46,12 @@ class Order extends Model {
         'created_at',
         'updated_at'
     ];
-
-    public function user()
-    {
+    
+    public function user() {
         return $this->belongsTo('App\Models\User');
     }
-
-    public function comboType()
-    {
+    
+    public function comboType() {
         return $this->belongsTo('App\models\ComboType');
     }
 }

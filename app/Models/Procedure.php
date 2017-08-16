@@ -32,7 +32,7 @@ use Illuminate\Database\Eloquent\Model;
 class Procedure extends Model {
     //
     protected $table = 'procedures';
-
+    
     protected $fillable = [
         'procedure_type_id',
         'school_id',
@@ -42,24 +42,24 @@ class Procedure extends Model {
         'updated_at',
         'enabled',
     ];
-
+    
     /**
      * 流程与学校
      */
     public function school() {
         return $this->belongsTo('App\Models\School');
     }
-
+    
     /**
      * 流程与流程类型
      */
     public function procedureType() {
         return $this->belongsTo('App\Models\ProcedureType');
     }
-
-
+    
+    
     public function datatable() {
-
+        
         $columns = [
             ['db' => 'Procedures.id', 'dt' => 0],
             ['db' => 'ProcedureType.name as proceduretypename', 'dt' => 1],
@@ -75,7 +75,7 @@ class Procedure extends Model {
                 }
             ],
         ];
-
+        
         $joins = [
             [
                 'table' => 'schools',
@@ -94,7 +94,7 @@ class Procedure extends Model {
                 ]
             ]
         ];
-
+        
         return Datatable::simple($this, $columns, $joins);
     }
 }

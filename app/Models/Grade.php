@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use App\Facades\DatatableFacade as Datatable;
 
 /**
  * App\Models\Grade
@@ -30,46 +30,44 @@ use App\Facades\DatatableFacade as Datatable;
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Subject[] $subject
  */
 class Grade extends Model {
-
+    
     protected $fillable = [
         'name',
         'school_id',
         'educator_ids',
         'enabled',
     ];
-
-    public function squads() {
-
-        return $this->hasMany('App\Models\Squad');
-    }
-
+    
     public function school() {
-
+        
         return $this->belongsTo('App\Models\School');
     }
-
+    
     public function subject() {
         return $this->hasMany('App\Models\Subject');
     }
-
-    public function students()
-    {
+    
+    public function students() {
         #先获取班级对象集合
-        $classes=$this->squads()->get();
-
-        $students=[];
+        $classes = $this->squads()->get();
+        
+        $students = [];
         #循环班级对象集合
-        foreach ($classes as $class)
-        {
-            $stdents[]=Student::whereClassId($class->id);
+        foreach ($classes as $class) {
+            $stdents[] = Student::whereClassId($class->id);
         }
-
+        
         return $students;
-
+        
     }
-
+    
+    public function squads() {
+        
+        return $this->hasMany('App\Models\Squad');
+    }
+    
     public function datatable() {
-
+        
         $columns = [
             ['db' => 'Grade.id', 'dt' => 0],
             ['db' => 'Grade.name', 'dt' => 1],
@@ -77,7 +75,7 @@ class Grade extends Model {
             ['db' => 'Grade.educator_ids', 'dt' => 3],
             ['db' => 'Grade.created_at', 'dt' => 4],
             ['db' => 'Grade.updated_at', 'dt' => 5],
-
+            
             [
                 'db' => 'Grade.enabled', 'dt' => 6,
                 'formatter' => function ($d, $row) {
@@ -89,15 +87,15 @@ class Grade extends Model {
             [
                 'table' => 'schools',
                 'alias' => 'School',
-                'type'  => 'INNER',
+                'type' => 'INNER',
                 'conditions' => [
                     'School.id = Grade.school_id'
                 ]
-
+            
             ]
         ];
-
+        
         return Datatable::simple($this, $columns, $joins);
     }
-
+    
 }
