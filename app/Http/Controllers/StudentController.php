@@ -26,6 +26,7 @@ class StudentController extends Controller
             'dialog' => true,
             'datatable' => true,
             'form'=>true,
+            'show'=>true
         ]);
     }
 
@@ -78,9 +79,30 @@ class StudentController extends Controller
      * @internal param Student $student
      */
     public function show($id){
-
-        $student = $this->student->findOrFail($id);
-        return view('student.show', ['student' => $student]);
+        $students = $this->student->whereId($id)
+            ->first([
+                'user_id','class_id',
+                'student_number',
+                'card_number',
+                'oncampus',
+                'birthday',
+                'remark',
+                'enabled'
+            ]);
+        $students->user_id = $students->user->realname;
+        $students->class_id = $students->squad->name;
+        $students->oncampus = $students->oncampus==1 ? '是' : '否' ;
+        $students->enabled = $students->enabled==1 ? '已启用' : '已禁用' ;
+        if ($students) {
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
+            $this->result['showData'] = $students;
+        } else {
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+            $this->result['message'] = '';
+        }
+        return response()->json($this->result);
+//        $student = $this->student->findOrFail($id);
+//        return view('student.show', ['student' => $student]);
     }
 
     /**

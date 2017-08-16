@@ -34,4 +34,7 @@
             </table>
         </div>
     </div>
+    @isset($show)
+    @include('student.show')
+    @endif
 @endsection
