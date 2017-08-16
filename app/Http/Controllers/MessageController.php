@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\MessageRequest;
+use App\Models\Media;
 use App\Models\Message;
 use App\Models\User;
 use Illuminate\Support\Facades\Request;
@@ -113,10 +114,15 @@ class MessageController extends Controller
         foreach ($users as $value) {
             $selectedUsers[$value['id']] = $value['realname'];
         }
+        $m = explode(",", $message->media_ids);
+
+        $medias = Media::whereIn('id',$m)->get(['id','path']);
+
         return view('message.edit', [
             'js' => 'js/message/edit.js',
             'message' => $message,
             'selectedUsers' => $selectedUsers,
+            'medias' => $medias,
             'form' => true
 
         ]);
