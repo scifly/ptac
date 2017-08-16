@@ -7,6 +7,8 @@ use App\Models\Media;
 use App\Models\WsmArticle;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\Storage;
+
 class WsmArticleController extends Controller
 {
     protected $article;
@@ -68,6 +70,19 @@ class WsmArticleController extends Controller
             'enabled' => $request->input('enabled')
         ];
 //dd($data);die;
+        //删除原有的图片
+        $del_ids = $request->input('del_ids');
+        if($del_ids){
+            $medias = Media::whereIn('id',$del_ids)->get(['id','path']);
+
+            foreach ($medias as $v)
+            {
+                $path_arr = explode("/",$v->path);
+                Storage::disk('uploads')->delete($path_arr[5]);
+
+            }
+            $delStatus = Media::whereIn('id',$del_ids)->delete();
+        }
         if($this->article->create($data))
         {
             $this->result['message'] = self::MSG_CREATE_OK;
@@ -146,6 +161,19 @@ class WsmArticleController extends Controller
         $data->media_ids = implode(',', $media_ids);
         $data->enabled = $request->input('enabled');
 
+        //删除原有的图片
+        $del_ids = $request->input('del_ids');
+        if($del_ids){
+            $medias = Media::whereIn('id',$del_ids)->get(['id','path']);
+
+            foreach ($medias as $v)
+            {
+                $path_arr = explode("/",$v->path);
+                Storage::disk('uploads')->delete($path_arr[5]);
+
+            }
+            $delStatus = Media::whereIn('id',$del_ids)->delete();
+        }
 
         if($data->save())
         {

@@ -7,6 +7,8 @@ use App\Models\Media;
 use App\Models\Message;
 use App\Models\User;
 use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\Storage;
+
 class MessageController extends Controller
 {
     protected $message;
@@ -71,7 +73,19 @@ class MessageController extends Controller
             'recipient_count' => 0,
         ];
 
+        //删除原有的图片
+        $del_ids = $request->input('del_ids');
+        if($del_ids){
+            $medias = Media::whereIn('id',$del_ids)->get(['id','path']);
 
+            foreach ($medias as $v)
+            {
+                $path_arr = explode("/",$v->path);
+                Storage::disk('uploads')->delete($path_arr[5]);
+
+            }
+            $delStatus = Media::whereIn('id',$del_ids)->delete();
+        }
         if($this->message->create($data))
         {
             $this->result['message'] = self::MSG_CREATE_OK;
@@ -154,7 +168,19 @@ class MessageController extends Controller
         $data->received_count = 0;
         $data->recipient_count = 0;
 
+        //删除原有的图片
+        $del_ids = $request->input('del_ids');
+        if($del_ids){
+            $medias = Media::whereIn('id',$del_ids)->get(['id','path']);
 
+            foreach ($medias as $v)
+            {
+                $path_arr = explode("/",$v->path);
+                Storage::disk('uploads')->delete($path_arr[5]);
+
+            }
+            $delStatus = Media::whereIn('id',$del_ids)->delete();
+        }
         if($data->save())
         {
             $this->result['message'] = self::MSG_EDIT_OK;
