@@ -41,11 +41,8 @@ $(function () {
         $uploadFile.fileinput('clear');
     });
     // 点击删除按钮
-    // var del_ids=[];
     $('body').on('click', '.delete', function () {
-        // del_ids.push($(this).parent().siblings().attr('id'));
         $(this).parent().parent().remove();
-        // $('#del_ids').val(del_ids);
         $pre.append('<input type="hidden" name="del_ids[]" value="' + $(this).parent().siblings().attr('id') + '">');
     })
 });

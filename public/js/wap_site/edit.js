@@ -40,5 +40,6 @@ $(function () {
     // 点击删除按钮
     $('body').on('click', '.delete', function () {
         $(this).parent().parent().remove();
+        $pre.append('<input type="hidden" name="del_ids[]" value="' + $(this).parent().siblings().attr('id') + '">');
     })
 });
