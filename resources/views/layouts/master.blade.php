@@ -596,9 +596,9 @@
 <script src="{{ URL::asset('js/demo.js') }}"></script>
 
 @isset($ueditor)
-<script type="text/javascript" src="{{ URL::asset('js/UEditor/ueditor.config.js') }}"></script>
+<script type="text/javascript" src="{{ URL::asset('js/plugins/UEditor/ueditor.config.js') }}"></script>
 <!-- 编辑器源码文件 -->
-<script type="text/javascript" src="{{ URL::asset('js/UEditor/ueditor.all.js') }}"></script>
+<script type="text/javascript" src="{{ URL::asset('js/plugins/UEditor/ueditor.all.js') }}"></script>
 <!-- 实例化编辑器 -->
 <script type="text/javascript">
     var editor = UE.getEditor('container');

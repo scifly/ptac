@@ -34,6 +34,7 @@ class ComposerServiceProvider extends ServiceProvider {
         View::composer('wap_site.create_edit', 'App\Http\ViewComposers\WapSiteComposer');
         View::composer('wap_site_module.create_edit', 'App\Http\ViewComposers\WapSiteModuleComposer');
         View::composer('wsm_article.create_edit', 'App\Http\ViewComposers\WsmArticleComposer');
+        View::composer('message.create_edit', 'App\Http\ViewComposers\MessageComposer');
 
     }
 

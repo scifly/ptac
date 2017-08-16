@@ -145,18 +145,25 @@ class WapSiteController extends Controller
 
         $data->school_id = $siteRequest->input('school_id');
         $data->site_title = $siteRequest->input('site_title');
-        $data->media_ids = implode(',', $media_ids);
         $data->enabled = $siteRequest->input('enabled');
 
         $row = $this->wapSite->where([
             'school_id' => $data->school_id,
         ])->first();
+
+
         if(!empty($row) && $row->id != $id){
 
             $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
             $this->result['message'] = '所属学校重复！';
 
         }else{
+            //删除原有的图片
+            $f = explode(",", $data->media_ids);
+            $delStatus = Media::whereIn('id',$f)->delete();
+
+            $data->media_ids = implode(',', $media_ids);
+
             if($data->save())
             {
                 $this->result['message'] = self::MSG_EDIT_OK;
@@ -241,6 +248,8 @@ class WapSiteController extends Controller
         }
 
     }
+
+
     public function webindex(){
 
         $school_id = isset($_GET['school_id']) ? $_GET['school_id'] : '';
@@ -254,7 +263,7 @@ class WapSiteController extends Controller
 //
 //        }
 //        die;
-        return view('wap_site.web.index', [
+        return view('wap_site.web_index', [
             'wapsite' => $wapsite,
             'medias' => $medias,
             'ws' =>true
