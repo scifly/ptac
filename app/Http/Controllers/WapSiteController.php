@@ -198,7 +198,7 @@ class WapSiteController extends Controller
      */
     public function uploadImages(){
 
-        if (Request::isMethod('post')) {
+//        if (Request::isMethod('post')) {
 
             $files = Request::file('img');
 
@@ -245,7 +245,7 @@ class WapSiteController extends Controller
             $result['data'] = $mes;
             }
             return response()->json($result);
-        }
+//        }
 
     }
 

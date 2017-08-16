@@ -31,23 +31,18 @@
                     {{--@endif--}}
                     <div class="preview">
                         @if(isset($medias))
+                            @foreach($medias as $key => $value)
+
                             <div class="img-item">
-                                <img src="../img/user1-128x128.jpg" alt="" id="0">
-                                @foreach($medias as $key => $value)
-                                    <img src="../../{{$value->path}}">
+                                    <img src="../../../{{$value->path}}">
                                     <input type="hidden" name="media_ids[]" value="{{$value->id}}"/>
-                                @endforeach
-                                <div class="del-mask">
-                                    <i class="delete fa fa-trash"></i>
-                                </div>
+                                    <div class="del-mask">
+                                        <i class="delete fa fa-trash"></i>
+                                    </div>
                             </div>
+                            @endforeach
+
                         @endif
-                        <div class="img-item">
-                            <img src="../img/user1-128x128.jpg" alt="" id="0">
-                            <div class="del-mask">
-                                <i class="delete fa fa-trash-o"></i>
-                            </div>
-                        </div>
                     </div>
                     <a class="btn btn-primary" data-toggle="modal" data-target="#modalPic">上传</a>
                 </div>
