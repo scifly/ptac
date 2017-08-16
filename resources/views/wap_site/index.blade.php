@@ -2,7 +2,7 @@
 @section('header')
     <div class="panel-heading">
         <div class="btn-group">
-            <a href="{{ url('wapsites/create') }}" class="btn btn-primary pull-right">
+            <a href="{{ url('wap_sites/create') }}" class="btn btn-primary pull-right">
                 添加微网站
             </a>
         </div>

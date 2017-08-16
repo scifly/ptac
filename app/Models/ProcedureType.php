@@ -27,22 +27,23 @@ use Illuminate\Database\Eloquent\Model;
 class ProcedureType extends Model {
     //
     protected $table = 'procedure_types';
-
-    protected $fillable =[
+    
+    protected $fillable = [
         'name',
         'remark',
         'created_at',
         'updated_at',
+        'enabled'
     ];
-
+    
     public function procedures() {
-
+        
         return $this->hasMany('App\Models\Procedure');
-
+        
     }
-
+    
     public function datatable() {
-
+        
         $columns = [
             ['db' => 'ProcedureType.id', 'dt' => 0],
             ['db' => 'ProcedureType.name', 'dt' => 1],
@@ -56,7 +57,7 @@ class ProcedureType extends Model {
                 }
             ],
         ];
-
+        
         return Datatable::simple($this, $columns);
     }
 }

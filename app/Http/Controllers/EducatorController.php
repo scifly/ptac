@@ -69,6 +69,7 @@ class EducatorController extends Controller
         $data['team_ids'] = implode(',', $ids);
         $data['school_id'] = $educatorRequest->input('school_id');
         $data['sms_quote'] = $educatorRequest->input('sms_quote');
+        $data['enabled'] = $educatorRequest->input('enabled');
 
         if($this->educator->create($data))
         {
@@ -154,6 +155,7 @@ class EducatorController extends Controller
         $data->school_id = $request->input('school_id');
         $data->team_ids = implode(',', $ids);
         $data->sms_quote = $request->input('sms_quote');
+        $data->enabled = $request->input('enabled');
 
         if($data->save())
         {

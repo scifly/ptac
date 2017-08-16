@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use App\Facades\DatatableFacade as Datatable;
 
 /**
  * App\Models\ProcedureLog
@@ -34,13 +34,16 @@ use App\Facades\DatatableFacade as Datatable;
  * @method static Builder|ProcedureLog whereStepStatus($value)
  * @method static Builder|ProcedureLog whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property-read \App\Models\Procedure $procedure
+ * @property-read \App\Models\ProcedureStep $procedureStep
+ * @property-read \App\Models\User $user
  */
 class ProcedureLog extends Model {
-
+    
     const DT_PEND = '<span class="badge bg-orange">%s</span>';
-
+    
     protected $table = 'procedure_logs';
-
+    
     protected $fillable = [
         'initiator_user_id',
         'procedure_id',
@@ -54,13 +57,21 @@ class ProcedureLog extends Model {
         'created_at',
         'updated_at',
     ];
-
+    
     /**
-     * 流程日志与用户
+     * 流程日志发起人
      */
-    public function user() {
-        return $this->belongsTo('App\Models\User');
+    public function initiator_user() {
+        return $this->belongsTo('App\Models\User')->select('id', 'realname');
     }
+    
+    /**
+     * 流程日志操作者
+     */
+    public function operator_user() {
+        return $this->belongsTo('App\Models\User')->select('id', 'realname');
+    }
+
 
     /**
      * 流程日志与流程
@@ -68,72 +79,67 @@ class ProcedureLog extends Model {
     public function procedure() {
         return $this->belongsTo('App\Models\Procedure');
     }
-
+    
     /**
-     * 日志与流程步骤
+     * 流程日志与流程步骤
      */
-    public function procedureStep() {
+    public function procedure_step() {
         return $this->belongsTo('App\Models\ProcedureStep');
     }
-
-    /**
-     * 获取用户信息
-     * @param $userId
-     * @return \Illuminate\Database\Eloquent\Collection|Model|null|static|static[]
-     */
-    public function get_user($userId){
-        return User::find($userId);
-    }
-
+    
     /**
      * 步骤状态处理，0-通过，1-拒绝，2-待定
      * @param $d
      * @return string
      */
-    public function status($d){
-
-        switch ($d){
-            case 0: return '通过';
-            case 1: return '拒绝';
-            case 2: return '待定';
-            default: return '通过';
+    public function status($d) {
+        
+        switch ($d) {
+            case 0:
+                return '通过';
+            case 1:
+                return '拒绝';
+            case 2:
+                return '待定';
+            default:
+                return '错误';
         }
     }
-
+    
     /**
      * 拆分initiator_media_ids、operator_media_ids,
      * @param $media_ids
      * @return array 处理后字典 key=>media.id,value => media
      */
-    public function operate_ids($media_ids){
-
-        $ids = explode(',',$media_ids);
-
+    public function operate_ids($media_ids) {
+        
+        $ids = explode(',', $media_ids);
+        
         $medias = array();
         foreach ($ids as $mid) {
             $media = Media::find($mid);
             $medias[$mid] = $media;
         }
-
+        
         return $medias;
     }
-
-    public function datatable(){
-
+    
+    public function datatable() {
+        
         $columns = [
             ['db' => 'ProcedureLog.id', 'dt' => 0],
             [
                 'db' => 'ProcedureLog.initiator_user_id', 'dt' => 1,
-                'formatter' => function($d, $row) {
-                       $user = $this->get_user($d);
-                       return $user->realname;
+                'formatter' => function ($d, $row) {
+                    $user = $this->get_user($d);
+                    return $user->realname;
                 }
             ],
             ['db' => 'Procedures.name as procedurename', 'dt' => 2],
             ['db' => 'ProcedureStep.name procedurestepname', 'dt' => 3],
             [
                 'db' => 'ProcedureLog.operator_user_id', 'dt' => 4,
-                'formatter' => function($d, $row) {
+                'formatter' => function ($d, $row) {
                     $user = $this->get_user($d);
                     return $user->realname;
                 }
@@ -144,37 +150,38 @@ class ProcedureLog extends Model {
             ['db' => 'ProcedureLog.updated_at', 'dt' => 8],
             [
                 'db' => 'ProcedureLog.step_status', 'dt' => 9,
-                'formatter' => function($d, $row) {
-
-                    switch ($d){
-
+                'formatter' => function ($d, $row) {
+                    
+                    switch ($d) {
+                        
                         case 0:
-                            $status =  sprintf(Datatable::DT_ON, '通过');
+                            $status = sprintf(Datatable::DT_ON, '通过');
                             break;
-
+                        
                         case 1:
                             $status = sprintf(Datatable::DT_OFF, '拒绝');
                             break;
-
+                        
                         case 2:
                             $status = sprintf(self::DT_PEND, '待定');
                             break;
-
+                        
                         default:
-                            $status =  sprintf(Datatable::DT_ON, '通过');
+                            $status = sprintf(Datatable::DT_ON, '通过');
                             break;
                     }
-
+                    
                     $id = $row['id'];
-                    $showLink = sprintf(Datatable::DT_LINK_SHOW, /*$model->getTable(),*/ $id);
+                    $showLink = sprintf(Datatable::DT_LINK_SHOW, /*$model->getTable(),*/
+                        $id);
                     $delLink = sprintf(Datatable::DT_LINK_DEL, $id);
-
+                    
                     return $status . Datatable::DT_SPACE . $showLink . Datatable::DT_SPACE . $delLink;
-
+                    
                 }
             ],
         ];
-
+        
         $joins = [
             [
                 'table' => 'procedures',
@@ -193,8 +200,17 @@ class ProcedureLog extends Model {
                 ]
             ]
         ];
-
+        
         return Datatable::simple($this, $columns, $joins);
     }
-
+    
+    /**
+     * 获取用户信息
+     * @param $userId
+     * @return \Illuminate\Database\Eloquent\Collection|Model|null|static|static[]
+     */
+    public function get_user($userId) {
+        return User::find($userId);
+    }
+    
 }

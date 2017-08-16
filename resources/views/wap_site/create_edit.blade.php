@@ -1,10 +1,3 @@
-<style>
-    .preview img {
-        width: 100%;
-        height: 100px;
-        margin: 10px;
-    }
-</style>
 <div class="box box-primary">
     <div class="box-header"></div>
     <div class="box-body">
@@ -29,23 +22,45 @@
             </div>
             <div class="form-group">
                 {!! Form::label('media_ids', '轮播图',['class' => 'col-sm-2 control-label']) !!}
-                <div class="col-sm-6">
-                    @if(isset($medias))
-                        @foreach($medias as $key => $value)
-                            <img src="../../..{{$value->path}}">
-                            <input type="hidden" name="media_ids[]" value="{{$value->id}}"/>
-                        @endforeach
-                    @endif
-                    <div class="preview" style="width: 100px;overflow: hidden;"></div>
+                <div class="col-sm-10">
+                    {{--@if(isset($medias))--}}
+                    {{--@foreach($medias as $key => $value)--}}
+                    {{--<img src="../../{{$value->path}}">--}}
+                    {{--<input type="hidden" name="media_ids[]" value="{{$value->id}}"/>--}}
+                    {{--@endforeach--}}
+                    {{--@endif--}}
+                    <div class="preview">
+                        @if(isset($medias))
+                            <div class="img-item">
+                                <img src="../img/user1-128x128.jpg" alt="" id="0">
+                                @foreach($medias as $key => $value)
+                                    <img src="../../{{$value->path}}">
+                                    <input type="hidden" name="media_ids[]" value="{{$value->id}}"/>
+                                @endforeach
+                                <div class="del-mask">
+                                    <i class="delete fa fa-trash"></i>
+                                </div>
+                            </div>
+                        @endif
+                        <div class="img-item">
+                            <img src="../img/user1-128x128.jpg" alt="" id="0">
+                            <div class="del-mask">
+                                <i class="delete fa fa-trash-o"></i>
+                            </div>
+                        </div>
+                    </div>
                     <a class="btn btn-primary" data-toggle="modal" data-target="#modalPic">上传</a>
                 </div>
             </div>
             <div class="form-group">
-                <div class="col-sm-3 col-sm-offset-2">
-                    {!! Form::radio('enabled', '1', true) !!}
-                    {!! Form::label('enabled', '启用') !!}
-                    {!! Form::radio('enabled', '0') !!}
-                    {!! Form::label('enabled', '禁用') !!}
+                {!! Form::label('enabled', '是否启用', [
+                    'class' => 'col-sm-2 control-label'
+                ]) !!}
+                <div class="col-sm-6" style="margin-top: 5px;">
+                    <input id="enabled" type="checkbox" name="enabled" data-render="switchery"
+                           data-theme="default" data-switchery="true"
+                           @if(!empty($wapsite['enabled'])) checked @endif
+                           data-classname="switchery switchery-small"/>
                 </div>
             </div>
         </div>

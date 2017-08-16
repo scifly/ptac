@@ -27,9 +27,8 @@ use Illuminate\Database\Eloquent\Model;
  * @mixin \Eloquent
  * @property-read \App\Models\School $schools
  */
-class ConferenceRoom extends Model
-{
-
+class ConferenceRoom extends Model {
+    
     protected $tables = 'conference_rooms';
     protected $fillable = [
         'name',
@@ -38,12 +37,11 @@ class ConferenceRoom extends Model
         'remark',
         'enabled'
     ];
-
+    
     /**
      * 会议地址与学校
      */
-    public function schools()
-    {
+    public function schools() {
         return $this->belongsTo('\App\Models\School');
     }
 }

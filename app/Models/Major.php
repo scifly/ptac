@@ -28,18 +28,16 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Major extends Model {
     //
-    protected $table='majors';
-
-    protected $fillable=['name','remark','school_id','created_at','updated_at','enabled'];
-
-    public function school()
-    {
+    protected $table = 'majors';
+    
+    protected $fillable = ['name', 'remark', 'school_id', 'created_at', 'updated_at', 'enabled'];
+    
+    public function school() {
         return $this->belongsTo('App\Models\School');
     }
-
-
-    public function majorSubject()
-    {
+    
+    
+    public function majorSubject() {
         return $this->hasOne('App\Models\MajorSubject');
     }
 }

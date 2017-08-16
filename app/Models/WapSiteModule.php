@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use App\Facades\DatatableFacade as Datatable;
 
 /**
  * App\Models\WapSiteModule
@@ -27,6 +27,9 @@ use App\Facades\DatatableFacade as Datatable;
  * 网站类型
  * @property-read \App\Models\WapSite $belongsToWs
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\WsmArticle[] $hasManyArticle
+ * @property-read \App\Models\WapSite $wapsite
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\WsmArticle[] $wsmarticles
+ * @property-read \App\Models\Media $media
  */
 class WapSiteModule extends Model {
     //
@@ -40,32 +43,33 @@ class WapSiteModule extends Model {
         'updated_at',
         'enabled',
     ];
-    public function wsmarticles()
-    {
-        return $this->hasMany('App\Models\WsmArticle','wsm_id','id');
+    
+    public function wsmarticles() {
+        return $this->hasMany('App\Models\WsmArticle', 'wsm_id', 'id');
     }
-    public function wapsite()
-    {
-        return $this->belongsTo('App\Models\WapSite', 'wap_site_id', 'id');
-
+    
+    public function wapsite() {
+        return $this->belongsTo('App\Models\WapSite');
+        
     }
-    public function media(){
+    
+    public function media() {
         return $this->belongsTo('App\Models\Media');
-
+        
     }
-
+    
     /**
      * @return array
      */
     public function datatable() {
-
+        
         $columns = [
             ['db' => 'WapSiteModule.id', 'dt' => 0],
             ['db' => 'WapSiteModule.name', 'dt' => 1],
             ['db' => 'WapSite.site_title', 'dt' => 2],
             ['db' => 'WapSiteModule.created_at', 'dt' => 3],
             ['db' => 'WapSiteModule.updated_at', 'dt' => 4],
-
+            
             [
                 'db' => 'WapSiteModule.enabled', 'dt' => 5,
                 'formatter' => function ($d, $row) {
@@ -77,14 +81,14 @@ class WapSiteModule extends Model {
             [
                 'table' => 'wap_sites',
                 'alias' => 'WapSite',
-                'type'  => 'INNER',
+                'type' => 'INNER',
                 'conditions' => [
                     'WapSite.id = WapSiteModule.wap_site_id'
                 ]
             ]
         ];
-
-        return Datatable::simple($this,  $columns, $joins);
+        
+        return Datatable::simple($this, $columns, $joins);
     }
-
+    
 }

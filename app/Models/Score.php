@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use App\Facades\DatatableFacade as Datatable;
 
 /**
  * App\Models\Score
@@ -35,7 +35,7 @@ use App\Facades\DatatableFacade as Datatable;
  * @property-read \App\Models\Subject $subject
  */
 class Score extends Model {
-
+    
     protected $fillable = [
         'student_id',
         'subject_id',
@@ -45,21 +45,21 @@ class Score extends Model {
         'score',
         'enabled'
     ];
-
+    
     public function student() {
         return $this->belongsTo('App\Models\Student');
     }
-
+    
     public function subject() {
         return $this->belongsTo('App\Models\Subject');
     }
-
+    
     public function exam() {
         return $this->belongsTo('App\Models\Exam');
     }
-
+    
     public function datatable() {
-
+        
         $columns = [
             ['db' => 'Score.id', 'dt' => 0],
             ['db' => 'Student.student_number', 'dt' => 1],
@@ -122,5 +122,5 @@ class Score extends Model {
         ];
         return Datatable::simple($this, $columns, $joins);
     }
-
+    
 }

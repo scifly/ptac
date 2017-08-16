@@ -2,7 +2,7 @@
 @section('header')
     <div class="panel-heading">
         <div class="btn-group">
-            <a href="{{ url('wsmarticles/create') }}" class="btn btn-primary pull-right">
+            <a href="{{ url('wsm_articles/create') }}" class="btn btn-primary pull-right">
                 添加文章
             </a>
         </div>

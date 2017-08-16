@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use App\Facades\DatatableFacade as Datatable;
 
 /**
  * App\Models\Team
@@ -40,7 +40,7 @@ class Team extends Model {
             ['db' => 'Team.updated_at', 'dt' => 4],
             [
                 'db' => 'Team.enabled', 'dt' => 5,
-                'formatter' => function($d, $row) {
+                'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
                 }
             ]
@@ -49,5 +49,5 @@ class Team extends Model {
         return Datatable::simple($this, $columns);
         
     }
-
+    
 }

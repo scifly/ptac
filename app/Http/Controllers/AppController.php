@@ -92,13 +92,15 @@ class AppController extends Controller {
     
     /**
      * Update the specified resource in storage.
+     * @param AppRequest $request
      * @param $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function update($id) {
+    public function update(AppRequest $request, $id) {
         
-        $this->app->findOrFail($id)->update(Request::all());
+        $this->app->findOrFail($id)->update($request->all());
         $this->result['message'] = self::MSG_EDIT_OK;
+        
         return response()->json($this->result);
         
     }
@@ -114,6 +116,7 @@ class AppController extends Controller {
         
         $this->app->findOrFail($id)->delete();
         $this->result['message'] = self::MSG_DEL_OK;
+        
         return response()->json($this->result);
         
     }

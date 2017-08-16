@@ -59,7 +59,7 @@ class Semester extends Model {
             ['db' => 'Semester.updated_at', 'dt' => 6],
             [
                 'db' => 'Semester.enabled', 'dt' => 7,
-                'formatter' => function($d, $row) {
+                'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
                 }
             ]
