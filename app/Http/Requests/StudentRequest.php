@@ -60,8 +60,6 @@ class StudentRequest extends FormRequest
         if (!isset($input['oncampus'])) {
             $input['oncampus'] = 0;
         }
-
-
         if (isset($input['enabled']) && $input['enabled'] === 'on') {
             $input['enabled'] = 1;
         }
