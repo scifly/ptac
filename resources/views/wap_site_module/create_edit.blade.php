@@ -21,15 +21,36 @@
                     ]) !!}
                 </div>
             </div>
+            {{--<div class="form-group">--}}
+            {{--{!! Form::label('media_ids', '轮播图',['class' => 'col-sm-4 control-label']) !!}--}}
+            {{--<div class="col-sm-6">--}}
+            {{--@if(isset($module))--}}
+            {{--<img src="../../..{{$module->media->path}}">--}}
+            {{--<input type="hidden" name="media_id" value="{{$module->media->id}}"/>--}}
+            {{--@endif--}}
+            {{--<div class="preview" style="width: 100px;overflow: hidden;"></div>--}}
+            {{--<a class="btn btn-primary" data-toggle="modal" data-target="#modalPic">上传</a>--}}
+            {{--</div>--}}
+            {{--</div>--}}
             <div class="form-group">
                 {!! Form::label('media_ids', '轮播图',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-6">
-                    @if(isset($module))
-                        <img src="../../..{{$module->media->path}}">
-                        <input type="hidden" name="media_id" value="{{$module->media->id}}"/>
-                    @endif
-                    <div class="preview" style="width: 100px;overflow: hidden;"></div>
+                    <div class="preview">
+                        @if(isset($module))
+                            <div class="img-item">
+                                <img src="../../..{{$module->media->path}}" id="{{$module->media->id}}">
+                                <input type="hidden" name="media_id" value="{{$module->media->id}}"/>
+                                <div class="del-mask"><i class="delete fa fa-trash-o"></i></div>
+                            </div>
+                        @endif
+                    </div>
                     <a class="btn btn-primary" data-toggle="modal" data-target="#modalPic">上传</a>
+                    {{-- @if(isset($module))
+                         <img src="../../..{{$module->media->path}}">
+                         <input type="hidden" name="media_id" value="{{$module->media->id}}"/>
+                     @endif
+                     <div class="preview" style="width: 100px;overflow: hidden;"></div>
+                     <a class="btn btn-primary" data-toggle="modal" data-target="#modalPic">上传</a>--}}
                 </div>
             </div>
             <div class="form-group">
@@ -67,16 +88,11 @@
                 </h4>
             </div>
             <div class="modal-body">
-                <form action="#" class="form-horizontal" enctype="multipart/form-data">
-                    <input type="file" id="uploadFile" accept="image/jpeg,image/gif,image/png" multiple>
-                </form>
+                <input type="file" name="img[]" id="uploadFile" accept="image/jpeg,image/gif,image/png" multiple>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default"
                         data-dismiss="modal">关闭
-                </button>
-                <button type="button" class="btn btn-primary" id="upload">
-                    上传
                 </button>
             </div>
         </div>

@@ -3,40 +3,38 @@
     <div class="box-body">
         <div class="form-horizontal">
             <div class="form-group">
-                {!! Form::label('wsm_id', '所属网站模块',['class' => 'col-sm-2 control-label']) !!}
-                <div class="col-sm-2">
-                    {!! Form::select('wsm_id', $wsms, null, ['class' => 'form-control']) !!}
-                </div>
-            </div>
-            <div class="form-group">
-                {!! Form::label('name', '名称',['class' => 'col-sm-2 control-label']) !!}
+                {!! Form::label('content', '消息内容',['class' => 'col-sm-2 control-label']) !!}
                 <div class="col-sm-3">
-                    {!! Form::text('name', null, [
-                    'class' => 'form-control',
-                    'placeholder' => '不能超过40个汉字',
-                    'data-parsley-required' => 'true',
-                    'data-parsley-maxlength' => '40',
-                    'data-parsley-minlength' => '2',
-
-                    ]) !!}
-                </div>
-            </div>
-            <div class="form-group">
-                {!! Form::label('summary', '文章摘要',['class' => 'col-sm-2 control-label']) !!}
-                <div class="col-sm-3">
-                    {!! Form::text('summary', null, [
+                    {!! Form::text('content', null, [
                     'class' => 'form-control',
                     'placeholder' => '不能超过60个汉字',
                     'data-parsley-required' => 'true',
                     'data-parsley-maxlength' => '60',
                     'data-parsley-minlength' => '2',
-
                     ]) !!}
                 </div>
             </div>
             <div class="form-group">
+                {!! Form::label('serviceid', '业务id',['class' => 'col-sm-2 control-label']) !!}
+                <div class="col-sm-2">
+                    {!! Form::text('serviceid', null, ['class' => 'form-control']) !!}
+                </div>
+            </div>
+            <div class="form-group">
+                {!! Form::label('message_id', '消息id',['class' => 'col-sm-2 control-label']) !!}
+                <div class="col-sm-2">
+                    {!! Form::text('message_id', null, ['class' => 'form-control']) !!}
+                </div>
+            </div>
+            <div class="form-group">
+                {!! Form::label('url', '页面地址',['class' => 'col-sm-2 control-label']) !!}
+                <div class="col-sm-2">
+                    {!! Form::text('url', null, ['class' => 'form-control']) !!}
+                </div>
+            </div>
+            <div class="form-group">
                 {!! Form::label('media_ids', '轮播图',['class' => 'col-sm-2 control-label']) !!}
-                <div class="col-sm-6">
+                <div class="col-sm-10">
                     <div class="preview">
                         @if(isset($medias))
                             @foreach($medias as $key => $value)
@@ -54,27 +52,34 @@
                 </div>
             </div>
             <div class="form-group">
-                {!! Form::label('content', '文章内容',['class' => 'col-sm-2 control-label']) !!}
-                <div class="col-sm-6">
-                    <script id="container" name="content" type="text/plain" >
-                        @if(isset($article->content))
-                            {!!($article->content)!!}
-                        @endif
-                    </script>
+                {!! Form::label('user_id', '发送者用户',['class' => 'col-sm-2 control-label']) !!}
+                <div class="col-sm-2">
+                    {!! Form::select('user_id', $users, null, ['class' => 'form-control']) !!}
+                </div>
+            </div>
+            <div class="form-group">
+                {!! Form::label('user_ids', '接收者用户',['class' => 'col-sm-2 control-label']) !!}
+                <div class="col-sm-2">
+                    <select multiple="multiple" name="user_ids[]" id="user_ids">
+                        @foreach($users as $key => $value)
+                            @if(isset($selectedUsers))
+                                <option value="{{$key}}" @if(array_key_exists($key,$selectedUsers))selected="selected"@endif>
+                                    {{$value}}
+                                </option>
+                            @else
+                                <option value="{{$key}}">{{$value}}</option>
+                            @endif
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                {!! Form::label('message_type_id', '消息类型',['class' => 'col-sm-2 control-label']) !!}
+                <div class="col-sm-2">
+                    {!! Form::select('message_type_id', $messageTypes, null, ['class' => 'form-control']) !!}
                 </div>
             </div>
 
-            <div class="form-group">
-                {!! Form::label('enabled', '是否启用', [
-                    'class' => 'col-sm-2 control-label'
-                ]) !!}
-                <div class="col-sm-6" style="margin-top: 5px;">
-                    <input id="enabled" type="checkbox" name="enabled" data-render="switchery"
-                           data-theme="default" data-switchery="true"
-                           @if(!empty($article['enabled'])) checked @endif
-                           data-classname="switchery switchery-small"/>
-                </div>
-            </div>
         </div>
     </div>
     <div class="box-footer">

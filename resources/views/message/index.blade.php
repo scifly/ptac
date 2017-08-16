@@ -2,14 +2,14 @@
 @section('header')
     <div class="panel-heading">
         <div class="btn-group">
-            <a href="{{ url('students/create') }}" class="btn btn-primary pull-right">
-                添加新学员
+            <a href="{{ url('messages/create') }}" class="btn btn-primary pull-right">
+                添加消息
             </a>
         </div>
     </div>
 @endsection
 @section('breadcrumb')
-    系统设置/学生设置
+    消息中心/消息管理
 @endsection
 @section('content')
     <div class="panel-body">
@@ -18,23 +18,19 @@
                 <thead>
                 <tr>
                     <th>#</th>
-                    <th>学生姓名</th>
-                    <th>班级名称</th>
-                    <th>学号</th>
-                    <th>卡号</th>
-                    <th>是否住校</th>
-                    <th>生日</th>
-                    <th>备注</th>
+                    <th>消息内容</th>
+                    <th>url</th>
+                    <th>发送者用户</th>
+                    <th>消息类型</th>
+                    <th>已读数量</th>
+                    <th>消息发送成功数</th>
+                    <th>接收者数量</th>
                     <th>创建时间</th>
                     <th>更新时间</th>
-                    <th>状态</th>
                 </tr>
                 </thead>
                 <tbody></tbody>
             </table>
         </div>
     </div>
-    @isset($show)
-    @include('student.show')
-    @endif
 @endsection

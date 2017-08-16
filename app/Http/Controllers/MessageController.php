@@ -2,20 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\WsmArticleRequest;
+use App\Http\Requests\MessageRequest;
 use App\Models\Media;
-use App\Models\WsmArticle;
-use Illuminate\Support\Facades\DB;
+use App\Models\Message;
+use App\Models\User;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Storage;
 
-class WsmArticleController extends Controller
+class MessageController extends Controller
 {
-    protected $article;
+    protected $message;
 
-    public function __construct(WsmArticle $article)
+    public function __construct(Message $message)
     {
-        $this->article = $article;
+        $this->message = $message;
     }
     /**
      * Display a listing of the resource.
@@ -25,10 +25,10 @@ class WsmArticleController extends Controller
     public function index()
     {
         if (Request::get('draw')) {
-            return response()->json($this->article->datatable());
+            return response()->json($this->message->datatable());
         }
-        return view('wsm_article.index' , [
-            'js' => 'js/wsm_article/index.js',
+        return view('message.index' , [
+            'js' => 'js/message/index.js',
             'dialog' => true,
             'datatable' => true,
             'form' => true,
@@ -42,33 +42,37 @@ class WsmArticleController extends Controller
      */
     public function create()
     {
-        return view('wsm_article.create',[
-            'js' => 'js/wsm_article/create.js',
-            'form' => true,
-            'ueditor' => true,
+        return view('message.create',[
+            'js' => 'js/message/create.js',
+            'form' => true
         ]);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param MessageRequest $request
      * @return \Illuminate\Http\Response
      */
-    public function store(WsmArticleRequest $request)
+    public function store(MessageRequest $request)
     {
-        // request
-        $media_ids = $request->input('media_ids');
 
+        $media_ids = $request->input('media_ids');
+        $user_ids = $request->input('user_ids');
         $data = [
-            'wsm_id' => $request->input('wsm_id'),
-            'name' => $request->input('name'),
-            'summary' => $request->input('summary'),
-            'thumbnail_media_id' => $media_ids[0],
             'content' => $request->input('content'),
-            'media_ids' => implode(',',$media_ids),
-            'enabled' => $request->input('enabled')
+            'serviceid' => $request->input('serviceid'),
+            'message_id' => $request->input('message_id'),
+            'url' => $request->input('url'),
+            'media_ids' => implode(',', $media_ids),
+            'user_id' => $request->input('user_id'),
+            'user_ids' => implode(',', $user_ids),
+            'message_type_id' => $request->input('message_type_id'),
+            'read_count' => 0,
+            'received_count' => 0,
+            'recipient_count' => 0,
         ];
+
         //删除原有的图片
         $del_ids = $request->input('del_ids');
         if($del_ids){
@@ -82,14 +86,13 @@ class WsmArticleController extends Controller
             }
             $delStatus = Media::whereIn('id',$del_ids)->delete();
         }
-        if($this->article->create($data))
+        if($this->message->create($data))
         {
             $this->result['message'] = self::MSG_CREATE_OK;
         } else {
             $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
             $this->result['message'] = '';
         }
-
         return response()->json($this->result);
     }
 
@@ -98,19 +101,13 @@ class WsmArticleController extends Controller
      *
      * @param $id
      * @return \Illuminate\Http\Response
-     * @internal param WsmArticle $wsmArticle
      */
     public function show($id)
     {
-        $article = WsmArticle::whereId($id)->first();
-        $f = explode(",", $article->media_ids);
+        $message = Message::whereId($id)->first();
 
-        $medias = Media::whereIn('id',$f)->get(['id','path']);
-
-        return view('wsm_article.show', [
-            'article' => $article,
-            'medias' => $medias,
-            'ws' =>true
+        return view('message.show', [
+            'message' => $message,
         ]);
     }
 
@@ -119,23 +116,28 @@ class WsmArticleController extends Controller
      *
      * @param $id
      * @return \Illuminate\Http\Response
-     * @internal param WsmArticle $wsmArticle
      */
     public function edit($id)
     {
-        $article = $this->article->whereId($id)->first();
+        $message = $this->message->whereId($id)->first();
+        $f = explode(",", $message->user_ids);
 
-        $f = explode(",", $article->media_ids);
+        $users = User::whereIn('id', $f)->get(['id','realname'])->toArray();
 
-        $medias = Media::whereIn('id',$f)->get(['id','path']);
+        $selectedUsers = [];
+        foreach ($users as $value) {
+            $selectedUsers[$value['id']] = $value['realname'];
+        }
+        $m = explode(",", $message->media_ids);
 
-        return view('wsm_article.edit', [
-            'js' => 'js/wsm_article/edit.js',
-            'article' => $article,
+        $medias = Media::whereIn('id',$m)->get(['id','path']);
+
+        return view('message.edit', [
+            'js' => 'js/message/edit.js',
+            'message' => $message,
+            'selectedUsers' => $selectedUsers,
             'medias' => $medias,
-            'form' => true,
-            'ueditor' => true,
-
+            'form' => true
 
         ]);
     }
@@ -143,22 +145,28 @@ class WsmArticleController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\WsmArticle  $wsmArticle
+     * @param Message|\Illuminate\Http\Request $request
+     * @param $id
      * @return \Illuminate\Http\Response
+     * @internal param Message $message
      */
-    public function update(WsmArticleRequest $request, $id)
+    public function update(MessageRequest $request, $id)
     {
-        $data = WsmArticle::find($id);
+        $data = Message::find($id);
         $media_ids = $request->input('media_ids');
+        $user_ids = $request->input('user_ids');
 
-        $data->wsm_id = $request->input('wsm_id');
-        $data->name = $request->input('name');
-        $data->summary = $request->input('summary');
-        $data->thumbnail_media_id = $request->input('thumbnail_media_id');
         $data->content = $request->input('content');
-        $data->media_ids = implode(',', $media_ids);
-        $data->enabled = $request->input('enabled');
+        $data->serviceid = $request->input('serviceid');
+        $data->message_id = $request->input('message_id');
+        $data->url = $request->input('url');
+        $data->media_ids = implode(',', $media_ids);;
+        $data->user_id = $request->input('user_id');
+        $data->user_ids = implode(',', $user_ids);;
+        $data->message_type_id = $request->input('message_type_id');
+        $data->read_count = 0;
+        $data->received_count = 0;
+        $data->recipient_count = 0;
 
         //删除原有的图片
         $del_ids = $request->input('del_ids');
@@ -173,7 +181,6 @@ class WsmArticleController extends Controller
             }
             $delStatus = Media::whereIn('id',$del_ids)->delete();
         }
-
         if($data->save())
         {
             $this->result['message'] = self::MSG_EDIT_OK;
@@ -182,6 +189,7 @@ class WsmArticleController extends Controller
             $this->result['message'] = '';
 
         }
+
         return response()->json($this->result);
     }
 
@@ -190,11 +198,10 @@ class WsmArticleController extends Controller
      *
      * @param $id
      * @return \Illuminate\Http\Response
-     * @internal param WsmArticle $wsmArticle
      */
     public function destroy($id)
     {
-        if ($this->article->findOrFail($id)->delete()) {
+        if ($this->message->findOrFail($id)->delete()) {
             $this->result['message'] = self::MSG_DEL_OK;
         } else {
             $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;

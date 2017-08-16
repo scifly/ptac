@@ -2,14 +2,14 @@
 @section('header')
     <div class="panel-heading">
         <div class="btn-group">
-            <a href="{{ url('students/create') }}" class="btn btn-primary pull-right">
-                添加新学员
+            <a href="{{ url('message_types/create') }}" class="btn btn-primary pull-right">
+                添加消息类型
             </a>
         </div>
     </div>
 @endsection
 @section('breadcrumb')
-    系统设置/学生设置
+    消息中心/消息类型设置
 @endsection
 @section('content')
     <div class="panel-body">
@@ -18,12 +18,7 @@
                 <thead>
                 <tr>
                     <th>#</th>
-                    <th>学生姓名</th>
-                    <th>班级名称</th>
-                    <th>学号</th>
-                    <th>卡号</th>
-                    <th>是否住校</th>
-                    <th>生日</th>
+                    <th>名称</th>
                     <th>备注</th>
                     <th>创建时间</th>
                     <th>更新时间</th>
@@ -34,7 +29,4 @@
             </table>
         </div>
     </div>
-    @isset($show)
-    @include('student.show')
-    @endif
 @endsection

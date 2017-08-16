@@ -37,6 +37,8 @@
     <!-- fileinput-->
     <link rel="stylesheet" href="{{ URL::asset('js/plugins/fileinput/css/fileinput.min.css') }}">
     <link rel="stylesheet" href="{{ URL::asset('js/plugins/fileinput/themes/explorer/theme.css') }}">
+    {{--图片上传--}}
+    <link rel="stylesheet" href="{{ URL::asset('css/imgInput.css') }}">
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -580,13 +582,14 @@
 <script src="{{ URL::asset('js/demo.js') }}"></script>
 
 @isset($ueditor)
-    <script type="text/javascript" src="{{ URL::asset('js/UEditor/ueditor.config.js') }}"></script>
-    <!-- 编辑器源码文件 -->
-    <script type="text/javascript" src="{{ URL::asset('js/UEditor/ueditor.all.js') }}"></script>
-    <!-- 实例化编辑器 -->
-    <script type="text/javascript">
-        var editor = UE.getEditor('container');
-    </script>
+<script type="text/javascript" src="{{ URL::asset('js/plugins/UEditor/ueditor.config.js') }}"></script>
+<!-- 编辑器源码文件 -->
+<script type="text/javascript" src="{{ URL::asset('js/plugins/UEditor/ueditor.all.js') }}"></script>
+<!-- 实例化编辑器 -->
+<script type="text/javascript">
+    var editor = UE.getEditor('container');
+</script>
+
 @endisset
 </body>
 </html>

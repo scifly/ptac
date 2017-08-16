@@ -79,8 +79,6 @@ class GroupController extends Controller
 
         return response()->json($this->result);
 
-
-
     }
 
     /**
@@ -170,7 +168,6 @@ class GroupController extends Controller
             $this->result['message'] = '删除失败';
         }
         return response()->json($this->result);
-
     }
 
 }
