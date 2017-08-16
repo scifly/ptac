@@ -23,12 +23,6 @@
             <div class="form-group">
                 {!! Form::label('media_ids', '轮播图',['class' => 'col-sm-2 control-label']) !!}
                 <div class="col-sm-10">
-                    {{--@if(isset($medias))--}}
-                    {{--@foreach($medias as $key => $value)--}}
-                    {{--<img src="../../{{$value->path}}">--}}
-                    {{--<input type="hidden" name="media_ids[]" value="{{$value->id}}"/>--}}
-                    {{--@endforeach--}}
-                    {{--@endif--}}
                     <div class="preview">
                         @if(isset($medias))
                             @foreach($medias as $key => $value)
@@ -40,9 +34,9 @@
                                     </div>
                             </div>
                             @endforeach
-
                         @endif
                     </div>
+                    <input type="hidden" name="del_ids" id="del_ids">
                     <a class="btn btn-primary" data-toggle="modal" data-target="#modalPic">上传</a>
                 </div>
             </div>
