@@ -119,7 +119,6 @@ class WapSiteController extends Controller
         $f = explode(",", $wapsite->media_ids);
 
         $medias = Media::whereIn('id',$f)->get(['id','path']);
-
         return view('wap_site.edit', [
             'js' => 'js/wap_site/edit.js',
             'wapsite' => $wapsite,
@@ -146,6 +145,7 @@ class WapSiteController extends Controller
         $data->school_id = $siteRequest->input('school_id');
         $data->site_title = $siteRequest->input('site_title');
         $data->enabled = $siteRequest->input('enabled');
+        $data->media_ids = implode(',', $media_ids);
 
         $row = $this->wapSite->where([
             'school_id' => $data->school_id,
@@ -159,10 +159,16 @@ class WapSiteController extends Controller
 
         }else{
             //删除原有的图片
-            $f = explode(",", $data->media_ids);
-            $delStatus = Media::whereIn('id',$f)->delete();
+            $f = explode(",", $siteRequest->input('del_ids'));
+            $medias = Media::whereIn('id',$f)->get(['id','path']);
 
-            $data->media_ids = implode(',', $media_ids);
+            foreach ($medias as $v)
+            {
+                $path_arr = explode("/",$v->path);
+                Storage::disk('uploads')->delete($path_arr[5]);
+
+            }
+            $delStatus = Media::whereIn('id',$f)->delete();
 
             if($data->save())
             {
