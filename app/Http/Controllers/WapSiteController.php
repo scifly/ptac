@@ -159,16 +159,19 @@ class WapSiteController extends Controller
 
         }else{
             //删除原有的图片
-            $f = explode(",", $siteRequest->input('del_ids'));
-            $medias = Media::whereIn('id',$f)->get(['id','path']);
+            $del_ids = $siteRequest->input('del_ids');
+            if($del_ids){
+                $f = explode(",", $del_ids);
+                $medias = Media::whereIn('id',$f)->get(['id','path']);
 
-            foreach ($medias as $v)
-            {
-                $path_arr = explode("/",$v->path);
-                Storage::disk('uploads')->delete($path_arr[5]);
+                foreach ($medias as $v)
+                {
+                    $path_arr = explode("/",$v->path);
+                    Storage::disk('uploads')->delete($path_arr[5]);
 
+                }
+                $delStatus = Media::whereIn('id',$f)->delete();
             }
-            $delStatus = Media::whereIn('id',$f)->delete();
 
             if($data->save())
             {
