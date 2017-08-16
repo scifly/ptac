@@ -69,7 +69,6 @@ class WsmArticleController extends Controller
             'media_ids' => implode(',',$media_ids),
             'enabled' => $request->input('enabled')
         ];
-//dd($data);die;
         //删除原有的图片
         $del_ids = $request->input('del_ids');
         if($del_ids){
