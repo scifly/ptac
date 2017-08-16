@@ -74,6 +74,19 @@ class WapSiteController extends Controller
             $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
             $this->result['message'] = '该学校已存在微网站！';
         }else{
+            //删除原有的图片
+            $del_ids = $request->input('del_ids');
+            if($del_ids){
+                $medias = Media::whereIn('id',$del_ids)->get(['id','path']);
+
+                foreach ($medias as $v)
+                {
+                    $path_arr = explode("/",$v->path);
+                    Storage::disk('uploads')->delete($path_arr[5]);
+
+                }
+                $delStatus = Media::whereIn('id',$del_ids)->delete();
+            }
             if($this->wapSite->create($data))
             {
                 $this->result['message'] = self::MSG_CREATE_OK;
@@ -161,8 +174,7 @@ class WapSiteController extends Controller
             //删除原有的图片
             $del_ids = $siteRequest->input('del_ids');
             if($del_ids){
-                $f = explode(",", $del_ids);
-                $medias = Media::whereIn('id',$f)->get(['id','path']);
+                $medias = Media::whereIn('id',$del_ids)->get(['id','path']);
 
                 foreach ($medias as $v)
                 {
@@ -170,7 +182,7 @@ class WapSiteController extends Controller
                     Storage::disk('uploads')->delete($path_arr[5]);
 
                 }
-                $delStatus = Media::whereIn('id',$f)->delete();
+                $delStatus = Media::whereIn('id',$del_ids)->delete();
             }
 
             if($data->save())
