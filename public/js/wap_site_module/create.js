@@ -34,6 +34,10 @@ $(function () {
             $pre.append('<div class="img-item"><img src="../../' + obj.path + '" id="' + obj.id + '"><div class="del-mask"><i class="delete glyphicon glyphicon-trash"></i></div></div>');
             $pre.append('<input type="hidden" name="media_id" value="' + obj.id + '">');
         });
+        // 成功后关闭弹窗
+        setTimeout(function () {
+            $('#modalPic').modal('hide');
+        }, 800)
     });
 
     // modal关闭，内容清空
@@ -43,5 +47,6 @@ $(function () {
     // 点击删除按钮
     $('body').on('click', '.delete', function () {
         $(this).parent().parent().remove();
+        $pre.append('<input type="hidden" name="del_id[]" value="' + $(this).parent().siblings().attr('id') + '">');
     })
 });

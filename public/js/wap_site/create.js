@@ -34,6 +34,10 @@ $(function () {
             $pre.append('<div class="img-item"><img src="../../' + obj.path + '" id="' + obj.id + '"><div class="del-mask"><i class="delete glyphicon glyphicon-trash"></i></div></div>');
             $pre.append('<input type="hidden" name="media_ids[]" value="' + obj.id + '">');
         });
+        // 成功后关闭弹窗
+        setTimeout(function () {
+            $('#modalPic').modal('hide');
+        }, 800)
     });
 
     // modal关闭，内容清空

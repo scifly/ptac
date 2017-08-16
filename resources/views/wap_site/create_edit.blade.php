@@ -26,17 +26,16 @@
                     <div class="preview">
                         @if(isset($medias))
                             @foreach($medias as $key => $value)
-                            <div class="img-item">
+                                <div class="img-item">
                                     <img src="../../../{{$value->path}}" id="{{$value->id}}">
                                     <input type="hidden" name="media_ids[]" value="{{$value->id}}"/>
                                     <div class="del-mask">
                                         <i class="delete fa fa-trash"></i>
                                     </div>
-                            </div>
+                                </div>
                             @endforeach
                         @endif
                     </div>
-                    {{--<input type="hidden" name="del_ids[]" id="del_ids">--}}
                     <a class="btn btn-primary" data-toggle="modal" data-target="#modalPic">上传</a>
                 </div>
             </div>
