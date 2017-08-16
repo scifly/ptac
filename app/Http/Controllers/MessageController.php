@@ -136,7 +136,7 @@ class MessageController extends Controller
      * @return \Illuminate\Http\Response
      * @internal param Message $message
      */
-    public function update(Message $request, $id)
+    public function update(MessageRequest $request, $id)
     {
         $data = Message::find($id);
         $media_ids = $request->input('media_ids');

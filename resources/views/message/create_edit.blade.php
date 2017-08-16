@@ -50,16 +50,6 @@
                     </div>
                     <a class="btn btn-primary" data-toggle="modal" data-target="#modalPic">上传</a>
                 </div>
-                {{--<div class="col-sm-6">--}}
-                    {{--@if(isset($medias))--}}
-                        {{--@foreach($medias as $key => $value)--}}
-                            {{--<img src="../../{{$value->path}}">--}}
-                            {{--<input type="hidden" name="media_ids[]" value="{{$value->id}}"/>--}}
-                        {{--@endforeach--}}
-                    {{--@endif--}}
-                    {{--<div class="preview" style="width: 100px;overflow: hidden;"></div>--}}
-                    {{--<a class="btn btn-primary" data-toggle="modal" data-target="#modalPic">上传</a>--}}
-                {{--</div>--}}
             </div>
             <div class="form-group">
                 {!! Form::label('user_id', '发送者用户',['class' => 'col-sm-2 control-label']) !!}
