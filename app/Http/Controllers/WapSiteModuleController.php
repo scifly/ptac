@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\WapSiteModuleRequest;
 use App\Http\Requests\WapSiteRequest;
+use App\Models\Media;
 use App\Models\WapSiteModule;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\Storage;
 
 class WapSiteModuleController extends Controller
 {
@@ -62,21 +64,28 @@ class WapSiteModuleController extends Controller
             'media_id' => $request->input('media_id'),
             'enabled' => $request->input('enabled')
         ];
-//        $row = $this->wapSiteModule->where([
-//                'name' => $data['name']
-//            ])->first();
-//        if(!empty($row)){
-//            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-//            $this->result['message'] = '名称重复！';
-//        }else{
-            if($this->wapSiteModule->create($data))
+
+        //删除原有的图片
+        $del_id = $request->input('del_id');
+        if($del_id){
+            $media = Media::whereIn('id',$del_id)->get(['id','path']);
+
+            foreach ($media as $v)
             {
-                $this->result['message'] = self::MSG_CREATE_OK;
-            } else {
-                $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-                $this->result['message'] = '';
+                $path_arr = explode("/",$v->path);
+                Storage::disk('uploads')->delete($path_arr[5]);
+
             }
-//        }
+            $delStatus = Media::whereIn('id',$del_id)->delete();
+        }
+        if($this->wapSiteModule->create($data))
+        {
+            $this->result['message'] = self::MSG_CREATE_OK;
+        } else {
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+            $this->result['message'] = '';
+        }
+
 
         return response()->json($this->result);
     }
@@ -130,24 +139,28 @@ class WapSiteModuleController extends Controller
         $data->media_id = $request->input('media_id');
         $data->enabled = $request->input('enabled');
 
-//        $row = $this->wapSiteModule->where([
-//            'school_id' => $data->school_id,
-//        ])->first();
-//        if(!empty($row) && $row->id != $id){
-//
-//            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-//            $this->result['message'] = '所属学校重复！';
-//
-//        }else{
-            if($data->save())
+        //删除原有的图片
+        $del_id = $request->input('del_id');
+        if($del_id){
+            $media = Media::whereIn('id',$del_id)->get(['id','path']);
+
+            foreach ($media as $v)
             {
-                $this->result['message'] = self::MSG_EDIT_OK;
-            } else {
-                $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-                $this->result['message'] = '';
+                $path_arr = explode("/",$v->path);
+                Storage::disk('uploads')->delete($path_arr[5]);
 
             }
-//        }
+            $delStatus = Media::whereIn('id',$del_id)->delete();
+        }
+        if($data->save())
+        {
+            $this->result['message'] = self::MSG_EDIT_OK;
+        } else {
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+            $this->result['message'] = '';
+
+        }
+
         return response()->json($this->result);
     }
 
