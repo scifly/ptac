@@ -21,8 +21,10 @@ class ProcedureLogController extends Controller {
      */
     public function create()
     {
+        $procedure_id = DB::table('procedures')->pluck('name', 'id');
         return view('procedure_log.create',[
             'js' => 'js/procedure_log/create.js',
+            'procedure_id' => $procedure_id,
             'form' => true
         ]);
     }
@@ -84,25 +86,9 @@ class ProcedureLogController extends Controller {
             ->where('first_log_id', $first_log_id)
             ->orderBy('id', 'asc')
             ->get();
-
-        return response()->json($data);
-        $result = [
-            [
-                'name' => '班级审批',
-                'status' => 0,
-            ],
-            [
-                'name' => '年级审批',
-                'status' => 1,
-            ],
-            [
-                'name' => '校级审批',
-                'status' => 2,
-            ],
-        ];
         return view('procedure_log.procedure_info',[
             'js' => 'js/procedure_log/procedure_info.js',
-            'data' => $result
+            'data' => $data
         ]);
     }
 
