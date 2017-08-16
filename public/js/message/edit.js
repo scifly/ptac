@@ -6,7 +6,7 @@ $(function () {
     $uploadFile.fileinput({
         language: 'zh',
         theme: 'explorer',
-        uploadUrl: "../uploadImages",
+        uploadUrl: "../../wap_sites/uploadImages",
         uploadAsync: false,
         maxFileCount: 5,
         minImageWidth: 50, //图片的最小宽度
