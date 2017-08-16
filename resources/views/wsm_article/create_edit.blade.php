@@ -3,13 +3,13 @@
     <div class="box-body">
         <div class="form-horizontal">
             <div class="form-group">
-                {!! Form::label('wsm_id', '所属网站模块',['class' => 'col-sm-4 control-label']) !!}
+                {!! Form::label('wsm_id', '所属网站模块',['class' => 'col-sm-2 control-label']) !!}
                 <div class="col-sm-2">
                     {!! Form::select('wsm_id', $wsms, null, ['class' => 'form-control']) !!}
                 </div>
             </div>
             <div class="form-group">
-                {!! Form::label('name', '名称',['class' => 'col-sm-4 control-label']) !!}
+                {!! Form::label('name', '名称',['class' => 'col-sm-2 control-label']) !!}
                 <div class="col-sm-3">
                     {!! Form::text('name', null, [
                     'class' => 'form-control',
@@ -22,7 +22,7 @@
                 </div>
             </div>
             <div class="form-group">
-                {!! Form::label('summary', '文章摘要',['class' => 'col-sm-4 control-label']) !!}
+                {!! Form::label('summary', '文章摘要',['class' => 'col-sm-2 control-label']) !!}
                 <div class="col-sm-3">
                     {!! Form::text('summary', null, [
                     'class' => 'form-control',
@@ -37,13 +37,19 @@
             <div class="form-group">
                 {!! Form::label('media_ids', '轮播图',['class' => 'col-sm-2 control-label']) !!}
                 <div class="col-sm-6">
-                    @if(isset($medias))
-                        @foreach($medias as $key => $value)
-                            <img src="../../..{{$value->path}}">
-                            <input type="hidden" name="media_ids[]" value="{{$value->id}}"/>
-                        @endforeach
-                    @endif
-                    <div class="preview" style="width: 100px;overflow: hidden;"></div>
+                    <div class="preview">
+                        @if(isset($medias))
+                            @foreach($medias as $key => $value)
+                                <div class="img-item">
+                                    <img src="../../../{{$value->path}}">
+                                    <input type="hidden" name="media_ids[]" value="{{$value->id}}"/>
+                                    <div class="del-mask">
+                                        <i class="delete fa fa-trash"></i>
+                                    </div>
+                                </div>
+                            @endforeach
+                        @endif
+                    </div>
                     <a class="btn btn-primary" data-toggle="modal" data-target="#modalPic">上传</a>
                 </div>
             </div>
@@ -60,7 +66,7 @@
 
             <div class="form-group">
                 {!! Form::label('enabled', '是否启用', [
-                    'class' => 'col-sm-4 control-label'
+                    'class' => 'col-sm-2 control-label'
                 ]) !!}
                 <div class="col-sm-6" style="margin-top: 5px;">
                     <input id="enabled" type="checkbox" name="enabled" data-render="switchery"
@@ -74,7 +80,7 @@
     <div class="box-footer">
         {{--button--}}
         <div class="form-group">
-            <div class="col-sm-3 col-sm-offset-4">
+            <div class="col-sm-3 col-sm-offset-2">
                 {!! Form::submit('保存', ['class' => 'btn btn-primary pull-left', 'id' => 'save']) !!}
                 {!! Form::reset('取消', ['class' => 'btn btn-default pull-right', 'id' => 'cancel']) !!}
             </div>
@@ -93,16 +99,11 @@
                 </h4>
             </div>
             <div class="modal-body">
-                <form action="#" class="form-horizontal" enctype="multipart/form-data">
-                    <input type="file" id="uploadFile" accept="image/jpeg,image/gif,image/png" multiple>
-                </form>
+                <input type="file" name="img[]" id="uploadFile" accept="image/jpeg,image/gif,image/png" multiple>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default"
                         data-dismiss="modal">关闭
-                </button>
-                <button type="button" class="btn btn-primary" id="upload">
-                    上传
                 </button>
             </div>
         </div>

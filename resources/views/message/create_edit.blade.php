@@ -1,10 +1,3 @@
-<style>
-    .preview img {
-        width: 100%;
-        height: 100px;
-        margin: 10px;
-    }
-</style>
 <div class="box box-primary">
     <div class="box-header"></div>
     <div class="box-body">
@@ -40,26 +33,42 @@
                 </div>
             </div>
             <div class="form-group">
-                {!! Form::label('media_ids', '图片',['class' => 'col-sm-2 control-label']) !!}
-                <div class="col-sm-6">
-                    @if(isset($medias))
-                        @foreach($medias as $key => $value)
-                            <img src="../../{{$value->path}}">
-                            <input type="hidden" name="media_ids[]" value="{{$value->id}}"/>
-                        @endforeach
-                    @endif
-                    <div class="preview" style="width: 100px;overflow: hidden;"></div>
+                {!! Form::label('media_ids', '轮播图',['class' => 'col-sm-2 control-label']) !!}
+                <div class="col-sm-10">
+                    <div class="preview">
+                        @if(isset($medias))
+                            @foreach($medias as $key => $value)
+                                <div class="img-item">
+                                    <img src="../../../{{$value->path}}">
+                                    <input type="hidden" name="media_ids[]" value="{{$value->id}}"/>
+                                    <div class="del-mask">
+                                        <i class="delete fa fa-trash"></i>
+                                    </div>
+                                </div>
+                            @endforeach
+                        @endif
+                    </div>
                     <a class="btn btn-primary" data-toggle="modal" data-target="#modalPic">上传</a>
                 </div>
+                {{--<div class="col-sm-6">--}}
+                    {{--@if(isset($medias))--}}
+                        {{--@foreach($medias as $key => $value)--}}
+                            {{--<img src="../../{{$value->path}}">--}}
+                            {{--<input type="hidden" name="media_ids[]" value="{{$value->id}}"/>--}}
+                        {{--@endforeach--}}
+                    {{--@endif--}}
+                    {{--<div class="preview" style="width: 100px;overflow: hidden;"></div>--}}
+                    {{--<a class="btn btn-primary" data-toggle="modal" data-target="#modalPic">上传</a>--}}
+                {{--</div>--}}
             </div>
             <div class="form-group">
-                {!! Form::label('user_id', '发送者用户',['class' => 'col-sm-4 control-label']) !!}
+                {!! Form::label('user_id', '发送者用户',['class' => 'col-sm-2 control-label']) !!}
                 <div class="col-sm-2">
                     {!! Form::select('user_id', $users, null, ['class' => 'form-control']) !!}
                 </div>
             </div>
             <div class="form-group">
-                {!! Form::label('user_ids', '接收者用户',['class' => 'col-sm-4 control-label']) !!}
+                {!! Form::label('user_ids', '接收者用户',['class' => 'col-sm-2 control-label']) !!}
                 <div class="col-sm-2">
                     <select multiple="multiple" name="user_ids[]" id="user_ids">
                         @foreach($users as $key => $value)
@@ -75,7 +84,7 @@
                 </div>
             </div>
             <div class="form-group">
-                {!! Form::label('message_type_id', '消息类型',['class' => 'col-sm-4 control-label']) !!}
+                {!! Form::label('message_type_id', '消息类型',['class' => 'col-sm-2 control-label']) !!}
                 <div class="col-sm-2">
                     {!! Form::select('message_type_id', $messageTypes, null, ['class' => 'form-control']) !!}
                 </div>
