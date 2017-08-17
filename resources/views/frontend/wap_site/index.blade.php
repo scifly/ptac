@@ -1,10 +1,26 @@
 @extends('layouts.mobile_master')
 @section('content')
+    <!--轮播图-->
+    <div class="swiper-container">
+        <div class="swiper-wrapper">
+            <div class="swiper-slide">
+                <img src="../img/banner01.jpg" alt="轮播">
+            </div>
+            <div class="swiper-slide">
+                <img src="../img/banner02.jpg" alt="轮播">
+            </div>
+            <div class="swiper-slide">
+                <img src="../img/banner03.jpg" alt="轮播">
+            </div>
+        </div>
+        <!-- If we need pagination -->
+        <div class="swiper-pagination"></div>
+    </div>
     <!--九宫格-->
     <div class="weui-grids">
         <a href="" class="weui-grid js_grid">
             <div class="weui-grid__icon">
-                <img src="img/icon_nav_button.png" alt="Button">
+                <img src="../img/icon_nav_button.png" alt="Button">
             </div>
             <p class="weui-grid__label">
                 Button
@@ -12,7 +28,7 @@
         </a>
         <a href="" class="weui-grid js_grid">
             <div class="weui-grid__icon">
-                <img src="img/icon_nav_button.png" alt="Button">
+                <img src="../img/icon_nav_button.png" alt="Button">
             </div>
             <p class="weui-grid__label">
                 List
@@ -20,7 +36,7 @@
         </a>
         <a href="" class="weui-grid js_grid">
             <div class="weui-grid__icon">
-                <img src="img/icon_nav_button.png" alt="Button">
+                <img src="../img/icon_nav_button.png" alt="Button">
             </div>
             <p class="weui-grid__label">
                 Form
@@ -28,7 +44,7 @@
         </a>
         <a href="" class="weui-grid js_grid">
             <div class="weui-grid__icon">
-                <img src="img/icon_nav_button.png" alt="Button">
+                <img src="../img/icon_nav_button.png" alt="Button">
             </div>
             <p class="weui-grid__label">
                 List
@@ -36,7 +52,7 @@
         </a>
         <a href="" class="weui-grid js_grid">
             <div class="weui-grid__icon">
-                <img src="img/icon_nav_button.png" alt="Button">
+                <img src="../img/icon_nav_button.png" alt="Button">
             </div>
             <p class="weui-grid__label">
                 List
@@ -44,7 +60,7 @@
         </a>
         <a href="" class="weui-grid js_grid">
             <div class="weui-grid__icon">
-                <img src="img/icon_nav_button.png" alt="Button">
+                <img src="../img/icon_nav_button.png" alt="Button">
             </div>
             <p class="weui-grid__label">
                 List
@@ -52,7 +68,7 @@
         </a>
         <a href="" class="weui-grid js_grid">
             <div class="weui-grid__icon">
-                <img src="img/icon_nav_button.png" alt="Button">
+                <img src="../img/icon_nav_button.png" alt="Button">
             </div>
             <p class="weui-grid__label">
                 List
@@ -60,7 +76,7 @@
         </a>
         <a href="" class="weui-grid js_grid">
             <div class="weui-grid__icon">
-                <img src="img/icon_nav_button.png" alt="Button">
+                <img src="../img/icon_nav_button.png" alt="Button">
             </div>
             <p class="weui-grid__label">
                 List
@@ -68,7 +84,7 @@
         </a>
         <a href="" class="weui-grid js_grid">
             <div class="weui-grid__icon">
-                <img src="img/icon_nav_button.png" alt="Button">
+                <img src="../img/icon_nav_button.png" alt="Button">
             </div>
             <p class="weui-grid__label">
                 List
