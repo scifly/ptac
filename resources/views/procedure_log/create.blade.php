@@ -28,40 +28,7 @@
                 <div class="form-group">
                     <label for="media_ids" class="col-sm-2 control-label">附件</label>
                     <div class="col-sm-8">
-                        <div class="preview pull-left">
-                            <div class="img-item">
-                                <img src="../img/excel_128px.png" alt="">
-                                <div class="del-mask">
-                                    <span class="file-name">名字名字名字</span>
-                                    <i class="delete fa fa-trash-o"></i>
-                                </div>
-                            </div>
-                            <div class="img-item">
-                                <img src="../img/pdf_128px.png" alt="">
-                                <div class="del-mask">
-                                    <i class="delete fa fa-trash-o"></i>
-                                </div>
-                            </div>
-                            <div class="img-item">
-                                <img src="../img/txt_128px.png" alt="">
-                                <div class="del-mask">
-                                    <i class="delete fa fa-trash-o"></i>
-                                </div>
-                            </div>
-                            <div class="img-item">
-                                <img src="../img/word_128px.png" alt="">
-                                <div class="del-mask">
-                                    <i class="delete fa fa-trash-o"></i>
-                                </div>
-                            </div>
-                            <div class="img-item">
-                                <img src="../img/zip_128px.png" alt="">
-                                <div class="del-mask">
-                                    <span></span>
-                                    <i class="delete fa fa-trash-o"></i>
-                                </div>
-                            </div>
-                        </div>
+                        <div class="preview"></div>
                         <a class="btn btn-primary" data-toggle="modal" data-target="#modalPic">上传</a>
                     </div>
                 </div>
