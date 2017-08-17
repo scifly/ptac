@@ -274,6 +274,7 @@ Route::get('procedure_logs/create', 'ProcedureLogController@create');
 Route::get('procedure_logs/procedure_info/{first_log_id}', 'ProcedureLogController@procedureInfo');
 Route::get('procedure_logs/my_rocedure', 'ProcedureLogController@myProcedure');
 Route::get('procedure_logs/pending', 'ProcedureLogController@pending');
+Route::any('procedure_logs/upload_medias', 'ProcedureLogController@uploadMedias');
 
 
 //用户管理-用户设置
@@ -284,8 +285,7 @@ Route::get('users/show/{id}', 'UserController@show');
 Route::get('users/edit/{id}', 'UserController@edit');
 Route::put('users/update/{id}', 'UserController@update');
 Route::delete('users/delete/{id}', 'UserController@destroy');
-Route::any('users/uploadavatar', 'UserController@uploadAvatar');
-Route::any('users/delavatar', 'UserController@delAvatar');
+Route::post('users/upload_ava/{id}', 'UserController@uploadAvatar');
 
 #用户中心
 //个人信息管理
