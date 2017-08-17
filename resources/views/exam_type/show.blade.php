@@ -12,7 +12,7 @@
         <span class="glyphicon glyphicon-trash"></span>
         Delete
     </a>
-    <p>Last edited: {{ $grade->updated_at->diffForHumans() }}</p>
+    <p>Last edited: {{ $examType->updated_at->diffForHumans() }}</p>
 @endsection
 @section('content')
 

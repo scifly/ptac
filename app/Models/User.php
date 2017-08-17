@@ -114,7 +114,9 @@ class User extends Authenticatable {
     public function pollquestionnaireAnswer() { return $this->hasOne('App\Models\PollQuestionnaireAnswer'); }
     
     public function pollquestionnairePartcipant() { return $this->hasOne('App\Models\PollQuestionnaireParticipant'); }
-    
+    public function message() {
+        return $this->hasMany('App\Models\Message');
+    }
     public function datatable() {
         
         $columns = [

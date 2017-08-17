@@ -105,9 +105,17 @@ class MessageController extends Controller
     public function show($id)
     {
         $message = Message::whereId($id)->first();
+        $f = explode(",", $message->user_ids);
 
+        $users = User::whereIn('id', $f)->get(['id','realname']);
+
+        $m = explode(",", $message->media_ids);
+
+        $medias = Media::whereIn('id',$m)->get(['id','path']);
         return view('message.show', [
             'message' => $message,
+            'users' => $users,
+            'medias' => $medias,
         ]);
     }
 
