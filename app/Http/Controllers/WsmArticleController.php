@@ -157,7 +157,7 @@ class WsmArticleController extends Controller
         $data->summary = $request->input('summary');
         $data->thumbnail_media_id = $media_ids[0];
         $data->content = $request->input('content');
-        $data->media_ids = implode(',', $media_ids);
+        $data->media_ids = implode(",", $media_ids);
         $data->enabled = $request->input('enabled');
 
         //删除原有的图片
