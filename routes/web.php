@@ -274,6 +274,7 @@ Route::get('procedure_logs/create', 'ProcedureLogController@create');
 Route::get('procedure_logs/procedure_info/{first_log_id}', 'ProcedureLogController@procedureInfo');
 Route::get('procedure_logs/my_rocedure', 'ProcedureLogController@myProcedure');
 Route::get('procedure_logs/pending', 'ProcedureLogController@pending');
+Route::any('procedure_logs/upload_medias', 'ProcedureLogController@uploadMedias');
 
 
 //用户管理-用户设置
