@@ -26,7 +26,6 @@
 .img-item img {
     width: 100%;
     height: 100%;
-    border: 1px solid #ccc;
 }
 
 .del-mask {
@@ -44,9 +43,25 @@
     -moz-transition: 0.5s;
     -o-transition: 0.5s;
     -webkit-transition: 0.5s;
+    overflow: hidden;
+    cursor: pointer;
 }
 
-.del-mask i {
+.del-mask i.delete {
     color: #fff;
     cursor: pointer;
+}
+
+/*add file*/
+.img-item .file-name{
+    color: #fff;
+    display: block;
+    float: left;
+    width: 90px;
+    word-break: break-all;
+    white-space: nowrap;
+    padding: 0 5px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 14px;
 }

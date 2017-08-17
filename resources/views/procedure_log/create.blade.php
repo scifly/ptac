@@ -10,13 +10,13 @@
             <div class="form-horizontal">
 
                 <div class="form-group">
-                    {!! Form::label('procedure_id', '请选择申请项目',['class' => 'col-sm-4 control-label']) !!}
+                    {!! Form::label('procedure_id', '请选择申请项目',['class' => 'col-sm-2 control-label']) !!}
                     <div class="col-sm-2">
                         {!! Form::select('procedure_id', $procedure_id, null, ['class' => 'form-control']) !!}
                     </div>
                 </div>
                 <div class="form-group">
-                    {!! Form::label('initiator_msg', '留言',['class' => 'col-sm-4 control-label']) !!}
+                    {!! Form::label('initiator_msg', '留言',['class' => 'col-sm-2 control-label']) !!}
                     <div class="col-sm-3">
                         {!! Form::text('initiator_msg', null, [
                         'class' => 'form-control',
@@ -26,9 +26,41 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="media_ids" class="col-sm-4 control-label">附件</label>
+                    <label for="media_ids" class="col-sm-2 control-label">附件</label>
                     <div class="col-sm-8">
-                        <div class="preview">
+                        <div class="preview pull-left">
+                            <div class="img-item">
+                                <img src="../img/excel_128px.png" alt="">
+                                <div class="del-mask">
+                                    <span class="file-name">名字名字名字</span>
+                                    <i class="delete fa fa-trash-o"></i>
+                                </div>
+                            </div>
+                            <div class="img-item">
+                                <img src="../img/pdf_128px.png" alt="">
+                                <div class="del-mask">
+                                    <i class="delete fa fa-trash-o"></i>
+                                </div>
+                            </div>
+                            <div class="img-item">
+                                <img src="../img/txt_128px.png" alt="">
+                                <div class="del-mask">
+                                    <i class="delete fa fa-trash-o"></i>
+                                </div>
+                            </div>
+                            <div class="img-item">
+                                <img src="../img/word_128px.png" alt="">
+                                <div class="del-mask">
+                                    <i class="delete fa fa-trash-o"></i>
+                                </div>
+                            </div>
+                            <div class="img-item">
+                                <img src="../img/zip_128px.png" alt="">
+                                <div class="del-mask">
+                                    <span></span>
+                                    <i class="delete fa fa-trash-o"></i>
+                                </div>
+                            </div>
                         </div>
                         <a class="btn btn-primary" data-toggle="modal" data-target="#modalPic">上传</a>
                     </div>
@@ -38,7 +70,7 @@
         <div class="box-footer">
             {{--button--}}
             <div class="form-group">
-                <div class="col-sm-3 col-sm-offset-4">
+                <div class="col-sm-3 col-sm-offset-2">
                     {!! Form::submit('保存', ['class' => 'btn btn-primary pull-left', 'id' => 'save']) !!}
                     {!! Form::reset('取消', ['class' => 'btn btn-default pull-right', 'id' => 'cancel']) !!}
                 </div>
@@ -58,12 +90,10 @@
                     </h4>
                 </div>
                 <div class="modal-body">
-                    <input type="file" name="medias[]" id="uploadFile" accept="image/jpeg,image/gif,image/png" multiple>
+                    <input type="file" name="medias[]" id="uploadFile" multiple>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default"
-                            data-dismiss="modal">关闭
-                    </button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
                 </div>
             </div>
         </div>
