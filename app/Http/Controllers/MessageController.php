@@ -160,9 +160,9 @@ class MessageController extends Controller
         $data->serviceid = $request->input('serviceid');
         $data->message_id = $request->input('message_id');
         $data->url = $request->input('url');
-        $data->media_ids = implode(',', $media_ids);;
+        $data->media_ids = implode(',', $media_ids);
         $data->user_id = $request->input('user_id');
-        $data->user_ids = implode(',', $user_ids);;
+        $data->user_ids = implode(',', $user_ids);
         $data->message_type_id = $request->input('message_type_id');
         $data->read_count = 0;
         $data->received_count = 0;
