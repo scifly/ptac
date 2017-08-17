@@ -26,7 +26,8 @@ class ProcedureTypeController extends Controller {
         return view('procedure_type.index', [
             'js' => 'js/procedure_type/index.js',
             'dialog' => true,
-            'datatable' => true
+            'datatable' => true,
+            'show' => true
         ]);
     }
 
@@ -78,8 +79,23 @@ class ProcedureTypeController extends Controller {
      * @internal param AttendanceMachine $attendanceMachine
      */
     public function show($id) {
-        //记录返回给view
-        return view('procedure_type.show', ['pt' => $this->procedureType->findOrFail($id)]);
+
+        //根据id 查找单条记录
+        $pt = $this->procedureType->whereId($id)
+            ->first(['name','remark','created_at','updated_at','enabled']);
+
+
+        $pt->enabled = $pt->enabled==1 ? '已启用' : '已禁用' ;
+
+        if ($pt) {
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
+            $this->result['showData'] = $pt;
+        } else {
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+            $this->result['message'] = '';
+        }
+
+        return response()->json($this->result);
     }
 
     /**
