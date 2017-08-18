@@ -3,14 +3,22 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\TabRequest;
+use App\Models\Action;
+use App\Models\Menu;
 use App\Models\Tab;
 use Illuminate\Support\Facades\Request;
 
 class TabController extends Controller {
     
-    protected $tab;
+    protected $tab, $action, $menu;
     
-    function __construct(Tab $tab) { $this->tab = $tab; }
+    function __construct(Tab $tab, Menu $menu, Action $action) {
+        
+        $this->tab = $tab;
+        $this->menu = $menu;
+        $this->action = $action;
+        
+    }
     
     /**
      * Display a listing of the resource.
@@ -22,11 +30,7 @@ class TabController extends Controller {
         if (Request::get('draw')) {
             return response()->json($this->tab->datatable());
         }
-        return view('tab.index', [
-            'js' => 'js/tab/index.js',
-            'datatable' => true,
-            'dialog' => true
-        ]);
+        return parent::output(__METHOD__);
         
     }
     
@@ -37,10 +41,7 @@ class TabController extends Controller {
      */
     public function create() {
         
-        return view('tab.create', [
-            'js' => 'js/action/create.js',
-            'form' => true
-        ]);
+        return parent::output(__METHOD__);
         
     }
     
@@ -51,15 +52,8 @@ class TabController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(TabRequest $request) {
-        
-        if ($this->tab->create($request->all())) {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-            $this->result['message'] = self::MSG_CREATE_OK;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = 'Oops';
-        }
-        return response()->json($this->result);
+    
+        return $this->tab->store($request) ? parent::succeed() : parent::fail();
         
     }
     
@@ -70,9 +64,10 @@ class TabController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function show($id) {
-        
-        $tab = $this->tab->findOrFail($id);
-        return view('action.show', ['tab' => $tab]);
+
+        $tab = $this->tab->find($id);
+        if (!$tab) { return parent::notFound(); };
+        return parent::output(__METHOD__, ['tab' => $tab]);
         
     }
     
@@ -84,10 +79,17 @@ class TabController extends Controller {
      */
     public function edit($id) {
         
-        return view('tab.edit', [
-            'js' => 'js/tab/edit.js',
-            'tab' => $this->tab->findOrFail($id),
-            'form' => true
+        $tab = $this->tab->find($id);
+        if (!$tab) { return parent::notFound(); }
+        $tabMenus = $tab->menus;
+        $selectedMenus = [];
+        foreach ($tabMenus as $menu) {
+            $selectedMenus[$menu->id] = $menu->name;
+        }
+        return parent::output(__METHOD__, [
+            'tab' => $tab,
+            'menus' => $this->menu->leaves(1),
+            'selectedMenus' => $selectedMenus,
         ]);
         
     }
@@ -101,10 +103,9 @@ class TabController extends Controller {
      */
     public function update(TabRequest $request, $id) {
         
-        $this->tab->findOrFail($id)->update($request->all());
-        $this->result['message'] = self::MSG_EDIT_OK;
-        
-        return response()->json($this->result);
+        $tab = $this->tab->find($id);
+        if (!$tab) { return parent::notFound(); }
+        return $this->tab->modify($request, $id) ? parent::succeed() : parent::fail();
         
     }
     
@@ -115,11 +116,8 @@ class TabController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function destroy($id) {
-        
-        $this->tab->findOrFail($id)->delete();
-        $this->result['message'] = self::MSG_DEL_OK;
-        
-        return response()->json($this->result);
+    
+        return $this->tab->remove($id) ? parent::succeed() : parent::fail();
         
     }
     

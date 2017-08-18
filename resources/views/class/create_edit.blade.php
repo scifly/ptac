@@ -25,9 +25,9 @@
                 </div>
             </div>
             <div class="form-group">
-                {!! Form::label('educator_ids', '年级主任',['class' => 'col-sm-4 control-label']) !!}
+                <label for="educator_ids" class="col-sm-4 control-label">年级主任</label>
                 <div class="col-sm-3">
-                    <select multiple="multiple" name="educator_ids[]" id="educator_ids">
+                    <select multiple name="educator_ids[]" id="educator_ids">
                         @foreach($educators as $key => $value)
                             @if(isset($selectedEducators))
                                 <option value="{{$key}}" @if(array_key_exists($key,$selectedEducators))selected="selected"@endif>
@@ -41,26 +41,18 @@
                 </div>
             </div>
             <div class="form-group">
-                {!! Form::label('enabled', '是否启用', [
-                    'class' => 'col-sm-4 control-label'
-                ]) !!}
+                <label for="enabled" class="col-sm-3 control-label">
+                    是否启用
+                </label>
                 <div class="col-sm-6" style="margin-top: 5px;">
                     <input id="enabled" type="checkbox" name="enabled" data-render="switchery"
                            data-theme="default" data-switchery="true"
-                           @if(!empty($squad['enabled'])) checked @endif
+                           @if(!empty($class['enabled'])) checked @endif
                            data-classname="switchery switchery-small"/>
                 </div>
             </div>
 
         </div>
     </div>
-    <div class="box-footer">
-        {{--button--}}
-        <div class="form-group">
-            <div class="col-sm-3 col-sm-offset-4">
-                {!! Form::submit('保存', ['class' => 'btn btn-primary pull-left', 'id' => 'save']) !!}
-                {!! Form::reset('取消', ['class' => 'btn btn-default pull-right', 'id' => 'cancel']) !!}
-            </div>
-        </div>
-    </div>
+    @include('partials.form.buttons')
 </div>

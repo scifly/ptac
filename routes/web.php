@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Route;
 # Route::get('/home', 'HomeController@index')->name('home');
 Route::get('test/index', 'TestController@index');
 Route::get('test/create', 'TestController@create');
-# Route::get('/', 'HomeController@index');
+Route::get('pages/{id}', 'HomeController@menu');
 
 # 菜单管理
 // action设置
@@ -46,7 +46,7 @@ Route::get('menus/show/{id}', 'MenuController@show');
 Route::get('menus/edit/{id}', 'MenuController@edit');
 Route::post('menus/sort', 'MenuController@sort');
 Route::put('menus/update/{id}', 'MenuController@update');
-Route::get('menus/move/{id}/{parentId}', 'MenuController@move');
+Route::post('menus/move/{id}/{parentId}', 'MenuController@move');
 Route::delete('menus/delete/{id}', 'MenuController@destroy');
 
 # 系统设置

@@ -14,7 +14,6 @@ class MenuComposer {
     public function __construct(School $school, Action $action, Tab $tab, Icon $icon) {
         
         $this->school = $school;
-        $this->action = $action;
         $this->tab = $tab;
         $this->icon = $icon;
         
@@ -24,7 +23,6 @@ class MenuComposer {
         
         $view->with([
             'schools' => $this->school->pluck('name', 'id'),
-            'actions' => $this->action->actions(),
             'tabs' => $this->tab->pluck('name', 'id'),
             'icons' => $this->icon->icons()
         ]);

@@ -4,7 +4,7 @@ var csrfToken = $('#csrf_token').attr('content');
 var ajaxLoader = "<img alt='' src='" + siteRoot + "/img/throbber.gif' style='vertical-align: middle;'/>&nbsp;" +
     "<span>表单加载中 ...</span>";
 var nodeid; // id of the node to be deleted
-var $boxBody = $('.box-body'); // the div that holds the form
+// var $boxBody = $('.box-body'); // the div that holds the form
 var $dialog = $('#modal-dialog');
 var $menuTree = $('#jstree-menu');
 var $formContainer = $('#form_container');
@@ -50,13 +50,13 @@ var menu = {
         var $form, $save, $cancel;
 
         menu.showForm();
-        $boxBody.html(ajaxLoader);
+        $formContainer.html(ajaxLoader);
         return $.ajax({
             type: 'GET',
             dataType: 'json',
             url: url,
             success: function(result) {
-                $boxBody.html(result.html);
+                $formContainer.html(result.html);
                 $save = $('#save');
                 $cancel = $('#cancel');
                 if (action === 'create') {
@@ -97,7 +97,6 @@ var menu = {
     }
 };
 $(function() {
-
     currentJsTree = $menuTree.jstree({
         core: {
             themes: {
@@ -112,7 +111,7 @@ $(function() {
             animation: 0,
             data: {
                 url: urlIndex,
-                type: 'GET',
+                type: 'POST',
                 dataType: 'json',
                 data: function(node) {
                     return { id: node.id, _token: csrfToken };
@@ -126,7 +125,7 @@ $(function() {
         menu.sort();
     }).on('move_node.jstree', function(e, data){
         $.ajax({
-            type: 'GET',
+            type: 'POST',
             dataType: 'json',
             url: urlMove + data.node.id + '/' + data.node.parent,
             data: { _token: csrfToken },

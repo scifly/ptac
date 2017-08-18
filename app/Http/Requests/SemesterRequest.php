@@ -23,9 +23,24 @@ class SemesterRequest extends FormRequest {
         return [
             'school_id' => 'required|integer',
             'name' => 'required|string|max:60',
+            'remark' => 'nullable|string|max:255',
             'start_date' => 'required|date|before:end_date',
             'end_date' => 'required|date|after:start_date',
             'enabled' => 'required|boolean'
         ];
     }
+    
+    protected function prepareForValidation() {
+        
+        $input = $this->all();
+        if (isset($input['enabled']) && $input['enabled'] === 'on') {
+            $input['enabled'] = 1;
+        }
+        if (!isset($input['enabled'])) {
+            $input['enabled'] = 0;
+        }
+        $this->replace($input);
+        
+    }
+    
 }

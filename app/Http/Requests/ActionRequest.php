@@ -22,18 +22,18 @@ class ActionRequest extends FormRequest {
         return [
             'name' => 'required|string|max:255',
             'method' => 'required|string|max:255',
-            'remark' => 'required|string|max:255',
             'controller' => 'required|string|max:255',
-            'view' => 'string|max:255',
-            'route' => 'string|max:255',
-            'js' => 'string|max:255',
+            'remark' => 'nullable|string|max:255',
+            'view' => 'nullable|string|max:255',
+            'route' => 'required|string|max:255',
+            'js' => 'nullable|string|max:255',
             'datatable' => 'boolean',
             'parsley' => 'boolean',
             'select2' => 'boolean',
             'chart' => 'boolean',
             'map' => 'boolean',
             'enabled' => 'required|boolean',
-            'action_type_ids' => 'string|max:60'
+            'action_type_ids' => 'nullable|string|max:60'
         ];
     }
     
@@ -61,7 +61,9 @@ class ActionRequest extends FormRequest {
         if (!isset($input['enabled'])) {
             $input['enabled'] = 0;
         }
-        $input['action_type_ids'] = implode(',', $input['action_type_ids']);
+        if (isset($input['action_type_ids'])) {
+            $input['action_type_ids'] = implode(',', $input['action_type_ids']);
+        }
         $this->replace($input);
     }
     

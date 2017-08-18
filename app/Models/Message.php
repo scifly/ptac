@@ -56,8 +56,6 @@ class Message extends Model {
         'read_count',
         'received_count',
         'recipient_count',
-        'created_at',
-        'updated_at',
     ];
     
     public function messageType() {

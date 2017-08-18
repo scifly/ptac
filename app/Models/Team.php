@@ -23,12 +23,14 @@ use Illuminate\Database\Eloquent\Model;
  * 教师员工组
  * @property int $school_id 所属学校ID
  * @property string|null $remark 备注
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Team whereRemark($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Team whereSchoolId($value)
+ * @method static Builder|Team whereRemark($value)
+ * @method static Builder|Team whereSchoolId($value)
  */
 class Team extends Model {
     
-    protected $fillable = ['name', 'enabled'];
+    protected $fillable = [
+        'name', 'enabled', 'school_id', 'remark'
+    ];
     
     public function datatable() {
         

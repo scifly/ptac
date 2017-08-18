@@ -13,111 +13,96 @@ class AppController extends Controller {
     function __construct(App $app) { $this->app = $app; }
     
     /**
-     * Display a listing of the resource.
+     * 显示微信应用记录列表
      *
-     * @return \Illuminate\Http\Response
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
         
         if (Request::get('draw')) {
             return response()->json($this->app->datatable());
         }
-        return view('app.index', [
-            'js' => 'js/app/index.js',
-            'dialog' => true,
-            'datatable' => true
-        ]);
+        return $this->output(__METHOD__);
+        
     }
     
     /**
-     * Show the form for creating a new resource.
+     * 显示创建微信应用记录的表单
      *
-     * @return \Illuminate\Http\Response
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function create() {
         
-        return view('app.create', [
-            'js' => 'js/app/create.js',
-            'form' => true
-        ]);
+        return $this->output(__METHOD__);
         
     }
     
     /**
-     * Store a newly created resource in storage.
+     * 保存新创建的应用记录
+     *
      * @param AppRequest $request
-     * @return \Illuminate\Http\Response
-     * @internal param \Illuminate\Http\Request|Request $request
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(AppRequest $request) {
         
-        //添加新数据
-        $this->app->create($request->all());
-        $this->result['message'] = self::MSG_CREATE_OK;
-        return response()->json($this->result);
+        return $this->app->create($request->all()) ? $this->succeed() : $this->fail();
 
     }
     
     /**
-     * Display the specified resource.
+     * 显示指定的微信应用记录详情
+     *
      * @param $id
-     * @return \Illuminate\Http\Response
-     * @internal param App $app
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function show($id) {
-        
-        // find the record by $id
-        return view('app.show', [
-            'app' => $this->app->findOrFail($id)
-        ]);
+
+        $app = $this->app->find($id);
+        if (!$app) { return $this->notFound(); }
+        return $this->output(__METHOD__, ['app' => $app]);
         
     }
     
     /**
-     * Show the form for editing the specified resource.
+     * 显示编辑指定微信应用记录的表单
      *
      * @param $id
-     * @return \Illuminate\Http\Response
-     * @internal param App $app
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function edit($id) {
         
-        // find the record by $id
-        return view('app.edit', [
-            'js' => 'js/app/edit.js',
-            'app' => $this->app->findOrFail($id),
-            'form' => true
-        ]);
+        $app = $this->app->find($id);
+        if (!$app) { return $this->notFound(); }
+        return $this->output(__METHOD__, ['app' => $app]);
+        
     }
     
     /**
-     * Update the specified resource in storage.
+     * 更新指定的微信应用记录
+     *
      * @param AppRequest $request
      * @param $id
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(AppRequest $request, $id) {
         
-        $this->app->findOrFail($id)->update($request->all());
-        $this->result['message'] = self::MSG_EDIT_OK;
-        
-        return response()->json($this->result);
+        $app = $this->app->find($id);
+        if (!$app) { return $this->notFound(); }
+        return $app->update($request->all()) ? $this->succeed() : $this->fail();
         
     }
     
     /**
-     * Remove the specified resource from storage.
+     * 删除指定的微信应用记录
      *
      * @param $id
-     * @return \Illuminate\Http\Response
-     * @internal param App $app
+     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
-        
-        $this->app->findOrFail($id)->delete();
-        $this->result['message'] = self::MSG_DEL_OK;
-        
-        return response()->json($this->result);
+
+        $app = $this->app->find($id);
+        if (!$app) { return $this->notFound(); }
+        return $app->delete() ? $this->succeed() : $this->fail();
         
     }
     

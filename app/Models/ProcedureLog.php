@@ -37,6 +37,11 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read \App\Models\Procedure $procedure
  * @property-read \App\Models\ProcedureStep $procedureStep
  * @property-read \App\Models\User $user
+ * @property int $first_log_id 该申请第一条记录的id
+ * @property-read \App\Models\User $initiator_user
+ * @property-read \App\Models\User $operator_user
+ * @property-read \App\Models\ProcedureStep $procedure_step
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ProcedureLog whereFirstLogId($value)
  */
 class ProcedureLog extends Model {
     

@@ -29,16 +29,17 @@ use Illuminate\Database\Eloquent\Model;
  * 学期
  * @property string|null $remark 备注
  * @property-read \App\Models\School $school
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Semester whereRemark($value)
+ * @method static Builder|Semester whereRemark($value)
  */
 class Semester extends Model {
     
     protected $fillable = [
         'school_id',
         'name',
+        'remark',
+        'start_date',
         'end_date',
-        'created_at',
-        'updated_at',
+        'enabled'
     ];
     
     public function school() {

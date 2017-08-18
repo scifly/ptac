@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Action;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
@@ -9,6 +10,8 @@ use Illuminate\Routing\Controller as BaseController;
 
 class Controller extends BaseController {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
+    
+    protected $menu;
     
     const HTTP_STATUSCODE_OK = 200;
     const HTTP_STATUSCODE_BAD_REQUEST = 400;
@@ -19,6 +22,7 @@ class Controller extends BaseController {
     const HTTP_STATUSCODE_INTERNAL_SERVER_ERROR = 500;
     
     const MSG_OK = '操作成功';
+    const MSG_FAIL = '操作失败';
     const MSG_CREATE_OK = '添加成功';
     const MSG_DEL_OK = '删除成功';
     const MSG_EDIT_OK = '保存成功';
@@ -33,5 +37,54 @@ class Controller extends BaseController {
         'statusCode' => self::HTTP_STATUSCODE_OK,
         'message' => self::MSG_OK
     ];
+    
+    protected function output($m, array $params = []) {
+    
+        $arr = explode('::', $m);
+        $method = $arr[1];
+        $controller = explode('\\', $arr[0]);
+        $controller = $controller[sizeof($controller) - 1];
+        $action = Action::whereMethod($method)->where('controller', $controller)->first();
+        if (!$action) { return false; }
+        $view = $action->view;
+        if (!$view) { return false; }
+        
+        return response()->json([
+            'html' => view($view, $params)->render(),
+            'js' => $action->js
+        ]);
+        
+    }
+    
+    protected function notFound() {
+    
+        $this->result = [
+            'statusCode' => self::HTTP_STATUSCODE_BAD_REQUEST,
+            'message' => self::MSG_BAD_REQUEST
+        ];
+        return response()->json($this->result);
+        
+    }
+    
+    protected function succeed($msg = self::MSG_OK) {
+    
+        $this->result = [
+            'statusCode' => self::HTTP_STATUSCODE_OK,
+            'message' => $msg
+        ];
+        
+        return response()->json($this->result);
+        
+    }
+    
+    protected function fail($msg = self::MSG_FAIL) {
+    
+        $this->result = [
+            'statusCode' => self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR,
+            'message' => $msg
+        ];
+        
+        return response()->json($this->result);
+    }
     
 }
