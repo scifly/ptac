@@ -276,7 +276,7 @@ class WapSiteController extends Controller
         $school_id = isset($_GET['school_id']) ? $_GET['school_id'] : '';
 
         $wapsite = WapSite::whereId(1)->first();
-        $f = explode(",", $wapsite->media_ids);
+        $f = explode(",", $wapsite['media_ids']);
 
         $medias = Media::whereIn('id',$f)->get(['id','path']);
 //        foreach ($wapsite->wapsitemodule as $v){
@@ -284,7 +284,7 @@ class WapSiteController extends Controller
 //
 //        }
 //        die;
-        return view('wap_site.web_index', [
+        return view('frontend.wap_site.index', [
             'wapsite' => $wapsite,
             'medias' => $medias,
             'ws' =>true

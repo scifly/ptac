@@ -114,19 +114,21 @@ class User extends Authenticatable {
     public function pollquestionnaireAnswer() { return $this->hasOne('App\Models\PollQuestionnaireAnswer'); }
     
     public function pollquestionnairePartcipant() { return $this->hasOne('App\Models\PollQuestionnaireParticipant'); }
-    
+    public function message() {
+        return $this->hasMany('App\Models\Message');
+    }
     public function datatable() {
         
         $columns = [
             ['db' => 'User.id', 'dt' => 0],
-            ['db' => 'Groups.name as grapname', 'dt' => 1],
             ['db' => 'User.username', 'dt' => 2],
+            ['db' => 'Groups.name as grapname', 'dt' => 1],
             ['db' => 'User.avatar_url', 'dt' => 3],
             ['db' => 'User.realname', 'dt' => 4],
             [
                 'db' => 'User.gender', 'dt' => 5,
                 'formatter' => function ($d, $row) {
-                    return $d ? '女' : '男';
+                    return $d ? '男' : '女';
                 }
             ],
             ['db' => 'User.email', 'dt' => 6],

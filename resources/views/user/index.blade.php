@@ -18,8 +18,8 @@
                 <thead>
                 <tr>
                     <th>#</th>
-                    <th>部门</th>
                     <th>用户名</th>
+                    <th>角色</th>
                     <th>头像</th>
                     <th>姓名</th>
                     <th>性别</th>
@@ -33,4 +33,7 @@
             </table>
         </div>
     </div>
+    @isset($show)
+        @include('user.show')
+    @endif
 @endsection

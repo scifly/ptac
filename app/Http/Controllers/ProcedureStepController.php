@@ -28,7 +28,8 @@ class ProcedureStepController extends Controller {
         return view('procedure_step.index', [
             'js' => 'js/procedure_step/index.js',
             'dialog' => true,
-            'datatable' => true
+            'datatable' => true,
+            'show' => true
         ]);
     }
 
@@ -74,16 +75,34 @@ class ProcedureStepController extends Controller {
      * @internal param AttendanceMachine $attendanceMachine
      */
     public function show($id) {
+
         //根据id 查找单条记录
-        $procedureStep = $this->procedureStep->whereId($id)->first();
-        $approver_user_ids = $procedureStep->operate_ids($procedureStep->approver_user_ids);
-        $related_user_ids = $procedureStep->operate_ids($procedureStep->related_user_ids);
-        //记录返回给view
-        return view('procedure_step.show', [
-            'procedureStep' => $procedureStep,
-            'approver_user_ids' => $approver_user_ids,
-            'related_user_ids' => $related_user_ids,
-        ]);
+        $ps = $this->procedureStep->whereId($id)
+            ->first([
+                'procedure_id',
+                'name',
+                'approver_user_ids',
+                'related_user_ids',
+                'remark',
+                'created_at',
+                'updated_at',
+                'enabled'
+            ]);
+
+        $ps->procedure_id = $ps->procedure->name;
+        $ps->approver_user_ids = $ps->user_names($ps->approver_user_ids);
+        $ps->related_user_ids = $ps->user_names($ps->related_user_ids);
+        $ps->enabled = $ps->enabled==1 ? '已启用' : '已禁用' ;
+
+        if ($ps) {
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
+            $this->result['showData'] = $ps;
+        } else {
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+            $this->result['message'] = '';
+        }
+
+        return response()->json($this->result);
     }
 
     /**

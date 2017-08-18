@@ -1,51 +1,33 @@
 $(crud.create('formUser'));
 
 $(function () {
-    // 初始化
-    $('#uploadFile').fileinput({
-        "language": 'zh',
-        'theme': 'explorer',
-        'maxFileCount': 1,
-        'uploadUrl': '#',
-        'showUpload': false,
-        'allowedFileExtensions': ['jpg', 'gif', 'png'],//接收的文件后缀
-        'fileActionSettings': {
-            showRemove: true,
-            showUpload: false,
-            showDrag: false
-        }
-    });
-    $('#upload').click(function () {
-        var data = new FormData($(".form-horizontal")[0]);
-        var imgInputElement = document.getElementById('uploadFile');
-        var len = imgInputElement.files.length;
-
-        for (var i = 0; i < len; i++) {
-            data.append('img[]', imgInputElement.files[i]);//获取到选中的图片
-        }
-        data.append('_token', $('#csrf_token').attr('content'));//添加token
-        // 图片预览
-        var $pre = $('.preview');
-        if (len !== 0) {
-            $.ajax({
-                type: 'post',
-                processData: false,
-                contentType: false,
-                dataType: 'json',
-                url: "../users/uploadavatar",
-                data: data,
-                success: function ($result) {
-                    var imgArr = $result.data;
-                    $.each(imgArr, function (index, obj) {//渲染选中的图片到表单
-                        console.log(index + obj.path);
-                        $pre.append('<img src="../../' + obj.path + '">');
-                        $pre.append('<input type="hidden" name="avatar_url" value="../../' + obj.path + '">');
-                    });
-                    // 清空,关闭弹框
-                    $('#uploadFile').fileinput('clear');
-                    $('#modalPic').modal('hide');
+    $('#avatar_upload').change(function () {
+        var formData = new FormData();
+        formData.append('avatar', $('#avatar_upload')[0].files[0]);
+        formData.append('_token', $('#csrf_token').attr('content'));
+        var id = $('input[name=avatar_url]').attr("id");
+        $.ajax({
+            url: "../users/upload_ava/" + id,
+            data: formData,
+            type: 'POST',
+            dataType: 'json',
+            contentType: false,
+            processData: false,
+            cache: false,
+            success: function (data) {
+                if (data.statusCode === 200) {
+                    $('#avatar_thumb_img').attr('src', '/ptac/storage/app/avauploads/' + data.fileName);
+                    $('input[name=avatar_url]').val(data.fileName);
+                    crud.inform('更新头像', data.message, crud.success);
+                }else{
+                    crud.inform('出现异常', data.message, crud.failure);
                 }
-            })
-        }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                var number = XMLHttpRequest.status;
+                var info = "错误号" + number + "文件上传失败!";
+                crud.inform('出现异常', info, crud.failure);
+            }
+        })
     })
 });
