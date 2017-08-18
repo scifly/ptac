@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ProcedureLogRequest;
 use App\Models\Media;
 use App\Models\ProcedureLog;
 use Illuminate\Support\Facades\DB;
@@ -91,18 +92,91 @@ class ProcedureLogController extends Controller {
 
     /**
      * 添加申请信息
+     * @param ProcedureLogRequest $request
      */
-    public function store()
+    public function store(ProcedureLogRequest $request)
     {
+        $user_id = 6;
+        $media_ids = $request->input('media_ids');
+        $procedure_step = DB::table('procedure_steps')->where('procedure_id', $request->input('procedure_id'))->orderBy('id','asc')->first();
+        $data = [
+            'procedure_id' => $request->input('procedure_id'),
+            'initiator_user_id' => $user_id,
+            'procedure_step_id' => $procedure_step->id,
+            'operator_user_id' => 0,
+            'operator_msg' => 0,
+            'operator_media_ids' => 0,
+            'step_status' => 2,
+            'first_log_id' => 0,
+            'initiator_msg' => $request->input('initiator_msg'),
+            'initiator_media_ids' => empty($media_ids) ? 0 : implode(',', $media_ids)
+        ];
 
+        if($id = $this->procedureLog->insertGetId($data))
+        {
+            $this->procedureLog->where('id', $id)->update(['first_log_id' => $id]);
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
+            $this->result['message'] = self::MSG_CREATE_OK;
+        } else {
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+            $this->result['message'] = '';
+        }
+        return response()->json($this->result);
     }
+
+    /**
+     * 审批申请
+     * @param ProcedureLogRequest $request
+     */
+    public function decision()
+    {
+        $user_id = 3;
+        $request = Request::all();
+        $update = $this->procedureLog->where('id', $request['id'])
+            ->update([
+                'step_status' => $request['step_status'],
+                'operator_user_id' => $user_id,
+                'operator_msg' => $request['operator_msg'],
+                'operator_media_ids' => empty($request['media_ids']) ? 0 : implode(',', $request['media_ids'])
+            ]);
+
+        if($update){
+            if($request['step_status'] == 0){
+                $procedure_step = DB::table('procedure_steps')->where([
+                    ['procedure_id', '=', $request['procedure_id']],
+                    ['id', '>', $request['procedure_step_id']]
+                ])->orderBy('id','asc')->first();
+                if(!empty($procedure_step)){
+                    $data = [
+                        'procedure_id' => $request['procedure_id'],
+                        'initiator_user_id' => $request['initiator_user_id'],
+                        'procedure_step_id' => $request['procedure_step_id'],
+                        'operator_user_id' => 0,
+                        'operator_msg' => 0,
+                        'operator_media_ids' => 0,
+                        'step_status' => 2,
+                        'first_log_id' => $request['first_log_id'],
+                        'initiator_msg' => $request['initiator_msg'],
+                        'initiator_media_ids' => $request['initiator_media_ids']
+                    ];
+                    $this->procedureLog->insertGetId($data);
+                }
+            }
+            $result['statusCode'] = self::HTTP_STATUSCODE_OK;
+            $result['message'] = '保存成功';
+        }else{
+            $result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+            $result['message'] = '请求失败';
+        }
+        return response()->json($result);
+    }
+
 
     /**
      * 上传文件
      */
     public function uploadMedias(){
         $files = Request::file('medias');
-
         if (empty($files)){
             $result['statusCode'] = 0;
             $result['message'] = '您还未选择文件！';
@@ -125,7 +199,7 @@ class ProcedureLogController extends Controller {
                     $data = [
                         'path' => $filePath,
                         'remark' => '流程相关附件',
-                        'media_type_id' => $type,
+                        'media_type_id' => 1,
                         'enabled' => '1',
                     ];
                     $mediaId = Media::insertGetId($data);
@@ -142,10 +216,25 @@ class ProcedureLogController extends Controller {
             $result['data'] = $mes;
         }
         return response()->json($result);
-
     }
 
+    /**
+     * 删除上传文件
+     */
+    public function deleteMedias($id){
+        $path = Media::where('id',$id)->value('path');
+        $path_arr = explode("/",$path);
+        Storage::disk('uploads')->delete($path_arr[5]);
 
+        if(Media::where('id',$id)->delete()){
+            $result['statusCode'] = self::HTTP_STATUSCODE_OK;
+            $result['message'] = self::MSG_DEL_OK;
+        }else{
+            $result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+            $result['message'] = self::MSG_BAD_REQUEST;
+        }
+        return response()->json($result);
+    }
 
 
 
