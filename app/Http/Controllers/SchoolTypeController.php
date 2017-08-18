@@ -15,7 +15,8 @@ class SchoolTypeController extends Controller {
     }
     
     /**
-     * Display a listing of the resource.
+     * 显示学校类型列表
+     *
      * @return \Illuminate\Http\Response
      * @internal param SchoolType $schoolType
      */
@@ -24,95 +25,77 @@ class SchoolTypeController extends Controller {
         if (Request::get('draw')) {
             return response()->json($this->schoolType->datatable());
         }
-        return view('school_type.index', [
-            'js' => 'js/school/index.js',
-            'datatable' => true,
-            'dialog' => true
-        ]);
+        return parent::output(__METHOD__);
         
     }
     
     /**
-     * Show the form for creating a new resource.
+     * 返回创建学校类型的表单
      *
      * @return \Illuminate\Http\Response
      */
     public function create() {
         
-        return view('school_type.create', [
-            'js' => 'js/school_type/create.js',
-            'form' => true
-        ]);
+        return parent::output(__METHOD__);
         
     }
     
     /**
-     * Store a newly created resource in storage.
+     * 保存新创建的学校类型记录
      *
      * @param SchoolTypeRequest|\Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(SchoolTypeRequest $request) {
         
-        if ($this->schoolType->create($request->all())) {
-            $this->result['message'] = self::MSG_CREATE_OK;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = 'wtf';
-        }
-        return response()->json($this->result);
+        return $this->schoolType->create($request->all()) ? parent::succeed() : parent::fail();
         
     }
     
     /**
-     * Display the specified resource.
+     * 显示指定的学校类型记录详情
      *
      * @param $id
-     * @return \Illuminate\Http\Response
      * @internal param SchoolType $schoolType
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function show($id) {
         
-        return view('school_type.show', [
-            'schoolType' => $this->schoolType->findOrFail($id)
-        ]);
+        $schoolType = $this->schoolType->find($id);
+        if (!$schoolType) { return parent::notFound(); }
+        return parent::output(__METHOD__, ['schoolType' => $schoolType]);
         
     }
     
     /**
-     * Show the form for editing the specified resource.
+     * 显示编辑学校类型记录的表单
      *
      * @param $id
-     * @return \Illuminate\Http\Response
      * @internal param $ \Ap p\Models\SchoolType $schoolType
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function edit($id) {
         
-        return view('school_type.edit', [
-            'js' => 'js/school_type/edit.js',
-            'schoolType' => $this->schoolType->findOrFail($id),
-            'form' => true
-        ]);
+        $schoolType = $this->schoolType->find($id);
+        if (!$schoolType) { return parent::notFound(); }
+        return parent::output(__METHOD__, ['schoolType' => $schoolType]);
         
     }
     
     /**
-     * Update the specified resource in storage.
+     * 更新指定的学校类型记录
      *
+     * @param SchoolTypeRequest $request
      * @param $id
-     * @return \Illuminate\Http\Response
      * @internal param \Illuminate\Http\Request $request
      * @internal param SchoolType $schoolType
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function update($id) {
+    public function update(SchoolTypeRequest $request, $id) {
     
-        if ($this->schoolType->findOrFail($id)->update(Request::all())) {
-            $this->result['message'] = self::MSG_EDIT_OK;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = 'WTF';
-        }
-        return response()->json($this->result);
+        $schoolType = $this->schoolType->find($id);
+        if (!$schoolType) { return parent::notFound(); }
+        return $schoolType->update($request->all()) ? parent::succeed() : parent::fail();
         
     }
     
@@ -124,14 +107,10 @@ class SchoolTypeController extends Controller {
      * @internal param SchoolType $schoolType
      */
     public function destroy($id) {
-        
-        if ($this->schoolType->findOrFail($id)->delete()) {
-            $this->result['message'] = self::MSG_DEL_OK;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '';
-        }
-        return response()->json($this->result);
+
+        $schoolType = $this->schoolType->find($id);
+        if (!$schoolType) { return parent::notFound(); }
+        return $schoolType->delete() ? parent::succeed() : parent::fail();
         
     }
 }

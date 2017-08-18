@@ -59,36 +59,13 @@ class ProcedureStep extends Model {
             [
                 'db' => 'ProcedureStep.approver_user_ids', 'dt' => 2,
                 'formatter' => function ($d, $row) {
-                    $users = $this->operate_ids($d);
-                    $data = '';
-                    foreach (array_keys($users) as $uid) {
-                        $data .= $users[$uid] . ', ';
-                    }
-                    
-                    $data = trim($data);
-                    $len = strlen($data);
-                    $len = $len - 1;
-                    
-                    $data = substr($data, 0, $len);
-                    return $data;
+                    return $this->user_names($d);
                 }
             ],
             [
                 'db' => 'ProcedureStep.related_user_ids', 'dt' => 3,
                 'formatter' => function ($d, $row) {
-                    $users = $this->operate_ids($d);
-                    $data = '';
-                    foreach (array_keys($users) as $uid) {
-                        $data .= $users[$uid] . ', ';
-                    }
-                    
-                    $data = trim($data);
-                    $len = strlen($data);
-                    $len = $len - 1;
-                    
-                    $data = substr($data, 0, $len);
-                    
-                    return $data;
+                    return $this->user_names($d);
                 }
             ],
             ['db' => 'ProcedureStep.name', 'dt' => 4],
@@ -119,7 +96,7 @@ class ProcedureStep extends Model {
     
     /**
      * 拆分appover_user_ids、related_user_ids,
-     * @param $user_ids '|'符号拼接的教职工id字符串
+     * @param $user_ids ','符号拼接的教职工id字符串
      * @return array 处理后字典 key=>user.id,value => user.realname
      */
     public function operate_ids($user_ids) {
@@ -134,9 +111,30 @@ class ProcedureStep extends Model {
         
         return $educators;
     }
-    
+
     /**
-     * 使用'|', 拼接教职工id
+     * 用户姓名字符串拼接
+     * @param $user_ids ','符号拼接的用户id字符串
+     * @return bool|string
+     */
+    public function user_names($user_ids){
+
+        $users = $this->operate_ids($user_ids);
+        $data = '';
+        foreach (array_keys($users) as $uid) {
+            $data .= $users[$uid] . ', ';
+        }
+
+        $data = trim($data);
+        $len = strlen($data);
+        $len = $len - 1;
+
+        $data = substr($data, 0, $len);
+        return $data;
+    }
+
+    /**
+     * 使用',', 拼接教职工id
      * @param $arry_id
      * @return string
      */

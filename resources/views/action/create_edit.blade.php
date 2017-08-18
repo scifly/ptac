@@ -37,15 +37,15 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        {!! Form::label('remark', '备注', [
+                        {!! Form::label('route', '路由', [
                             'class' => 'col-sm-3 control-label'
                         ]) !!}
                         <div class="col-sm-6">
-                            {!! Form::text('remark', null, [
+                            {!! Form::text('route', null, [
                                 'class' => 'form-control special-form-control',
-                                'placeholder' => '(请输入备注)',
+                                'placeholder' => '(请输入路由)',
                                 'data-parsley-required' => 'true',
-                                'data-parsley-maxlength' => '255'
+                                'data-parsley-maxlength' => '255',
                             ]) !!}
                         </div>
                     </div>
@@ -70,7 +70,6 @@
                             {!! Form::text('view', null, [
                                 'class' => 'form-control special-form-control',
                                 'placeholder' => '(请输入view路径)',
-                                'data-parsley-required' => 'true',
                                 'data-parsley-maxlength' => '255'
                             ]) !!}
                         </div>
@@ -83,64 +82,90 @@
                             {!! Form::text('js', null, [
                                 'class' => 'form-control special-form-control',
                                 'placeholder' => '(请输入js文件路径)',
-                                'data-parsley-required' => 'true',
                                 'data-parsley-maxlength' => '255'
                             ]) !!}
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="datatable" class="col-sm-3 control-label">
-                            是否使用datatable插件
-                        </label>
-                        <div class="col-sm-6" style="margin-top: 5px;">
-                            <input id="datatable" type="checkbox" name="datatable"
-                                   @if(!empty($action['datatable'])) checked @endif
-                                   data-render="switchery" data-theme="default"
-                                   data-switchery="true" data-classname="switchery switchery-small"/>
+                        {!! Form::label('remark', '备注', [
+                            'class' => 'col-sm-3 control-label'
+                        ]) !!}
+                        <div class="col-sm-6">
+                            {!! Form::text('remark', null, [
+                                'class' => 'form-control special-form-control',
+                                'placeholder' => '(请输入备注)',
+                                'data-parsley-maxlength' => '255'
+                            ]) !!}
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="parsley" class="col-sm-3 control-label">
-                            是否使用parsley插件
-                        </label>
-                        <div class="col-sm-6" style="margin-top: 5px;">
-                            <input id="parsley" type="checkbox" name="parsley"
-                                   @if(!empty($action['parsley'])) checked @endif
-                                   data-render="switchery" data-theme="default"
-                                   data-switchery="true" data-classname="switchery switchery-small"/>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="select2" class="col-sm-3 control-label">
-                            是否使用select2插件
-                        </label>
-                        <div class="col-sm-6" style="margin-top: 5px;">
-                            <input id="select2" type="checkbox" name="select2"
-                                   @if(!empty($action['select2'])) checked @endif
-                                   data-render="switchery" data-theme="default"
-                                   data-switchery="true" data-classname="switchery switchery-small"/>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="chart" class="col-sm-3 control-label">
-                            是否使用chart插件
-                        </label>
-                        <div class="col-sm-6" style="margin-top: 5px;">
-                            <input id="chart" type="checkbox" name="chart"
-                                   @if(!empty($action['chart'])) checked @endif
-                                   data-render="switchery" data-theme="default"
-                                   data-switchery="true" data-classname="switchery switchery-small"/>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="map" class="col-sm-3 control-label">
-                            是否使用map插件
-                        </label>
-                        <div class="col-sm-6" style="margin-top: 5px;">
-                            <input id="map" type="checkbox" name="map"
-                                   @if(!empty($action['map'])) checked @endif
-                                   data-render="switchery" data-theme="default"
-                                   data-switchery="true" data-classname="switchery switchery-small"/>
+                        <label for="" class="col-sm-3 control-label">使用插件</label>
+                        <div class="col-sm-6">
+                            <table class="table table-bordered">
+                                <thead>
+                                <tr>
+                                    <td>
+                                        <label for="datatable">
+                                            <span class="badge bg-light-blue">datatable</span>
+                                        </label>
+                                    </td>
+                                    <td>
+                                        <label for="parsley">
+                                            <span class="badge bg-light-blue">parsley</span>
+                                        </label>
+                                    </td>
+                                    <td>
+                                        <label for="select2">
+                                            <span class="badge bg-light-blue">select2</span>
+                                        </label>
+                                    </td>
+                                    <td>
+                                        <label for="chart">
+                                            <span class="badge bg-light-blue">chart</span>
+                                        </label>
+                                    </td>
+                                    <td>
+                                        <label for="map">
+                                            <span class="badge bg-light-blue">map</span>
+                                        </label>
+                                    </td>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td>
+                                        <input id="datatable" type="checkbox" name="datatable"
+                                               @if(!empty($action['datatable'])) checked @endif
+                                               data-render="switchery" data-theme="default"
+                                               data-switchery="true" data-classname="switchery switchery-small"/>
+                                    </td>
+                                    <td>
+                                        <input id="parsley" type="checkbox" name="parsley"
+                                               @if(!empty($action['parsley'])) checked @endif
+                                               data-render="switchery" data-theme="default"
+                                               data-switchery="true" data-classname="switchery switchery-small"/>
+                                    </td>
+                                    <td>
+                                        <input id="select2" type="checkbox" name="select2"
+                                               @if(!empty($action['select2'])) checked @endif
+                                               data-render="switchery" data-theme="default"
+                                               data-switchery="true" data-classname="switchery switchery-small"/>
+                                    </td>
+                                    <td>
+                                        <input id="chart" type="checkbox" name="chart"
+                                               @if(!empty($action['chart'])) checked @endif
+                                               data-render="switchery" data-theme="default"
+                                               data-switchery="true" data-classname="switchery switchery-small"/>
+                                    </td>
+                                    <td>
+                                        <input id="map" type="checkbox" name="map"
+                                               @if(!empty($action['map'])) checked @endif
+                                               data-render="switchery" data-theme="default"
+                                               data-switchery="true" data-classname="switchery switchery-small"/>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                     <div class="form-group">
@@ -179,15 +204,7 @@
                     </div>
                 </div>
             </div>
-            <div class="box-footer">
-                {{--button--}}
-                <div class="form-group">
-                    <div class="col-sm-3 col-sm-offset-3">
-                        {!! Form::submit('保存', ['class' => 'btn btn-primary pull-left','id' =>'save']) !!}
-                        {!! Form::reset('取消', ['class' => 'btn btn-default pull-right','id' =>'cancel']) !!}
-                    </div>
-                </div>
-            </div>
+            @include('partials.form.buttons')
         </div>
     </div>
 </div>

@@ -13,118 +13,97 @@ class SemesterController extends Controller {
     function __construct(Semester $semester) { $this->semester = $semester; }
     
     /**
-     * Display a listing of the resource.
+     * 显示学期记录列表
      *
-     * @return \Illuminate\Http\Response
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
         
         if (Request::get('draw')) {
             return response()->json($this->semester->datatable());
         }
-        return view('semester.index', [
-            'js' => 'js/semester/index.js',
-            'datatable' => true,
-            'dialog' => true
-        ]);
+        return parent::output(__METHOD__);
         
     }
     
     /**
-     * Show the form for creating a new resource.
+     * 显示创建学期记录的表单
      *
-     * @return \Illuminate\Http\Response
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function create() {
-        
-        return view('semester.create', [
-            'js' => 'js/semester/create.js',
-            'form' => true
-        ]);
+
+        return $this->output(__METHOD__);
         
     }
     
     /**
-     * Store a newly created resource in storage.
+     * 保存新创建的学期记录
      *
      * @param SemesterRequest $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(SemesterRequest $request) {
         
-        if ($this->semester->create($request->all())) {
-            $this->result['message'] = self::MSG_CREATE_OK;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '';
-        }
-        return response()->json($this->result);
+        return $this->semester->create($request->all()) ? $this->succeed() : $this->fail();
         
     }
     
     /**
-     * Display the specified resource.
+     * 显示指定的学期记录详情
      *
-     * @param  int $id
-     * @return \Illuminate\Http\Response
+     * @param $id
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function show($id) {
-        
-        return view('semester.show', [
-            'team' => $this->semester->findOrFail($id)
-        ]);
-        
+
+        $semester = $this->semester->find($id);
+        if (!$semester) { return $this->notFound(); }
+        return $this->output(__METHOD__, ['semester' => $semester]);
+
     }
     
     /**
-     * Show the form for editing the specified resource.
+     * 显示编辑指定学期记录的表单
      *
-     * @param  int $id
-     * @return \Illuminate\Http\Response
+     * @param $id
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function edit($id) {
 
-        return view('semester.edit', [
-            'js' => 'js/semester/edit.js',
-            'semester' => $this->semester->findOrFail($id),
-            'form' => true
-        ]);
-        
+        $semester = $this->semester->find($id);
+        if (!$semester) { return $this->notFound(); }
+        return $this->output(__METHOD__, ['semester' => $semester]);
+
     }
     
     /**
-     * Update the specified resource in storage.
+     * 更新指定的学期记录
      *
-     * @param  int $id
-     * @return \Illuminate\Http\Response
+     * @param SemesterRequest $request
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function update($id) {
-        
-        if ($this->semester->findOrFail($id)->update(Request::all())) {
-            $this->result['message'] = self::MSG_EDIT_OK;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '';
-        }
-        return response()->json($this->result);
+    public function update(SemesterRequest $request, $id) {
+
+        $semester = $this->semester->find($id);
+        if (!$semester) { return $this->notFound(); }
+        return $semester->update($request->all()) ? $this->succeed() : $this->fail();
         
     }
     
     /**
-     * Remove the specified resource from storage.
+     * 删除指定的学期记录
      *
-     * @param  int $id
-     * @return \Illuminate\Http\Response
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
-        
-        if ($this->semester->findOrFail($id)->delete()) {
-            $this->result['message'] = self::MSG_DEL_OK;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '';
-        }
-        return response()->json($this->result);
+    
+        $semester = $this->semester->find($id);
+        if (!$semester) { return $this->notFound(); }
+        return $semester->delete() ? $this->succeed() : $this->fail();
         
     }
+    
 }

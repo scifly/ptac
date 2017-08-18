@@ -10,54 +10,25 @@ class MenuController extends Controller {
     
     protected $menu;
     
-    function __construct(Menu $menu) { $this->menu = $menu; }
-    
-    public function index() {
+    function __construct(Menu $menu) {
         
-        if (Request::ajax()) {
-            $menus = $this->menu->get(['id', 'parent_id', 'name', 'position'])
-                ->sortBy(['position'])->toArray();
-            $data = [];
-            foreach ($menus as $menu) {
-                if (isset($menu['parent_id'])) {
-                    $m = $this->menu->find($menu['id']);
-                    $icon = $m->icon;
-                    $menu['name'] = ($icon ? '<i class="' . $icon->name . '"></i>' : '<i class="fa fa-circle-o"></i>') .
-                        '&nbsp;' . $menu['name'];
-                }
-                $parentId = isset($menu['parent_id']) ? $menu['parent_id'] : '#';
-                $data[] = [
-                    'id' => $menu['id'],
-                    'parent' => $parentId,
-                    'text' => $menu['name']
-                ];
-            }
-            return response()->json($data);
-        }
-        return view('menu.index', [
-            'dialog' => true,
-            'js' => 'js/menu/index.js',
-            'jstree' => true,
-            'form' => true,
-            'menus' => $this->menu->leaves(1)
-        ]);
+        $this->menu = $menu;
         
     }
     
-    /**
-     * 显示创建菜单记录的表单
-     *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
-     */
+    public function index() {
+        
+        if (Request::method() === 'POST' ) {
+            return $this->menu->tree();
+        }
+        return parent::output(__METHOD__);
+        
+    }
+    
+    /** 显示创建菜单记录的表单 */
     public function create() {
         
-        if (Request::ajax()) {
-            return response()->json(['html' => view('menu.create')->render()]);
-        }
-        return view('menu.create', [
-            'js' => 'js/action/create.js',
-            'form' => true,
-        ]);
+        return parent::output(__METHOD__);
         
     }
     
@@ -69,14 +40,7 @@ class MenuController extends Controller {
      */
     public function store(MenuRequest $request) {
         
-        if ($this->menu->store($request)) {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-            $this->result['message'] = self::MSG_CREATE_OK;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '';
-        }
-        return response()->json($this->result);
+        return $this->menu->store($request) ? parent::succeed() : parent::fail();
         
     }
     
@@ -84,13 +48,13 @@ class MenuController extends Controller {
      * 显示指定的菜单记录详情
      *
      * @param $id
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function show($id) {
         
-        return view('menu.show', [
-            'menu' => $this->menu->findOrFail($id)
-        ]);
+        $menu = $this->menu->find($id);
+        if (!$menu) { return parent::notFound(); }
+        return parent::output(__METHOD__, ['menu' => $menu]);
         
     }
     
@@ -98,29 +62,22 @@ class MenuController extends Controller {
      * 显示编辑指定菜单记录的表单
      *
      * @param $id
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
-     * @internal param null $parentId
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function edit($id) {
+    
+        $menu = $this->menu->find($id);
+        if (!$menu) { return parent::notFound(); }
         
-        if (Request::ajax()) {
-            $menu = $this->menu->find($id);
-            $menuTabs = $menu->tabs;
-            $selectedTabs = [];
-            foreach ($menuTabs as $tab) {
-                $selectedTabs[$tab->id] = $tab->name;
-            }
-            return response()->json([
-                'html' => view('menu.edit', [
-                    'selectedTabs' => $selectedTabs,
-                    'menu' => $menu
-                ])->render()
-            ]);
+        # 获取已选定的卡片
+        $menuTabs = $menu->tabs;
+        $selectedTabs = [];
+        foreach ($menuTabs as $tab) {
+            $selectedTabs[$tab->id] = $tab->name;
         }
-        return view('menu.edit', [
-            'js' => 'js/menu/edit.js',
-            'form' => true,
-            'menu' => $this->menu->findOrFail($id),
+        return parent::output(__METHOD__, [
+            'menu' => $menu,
+            'selectedTabs' => $selectedTabs
         ]);
         
     }
@@ -134,15 +91,9 @@ class MenuController extends Controller {
      */
     public function update(MenuRequest $request, $id) {
         
-        if ($this->menu->modify($request, $id)) {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-            $this->result['message'] = self::MSG_EDIT_OK;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '修改失败';
-        }
-        
-        return response()->json($this->result);
+        $menu = $this->menu->find($id);
+        if (!$menu) { return parent::notFound(); }
+        return $this->menu->modify($request, $id) ? parent::succeed() : parent::fail();
         
     }
     
@@ -154,16 +105,13 @@ class MenuController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function move($id, $parentId) {
-    
-        if ($this->menu->move($id, $parentId)) {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-            $this->result['message'] = '菜单位置更新成功';
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '菜单位置更新失败';
+
+        $menu = $this->menu->find($id);
+        $parentMenu = $this->menu->find($parentId);
+        if (!$menu || !$parentMenu) {
+            return parent::notFound();
         }
-        
-        return response()->json($this->result);
+        return $this->menu->move($id, $parentId) ? parent::succeed() : parent::fail();
         
     }
     
@@ -175,14 +123,9 @@ class MenuController extends Controller {
      */
     public function destroy($id) {
         
-        if ($this->menu->remove($id)) {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-            $this->result['message'] = self::MSG_DEL_OK;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '删除失败';
-        }
-        return response()->json($this->result);
+        $menu = $this->menu->find($id);
+        if (!$menu) { return parent::notFound(); }
+        return $this->menu->remove($id) ? parent::succeed() : parent::fail();
         
     }
     

@@ -31,4 +31,7 @@
             </table>
         </div>
     </div>
+    @isset($show)
+        @include('attendance_machine.show')
+    @endif
 @endsection

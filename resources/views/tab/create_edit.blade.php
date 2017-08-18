@@ -10,7 +10,7 @@
             <div class="box-body">
                 <div class="form-horizontal">
                     <div class="form-group">
-                        {!! Form::label('name', 'Action名称',[
+                        {!! Form::label('name', '卡片名称',[
                             'class' => 'col-sm-3 control-label'
                         ]) !!}
                         <div class="col-sm-6">
@@ -54,36 +54,62 @@
                                     <label for="icon_id">
                                         <input id="icon_id" type="radio" name="icon_id"
                                                value="{{ $key }}" class="minimal"
-                                               @if(isset($menu) && $menu['icon_id'] == $key)
+                                               @if(isset($tab) && $tab['icon_id'] == $key)
                                                checked
-                                                @endif
+                                               @endif
                                         >
                                     </label>
                                     <i class="{{ $value }}" style="margin-left: 10px;">&nbsp; {{ $value }}</i><br />
                                 @endforeach
                             @endforeach
+
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="enabled" class="col-sm-3 control-label">是否启用</label>
+                        {!! Form::label('action_id', '默认Action', [
+                            'class' => 'col-sm-3 control-label'
+                        ]) !!}
+                        <div class="col-sm-6">
+                            {!! Form::select('action_id', $actions, null, [
+                                'id' => 'action_id',
+                                'style' => 'width: 100%;'
+                            ]) !!}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="menu_ids" class="col-sm-3 control-label">所属菜单</label>
+                        <div class="col-sm-6">
+                            <select multiple name="menu_ids[]" id="menu_ids" style="width: 100%;">
+                                @foreach ($menus as $key => $value)
+                                    @if(isset($selectedMenus))
+                                        <option value="{{ $key }}"
+                                            @if(array_key_exists($key, $selectedMenus))
+                                                selected
+                                            @endif
+                                        >
+                                            {{ $value }}
+                                        </option>
+                                    @else
+                                        <option value="{{ $key }}">{{ $value }}</option>
+                                    @endif
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="enabled" class="col-sm-3 control-label">
+                            是否启用
+                        </label>
                         <div class="col-sm-6" style="margin-top: 5px;">
                             <input id="enabled" type="checkbox" name="enabled" data-render="switchery"
                                    data-theme="default" data-switchery="true"
-                                   @if(!empty($tab['enabled'])) checked @endif
+                                   @if(!empty($action['enabled'])) checked @endif
                                    data-classname="switchery switchery-small"/>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="box-footer">
-                {{--button--}}
-                <div class="form-group">
-                    <div class="col-sm-3 col-sm-offset-3">
-                        {!! Form::submit('保存', ['class' => 'btn btn-primary pull-left','id' =>'save']) !!}
-                        {!! Form::reset('取消', ['class' => 'btn btn-default pull-right','id' =>'cancel']) !!}
-                    </div>
-                </div>
-            </div>
+            @include('partials.form_buttons')
         </div>
     </div>
 </div>

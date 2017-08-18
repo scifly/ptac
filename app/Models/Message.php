@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use App\Facades\DatatableFacade as Datatable;
 
 /**
  * App\Models\Message
@@ -50,15 +51,62 @@ class Message extends Model {
         'url',
         'media_ids',
         'user_id',
+        'user_ids',
         'message_type_id',
         'read_count',
-        'recevied_count',
+        'received_count',
         'recipient_count',
-        'created_at',
-        'updated_at',
     ];
     
     public function messageType() {
         return $this->belongsTo('App\Models\MessageType');
+    }
+    public function user() {
+        return $this->belongsTo('App\Models\User');
+    }
+
+    /**
+     * @return array
+     */
+    public function datatable() {
+
+        $columns = [
+            ['db' => 'Message.id', 'dt' => 0],
+            ['db' => 'Message.content', 'dt' => 1],
+            ['db' => 'Message.url', 'dt' => 2],
+            ['db' => 'User.realname', 'dt' => 3],
+            ['db' => 'MessageType.name', 'dt' => 4],
+            ['db' => 'Message.read_count', 'dt' => 5],
+            ['db' => 'Message.received_count', 'dt' => 6],
+            ['db' => 'Message.recipient_count', 'dt' => 7],
+            ['db' => 'Message.created_at', 'dt' => 8],
+
+            [
+                'db' => 'Message.updated_at', 'dt' => 9,
+                'formatter' => function ($d, $row) {
+                    return Datatable::dtOps($this, $d, $row);
+                }
+            ]
+        ];
+        $joins = [
+            [
+                'table' => 'message_types',
+                'alias' => 'MessageType',
+                'type'  => 'INNER',
+                'conditions' => [
+                    'MessageType.id = Message.message_type_id'
+                ]
+            ],
+            [
+                'table' => 'users',
+                'alias' => 'User',
+                'type'  => 'INNER',
+                'conditions' => [
+                    'User.id = Message.user_id'
+                ]
+            ]
+        ];
+
+        return Datatable::simple($this,  $columns, $joins);
     }
 }

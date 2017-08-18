@@ -31,4 +31,7 @@
             </table>
         </div>
     </div>
+    @isset($show)
+        @include('procedure.show')
+    @endif
 @endsection

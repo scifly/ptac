@@ -37,25 +37,10 @@
     </div>
 </div>
 <div class="form-group">
-    {!! Form::label('action_id', '默认Action', [
-        'class' => 'col-sm-3 control-label'
-    ]) !!}
-    <div class="col-sm-6">
-        {!! Form::select('action_id', $actions, null, [
-            'id' => 'action_id',
-            'style' => 'width: 100%;'
-        ]) !!}
-    </div>
-</div>
-<div class="form-group">
     {!! Form::label('icon_id', '图标', [
         'class' => 'col-sm-3 control-label'
     ]) !!}
     <div class="col-sm-6" style="overflow-y: scroll; height: 200px; border: 1px solid gray; margin-left: 15px; width: 393px;">
-        {{--{!! Form::select('icon_id', $icons, null, [
-            'id' => 'icon_id',
-            'style' => 'width: 100%;'
-        ]) !!}--}}
         @foreach($icons as $group => $_icons)
             @foreach ($_icons as $key => $value)
                 <label for="icon_id">

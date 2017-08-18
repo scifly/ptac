@@ -40,6 +40,8 @@
     <!-- fileinput-->
     <link rel="stylesheet" href="{{ URL::asset('js/plugins/fileinput/css/fileinput.min.css') }}">
     <link rel="stylesheet" href="{{ URL::asset('js/plugins/fileinput/themes/explorer/theme.css') }}">
+    {{--图片上传--}}
+    <link rel="stylesheet" href="{{ URL::asset('css/imgInput.css') }}">
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -209,138 +211,7 @@
             </form>
             <!--左侧菜单-->
             <ul class="sidebar-menu" data-widget="tree">
-                {{--<li class="header">菜单</li>--}}
-                <li><a href="#"><i class="fa fa-home"></i> 首页</a></li>
-                <!--用户通讯录-->
-                <li class="treeview">
-                    <a href="#">
-                        <i class="fa fa-phone-square"></i> <span>用户/通讯录</span>
-                        <span class="pull-right-container">
-                            <i class="fa fa-angle-left pull-right"></i>
-                        </span>
-                    </a>
-                    <ul class="treeview-menu">
-                        <li><a href="#"><i class="fa fa-circle-o"></i> 教职员工</a></li>
-                        <li><a href="#"><i class="fa fa-circle-o"></i> 监护人</a></li>
-                        <li><a href="#"><i class="fa fa-circle-o"></i> 学生</a></li>
-                        <li><a href="#"><i class="fa fa-circle-o"></i> 管理员</a></li>
-                    </ul>
-                </li>
-                <!--成绩管理-->
-                <li class="treeview">
-                    <a href="#">
-                        <i class="fa fa-dashboard"></i> <span> 成绩管理</span>
-                        <span class="pull-right-container">
-                            <i class="fa fa-angle-left pull-right"></i>
-                        </span>
-                    </a>
-                    <ul class="treeview-menu">
-                        <li><a href="#"><i class="fa fa-circle-o"></i> 考试设置</a></li>
-                        <li><a href="#"><i class="fa fa-circle-o"></i> 成绩管理</a></li>
-                        <li><a href="#"><i class="fa fa-circle-o"></i> 成绩统计/打印</a></li>
-                        <li><a href="#"><i class="fa fa-circle-o"></i> 成绩发布</a></li>
-                    </ul>
-                </li>
-                <!--考勤管理-->
-                <li class="treeview">
-                    <a href="#">
-                        <i class="fa fa-dashboard"></i> <span> 考勤管理</span>
-                        <span class="pull-right-container">
-                            <i class="fa fa-angle-left pull-right"></i>
-                        </span>
-                    </a>
-                    <ul class="treeview-menu">
-                        <li><a href="#"><i class="fa fa-circle-o"></i> 考勤设置</a></li>
-                        <li><a href="#"><i class="fa fa-circle-o"></i> 考勤查询/统计</a></li>
-                        <li><a href="#"><i class="fa fa-circle-o"></i> 学生定位/监控</a></li>
-                    </ul>
-                </li>
-                <!--课程表管理-->
-                <li class="treeview">
-                    <a href="#">
-                        <i class="fa fa-dashboard"></i> <span> 课程表管理</span>
-                        <span class="pull-right-container">
-                            <i class="fa fa-angle-left pull-right"></i>
-                        </span>
-                    </a>
-                    <ul class="treeview-menu">
-                        <li><a href="#"><i class="fa fa-circle-o"></i> 课程表设置</a></li>
-                    </ul>
-                </li>
-                <!--自媒体管理-->
-                <li class="treeview">
-                    <a href="#">
-                        <i class="fa fa-dashboard"></i> <span> 自媒体管理</span>
-                        <span class="pull-right-container">
-                            <i class="fa fa-angle-left pull-right"></i>
-                        </span>
-                    </a>
-                    <ul class="treeview-menu">
-                        <li><a href="#"><i class="fa fa-circle-o"></i> 微网站管理</a></li>
-                    </ul>
-                </li>
-                <!--投票问卷-->
-                <li class="treeview">
-                    <a href="#">
-                        <i class="fa fa-edit"></i> <span>投票问卷</span>
-                        <span class="pull-right-container">
-                            <i class="fa fa-angle-left pull-right"></i>
-                        </span>
-                    </a>
-                    <ul class="treeview-menu">
-                        <li><a href="#"><i class="fa fa-circle-o"></i> 发起</a></li>
-                        <li><a href="#"><i class="fa fa-circle-o"></i> 参与</a></li>
-                        <li><a href="#"><i class="fa fa-circle-o"></i> 查询/统计</a></li>
-                    </ul>
-                </li>
-                <!--移动办公-->
-                <li class="treeview">
-                    <a href="#">
-                        <i class="fa fa-dashboard"></i> <span> 移动办公</span>
-                        <span class="pull-right-container">
-                            <i class="fa fa-angle-left pull-right"></i>
-                        </span>
-                    </a>
-                    <ul class="treeview-menu">
-                        <li><a href="#"><i class="fa fa-circle-o"></i> 审批设置</a></li>
-                        <li><a href="#"><i class="fa fa-circle-o"></i> 审批发起/处理</a></li>
-                        <li><a href="#"><i class="fa fa-circle-o"></i> 会议助手</a></li>
-                        <li><a href="#"><i class="fa fa-circle-o"></i> 申诉</a></li>
-                        <li><a href="#"><i class="fa fa-circle-o"></i> 财务助手</a></li>
-                    </ul>
-                </li>
-                <!--用户中心-->
-                <li class="treeview">
-                    <a href="#">
-                        <i class="fa fa-user"></i> <span>用户中心</span>
-                        <span class="pull-right-container">
-                            <i class="fa fa-angle-left pull-right"></i>
-                        </span>
-                    </a>
-                    <ul class="treeview-menu">
-                        <li><a href="#"><i class="fa fa-circle-o"></i> 个人通讯录</a></li>
-                        <li><a href="#"><i class="fa fa-circle-o"></i> 消息中心</a></li>
-                        <li><a href="#"><i class="fa fa-circle-o"></i> 日历</a></li>
-                        <li><a href="#"><i class="fa fa-circle-o"></i> 个人信息</a></li>
-                    </ul>
-                </li>
-                <!--系统设置-->
-                <li class="treeview">
-                    <a href="#">
-                        <i class="fa fa-gear"></i> <span>系统设置</span>
-                        <span class="pull-right-container">
-                            <i class="fa fa-angle-left pull-right"></i>
-                        </span>
-                    </a>
-                    <ul class="treeview-menu">
-                        <li><a href="#"><i class="fa fa-circle-o"></i> 学校设置</a></li>
-                        <li><a href="#"><i class="fa fa-circle-o"></i> 科目设置</a></li>
-                        <li><a href="#"><i class="fa fa-circle-o"></i> 角色/权限</a></li>
-                        <li><a href="#"><i class="fa fa-circle-o"></i> 年级/班级设置</a></li>
-                        <li><a href="#"><i class="fa fa-circle-o"></i> 运营者设置</a></li>
-                        <li><a href="#"><i class="fa fa-circle-o"></i> 应用设置</a></li>
-                    </ul>
-                </li>
+                @yield('menu')
             </ul>
         </section>
     </aside>
@@ -589,13 +460,14 @@
 <script src="{{ URL::asset('js/demo.js') }}"></script>
 
 @isset($ueditor)
-    <script type="text/javascript" src="{{ URL::asset('js/UEditor/ueditor.config.js') }}"></script>
-    <!-- 编辑器源码文件 -->
-    <script type="text/javascript" src="{{ URL::asset('js/UEditor/ueditor.all.js') }}"></script>
-    <!-- 实例化编辑器 -->
-    <script type="text/javascript">
-        var editor = UE.getEditor('container');
-    </script>
+<script type="text/javascript" src="{{ URL::asset('js/plugins/UEditor/ueditor.config.js') }}"></script>
+<!-- 编辑器源码文件 -->
+<script type="text/javascript" src="{{ URL::asset('js/plugins/UEditor/ueditor.all.js') }}"></script>
+<!-- 实例化编辑器 -->
+<script type="text/javascript">
+    var editor = UE.getEditor('container');
+</script>
+
 @endisset
 </body>
 </html>

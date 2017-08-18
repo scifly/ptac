@@ -74,6 +74,19 @@ class WapSiteController extends Controller
             $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
             $this->result['message'] = '该学校已存在微网站！';
         }else{
+            //删除原有的图片
+            $del_ids = $request->input('del_ids');
+            if($del_ids){
+                $medias = Media::whereIn('id',$del_ids)->get(['id','path']);
+
+                foreach ($medias as $v)
+                {
+                    $path_arr = explode("/",$v->path);
+                    Storage::disk('uploads')->delete($path_arr[5]);
+
+                }
+                $delStatus = Media::whereIn('id',$del_ids)->delete();
+            }
             if($this->wapSite->create($data))
             {
                 $this->result['message'] = self::MSG_CREATE_OK;
@@ -119,7 +132,6 @@ class WapSiteController extends Controller
         $f = explode(",", $wapsite->media_ids);
 
         $medias = Media::whereIn('id',$f)->get(['id','path']);
-
         return view('wap_site.edit', [
             'js' => 'js/wap_site/edit.js',
             'wapsite' => $wapsite,
@@ -145,18 +157,34 @@ class WapSiteController extends Controller
 
         $data->school_id = $siteRequest->input('school_id');
         $data->site_title = $siteRequest->input('site_title');
-        $data->media_ids = implode(',', $media_ids);
         $data->enabled = $siteRequest->input('enabled');
+        $data->media_ids = implode(',', $media_ids);
 
         $row = $this->wapSite->where([
             'school_id' => $data->school_id,
         ])->first();
+
+
         if(!empty($row) && $row->id != $id){
 
             $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
             $this->result['message'] = '所属学校重复！';
 
         }else{
+            //删除原有的图片
+            $del_ids = $siteRequest->input('del_ids');
+            if($del_ids){
+                $medias = Media::whereIn('id',$del_ids)->get(['id','path']);
+
+                foreach ($medias as $v)
+                {
+                    $path_arr = explode("/",$v->path);
+                    Storage::disk('uploads')->delete($path_arr[5]);
+
+                }
+                $delStatus = Media::whereIn('id',$del_ids)->delete();
+            }
+
             if($data->save())
             {
                 $this->result['message'] = self::MSG_EDIT_OK;
@@ -191,7 +219,7 @@ class WapSiteController extends Controller
      */
     public function uploadImages(){
 
-        if (Request::isMethod('post')) {
+//        if (Request::isMethod('post')) {
 
             $files = Request::file('img');
 
@@ -238,15 +266,17 @@ class WapSiteController extends Controller
             $result['data'] = $mes;
             }
             return response()->json($result);
-        }
+//        }
 
     }
+
+
     public function webindex(){
 
         $school_id = isset($_GET['school_id']) ? $_GET['school_id'] : '';
 
         $wapsite = WapSite::whereId(1)->first();
-        $f = explode(",", $wapsite->media_ids);
+        $f = explode(",", $wapsite['media_ids']);
 
         $medias = Media::whereIn('id',$f)->get(['id','path']);
 //        foreach ($wapsite->wapsitemodule as $v){
@@ -254,7 +284,7 @@ class WapSiteController extends Controller
 //
 //        }
 //        die;
-        return view('wap_site.web.index', [
+        return view('frontend.wap_site.index', [
             'wapsite' => $wapsite,
             'medias' => $medias,
             'ws' =>true

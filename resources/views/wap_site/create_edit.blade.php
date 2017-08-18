@@ -1,10 +1,3 @@
-<style>
-    .preview img {
-        width: 100%;
-        height: 100px;
-        margin: 10px;
-    }
-</style>
 <div class="box box-primary">
     <div class="box-header"></div>
     <div class="box-body">
@@ -29,20 +22,26 @@
             </div>
             <div class="form-group">
                 {!! Form::label('media_ids', '轮播图',['class' => 'col-sm-2 control-label']) !!}
-                <div class="col-sm-6">
-                    @if(isset($medias))
-                        @foreach($medias as $key => $value)
-                            <img src="../../{{$value->path}}">
-                            <input type="hidden" name="media_ids[]" value="{{$value->id}}"/>
-                        @endforeach
-                    @endif
-                    <div class="preview" style="width: 100px;overflow: hidden;"></div>
+                <div class="col-sm-10">
+                    <div class="preview">
+                        @if(isset($medias))
+                            @foreach($medias as $key => $value)
+                                <div class="img-item">
+                                    <img src="../../../{{$value->path}}" id="{{$value->id}}">
+                                    <input type="hidden" name="media_ids[]" value="{{$value->id}}"/>
+                                    <div class="del-mask">
+                                        <i class="delete fa fa-trash"></i>
+                                    </div>
+                                </div>
+                            @endforeach
+                        @endif
+                    </div>
                     <a class="btn btn-primary" data-toggle="modal" data-target="#modalPic">上传</a>
                 </div>
             </div>
             <div class="form-group">
                 {!! Form::label('enabled', '是否启用', [
-                    'class' => 'col-sm-4 control-label'
+                    'class' => 'col-sm-2 control-label'
                 ]) !!}
                 <div class="col-sm-6" style="margin-top: 5px;">
                     <input id="enabled" type="checkbox" name="enabled" data-render="switchery"

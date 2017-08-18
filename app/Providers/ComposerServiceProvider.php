@@ -38,6 +38,11 @@ class ComposerServiceProvider extends ServiceProvider {
         View::composer('tab.create_edit', 'App\Http\ViewComposers\TabComposer');
         View::composer('wap_site_module.create_edit', 'App\Http\ViewComposers\WapSiteModuleComposer');
         View::composer('wsm_article.create_edit', 'App\Http\ViewComposers\WsmArticleComposer');
+<<<<<<< HEAD
+        View::composer('action.create_edit', 'App\Http\ViewComposers\ActionComposer');
+=======
+        View::composer('message.create_edit', 'App\Http\ViewComposers\MessageComposer');
+>>>>>>> redmine/master
 
     }
 

@@ -9,7 +9,7 @@ class UserRequest extends FormRequest {
     protected $rules = [
         'group_id' => 'required|integer',
         'username' => 'required|string|max:255',
-//        'remember_token' => 'required|string|max:255',
+        '_token' => 'required|string|max:255',
         'email' => 'required|string|max:255',
         'gender' => 'required|boolean',
         'realname' => 'required|string|max:60',
@@ -21,7 +21,7 @@ class UserRequest extends FormRequest {
     protected $strings_key = [
         'group_id' => '分组类型',
         'username' => '用户名',
-//        'remember_token' => '记住我令牌',
+        '_token' => '记住我令牌',
         'email' => '电子邮箱',
         'gender' => '性别',
         'realname' => '姓名',

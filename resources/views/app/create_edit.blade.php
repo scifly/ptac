@@ -159,15 +159,7 @@
                     </div>
                 </div>
             </div>
-            <div class="box-footer">
-                {{--button--}}
-                <div class="form-group">
-                    <div class="col-sm-3 col-sm-offset-2" style="padding: 0;">
-                        {!! Form::submit('保存', ['class' => 'btn btn-primary pull-left','id' =>'save']) !!}
-                        {!! Form::reset('取消', ['class' => 'btn btn-default pull-right','id' =>'cencel']) !!}
-                    </div>
-                </div>
-            </div>
+            @include('partials.form_buttons')
         </div>
     </div>
 </div>

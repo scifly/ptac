@@ -3,8 +3,11 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Http\Requests\TabRequest;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
+use Mockery\Exception;
 
 /**
  * App\Models\Tab
@@ -31,28 +34,24 @@ use Illuminate\Database\Eloquent\Model;
 class Tab extends Model {
     
     protected $fillable = [
-        'name', 'remark', 'icon_id', 'enabled'
+        'name', 'remark', 'icon_id', 'action_id', 'enabled'
     ];
     
     public function menus() {
         
-        return $this->belongsToMany('App\Models\Menu')
-            ->withPivot('tab_order', 'enabled')
-            ->withTimestamps();
-        
-    }
-    
-    public function actions() {
-        
-        return $this->belongsToMany('App\Models\Action', 'tabs_actions')
-            ->withPivot('default', 'enabled')
-            ->withTimestamps();
+        return $this->belongsToMany('App\Models\Menu', 'menus_tabs');
         
     }
     
     public function icon() {
         
         return $this->belongsTo('App\Models\Icon');
+        
+    }
+    
+    public function action() {
+        
+        return $this->belongsTo('App\Models\Action');
         
     }
     
@@ -90,6 +89,61 @@ class Tab extends Model {
         ];
         
         return Datatable::simple($this, $columns, $joins);
+        
+    }
+    
+    public function store(TabRequest $request) {
+        
+        try {
+            $exception = DB::transaction(function() use ($request) {
+                $t = $this->create($request->all());
+                $menuTab = new MenuTab();
+                $menuIds = $request->input('menu_ids', []);
+                $menuTab->storeByTabId($t->id, $menuIds);
+            });
+            return is_null($exception) ? true : $exception;
+        } catch (Exception $e) {
+            return false;
+        }
+        
+    }
+    
+    public function modify(TabRequest $request, $tabId) {
+        
+        $tab = $this->find($tabId);
+        if (!isset($tab)) { return false; }
+        try {
+            $exception = DB::transaction(function() use($request, $tabId, $tab) {
+                $tab->update($request->all());
+                $menuIds = $request->input('menu_ids', []);
+                $menuTab = new MenuTab();
+                $menuTab::whereTabId($tabId)->delete();
+                $menuTab->storeByTabId($tabId, $menuIds);
+            });
+            
+            return is_null($exception) ? true : $exception;
+        } catch (Exception $e) {
+            return false;
+        }
+        
+    }
+    
+    public function remove($tabId) {
+        
+        $tab = $this->find($tabId);
+        if (!isset($tab)) { return false; }
+        try {
+            $exception = DB::transaction(function() use ($tabId, $tab) {
+                # 删除指定的卡片记录
+                $tab->delete();
+                # 删除与指定卡片绑定的菜单记录
+                MenuTab::whereTabId($tabId)->delete();
+            });
+            
+            return is_null($exception) ? true : $exception;
+        } catch (Exception $e) {
+            return false;
+        }
         
     }
     

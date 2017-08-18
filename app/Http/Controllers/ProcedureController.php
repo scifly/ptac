@@ -26,7 +26,8 @@ class ProcedureController extends Controller {
         return view('procedure.index', [
             'js' => 'js/procedure/index.js',
             'dialog' => true,
-            'datatable' => true
+            'datatable' => true,
+            'show' => true
         ]);
     }
 
@@ -64,18 +65,6 @@ class ProcedureController extends Controller {
             }
         }
         return response()->json($this->result);
-
-       /* $procedure = new Procedure;
-        $procedure->procedure_type_id = $request->procedure_type_id;
-        $procedure->school_id = $request->school_id;
-        $procedure->name = $request->name;
-        $procedure->remark = $request->remark;
-        $procedure->enabled = $request->enabled;
-        if ($procedure->save()) {
-            return response()->json(['statusCode' => 200, 'message' => '创建成功！']);
-        }
-
-        return response()->json(['statusCode' => 500, 'message' => '创建失败！']);*/
     }
 
     /**
@@ -84,8 +73,24 @@ class ProcedureController extends Controller {
      * @internal param AttendanceMachine $attendanceMachine
      */
     public function show($id) {
-        //记录返回给view
-        return view('procedure_type.show', ['pt' => $this->procedure->findOrFail($id)]);
+
+        //根据id 查找单条记录
+        $procedure = $this->procedure->whereId($id)
+            ->first(['name','school_id','procedure_type_id','remark','created_at','updated_at','enabled']);
+
+        $procedure->school_id = $procedure->school->name;
+        $procedure->procedure_type_id = $procedure->procedureType->name;
+        $procedure->enabled = $procedure->enabled==1 ? '已启用' : '已禁用' ;
+
+        if ($procedure) {
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
+            $this->result['showData'] = $procedure;
+        } else {
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+            $this->result['message'] = '';
+        }
+
+        return response()->json($this->result);
     }
 
     /**
@@ -114,6 +119,7 @@ class ProcedureController extends Controller {
     public function update(ProcedureRequest $request, $id) {
 
         $procedure = $request->all();
+
         $record = $this->procedure->where('procedure_type_id', $procedure['procedure_type_id'])
             ->where('school_id', $procedure['school_id'])
             ->where('name', $procedure['name'])
@@ -132,18 +138,6 @@ class ProcedureController extends Controller {
         }
         return response()->json($this->result);
 
-       /* $procedure = Procedure::whereId($id)->first();
-        $procedure->procedure_type_id = $request->procedure_type_id;
-        $procedure->school_id = $request->school_id;
-        $procedure->name = $request->name;
-        $procedure->remark = $request->remark;
-        $procedure->enabled = $request->enabled;
-        if ($procedure->save()) {
-            return response()->json(['statusCode' => 200, 'message' => '更新成功！']);
-        }
-
-        return response()->json(['statusCode' => 500, 'message' => '更新失败！']);
-*/
     }
 
     /**
@@ -167,12 +161,4 @@ class ProcedureController extends Controller {
         }
         return response()->json($this->result);
     }
-      /*  $procedure = Procedure::whereId($id)->first();
-
-        if ($procedure->delete()) {
-            return response()->json(['statusCode' => 200, 'message' => '删除成功！']);
-        }
-
-        return response()->json(['statusCode' => 500, 'message' => '删除失败！']);
-    }*/
 }

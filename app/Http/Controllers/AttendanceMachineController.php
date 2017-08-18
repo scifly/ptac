@@ -25,7 +25,9 @@ class AttendanceMachineController extends Controller {
 
         return view('attendance_machine.index', [
             'js' => 'js/attendance_machine/index.js',
-            'dialog' => true
+            'dialog' => true,
+            'datatable' => true,
+            'show' => true
         ]);
     }
 
@@ -47,6 +49,7 @@ class AttendanceMachineController extends Controller {
     public function store(AttendanceMachineRequest $request) {
         //创建一个考勤机空记录
         //将request 请求中包含的表单数据填入空记录对应的字段中
+        //判断，同一个学校的考勤机，不能拥有同名、同设备编号的考勤机
         //保存记录
 
         $am = new AttendanceMachine;
@@ -55,11 +58,25 @@ class AttendanceMachineController extends Controller {
         $am->school_id = $request->school_id;
         $am->machineid = $request->machineid;
         $am->enabled = $request->enabled;
-        if ($am->save()) {
-            return response()->json(['statusCode' => 200, 'message' => '创建成功！']);
+
+        $record = $this->attendanceMachine->where('name', $am['name'])
+            ->where('school_id', $am['school_id'])
+            ->where('machineid', $am['machineid'])
+            ->first();
+
+        if (!empty($record)) {
+            return response()->json(['statusCode' => self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR, 'message' => '考勤设备已存在！']);
         }
 
-        return response()->json(['statusCode' => 500, 'message' => '创建失败！']);
+        if ($am->save()) {
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
+            $this->result['message'] = self::MSG_CREATE_OK;
+        }else {
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+            $this->result['message'] = self::MSG_BAD_REQUEST;
+        }
+
+        return response()->json($this->result);
     }
 
     /**
@@ -69,10 +86,29 @@ class AttendanceMachineController extends Controller {
      */
     public function show($id) {
         //根据id 查找单条记录
-        $am = AttendanceMachine::find($id);
 
-        //记录返回给view
-        return view('attendance_machine.show', ['am' => $am]);
+        $am = $this->attendanceMachine->whereId($id)
+            ->first([
+                'name',
+                'location',
+                'school_id',
+                'machineid',
+                'created_at',
+                'updated_at',
+                'enabled'
+            ]);
+
+        $am->school_id = $am->school->name;
+        $am->enabled = $am->enabled==1 ? '已启用' : '已禁用' ;
+        if ($am) {
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
+            $this->result['showData'] = $am;
+        } else {
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+            $this->result['message'] = '';
+        }
+
+        return response()->json($this->result);
     }
 
     /**
@@ -83,7 +119,7 @@ class AttendanceMachineController extends Controller {
      */
     public function edit($id) {
         //根据id 查找单条记录
-        $am = AttendanceMachine::whereId($id)->first();
+        $am = AttendanceMachine::findOrFail($id);
 
         //记录返回给view
         return view('attendance_machine.edit', [
@@ -106,17 +142,21 @@ class AttendanceMachineController extends Controller {
         //保存当前记录
         //根据操作结果返回不同的json数据
 
-        $am = AttendanceMachine::whereId($id)->first();
+        $am = AttendanceMachine::findOrFail($id);
         $am->name = $request->name;
         $am->location = $request->location;
         $am->school_id = $request->school_id;
         $am->machineid = $request->machineid;
         $am->enabled = $request->enabled;
         if ($am->save()) {
-            return response()->json(['statusCode' => 200, 'message' => '创建成功！']);
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
+            $this->result['message'] = self::MSG_EDIT_OK;
+        }else {
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+            $this->result['message'] = self::MSG_BAD_REQUEST;
         }
 
-        return response()->json(['statusCode' => 500, 'message' => '创建失败！']);
+        return response()->json($this->result);
 
     }
 
@@ -131,12 +171,16 @@ class AttendanceMachineController extends Controller {
         //根据id查找需要删除的数据
         //进行删除操作
         //返回json 格式的操作结果
-        $am = AttendanceMachine::whereId($id)->first();
+        $am = AttendanceMachine::findOrFail($id);
 
         if ($am->delete()) {
-            return response()->json(['statusCode' => 200, 'message' => '删除成功！']);
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
+            $this->result['message'] = self::MSG_DEL_OK;
+        }else {
+            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+            $this->result['message'] = self::MSG_BAD_REQUEST;
         }
 
-        return response()->json(['statusCode' => 500, 'message' => '删除失败！']);
+        return response()->json($this->result);
     }
 }

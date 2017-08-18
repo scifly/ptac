@@ -54,7 +54,7 @@ class School extends Model {
     
     public function semesters() {
         
-        return $this->hasMany('App\Models\Semester', 'school_id', 'id');
+        return $this->hasMany('App\Models\Semester');
         
     }
     
@@ -78,8 +78,7 @@ class School extends Model {
     
     public function grade() {
         
-        return $this->hasMany('App\Models\Grade', 'school_id', 'id');
-        
+        return $this->hasMany('App\Models\Grade');
         
     }
     
@@ -89,8 +88,10 @@ class School extends Model {
         
     }
     
-    public function wapsite() {
+    public function wapSite() {
+        
         return $this->hasOne('App\Models\WapSite');
+        
     }
     
     public function datatable() {
