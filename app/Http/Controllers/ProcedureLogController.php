@@ -31,7 +31,7 @@ class ProcedureLogController extends Controller {
                 ->where('initiator_user_id',$user_id)
                 ->groupBy('first_log_id')
                 ->pluck('id')->toArray();
-            $where = 'id in (' . implode(',', $ids) . ')';dump($where);
+            $where = 'ProcedureLog.id in (' . implode(',', $ids) . ')';
 
             return response()->json($this->procedureLog->datatable($where));
 
@@ -64,22 +64,46 @@ class ProcedureLogController extends Controller {
      * 待审核的流程列表
      */
     public function pending(){
-        $user_id = 3;
-        //查询待审核的流程最后一条log记录
-        $ids = $this->procedureLog->select(DB::raw('max(procedure_logs.id) as id'))->where('step_status',2)->groupBy('first_log_id')->pluck('id')->toArray();
-        //根据IDs查询数据
-        $data = $this->procedureLog
-            ->with('procedure', 'procedure_step', 'initiator_user')
-            ->whereIn('procedure_logs.id', $ids)
-            ->orderBy('id', 'desc')
-            ->get();
-        $result = [];
-        foreach ($data as $val){
-            if(in_array($user_id, explode(',',$val->procedure_step->approver_user_ids))){
-                $result[]=$val;
-            }
+        if (Request::get('draw')) {
+            $user_id = 3;
+            //查询待审核的流程最后一条log记录
+            $ids = $this->procedureLog->select(DB::raw('max(procedure_logs.id) as id'))
+                ->where('step_status',2)
+                ->groupBy('first_log_id')
+                ->pluck('id')
+                ->toArray();
+            $where = 'ProcedureLog.id in (' . implode(',', $ids) . ') and FIND_IN_SET('. $user_id .',ProcedureStep.related_user_ids)';
+
+            return response()->json($this->procedureLog->datatable($where));
+
         }
-        return response()->json($result);
+
+        return view('procedure_log.index', [
+            'js' => 'js/procedure_log/index.js',
+            'dialog' => true,
+            'datatable' => true
+        ]);
+//
+//        $user_id = 3;
+//        //查询待审核的流程最后一条log记录
+//        $ids = $this->procedureLog->select(DB::raw('max(procedure_logs.id) as id'))
+//            ->where('step_status',2)
+//            ->groupBy('first_log_id')
+//            ->pluck('id')
+//            ->toArray();
+//        //根据IDs查询数据
+//        $data = $this->procedureLog
+//            ->with('procedure', 'procedure_step', 'initiator_user')
+//            ->whereIn('procedure_logs.id', $ids)
+//            ->orderBy('id', 'desc')
+//            ->get();
+//        $result = [];
+//        foreach ($data as $val){
+//            if(in_array($user_id, explode(',',$val->procedure_step->approver_user_ids))){
+//                $result[]=$val;
+//            }
+//        }
+//        return response()->json($result);
     }
 
     /**
@@ -125,7 +149,10 @@ class ProcedureLogController extends Controller {
     {
         $user_id = 6;
         $media_ids = $request->input('media_ids');
-        $procedure_step = DB::table('procedure_steps')->where('procedure_id', $request->input('procedure_id'))->orderBy('id','asc')->first();
+        $procedure_step = DB::table('procedure_steps')
+            ->where('procedure_id', $request->input('procedure_id'))
+            ->orderBy('id','asc')
+            ->first();
         $data = [
             'procedure_id' => $request->input('procedure_id'),
             'initiator_user_id' => $user_id,

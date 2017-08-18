@@ -111,26 +111,6 @@ class ProcedureLog extends Model {
     }
 
     /**
-     * 步骤状态处理，0-通过，1-拒绝，2-待定
-     *
-     * @param $d
-     * @return string
-     */
-    public function status($d) {
-        
-        switch ($d) {
-            case 0:
-                return '通过';
-            case 1:
-                return '拒绝';
-            case 2:
-                return '待定';
-            default:
-                return '错误';
-        }
-    }
-    
-    /**
      * 拆分initiator_media_ids、operator_media_ids,
      * @param $media_ids
      * @return array 处理后字典 key=>media.id,value => media
@@ -151,29 +131,19 @@ class ProcedureLog extends Model {
     public function datatable($where) {
 
         $columns = [
-            ['db' => 'ProcedureLog.id', 'dt' => 0],
+            ['db' => 'ProcedureLog.first_log_id', 'dt' => 0],
             [
                 'db' => 'ProcedureLog.initiator_user_id', 'dt' => 1,
                 'formatter' => function ($d, $row) {
-                    $user = $this->get_user($d);
-                    return $user->realname;
+                    return $this->get_user($d)->realname;
                 }
             ],
             ['db' => 'Procedures.name as procedurename', 'dt' => 2],
             ['db' => 'ProcedureStep.name procedurestepname', 'dt' => 3],
+            ['db' => 'ProcedureLog.initiator_msg', 'dt' => 4],
+            ['db' => 'ProcedureLog.updated_at', 'dt' => 5],
             [
-                'db' => 'ProcedureLog.operator_user_id', 'dt' => 4,
-                'formatter' => function ($d, $row) {
-                    $user = $this->get_user($d);
-                    return $user->realname;
-                }
-            ],
-            ['db' => 'ProcedureLog.initiator_msg', 'dt' => 5],
-            ['db' => 'ProcedureLog.operator_msg', 'dt' => 6],
-            ['db' => 'ProcedureLog.created_at', 'dt' => 7],
-            ['db' => 'ProcedureLog.updated_at', 'dt' => 8],
-            [
-                'db' => 'ProcedureLog.step_status', 'dt' => 9,
+                'db' => 'ProcedureLog.step_status', 'dt' => 6,
                 'formatter' => function ($d, $row) {
 
                     switch ($d) {
@@ -191,15 +161,16 @@ class ProcedureLog extends Model {
                             break;
 
                         default:
-                            $status = sprintf(Datatable::DT_ON, '通过');
+                            $status = sprintf(Datatable::DT_OFF, '错误');
                             break;
                     }
 
-                    $id = $row['id'];
-                    $showLink = sprintf(Datatable::DT_LINK_SHOW, /*$model->getTable(),*/
-                        $id);
+                    $id = $row['first_log_id'];
+                    $showLink = '<a id = '. $id .' href="show/'.$id.'" class="btn btn-primary btn-icon btn-circle btn-xs" data-toggle="modal">
+            <i class="fa fa-eye"></i>
+        </a>';
 
-                    return $status . Datatable::DT_SPACE . $showLink . Datatable::DT_SPACE . $delLink;
+                    return $status . Datatable::DT_SPACE . $showLink;
 
                 }
             ],
