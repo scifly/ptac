@@ -292,6 +292,17 @@ Route::get('personal_infos/edit/{id}', 'PersonalInfoController@edit');
 Route::put('personal_infos/update/{id}', 'PersonalInfoController@update');
 Route::post('personal_infos/upload_ava/{id}', 'PersonalInfoController@uploadAvatar');
 
+//日历事件设置
+Route::get('events/index', 'EventController@index');
+Route::get('events/create', 'EventController@create');
+Route::post('events/store', 'EventController@store');
+Route::any('events/show/{id}', 'EventController@show');
+Route::get('events/edit/{id}', 'EventController@edit');
+Route::put('events/update/{id}', 'EventController@update');
+Route::delete('events/delete/{id}', 'EventController@destroy');
+Route::get('events/select_events/{id}', 'EventController@selectEvents');
+Route::post('events/drag_events', 'EventController@dragEvents');
+
 //考试类型设置
 Route::get('exam_types/index', 'ExamTypeController@index');
 Route::get('exam_types/create', 'ExamTypeController@create');
