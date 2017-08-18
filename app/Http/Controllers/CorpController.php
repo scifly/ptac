@@ -16,7 +16,6 @@ class CorpController extends Controller {
 
     /**
      * 显示企业列表
-     *
      * @return \Illuminate\Http\Response
      */
     public function index() {
@@ -46,8 +45,8 @@ class CorpController extends Controller {
 
     /**
      * 保存新创建的企业记录
+     * @param CorpRequest $request
      * @return \Illuminate\Http\Response
-     * @internal param \Illuminate\Http\Request $request
      */
     public function store(CorpRequest $request) {
         $data = $request->all();

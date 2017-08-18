@@ -268,11 +268,16 @@ Route::get('procedure_steps/delete/{id}', 'ProcedureStepController@destroy');
 Route::get('procedure_steps/getSchoolEducators/{id}', 'ProcedureStepController@getSchoolEducators');
 
 //流程日志
-Route::get('procedure_logs/index', 'ProcedureLogController@index');
+//Route::get('procedure_logs/index', 'ProcedureLogController@index');
 Route::get('procedure_logs/show/{id}', 'ProcedureLogController@show');
-Route::get('procedure_logs/procedure_info/{first_log_id}', 'ProcedureLogController@procedureInfo');
-Route::get('procedure_logs/my_rocedure', 'ProcedureLogController@myProcedure');
+Route::get('procedure_logs/index', 'ProcedureLogController@myProcedure');
 Route::get('procedure_logs/pending', 'ProcedureLogController@pending');
+Route::get('procedure_logs/procedure_info/{first_log_id}', 'ProcedureLogController@procedureInfo');
+Route::get('procedure_logs/create', 'ProcedureLogController@create');
+Route::post('procedure_logs/store', 'ProcedureLogController@store');
+Route::post('procedure_logs/decision', 'ProcedureLogController@decision');
+Route::post('procedure_logs/upload_medias', 'ProcedureLogController@uploadMedias');
+Route::get('procedure_logs/delete_medias/{id}', 'ProcedureLogController@deleteMedias');
 
 
 //用户管理-用户设置
@@ -283,14 +288,13 @@ Route::get('users/show/{id}', 'UserController@show');
 Route::get('users/edit/{id}', 'UserController@edit');
 Route::put('users/update/{id}', 'UserController@update');
 Route::delete('users/delete/{id}', 'UserController@destroy');
-Route::any('users/uploadavatar', 'UserController@uploadAvatar');
-Route::any('users/delavatar', 'UserController@delAvatar');
+Route::post('users/upload_ava/{id}', 'UserController@uploadAvatar');
 
 #用户中心
 //个人信息管理
-Route::get('personal_info/edit/{id}', 'PersonalInfoController@edit');
-Route::put('personal_info/update/{id}', 'PersonalInfoController@update');
-Route::post('personal_info/upload_ava/{id}', 'PersonalInfoController@uploadAvatar');
+Route::get('personal_infos/edit/{id}', 'PersonalInfoController@edit');
+Route::put('personal_infos/update/{id}', 'PersonalInfoController@update');
+Route::post('personal_infos/upload_ava/{id}', 'PersonalInfoController@uploadAvatar');
 
 //考试类型设置
 Route::get('exam_types/index', 'ExamTypeController@index');
@@ -362,3 +366,20 @@ Route::get('wsm_articles/edit/{id}', 'WsmArticleController@edit');
 Route::put('wsm_articles/update/{id}', 'WsmArticleController@update');
 Route::delete('wsm_articles/delete/{id}', 'WsmArticleController@destroy');
 
+//消息中心-消息管理
+Route::get('messages/index', 'MessageController@index');
+Route::get('messages/create', 'MessageController@create');
+Route::post('messages/store', 'MessageController@store');
+Route::get('messages/show/{id}', 'MessageController@show');
+Route::get('messages/edit/{id}', 'MessageController@edit');
+Route::put('messages/update/{id}', 'MessageController@update');
+Route::delete('messages/delete/{id}', 'MessageController@destroy');
+
+//消息中心-消息类型管理
+Route::get('message_types/index', 'MessageTypeController@index');
+Route::get('message_types/create', 'MessageTypeController@create');
+Route::post('message_types/store', 'MessageTypeController@store');
+Route::get('message_types/show/{id}', 'MessageTypeController@show');
+Route::get('message_types/edit/{id}', 'MessageTypeController@edit');
+Route::put('message_types/update/{id}', 'MessageTypeController@update');
+Route::delete('message_types/delete/{id}', 'MessageTypeController@destroy');

@@ -15,13 +15,25 @@
             </div>
             <div class="form-group">
                 {!! Form::label('avatar_url', '头像',['class' => 'col-sm-4 control-label']) !!}
-                <div class="col-sm-6">
-                    @if(isset($user->avatar_url))
-                            <img src="../../..{{$user->avatar_url}}">
-                            <input type="hidden" name="avatar_url" value="{{$user->avatar_url}}"/>
-                    @endif
-                <div class="preview" style="width: 100px;overflow: hidden;"></div>
-                <a class="btn btn-primary" data-toggle="modal" data-target="#modalPic">上传</a>
+                <div class="col-sm-7">
+                    <div id="preview" style="display: block">
+                        <img id="avatar_thumb_img"
+                             @if(isset($user))src='{{asset("../storage/app/avauploads/{$user->avatar_url}")}}'
+                             @else src="{{asset("../storage/app/avauploads/default_avatar.png")}}"
+                             @endif
+                             style="width:100px; height: 100px;max-width: 100px;max-height: 100px; border-radius:50%; overflow:hidden;"/>
+
+                        <input @if(isset($user))id= "{{$user->id}}"@else id="0" @endif
+                            type="text" size="50" name="avatar_url" class="hide"
+                               @if(isset($user)) value="{{$user->avatar_url}}"@else value="default_avatar.png" @endif/>
+
+                        <a class="btn btn-upload" style=" margin-left:50px; border:1px solid #3c8dbc; color:#3c8dbc !important; border-radius:40px; position: relative; overflow: hidden;">
+                            <span>上传头像</span>
+                            <input id="avatar_upload" type="file" name="file" multiple="multiple" style="position: absolute;
+                             top: 0; right: 0; margin: 0; padding: 0; font-size: 20px; cursor: pointer; opacity: 0; filter: alpha(opacity=0);"/>
+                        </a>
+                    </div>
+                </div>
             </div>
             <div class="form-group">
                 {!! Form::label('realname', '姓名',['class' => 'col-sm-4 control-label']) !!}
@@ -88,33 +100,6 @@
             <div class="col-sm-3 col-sm-offset-4">
                 {!! Form::submit('保存', ['class' => 'btn btn-primary pull-left', 'id' => 'save']) !!}
                 {!! Form::reset('取消', ['class' => 'btn btn-default pull-right', 'id' => 'cancel']) !!}
-            </div>
-        </div>
-    </div>
-</div>
-<div class="modal fade" id="modalPic">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal"
-                        aria-hidden="true">×
-                </button>
-                <h4 class="modal-title" id="myModalLabel">
-                    头像上传
-                </h4>
-            </div>
-            <div class="modal-body">
-                <form action="#" class="form-horizontal" enctype="multipart/form-data">
-                    <input type="file" id="uploadFile" accept="image/jpeg,image/gif,image/png" multiple>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default"
-                        data-dismiss="modal">关闭
-                </button>
-                <button type="button" class="btn btn-primary" id="upload">
-                    上传
-                </button>
             </div>
         </div>
     </div>

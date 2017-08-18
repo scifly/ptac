@@ -32,4 +32,7 @@
             </table>
         </div>
     </div>
+    @isset($show)
+        @include('procedure_step.show')
+    @endif
 @endsection

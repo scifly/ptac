@@ -5,27 +5,14 @@ namespace App\Http\Controllers;
 use App\Http\Requests\PersonalInfoRequest;
 use App\Models\User;
 use Illuminate\Support\Facades\Request;
-use Illuminate\Support\Facades\Session;
 
-class personalInfoController extends Controller {
+class PersonalInfoController extends Controller {
     protected $user;
     public $imgPath = array();
 
     function __construct(User $user) {
         $this->user = $user;
     }
-
-    /**
-     * 显示个人信息详情.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    /* public function show($id) {
-
-         $info = $this->user->whereId($id)->first();
-         $group = $info->group()->whereId($info->group_id)->first();
-         return view('personal_info.show', ['info' => $info, 'group' => $group]);
-     }*/
 
     /**
      * 修改个人信息的表单
@@ -47,7 +34,6 @@ class personalInfoController extends Controller {
 
     /**
      * 修改更新个人信息
-     *
      * @param PersonalInfoRequest $request
      * @param $id
      * @return \Illuminate\Http\Response
@@ -68,6 +54,8 @@ class personalInfoController extends Controller {
 
     /**
      * 上传头像处理
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
      */
     public function uploadAvatar($id) {
         $file = Request::file('avatar');
@@ -90,27 +78,39 @@ class personalInfoController extends Controller {
         if (!$file->move($path, $fileName)) {
             return response()->json(['statusCode' => self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR, 'message' => '头像保存失败']);
         }
+        return $this->saveImg($id, $fileName);
+    }
+
+    /**
+     * 将图片路径存入数据库
+     * @param $id
+     * @param $imgName
+     * @return \Illuminate\Http\JsonResponse
+     */
+    private function saveImg($id, $imgName) {
         $personalImg = $this->user->whereId($id)->first();
         //判断数据库头像是否相同
-        if ($fileName !== $personalImg->avatar_url) {
+        if ($imgName !== $personalImg->avatar_url) {
             $removeOldImg = storage_path('app/avauploads/') . $personalImg->avatar_url;
             if (is_file($removeOldImg)) {
                 unlink($removeOldImg);
             }
-            $personalImg->avatar_url = $fileName;
+            $personalImg->avatar_url = $imgName;
             if ($personalImg->save()) {
                 $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-                $this->result['fileName'] = $fileName;
+                $this->result['fileName'] = $imgName;
             } else {
                 $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
                 $this->result['message'] = '头像保存失败';
             }
         }
-        return response()->json(['statusCode' => '200', 'fileName' => $fileName]);
+        return response()->json($this->result);
     }
 
     /**
-     * 验证上传文件是否成功
+     * 验证文件是否上传成功
+     * @param $file
+     * @return array
      */
     private function checkFile($file) {
         if (!$file->isValid()) {
@@ -119,7 +119,6 @@ class personalInfoController extends Controller {
         if ($file->getClientSize() > $file->getMaxFilesize()) {
             return ['status' => false, 'msg' => '图片过大'];
         }
-
         return ['status' => true];
     }
 }

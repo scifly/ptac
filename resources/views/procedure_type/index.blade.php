@@ -29,4 +29,7 @@
             </table>
         </div>
     </div>
+    @isset($show)
+        @include('procedure_type.show')
+    @endif
 @endsection
