@@ -272,7 +272,7 @@ Route::get('procedure_steps/getSchoolEducators/{id}', 'ProcedureStepController@g
 Route::get('procedure_logs/show/{id}', 'ProcedureLogController@show');
 Route::get('procedure_logs/index', 'ProcedureLogController@myProcedure');
 Route::get('procedure_logs/pending', 'ProcedureLogController@pending');
-Route::get('procedure_logs/procedure_info/{first_log_id}', 'ProcedureLogController@procedureInfo');
+Route::get('procedure_logs/procedure_info/{first_log_id}    ', 'ProcedureLogController@procedureInfo');
 Route::get('procedure_logs/create', 'ProcedureLogController@create');
 Route::post('procedure_logs/store', 'ProcedureLogController@store');
 Route::post('procedure_logs/decision', 'ProcedureLogController@decision');

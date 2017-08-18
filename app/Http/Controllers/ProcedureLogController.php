@@ -21,16 +21,42 @@ class ProcedureLogController extends Controller {
      * 我发起的流程列表
      */
     public function myProcedure(){
-        $user_id = 6;
-        //查询我发布的流程最后一条log记录
-        $ids = $this->procedureLog->select(DB::raw('max(procedure_logs.id) as id'))->where('initiator_user_id',$user_id)->groupBy('first_log_id')->pluck('id')->toArray();
-        //根据IDs查询数据
-        $data = $this->procedureLog
-            ->with('procedure', 'procedure_step')
-            ->whereIn('id', $ids)
-            ->orderBy('id', 'desc')
-            ->get();
-        return response()->json($data);
+
+        //-------------------------------
+
+        if (Request::get('draw')) {
+            $user_id = 6;
+            //查询我发布的流程最后一条log记录
+            $ids = $this->procedureLog->select(DB::raw('max(procedure_logs.id) as id'))
+                ->where('initiator_user_id',$user_id)
+                ->groupBy('first_log_id')
+                ->pluck('id')->toArray();
+            $where = 'id in (' . implode(',', $ids) . ')';dump($where);
+
+            return response()->json($this->procedureLog->datatable($where));
+
+        }
+
+        return view('procedure_log.index', [
+            'js' => 'js/procedure_log/index.js',
+            'dialog' => true,
+            'datatable' => true
+        ]);
+
+        //-------------------------------
+//        $user_id = 6;
+//        //查询我发布的流程最后一条log记录
+//        $ids = $this->procedureLog->select(DB::raw('max(procedure_logs.id) as id'))
+//            ->where('initiator_user_id',$user_id)
+//            ->groupBy('first_log_id')
+//            ->pluck('id')->toArray();
+//        //根据IDs查询数据
+//        $data = $this->procedureLog
+//            ->with('procedure', 'procedure_step')
+//            ->whereIn('id', $ids)
+//            ->orderBy('id', 'desc')
+//            ->get();
+//        return response()->json($data);
     }
 
 
@@ -57,7 +83,8 @@ class ProcedureLogController extends Controller {
     }
 
     /**
-     *流程详情页
+     * 流程详情页
+     *
      * @param $first_log_id
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
@@ -206,7 +233,7 @@ class ProcedureLogController extends Controller {
                     $mes [] = [
                         'id' => $mediaId,
                         'path' => $filePath,
-                        'type' => $type,
+                        'type' => $ext,
                         'filename' => $originalName,
                     ];
                 }
@@ -219,7 +246,7 @@ class ProcedureLogController extends Controller {
     }
 
     /**
-     * 删除上传文件
+     * 删除上传的文件
      */
     public function deleteMedias($id){
         $path = Media::where('id',$id)->value('path');
@@ -236,81 +263,4 @@ class ProcedureLogController extends Controller {
         return response()->json($result);
     }
 
-
-
-
-
-
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index() {
-        if (Request::get('draw')) {
-            return response()->json($this->procedureLog->datatable());
-        }
-
-        return view('procedure_log.index', [
-            'js' => 'js/procedure_log/index.js',
-            'dialog' => true,
-            'datatable' => true
-        ]);
-    }
-
-
-    /**
-     * Display the specified resource.
-     * @return \Illuminate\Http\Response
-     * @internal param AttendanceMachine $attendanceMachine
-     */
-    public function show($id) {
-
-        //根据id 查找单条记录
-        $procedureLog = $this->procedureLog->whereId($id)->first();
-        $initiator_medias = $procedureLog->operate_ids($procedureLog->initiator_media_ids);
-        $operator_medias = $procedureLog->operate_ids($procedureLog->operator_media_ids);
-        $initiator_user = $procedureLog->get_user($procedureLog->initiator_user_id);
-        $operator_user = $procedureLog->get_user($procedureLog->operator_user_id);
-
-        //记录返回给view
-        return view('procedure_log.show', [
-            'procedureLog' => $procedureLog,
-            'initiator_user' => $initiator_user,
-            'initiator_medias' => $initiator_medias,
-            'operator_user' => $operator_user,
-            'operator_medias' => $operator_medias
-        ]);
-    }
-
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param $id
-     * @return \Illuminate\Http\Response
-     * @internal param Procedure $procedure
-     * @internal param AttendanceMachine $attendanceMachine
-     */
-    public function destroy($id) {
-        //根据id查找需要删除的数据
-        //进行删除操作
-        //返回json 格式的操作结果
-        if ($this->procedureLog->findOrFail($id)->delete()) {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-            $this->result['message'] = self::MSG_DEL_OK;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '删除失败';
-        }
-        return response()->json($this->result);
-
-        /*  $procedureLog = ProcedureLog::whereId($id)->first();
-          if ($procedureLog->delete()) {
-              return response()->json(['statusCode' => 200, 'message' => '删除成功！']);
-          }
-
-          return response()->json(['statusCode' => 500, 'message' => '删除失败！']);
-      }*/
-    }
 }

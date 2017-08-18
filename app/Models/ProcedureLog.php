@@ -43,6 +43,25 @@ class ProcedureLog extends Model {
     const DT_PEND = '<span class="badge bg-orange">%s</span>';
     
     protected $table = 'procedure_logs';
+
+    protected $joins = [
+        [
+            'table' => 'procedures',
+            'alias' => 'Procedures',
+            'type' => 'INNER',
+            'conditions' => [
+                'Procedures.id = ProcedureLog.procedure_id'
+            ]
+        ],
+        [
+            'table' => 'procedure_steps',
+            'alias' => 'ProcedureStep',
+            'type' => 'INNER',
+            'conditions' => [
+                'ProcedureStep.id = ProcedureLog.procedure_step_id'
+            ]
+        ]
+    ];
     
     protected $fillable = [
         'initiator_user_id',
@@ -72,7 +91,6 @@ class ProcedureLog extends Model {
         return $this->belongsTo('App\Models\User')->select('id', 'realname');
     }
 
-
     /**
      * 流程日志与流程
      */
@@ -86,9 +104,10 @@ class ProcedureLog extends Model {
     public function procedure_step() {
         return $this->belongsTo('App\Models\ProcedureStep');
     }
-    
+
     /**
      * 步骤状态处理，0-通过，1-拒绝，2-待定
+     *
      * @param $d
      * @return string
      */
@@ -124,8 +143,8 @@ class ProcedureLog extends Model {
         return $medias;
     }
     
-    public function datatable() {
-        
+    public function datatable($where) {
+
         $columns = [
             ['db' => 'ProcedureLog.id', 'dt' => 0],
             [
@@ -151,59 +170,39 @@ class ProcedureLog extends Model {
             [
                 'db' => 'ProcedureLog.step_status', 'dt' => 9,
                 'formatter' => function ($d, $row) {
-                    
+
                     switch ($d) {
-                        
+
                         case 0:
                             $status = sprintf(Datatable::DT_ON, '通过');
                             break;
-                        
+
                         case 1:
                             $status = sprintf(Datatable::DT_OFF, '拒绝');
                             break;
-                        
+
                         case 2:
                             $status = sprintf(self::DT_PEND, '待定');
                             break;
-                        
+
                         default:
                             $status = sprintf(Datatable::DT_ON, '通过');
                             break;
                     }
-                    
+
                     $id = $row['id'];
                     $showLink = sprintf(Datatable::DT_LINK_SHOW, /*$model->getTable(),*/
                         $id);
-                    $delLink = sprintf(Datatable::DT_LINK_DEL, $id);
-                    
+
                     return $status . Datatable::DT_SPACE . $showLink . Datatable::DT_SPACE . $delLink;
-                    
+
                 }
             ],
         ];
-        
-        $joins = [
-            [
-                'table' => 'procedures',
-                'alias' => 'Procedures',
-                'type' => 'INNER',
-                'conditions' => [
-                    'Procedures.id = ProcedureLog.procedure_id'
-                ]
-            ],
-            [
-                'table' => 'procedure_steps',
-                'alias' => 'ProcedureStep',
-                'type' => 'INNER',
-                'conditions' => [
-                    'ProcedureStep.id = ProcedureLog.procedure_step_id'
-                ]
-            ]
-        ];
-        
-        return Datatable::simple($this, $columns, $joins);
+
+        return Datatable::simple($this, $columns, $this->joins, $where);
     }
-    
+
     /**
      * 获取用户信息
      * @param $userId
