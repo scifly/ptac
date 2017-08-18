@@ -11,39 +11,36 @@ class ActionController extends Controller {
     
     protected $action;
     
-    function __construct(Action $action) { $this->action = $action; }
-    
-    /**
-     * 显示action列表
-     *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\JsonResponse|\Illuminate\View\View
-     */
-    public function index() {
+    function __construct(Action $action) {
         
-        if (Request::get('draw')) {
-            return response()->json($this->action->datatable());
-        }
-        // 获取app/Http/Controllers路径下控制器包含的所有自定义public方法
-        $this->action->scan();
-        return view('action.index', [
-            'js' => 'js/action/index.js',
-            'datatable' => true,
-            'dialog' => true
-        ]);
+        $this->action = $action;
         
     }
     
     /**
-     * 显示创建action记录的表单
+     * 显示action列表
      *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function index() {
+
+        // dd($this->action->datatable());
+        if (Request::get('draw')) {
+            return response()->json($this->action->datatable());
+        }
+        if (!$this->action->scan()) { return parent::notFound(); }
+        return parent::output(__METHOD__);
+        
+    }
+    
+    /**
+     * 显示创建Action记录的表单
+     *
+     * @return \Illuminate\Http\JsonResponse
      */
     public function create() {
-        
-        return view('action.create', [
-            'js' => 'js/action/create.js',
-            'form' => true
-        ]);
+
+        return parent::output(__METHOD__);
         
     }
     
@@ -55,14 +52,7 @@ class ActionController extends Controller {
      */
     public function store(ActionRequest $request) {
         
-        if ($this->action->create($request->all())) {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-            $this->result['message'] = self::MSG_CREATE_OK;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '';
-        }
-        return response()->json($this->result);
+        return $this->action->store($request) ? parent::succeed() : parent::fail();
         
     }
     
@@ -74,8 +64,9 @@ class ActionController extends Controller {
      */
     public function show($id) {
         
-        $action = $this->action->findOrFail($id);
-        return view('action.show', ['action' => $action]);
+        $action = $this->action->find($id);
+        if (!$action) { return parent::notFound(); }
+        return parent::output(__METHOD__, ['action' => $action]);
         
     }
     
@@ -87,8 +78,11 @@ class ActionController extends Controller {
      */
     public function edit($id) {
         
-        $action = $this->action->findOrFail($id);
-        $ids = $action->where('id', $id)->get(['action_type_ids'])->toArray()[0]['action_type_ids'];
+        $action = $this->action->find($id);
+        if (!$action) { return parent::notFound(); }
+        $ids = $action->where('id', $id)
+            ->get(['action_type_ids'])
+            ->toArray()[0]['action_type_ids'];
         $actionTypeIds = explode(',', $ids);
         $selectedActionTypes = [];
         if (empty($actionTypeIds[0])) {
@@ -99,9 +93,8 @@ class ActionController extends Controller {
                 $selectedActionTypes[$actionTypeId] = $actionType['name'];
             }
         }
-        return view('action.edit', [
-            'js' => 'js/action/edit.js',
-            'form' => true,
+        
+        return parent::output(__METHOD__, [
             'action' => $action,
             'selectedActionTypes' => $selectedActionTypes
         ]);
@@ -117,10 +110,9 @@ class ActionController extends Controller {
      */
     public function update(ActionRequest $request, $id) {
         
-        $this->action->findOrFail($id)->update($request->all());
-        $this->result['message'] = self::MSG_EDIT_OK;
-        
-        return response()->json($this->result);
+        $action = $this->action->find($id);
+        if (!$action) { return parent::notFound(); }
+        return $action->update($request->all()) ? parent::succeed() : parent::fail();
         
     }
     
@@ -131,15 +123,10 @@ class ActionController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
-    
-        if ($this->action->findOrFail($id)->delete()) {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-            $this->result['message'] = self::MSG_DEL_OK;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '';
-        }
-        return response()->json($this->result);
+
+        $action = $this->action->find($id);
+        if (!$action) { return parent::notFound(); }
+        return $action->delete() ? parent::succeed() : parent::fail();
         
     }
     

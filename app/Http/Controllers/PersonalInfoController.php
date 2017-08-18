@@ -112,8 +112,7 @@ class personalInfoController extends Controller {
     /**
      * 验证上传文件是否成功
      */
-    private
-    function checkFile($file) {
+    private function checkFile($file) {
         if (!$file->isValid()) {
             return ['status' => false, 'msg' => '文件上传失败'];
         }

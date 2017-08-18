@@ -34,12 +34,24 @@ class MenuTab extends Model {
         'enabled'
     ];
     
-    public function store($menuId, array $tabIds) {
+    public function storeByMenuId($menuId, array $tabIds) {
         
         foreach ($tabIds as $tabId) {
             $this->create([
                 'menu_id' => $menuId,
                 'tab_id' => $tabId,
+                'enabled' => 1
+            ]);
+        }
+        
+    }
+    
+    public function storeByTabId($tabId, array $menuIds) {
+        
+        foreach ($menuIds as $menuId) {
+            $this->create([
+                'tab_id' => $tabId,
+                'menu_id' => $menuId,
                 'enabled' => 1
             ]);
         }

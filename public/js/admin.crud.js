@@ -7,8 +7,9 @@ var crud = {
         return '/' + paths[1] + '/' + paths[2] + '/';
     },
     inform: function(title, text, image) {
-        $.gritter.add({title: title, text: text, image: crud.siteroot() + image});
+        $.gritter.add({title: title, text: text, image: page.siteRoot() + image});
     },
+
     ajaxRequest: function(requestType, ajaxUrl, data, obj) {
         $.ajax({
             type: requestType,
@@ -61,25 +62,36 @@ var crud = {
             return false;
         });
     },
-    index: function (showId) {
+    index: function (table) {
         $('#data-table').dataTable({
             processing: true,
             serverSide: true,
-            ajax: 'index',
+            ajax: page.siteRoot() + table + '/index',
             order: [[0, 'desc']],
             stateSave: true,
             language: {url: '../files/ch.json'}
         });
 
         var id, $row;
-        var $showId = $('#'+showId);
-        $(document).on('click', '.fa-trash', function () {
+        // var $showId = $('#'+showId);
+        $(document).on('click', '.fa-trash', function() {
             id = $(this).parents().eq(0).attr('id');
             $row = $(this).parents().eq(2);
             $('#modal-dialog').modal({backdrop: true});
         });
+        $(document).on('click', '.fa-edit', function(e) {
+            var url = $(this).parents().eq(0).attr('id');
+            url = url.replace('_', '/');
+            var $activeTabPane = $('#tab_' + page.getActiveTabId());
+            $activeTabPane.html(page.ajaxLoader);
+            page.getTabContent($activeTabPane, page.siteRoot() + table + '/' + url);
+        });
+        $(document).on('click', '.fa-eye', function() {
+            var url = $(this).parents().eq(0).attr('id');
+            url = url.replace('_', '/');
+        });
 
-        var $name = [];
+        /*var $name = [];
         $(document).on('click', '.fa-eye', function () {
             var $showdl = $(".dl-horizontal");
             var $showdt = $(".dl-horizontal dt");
@@ -115,7 +127,7 @@ var crud = {
                     }
                 }
             });
-        });
+        });*/
 
         $('#confirm-delete').on('click', function () {
             crud.ajaxRequest(

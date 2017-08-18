@@ -2,7 +2,6 @@
     <div class="box-header"></div>
     <div class="box-body">
         <div class="form-horizontal">
-
             <div class="form-group">
                 {!! Form::label('user_id', '教职员工',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-2">
@@ -10,9 +9,9 @@
                 </div>
             </div>
             <div class="form-group">
-                {!! Form::label('team_ids', '所属组',['class' => 'col-sm-4 control-label']) !!}
+                <label for="team_ids" class="col-sm-4 control-label">所属组</label>
                 <div class="col-sm-2">
-                    <select multiple="multiple" name="team_ids[]" id="team_ids">
+                    <select multiple name="team_ids[]" id="team_ids">
                         @foreach($teams as $key => $value)
                             @if(isset($selectedTeams))
                                 <option value="{{$key}}" @if(array_key_exists($key,$selectedTeams))selected="selected"@endif>
@@ -38,9 +37,9 @@
                 </div>
             </div>
             <div class="form-group">
-                {!! Form::label('enabled', '是否启用', [
-                    'class' => 'col-sm-4 control-label'
-                ]) !!}
+                <label for="enabled" class="col-sm-3 control-label">
+                    是否启用
+                </label>
                 <div class="col-sm-6" style="margin-top: 5px;">
                     <input id="enabled" type="checkbox" name="enabled" data-render="switchery"
                            data-theme="default" data-switchery="true"
@@ -48,16 +47,7 @@
                            data-classname="switchery switchery-small"/>
                 </div>
             </div>
-
         </div>
     </div>
-    <div class="box-footer">
-        {{--button--}}
-        <div class="form-group">
-            <div class="col-sm-3 col-sm-offset-4">
-                {!! Form::submit('保存', ['class' => 'btn btn-primary pull-left', 'id' => 'save']) !!}
-                {!! Form::reset('取消', ['class' => 'btn btn-default pull-right', 'id' => 'cancel']) !!}
-            </div>
-        </div>
-    </div>
+    @include('partials.form.buttons')
 </div>

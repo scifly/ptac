@@ -13,90 +13,96 @@ class SchoolController extends Controller {
     function __construct(School $school) { $this->school = $school; }
     
     /**
-     * Display a listing of the resource.
-     * @return \Illuminate\Http\Response
-     * @internal param null $arg
-     * @internal param Request $request
+     * 显示学校记录列表
+     *
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
     
         if (Request::get('draw')) {
             return response()->json($this->school->datatable());
         }
-        return view('school.index', [
-            'js' => 'js/school/index.js',
-            'datatable' => true
-        ]);
+        return parent::output(__METHOD__);
     
     }
     
     /**
-     * Show the form for creating a new resource.
+     * 显示创建学校记录的表单
      *
-     * @return \Illuminate\Http\Response
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function create() {
         
-        return view('school.create', ['js' => 'js/school/create.js']);
+        return parent::output(__METHOD__);
         
     }
     
     /**
-     * Store a newly created resource in storage.
+     * 保存新创建的学校记录
      *
      * @param SchoolRequest $request
      * @return \Illuminate\Http\Response
      */
     public function store(SchoolRequest $request) {
-        //
+    
+        return $this->school->create($request->all()) ? parent::succeed() : parent::fail();
+    
     }
     
     /**
-     * Display the specified resource.
+     * 显示指定的学校记录详情
      *
      * @param $id
-     * @return \Illuminate\Http\Response
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function show($id) {
     
-    
+        $school = $this->school->find($id);
+        if (!$school) { return parent::notFound(); }
+        return parent::output(__METHOD__);
     
     }
     
     /**
-     * Show the form for editing the specified resource.
+     * 显示编辑指定学校记录的表单
+     *
      * @param $id
-     * @return \Illuminate\Http\Response
-     * @internal param School $school
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function edit($id) {
         
-        $school = School::whereId($id)->first();
-        return view('school.edit', [
-            'js' => 'js/school/edit.js',
-            'school' => $school
-        ]);
+        $school = $this->school->find($id);
+        if (!$school) { return parent::notFound(); }
+        return parent::output(__METHOD__, ['school' => $school]);
         
     }
     
     /**
-     * Update the specified resource in storage.
+     * 更新指定的学校记录
      *
      * @param SchoolRequest|\Illuminate\Http\Request $request
-     * @param  \App\Models\School $school
-     * @return \Illuminate\Http\Response
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function update(SchoolRequest $request, School $school) {
-        //
+    public function update(SchoolRequest $request, $id) {
+        
+        $school = $this->school->find($id);
+        if (!$school) { return parent::notFound(); }
+        return $school->update($request->all()) ? parent::succeed() : parent::fail();
+        
     }
     
     /**
-     * Remove the specified resource from storage.
+     * 删除指定的学校记录
      *
-     * @param  \App\Models\School $school
-     * @return \Illuminate\Http\Response
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy(School $school) {
-        //
+    public function destroy($id) {
+        
+        $school = $this->school->find($id);
+        if (!$school) { return parent::notFound(); }
+        return $school->delete() ? parent::succeed() : parent::fail();
+        
     }
 }

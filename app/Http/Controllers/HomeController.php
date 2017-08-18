@@ -2,40 +2,62 @@
 
 namespace App\Http\Controllers;
 
-use App\Facades\Wechat;
-use App\Http\Requests\Request;
-use App\Http\Requests\RegisterUser;
-use App\Models\School;
+use App\Models\Menu;
+use Illuminate\Support\Facades\Request;
 
 
 class HomeController extends Controller {
     
-    protected $school;
+    protected $menu;
     
     /**
      * Create a new controller instance.
-     *
+     * @param Menu $menu
      */
-    public function __construct(School $school) {
+    public function __construct(Menu $menu) {
         
-        $this->school = $school;
-        // $this->middleware('auth');
+        $this->menu = $menu;
 
     }
     
     /**
      * Show the application dashboard.
      *
-     * @return \Illuminate\Http\Response
      */
     public function index() {
         
-        $data = $this->school->datatable();
-        dd($data);
+    }
 
-        // echo Wechat::getAccessToken('a', 'b', 'c');
+    public function menu($id) {
         
-        return view('home');
+        // 获取卡片列表
+        $tabArray = [];
+        $menu = $this->menu->find($id);
+        $tabs = $menu->tabs;
+        foreach ($tabs as $tab) {
+            $tabArray[] = [
+                'id' => 'tab_' . $tab->id,
+                'name' => $tab->name,
+                'active' => false,
+                'url' => $tab->action->route
+            ];
+        }
+        $tabArray[0]['active'] = true;
+        
+        // 获取菜单列表
+        $menu = $this->menu->getMenuHtml($id);
+        
+        return view('home.page', [
+            'menu' => $menu,
+            'tabs' => $tabArray,
+            'menuId' => $id,
+            'js' => 'js/home/page.js',
+            'datatable' => true,
+            'form' => true,
+            'jstree' => true,
+            'dialog' => true
+        ]);
         
     }
+    
 }

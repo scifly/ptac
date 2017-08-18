@@ -3,11 +3,15 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Http\Requests\ActionRequest;
 use App\Models\ActionType as ActionType;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
+use Mockery\Exception;
 use ReflectionClass;
+use Doctrine\Common\Inflector\Inflector;
 
 /**
  * App\Models\Action
@@ -51,7 +55,29 @@ use ReflectionClass;
  */
 class Action extends Model {
     
-    const NOT_SET = '<span class="badge bg-gray">[n/a]</span>';
+    const BADGE_GRAY = '<span class="badge bg-black">[n/a]</span>';
+    const BADGE_GREEN = '<span class="badge bg-green">%s</span>';
+    const BADGE_YELLOW = '<span class="badge bg-yellow">%s</span>';
+    const BADGE_RED = '<span class="badge bg-red">%s</span>';
+    const BADGE_LIGHT_BLUE = '<span class="badge bg-light-blue">%s</span>';
+    const BADGE_MAROON = '<span class="badge bg-maroon">%s</span>';
+    const DT_ON = '<span class="badge bg-green">%s</span>';
+    const DT_OFF = '<span class="badge bg-gray">%s</span>';
+    const DT_LINK_EDIT = <<<HTML
+        <a id="%s" href="javascript:void(0)" class="btn btn-success btn-icon btn-circle btn-xs">
+            <i class="fa fa-edit"></i>
+        </a>
+HTML;
+    const DT_LINK_DEL = <<<HTML
+        <a id="%s" href="javascript:void(0)" class="btn btn-danger btn-icon btn-circle btn-xs" data-toggle="modal">
+            <i class="fa fa-trash"></i>
+        </a>
+HTML;
+    const DT_LINK_SHOW = <<<HTML
+        <a id="%s" href="javascript:void(0)" class="btn btn-primary btn-icon btn-circle btn-xs"  data-toggle="modal">
+            <i class="fa fa-eye"></i>
+        </a>
+HTML;
     
     protected $fillable = [
         'name',
@@ -79,8 +105,7 @@ class Action extends Model {
         'ResetPasswordController',
         'HomeController',
         'TestController',
-        // 'ActionController'
-        'Score_SendController'
+        'Score_SendController',
     ];
     protected $routes;
     # 控制器路径
@@ -93,25 +118,101 @@ class Action extends Model {
      */
     public function tabs() {
         
-        return $this->belongsToMany('App\Models\Tab', 'tabs_actions')
-            ->withPivot('default', 'enabled')
-            ->withTimestamps();
+        return $this->belongsToMany('App\Models\Tab', 'tabs_actions');
+        
     }
     
     /**
-     * 返回action列表
+     * 返回HTTP请求方法中包含GET以及路由中不带参数的action列表
      *
      * @return array
      */
     public function actions() {
         
-        $data = $this->whereEnabled(1)->get(['controller', 'name', 'id']);
+        $data = $this->whereEnabled(1)->get([
+            'controller', 'name', 'id', 'action_type_ids', 'route'
+        ]);
         $actions = [];
+        # 获取HTTP请求类型为GET的Action类型ID
+        $id = ActionType::whereName('GET')->first()->id;
         foreach ($data as $action) {
-            $actions[$action->controller][$action->id] = $action['name'];
+            if (
+                in_array($id, explode(',', $action['action_type_ids'])) &&
+                !strpos($action['route'], '{')
+            ) {
+                $actions[$action->controller][$action->id] = $action['name'] . ' - ' . $action['route'];
+            }
         }
         ksort($actions);
         return $actions;
+        
+    }
+    
+    /**
+     * 保存新创建的Action记录
+     *
+     * @param ActionRequest $request
+     * @return bool|mixed
+     */
+    public function store(ActionRequest $request) {
+        
+        # 创建新的Action记录及卡片绑定记录
+        try {
+            $exception = DB::transaction(function() use ($request) {
+                $this->create($request->all());
+            });
+            
+            return is_null($exception) ? true : $exception;
+        } catch (Exception $e) {
+            return false;
+        }
+        
+    }
+    
+    /**
+     * 修改指定的Action记录
+     *
+     * @param ActionRequest $request
+     * @param $actionId
+     * @return bool|mixed
+     */
+    public function modify(ActionRequest $request, $actionId) {
+        
+        $action = $this->find($actionId);
+        if (!isset($action)) { return false; }
+        try {
+            $exception = DB::transaction(function() use ($request, $actionId, $action) {
+                # 更新指定的Action记录
+                $action->update($request->all());
+            });
+            
+            return is_null($exception) ? true : $exception;
+        } catch (Exception $e) {
+            return false;
+        }
+        
+    }
+    
+    /**
+     * 移除指定的Action记录
+     *
+     * @param $actionId
+     * @return bool|mixed
+     */
+    public function remove($actionId) {
+        
+        $action = $this->find($actionId);
+        if (!isset($action)) { return false; }
+        try {
+            $exception = DB::transaction(function() use ($actionId, $action) {
+                # 删除指定的Action记录
+                $action->delete();
+            });
+            
+            return is_null($exception) ? true : $exception;
+        } catch (Exception $e) {
+            return false;
+        }
         
     }
     
@@ -122,35 +223,54 @@ class Action extends Model {
             [
                 'db' => 'Action.name', 'dt' => 1,
                 'formatter' => function ($d) {
-                    return empty($d) ? self::NOT_SET : $d;
+                    return empty($d) ? self::BADGE_GRAY : $d;
                 }
             ],
-            ['db' => 'Action.method', 'dt' => 2],
-            ['db' => 'Action.controller', 'dt' => 3],
             [
-                'db' => 'Action.view', 'dt' => 4,
+                'db' => 'Action.method', 'dt' => 2,
+                'formatter' => function($d) {
+                    return !empty($d) ? sprintf(self::BADGE_GREEN, $d) : self::BADGE_GRAY;
+                }
+            ],
+            [
+                'db' => 'Action.route', 'dt' => 3,
+                'formatter' => function($d) {
+                    return !empty($d) ? sprintf(self::BADGE_YELLOW, $d) : self::BADGE_GRAY;
+                }
+            ],
+            [
+                'db' => 'Action.controller', 'dt' => 4,
+                'formatter' => function($d) {
+                    return !empty($d) ? sprintf(self::BADGE_RED, $d) : self::BADGE_GRAY;
+                }
+            ],
+            [
+                'db' => 'Action.view', 'dt' => 5,
+                'formatter' => function($d) {
+                    return !empty($d) ? sprintf(self::BADGE_LIGHT_BLUE, $d) : self::BADGE_GRAY;
+                }
+            ],
+            [
+                'db' => 'Action.js', 'dt' => 6,
+                'formatter' => function($d) {
+                    return !empty($d) ? sprintf(self::BADGE_MAROON, $d) : self::BADGE_GRAY;
+                }
+            ],
+            [
+                'db' => 'Action.action_type_ids', 'dt' => 7,
                 'formatter' => function ($d) {
-                    return empty($d) ? self::NOT_SET : $d;
+                    return !empty($d) ? $this->actionTypes($d) : self::BADGE_GRAY;
                 }
             ],
             [
-                'db' => 'Action.js', 'dt' => 5,
-                'formatter' => function ($d) {
-                    return empty($d) ? self::NOT_SET : $d;
-                }
-            ],
-            ['db' => 'Action.created_at', 'dt' => 6],
-            ['db' => 'Action.updated_at', 'dt' => 7],
-            [
-                'db' => 'Action.action_type_ids', 'dt' => 8,
-                'formatter' => function ($d) {
-                    return $this->actionTypes($d);
-                }
-            ],
-            [
-                'db' => 'Action.enabled', 'dt' => 9,
+                'db' => 'Action.enabled', 'dt' => 8,
                 'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($this, $d, $row);
+                    $id = $row['id'];
+                    $status = $d ? sprintf(self::DT_ON, '已启用') : sprintf(self::DT_OFF, '已禁用');
+                    $showLink = sprintf(self::DT_LINK_SHOW, 'show_' . $id);
+                    $editLink = sprintf(self::DT_LINK_EDIT, 'edit_' . $id);
+                    
+                    return $status . '&nbsp;' . $showLink . '&nbsp;' . $editLink;
                 }
             ]
         ];
@@ -159,25 +279,6 @@ class Action extends Model {
         
     }
     
-    /**
-     * 根据ActionType IDs返回Http action名称
-     *
-     * @param $action_type_ids
-     * @return string
-     */
-    public function actionTypes($action_type_ids) {
-        
-        $actionTypes = [];
-        $actionTypeIds = explode(',', $action_type_ids);
-        foreach ($actionTypeIds as $actionTypeId) {
-            $actionType = ActionType::whereId($actionTypeId)->where('enabled', 1)->first();
-            if ($actionType) {
-                $actionTypes[] = $actionType->name;
-            }
-        }
-        return implode(',', $actionTypes);
-        
-    }
     
     public function scan() {
         
@@ -196,7 +297,11 @@ class Action extends Model {
         }
         $ctlrDiff = array_diff($existingCtlrs, $controllerNames);
         foreach ($ctlrDiff as $ctlr) {
-            $this->where('controller', $ctlr)->delete();
+            $actions = $this->where('controller', $ctlr)->get();
+            foreach ($actions as $a) {
+                if (!$this->remove($a->id)) { return false; };
+            }
+            # $this->where('controller', $ctlr)->delete();
         }
         foreach ($controllers as $controller) {
             // dd($controller);
@@ -204,7 +309,9 @@ class Action extends Model {
             $className = $obj->getName();
             $methods = $obj->getMethods();
             // remove non-existing methods of current controller
-            $this->delNonExistingMethods($methods, $className);
+            if (!$this->delNonExistingMethods($methods, $className)) {
+                return false;
+            }
             foreach ($methods as $method) {
                 $action = $method->getName();
                 if (
@@ -248,6 +355,7 @@ class Action extends Model {
                 ])->first();
                 if ($a) {
                     $a->route = $action['route'];
+                    $a->action_type_ids = $action['action_type_ids'];
                     $a->save();
                 } else {
                     $data = [
@@ -270,6 +378,28 @@ class Action extends Model {
                 }
             }
         }
+        return true;
+    }
+    
+    
+    /** Helper functions -------------------------------------------------------------------------------------------- */
+    /**
+     * 根据ActionType IDs返回Http action名称
+     *
+     * @param $action_type_ids
+     * @return string
+     */
+    private function actionTypes($action_type_ids) {
+        
+        $actionTypes = [];
+        $actionTypeIds = explode(',', $action_type_ids);
+        foreach ($actionTypeIds as $actionTypeId) {
+            $actionType = ActionType::whereId($actionTypeId)->where('enabled', 1)->first();
+            if ($actionType) {
+                $actionTypes[] = $actionType->name;
+            }
+        }
+        return implode(', ', $actionTypes);
         
     }
     
@@ -343,6 +473,7 @@ class Action extends Model {
      *
      * @param $methods
      * @param $className
+     * @return bool
      */
     private function delNonExistingMethods($methods, $className) {
         
@@ -356,18 +487,28 @@ class Action extends Model {
         }
         $methodDiffs = array_diff($existingMethods, $currentMethods);
         foreach ($methodDiffs as $method) {
-            $this->where([
+            $a = $this->where([
                 ['controller', $controllerName],
                 ['method', $method]
-            ])->delete();
+            ])->first();
+            if (!$this->remove($a->id)) { return false; };
         }
+        
+        return true;
         
     }
     
+    /**
+     * 获取指定方法的名称
+     *
+     * @param $methods
+     * @return array
+     */
     private function getMethodNames($methods) {
         
         $methodNames = [];
         foreach ($methods as $method) {
+            /** @noinspection PhpUndefinedMethodInspection */
             $methodNames[] = $method->getName();
         }
         return $methodNames;
@@ -420,18 +561,12 @@ class Action extends Model {
      */
     private function getTableName($controller) {
         
-        $modelName = substr($controller, 0, strlen($controller) - strlen('Controller'));
-        $modelName = 'App\\Models\\' . $modelName;
-        if ($modelName === 'App\\Models\\Action') {
-            $tableName = $this->getTable();
-        } else {
-            $model = new $modelName;
-            /** @noinspection PhpUndefinedMethodInspection */
-            $tableName = $model->getTable();
-            unset($model);
-        }
+        $modelName = substr(
+            $controller, 0,
+            strlen($controller) - strlen('Controller')
+        );
         
-        return $tableName;
+        return Inflector::pluralize(Inflector::tableize($modelName));
         
     }
     

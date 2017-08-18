@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -16,13 +17,13 @@ use Illuminate\Database\Eloquent\Model;
  * @property \Carbon\Carbon|null $updated_at
  * @property int $enabled
  * @property-read \App\Models\MediaType $mediaType
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Media whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Media whereEnabled($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Media whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Media whereMediaTypeId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Media wherePath($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Media whereRemark($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Media whereUpdatedAt($value)
+ * @method static Builder|Media whereCreatedAt($value)
+ * @method static Builder|Media whereEnabled($value)
+ * @method static Builder|Media whereId($value)
+ * @method static Builder|Media whereMediaTypeId($value)
+ * @method static Builder|Media wherePath($value)
+ * @method static Builder|Media whereRemark($value)
+ * @method static Builder|Media whereUpdatedAt($value)
  * @property-read \App\Models\WapSiteModule $wapsitemoudle
  */
 class Media extends Model {

@@ -11,13 +11,21 @@ class DatatableFacade extends Facade {
 
     const DT_ON = '<span class="badge bg-green">%s</span>';
     const DT_OFF = '<span class="badge bg-gray">%s</span>';
-    const DT_LINK_EDIT = '<!--suppress HtmlUnknownTarget -->
-<a href="edit/%s" class="btn btn-success btn-icon btn-circle btn-xs"><i class="fa fa-edit"></i></a>';
-    const DT_LINK_DEL = '<!--suppress HtmlUnknownAnchorTarget -->
-<a id="%s" href="" class="btn btn-danger btn-icon btn-circle btn-xs" data-toggle="modal"><i class="fa fa-trash"></i></a>';
-    const DT_LINK_SHOW = '<!--suppress HtmlUnknownAnchorTarget -->
-<a href="show/%s" class="btn btn-primary btn-icon btn-circle btn-xs"  data-toggle="modal"><i class="fa fa-eye"></i></a>';
-/*<a id="%s" href="" class="btn btn-primary btn-icon btn-circle btn-xs"  data-toggle="modal"><i class="fa fa-eye"></i></a>';*/
+    const DT_LINK_EDIT = <<<HTML
+        <a id="%s" href="javascript:void(0)" class="btn btn-success btn-icon btn-circle btn-xs">
+            <i class="fa fa-edit"></i>
+        </a>
+HTML;
+    const DT_LINK_DEL = <<<HTML
+        <a id="%s" href="javascript:void(0)" class="btn btn-danger btn-icon btn-circle btn-xs" data-toggle="modal">
+            <i class="fa fa-trash"></i>
+        </a>
+HTML;
+    const DT_LINK_SHOW = <<<HTML
+        <a id="%s" href="javascript:void(0)" class="btn btn-primary btn-icon btn-circle btn-xs"  data-toggle="modal">
+            <i class="fa fa-eye"></i>
+        </a>
+HTML;
     const DT_SPACE = '&nbsp;';
     const DT_PRIMARY = '<span class="badge badge-info">%s</span>';
     const DT_LOCK = '<i class="fa fa-lock"></i>&nbsp;已占用';
@@ -177,8 +185,8 @@ class DatatableFacade extends Facade {
 
         $id = $row['id'];
         $status = $active ? sprintf(self::DT_ON, '已启用') : sprintf(self::DT_OFF, '已禁用');
-        $showLink = sprintf(self::DT_LINK_SHOW, /*$model->getTable(),*/ $id);
-        $editLink = sprintf(self::DT_LINK_EDIT, /*$model->getTable(), */$id);
+        $showLink = sprintf(self::DT_LINK_SHOW, 'show_' . $id);
+        $editLink = sprintf(self::DT_LINK_EDIT, 'edit_' . $id);
         $delLink = sprintf(self::DT_LINK_DEL, $id);
 
         return $status . self::DT_SPACE . $showLink . self::DT_SPACE .
