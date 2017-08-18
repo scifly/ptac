@@ -1,3 +1,4 @@
+$(crud.create('formProcedureLogCreate'));
 $(function () {
     var $pre = $('.preview');
     var $uploadFile = $('#uploadFile');
@@ -27,8 +28,7 @@ $(function () {
         // 填充数据
         var response = data.response.data;
         $.each(response, function (index, obj) {
-            $pre.append('<div class="img-item"><img src="../../' + obj.path + '" id="' + obj.id + '"><div class="del-mask"><i class="delete glyphicon glyphicon-trash"></i></div></div>');
-            $pre.append('<input type="hidden" name="media_ids[]" value="' + obj.id + '">');
+            $pre.append('<div class="img-item"><img src="../../' + obj.path + '" id="' + obj.id + '"><div class="del-mask"><i class="delete glyphicon glyphicon-trash"></i></div><input type="hidden" name="media_ids[]" value="' + obj.id + '"></div>');
         });
         // 成功后关闭弹窗
         setTimeout(function () {
@@ -42,7 +42,24 @@ $(function () {
     });
     // 点击删除按钮
     $('body').on('click', '.delete', function () {
-        $(this).parent().parent().remove();
-        $pre.append('<input type="hidden" name="del_ids[]" value="' + $(this).parent().siblings().attr('id') + '">');
+        obj = $(this).parent();
+        $.ajax({
+            type: 'GET',
+            url: '../procedure_logs/delete_medias/'+ obj.siblings().attr('id'),
+            success: function (result) {
+                if (result.statusCode === 200) {
+                    obj.parent().remove();
+                }
+                crud.inform(
+                    '操作结果', result.message,
+                    result.statusCode === 200 ? crud.success : crud.failure
+                );
+                return false;
+            },
+            error: function (e) {
+                var obj = JSON.parse(e.responseText);
+                crud.inform('出现异常', obj['message'], crud.failure);
+            }
+        });
     })
 });

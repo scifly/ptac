@@ -268,13 +268,16 @@ Route::get('procedure_steps/delete/{id}', 'ProcedureStepController@destroy');
 Route::get('procedure_steps/getSchoolEducators/{id}', 'ProcedureStepController@getSchoolEducators');
 
 //流程日志
-Route::get('procedure_logs/index', 'ProcedureLogController@index');
+//Route::get('procedure_logs/index', 'ProcedureLogController@index');
 Route::get('procedure_logs/show/{id}', 'ProcedureLogController@show');
-Route::get('procedure_logs/create', 'ProcedureLogController@create');
-Route::get('procedure_logs/procedure_info/{first_log_id}', 'ProcedureLogController@procedureInfo');
-Route::get('procedure_logs/my_rocedure', 'ProcedureLogController@myProcedure');
+Route::get('procedure_logs/index', 'ProcedureLogController@myProcedure');
 Route::get('procedure_logs/pending', 'ProcedureLogController@pending');
-Route::any('procedure_logs/upload_medias', 'ProcedureLogController@uploadMedias');
+Route::get('procedure_logs/procedure_info/{first_log_id}', 'ProcedureLogController@procedureInfo');
+Route::get('procedure_logs/create', 'ProcedureLogController@create');
+Route::post('procedure_logs/store', 'ProcedureLogController@store');
+Route::post('procedure_logs/decision', 'ProcedureLogController@decision');
+Route::post('procedure_logs/upload_medias', 'ProcedureLogController@uploadMedias');
+Route::get('procedure_logs/delete_medias/{id}', 'ProcedureLogController@deleteMedias');
 
 
 //用户管理-用户设置
