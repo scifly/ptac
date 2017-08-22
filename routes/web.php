@@ -356,6 +356,7 @@ Route::get('wap_site_modules/show/{id}', 'WapSiteModuleController@show');
 Route::get('wap_site_modules/edit/{id}', 'WapSiteModuleController@edit');
 Route::put('wap_site_modules/update/{id}', 'WapSiteModuleController@update');
 Route::delete('wap_site_modules/delete/{id}', 'WapSiteModuleController@destroy');
+Route::get('wap_site_modules/webindex/{id}', 'WapSiteModuleController@webindex');
 
 //微网站管理-文章管理
 Route::get('wsm_articles/index', 'WsmArticleController@index');
@@ -365,8 +366,8 @@ Route::get('wsm_articles/show/{id}', 'WsmArticleController@show');
 Route::get('wsm_articles/edit/{id}', 'WsmArticleController@edit');
 Route::put('wsm_articles/update/{id}', 'WsmArticleController@update');
 Route::delete('wsm_articles/delete/{id}', 'WsmArticleController@destroy');
+Route::get('wsm_articles/detail/{id}', 'WsmArticleController@detail');
 
-Route::get('wsm_articles/webindex', 'WsmArticleController@webindex');
 
 //消息中心-消息管理
 Route::get('messages/index', 'MessageController@index');
