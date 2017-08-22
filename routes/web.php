@@ -366,6 +366,8 @@ Route::get('wsm_articles/edit/{id}', 'WsmArticleController@edit');
 Route::put('wsm_articles/update/{id}', 'WsmArticleController@update');
 Route::delete('wsm_articles/delete/{id}', 'WsmArticleController@destroy');
 
+Route::get('wsm_articles/webindex', 'WsmArticleController@webindex');
+
 //消息中心-消息管理
 Route::get('messages/index', 'MessageController@index');
 Route::get('messages/create', 'MessageController@create');
