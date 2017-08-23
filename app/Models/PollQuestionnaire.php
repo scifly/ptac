@@ -36,7 +36,7 @@ class PollQuestionnaire extends Model {
     //
     protected $table = 'poll_questionnaires';
     
-    protected $fillable = ['school_id', 'user_id', 'name', 'start', 'end', 'created_at', 'updated-at', 'enabled'];
+    protected $fillable = ['school_id', 'user_id', 'name', 'start', 'end',  'enabled'];
     
     public function school() {
         return $this->belongsTo('App\Models\School');
