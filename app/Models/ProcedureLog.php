@@ -48,6 +48,25 @@ class ProcedureLog extends Model {
     const DT_PEND = '<span class="badge bg-orange">%s</span>';
     
     protected $table = 'procedure_logs';
+
+    protected $joins = [
+        [
+            'table' => 'procedures',
+            'alias' => 'Procedures',
+            'type' => 'INNER',
+            'conditions' => [
+                'Procedures.id = ProcedureLog.procedure_id'
+            ]
+        ],
+        [
+            'table' => 'procedure_steps',
+            'alias' => 'ProcedureStep',
+            'type' => 'INNER',
+            'conditions' => [
+                'ProcedureStep.id = ProcedureLog.procedure_step_id'
+            ]
+        ]
+    ];
     
     protected $fillable = [
         'initiator_user_id',
@@ -77,7 +96,6 @@ class ProcedureLog extends Model {
         return $this->belongsTo('App\Models\User')->select('id', 'realname');
     }
 
-
     /**
      * 流程日志与流程
      */
@@ -91,26 +109,7 @@ class ProcedureLog extends Model {
     public function procedure_step() {
         return $this->belongsTo('App\Models\ProcedureStep');
     }
-    
-    /**
-     * 步骤状态处理，0-通过，1-拒绝，2-待定
-     * @param $d
-     * @return string
-     */
-    public function status($d) {
-        
-        switch ($d) {
-            case 0:
-                return '通过';
-            case 1:
-                return '拒绝';
-            case 2:
-                return '待定';
-            default:
-                return '错误';
-        }
-    }
-    
+
     /**
      * 拆分initiator_media_ids、operator_media_ids,
      * @param $media_ids
@@ -129,86 +128,57 @@ class ProcedureLog extends Model {
         return $medias;
     }
     
-    public function datatable() {
-        
+    public function datatable($where) {
+
         $columns = [
-            ['db' => 'ProcedureLog.id', 'dt' => 0],
+            ['db' => 'ProcedureLog.first_log_id', 'dt' => 0],
             [
                 'db' => 'ProcedureLog.initiator_user_id', 'dt' => 1,
                 'formatter' => function ($d, $row) {
-                    $user = $this->get_user($d);
-                    return $user->realname;
+                    return $this->get_user($d)->realname;
                 }
             ],
             ['db' => 'Procedures.name as procedurename', 'dt' => 2],
             ['db' => 'ProcedureStep.name procedurestepname', 'dt' => 3],
+            ['db' => 'ProcedureLog.initiator_msg', 'dt' => 4],
+            ['db' => 'ProcedureLog.updated_at', 'dt' => 5],
             [
-                'db' => 'ProcedureLog.operator_user_id', 'dt' => 4,
+                'db' => 'ProcedureLog.step_status', 'dt' => 6,
                 'formatter' => function ($d, $row) {
-                    $user = $this->get_user($d);
-                    return $user->realname;
-                }
-            ],
-            ['db' => 'ProcedureLog.initiator_msg', 'dt' => 5],
-            ['db' => 'ProcedureLog.operator_msg', 'dt' => 6],
-            ['db' => 'ProcedureLog.created_at', 'dt' => 7],
-            ['db' => 'ProcedureLog.updated_at', 'dt' => 8],
-            [
-                'db' => 'ProcedureLog.step_status', 'dt' => 9,
-                'formatter' => function ($d, $row) {
-                    
+
                     switch ($d) {
-                        
+
                         case 0:
                             $status = sprintf(Datatable::DT_ON, '通过');
                             break;
-                        
+
                         case 1:
                             $status = sprintf(Datatable::DT_OFF, '拒绝');
                             break;
-                        
+
                         case 2:
                             $status = sprintf(self::DT_PEND, '待定');
                             break;
-                        
+
                         default:
-                            $status = sprintf(Datatable::DT_ON, '通过');
+                            $status = sprintf(Datatable::DT_OFF, '错误');
                             break;
                     }
-                    
-                    $id = $row['id'];
-                    $showLink = sprintf(Datatable::DT_LINK_SHOW, /*$model->getTable(),*/
-                        $id);
-                    $delLink = sprintf(Datatable::DT_LINK_DEL, $id);
-                    
-                    return $status . Datatable::DT_SPACE . $showLink . Datatable::DT_SPACE . $delLink;
-                    
+
+                    $id = $row['first_log_id'];
+                    $showLink = '<a id = '. $id .' href="show/'.$id.'" class="btn btn-primary btn-icon btn-circle btn-xs" data-toggle="modal">
+            <i class="fa fa-eye"></i>
+        </a>';
+
+                    return $status . Datatable::DT_SPACE . $showLink;
+
                 }
             ],
         ];
-        
-        $joins = [
-            [
-                'table' => 'procedures',
-                'alias' => 'Procedures',
-                'type' => 'INNER',
-                'conditions' => [
-                    'Procedures.id = ProcedureLog.procedure_id'
-                ]
-            ],
-            [
-                'table' => 'procedure_steps',
-                'alias' => 'ProcedureStep',
-                'type' => 'INNER',
-                'conditions' => [
-                    'ProcedureStep.id = ProcedureLog.procedure_step_id'
-                ]
-            ]
-        ];
-        
-        return Datatable::simple($this, $columns, $joins);
+
+        return Datatable::simple($this, $columns, $this->joins, $where);
     }
-    
+
     /**
      * 获取用户信息
      * @param $userId

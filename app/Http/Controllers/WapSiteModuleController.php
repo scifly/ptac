@@ -6,6 +6,7 @@ use App\Http\Requests\WapSiteModuleRequest;
 use App\Http\Requests\WapSiteRequest;
 use App\Models\Media;
 use App\Models\WapSiteModule;
+use App\Models\WsmArticle;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Storage;
@@ -179,5 +180,19 @@ class WapSiteModuleController extends Controller
             $this->result['message'] = '';
         }
         return response()->json($this->result);
+    }
+    public function webindex($id){
+
+
+        $articles = WsmArticle::where('wsm_id',$id)->get();
+//        foreach ($articles as $v)
+//        {
+//            dd($v->thumbnailmedia);
+//        }die;
+        return view('frontend.wap_site.list', [
+            'articles' => $articles,
+            'ws' =>true
+        ]);
+
     }
 }
