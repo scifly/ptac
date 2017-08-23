@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Menu;
+use App\Models\MenuTab;
+use App\Models\Tab;
 use Illuminate\Support\Facades\Request;
 
 
@@ -29,12 +31,23 @@ class HomeController extends Controller {
     }
 
     public function menu($id) {
-        
+
+        session(['menuId' => $id]);
         // 获取卡片列表
         $tabArray = [];
-        $menu = $this->menu->find($id);
-        $tabs = $menu->tabs;
+        // $menu = $this->menu->find($id);
+        /*$tabs = $menu->tabs;
         foreach ($tabs as $tab) {
+            $tabArray[] = [
+                'id' => 'tab_' . $tab->id,
+                'name' => $tab->name,
+                'active' => false,
+                'url' => $tab->action->route
+            ];
+        }*/
+        $tabRanks = MenuTab::whereMenuId($id)->get()->sortBy('tab_order')->toArray();
+        foreach ($tabRanks as $rank) {
+            $tab = Tab::whereId($rank['tab_id'])->first();
             $tabArray[] = [
                 'id' => 'tab_' . $tab->id,
                 'name' => $tab->name,
@@ -52,10 +65,6 @@ class HomeController extends Controller {
             'tabs' => $tabArray,
             'menuId' => $id,
             'js' => 'js/home/page.js',
-            'datatable' => true,
-            'form' => true,
-            'jstree' => true,
-            'dialog' => true
         ]);
         
     }

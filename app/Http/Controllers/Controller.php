@@ -3,10 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Action;
+use App\Models\Menu;
+use App\Models\Tab;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
+use Illuminate\Support\Facades\Request;
 
 class Controller extends BaseController {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
@@ -37,7 +40,7 @@ class Controller extends BaseController {
         'statusCode' => self::HTTP_STATUSCODE_OK,
         'message' => self::MSG_OK
     ];
-    
+
     protected function output($m, array $params = []) {
     
         $arr = explode('::', $m);
@@ -48,10 +51,13 @@ class Controller extends BaseController {
         if (!$action) { return false; }
         $view = $action->view;
         if (!$view) { return false; }
-        
+        $menu = Menu::whereId(session('menuId'))->first();
+        $tab = Tab::whereId(Request::get('tabId'))->first();
+        $params['breadcrumb'] = $menu->name . ' / ' . $tab->name . ' / ' . $action->name;
         return response()->json([
             'html' => view($view, $params)->render(),
-            'js' => $action->js
+            'js' => $action->js,
+            'breadcrumb' => $params['breadcrumb']
         ]);
         
     }
