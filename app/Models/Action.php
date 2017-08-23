@@ -104,7 +104,7 @@ HTML;
     ];
     protected $routes;
     # 控制器路径
-    protected $dir = '/media/sf_sandbox/urlshortener/app/Http/Controllers';
+    protected $dir = '/media/sf_sandbox/ptac/app/Http/Controllers';
     
     /**
      * 返回当前action包含的卡片
@@ -434,7 +434,7 @@ HTML;
         
         for ($i = 0; $i < sizeof($controllers); $i++) {
             $controllers[$i] = str_replace('/', '\\', $controllers[$i]);
-            $controllers[$i] = str_replace('\\media\\sf_sandbox\\urlshortener\\', '', $controllers[$i]);
+            $controllers[$i] = str_replace('\\media\\sf_sandbox\\ptac\\', '', $controllers[$i]);
             $controllers[$i] = str_replace('.php', '', $controllers[$i]);
         }
         
