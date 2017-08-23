@@ -32,12 +32,17 @@ class GradeController extends Controller
         if (Request::get('draw')) {
             return response()->json($this->grade->datatable());
         }
-        return view('grade.index' ,
-            [
-                'js' => 'js/grade/index.js',
-                'dialog' => true,
-                'datatable' => true,
-            ]);
+        return $this->output(__METHOD__);
+
+//        if (Request::get('draw')) {
+//            return response()->json($this->grade->datatable());
+//        }
+//        return view('grade.index' ,
+//            [
+//                'js' => 'js/grade/index.js',
+//                'dialog' => true,
+//                'datatable' => true,
+//            ]);
 
     }
 
@@ -49,10 +54,12 @@ class GradeController extends Controller
      */
     public function create()
     {
-        return view('grade.create',[
-            'js' => 'js/grade/create.js',
-            'form' => true
-        ]);
+        return $this->output(__METHOD__);
+
+//        return view('grade.create',[
+//            'js' => 'js/grade/create.js',
+//            'form' => true
+//        ]);
     }
 
     /**
@@ -74,20 +81,14 @@ class GradeController extends Controller
                     'school_id' => $data['school_id'],
                     'name' => $data['name']
                 ])->first();
-        if(!empty($row)){
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '年级名称重复！';
+        if(!empty($row) ){
+
+            $this->fail('年级名称重复！');
         }else{
-            if($this->grade->create($data))
-            {
-                $this->result['message'] = self::MSG_CREATE_OK;
-            } else {
-                $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-                $this->result['message'] = '';
-            }
+
+            return $this->grade->create($data) ? $this->succeed() : $this->fail();
         }
 
-        return response()->json($this->result);
 
     }
 
@@ -98,18 +99,20 @@ class GradeController extends Controller
      */
     public function show($id)
     {
-        $grade = Grade::whereId($id)->first();
         $educators = User::whereHas('educator' , function($query) use ($grade) {
 
                 $f = explode(",", $grade->educator_ids);
                 $query->whereIn('id', $f);
 
         })->get(['id','username'])->toArray();
+        $grade = $this->grade->find($id);
 
-        return view('grade.show', [
+        if (!$grade) { return parent::notFound(); }
+        return parent::output(__METHOD__, [
             'grade' => $grade,
             'educators' => $educators
         ]);
+
     }
 
     /**
@@ -118,7 +121,9 @@ class GradeController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function edit($id) {
-        $grade = $this->grade->whereId($id)->first();
+        $grade = $this->grade->find($id);
+
+        if (!$grade) { return parent::notFound(); }
 
         $educators = User::whereHas('educator' , function($query) use ($grade) {
 
@@ -131,12 +136,12 @@ class GradeController extends Controller
         foreach ($educators as $value) {
             $selectedEducators[$value['id']] = $value['username'];
         }
-        return view('grade.edit', [
-            'js' => 'js/grade/edit.js',
+
+        return parent::output(__METHOD__, [
             'grade' => $grade,
             'selectedEducators' => $selectedEducators,
-            'form' => true
         ]);
+
     }
 
     /**
@@ -151,6 +156,9 @@ class GradeController extends Controller
         // find the record by id
         // update the record with the request data
         $data = Grade::find($id);
+
+        if (!$data) { return parent::notFound(); }
+
         $ids = $gradeRequest->input('educator_ids');
 
         $data->name = $gradeRequest->input('name');
@@ -163,21 +171,12 @@ class GradeController extends Controller
             ])->first();
         if(!empty($row) && $row->id != $id){
 
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '年级名称重复！';
-
+            $this->fail('年级名称重复！');
         }else{
-            if($data->save())
-            {
-                $this->result['message'] = self::MSG_EDIT_OK;
-            } else {
-                $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-                $this->result['message'] = '';
 
-            }
+            return $data->save() ? $this->succeed() : $this->fail();
         }
 
-        return response()->json($this->result);
     }
 
     /**
@@ -186,13 +185,10 @@ class GradeController extends Controller
      */
     public function destroy($id)
     {
-        if ($this->grade->findOrFail($id)->delete()) {
-            $this->result['message'] = self::MSG_DEL_OK;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '';
-        }
-        return response()->json($this->result);
+        $grade = $this->grade->find($id);
+
+        if (!$grade) { return parent::notFound(); }
+        return $grade->delete() ? parent::succeed() : parent::fail();
 
     }
 }

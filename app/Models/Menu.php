@@ -363,7 +363,7 @@ HTML;
             # 获取菜单对应的默认Route
             // $mUrl = $m->action_id ? '/urlshortener/public/' . $m->action->route : '#';
             // $mUrl = $mUrl ? $mUrl : '#';
-            $mUrl = '/urlshortener/public/pages/' . $m->id;
+            $mUrl = '/ptac/public/pages/' . $m->id;
             # 计算菜单所处的level
             $lvl = 0;
             $this->getMenuLevel($m, $lvl);
