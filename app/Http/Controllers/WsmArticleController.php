@@ -205,14 +205,14 @@ class WsmArticleController extends Controller
 
     public function detail($id)
     {
-//        $article = WsmArticle::whereId($id)->first();
-//        $f = explode(",", $article->media_ids);
-//
-//        $medias = Media::whereIn('id',$f)->get(['id','path']);
+        $article = WsmArticle::whereId($id)->first();
+        $f = explode(",", $article->media_ids);
 
-        return view('frontend.wap_site.list_detail', [
-//            'article' => $article,
-//            'medias' => $medias,
+        $medias = Media::whereIn('id',$f)->get(['id','path']);
+
+        return view('frontend.wap_site.article', [
+            'article' => $article,
+            'medias' => $medias,
             'ws' =>true
         ]);
     }
