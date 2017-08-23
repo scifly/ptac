@@ -30,7 +30,7 @@ class ProcedureLogController extends Controller {
             $ids = $this->procedureLog->select(DB::raw('max(procedure_logs.id) as id'))
                 ->where('initiator_user_id',$user_id)
                 ->groupBy('first_log_id')
-                ->pluck('id')->toArray();
+                ->pluck('id')->toArray();    
             $where = 'ProcedureLog.id in (' . implode(',', $ids) . ')';
 
             return response()->json($this->procedureLog->datatable($where));
@@ -113,6 +113,7 @@ class ProcedureLogController extends Controller {
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function procedureInfo($first_log_id){
+        $user_id = 7;
         //根据IDs查询数据
         $data = $this->procedureLog
             ->with('procedure', 'procedure_step', 'initiator_user', 'operator_user')
@@ -121,7 +122,8 @@ class ProcedureLogController extends Controller {
             ->get();
         return view('procedure_log.procedure_info',[
             'js' => 'js/procedure_log/procedure_info.js',
-            'data' => $data
+            'data' => $data,
+            'user_id' => $user_id
         ]);
     }
 
@@ -204,14 +206,14 @@ class ProcedureLogController extends Controller {
                     $data = [
                         'procedure_id' => $request['procedure_id'],
                         'initiator_user_id' => $request['initiator_user_id'],
-                        'procedure_step_id' => $request['procedure_step_id'],
+                        'procedure_step_id' => $procedure_step->id,
                         'operator_user_id' => 0,
                         'operator_msg' => 0,
                         'operator_media_ids' => 0,
                         'step_status' => 2,
                         'first_log_id' => $request['first_log_id'],
                         'initiator_msg' => $request['initiator_msg'],
-                        'initiator_media_ids' => $request['initiator_media_ids']
+                        'initiator_media_ids' => empty($request['initiator_media_ids']) ? 0 : $request['initiator_media_ids']
                     ];
                     $this->procedureLog->insertGetId($data);
                 }
@@ -232,7 +234,7 @@ class ProcedureLogController extends Controller {
     public function uploadMedias(){
         $files = Request::file('medias');
         if (empty($files)){
-            $result['statusCode'] = 0;
+            $result['statusCode'] = 500;
             $result['message'] = '您还未选择文件！';
         }else{
             $result['data']=array();
@@ -265,7 +267,7 @@ class ProcedureLogController extends Controller {
                     ];
                 }
             }
-            $result['statusCode'] = 1;
+            $result['statusCode'] = 200;
             $result['message'] = '上传成功！';
             $result['data'] = $mes;
         }
