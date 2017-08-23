@@ -189,7 +189,7 @@ class WapSiteModuleController extends Controller
 //        {
 //            dd($v->thumbnailmedia);
 //        }die;
-        return view('frontend.wap_site.list', [
+        return view('frontend.wap_site.module', [
             'articles' => $articles,
             'ws' =>true
         ]);

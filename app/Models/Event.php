@@ -47,11 +47,9 @@ use Illuminate\Database\Eloquent\Model;
  * @mixin \Eloquent
  */
 class Event extends Model {
-    //
     protected $table = 'events';
-    
     protected $fillable = [
-        'name',
+        'title',
         'remark',
         'location',
         'contact',
@@ -62,10 +60,17 @@ class Event extends Model {
         'iscourse',
         'educator_id',
         'subject_id',
+        'alertable',
         'alert_mins',
         'user_id',
         'created_at',
         'updated_at',
         'enabled'
     ];
+    public function educator(){
+        return $this->belongsTo('App\Models\Educator');
+    }
+    public function subject(){
+        return $this->belongsTo('APP\Models\Subject');
+    }
 }

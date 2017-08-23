@@ -348,8 +348,8 @@ HTML;
                     ['method', $action['method']]
                 ])->first();
                 if ($a) {
-                    $a->route = $action['route'];
-                    $a->action_type_ids = $action['action_type_ids'];
+                    // $a->route = $action['route'];
+                    // $a->action_type_ids = $action['action_type_ids'];
                     $a->save();
                 } else {
                     $data = [
