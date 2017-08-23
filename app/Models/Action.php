@@ -445,7 +445,7 @@ HTML;
         
         for ($i = 0; $i < sizeof($controllers); $i++) {
             $controllers[$i] = str_replace('/', '\\', $controllers[$i]);
-            $controllers[$i] = str_replace('\\media\\sf_sandbox\\urlshortener\\', '', $controllers[$i]);
+            $controllers[$i] = str_replace('\\media\\sf_sandbox\\ptac\\', '', $controllers[$i]);
             $controllers[$i] = str_replace('.php', '', $controllers[$i]);
         }
         
