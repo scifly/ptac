@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Educator;
 use App\Models\Event;
+use App\Models\Subject;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
 
@@ -41,17 +42,17 @@ class EventController extends Controller {
         //判断userID的权限 1.管理员及以上  2.用户
 
         //通过userId找出educator_id
-        $educator = Educator::where('user_id',$userId)->first();
+        $educator = Educator::where('user_id', $userId)->first();
         //先选出公开事件中 非课程的事件
         $pubNoCourseEvents = $this->event
             ->where('ispublic', 1)
-            ->where('iscourse',0)
+            ->where('iscourse', 0)
             ->get()->toArray();
         //选出公开事件中 课程事件
         $pubCourEvents = $this->event
             ->where('ispublic', 1)
-            ->where('iscourse',1)
-            ->where('educator_id',$educator->id)
+            ->where('iscourse', 1)
+            ->where('educator_id', $educator->id)
             ->get()->toArray();
 
         //再选个人未公开事件
@@ -61,13 +62,13 @@ class EventController extends Controller {
             ->where('enabled', '1')
             ->get()->toArray();
         //全部公共事件
-        $pubEvents = $this->event->where('ispublic',1)->get()->toArray();
+        $pubEvents = $this->event->where('ispublic', 1)->get()->toArray();
         //如果是管理员
-        if($userId == 1){
-            return  response()->json(array_merge($pubEvents, $perEvents));
+        if ($userId == 1) {
+            return response()->json(array_merge($pubEvents, $perEvents));
         }
         //如果是用户
-        return response()->json(array_merge($pubNoCourseEvents, $perEvents,$pubCourEvents));
+        return response()->json(array_merge($pubNoCourseEvents, $perEvents, $pubCourEvents));
     }
 
     /**
@@ -215,4 +216,20 @@ class EventController extends Controller {
 //
 //        $uId = Session::get('user');
 //    }
+
+    /**
+     * 获取当前user_id 对应的学校的所有教职工id
+     *
+     * @param $userId
+     * @return array
+     */
+    private function getEducators($userId) {
+        $educator = Educator::where('user_id', $userId)->first();
+        return Educator::where('school_id', $educator->school_id)->get()->toArray();
+    }
+
+    private function getSubjects($userId) {
+        $educator = Educator::where('user_id', $userId)->first();
+        return Subject::where('school_id', $educator->school_id)->get()->toArray();
+    }
 }
