@@ -26,6 +26,7 @@ class SubjectController extends Controller {
         if (Request::get('draw')) {
             return response()->json($this->subject->datatable());
         }
+
         return view('subject.index', [
             'js' => 'js/subject/index.js',
             'dialog' => true,
