@@ -273,17 +273,14 @@ class WapSiteController extends Controller
 
     public function webindex(){
 
-        $school_id = isset($_GET['school_id']) ? $_GET['school_id'] : '';
+//        $school_id = isset($_GET['school_id']) ? $_GET['school_id'] : '';
 
-        $wapsite = WapSite::whereId(1)->first();
+        $wapsite = $this->wapSite->whereId(3)->first();
+
         $f = explode(",", $wapsite['media_ids']);
 
         $medias = Media::whereIn('id',$f)->get(['id','path']);
-//        foreach ($wapsite->wapsitemodule as $v){
-//            dd($v->media);
-//
-//        }
-//        die;
+
         return view('frontend.wap_site.index', [
             'wapsite' => $wapsite,
             'medias' => $medias,

@@ -1,4 +1,9 @@
 var page = {
+    success: 'img/confirm.png',
+    failure: 'img/failure.jpg',
+    inform: function(title, text, image) {
+        $.gritter.add({title: title, text: text, image: page.siteRoot() + image});
+    },
     siteRoot: function() {
         var path = window.location.pathname;
         var paths = path.split('/');
@@ -6,7 +11,7 @@ var page = {
     },
     ajaxLoader: function() {
         return "<img alt='' src='" + page.siteRoot() + "/img/throbber.gif' " +
-        "style='vertical-align: middle;'/>&nbsp;<span>页面加载中 ...</span>"
+        "style='vertical-align: middle;'/>"
     },
     getActiveTabId: function() {
         var tabId = $('.nav-tabs .active a').attr('href').split('_');
@@ -14,11 +19,11 @@ var page = {
     },
     getTabContent: function($tabPane, url) {
         $tabPane.html(page.ajaxLoader);
-        // alert(url);
         $.ajax({
             type: 'GET',
             dataType: 'json',
             url: url,
+            data: { tabId: page.getActiveTabId() },
             success: function(result) {
                 $tabPane.html(result.html);
                 $.getScript(page.siteRoot() + result.js);

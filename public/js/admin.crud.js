@@ -1,15 +1,9 @@
 var crud = {
-    success: 'img/confirm.png',
-    failure: 'img/failure.jpg',
-    siteroot: function() {
-        var path = window.location.pathname;
-        var paths = path.split('/');
-        return '/' + paths[1] + '/' + paths[2] + '/';
+    unbindEvents: function() {
+        $('#add-record').unbind('click');
+        $(document).off('click', '.fa-edit');
+        $(document).off('click', '.fa-eye');
     },
-    inform: function(title, text, image) {
-        $.gritter.add({title: title, text: text, image: page.siteRoot() + image});
-    },
-
     ajaxRequest: function(requestType, ajaxUrl, data, obj) {
         $.ajax({
             type: requestType,
@@ -24,15 +18,15 @@ var crud = {
                         default: break;
                     }
                 }
-                crud.inform(
+                page.inform(
                     '操作结果', result.message,
-                    result.statusCode === 200 ? crud.success : crud.failure
+                    result.statusCode === 200 ? page.success : page.failure
                 );
                 return false;
             },
             error: function(e) {
                 var obj = JSON.parse(e.responseText);
-                crud.inform('出现异常', obj['message'], crud.failure);
+                page.inform('出现异常', obj['message'], page.failure);
             }
         });
     },
@@ -50,19 +44,25 @@ var crud = {
         });
 
         // Cancel button
-        $('#cancel').on('click', function() { window.location = homeUrl; });
+        $('#cancel, #record-list').on('click', function() {
+            var $activeTabPane = $('#tab_' + page.getActiveTabId());
+            page.getTabContent($activeTabPane, page.siteRoot() + homeUrl)
+        });
 
         // Parsley
         var $form = $('#' + formId);
         $form.parsley().on("form:validated", function () {
             if ($('.parsley-error').length === 0) {
-                crud.ajaxRequest(requestType, ajaxUrl, $form.serialize(), $form[0]);
+                crud.ajaxRequest(requestType, page.siteRoot() + ajaxUrl, $form.serialize(), $form[0]);
             }
         }).on('form:submit', function() {
             return false;
         });
     },
     index: function (table) {
+        var $activeTabPane = $('#tab_' + page.getActiveTabId());
+
+        // 显示记录列表
         $('#data-table').dataTable({
             processing: true,
             serverSide: true,
@@ -72,75 +72,48 @@ var crud = {
             language: {url: '../files/ch.json'}
         });
 
+        // 新增记录
+        $('#add-record').on('click', function() {
+            page.getTabContent($activeTabPane, page.siteRoot() + table + '/create');
+            crud.unbindEvents();
+        });
+
+        // 编辑记录
+        $(document).on('click', '.fa-edit', function() {
+            var url = $(this).parents().eq(0).attr('id');
+            url = url.replace('_', '/');
+            page.getTabContent($activeTabPane, page.siteRoot() + table + '/' + url);
+            // $(document).off('click', '.fa-edit');
+            crud.unbindEvents();
+        });
+
+        // 查看记录详情
+        $(document).on('click', '.fa-eye', function() {
+            var url = $(this).parents().eq(0).attr('id');
+            url = url.replace('_', '/');
+            crud.unbindEvents();
+        });
+
+        // 删除记录
         var id, $row;
-        // var $showId = $('#'+showId);
         $(document).on('click', '.fa-trash', function() {
             id = $(this).parents().eq(0).attr('id');
             $row = $(this).parents().eq(2);
             $('#modal-dialog').modal({backdrop: true});
         });
-        $(document).on('click', '.fa-edit', function(e) {
-            var url = $(this).parents().eq(0).attr('id');
-            url = url.replace('_', '/');
-            var $activeTabPane = $('#tab_' + page.getActiveTabId());
-            $activeTabPane.html(page.ajaxLoader);
-            page.getTabContent($activeTabPane, page.siteRoot() + table + '/' + url);
-        });
-        $(document).on('click', '.fa-eye', function() {
-            var url = $(this).parents().eq(0).attr('id');
-            url = url.replace('_', '/');
-        });
-
-        /*var $name = [];
-        $(document).on('click', '.fa-eye', function () {
-            var $showdl = $(".dl-horizontal");
-            var $showdt = $(".dl-horizontal dt");
-            var $showdd = $(".dl-horizontal dd");
-            id = $(this).parents().eq(0).attr('id');
-            if($name.length === 0 ){
-                $showdt.each(function(){
-                    $name.push($(this).text());
-                });
-            }
-            $showdt.remove();
-            $showdd.remove();
-            $.ajax({
-                type: 'GET',
-                url:'show/' + id,
-                success: function (result){
-                    if(result.statusCode === 200){
-                        var $value = [];
-                        var $rst = {};
-                        var $obj = eval(result.showData);
-                        for (var objKey in $obj) {
-                            $value.push($obj[objKey]);
-                        }
-                        for (var i = 0; i < $name.length; i++) {
-                            $rst[$name[i]] = $value[i];
-                        }
-                        for(var key in $rst){
-                            $showdl.append("<dt>"+key+"<dt>" +"<dd>"+$rst[key]+"<dd>");
-                        }
-                        $showId.modal({backdrop: true});
-                    }else{
-                        crud.inform('出现异常', result.message, crud.failure);
-                    }
-                }
-            });
-        });*/
-
         $('#confirm-delete').on('click', function () {
             crud.ajaxRequest(
-                'DELETE', 'delete/' + id,
+                'DELETE', page.siteRoot() + '/' + table + '/delete/' + id,
                 { _token: $('#csrf_token').attr('content') }, $row
             );
+            $(this).unbind('click');
         });
     },
-    create: function(formId) { this.init('index', formId, 'store', 'POST'); },
-    edit: function (formId) {
-        var path = window.location.pathname;
-        var paths = path.split('/');
-        var id = paths[paths.length - 1];
-        this.init('../index', formId, '../update/' + id, 'PUT');
+    create: function(formId, table) {
+        this.init(table + '/index', formId, table + '/store', 'POST');
+    },
+    edit: function (formId, table) {
+        var id = $('#id').val();
+        this.init(table + '/index', formId, table + '/update/' + id, 'PUT');
     }
 };

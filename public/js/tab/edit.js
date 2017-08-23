@@ -1,1 +1,1 @@
-$(crud.edit('formTab'));
+$(crud.edit('formTab', 'tabs'));

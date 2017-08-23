@@ -58,4 +58,15 @@ class MenuTab extends Model {
         
     }
     
+    public function storeTabRanks($menuId, array $ranks) {
+        
+        $result = true;
+        foreach ($ranks as $id => $rank) {
+            $result = $this::whereMenuId($menuId)->where('tab_id', $id)
+                ->update(['tab_order' => $rank + 1]);
+        }
+        return $result;
+        
+    }
+    
 }

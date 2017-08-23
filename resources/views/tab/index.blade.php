@@ -1,9 +1,6 @@
 <div class="box box-widget">
     <div class="box-header with-border">
-        <span class="">BreadCrumb/Goes/Here</span>
-        <div class="box-tools pull-right">
-            <button type="button" class="btn btn-box-tool"><i class="fa fa-plus"></i> 新增</button>
-        </div>
+        @include('partials.list_header', ['addBtn' => true])
     </div>
     <div class="box-body">
         <table id="data-table" class="table table-striped table-bordered table-hover table-condensed">
