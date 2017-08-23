@@ -25,28 +25,12 @@ $(function () {
     });
     // 上传成功
     $uploadFile.on("filebatchuploadsuccess", function (event, data, previewId, index) {
-        // 填充数据
+        // 填充数据1
         var response = data.response.data;
         $.each(response, function (index, obj) {
-            if (obj.type === 0) {
-                // excel
-                $pre.append('<div class="img-item"><img src="../img/excel_128px.png" id="' + obj.id + '" alt="excel文件">' +
-                    '<div class="del-mask"><span class="file-name">' + obj.filename + '</span><i class="delete glyphicon glyphicon-trash"></i></div></div>');
-            } else if (obj.type === 1) {
-                // pdf
-                $pre.append('<div class="img-item"><img src="../img/pdf_128px.png" id="' + obj.id + '" alt="pdf文件">' +
-                    '<div class="del-mask"><span class="file-name">' + obj.filename + '</span><i class="delete glyphicon glyphicon-trash"></i></div></div>');
-            } else if (obj.type === 2) {
-                // txt
-                $pre.append('<div class="img-item"><img src="../img/txt_128px.png" id="' + obj.id + '" alt="txt文件">' +
-                    '<div class="del-mask"><span class="file-name">' + obj.filename + '</span><i class="delete glyphicon glyphicon-trash"></i></div></div>');
-            } else if (obj.type === 3) {
-                // word
-                $pre.append('<div class="img-item"><img src="../img/word_128px.png" id="' + obj.id + '" alt="word文件">' +
-                    '<div class="del-mask"><span class="file-name">' + obj.filename + '</span><i class="delete glyphicon glyphicon-trash"></i></div></div>');
-            } else if (obj.type === 4) {
-                // zip
-                $pre.append('<div class="img-item"><img src="../img/zip_128px.png" id="' + obj.id + '" alt="zip文件">' +
+            if ($.inArray(obj.type, ['jpg', 'gif', 'png']) === -1) {
+                // 非img
+                $pre.append('<div class="img-item"><img src="../img/'+obj.type+'_128px.png" id="' + obj.id + '" alt="'+obj.type+'文件">' +
                     '<div class="del-mask"><span class="file-name">' + obj.filename + '</span><i class="delete glyphicon glyphicon-trash"></i></div></div>');
             } else {
                 //img

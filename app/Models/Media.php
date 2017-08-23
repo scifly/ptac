@@ -44,4 +44,12 @@ class Media extends Model {
         return $this->hasOne('App\Models\WapSiteModule');
         
     }
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function wasmarticle() {
+
+        return $this->hasOne('App\Models\WsmArticle', 'thumbnail_media_id', 'id');
+
+    }
 }

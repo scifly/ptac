@@ -3,93 +3,33 @@
     <!--轮播图-->
     <div class="swiper-container">
         <div class="swiper-wrapper">
-            <div class="swiper-slide">
-                <img src="../img/banner01.jpg" alt="轮播">
-            </div>
-            <div class="swiper-slide">
-                <img src="../img/banner02.jpg" alt="轮播">
-            </div>
-            <div class="swiper-slide">
-                <img src="../img/banner03.jpg" alt="轮播">
-            </div>
+            @if(isset($medias) && !empty($medias))
+                @foreach($medias as $k => $v)
+                    <div class="swiper-slide">
+                        <img src="../../{{$v->path}}" alt="轮播">
+                    </div>
+                @endforeach
+            @endif
         </div>
         <!-- If we need pagination -->
         <div class="swiper-pagination"></div>
     </div>
     <!--九宫格-->
     <div class="weui-grids">
-        <a href="" class="weui-grid js_grid">
-            <div class="weui-grid__icon">
-                <img src="../img/icon_nav_button.png" alt="Button">
-            </div>
-            <p class="weui-grid__label">
-                Button
-            </p>
-        </a>
-        <a href="" class="weui-grid js_grid">
-            <div class="weui-grid__icon">
-                <img src="../img/icon_nav_button.png" alt="Button">
-            </div>
-            <p class="weui-grid__label">
-                List
-            </p>
-        </a>
-        <a href="" class="weui-grid js_grid">
-            <div class="weui-grid__icon">
-                <img src="../img/icon_nav_button.png" alt="Button">
-            </div>
-            <p class="weui-grid__label">
-                Form
-            </p>
-        </a>
-        <a href="" class="weui-grid js_grid">
-            <div class="weui-grid__icon">
-                <img src="../img/icon_nav_button.png" alt="Button">
-            </div>
-            <p class="weui-grid__label">
-                List
-            </p>
-        </a>
-        <a href="" class="weui-grid js_grid">
-            <div class="weui-grid__icon">
-                <img src="../img/icon_nav_button.png" alt="Button">
-            </div>
-            <p class="weui-grid__label">
-                List
-            </p>
-        </a>
-        <a href="" class="weui-grid js_grid">
-            <div class="weui-grid__icon">
-                <img src="../img/icon_nav_button.png" alt="Button">
-            </div>
-            <p class="weui-grid__label">
-                List
-            </p>
-        </a>
-        <a href="" class="weui-grid js_grid">
-            <div class="weui-grid__icon">
-                <img src="../img/icon_nav_button.png" alt="Button">
-            </div>
-            <p class="weui-grid__label">
-                List
-            </p>
-        </a>
-        <a href="" class="weui-grid js_grid">
-            <div class="weui-grid__icon">
-                <img src="../img/icon_nav_button.png" alt="Button">
-            </div>
-            <p class="weui-grid__label">
-                List
-            </p>
-        </a>
-        <a href="" class="weui-grid js_grid">
-            <div class="weui-grid__icon">
-                <img src="../img/icon_nav_button.png" alt="Button">
-            </div>
-            <p class="weui-grid__label">
-                List
-            </p>
-        </a>
+        @if(isset($wapsite->wapSiteModules) && !empty($wapsite->wapSiteModules))
+            @foreach($wapsite->wapSiteModules as $v)
+
+                <a href="../wap_site_modules/webindex/{{$v->id}}" class="weui-grid js_grid">
+                    <div class="weui-grid__icon">
+                        <img src="../../{{$v->media->path}}" alt="Button">
+                    </div>
+                    <p class="weui-grid__label">
+                        {{$v->name}}
+                    </p>
+                </a>
+            @endforeach
+        @endif
+
     </div>
     <!-- footer -->
     <div class="weui-footer weui-footer_fixed-bottom">
