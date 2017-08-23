@@ -87,11 +87,6 @@ HTML;
         'view',
         'route',
         'js',
-        'datatable',
-        'parsley',
-        'select2',
-        'chart',
-        'map',
         'action_type_ids',
         'enabled'
     ];
@@ -114,11 +109,11 @@ HTML;
     /**
      * 返回当前action包含的卡片
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function tabs() {
         
-        return $this->belongsToMany('App\Models\Tab', 'tabs_actions');
+        return $this->hasMany('App\Models\Tab');
         
     }
     
@@ -304,7 +299,6 @@ HTML;
             # $this->where('controller', $ctlr)->delete();
         }
         foreach ($controllers as $controller) {
-            // dd($controller);
             $obj = new ReflectionClass(ucfirst($controller));
             $className = $obj->getName();
             $methods = $obj->getMethods();
@@ -367,11 +361,6 @@ HTML;
                         'route' => $action['route'],
                         'action_type_ids' => $action['action_type_ids'],
                         'js' => $action['js'],
-                        'datatable' => NULL,
-                        'parsley' => NULL,
-                        'select2' => NULL,
-                        'chart' => NULL,
-                        'map' => NULL,
                         'enabled' => 1
                     ];
                     $this->create($data);
@@ -583,7 +572,7 @@ HTML;
         if (!in_array($controller, $this->excludedControllers)) {
             $route = $this->getTableName($controller) . '/' . $action;
             foreach ($this->routes as $r) {
-                if (strpos($r->uri, $route) === 0) {
+                if (stripos($r->uri, $route) === 0) {
                     return $r->uri;
                 }
             }
@@ -606,7 +595,7 @@ HTML;
             $route = $this->getTableName($controller) . '/' . $action;
             $actionTypeIds = [];
             foreach ($this->routes as $r) {
-                if (strpos($r->uri, $route) === 0) {
+                if (stripos($r->uri, $route) === 0) {
                     foreach ($r->methods as $method) {
                         $actionTypeIds[] = $this->actionTypes[$method];
                     }

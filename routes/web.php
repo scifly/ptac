@@ -48,6 +48,8 @@ Route::post('menus/sort', 'MenuController@sort');
 Route::put('menus/update/{id}', 'MenuController@update');
 Route::post('menus/move/{id}/{parentId}', 'MenuController@move');
 Route::delete('menus/delete/{id}', 'MenuController@destroy');
+Route::get('menus/menutabs/{id}', 'MenuController@menuTabs');
+Route::post('menus/ranktabs/{id}', 'MenuController@rankTabs');
 
 # 系统设置
 // 学校设置
