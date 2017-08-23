@@ -31,7 +31,10 @@
     @isset($ws)
         {{--<link rel="stylesheet" href="{{ URL::asset('css/wapSite.css') }}">--}}
     @endisset
-
+    @isset($fullcalendar)
+    <link rel="stylesheet" href="{{ URL::asset('js/plugins/fullcalendar/css/fullcalendar.min.css') }}">
+    <link rel="stylesheet" href="{{ URL::asset('js/plugins/fullcalendar/css/jquery-ui.min.css') }}">
+    @endisset
     {{--审核详情--}}
     <link rel="stylesheet" href="{{ URL::asset('css/procedure_info.css') }}">
     <!-- fileinput-->
@@ -435,6 +438,12 @@
 @endisset
 @isset($chart)
     <script src="{{ URL::asset('js/Chart.min.js') }}"></script>
+@endisset
+@isset($fullcalendar)
+<script src="{{ URL::asset('js/plugins/fullcalendar/js/jquery-ui.min.js') }}"></script>
+<script src="{{ URL::asset('js/plugins/fullcalendar/js/jquery-ui-timepicker-addon.js') }}"></script>
+<script src="{{ URL::asset('js/plugins/fullcalendar/js/moment.min.js') }}"></script>
+<script src="{{ URL::asset('js/plugins/fullcalendar/js/fullcalendar.min.js') }}"></script>
 @endisset
 <script src="{{ URL::asset('js/admin.crud.js') }}"></script>
 <script src="{{ URL::asset('js/demo.js') }}"></script>

@@ -301,5 +301,25 @@ $factory->define(App\Models\CustodianStudent::class, function (Faker\Generator $
     ];
 });
 
+$factory->define(App\Models\Event::class, function (Faker\Generator $faker) {
+
+    return [
+        'name' => $faker->name,
+        'remark' => $faker->sentence(6),
+        'location' => $faker->address,
+        'contact' => $faker->name,
+        'url' => $faker->url,
+        'start' => $faker->dateTimeThisMonth(),
+        'end' => $faker->dateTimeThisMonth(),
+        'ispublic' => '0',
+        'iscourse' => '0',
+        'educator_id' => '1',
+        'subject_id' => '1',
+        'alertable' => '0',
+        'alert_mins' => '5',
+        'user_id' => '1',
+        'enabled' => '0',
+    ];
+});
 
 

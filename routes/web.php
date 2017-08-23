@@ -61,6 +61,24 @@ Route::get('schools/edit/{id}', 'SchoolController@edit');
 Route::put('schools/update/{id}', 'SchoolController@update');
 Route::delete('schools/delete/{id}', 'SchoolController@destroy');
 
+//学期设置
+Route::get('semesters/index', 'SemesterController@index');
+Route::get('semesters/create', 'SemesterController@create');
+Route::post('semesters/store', 'SemesterController@store');
+Route::get('semesters/show/{id}', 'SemesterController@show');
+Route::get('semesters/edit/{id}', 'SemesterController@edit');
+Route::put('semesters/update/{id}', 'SemesterController@update');
+Route::delete('semesters/delete/{id}', 'SemesterController@destroy');
+
+//教职员工组别设置
+Route::get('teams/index', 'TeamController@index');
+Route::get('teams/create', 'TeamController@create');
+Route::post('teams/store', 'TeamController@store');
+Route::get('teams/show/{id}', 'TeamController@show');
+Route::get('teams/edit/{id}', 'TeamController@edit');
+Route::put('teams/update/{id}', 'TeamController@update');
+Route::delete('teams/delete/{id}', 'TeamController@destroy');
+
 // 学校类型设置
 Route::get('school_types/index', 'SchoolTypeController@index');
 Route::get('school_types/create', 'SchoolTypeController@create');
@@ -298,6 +316,18 @@ Route::get('personal_infos/edit/{id}', 'PersonalInfoController@edit');
 Route::put('personal_infos/update/{id}', 'PersonalInfoController@update');
 Route::post('personal_infos/upload_ava/{id}', 'PersonalInfoController@uploadAvatar');
 
+//日历事件设置
+Route::get('events/index', 'EventController@index');
+Route::get('events/create', 'EventController@create');
+Route::post('events/store', 'EventController@store');
+Route::any('events/show/{id}', 'EventController@show');
+Route::get('events/edit/{id}', 'EventController@edit');
+Route::put('events/update/{id}', 'EventController@update');
+Route::delete('events/delete/{id}', 'EventController@destroy');
+Route::get('events/calendar_events/{id}', 'EventController@calendarEvents');
+Route::post('events/drag_events', 'EventController@dragEvents');
+Route::post('events/update_time', 'EventController@updateTime');
+
 //考试类型设置
 Route::get('exam_types/index', 'ExamTypeController@index');
 Route::get('exam_types/create', 'ExamTypeController@create');
@@ -388,3 +418,5 @@ Route::get('message_types/show/{id}', 'MessageTypeController@show');
 Route::get('message_types/edit/{id}', 'MessageTypeController@edit');
 Route::put('message_types/update/{id}', 'MessageTypeController@update');
 Route::delete('message_types/delete/{id}', 'MessageTypeController@destroy');
+
+Route::get('test', 'TestController@test');
