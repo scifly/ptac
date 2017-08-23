@@ -4,16 +4,18 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\MenuRequest;
 use App\Models\Menu;
+use App\Models\MenuTab;
+use App\Models\Tab;
 use Illuminate\Support\Facades\Request;
 
 class MenuController extends Controller {
     
-    protected $menu;
+    protected $menu, $menuTab;
     
-    function __construct(Menu $menu) {
+    function __construct(Menu $menu, MenuTab $menuTab) {
         
         $this->menu = $menu;
-        
+        $this->menuTab = $menuTab;
     }
     
     public function index() {
@@ -141,6 +143,42 @@ class MenuController extends Controller {
             }
         }
     
+    }
+    
+    /**
+     * 显示指定菜单包含的卡片
+     *
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function menuTabs($id) {
+        
+        $menu = $this->menu->find($id);
+        if (!$menu) { return $this->notFound(); }
+        $tabRanks = MenuTab::whereMenuId($id)->get()->sortBy('tab_order')->toArray();
+        $tabs = [];
+        foreach ($tabRanks as $rank) {
+            $tab = Tab::whereId($rank['tab_id'])->first();
+            $tabs[] = $tab;
+        }
+        // $tabs = $menu->tabs;
+        return $this->output(__METHOD__, ['tabs' => $tabs]);
+    
+    }
+    
+    /**
+     * 保存指定菜单的卡片排列顺序
+     *
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function rankTabs($id) {
+        
+        $menu = $this->menu->find($id);
+        if (!$menu) { return $this->notFound(); }
+        $ranks = Request::get('data');
+        return $this->menuTab->storeTabRanks($id, $ranks) ? $this->succeed() : $this->fail();
+        
     }
     
 }

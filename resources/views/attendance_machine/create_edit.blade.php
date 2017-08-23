@@ -53,5 +53,5 @@
 
         </div>
     </div>
-    @include('partials.form.buttons')
+    @include('partials.form_buttons')
 </div>

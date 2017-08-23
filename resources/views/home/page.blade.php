@@ -415,11 +415,14 @@
 </div>
 <!-- jQuery 3 / Bootstrap 3.3.7 / AdminLTE App / Gritter / Admin.CRUD / Demo -->
 <script src="{{ URL::asset('js/jquery.min.js') }}"></script>
+<script src="{{ URL::asset('js/jquery-ui.min.js') }}"></script>
 <script src="{{ URL::asset('js/bootstrap.min.js') }}"></script>
 <script src="{{ URL::asset('js/adminlte.min.js') }}"></script>
 <script src="{{ URL::asset('js/plugins/gritter/js/jquery.gritter.js') }}"></script>
 <script src="{{ URL::asset('js/plugins/icheck/icheck.min.js') }}"></script>
 <script src="{{ URL::asset('js/plugins/jstree/dist/jstree.min.js') }}"></script>
+<script src="{{ URL::asset('js/plugins/todolist/todolist.js') }}"></script>
+
 <!-- Parsley / Select2 / Switchery -->
 <script src="{{ URL::asset('js/plugins/parsley/parsley.min.js') }}"></script>
 <script src="{{ URL::asset('js/plugins/parsley/i18n/zh_cn.js') }}"></script>
@@ -436,9 +439,9 @@
 <script src="{{ URL::asset('js/plugins/fileinput/themes/explorer/theme.js') }}"></script>
 <!-- AdminLTE for demo purposes -->
 <script src="{{ URL::asset('js/demo.js') }}"></script>
-<script src="{{ URL::asset('js/UEditor/ueditor.config.js') }}"></script>
+{{--<script src="{{ URL::asset('js/UEditor/ueditor.config.js') }}"></script>--}}
 <!-- 编辑器源码文件 -->
-<script src="{{ URL::asset('js/UEditor/ueditor.all.js') }}"></script>
+{{--<script src="{{ URL::asset('js/UEditor/ueditor.all.js') }}"></script>--}}
 <!-- 实例化编辑器 -->
 {{--<script type="text/javascript">
     var editor = UE.getEditor('container');

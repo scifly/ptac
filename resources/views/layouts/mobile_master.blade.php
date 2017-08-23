@@ -24,6 +24,6 @@
 <script src="{{ URL::asset('js/jquery-weui.min.js') }}"></script>
 <!-- swiper -->
 <script src="{{ URL::asset('js/plugins/swiper/js/swiper.jquery.min.js') }}"></script>
-<script src="{{ URL::asset('js/mobile.crud.js') }}"></script>
+<script src="{{ URL::asset('js/mobile.js') }}"></script>
 </body>
 </html>

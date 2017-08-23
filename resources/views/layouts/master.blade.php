@@ -29,7 +29,7 @@
         <link rel="stylesheet" href="{{ URL::asset('js/plugins/datatables/datatables.min.css') }}">
     @endisset
     @isset($ws)
-        <link rel="stylesheet" href="{{ URL::asset('css/wapSite.css') }}">
+        {{--<link rel="stylesheet" href="{{ URL::asset('css/wapSite.css') }}">--}}
     @endisset
 
     {{--审核详情--}}
