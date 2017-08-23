@@ -26,7 +26,7 @@ class TabController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function index() {
-        
+
         if (Request::get('draw')) {
             return response()->json($this->tab->datatable());
         }
@@ -36,12 +36,12 @@ class TabController extends Controller {
     
     /**
      * Show the form for creating a new resource.
-     *
      * @return \Illuminate\Http\Response
+     * @internal param $tabId
      */
     public function create() {
         
-        return parent::output(__METHOD__);
+        return parent::output(__METHOD__, ['menus' => $this->menu->leaves(1)]);
         
     }
     

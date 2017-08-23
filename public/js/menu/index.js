@@ -1,8 +1,6 @@
-var siteRoot = '/urlshortener/public/';
 var formUrl = '', currentJsTree, requestType;
 var csrfToken = $('#csrf_token').attr('content');
-var ajaxLoader = "<img alt='' src='" + siteRoot + "/img/throbber.gif' style='vertical-align: middle;'/>&nbsp;" +
-    "<span>表单加载中 ...</span>";
+
 var nodeid; // id of the node to be deleted
 // var $boxBody = $('.box-body'); // the div that holds the form
 var $dialog = $('#modal-dialog');
@@ -11,15 +9,26 @@ var $formContainer = $('#form_container');
 var $confirmDelete = $('#confirm-delete');
 
 // URLs used on the page
-var urlIndex = siteRoot + 'menus/index';
-var urlSort = siteRoot + 'menus/sort';
-var urlCreate = siteRoot + 'menus/create';
-var urlStore = siteRoot + 'menus/store';
-var urlEdit = siteRoot + 'menus/edit/';
-var urlUpdate = siteRoot + 'menus/update/';
-var urlMove = siteRoot + 'menus/move/';
-var urlDelete = siteRoot + 'menus/delete/';
-
+var urlRoot = page.siteRoot();
+var urlIndex = urlRoot + 'menus/index';
+var urlSort = urlRoot + 'menus/sort';
+var urlCreate = urlRoot + 'menus/create';
+var urlStore = urlRoot + 'menus/store';
+var urlEdit = urlRoot + 'menus/edit/';
+var urlUpdate = urlRoot + 'menus/update/';
+var urlMove = urlRoot + 'menus/move/';
+var urlDelete = urlRoot + 'menus/delete/';
+var urlRankTabs = urlRoot + 'menus/ranktabs/';
+var urlMenuTabs = urlRoot + 'menus/menutabs/';
+var saveRank =
+    '<div class="box-tools pull-right">' +
+    '    <button id="save-rank" type="button" class="btn btn-box-tool">' +
+    '        <i class="fa fa-save text-blue"> 保存排序</i>' +
+    '    </button>&nbsp;' +
+    '    <button id="record-list" type="button" class="btn btn-box-tool">' +
+    '        <i class="fa fa-mail-reply text-blue"> 返回列表</i>' +
+    '   </button>' +
+    '</div>';
 // helper functions for menu management
 var menu = {
     sort: function() {
@@ -50,45 +59,78 @@ var menu = {
         var $form, $save, $cancel;
 
         menu.showForm();
-        $formContainer.html(ajaxLoader);
+        $formContainer.html(page.ajaxLoader());
         return $.ajax({
             type: 'GET',
             dataType: 'json',
             url: url,
+            data: { tabId: page.getActiveTabId() },
             success: function(result) {
+                var $breadcrumb = $('#breadcrumb');
                 $formContainer.html(result.html);
-                $save = $('#save');
-                $cancel = $('#cancel');
-                if (action === 'create') {
-                    $('#parent_id').val(id);
-                }
-                $('select').select2();
-                Switcher.init();
-                $('input[type="checkbox"].minimal, input[type="radio"].minimal').iCheck({
-                    checkboxClass: 'icheckbox_minimal-blue',
-                    radioClass: 'iradio_minimal-blue'
-                });
-                $form = $('#formMenu');
-                $form.parsley().on('form:validated', function() {
-                    if ($('.parsley-error').length === 0) {
+                $breadcrumb.html(result['breadcrumb']);
+                if (action === 'rank') {
+                    var $tabList = $('.todo-list');
+                    $tabList.sortable({
+                        placeholder         : 'sort-highlight',
+                        handle              : '.handle',
+                        forcePlaceholderSize: true,
+                        zIndex              : 999999
+                    }).todoList();
+                    $breadcrumb.after(saveRank);
+                    $(document).on('click', '#save-rank', function() {
+                        var $tabs = $('.text');
+                        var ranks = {};
+                        for (var i = 0; i < $tabs.length; i++) {
+                            ranks[$tabs[i].id] = i;
+                        }
                         $.ajax({
-                            type: requestType,
+                            type: 'POST',
                             dataType: 'json',
                             url: formUrl,
-                            data: $form.serialize(),
+                            data: { data: ranks, _token: csrfToken },
                             success: function(result) {
-                                $.gritter.add({
-                                    title: '操作结果',
-                                    text: result.message
-                                });
-                                menu.showTree();
-                                setTimeout(function() {menu.sort()}, 5000);
+                                page.inform(
+                                    '操作结果', result.message,
+                                    result.statusCode === 200 ? page.success : page.failure
+                                );
                             }
                         });
+                    });
+                } else {
+                    $save = $('#save');
+                    $cancel = $('#cancel');
+                    if (action === 'create') {
+                        $('#parent_id').val(id);
                     }
-                }).on('form:submit', function() { return false; });
-                $save.on('click', function() { $form.trigger('form:validate'); });
-                $cancel.on('click', function() { menu.showTree(); });
+                    $('select').select2();
+                    Switcher.init();
+                    $('input[type="checkbox"].minimal, input[type="radio"].minimal').iCheck({
+                        checkboxClass: 'icheckbox_minimal-blue',
+                        radioClass: 'iradio_minimal-blue'
+                    });
+                    $form = $('#formMenu');
+                    $form.parsley().on('form:validated', function() {
+                        if ($('.parsley-error').length === 0) {
+                            $.ajax({
+                                type: requestType,
+                                dataType: 'json',
+                                url: formUrl,
+                                data: $form.serialize(),
+                                success: function(result) {
+                                    page.inform(
+                                        '操作结果', result.message,
+                                        result.statusCode === 200 ? page.success : page.failure
+                                    );
+                                    menu.showTree();
+                                    setTimeout(function() {menu.sort()}, 5000);
+                                }
+                            });
+                        }
+                    }).on('form:submit', function() { return false; });
+                    $save.on('click', function() { $form.trigger('form:validate'); });
+                    $cancel.on('click', function() { menu.showTree(); });
+                }
             }
         });
     },
@@ -140,10 +182,10 @@ $(function() {
             url: urlDelete + nodeid,
             data: { _token: csrfToken },
             success: function(result) {
-                $.gritter.add({
-                    title: "删除结果",
-                    text: result.message
-                });
+                page.inform(
+                    '操作结果', result.message,
+                    result.statusCode === 200 ? page.success : page.failure
+                );
                 $.when(menu.sort()).done($menuTree.jstree().refresh());
             }
         });
@@ -163,7 +205,7 @@ function customMenu() {
         },
         renameItem: {
             label: '修改',
-            action: function(node){
+            action: function(node) {
                 var selector = menu.getSelector(node);
 
                 formUrl = urlUpdate + selector.id;
@@ -173,9 +215,19 @@ function customMenu() {
         },
         deleteItem: {
             label: '删除',
-            action: function(node){
+            action: function(node) {
                 $dialog.modal({ backdrop: true });
                 nodeid = menu.getSelector(node).id;
+            }
+        },
+        rankTabs: {
+            label: '卡片排序',
+            action: function(node) {
+                var selector = menu.getSelector(node);
+
+                formUrl = urlRankTabs + selector.id;
+                requestType = 'POST';
+                menu.getForm(selector.id, urlMenuTabs + selector.id, 'rank');
             }
         }
     };

@@ -24,7 +24,6 @@ class ActionController extends Controller {
      */
     public function index() {
 
-        // dd($this->action->datatable());
         if (Request::get('draw')) {
             return response()->json($this->action->datatable());
         }
