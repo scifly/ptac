@@ -1,1 +1,1 @@
-$(crud.create('formSemester'));
+$(crud.create('formSemester', 'semesters'));
