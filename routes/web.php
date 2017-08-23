@@ -304,8 +304,9 @@ Route::any('events/show/{id}', 'EventController@show');
 Route::get('events/edit/{id}', 'EventController@edit');
 Route::put('events/update/{id}', 'EventController@update');
 Route::delete('events/delete/{id}', 'EventController@destroy');
-Route::get('events/select_events/{id}', 'EventController@selectEvents');
+Route::get('events/calendar_events/{id}', 'EventController@calendarEvents');
 Route::post('events/drag_events', 'EventController@dragEvents');
+Route::post('events/update_time', 'EventController@updateTime');
 
 //考试类型设置
 Route::get('exam_types/index', 'ExamTypeController@index');
