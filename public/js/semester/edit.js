@@ -1,1 +1,1 @@
-$(crud.edit('formSemester'));
+$(crud.edit('formSemester', 'semesters'));

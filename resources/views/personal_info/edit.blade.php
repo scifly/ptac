@@ -1,6 +1,6 @@
 @extends('layouts.master')
 @section('header')
-    <h2>个人信息</h2>
+    <h2>个人账户管理</h2>
 @endsection
 @section('content')
     {!! Form::model($personalInfo, ['method' => 'put', 'id' => 'formPersonalInfo', 'data-parsley-validate' => 'true']) !!}
