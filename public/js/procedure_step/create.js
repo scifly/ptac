@@ -1,4 +1,4 @@
-$(crud.create('formProcedureStep'));
+$(crud.create('formProcedureStep', 'procedure_steps'));
 
 /**
  *初始化多选框内容

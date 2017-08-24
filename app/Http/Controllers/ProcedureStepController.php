@@ -24,13 +24,7 @@ class ProcedureStepController extends Controller {
         if (Request::get('draw')) {
             return response()->json($this->procedureStep->datatable());
         }
-
-        return view('procedure_step.index', [
-            'js' => 'js/procedure_step/index.js',
-            'dialog' => true,
-            'datatable' => true,
-            'show' => true
-        ]);
+        return parent::output(__METHOD__);
     }
 
     /**
@@ -39,7 +33,7 @@ class ProcedureStepController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function create() {
-        return view('procedure_step.create', ['js' => 'js/procedure_step/create.js', 'form' => true]);
+        return $this->output(__METHOD__);
     }
 
     /**
@@ -49,7 +43,19 @@ class ProcedureStepController extends Controller {
      * @internal param \Illuminate\Http\Request|Request $request
      */
     public function store(ProcedureStepRequest $request) {
-        $procedureStep = $request->all();
+        $input = $request->all();
+        $input['approver_user_ids'] = $this->procedureStep->join_ids($request->approver_user_ids);
+        $input['related_user_ids'] = $this->procedureStep->join_ids($request->related_user_ids);
+        $record = $this->procedureStep->where('procedure_id', $input['procedure_id'])
+            ->where('name', $input['name'])
+            ->where('approver_user_ids', $input['approver_user_ids'])
+            ->first();
+        if (!empty($record)) {
+            return response()->json(['statusCode' => self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR, 'message' => '已经有该记录！']);
+        }
+        return $this->procedureStep->create($input) ? $this->succeed() : $this->fail();
+
+        /*$procedureStep = $request->all();
         $procedureStep['approver_user_ids'] = $this->procedureStep->join_ids($request->approver_user_ids);
         $procedureStep['related_user_ids'] = $this->procedureStep->join_ids($request->related_user_ids);
         $record = $this->procedureStep->where('procedure_id', $procedureStep['procedure_id'])
@@ -66,7 +72,7 @@ class ProcedureStepController extends Controller {
             $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
             $this->result['message'] = '添加失败';
         }
-        return response()->json($this->result);
+        return response()->json($this->result);*/
     }
 
     /**
@@ -76,7 +82,13 @@ class ProcedureStepController extends Controller {
      */
     public function show($id) {
 
-        //根据id 查找单条记录
+        $procedureStep = $this->procedureStep->find($id);
+        if (!$procedureStep) {
+            return $this->notFound();
+        }
+        return $this->output(__METHOD__, ['procedureStep' => $procedureStep]);
+
+       /* //根据id 查找单条记录
         $ps = $this->procedureStep->whereId($id)
             ->first([
                 'procedure_id',
@@ -102,7 +114,7 @@ class ProcedureStepController extends Controller {
             $this->result['message'] = '';
         }
 
-        return response()->json($this->result);
+        return response()->json($this->result);*/
     }
 
     /**
@@ -112,12 +124,11 @@ class ProcedureStepController extends Controller {
      * @internal param AttendanceMachine $attendanceMachine
      */
     public function edit($id) {
-        //记录返回给view
-        return view('procedure_step.edit', [
-            'js' => 'js/procedure_step/edit.js',
-            'procedureStep' => $this->procedureStep->findOrFail($id),
-            'form' => true
-        ]);
+        $procedureStep = $this->procedureStep->find($id);
+        if (!$procedureStep) {
+            return $this->notFound();
+        }
+        return $this->output(__METHOD__, ['procedureStep' => $procedureStep]);
     }
 
     /**
@@ -129,7 +140,23 @@ class ProcedureStepController extends Controller {
      * @internal param AttendanceMachine $attendanceMachine
      */
     public function update(ProcedureStepRequest $request, $id) {
-        $procedureStep = $request->all();
+        $input = $request->all();
+        $input['approver_user_ids'] = $this->procedureStep->join_ids($request->approver_user_ids);
+        $input['related_user_ids'] = $this->procedureStep->join_ids($request->related_user_ids);
+        $record = $this->procedureStep->where('procedure_id', $input['procedure_id'])
+            ->where('name', $input['name'])
+            ->where('approver_user_ids', $input['approver_user_ids'])
+            ->first();
+        if (!empty($record) && ($record->id != $id)) {
+            return response()->json(['statusCode' => self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR, 'message' => '已经有该记录！']);
+        }
+        $procedureStep = $this->procedureStep->find($id);
+        if (!$procedureStep) {
+            return $this->notFound();
+        }
+        return $procedureStep->update($input) ? $this->succeed() : $this->fail();
+
+     /*   $procedureStep = $request->all();
         $procedureStep['approver_user_ids'] = $this->procedureStep->join_ids($request->approver_user_ids);
         $procedureStep['related_user_ids'] = $this->procedureStep->join_ids($request->related_user_ids);
         $record = $this->procedureStep->where('procedure_id', $procedureStep['procedure_id'])
@@ -147,7 +174,7 @@ class ProcedureStepController extends Controller {
             $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
             $this->result['message'] = '更新失败';
         }
-        return response()->json($this->result);
+        return response()->json($this->result);*/
     }
 
     /**
@@ -159,17 +186,11 @@ class ProcedureStepController extends Controller {
      * @internal param AttendanceMachine $attendanceMachine
      */
     public function destroy($id) {
-        //根据id查找需要删除的数据
-        //进行删除操作
-        //返回json 格式的操作结果
-        if ($this->procedureStep->findOrFail($id)->delete()) {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-            $this->result['message'] = self::MSG_DEL_OK;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '删除失败';
+        $procedureStep = $this->procedureStep->find($id);
+        if (!$procedureStep) {
+            return $this->notFound();
         }
-        return response()->json($this->result);
+        return $procedureStep->delete() ? $this->succeed() : $this->fail();
     }
 
     /**

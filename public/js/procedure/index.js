@@ -1,1 +1,1 @@
-$(crud.index('modal-show-procedure'));
+$(crud.index('procedures'));

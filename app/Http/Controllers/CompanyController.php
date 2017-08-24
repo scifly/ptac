@@ -16,20 +16,16 @@ class CompanyController extends Controller {
 
     /**
      * 显示运营者公司列表
+     *
      * @return \Illuminate\Http\Response
      * @internal param null $arg
      * @internal param Request $request
      */
     public function index() {
-
         if (Request::get('draw')) {
             return response()->json($this->company->datatable());
         }
-        return view('company.index', [
-            'js' => 'js/company/index.js',
-            'dialog' => true,
-            'datatable' => true
-        ]);
+        return parent::output(__METHOD__);
     }
 
     /**
@@ -38,11 +34,12 @@ class CompanyController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function create() {
-        return view('company.create', ['js' => 'js/company/create.js', 'form' => true]);
+        return $this->output(__METHOD__);
     }
 
     /**
      * 保存新创建的运营者公司记录
+     *
      * @param CompanyRequest $request
      * @return \Illuminate\Http\Response
      * @internal param \Illuminate\Http\Request|Request $request
@@ -53,79 +50,61 @@ class CompanyController extends Controller {
             ->where('corpid', $data['corpid'])
             ->first();
         if (!empty($record)) {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '已经有该记录';
-        } else {
-            if ($this->company->create($data)) {
-                $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-                $this->result['message'] = self::MSG_CREATE_OK;
-            } else {
-                $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-                $this->result['message'] = '';
-            }
+            return response()->json(['statusCode' => self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR, 'message' => '已经有该记录！']);
         }
-        return response()->json($this->result);
+        return $this->company->create($request->all()) ? $this->succeed() : $this->fail();
     }
 
     /**
      * 显示运营者公司记录详情
+     *
      * @param $id
      * @return \Illuminate\Http\Response
      */
     public function show($id) {
-        //return view('company.show', ['company' => $this->company->findOrFail($id)]);
-        $showData = $this->company->whereId($id)->first(['name','remark','corpid','created_at','updated_at','enabled']);
-        if($showData->enabled = ($showData->enabled == 0 ? "已禁用" : "已启用"));
-        if ($showData) {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-            $this->result['showData'] = $showData;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '';
+        $company = $this->company->find($id);
+        if (!$company) {
+            return $this->notFound();
         }
-        return response()->json($this->result);
+        return $this->output(__METHOD__, ['company' => $company]);
     }
 
     /**
      * 显示编辑运营者公司记录的表单
+     *
      * @param $id
      * @return \Illuminate\Http\Response
      * @internal param Company $company
      */
     public function edit($id) {
-
-        return view('company.edit', [
-            'js' => 'js/company/edit.js',
-            'company' => $this->company->findOrFail($id),
-            'form' => true
-        ]);
-
+        $company = $this->company->find($id);
+        if (!$company) {
+            return $this->notFound();
+        }
+        return $this->output(__METHOD__, ['company' => $company]);
     }
 
     /**
      * 更新指定运营者公司记录
+     *
      * @param CompanyRequest $request
      * @param $id
      * @return \Illuminate\Http\Response
      */
     public function update(CompanyRequest $request, $id) {
-        $data = $request->all();
-        $record = $this->company->where('name', $data['name'])
-            ->where('corpid', $data['corpid'])
+
+        $input = $request->all();
+        $record = $this->company->where('name', $input['name'])
+            ->where('corpid', $input['corpid'])
             ->first();
         if (!empty($record) && ($record->id != $id)) {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '已有该记录';
-        } else {
-            if ($this->company->findOrFail($id)->update($data)) {
-                $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-                $this->result['message'] = self::MSG_EDIT_OK;
-            } else {
-                $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-                $this->result['message'] = '';
-            }
+            return response()->json(['statusCode' => self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR, 'message' => '已经有该记录！']);
         }
-        return response()->json($this->result);
+        $company = $this->company->find($id);
+        if (!$company) {
+            return $this->notFound();
+        }
+        return $company->update($request->all()) ? $this->succeed() : $this->fail();
     }
 
     /**
@@ -135,14 +114,11 @@ class CompanyController extends Controller {
      * @internal param Company $company
      */
     public function destroy($id) {
-        if ($this->company->findOrFail($id)->delete()) {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-            $this->result['message'] = self::MSG_DEL_OK;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '';
+        $company = $this->company->find($id);
+        if (!$company) {
+            return $this->notFound();
         }
-        return response()->json($this->result);
+        return $company->delete() ? $this->succeed() : $this->fail();
     }
 }
 

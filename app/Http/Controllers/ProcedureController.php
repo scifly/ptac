@@ -22,13 +22,7 @@ class ProcedureController extends Controller {
         if (Request::get('draw')) {
             return response()->json($this->procedure->datatable());
         }
-
-        return view('procedure.index', [
-            'js' => 'js/procedure/index.js',
-            'dialog' => true,
-            'datatable' => true,
-            'show' => true
-        ]);
+        return parent::output(__METHOD__);
     }
 
     /**
@@ -37,34 +31,23 @@ class ProcedureController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function create() {
-        return view('procedure.create', ['js' => 'js/procedure/create.js', 'form' => true]);
+        return $this->output(__METHOD__);
     }
 
     /**
-     * Store a newly created resource in storage.
      * @param ProcedureRequest $request
-     * @return \Illuminate\Http\Response
-     * @internal param \Illuminate\Http\Request|Request $request
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(ProcedureRequest $request) {
-        $procedure = $request->all();
-        $record = $this->procedure->where('procedure_type_id', $procedure['procedure_type_id'])
-            ->where('school_id', $procedure['school_id'])
-            ->where('name', $procedure['name'])
+        $input = $request->all();
+        $record = $this->procedure->where('procedure_type_id', $input['procedure_type_id'])
+            ->where('school_id', $input['school_id'])
+            ->where('name', $input['name'])
             ->first();
         if (!empty($record)) {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '已经有该记录';
-        } else {
-            if ($this->procedure->create($procedure)) {
-                $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-                $this->result['message'] = self::MSG_CREATE_OK;
-            } else {
-                $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-                $this->result['message'] = '添加失败';
-            }
+            return response()->json(['statusCode' => self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR, 'message' => '已经有该记录！']);
         }
-        return response()->json($this->result);
+        return $this->procedure->create($request->all()) ? $this->succeed() : $this->fail();
     }
 
     /**
@@ -74,91 +57,74 @@ class ProcedureController extends Controller {
      */
     public function show($id) {
 
-        //根据id 查找单条记录
-        $procedure = $this->procedure->whereId($id)
-            ->first(['name','school_id','procedure_type_id','remark','created_at','updated_at','enabled']);
-
-        $procedure->school_id = $procedure->school->name;
-        $procedure->procedure_type_id = $procedure->procedureType->name;
-        $procedure->enabled = $procedure->enabled==1 ? '已启用' : '已禁用' ;
-
-        if ($procedure) {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-            $this->result['showData'] = $procedure;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '';
+        $procedure = $this->procedure->find($id);
+        if (!$procedure) {
+            return $this->notFound();
         }
+        return $this->output(__METHOD__, ['procedure' => $procedure]);
+        //根据id 查找单条记录
+        /* $procedure = $this->procedure->whereId($id)
+             ->first(['name','school_id','procedure_type_id','remark','created_at','updated_at','enabled']);
 
-        return response()->json($this->result);
+         $procedure->school_id = $procedure->school->name;
+         $procedure->procedure_type_id = $procedure->procedureType->name;
+         $procedure->enabled = $procedure->enabled==1 ? '已启用' : '已禁用' ;
+
+         if ($procedure) {
+             $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
+             $this->result['showData'] = $procedure;
+         } else {
+             $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
+             $this->result['message'] = '';
+         }
+
+         return response()->json($this->result);*/
     }
 
     /**
-     * Show the form for editing the specified resource.
      * @param $id
-     * @return \Illuminate\Http\Response
-     * @internal param AttendanceMachine $attendanceMachine
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function edit($id) {
-        //记录返回给view
-        return view('procedure.edit', [
-            'js' => 'js/procedure/edit.js',
-            'procedure' => $this->procedure->findOrFail($id),
-            'form' => true
-        ]);
+        $procedure = $this->procedure->find($id);
+        if (!$procedure) {
+            return $this->notFound();
+        }
+        return $this->output(__METHOD__, ['procedure' => $procedure]);
     }
 
     /**
-     * Update the specified resource in storage.
      * @param ProcedureRequest $request
      * @param $id
-     * @return \Illuminate\Http\Response
-     * @internal param \Illuminate\Http\Request|Request $request
-     * @internal param AttendanceMachine $attendanceMachine
+     * @return \Illuminate\Http\JsonResponse
      */
     public function update(ProcedureRequest $request, $id) {
-
-        $procedure = $request->all();
-
-        $record = $this->procedure->where('procedure_type_id', $procedure['procedure_type_id'])
-            ->where('school_id', $procedure['school_id'])
-            ->where('name', $procedure['name'])
+        $input = $request->all();
+        $record = $this->procedure->where('procedure_type_id', $input['procedure_type_id'])
+            ->where('school_id', $input['school_id'])
+            ->where('name', $input['name'])
             ->first();
         if (!empty($record) && ($record->id != $id)) {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '已有该记录';
-        } else {
-            if ($this->procedure->findOrFail($id)->update($procedure)) {
-                $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-                $this->result['message'] = self::MSG_EDIT_OK;
-            } else {
-                $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-                $this->result['message'] = '更新失败';
-            }
+            return response()->json(['statusCode' => self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR, 'message' => '已经有该记录！']);
         }
-        return response()->json($this->result);
 
+        $procedure = $this->procedure->find($id);
+        if (!$procedure) {
+            return $this->notFound();
+        }
+        return $procedure->update($request->all()) ? $this->succeed() : $this->fail();
     }
 
     /**
-     * Remove the specified resource from storage.
-     *
      * @param $id
-     * @return \Illuminate\Http\Response
-     * @internal param Procedure $procedure
-     * @internal param AttendanceMachine $attendanceMachine
+     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
-        //根据id查找需要删除表数据
-        //进行删除操作
-        //返回json 格式的操作结果
-        if ($this->procedure->findOrFail($id)->delete()) {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-            $this->result['message'] = self::MSG_DEL_OK;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '删除失败';
+        $procedure = $this->procedure->find($id);
+        dd($procedure);
+        if (!$procedure) {
+            return $this->notFound();
         }
-        return response()->json($this->result);
+        return $procedure->delete() ? $this->succeed() : $this->fail();
     }
 }

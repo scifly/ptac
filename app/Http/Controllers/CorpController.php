@@ -16,6 +16,7 @@ class CorpController extends Controller {
 
     /**
      * 显示企业列表
+     *
      * @return \Illuminate\Http\Response
      */
     public function index() {
@@ -23,12 +24,7 @@ class CorpController extends Controller {
         if (Request::get('draw')) {
             return response()->json($this->corp->datatable());
         }
-        return view('corp.index', [
-            'js' => 'js/corp/index.js',
-            'dialog' => true,
-            'datatable' => true,
-            'form' => true
-        ]);
+        return parent::output(__METHOD__);
     }
 
     /**
@@ -37,10 +33,7 @@ class CorpController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function create() {
-        return view('corp.create', [
-            'js' => 'js/corp/create.js',
-            'form' => true
-        ]);
+        return $this->output(__METHOD__);
     }
 
     /**
@@ -49,23 +42,14 @@ class CorpController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function store(CorpRequest $request) {
-        $data = $request->all();
-        $record = $this->corp->where('name', $data['name'])
-            ->where('company_id', $data['company_id'])
+        $input = $request->all();
+        $record = $this->corp->where('name', $input['name'])
+            ->where('company_id', $input['company_id'])
             ->first();
         if (!empty($record)) {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '已经有该记录';
-        } else {
-            if ($this->corp->create($request->all())) {
-                $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-                $this->result['message'] = self::MSG_CREATE_OK;
-            } else {
-                $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-                $this->result['message'] = '';
-            }
+            return response()->json(['statusCode' => self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR, 'message' => '已经有该记录！']);
         }
-        return response()->json($this->result);
+        return $this->corp->create($request->all()) ? $this->succeed() : $this->fail();
     }
 
     /**
@@ -75,18 +59,11 @@ class CorpController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function show($id) {
-        //return view('corp.show', ['corp' => $this->corp->findOrFail($id)]);
-        $showData = $this->corp->whereId($id)->first(['name','company_id','corpid','created_at','updated_at','enabled']);
-        if($showData->enabled = ($showData->enabled == 0 ? "已禁用" : "已启用"));
-        $showData->company_id = $showData->company->name;
-        if ($showData) {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-            $this->result['showData'] = $showData;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '';
+        $corp = $this->corp->find($id);
+        if (!$corp) {
+            return $this->notFound();
         }
-        return response()->json($this->result);
+        return $this->output(__METHOD__, ['corp' => $corp]);
     }
 
     /**
@@ -96,11 +73,11 @@ class CorpController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function edit($id) {
-        return view('corp.edit', [
-            'js' => 'js/corp/edit.js',
-            'corp' => $this->corp->findOrFail($id),
-            'form' => true
-        ]);
+        $corp = $this->corp->find($id);
+        if (!$corp) {
+            return $this->notFound();
+        }
+        return $this->output(__METHOD__, ['corp' => $corp]);
     }
 
     /**
@@ -111,23 +88,18 @@ class CorpController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function update(CorpRequest $request, $id) {
-        $data = $request->all();
-        $record = $this->corp->where('name', $data['name'])
-            ->where('company_id', $data['company_id'])
+        $input = $request->all();
+        $record = $this->corp->where('name', $input['name'])
+            ->where('company_id', $input['company_id'])
             ->first();
         if (!empty($record) && ($record->id != $id)) {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '已有该记录';
-        } else {
-            if ($this->corp->findOrFail($id)->update($data)) {
-                $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-                $this->result['message'] = self::MSG_EDIT_OK;
-            } else {
-                $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-                $this->result['message'] = '';
-            }
+            return response()->json(['statusCode' => self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR, 'message' => '已经有该记录！']);
         }
-        return response()->json($this->result);
+        $corp = $this->corp->find($id);
+        if (!$corp) {
+            return $this->notFound();
+        }
+        return $corp->update($request->all()) ? $this->succeed() : $this->fail();
     }
 
     /**
@@ -137,13 +109,10 @@ class CorpController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function destroy($id) {
-        if ($this->corp->findOrFail($id)->delete()) {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-            $this->result['message'] = self::MSG_DEL_OK;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '';
+        $corp = $this->corp->find($id);
+        if (!$corp) {
+            return $this->notFound();
         }
-        return response()->json($this->result);
+        return $corp->delete() ? $this->succeed() : $this->fail();
     }
 }
