@@ -94,19 +94,12 @@ class SubjectController extends Controller {
             $grade = Grade::whereId($id)->first();
             $selectedGrades[$id] = $grade['name'];
         }
-        dd($subject);
         if (!$subject) { return parent::notFound(); }
         return parent::output(__METHOD__, [
             'subject' => $subject,
             'selectedGrades' => $selectedGrades
         ]);
-//        return view('subject.edit', [
-//            'js' => 'js/subject/edit.js',
-//            'form' => true,
-//            'subject' => $subject,
-//            'selectedGrades' => $selectedGrades
-//        ]);
-        
+
     }
 
     /**
@@ -140,14 +133,12 @@ class SubjectController extends Controller {
      * @return \Illuminate\Http\Response
      * @internal param Subject $subject
      */
-    public function destroy($id) {
-        if ($this->subject->findOrFail($id)->delete()) {
-            $this->result['message'] = self::MSG_DEL_OK;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '删除失败';
-        }
-        return response()->json($this->result);
+    public function destroy($id)
+    {
+        $subject = $this->subject->find($id);
+        if (!$subject) { return parent::notFound(); }
+        return $subject->delete() ? parent::succeed() : parent::fail();
+
     }
     
     /**

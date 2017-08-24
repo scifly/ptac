@@ -30,12 +30,7 @@ class GroupController extends Controller
         if (Request::get('draw')) {
             return response()->json($this->group->datatable());
         }
-        return view('group.index', [
-            'js' => 'js/group/index.js',
-            'datatable' => true,
-            'dialog' => true,
-            'show' => true
-        ]);
+        return parent::output(__METHOD__);
 
     }
 
@@ -46,10 +41,7 @@ class GroupController extends Controller
      */
     public function create()
     {
-        return view('group.create', [
-            'js' => 'js/group/create.js',
-            'form' => true
-        ]);
+        return parent::output(__METHOD__);
 
     }
 
@@ -66,18 +58,12 @@ class GroupController extends Controller
         {
             $this->result['statusCode'] = self::MSG_BAD_REQUEST;
             $this->result['message'] = '该角色已经存在,请勿重复添加!';
+            return response()->json($this->result);
         }else{
-            if ($this->group->create($data))
-            {
-                $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-                $this->result['message'] = self::MSG_CREATE_OK;
-            }else{
-                $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-                $this->result['message'] = '添加失败';
-            }
+            return $this->group->create($data) ? parent::succeed() : parent::fail();
         }
 
-        return response()->json($this->result);
+
 
     }
 
@@ -114,11 +100,9 @@ class GroupController extends Controller
      */
     public function edit($id)
     {
-        return view('group.edit', [
-            'js' => 'js/group/edit.js',
-            'group' => $this->group->findOrFail($id),
-            'form' => true
-        ]);
+        $group = $this->group->find($id);
+        if (!$group) { return parent::notFound(); }
+        return parent::output(__METHOD__, ['group' => $group]);
 
     }
 
@@ -160,14 +144,9 @@ class GroupController extends Controller
     public function destroy($id)
     {
 
-        if ($this->group->findOrFail($id)->delete())
-        {
-            $this->result['message'] = self::MSG_DEL_OK;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '删除失败';
-        }
-        return response()->json($this->result);
+        $group = $this->group->find($id);
+        if (!$group) { return parent::notFound(); }
+        return $group->delete() ? parent::succeed() : parent::fail();
     }
 
 }

@@ -23,13 +23,8 @@ class SubjectModuleController extends Controller {
         if (Request::get('draw')) {
             return response()->json($this->subjectModule->datatable());
         }
-        return view('subject_module.index', [
-            'js' => 'js/subject_module/index.js',
-            'dialog' => true,
-            'datatable' => true,
-            'form' => true,
-            'show' => true,
-        ]);
+        return parent::output(__METHOD__);
+
     }
     
     /**
@@ -37,10 +32,8 @@ class SubjectModuleController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function create() {
-        return view('subject_module.create', [
-            'js' => 'js/subject_module/create.js',
-            'form' => true
-        ]);
+
+        return parent::output(__METHOD__);
     }
     
     /**
@@ -50,7 +43,6 @@ class SubjectModuleController extends Controller {
      */
     public function store(SubjectModuleRequest $request) {
         $data = $request->except('_token');
-        dd($data);
         $result = $this->subjectModule
             ->where('name',$data['name'])
             ->where('subject_id',$data['subject_id'])
@@ -59,17 +51,11 @@ class SubjectModuleController extends Controller {
         if (!empty($result)){
             $this->result['statusCode'] = self::MSG_BAD_REQUEST;
             $this->result['message'] = '该条数据已经存在,请勿重复添加!';
+            return response()->json($this->result);
         }else{
-            if ($this->subjectModule->create($data)) {
-                $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-                $this->result['message'] = self::MSG_CREATE_OK;
-            }else{
-                $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-                $this->result['message'] = '添加失败!';
-            }
+            return $this->subjectModule->create($data) ? parent::succeed() : parent::fail();
         }
 
-        return response()->json($this->result);
 
     }
     
@@ -104,13 +90,12 @@ class SubjectModuleController extends Controller {
      */
     public function edit($id) {
         $subjectModules = $this->subjectModule->findOrFail($id)->toArray();
-        
-        return view('subject_module.edit', [
-            'js' => 'js/subject_module/edit.js',
-            'form' => true,
+
+        if (!$subjectModules) { return parent::notFound(); }
+        return parent::output(__METHOD__, [
             'subjectModules' => $subjectModules,
-        
         ]);
+
     }
     
     /**
@@ -152,12 +137,8 @@ class SubjectModuleController extends Controller {
      * @internal param SubjectModule $subjectModule
      */
     public function destroy($id) {
-        if ($this->subjectModule->findOrFail($id)->delete()) {
-            $this->result['message'] = self::MSG_DEL_OK;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '删除失败';
-        }
-        return response()->json($this->result);
+        $subjectModule = $this->find($id);
+        if (!$subjectModule) { return parent::notFound(); }
+        return $subjectModule->delete() ? parent::succeed() : parent::fail();
     }
 }

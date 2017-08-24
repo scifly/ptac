@@ -11,7 +11,7 @@ class SubjectSeeder extends Seeder
      */
     public function run()
     {
-        factory(App\Models\Subject::class, 5)->create()->each(function ($subject) {
+        factory(App\Models\Subject::class, 20)->create()->each(function ($subject) {
             $subject->save();
         });
     }

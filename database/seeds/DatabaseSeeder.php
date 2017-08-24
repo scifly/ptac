@@ -12,7 +12,7 @@ class DatabaseSeeder extends Seeder {
 
 //        $this->call(UserSeeder::class);
 //        $this->call(SchoolTypeSeeder::class);
-//        $this->call(SubjectSeeder::class);
+        $this->call(SubjectSeeder::class);
 //        $this->call(ScoreRangeSeeder::class);
 //        $this->call(CorpSeeder::class);
 //        $this->call(SchoolSeeder::class);
@@ -33,7 +33,7 @@ class DatabaseSeeder extends Seeder {
 //        $this->call(EducatorClassSeeder::class);
 //        $this->call(CustodianStudentSeeder::class);
 //        $this->call(TabSeeder::class);
-        $this->call(IconSeeder::class);
-        $this->call(IconTypeSeeder::class);
+//        $this->call(IconSeeder::class);
+//        $this->call(IconTypeSeeder::class);
     }
 }

@@ -1,19 +1,8 @@
-@extends('layouts.master')
-@section('header')
-    <div class="panel-heading">
-        <div class="btn-group">
-            <a href="{{ url('subject_modules/create') }}" class="btn btn-primary pull-right">
-                添加次分类
-            </a>
-        </div>
+<div  class="box box-widget">
+    <div class="box-header with-border">
+        @include('partials.list_header', ['addBtn' => true])
     </div>
-@endsection
-@section('breadcrumb')
-    系统设置/科目次分类
-@endsection
-@section('content')
-    <div class="panel-body">
-        <div class="table-responsive">
+    <div class="box-body">
             <table id="data-table" class="table table-striped table-bordered table-hover table-condensed">
                 <thead>
                 <tr>
@@ -30,7 +19,3 @@
             </table>
         </div>
     </div>
-    @isset($show)
-       @include('subject_module.show')
-    @endif
-@endsection
