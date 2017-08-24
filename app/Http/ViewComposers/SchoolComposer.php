@@ -8,22 +8,21 @@ use Illuminate\Contracts\View\View;
 
 class SchoolComposer {
     
-    protected $schoolTypes;
-    protected $corps;
+    protected $schoolType;
+    protected $corp;
     
-    public function __construct(SchoolType $schoolTypes, Corp $corps) {
+    public function __construct(SchoolType $schoolType, Corp $corp) {
         
-        $this->schoolTypes = $schoolTypes;
-        $this->corps = $corps;
+        $this->schoolType = $schoolType;
+        $this->corp = $corp;
         
     }
     
     public function compose(View $view) {
         
-        // $view->with('schoolTypes', $this->schoolTypes->pluck('name', 'id'));
         $view->with([
-            'schoolTypes' => $this->schoolTypes->pluck('name', 'id'),
-            'corps' => $this->corps->pluck('name', 'id')
+            'schoolTypes' => $this->schoolType->pluck('name', 'id'),
+            'corps' => $this->corp->pluck('name', 'id')
         ]);
     }
     

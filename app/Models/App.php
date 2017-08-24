@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Http\Requests\AppRequest;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
@@ -67,6 +68,25 @@ class App extends Model {
         'enabled'
     ];
     
+    public function existed(AppRequest $request, $id = NULL) {
+        
+        if (!$id) {
+            $app = $this->where('agentid', $request->input('agentid'))
+                ->orWhere('url', $request->input('url'))
+                ->orWhere('token', $request->input('token'))
+                ->orWhere('encodingaeskey', $request->input('encodingaeskey'))
+                ->first();
+        } else {
+            $app = $this->where('agentid', $request->input('agentid'))
+                ->where('id', '<>', $id)
+                ->orWhere('url', $request->input('url'))
+                ->orWhere('token', $request->input('token'))
+                ->orWhere('encodingaeskey', $request->input('encodingaeskey'))
+                ->first();
+        }
+        return $app ? true : false;
+        
+    }
     
     public function datatable() {
         

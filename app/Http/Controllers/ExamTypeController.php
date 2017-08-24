@@ -7,160 +7,107 @@ use App\Models\ExamType;
 use Illuminate\Support\Facades\Request;
 
 
-class ExamTypeController extends Controller
-{
+class ExamTypeController extends Controller {
     protected $examType;
-
+    
     function __construct(ExamType $examType) {
+        
         $this->examType = $examType;
-
+        
     }
-
+    
     /**
-     * Display a listing of the resource.
-     * @return \Illuminate\Http\Response
-     * @internal param Request $request
+     * 显示考试类型列表
+     *
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
-
+        
         if (Request::get('draw')) {
             return response()->json($this->examType->datatable());
         }
-        return view('exam_type.index' ,
-            [
-                'js' => 'js/exam_type/index.js',
-                'dialog' => true,
-                'datatable' => true,
-            ]);
-
+        return $this->output(__METHOD__);
+        
     }
-
+    
     /**
-     * Show the form for creating a new resource.
+     * 显示创建考试类型记录的表单
      *
-     * @return \Illuminate\Http\Response
+     * @return bool|\Illuminate\Http\JsonResponse
      */
-    public function create()
-    {
-        return view('exam_type.create',[
-            'js' => 'js/exam_type/create.js',
-            'form' => true
-        ]);
+    public function create() {
+        
+        return $this->output(__METHOD__);
+        
     }
-
+    
     /**
-     * Store a newly created resource in storage.
+     * 保存新创建的考试类型记录
      *
-     * @param ExamTypeRequest $examTypeRequest
-     * @return \Illuminate\Http\Response
-     * @internal param \Illuminate\Http\Request $request
+     * @param ExamTypeRequest $request
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function store(ExamTypeRequest $examTypeRequest)
-    {
-        // request
-        $data = $examTypeRequest->all();
-        $row = $this->examType->where(['name' => $data['name']])->first();
-        if(!empty($row)){
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '名称重复！';
-        }else{
-            if($this->examType->create($data))
-            {
-                $this->result['message'] = self::MSG_CREATE_OK;
-            } else {
-                $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-                $this->result['message'] = '';
-            }
-        }
-
-        return response()->json($this->result);
+    public function store(ExamTypeRequest $request) {
+        
+        return $this->examType->create($request->all()) ? $this->succeed() : $this->fail();
+        
     }
-
+    
     /**
-     * Display the specified resource.
+     * 显示指定的考试类型记录详情
      *
      * @param $id
-     * @return \Illuminate\Http\Response
-     * @internal param ExamType $examType
+     * @return bool|\Illuminate\Http\JsonResponse
      */
-    public function show($id)
-    {
-        $examType = ExamType::whereId($id)->first();
-
-        return view('exam_type.show', [
-            'examType' => $examType,
-        ]);
+    public function show($id) {
+        
+        $examType = $this->examType->find($id);
+        if (!$examType) { return $this->notFound(); }
+        return $this->output(__METHOD__, ['examType' => $examType]);
+        
     }
-
+    
     /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\ExamType  $examType
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        $examType = $this->examType->whereId($id)->first();
-
-        return view('exam_type.edit', [
-            'js' => 'js/exam_type/edit.js',
-            'examType' => $examType,
-            'form' => true
-
-        ]);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param ExamTypeRequest $examTypeRequest
-     * @param $id
-     * @return \Illuminate\Http\Response
-     * @internal param \Illuminate\Http\Request $request
-     * @internal param ExamType $examType
-     */
-    public function update(ExamTypeRequest $examTypeRequest, $id)
-    {
-        $data = ExamType::find($id);
-
-        $data->name = $examTypeRequest->input('name');
-        $data->remark = $examTypeRequest->input('remark');
-        $data->enabled = $examTypeRequest->input('enabled');
-        $row = $this->examType->where(['name' => $data->name])->first();
-        if(!empty($row) && $row->id != $id){
-
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '名称重复！';
-
-        }else{
-            if($data->save())
-            {
-                $this->result['message'] = self::MSG_EDIT_OK;
-            } else {
-                $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-                $this->result['message'] = '';
-
-            }
-        }
-
-        return response()->json($this->result);
-    }
-
-    /**
-     * Remove the specified resource from storage.
+     * 显示编辑指定考试类型记录的表单
      *
      * @param $id
-     * @return \Illuminate\Http\Response
-     * @internal param ExamType $examType
+     * @return bool|\Illuminate\Http\JsonResponse
      */
-    public function destroy($id)
-    {
-        if ($this->examType->findOrFail($id)->delete()) {
-            $this->result['message'] = self::MSG_DEL_OK;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '';
-        }
-        return response()->json($this->result);
+    public function edit($id) {
+        
+        $examType = $this->examType->find($id);
+        if (!$examType) { return $this->notFound(); }
+        return $this->output(__METHOD__, ['examType' => $examType]);
+    
     }
+    
+    /**
+     * 更新指定的考试类型记录
+     *
+     * @param ExamTypeRequest $request
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function update(ExamTypeRequest $request, $id) {
+    
+        $examType = $this->examType->find($id);
+        if (!$examType) { return $this->notFound(); }
+        return $examType->update($request->all()) ? $this->succeed() : $this->fail();
+        
+    }
+    
+    /**
+     * 删除指定的考试类型记录
+     *
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function destroy($id) {
+        
+        $examType = $this->examType->find($id);
+        if (!$examType) { return $this->notFound(); }
+        return $examType->delete() ? $this->succeed() : $this->fail();
+        
+    }
+    
 }

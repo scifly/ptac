@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Http\Requests\AttendanceMachineRequest;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
@@ -43,14 +44,34 @@ class AttendanceMachine extends Model {
      * 考勤机与学校
      */
     public function school() {
+        
         return $this->belongsTo('App\Models\School');
+        
     }
     
     /**
      * 考勤机与学生考勤
      */
     public function studentAttendances() {
+        
         return $this->hasMany('App\Models\StudentAttendance');
+        
+    }
+    
+    /**
+     * 判断考勤机记录是否已存在
+     *
+     * @param AttendanceMachineRequest $request
+     * @return bool
+     */
+    public function existed(AttendanceMachineRequest $request) {
+    
+        $am = $this->where('name', $request->input('name'))
+            ->where('school_id', $request->input('school_id'))
+            ->where('machineid', $request->input('machine_id'))->first();
+        
+        return $am ? true : false;
+        
     }
     
     public function datatable() {

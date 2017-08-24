@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Http\Requests\ProcedureRequest;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
@@ -57,6 +58,23 @@ class Procedure extends Model {
         return $this->belongsTo('App\Models\ProcedureType');
     }
     
+    public function existed(ProcedureRequest $request, $id = NULL) {
+        
+        if (!$id) {
+            $procedure = $this->where('procedure_type_id', $request->input('procedure_type_id'))
+                ->where('school_id', $request->input('school_id'))
+                ->where('name', $$request->input('name'))
+                ->first();
+        } else {
+            $procedure = $this->where('procedure_type_id', $request->input('procedure_type_id'))
+                ->where('id', '<>', $id)
+                ->where('school_id', $request->input('school_id'))
+                ->where('name', $$request->input('name'))
+                ->first();
+        }
+        return $procedure ? true : false;
+        
+    }
     
     public function datatable() {
         

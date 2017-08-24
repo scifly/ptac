@@ -143,6 +143,14 @@ HTML;
         
     }
     
+    public function existed(ActionRequest $request) {
+        
+        $action = $this->where('controller', $request->input('controller'))
+            ->where('method', $request->input('method'))->first();
+        return $action ? true : false;
+        
+    }
+    
     /**
      * 保存新创建的Action记录
      *

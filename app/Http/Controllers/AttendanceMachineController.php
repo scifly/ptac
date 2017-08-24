@@ -7,180 +7,113 @@ use App\Models\AttendanceMachine;
 use Illuminate\Support\Facades\Request;
 
 class AttendanceMachineController extends Controller {
+    
     protected $attendanceMachine;
 
     function __construct(AttendanceMachine $attendanceMachine) {
+        
         $this->attendanceMachine = $attendanceMachine;
+        
     }
-
+    
     /**
-     * Display a listing of the resource.
+     * 显示考勤机列表
      *
-     * @return \Illuminate\Http\Response
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
+        
         if (Request::get('draw')) {
             return response()->json($this->attendanceMachine->datatable());
         }
-
-        return view('attendance_machine.index', [
-            'js' => 'js/attendance_machine/index.js',
-            'dialog' => true,
-            'datatable' => true,
-            'show' => true
-        ]);
+        return $this->output(__METHOD__);
+        
     }
-
+    
     /**
-     * Show the form for creating a new resource.
+     * 显示创建考勤机记录的表单
      *
-     * @return \Illuminate\Http\Response
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function create() {
-        return view('attendance_machine.create', ['js' => 'js/attendance_machine/create.js']);
+        
+        return $this->output(__METHOD__);
+        
     }
-
+    
     /**
-     * Store a newly created resource in storage.
+     * 保存新创建的考勤机记录
+     *
      * @param AttendanceMachineRequest $request
-     * @return \Illuminate\Http\Response
-     * @internal param \Illuminate\Http\Request|Request $request
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(AttendanceMachineRequest $request) {
-        //创建一个考勤机空记录
-        //将request 请求中包含的表单数据填入空记录对应的字段中
-        //判断，同一个学校的考勤机，不能拥有同名、同设备编号的考勤机
-        //保存记录
-
-        $am = new AttendanceMachine;
-        $am->name = $request->name;
-        $am->location = $request->location;
-        $am->school_id = $request->school_id;
-        $am->machineid = $request->machineid;
-        $am->enabled = $request->enabled;
-
-        $record = $this->attendanceMachine->where('name', $am['name'])
-            ->where('school_id', $am['school_id'])
-            ->where('machineid', $am['machineid'])
-            ->first();
-
-        if (!empty($record)) {
-            return response()->json(['statusCode' => self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR, 'message' => '考勤设备已存在！']);
+        
+        if ($this->attendanceMachine->existed($request)) {
+            return $this->fail('考勤机记录已存在');
         }
-
-        if ($am->save()) {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-            $this->result['message'] = self::MSG_CREATE_OK;
-        }else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = self::MSG_BAD_REQUEST;
-        }
-
-        return response()->json($this->result);
+        return $this->attendanceMachine->create($request->all()) ? $this->succeed() : $this->fail();
+        
     }
-
+    
     /**
-     * Display the specified resource.
-     * @return \Illuminate\Http\Response
-     * @internal param AttendanceMachine $attendanceMachine
-     */
-    public function show($id) {
-        //根据id 查找单条记录
-
-        $am = $this->attendanceMachine->whereId($id)
-            ->first([
-                'name',
-                'location',
-                'school_id',
-                'machineid',
-                'created_at',
-                'updated_at',
-                'enabled'
-            ]);
-
-        $am->school_id = $am->school->name;
-        $am->enabled = $am->enabled==1 ? '已启用' : '已禁用' ;
-        if ($am) {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-            $this->result['showData'] = $am;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '';
-        }
-
-        return response()->json($this->result);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     * @param $id
-     * @return \Illuminate\Http\Response
-     * @internal param AttendanceMachine $attendanceMachine
-     */
-    public function edit($id) {
-        //根据id 查找单条记录
-        $am = AttendanceMachine::findOrFail($id);
-
-        //记录返回给view
-        return view('attendance_machine.edit', [
-            'js' => 'js/attendance_machine/edit.js',
-            'am' => $am
-        ]);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     * @param AttendanceMachineRequest $request
-     * @param $id
-     * @return \Illuminate\Http\Response
-     * @internal param \Illuminate\Http\Request|Request $request
-     * @internal param AttendanceMachine $attendanceMachine
-     */
-    public function update(AttendanceMachineRequest $request, $id) {
-        //跟进id查找记录，
-        //把request 传的值，赋值给对应的字段
-        //保存当前记录
-        //根据操作结果返回不同的json数据
-
-        $am = AttendanceMachine::findOrFail($id);
-        $am->name = $request->name;
-        $am->location = $request->location;
-        $am->school_id = $request->school_id;
-        $am->machineid = $request->machineid;
-        $am->enabled = $request->enabled;
-        if ($am->save()) {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-            $this->result['message'] = self::MSG_EDIT_OK;
-        }else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = self::MSG_BAD_REQUEST;
-        }
-
-        return response()->json($this->result);
-
-    }
-
-    /**
-     * Remove the specified resource from storage.
+     * 显示指定的考勤机记录详情
      *
      * @param $id
-     * @return \Illuminate\Http\Response
-     * @internal param AttendanceMachine $attendanceMachine
+     * @return bool|\Illuminate\Http\JsonResponse
+     */
+    public function show($id) {
+        
+        $am = $this->attendanceMachine->find($id);
+        if (!$am) { return $this->notFound(); }
+        return $this->output(__METHOD__, ['am' => $am]);
+        
+    }
+    
+    /**
+     * 显示编辑指定考勤机记录的表单
+     *
+     * @param $id
+     * @return bool|\Illuminate\Http\JsonResponse
+     */
+    public function edit($id) {
+        
+        $am = $this->attendanceMachine->find($id);
+        if (!$am) { return $this->notFound(); }
+        return $this->output(__METHOD__, ['am' => $am]);
+        
+    }
+    
+    /**
+     * 更新指定的考勤机记录
+     *
+     * @param AttendanceMachineRequest $request
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function update(AttendanceMachineRequest $request, $id) {
+ 
+        $am = $this->attendanceMachine->find($id);
+        if (!$am) { return $this->notFound(); }
+        if ($this->attendanceMachine->existed($request)) {
+            return $this->fail('已经有此记录');
+        }
+        return $am->update($request->all()) ? $this->succeed() : $this->fail();
+        
+    }
+    
+    /**
+     * 删除指定的考勤机记录
+     *
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
-        //根据id查找需要删除的数据
-        //进行删除操作
-        //返回json 格式的操作结果
-        $am = AttendanceMachine::findOrFail($id);
-
-        if ($am->delete()) {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-            $this->result['message'] = self::MSG_DEL_OK;
-        }else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = self::MSG_BAD_REQUEST;
-        }
-
-        return response()->json($this->result);
+        
+        $am = $this->attendanceMachine->find($id);
+        if (!$am) { return $this->notFound(); }
+        return $am->delete() ? $this->succeed() : $this->fail();
+        
     }
+    
 }

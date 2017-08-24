@@ -3,7 +3,9 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Http\Requests\GradeRequest;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -26,8 +28,8 @@ use Illuminate\Database\Eloquent\Model;
  * @mixin \Eloquent
  * 年级
  * @property-read \App\Models\School $school
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Squad[] $squads
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Subject[] $subject
+ * @property-read Collection|\App\Models\Squad[] $squads
+ * @property-read Collection|\App\Models\Subject[] $subject
  */
 class Grade extends Model {
     
@@ -38,32 +40,22 @@ class Grade extends Model {
         'enabled',
     ];
     
-    public function school() {
-        
-        return $this->belongsTo('App\Models\School');
-    }
+    public function school() { return $this->belongsTo('App\Models\School'); }
     
-    public function subject() {
-        return $this->hasMany('App\Models\Subject');
-    }
+    public function classes() { return $this->hasMany('App\Models\Squad'); }
     
-    public function students() {
-        #先获取班级对象集合
-        $classes = $this->squads()->get();
+    public function existed(GradeRequest $request, $id = NULL) {
         
-        $students = [];
-        #循环班级对象集合
-        foreach ($classes as $class) {
-            $stdents[] = Student::whereClassId($class->id);
+        if (!$id) {
+            $grade = $this->where('school_id', $request->input('school_id'))
+                ->where('name', $request->input('name'))->first();
+        } else {
+            $grade = $this->where('school_id', $request->input('school_id'))
+                ->where('id', '<>', $id)
+                ->where('name', $request->input('name'))->first();
         }
+        return $grade ? true : false;
         
-        return $students;
-        
-    }
-    
-    public function squads() {
-        
-        return $this->hasMany('App\Models\Squad');
     }
     
     public function datatable() {
