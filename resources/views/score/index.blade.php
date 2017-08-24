@@ -1,18 +1,8 @@
-@extends('layouts.master')
-@section('header')
-    <div class="panel-heading">
-        <div class="btn-group">
-            <a href="{{ url('scores/create') }}" class="btn btn-primary pull-right">
-                添加新成绩
-            </a>
-        </div>
+<div class="box box-widget">
+    <div class="box-header with-border">
+        @include('partials.list_header', ['addBtn' => true])
     </div>
-@endsection
-@section('breadcrumb')
-    成绩管理/成绩管理
-@endsection
-@section('content')
-    <div class="panel-body">
+    <div class="box-body">
         <div class="table-responsive">
             <table id="data-table" class="table table-striped table-bordered table-hover table-condensed">
                 <thead>
@@ -34,4 +24,4 @@
             </table>
         </div>
     </div>
-@endsection
+</div>

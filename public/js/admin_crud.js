@@ -65,7 +65,7 @@ var crud = {
         $('#data-table').dataTable({
             processing: true,
             serverSide: true,
-            ajax: '/urlshortener/public/tabs/index',
+            ajax: '/ptac/public/tabs/index',
             order: [[0, 'desc']],
             stateSave: true,
             language: {url: '../files/ch.json'}

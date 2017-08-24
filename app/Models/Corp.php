@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Http\Requests\CompanyRequest;
+use App\Http\Requests\CorpRequest;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
@@ -46,6 +48,21 @@ class Corp extends Model {
     public function company() {
         
         return $this->belongsTo('App\Models\Company');
+    }
+    
+    public function existed(CorpRequest $request, $id = NULL) {
+        
+        if (!$id) {
+            $corp = $this->where('name', $request->input('name'))
+                ->where('company_id', $request->input('company_id'))->first();
+        } else {
+            $corp = $this->where('name', $request->input('name'))
+                ->where('id', '<>', $id)
+                ->where('company_id', $request->input('company_id'))->first();
+        }
+        
+        return $corp ? true : false;
+        
     }
     
     /**

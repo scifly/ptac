@@ -1,1 +1,1 @@
-$(crud.index('modal-show-company'));
+$(crud.index('companies'));

@@ -7,7 +7,7 @@ use Illuminate\Foundation\Http\FormRequest;
 class ProcedureTypeRequest extends FormRequest {
 
     protected $rules = [
-        'name' => 'required|string|max:60',
+        'name' => 'required|string|max:60|unique:procedure_types',
         'remark' => 'required|string|max:255',
         'enabled' => 'required|boolean'
     ];
@@ -28,18 +28,14 @@ class ProcedureTypeRequest extends FormRequest {
      *
      * @return bool
      */
-    public function authorize() {
-        return true;
-    }
+    public function authorize() { return true; }
 
     /**
      * Get the validation rules that apply to the request.
      *
      * @return array
      */
-    public function rules() {
-        return $this->rules;
-    }
+    public function rules() { return $this->rules; }
 
     public function messages(){
 
@@ -72,5 +68,7 @@ class ProcedureTypeRequest extends FormRequest {
             $input['enabled'] = 0;
         }
         $this->replace($input);
+        
     }
+    
 }

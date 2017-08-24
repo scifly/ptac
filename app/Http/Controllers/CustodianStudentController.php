@@ -3,28 +3,25 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CustodianStudentRequest;
-use App\Models\CustodianStudent;
 use App\Models\Custodian;
+use App\Models\CustodianStudent;
 use App\Models\Student;
 use Illuminate\Support\Facades\Request;
 
-class CustodianStudentController extends Controller
-{
+class CustodianStudentController extends Controller {
     protected $custodianStudent;
-
-    function __construct(CustodianStudent $custodianStudent, Custodian $custodian, Student $student)
-    {
+    
+    function __construct(CustodianStudent $custodianStudent, Custodian $custodian, Student $student) {
         $this->custodianStudent = $custodianStudent;
         $this->custodian = $custodian;
         $this->student = $student;
     }
-
+    
     /**
      * 显示监护人列表
      * @return \Illuminate\Http\Response
      */
-    public function index()
-    {
+    public function index() {
         if (Request::get('draw')) {
             return response()->json($this->custodianStudent->datatable());
         }
@@ -32,84 +29,79 @@ class CustodianStudentController extends Controller
             'js' => 'js/custodian_student/index.js',
             'dialog' => true,
             'datatable' => true,
-            'form'=>true,
+            'form' => true,
         ]);
     }
-
+    
     /**
      * 添加监护人和学生关系的页面
      * @return \Illuminate\Http\Response
      */
-    public function create()
-    {
-        return view('custodian_student.create',[
+    public function create() {
+        return view('custodian_student.create', [
             'js' => 'js/custodian_student/create.js',
             'form' => true
         ]);
     }
-
+    
     /**
      * 创建监护人和学生之间的关系
      * @param CustodianStudentRequest $request
      * @return \Illuminate\Http\Response
      * @internal param $CustodianStudentRequest
      */
-    public function store(CustodianStudentRequest $request)
-    {
+    public function store(CustodianStudentRequest $request) {
         $data = $request->except('_token');
         $result = $this->custodianStudent
-            ->where('custodian_id',$data['custodian_id'])
-            ->where('student_id',$data['student_id'])
+            ->where('custodian_id', $data['custodian_id'])
+            ->where('student_id', $data['student_id'])
             ->get()
             ->toArray();
-        if(!empty($result))
-        {
+        if (!empty($result)) {
             $this->result['statusCode'] = self::MSG_BAD_REQUEST;
             $this->result['message'] = '该条数据已经存在!';
-        }else{
+        } else {
             if ($this->custodianStudent->create($data)) {
                 $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
                 $this->result['message'] = self::MSG_CREATE_OK;
-            }else{
+            } else {
                 $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
                 $this->result['message'] = self::添加失败;
             }
         }
-
+        
         return response()->json($this->result);
     }
-
+    
     /**
      * Display the specified resource.
      * @param $id
      * @return \Illuminate\Http\Response
      * @internal param CustodianStudent $custodianStudent
      */
-    public function show($id)
-    {
-        return view('custodian_student.show',[
-            'custodianStudent' =>$this->custodianStudent->findOrFail($id)
+    public function show($id) {
+        return view('custodian_student.show', [
+            'custodianStudent' => $this->custodianStudent->findOrFail($id)
         ]);
     }
-
+    
     /**
      * Show the form for editing the specified resource.
      * @param $id
      * @return \Illuminate\Http\Response
      * @internal param CustodianStudent $custodianStudent
      */
-    public function edit($id)
-    {
+    public function edit($id) {
         $custodianStudent = $this->custodianStudent->findOrFail($id);
-
+        
         return view('custodian_student.edit', [
             'js' => 'js/custodian_student/edit.js',
             'custodianStudent' => $custodianStudent,
             'form' => true
         ]);
-
+        
     }
-
+    
     /**
      * 更改监护人和学生之间的关系
      * @param CustodianStudentRequest $request
@@ -117,22 +109,19 @@ class CustodianStudentController extends Controller
      * @return \Illuminate\Http\Response
      * @internal param CustodianStudent $custodianStudent
      */
-    public function update(CustodianStudentRequest $request, $id)
-    {
+    public function update(CustodianStudentRequest $request, $id) {
         $data = $request->all();
         $custodianStudent = $this->custodianStudent->findOrFail($id);
         $result = $this->custodianStudent
-            ->where('custodian_id',$data['custodian_id'])
-            ->where('student_id',$data['student_id'])
+            ->where('custodian_id', $data['custodian_id'])
+            ->where('student_id', $data['student_id'])
             ->first();
-
-        if(!empty($result) && ($result->id !=$id))
-        {
+        
+        if (!empty($result) && ($result->id != $id)) {
             $this->result['statusCode'] = self::MSG_BAD_REQUEST;
             $this->result['message'] = '该条数据已经存在!';
-        }else{
-            if($custodianStudent->update($data))
-            {
+        } else {
+            if ($custodianStudent->update($data)) {
                 $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
                 $this->result['message'] = self::MSG_EDIT_OK;
             } else {
@@ -140,18 +129,17 @@ class CustodianStudentController extends Controller
                 $this->result['message'] = '更新失败';
             }
         }
-
+        
         return response()->json($this->result);
     }
-
+    
     /**
      * 删除监护人和学生之间的关系
      * @param $id
      * @return \Illuminate\Http\Response
      * @internal param CustodianStudent $custodianStudent
      */
-    public function destroy($id)
-    {
+    public function destroy($id) {
         if ($this->custodianStudent->findOrFail($id)->delete()) {
             $this->result['message'] = self::MSG_DEL_OK;
         } else {

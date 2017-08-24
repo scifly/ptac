@@ -22,7 +22,7 @@ class PersonalInfoController extends Controller {
      * @internal param User $user
      */
     public function edit($id) {
-        $personalInfo = $this->user->whereId($id)->first();
+        $personalInfo = $this->user->find($id);
         $group = $personalInfo->group()->whereId($personalInfo->group_id)->first();
         return view('personal_info.edit', [
             'js' => 'js/personal_info/edit.js',

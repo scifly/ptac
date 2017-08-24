@@ -1,18 +1,8 @@
-@extends('layouts.master')
-@section('header')
-    <div class="panel-heading">
-        <div class="btn-group">
-            <a href="{{ url('corps/create') }}" class="btn btn-primary pull-right">
-                添加新企业
-            </a>
-        </div>
+<div class="box box-widget">
+    <div class="box-header with-border">
+        @include('partials.list_header', ['addBtn' => true])
     </div>
-@endsection
-@section('breadcrumb')
-    系统设置/企业设置
-@endsection
-@section('content')
-    <div class="panel-body">
+    <div class="box-body">
         <div class="table-responsive">
             <table id="data-table" class="table table-striped table-bordered table-hover table-condensed">
                 <thead>
@@ -30,5 +20,4 @@
             </table>
         </div>
     </div>
-        @include('corp.show')
-@endsection
+</div>

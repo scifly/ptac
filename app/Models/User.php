@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Models\PollQuestionnaireAnswer;
+use App\Models\PollQuestionnaireParticipant;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -60,11 +62,11 @@ use Illuminate\Notifications\Notifiable;
  * @method static Builder|User whereTelephone($value)
  * @method static Builder|User whereUserid($value)
  * 用户
- * @property-read \App\Models\Group $group
- * @property-read \App\Models\Operator $operator
- * @property-read \App\Models\PollQuestionnaireAnswer $pollquestionnaireAnswer
- * @property-read \App\Models\PollQuestionnaireParticipant $pollquestionnairePartcipant
- * @property-read \App\Models\PollQuestionnaire $pollquestionnaires
+ * @property-read Group $group
+ * @property-read Operator $operator
+ * @property-read PollQuestionnaireAnswer $pollquestionnaireAnswer
+ * @property-read PollQuestionnaireParticipant $pollquestionnairePartcipant
+ * @property-read PollQuestionnaire $pollquestionnaires
  */
 class User extends Authenticatable {
     

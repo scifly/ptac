@@ -1,1 +1,1 @@
-$(crud.index('modal-show-proceduretype'));
+$(crud.index('procedure_types'));

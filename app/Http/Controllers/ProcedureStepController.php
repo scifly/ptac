@@ -9,173 +9,111 @@ use App\Models\ProcedureStep;
 use Illuminate\Support\Facades\Request;
 
 class ProcedureStepController extends Controller {
+    
     protected $procedureStep;
-
-    function __construct(ProcedureStep $procedureStep) {
-        $this->procedureStep = $procedureStep;
-    }
-
+    
+    function __construct(ProcedureStep $procedureStep) { $this->procedureStep = $procedureStep; }
+    
     /**
-     * Display a listing of the resource.
+     * 显示审批流程步骤列表
      *
-     * @return \Illuminate\Http\Response
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
+        
         if (Request::get('draw')) {
             return response()->json($this->procedureStep->datatable());
         }
-
-        return view('procedure_step.index', [
-            'js' => 'js/procedure_step/index.js',
-            'dialog' => true,
-            'datatable' => true,
-            'show' => true
-        ]);
+        return $this->output(__METHOD__);
+        
     }
-
+    
     /**
-     * Show the form for creating a new resource.
+     * 显示创建审批流程步骤记录的表单
      *
-     * @return \Illuminate\Http\Response
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function create() {
-        return view('procedure_step.create', ['js' => 'js/procedure_step/create.js', 'form' => true]);
+        
+        return $this->output(__METHOD__);
+        
     }
-
+    
     /**
-     * Store a newly created resource in storage.
+     * 保存新创建的审批流程步骤记录
+     *
      * @param ProcedureStepRequest $request
-     * @return \Illuminate\Http\Response
-     * @internal param \Illuminate\Http\Request|Request $request
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(ProcedureStepRequest $request) {
-        $procedureStep = $request->all();
-        $procedureStep['approver_user_ids'] = $this->procedureStep->join_ids($request->approver_user_ids);
-        $procedureStep['related_user_ids'] = $this->procedureStep->join_ids($request->related_user_ids);
-        $record = $this->procedureStep->where('procedure_id', $procedureStep['procedure_id'])
-            ->where('name', $procedureStep['name'])
-            ->where('approver_user_ids', $procedureStep['approver_user_ids'])
-            ->first();
-        if (!empty($record)) {
-            return response()->json(['statusCode' => self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR, 'message' => '已经有该记录！']);
+        
+        if ($this->procedureStep->existed($request)) {
+            return $this->fail('已经有此记录');
         }
-        if ($this->procedureStep->create($procedureStep)) {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-            $this->result['message'] = self::MSG_CREATE_OK;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '添加失败';
-        }
-        return response()->json($this->result);
+        return $this->procedureStep->create($request->all()) ? $this->succeed() : $this->fail();
+        
     }
-
+    
     /**
-     * Display the specified resource.
-     * @return \Illuminate\Http\Response
-     * @internal param AttendanceMachine $attendanceMachine
-     */
-    public function show($id) {
-
-        //根据id 查找单条记录
-        $ps = $this->procedureStep->whereId($id)
-            ->first([
-                'procedure_id',
-                'name',
-                'approver_user_ids',
-                'related_user_ids',
-                'remark',
-                'created_at',
-                'updated_at',
-                'enabled'
-            ]);
-
-        $ps->procedure_id = $ps->procedure->name;
-        $ps->approver_user_ids = $ps->user_names($ps->approver_user_ids);
-        $ps->related_user_ids = $ps->user_names($ps->related_user_ids);
-        $ps->enabled = $ps->enabled==1 ? '已启用' : '已禁用' ;
-
-        if ($ps) {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-            $this->result['showData'] = $ps;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '';
-        }
-
-        return response()->json($this->result);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     * @param $id
-     * @return \Illuminate\Http\Response
-     * @internal param AttendanceMachine $attendanceMachine
-     */
-    public function edit($id) {
-        //记录返回给view
-        return view('procedure_step.edit', [
-            'js' => 'js/procedure_step/edit.js',
-            'procedureStep' => $this->procedureStep->findOrFail($id),
-            'form' => true
-        ]);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     * @param ProcedureStepRequest $request
-     * @param $id
-     * @return \Illuminate\Http\Response
-     * @internal param \Illuminate\Http\Request|Request $request
-     * @internal param AttendanceMachine $attendanceMachine
-     */
-    public function update(ProcedureStepRequest $request, $id) {
-        $procedureStep = $request->all();
-        $procedureStep['approver_user_ids'] = $this->procedureStep->join_ids($request->approver_user_ids);
-        $procedureStep['related_user_ids'] = $this->procedureStep->join_ids($request->related_user_ids);
-        $record = $this->procedureStep->where('procedure_id', $procedureStep['procedure_id'])
-            ->where('name', $procedureStep['name'])
-            ->where('approver_user_ids', $procedureStep['approver_user_ids'])
-            ->first();
-        if (!empty($record) && ($record->id != $id)) {
-            return response()->json(['statusCode' => self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR, 'message' => '已经有该记录！']);
-
-        }
-        if ($this->procedureStep->findOrFail($id)->update($procedureStep)) {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-            $this->result['message'] = self::MSG_EDIT_OK;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '更新失败';
-        }
-        return response()->json($this->result);
-    }
-
-    /**
-     * Remove the specified resource from storage.
+     * 显示指定的审批流程步骤记录详情
      *
      * @param $id
-     * @return \Illuminate\Http\Response
-     * @internal param Procedure $procedure
-     * @internal param AttendanceMachine $attendanceMachine
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function show($id) {
+        
+        $procedureStep = $this->procedureStep->find($id);
+        if (!$procedureStep) { return $this->notFound(); }
+        return $this->output(__METHOD__) ? $this->succeed() : $this->fail();
+    
+    }
+    
+    /**
+     * 显示编辑指定审批流程步骤记录的表单
+     *
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function edit($id) {
+        
+        $procedureStep = $this->procedureStep->find($id);
+        if (!$procedureStep) { return $this->notFound(); }
+        return $this->output(__METHOD__) ? $this->succeed() : $this->fail();
+    
+    }
+    
+    /**
+     * 更新指定的流程审批步骤记录
+     *
+     * @param ProcedureStepRequest $request
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function update(ProcedureStepRequest $request, $id) {
+    
+        $procedureStep = $this->procedureStep->find($id);
+        if (!$procedureStep) { return $this->notFound(); }
+        if ($this->procedureStep->existed($request, $id)) {
+            return $this->fail('已经有此记录');
+        }
+        return $procedureStep->update($request->all()) ? $this->succeed() : $this->fail();
+        
+    }
+    
+    /**
+     * 删除指定的审批流程步骤记录
+     *
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
-        //根据id查找需要删除的数据
-        //进行删除操作
-        //返回json 格式的操作结果
-        if ($this->procedureStep->findOrFail($id)->delete()) {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-            $this->result['message'] = self::MSG_DEL_OK;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '删除失败';
-        }
-        return response()->json($this->result);
+    
+        $procedureStep = $this->procedureStep->find($id);
+        if (!$procedureStep) { return $this->notFound(); }
+        return $procedureStep->delete() ? $this->succeed() : $this->fail();
+        
     }
 
-    /**
-     * @param  $id
-     * @return Jsonobj user_id:realname
-     */
     public function getSchoolEducators($id) {
         $temp = Procedure::whereId($id)->first(['school_id']);
         $data = Educator::with('user')->where('school_id', $temp->school_id)->get()->toArray();

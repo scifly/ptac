@@ -21,7 +21,7 @@ class IconTypeRequest extends FormRequest {
      */
     public function rules() {
         return [
-            'name' => 'required|string|max:60',
+            'name' => 'required|string|max:60|unique:icon_types',
             'remark' => 'string|max:255',
             'enabled' => 'required|boolean'
         ];

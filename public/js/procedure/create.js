@@ -1,1 +1,1 @@
-$(crud.create('formProcedure'));
+$(crud.create('formProcedure', 'procedures'));
