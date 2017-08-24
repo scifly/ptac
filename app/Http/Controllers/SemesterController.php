@@ -56,11 +56,9 @@ class SemesterController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function show($id) {
-
         $semester = $this->semester->find($id);
         if (!$semester) { return $this->notFound(); }
         return $this->output(__METHOD__, ['semester' => $semester]);
-
     }
     
     /**

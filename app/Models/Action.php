@@ -104,7 +104,7 @@ HTML;
     ];
     protected $routes;
     # 控制器路径
-    protected $dir = '/media/sf_sandbox/urlshortener/app/Http/Controllers';
+    protected $dir = '/media/sf_sandbox/ptac/app/Http/Controllers';
     
     /**
      * 返回当前action包含的卡片
@@ -356,8 +356,8 @@ HTML;
                     ['method', $action['method']]
                 ])->first();
                 if ($a) {
-                    $a->route = $action['route'];
-                    $a->action_type_ids = $action['action_type_ids'];
+                    // $a->route = $action['route'];
+                    // $a->action_type_ids = $action['action_type_ids'];
                     $a->save();
                 } else {
                     $data = [

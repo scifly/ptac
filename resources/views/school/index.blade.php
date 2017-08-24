@@ -1,11 +1,6 @@
-<div class="box box-primary">
-    <div class="box-header">
-        <div class="btn-group">
-            <a href="{{ url('schools/create') }}" class="btn btn-primary pull-right">
-                <i class="fa fa-plus"></i>
-                添加新学校
-            </a>
-        </div>
+<div class="box box-widget">
+    <div class="box-header with-border">
+        @include('partials.list_header', ['addBtn' => true])
     </div>
     <div class="box-body">
         <table id="data-table" class="dataTable table table-striped table-hover table-bordered">

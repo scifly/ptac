@@ -1,5 +1,7 @@
-<div class="box box-primary">
-    <div class="box-header"></div>
+<div class="box box-widget">
+    <div class="box-header with-border">
+        @include('partials.form_header')
+    </div>
     <div class="box-body">
         <div class="form-horizontal">
             <div class="form-group">
@@ -49,7 +51,7 @@
                 </div>
             </div>
             <div class="form-group">
-                <label for="enabled" class="col-sm-3 control-label">
+                <label for="enabled" class="col-sm-4 control-label">
                     是否启用
                 </label>
                 <div class="col-sm-6" style="margin-top: 5px;">

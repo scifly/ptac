@@ -16,14 +16,10 @@ class ProcedureLogController extends Controller {
         $this->procedureLog = $procedureLog;
     }
 
-
     /**
      * 我发起的流程列表
      */
     public function myProcedure(){
-
-        //-------------------------------
-
         if (Request::get('draw')) {
             $user_id = 6;
             //查询我发布的流程最后一条log记录
@@ -36,14 +32,12 @@ class ProcedureLogController extends Controller {
             return response()->json($this->procedureLog->datatable($where));
 
         }
-
         return view('procedure_log.index', [
             'js' => 'js/procedure_log/index.js',
             'dialog' => true,
             'datatable' => true
         ]);
 
-        //-------------------------------
 //        $user_id = 6;
 //        //查询我发布的流程最后一条log记录
 //        $ids = $this->procedureLog->select(DB::raw('max(procedure_logs.id) as id'))
@@ -77,13 +71,12 @@ class ProcedureLogController extends Controller {
             return response()->json($this->procedureLog->datatable($where));
 
         }
-
         return view('procedure_log.index', [
             'js' => 'js/procedure_log/index.js',
             'dialog' => true,
             'datatable' => true
         ]);
-//
+
 //        $user_id = 3;
 //        //查询待审核的流程最后一条log记录
 //        $ids = $this->procedureLog->select(DB::raw('max(procedure_logs.id) as id'))
@@ -127,7 +120,6 @@ class ProcedureLogController extends Controller {
         ]);
     }
 
-
     /**
      * 发起申请页
      *
@@ -145,7 +137,9 @@ class ProcedureLogController extends Controller {
 
     /**
      * 添加申请信息
+     *
      * @param ProcedureLogRequest $request
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(ProcedureLogRequest $request)
     {
@@ -182,7 +176,6 @@ class ProcedureLogController extends Controller {
 
     /**
      * 审批申请
-     * @param ProcedureLogRequest $request
      */
     public function decision()
     {

@@ -1,1 +1,1 @@
-$(crud.edit('formProcedure'));
+$(crud.edit('formProcedure', 'procedures'));

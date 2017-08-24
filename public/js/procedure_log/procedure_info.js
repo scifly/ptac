@@ -23,9 +23,10 @@ $(function () {
         }else{
             $('#step_status').val(1);
         }
-        data = $('#formProcedureLogDecision').serialize();
+        var $form = $('#formProcedureLogDecision');
+        data = $form.serialize();
         console.log(data);
-        $('#formProcedureLogDecision').parsley().on("form:validated", function () {
+        $form.parsley().on("form:validated", function () {
             if ($('.parsley-error').length === 0) {
                 $.ajax({
                     type: 'POST',
@@ -67,7 +68,7 @@ $(function () {
             showDrag: false
         },
         uploadExtraData: {
-            '_token': $('#csrf_token').attr('content');
+            '_token': $('#csrf_token').attr('content')
         }
     });
     // 上传成功
