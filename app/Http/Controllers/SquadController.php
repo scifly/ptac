@@ -30,12 +30,7 @@ class SquadController extends Controller
         if (Request::get('draw')) {
             return response()->json($this->squad->datatable());
         }
-        return view('class.index' , [
-            'js' => 'js/class/index.js',
-            'dialog' => true,
-            'datatable' => true,
-
-        ]);
+        return $this->output(__METHOD__);
 
     }
 
@@ -47,11 +42,7 @@ class SquadController extends Controller
     public function create()
     {
         //
-        return view('class.create',[
-            'js' => 'js/class/create.js',
-            'form' => true
-
-        ]);
+        return $this->output(__METHOD__);
 
     }
 
@@ -73,19 +64,13 @@ class SquadController extends Controller
         $data['enabled'] = $squadRequest->input('enabled');
 
         $row = $this->squad->where(['grade_id' => $data['grade_id'], 'name' => $data['name']])->first();
-        if(!empty($row)){
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '班级名称重复！';
+        if(!empty($row) ){
+
+            return $this->fail('班级名称重复！');
         }else{
-            if($this->squad->create($data))
-            {
-                $this->result['message'] = self::MSG_CREATE_OK;
-            } else {
-                $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-                $this->result['message'] = '';
-            }
+
+            return $this->squad->create($data) ? $this->succeed() : $this->fail();
         }
-        return response()->json($this->result);
 
     }
 
@@ -98,14 +83,20 @@ class SquadController extends Controller
     public function show($id)
     {
         //
-        $squad = Squad::whereId($id)->first();
+        $squad = $this->squad->find($id);
+        if (!$squad) { return parent::notFound(); }
+
         $educators = User::whereHas('educator' , function($query) use ($squad) {
 
             $f = explode(",", $squad->educator_ids);
             $query-> whereIn('id', $f);
 
-        })->get(['id','username'])->toArray();
-        return view('class.show', ['squad' => $squad, 'educators' => $educators]);
+        })->get(['id','realname'])->toArray();
+        if (!$squad) { return parent::notFound(); }
+        return parent::output(__METHOD__, [
+            'squad' => $squad,
+            'educators' => $educators
+        ]);
 
     }
 
@@ -118,25 +109,26 @@ class SquadController extends Controller
     public function edit($id)
     {
         //
-        $squad = $this->squad->whereId($id)->first();
+        $squad = $this->squad->find($id);
+
+        if (!$squad) { return parent::notFound(); }
+
         $educators = User::whereHas('educator' , function($query) use ($squad) {
 
             $f = explode(",", $squad->educator_ids);
             $query->whereIn('id', $f);
 
-        })->get(['id','username'])->toArray();
+        })->get(['id','realname'])->toArray();
 
         $selectedEducators = [];
         foreach ($educators as $value) {
-            $selectedEducators[$value['id']] = $value['username'];
+            $selectedEducators[$value['id']] = $value['realname'];
         }
-        return view('class.edit', [
-            'js' => 'js/class/edit.js',
+        return parent::output(__METHOD__, [
             'squad' => $squad,
             'selectedEducators' => $selectedEducators,
-            'form' => true
-
         ]);
+
     }
 
     /**
@@ -151,6 +143,7 @@ class SquadController extends Controller
     public function update(SquadRequest $squadRequest, $id)
     {
         $data = Squad::find($id);
+        if (!$data) { return parent::notFound(); }
         $ids = $squadRequest->input('educator_ids');
 
         $data->name = $squadRequest->input('name');
@@ -164,20 +157,11 @@ class SquadController extends Controller
             ])->first();
         if(!empty($row) && $row->id != $id){
 
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '班级名称重复！';
-
+            return $this->fail('班级名称重复！');
         }else{
-            if($data->save())
-            {
-                $this->result['message'] = self::MSG_EDIT_OK;
-            } else {
-                $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-                $this->result['message'] = '';
 
-            }
+            return $data->save() ? $this->succeed() : $this->fail();
         }
-        return response()->json($this->result);
     }
 
     /**
@@ -189,12 +173,9 @@ class SquadController extends Controller
      */
     public function destroy($id)
     {
-        if ($this->squad->findOrFail($id)->delete()) {
-            $this->result['message'] = self::MSG_DEL_OK;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '';
-        }
-        return response()->json($this->result);
+        $squad = $this->squad->find($id);
+
+        if (!$squad) { return parent::notFound(); }
+        return $squad->delete() ? parent::succeed() : parent::fail();
     }
 }

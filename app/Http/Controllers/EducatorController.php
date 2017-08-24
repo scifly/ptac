@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\EducatorRequest;
 use App\Models\Educator;
 use App\Models\Team;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
 
 /**
@@ -32,11 +31,7 @@ class EducatorController extends Controller
         if (Request::get('draw')) {
             return response()->json($this->educator->datatable());
         }
-        return view('educator.index' , [
-            'js' => 'js/educator/index.js',
-            'dialog' => true,
-            'datatable' => true
-            ]);
+        return $this->output(__METHOD__);
 
     }
 
@@ -47,11 +42,8 @@ class EducatorController extends Controller
      */
     public function create()
     {
-        //
-        return view('educator.create',[
-            'js' => 'js/educator/create.js',
-            'form' => true
-            ]);
+        return $this->output(__METHOD__);
+
     }
 
     /**
@@ -71,15 +63,7 @@ class EducatorController extends Controller
         $data['sms_quote'] = $educatorRequest->input('sms_quote');
         $data['enabled'] = $educatorRequest->input('enabled');
 
-        if($this->educator->create($data))
-        {
-            $this->result['message'] = self::MSG_CREATE_OK;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '';
-
-        }
-        return response()->json($this->result);
+        return $this->educator->create($data) ? $this->succeed() : $this->fail();
 
     }
 
@@ -93,18 +77,16 @@ class EducatorController extends Controller
     public function show($id)
     {
 
-        $educator = $this->educator->whereId($id)->first();
+        $educator = $this->educator->find($id);
+
+        if (!$educator) { return parent::notFound(); }
         $f = explode(",", $educator->team_ids);
         $teams=Team::whereIn('id',$f)->get(['id','name']);
 
-//        $teams = DB::table('teams')
-//            ->whereIn('id', $f )
-//            ->get(['id','name']);
 
-        return view('educator.show', [
+        if (!$educator) { return parent::notFound(); }
+        return parent::output(__METHOD__, [
             'educator' => $educator,
-            'show' => true,
-
             'teams' => $teams
         ]);
 
@@ -113,27 +95,27 @@ class EducatorController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Educator  $educator
+     * @param $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
     {
-        $educator = $this->educator->whereId($id)->first();
+        $educator =  $this->educator->find($id);
+        if (!$educator) { return parent::notFound(); }
+
         $ids = explode(",", $educator->team_ids);
 
-        $teams = DB::table('teams')
-            ->whereIn('id', $ids )
+        $teams = Team::whereIn('id', $ids)
             ->get(['id','name']);
         $selectedTeams = [];
         foreach ($teams as $value) {
             $selectedTeams[$value->id] = $value->name;
         }
-        return view('educator.edit', [
-            'js' => 'js/educator/edit.js',
+        return parent::output(__METHOD__, [
             'educator' => $educator,
             'selectedTeams' => $selectedTeams,
-            'form' => true
         ]);
+
     }
 
     /**
@@ -149,6 +131,7 @@ class EducatorController extends Controller
         // find the record by id
         // update the record with the request data
         $data = Educator::find($id);
+        if (!$data) { return parent::notFound(); }
         $ids = $request->input('team_ids');
 
         $data->user_id = $request->input('user_id');
@@ -156,16 +139,7 @@ class EducatorController extends Controller
         $data->team_ids = implode(',', $ids);
         $data->sms_quote = $request->input('sms_quote');
         $data->enabled = $request->input('enabled');
-
-        if($data->save())
-        {
-            $this->result['message'] = self::MSG_EDIT_OK;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '';
-
-        }
-        return response()->json($this->result);
+        return $data->save() ? $this->succeed() : $this->fail();
     }
 
     /**
@@ -177,12 +151,9 @@ class EducatorController extends Controller
      */
     public function destroy($id)
     {
-        if ($this->educator->findOrFail($id)->delete()) {
-            $this->result['message'] = self::MSG_DEL_OK;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '';
-        }
-        return response()->json($this->result);
+        $educator = $this->educator->find($id);
+
+        if (!$educator) { return parent::notFound(); }
+        return $educator->delete() ? parent::succeed() : parent::fail();
     }
 }

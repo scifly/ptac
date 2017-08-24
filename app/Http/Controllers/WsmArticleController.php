@@ -27,12 +27,7 @@ class WsmArticleController extends Controller
         if (Request::get('draw')) {
             return response()->json($this->article->datatable());
         }
-        return view('wsm_article.index' , [
-            'js' => 'js/wsm_article/index.js',
-            'dialog' => true,
-            'datatable' => true,
-            'form' => true,
-        ]);
+        return $this->output(__METHOD__);
     }
 
     /**
@@ -42,17 +37,14 @@ class WsmArticleController extends Controller
      */
     public function create()
     {
-        return view('wsm_article.create',[
-            'js' => 'js/wsm_article/create.js',
-            'form' => true,
-            'ueditor' => true,
-        ]);
+        return $this->output(__METHOD__);
+
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param WsmArticleRequest $request
      * @return \Illuminate\Http\Response
      */
     public function store(WsmArticleRequest $request)
@@ -82,15 +74,7 @@ class WsmArticleController extends Controller
             }
             $delStatus = Media::whereIn('id',$del_ids)->delete();
         }
-        if($this->article->create($data))
-        {
-            $this->result['message'] = self::MSG_CREATE_OK;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '';
-        }
-
-        return response()->json($this->result);
+        return $this->wapSite->create($data) ? $this->succeed() : $this->fail();
     }
 
     /**
@@ -102,16 +86,16 @@ class WsmArticleController extends Controller
      */
     public function show($id)
     {
-        $article = WsmArticle::whereId($id)->first();
+        $article = $this->article->find($id);
+        if (!$article) { return parent::notFound(); }
         $f = explode(",", $article->media_ids);
 
         $medias = Media::whereIn('id',$f)->get(['id','path']);
-
-        return view('wsm_article.show', [
+        return parent::output(__METHOD__, [
             'article' => $article,
             'medias' => $medias,
-            'ws' =>true
         ]);
+
     }
 
     /**
@@ -125,26 +109,22 @@ class WsmArticleController extends Controller
     {
         $article = $this->article->whereId($id)->first();
 
+        if (!$article) { return parent::notFound(); }
         $f = explode(",", $article->media_ids);
 
         $medias = Media::whereIn('id',$f)->get(['id','path']);
-
-        return view('wsm_article.edit', [
-            'js' => 'js/wsm_article/edit.js',
+        return parent::output(__METHOD__, [
             'article' => $article,
             'medias' => $medias,
-            'form' => true,
-            'ueditor' => true,
-
-
         ]);
+
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\WsmArticle  $wsmArticle
+     * @param WsmArticleRequest $request
+     * @param $id
      * @return \Illuminate\Http\Response
      */
     public function update(WsmArticleRequest $request, $id)
@@ -174,15 +154,7 @@ class WsmArticleController extends Controller
             $delStatus = Media::whereIn('id',$del_ids)->delete();
         }
 
-        if($data->save())
-        {
-            $this->result['message'] = self::MSG_EDIT_OK;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '';
-
-        }
-        return response()->json($this->result);
+        return $data->save() ? $this->succeed() : $this->fail();
     }
 
     /**
@@ -194,13 +166,10 @@ class WsmArticleController extends Controller
      */
     public function destroy($id)
     {
-        if ($this->article->findOrFail($id)->delete()) {
-            $this->result['message'] = self::MSG_DEL_OK;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '';
-        }
-        return response()->json($this->result);
+        $wsm = $this->article->find($id);
+
+        if (!$wsm) { return parent::notFound(); }
+        return $wsm->delete() ? parent::succeed() : parent::fail();
     }
 
     public function detail($id)

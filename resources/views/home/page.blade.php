@@ -439,13 +439,14 @@
 <script src="{{ URL::asset('js/plugins/fileinput/themes/explorer/theme.js') }}"></script>
 <!-- AdminLTE for demo purposes -->
 <script src="{{ URL::asset('js/demo.js') }}"></script>
-{{--<script src="{{ URL::asset('js/UEditor/ueditor.config.js') }}"></script>--}}
+{{--@isset($ued)--}}
+<script type="text/javascript" src="{{ URL::asset('js/plugins/UEditor/ueditor.config.js') }}"></script>
 <!-- 编辑器源码文件 -->
-{{--<script src="{{ URL::asset('js/UEditor/ueditor.all.js') }}"></script>--}}
+<script type="text/javascript" src="{{ URL::asset('js/plugins/UEditor/ueditor.all.js') }}"></script>
 <!-- 实例化编辑器 -->
-{{--<script type="text/javascript">
-    var editor = UE.getEditor('container');
-</script>--}}
+<script type="text/javascript">
+</script>
+{{--@endisset--}}
 <script src="{{ URL::asset($js) }}"></script>
 </body>
 </html>

@@ -24,13 +24,7 @@ class MessageTypeController extends Controller
         if (Request::get('draw')) {
             return response()->json($this->messageType->datatable());
         }
-        return view('message_type.index' ,
-            [
-                'js' => 'js/message_type/index.js',
-                'dialog' => true,
-                'datatable' => true,
-            ]);
-
+        return $this->output(__METHOD__);
     }
 
     /**
@@ -40,10 +34,8 @@ class MessageTypeController extends Controller
      */
     public function create()
     {
-        return view('message_type.create',[
-            'js' => 'js/message_type/create.js',
-            'form' => true
-        ]);
+        return $this->output(__METHOD__);
+
     }
 
     /**
@@ -58,20 +50,14 @@ class MessageTypeController extends Controller
         // request
         $data = $request->all();
         $row = $this->messageType->where(['name' => $data['name']])->first();
-        if(!empty($row)){
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '名称重复！';
-        }else{
-            if($this->messageType->create($data))
-            {
-                $this->result['message'] = self::MSG_CREATE_OK;
-            } else {
-                $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-                $this->result['message'] = '';
-            }
-        }
 
-        return response()->json($this->result);
+        if(!empty($row) ){
+
+            return $this->fail('名称重复！');
+        }else{
+
+            return $this->messageType->create($data) ? $this->succeed() : $this->fail();
+        }
     }
 
     /**
@@ -82,10 +68,12 @@ class MessageTypeController extends Controller
      */
     public function show($id)
     {
-        $messageType = MessageType::whereId($id)->first();
+        $messageType = $this->messageType->find($id);
 
-        return view('message_type.show', [
+        if (!$messageType) { return parent::notFound(); }
+        return parent::output(__METHOD__, [
             'messageType' => $messageType,
+
         ]);
     }
 
@@ -97,12 +85,11 @@ class MessageTypeController extends Controller
      */
     public function edit($id)
     {
-        $messageType = $this->messageType->whereId($id)->first();
+        $messageType = $this->messageType->find($id);
 
-        return view('message_type.edit', [
-            'js' => 'js/message_type/edit.js',
+        if (!$messageType) { return parent::notFound(); }
+        return parent::output(__METHOD__, [
             'messageType' => $messageType,
-            'form' => true
 
         ]);
     }
@@ -118,28 +105,18 @@ class MessageTypeController extends Controller
     public function update(MessageTypeRequest $request, $id)
     {
         $data = MessageType::find($id);
-
+        if (!$data) { return parent::notFound(); }
         $data->name = $request->input('name');
         $data->remark = $request->input('remark');
         $data->enabled = $request->input('enabled');
         $row = $this->messageType->where(['name' => $data->name])->first();
         if(!empty($row) && $row->id != $id){
 
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '名称重复！';
-
+            return $this->fail('名称重复！');
         }else{
-            if($data->save())
-            {
-                $this->result['message'] = self::MSG_EDIT_OK;
-            } else {
-                $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-                $this->result['message'] = '';
-
-            }
+            return $data->save() ? $this->succeed() : $this->fail();
         }
 
-        return response()->json($this->result);
     }
 
     /**
@@ -150,12 +127,9 @@ class MessageTypeController extends Controller
      */
     public function destroy($id)
     {
-        if ($this->messageType->findOrFail($id)->delete()) {
-            $this->result['message'] = self::MSG_DEL_OK;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '';
-        }
-        return response()->json($this->result);
+        $messageType = $this->messageType->find($id);
+
+        if (!$messageType) { return parent::notFound(); }
+        return $messageType->delete() ? parent::succeed() : parent::fail();
     }
 }

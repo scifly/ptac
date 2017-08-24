@@ -1,8 +1,10 @@
 /**
  * Created by Administrator on 2017-07-21 0021.
  */
-$(crud.create('formWsmArticle'));
+$(crud.create('formWsmArticle', 'wsm_articles'));
 $(function () {
+    var editor = UE.getEditor('container');//初始化富文本编辑器
+
     var $pre = $('.preview');
     var $uploadFile = $('#uploadFile');
     // 初始化

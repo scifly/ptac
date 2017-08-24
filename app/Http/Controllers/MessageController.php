@@ -27,12 +27,7 @@ class MessageController extends Controller
         if (Request::get('draw')) {
             return response()->json($this->message->datatable());
         }
-        return view('message.index' , [
-            'js' => 'js/message/index.js',
-            'dialog' => true,
-            'datatable' => true,
-            'form' => true,
-        ]);
+        return $this->output(__METHOD__);
     }
 
     /**
@@ -42,10 +37,8 @@ class MessageController extends Controller
      */
     public function create()
     {
-        return view('message.create',[
-            'js' => 'js/message/create.js',
-            'form' => true
-        ]);
+        return $this->output(__METHOD__);
+
     }
 
     /**
@@ -86,14 +79,7 @@ class MessageController extends Controller
             }
             $delStatus = Media::whereIn('id',$del_ids)->delete();
         }
-        if($this->message->create($data))
-        {
-            $this->result['message'] = self::MSG_CREATE_OK;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '';
-        }
-        return response()->json($this->result);
+        return $this->wapSite->create($data) ? $this->succeed() : $this->fail();
     }
 
     /**
@@ -104,19 +90,22 @@ class MessageController extends Controller
      */
     public function show($id)
     {
-        $message = Message::whereId($id)->first();
+
+        $message = $this->message->find($id);
+        if (!$message) { return parent::notFound(); }
         $f = explode(",", $message->user_ids);
 
         $users = User::whereIn('id', $f)->get(['id','realname']);
-
         $m = explode(",", $message->media_ids);
 
         $medias = Media::whereIn('id',$m)->get(['id','path']);
-        return view('message.show', [
+
+        return parent::output(__METHOD__, [
             'message' => $message,
             'users' => $users,
             'medias' => $medias,
         ]);
+
     }
 
     /**
@@ -127,7 +116,8 @@ class MessageController extends Controller
      */
     public function edit($id)
     {
-        $message = $this->message->whereId($id)->first();
+        $message = $this->message->find($id);
+        if (!$message) { return parent::notFound(); }
         $f = explode(",", $message->user_ids);
 
         $users = User::whereIn('id', $f)->get(['id','realname'])->toArray();
@@ -139,21 +129,17 @@ class MessageController extends Controller
         $m = explode(",", $message->media_ids);
 
         $medias = Media::whereIn('id',$m)->get(['id','path']);
-
-        return view('message.edit', [
-            'js' => 'js/message/edit.js',
+        return parent::output(__METHOD__, [
             'message' => $message,
             'selectedUsers' => $selectedUsers,
             'medias' => $medias,
-            'form' => true
-
         ]);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param Message|\Illuminate\Http\Request $request
+     * @param MessageRequest $request
      * @param $id
      * @return \Illuminate\Http\Response
      * @internal param Message $message
@@ -161,6 +147,7 @@ class MessageController extends Controller
     public function update(MessageRequest $request, $id)
     {
         $data = Message::find($id);
+        if (!$data) { return parent::notFound(); }
         $media_ids = $request->input('media_ids');
         $user_ids = $request->input('user_ids');
 
@@ -189,16 +176,8 @@ class MessageController extends Controller
             }
             $delStatus = Media::whereIn('id',$del_ids)->delete();
         }
-        if($data->save())
-        {
-            $this->result['message'] = self::MSG_EDIT_OK;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '';
 
-        }
-
-        return response()->json($this->result);
+        return $data->save() ? $this->succeed() : $this->fail();
     }
 
     /**
@@ -209,12 +188,9 @@ class MessageController extends Controller
      */
     public function destroy($id)
     {
-        if ($this->message->findOrFail($id)->delete()) {
-            $this->result['message'] = self::MSG_DEL_OK;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '';
-        }
-        return response()->json($this->result);
+        $message = $this->message->find($id);
+
+        if (!$message) { return parent::notFound(); }
+        return $message->delete() ? parent::succeed() : parent::fail();
     }
 }

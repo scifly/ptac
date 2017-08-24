@@ -83,7 +83,7 @@ class GradeController extends Controller
                 ])->first();
         if(!empty($row) ){
 
-            $this->fail('年级名称重复！');
+            return $this->fail('年级名称重复！');
         }else{
 
             return $this->grade->create($data) ? $this->succeed() : $this->fail();
@@ -99,15 +99,17 @@ class GradeController extends Controller
      */
     public function show($id)
     {
+        $grade = $this->grade->find($id);
+
+        if (!$grade) { return parent::notFound(); }
+
         $educators = User::whereHas('educator' , function($query) use ($grade) {
 
                 $f = explode(",", $grade->educator_ids);
                 $query->whereIn('id', $f);
 
-        })->get(['id','username'])->toArray();
-        $grade = $this->grade->find($id);
+        })->get(['id','realname'])->toArray();
 
-        if (!$grade) { return parent::notFound(); }
         return parent::output(__METHOD__, [
             'grade' => $grade,
             'educators' => $educators
@@ -130,11 +132,11 @@ class GradeController extends Controller
             $f = explode(",", $grade->educator_ids);
             $query->whereIn('id', $f);
 
-        })->get(['id','username'])->toArray();
+        })->get(['id','realname'])->toArray();
 
         $selectedEducators = [];
         foreach ($educators as $value) {
-            $selectedEducators[$value['id']] = $value['username'];
+            $selectedEducators[$value['id']] = $value['realname'];
         }
 
         return parent::output(__METHOD__, [
@@ -171,7 +173,7 @@ class GradeController extends Controller
             ])->first();
         if(!empty($row) && $row->id != $id){
 
-            $this->fail('年级名称重复！');
+            return $this->fail('年级名称重复！');
         }else{
 
             return $data->save() ? $this->succeed() : $this->fail();

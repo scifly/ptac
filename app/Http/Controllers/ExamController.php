@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ExamRequest;
 use App\Models\Exam;
+use App\Models\Squad;
+use App\Models\Subject;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -31,12 +33,7 @@ class ExamController extends Controller
         if (Request::get('draw')) {
             return response()->json($this->exam->datatable());
         }
-        return view('exam.index' ,
-            [
-                'js' => 'js/exam/index.js',
-                'dialog' => true,
-                'datatable' => true,
-            ]);
+        return $this->output(__METHOD__);
 
     }
 
@@ -47,10 +44,7 @@ class ExamController extends Controller
      */
     public function create()
     {
-        return view('exam.create',[
-            'js' => 'js/exam/create.js',
-            'form' => true
-        ]);
+        return $this->output(__METHOD__);
     }
 
     /**
@@ -78,45 +72,40 @@ class ExamController extends Controller
         $data['end_date'] = $examRequest->input('end_date');
         $data['enabled'] = $examRequest->input('enabled');
         $row = $this->exam->where(['exam_type_id' => $data['exam_type_id'], 'name' => $data['name']])->first();
-        if(!empty($row)){
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '名称重复！';
-        }else{
-            if($this->exam->create($data))
-            {
-                $this->result['message'] = self::MSG_CREATE_OK;
-            } else {
-                $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-                $this->result['message'] = '';
-            }
-        }
 
-        return response()->json($this->result);
+        if(!empty($row) ){
+
+            return $this->fail('名称重复！');
+        }else{
+
+            return $this->exam->create($data) ? $this->succeed() : $this->fail();
+        }
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Exam  $exam
+     * @param $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
     {
-        $exam = Exam::whereId($id)->first();
+        $exam = $this->exam->find($id);
+        if (!$exam) { return parent::notFound(); }
+
         $classIds = explode(",", $exam->class_ids);
-        $classes = DB::table('classes')
-            ->whereIn('id', $classIds )
+        $classes = Squad::whereIn('id', $classIds )
             ->get(['id','name']);
         $subjectIds = explode(",", $exam->subject_ids);
         $subjects = DB::table('subjects')
             ->whereIn('id', $subjectIds )
             ->get(['id','name']);
-
-        return view('exam.show', [
+        return parent::output(__METHOD__, [
             'exam' => $exam,
             'classes' => $classes,
             'subjects' => $subjects,
         ]);
+
     }
 
     /**
@@ -128,11 +117,12 @@ class ExamController extends Controller
      */
     public function edit($id)
     {
-        $exam = $this->exam->whereId($id)->first();
+        $exam = $this->exam->find($id);
+
+        if (!$exam) { return parent::notFound(); }
 
         $class = explode(",", $exam->class_ids);
-        $classes = DB::table('classes')
-            ->whereIn('id', $class )
+        $classes = Squad::whereIn('id', $class )
             ->get(['id','name']);
         $selectedClasses = [];
         foreach ($classes as $value) {
@@ -140,22 +130,19 @@ class ExamController extends Controller
         }
 
         $subject = explode(",", $exam->subject_ids);
-        $subjects = DB::table('subjects')
-            ->whereIn('id', $subject )
+        $subjects = Subject::whereIn('id', $subject )
             ->get(['id','name']);
         $selectedSubjects = [];
         foreach ($subjects as $value) {
             $selectedSubjects[$value->id] = $value->name;
         }
 
-
-        return view('exam.edit', [
-            'js' => 'js/exam/edit.js',
+        return parent::output(__METHOD__, [
             'exam' => $exam,
             'selectedClasses' => $selectedClasses,
             'selectedSubjects' => $selectedSubjects,
-            'form' => true
         ]);
+
     }
 
     /**
@@ -171,6 +158,9 @@ class ExamController extends Controller
     {
         // request
         $data = Exam::find($id);
+
+        if (!$data) { return parent::notFound(); }
+
         $classIds = $examRequest->input('class_ids');
         $subjectIds = $examRequest->input('subject_ids');
 
@@ -190,21 +180,11 @@ class ExamController extends Controller
             ])->first();
         if(!empty($row) && $row->id != $id){
 
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '名称重复！';
-
+            return $this->fail('名称重复！');
         }else{
-            if($data->save())
-            {
-                $this->result['message'] = self::MSG_EDIT_OK;
-            } else {
-                $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-                $this->result['message'] = '';
 
-            }
+            return $data->save() ? $this->succeed() : $this->fail();
         }
-
-        return response()->json($this->result);
     }
 
     /**
@@ -216,12 +196,9 @@ class ExamController extends Controller
      */
     public function destroy($id)
     {
-        if ($this->exam->findOrFail($id)->delete()) {
-            $this->result['message'] = self::MSG_DEL_OK;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '';
-        }
-        return response()->json($this->result);
+        $exam = $this->exam->find($id);
+
+        if (!$exam) { return parent::notFound(); }
+        return $exam->delete() ? parent::succeed() : parent::fail();
     }
 }

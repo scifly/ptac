@@ -40,6 +40,7 @@ class ComposerServiceProvider extends ServiceProvider {
         View::composer('wsm_article.create_edit', 'App\Http\ViewComposers\WsmArticleComposer');
         View::composer('action.create_edit', 'App\Http\ViewComposers\ActionComposer');
         View::composer('message.create_edit', 'App\Http\ViewComposers\MessageComposer');
+        View::composer('exam.create_edit', 'App\Http\ViewComposers\ExamComposer');
 
     }
 

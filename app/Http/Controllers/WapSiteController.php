@@ -29,12 +29,7 @@ class WapSiteController extends Controller
         if (Request::get('draw')) {
             return response()->json($this->wapSite->datatable());
         }
-        return view('wap_site.index' , [
-            'js' => 'js/wap_site/index.js',
-            'dialog' => true,
-            'datatable' => true,
-            'form' => true,
-        ]);
+        return $this->output(__METHOD__);
     }
 
     /**
@@ -44,10 +39,8 @@ class WapSiteController extends Controller
      */
     public function create()
     {
-        return view('wap_site.create',[
-            'js' => 'js/wap_site/create.js',
-            'form' => true
-        ]);
+        return $this->output(__METHOD__);
+
     }
 
     /**
@@ -70,9 +63,9 @@ class WapSiteController extends Controller
         $row = $this->wapSite->where([
                 'school_id' => $data['school_id']
             ])->first();
-        if(!empty($row)){
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '该学校已存在微网站！';
+        if(!empty($row) ){
+
+            return $this->fail('该学校已存在微网站！');
         }else{
             //删除原有的图片
             $del_ids = $request->input('del_ids');
@@ -87,15 +80,9 @@ class WapSiteController extends Controller
                 }
                 $delStatus = Media::whereIn('id',$del_ids)->delete();
             }
-            if($this->wapSite->create($data))
-            {
-                $this->result['message'] = self::MSG_CREATE_OK;
-            } else {
-                $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-                $this->result['message'] = '';
-            }
+            return $this->wapSite->create($data) ? $this->succeed() : $this->fail();
         }
-        return response()->json($this->result);
+
     }
 
     /**
@@ -108,37 +95,39 @@ class WapSiteController extends Controller
     public function show($id)
     {
 
-        $wapsite = WapSite::whereId($id)->first();
+        $wapsite = $this->wapSite->find($id);
+        if (!$wapsite) { return parent::notFound(); }
         $f = explode(",", $wapsite->media_ids);
 
         $medias = Media::whereIn('id',$f)->get(['id','path']);
-        return view('wap_site.show', [
+
+        return parent::output(__METHOD__, [
             'wapsite' => $wapsite,
             'medias' => $medias,
-            'ws' =>true
         ]);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\WapSite  $wapSite
+     * @param $id
      * @return \Illuminate\Http\Response
+     * @internal param WapSite $wapSite
      */
     public function edit( $id)
     {
-        $wapsite = $this->wapSite->whereId($id)->first();
+        $wapsite = $this->wapSite->find($id);
 
+        if (!$wapsite) { return parent::notFound(); }
         $f = explode(",", $wapsite->media_ids);
 
         $medias = Media::whereIn('id',$f)->get(['id','path']);
-        return view('wap_site.edit', [
-            'js' => 'js/wap_site/edit.js',
+
+        return parent::output(__METHOD__, [
             'wapsite' => $wapsite,
             'medias' => $medias,
-            'form' => true
-
         ]);
+
     }
 
     /**
@@ -153,6 +142,8 @@ class WapSiteController extends Controller
     public function update( WapSiteRequest $siteRequest, $id)
     {
         $data = WapSite::find($id);
+        if (!$data) { return parent::notFound(); }
+
         $media_ids = $siteRequest->input('media_ids');
 
         $data->school_id = $siteRequest->input('school_id');
@@ -163,13 +154,9 @@ class WapSiteController extends Controller
         $row = $this->wapSite->where([
             'school_id' => $data->school_id,
         ])->first();
-
-
         if(!empty($row) && $row->id != $id){
 
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '所属学校重复！';
-
+            return $this->fail('所属学校重复！');
         }else{
             //删除原有的图片
             $del_ids = $siteRequest->input('del_ids');
@@ -185,33 +172,24 @@ class WapSiteController extends Controller
                 $delStatus = Media::whereIn('id',$del_ids)->delete();
             }
 
-            if($data->save())
-            {
-                $this->result['message'] = self::MSG_EDIT_OK;
-            } else {
-                $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-                $this->result['message'] = '';
-
-            }
+            return $data->save() ? $this->succeed() : $this->fail();
         }
-        return response()->json($this->result);
+
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\WapSite  $wapSite
+     * @param $id
      * @return \Illuminate\Http\Response
+     * @internal param WapSite $wapSite
      */
     public function destroy($id)
     {
-        if ($this->wapSite->findOrFail($id)->delete()) {
-            $this->result['message'] = self::MSG_DEL_OK;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '';
-        }
-        return response()->json($this->result);
+        $wapsite = $this->wapSite->find($id);
+
+        if (!$wapsite) { return parent::notFound(); }
+        return $wapsite->delete() ? parent::succeed() : parent::fail();
     }
 
     /**

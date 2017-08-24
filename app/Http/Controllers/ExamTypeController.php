@@ -26,12 +26,7 @@ class ExamTypeController extends Controller
         if (Request::get('draw')) {
             return response()->json($this->examType->datatable());
         }
-        return view('exam_type.index' ,
-            [
-                'js' => 'js/exam_type/index.js',
-                'dialog' => true,
-                'datatable' => true,
-            ]);
+        return $this->output(__METHOD__);
 
     }
 
@@ -42,10 +37,7 @@ class ExamTypeController extends Controller
      */
     public function create()
     {
-        return view('exam_type.create',[
-            'js' => 'js/exam_type/create.js',
-            'form' => true
-        ]);
+        return $this->output(__METHOD__);
     }
 
     /**
@@ -60,20 +52,13 @@ class ExamTypeController extends Controller
         // request
         $data = $examTypeRequest->all();
         $row = $this->examType->where(['name' => $data['name']])->first();
-        if(!empty($row)){
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '名称重复！';
-        }else{
-            if($this->examType->create($data))
-            {
-                $this->result['message'] = self::MSG_CREATE_OK;
-            } else {
-                $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-                $this->result['message'] = '';
-            }
-        }
+        if(!empty($row) ){
 
-        return response()->json($this->result);
+            return $this->fail('名称重复！');
+        }else{
+
+            return $this->examType->create($data) ? $this->succeed() : $this->fail();
+        }
     }
 
     /**
@@ -85,28 +70,28 @@ class ExamTypeController extends Controller
      */
     public function show($id)
     {
-        $examType = ExamType::whereId($id)->first();
-
-        return view('exam_type.show', [
+        $examType = $this->examType->find($id);
+        if (!$examType) { return parent::notFound(); }
+        return parent::output(__METHOD__, [
             'examType' => $examType,
         ]);
+
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\ExamType  $examType
+     * @param $id
      * @return \Illuminate\Http\Response
+     * @internal param ExamType $examType
      */
     public function edit($id)
     {
-        $examType = $this->examType->whereId($id)->first();
+        $examType = $this->examType->find($id);
 
-        return view('exam_type.edit', [
-            'js' => 'js/exam_type/edit.js',
+        if (!$examType) { return parent::notFound(); }
+        return parent::output(__METHOD__, [
             'examType' => $examType,
-            'form' => true
-
         ]);
     }
 
@@ -123,27 +108,19 @@ class ExamTypeController extends Controller
     {
         $data = ExamType::find($id);
 
+        if (!$data) { return parent::notFound(); }
+
         $data->name = $examTypeRequest->input('name');
         $data->remark = $examTypeRequest->input('remark');
         $data->enabled = $examTypeRequest->input('enabled');
         $row = $this->examType->where(['name' => $data->name])->first();
         if(!empty($row) && $row->id != $id){
 
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '名称重复！';
-
+            return $this->fail('名称重复！');
         }else{
-            if($data->save())
-            {
-                $this->result['message'] = self::MSG_EDIT_OK;
-            } else {
-                $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-                $this->result['message'] = '';
 
-            }
+            return $data->save() ? $this->succeed() : $this->fail();
         }
-
-        return response()->json($this->result);
     }
 
     /**
@@ -155,12 +132,9 @@ class ExamTypeController extends Controller
      */
     public function destroy($id)
     {
-        if ($this->examType->findOrFail($id)->delete()) {
-            $this->result['message'] = self::MSG_DEL_OK;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '';
-        }
-        return response()->json($this->result);
+        $examType = $this->examType->find($id);
+
+        if (!$examType) { return parent::notFound(); }
+        return $examType->delete() ? parent::succeed() : parent::fail();
     }
 }
