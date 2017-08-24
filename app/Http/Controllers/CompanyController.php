@@ -92,7 +92,7 @@ class CompanyController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function update(CompanyRequest $request, $id) {
-
+       // dd($id);
         $input = $request->all();
         $record = $this->company->where('name', $input['name'])
             ->where('corpid', $input['corpid'])

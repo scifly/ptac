@@ -5,6 +5,13 @@
     <div class="box-body">
         <div class="form-horizontal">
             <div class="form-group">
+                <div class="col-sm-2">
+                    {!! Form::text('id', null, [
+                        'class' => 'form-control hidden',
+                    ]) !!}
+                </div>
+            </div>
+            <div class="form-group">
                 {!! Form::label('name', '名称',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-2">
                     {!! Form::text('name', null, [

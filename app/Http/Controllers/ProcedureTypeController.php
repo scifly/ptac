@@ -167,7 +167,6 @@ class ProcedureTypeController extends Controller {
     public function destroy($id) {
 
         $procedureType = $this->procedureType->find($id);
-        dd($procedureType);
         if (!$procedureType) {
             return $this->notFound();
         }
