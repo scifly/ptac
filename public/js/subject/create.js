@@ -1,1 +1,1 @@
-$(crud.create('formSubject'))
+$(crud.create('formSubject','subjects'))

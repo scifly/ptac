@@ -1,1 +1,1 @@
-$(crud.index('modal-show-subject'));
+$(crud.index('subjects'));

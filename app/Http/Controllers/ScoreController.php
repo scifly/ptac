@@ -160,7 +160,7 @@ class ScoreController extends Controller {
     }
 
     /**
-     *删除指定成绩记录
+     * 删除指定成绩记录
      *
      * @param $id
      * @return \Illuminate\Http\Response
@@ -174,7 +174,13 @@ class ScoreController extends Controller {
         return $score->delete() ? $this->succeed() : $this->fail();
     }
 
-    public function statistics($exam_id) {
+    /**
+     * 成绩统计
+     *
+     * @param $exam_id
+     */
+    public function statistics($exam_id){
+
         $class_ids = DB::table('exams')->where('id', $exam_id)->value('class_ids');
         $class = DB::table('classes')
             ->whereIn('id', explode(',', $class_ids))

@@ -101,7 +101,6 @@ var crud = {
             $row = $(this).parents().eq(2);
             $('#modal-dialog').modal({backdrop: true});
         });
-
         $('#confirm-delete').on('click', function () {
             crud.ajaxRequest(
                 'DELETE', page.siteRoot() + '/' + table + '/delete/' + id,
