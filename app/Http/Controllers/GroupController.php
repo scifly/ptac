@@ -6,168 +6,104 @@ use App\Http\Requests\GroupRequest;
 use App\Models\Group;
 use Illuminate\Support\Facades\Request;
 
-class GroupController extends Controller
-{
-
+class GroupController extends Controller {
+    
     protected $group;
-
+    
+    function __construct(Group $group) { $this->group = $group; }
+    
     /**
-     * GroupController constructor.
-     * @param Group $group
+     * 显示角色列表
+     *
+     * @return bool|\Illuminate\Http\JsonResponse
      */
-    function __construct(Group $group)
-    {
-        $this->group = $group;
-    }
-
-    /**
-     * 角色列表主页
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-
+    public function index() {
+        
         if (Request::get('draw')) {
             return response()->json($this->group->datatable());
         }
-        return view('group.index', [
-            'js' => 'js/group/index.js',
-            'datatable' => true,
-            'dialog' => true,
-            'show' => true
-        ]);
-
+        return $this->output(__METHOD__);
+        
     }
-
+    
     /**
-     * 新建角色页面
+     * 显示创建新角色的表单
      *
-     * @return \Illuminate\Http\Response
+     * @return bool|\Illuminate\Http\JsonResponse
      */
-    public function create()
-    {
-        return view('group.create', [
-            'js' => 'js/group/create.js',
-            'form' => true
-        ]);
-
+    public function create() {
+        
+        return $this->output(__METHOD__);
+        
     }
-
+    
     /**
-     *创建角色
+     * 保存新创建的角色记录
+     *
      * @param GroupRequest $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function store(GroupRequest $request)
-    {
-        $data = $request->all();
-        $result = $this->group->where('name',$data['name'])->first();
-        if (!empty($result))
-        {
-            $this->result['statusCode'] = self::MSG_BAD_REQUEST;
-            $this->result['message'] = '该角色已经存在,请勿重复添加!';
-        }else{
-            if ($this->group->create($data))
-            {
-                $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-                $this->result['message'] = self::MSG_CREATE_OK;
-            }else{
-                $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-                $this->result['message'] = '添加失败';
-            }
-        }
-
-        return response()->json($this->result);
-
+    public function store(GroupRequest $request) {
+        
+        return $this->group->create($request->all()) ? $this->succeed() : $this->fail();
+        
     }
-
+    
     /**
-     * 角色详情.
+     * 显示指定的角色记录详情
+     *
      * @param $id
-     * @return \Illuminate\Http\Response
+     * @return bool|\Illuminate\Http\JsonResponse
      */
-    public function show($id)
-    {
-        $groups = $this->group->whereId($id)
-            ->first(['name','remark','created_at','updated_at','enabled']);
-
-        $groups->enabled = $groups->enabled==1 ? '已启用' : '已禁用' ;
-        if ($groups) {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-            $this->result['showData'] = $groups;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '';
-        }
-        return response()->json($this->result);
-//        return view('group.show', [
-//            'group' => $this->group->findOrFail($id)
-//        ]);
-
+    public function show($id) {
+        
+        $group = $this->group->find($id);
+        if (!$group) { return $this->notFound(); }
+        return $this->output(__METHOD__, ['group' => $group]);
+        
     }
-
+    
     /**
-     * Show the form for editing the specified resource.
+     * 显示编辑指定角色记录的表单
+     *
      * @param $id
-     * @return \Illuminate\Http\Response
-     * @internal param Group $group
+     * @return bool|\Illuminate\Http\JsonResponse
      */
-    public function edit($id)
-    {
-        return view('group.edit', [
-            'js' => 'js/group/edit.js',
-            'group' => $this->group->findOrFail($id),
-            'form' => true
-        ]);
-
+    public function edit($id) {
+        
+        $group = $this->group->find($id);
+        if (!$group) { return $this->notFound(); }
+        return $this->output(__METHOD__, ['group' => $group]);
+        
     }
-
+    
     /**
-     * 更改角色
+     * 更新指定的角色记录
+     *
      * @param GroupRequest $request
      * @param $id
-     * @return \Illuminate\Http\Response
-     * @internal param Group $group
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function update(GroupRequest $request, $id)
-    {
-        $data = $request->all();
-        $result = $this->group->where('name',$data['name'])->first();
-        if(!empty($result) && $result->id!= $id)
-        {
-            $this->result['statusCode'] = self::MSG_BAD_REQUEST;
-            $this->result['message'] = '该角色已经存在!';
-        }else{
-            if ($this->group->findOrFail($id)->update($data)){
-                $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-                $this->result['message'] = self::MSG_EDIT_OK;
-            } else {
-                $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-                $this->result['message'] = '更新失败';
-            }
-        }
-
-        return response()->json($this->result);
-
+    public function update(GroupRequest $request, $id) {
+    
+        $group = $this->group->find($id);
+        if (!$group) { return $this->notFound(); }
+        return $group->update($request->all()) ? $this->succeed() : $this->fail();
+    
     }
-
+    
     /**
-     * 删除角色.
+     * 删除指定的角色记录
+     *
      * @param $id
-     * @return \Illuminate\Http\Response
-     * @internal param Group $group
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy($id)
-    {
-
-        if ($this->group->findOrFail($id)->delete())
-        {
-            $this->result['message'] = self::MSG_DEL_OK;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '删除失败';
-        }
-        return response()->json($this->result);
+    public function destroy($id) {
+    
+        $group = $this->group->find($id);
+        if (!$group) { return $this->notFound(); }
+        return $group->delete() ? $this->succeed() : $this->fail();
+    
     }
-
+    
 }

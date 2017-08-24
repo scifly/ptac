@@ -212,9 +212,7 @@
         </section>
         <!--content-->
         <section class="content">
-            @isset($dialog)
                 @include('partials.modal_dialog')
-            @endif
             {{--@yield('content')--}}
             @if(isset($tabs))
                 <div class="col-lg-12">

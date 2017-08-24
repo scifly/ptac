@@ -51,7 +51,7 @@
                 </div>
             </div>
             <div class="form-group">
-                <label for="enabled" class="col-sm-3 control-label">
+                <label for="enabled" class="col-sm-4 control-label">
                     是否启用
                 </label>
                 <div class="col-sm-6" style="margin-top: 5px;">

@@ -7,134 +7,107 @@ use App\Models\ExamType;
 use Illuminate\Support\Facades\Request;
 
 
-class ExamTypeController extends Controller
-{
+class ExamTypeController extends Controller {
     protected $examType;
-
+    
     function __construct(ExamType $examType) {
+        
         $this->examType = $examType;
-
+        
     }
-
+    
     /**
-     * Display a listing of the resource.
-     * @return \Illuminate\Http\Response
-     * @internal param Request $request
+     * 显示考试类型列表
+     *
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
-
+        
         if (Request::get('draw')) {
             return response()->json($this->examType->datatable());
         }
         return $this->output(__METHOD__);
-
+        
     }
-
+    
     /**
-     * Show the form for creating a new resource.
+     * 显示创建考试类型记录的表单
      *
-     * @return \Illuminate\Http\Response
+     * @return bool|\Illuminate\Http\JsonResponse
      */
-    public function create()
-    {
+    public function create() {
+        
         return $this->output(__METHOD__);
+        
     }
-
+    
     /**
-     * Store a newly created resource in storage.
+     * 保存新创建的考试类型记录
      *
-     * @param ExamTypeRequest $examTypeRequest
-     * @return \Illuminate\Http\Response
-     * @internal param \Illuminate\Http\Request $request
+     * @param ExamTypeRequest $request
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function store(ExamTypeRequest $examTypeRequest)
-    {
-        // request
-        $data = $examTypeRequest->all();
-        $row = $this->examType->where(['name' => $data['name']])->first();
-        if(!empty($row) ){
-
-            return $this->fail('名称重复！');
-        }else{
-
-            return $this->examType->create($data) ? $this->succeed() : $this->fail();
-        }
+    public function store(ExamTypeRequest $request) {
+        
+        return $this->examType->create($request->all()) ? $this->succeed() : $this->fail();
+        
     }
-
+    
     /**
-     * Display the specified resource.
+     * 显示指定的考试类型记录详情
      *
      * @param $id
-     * @return \Illuminate\Http\Response
-     * @internal param ExamType $examType
+     * @return bool|\Illuminate\Http\JsonResponse
      */
-    public function show($id)
-    {
+    public function show($id) {
+        
         $examType = $this->examType->find($id);
-        if (!$examType) { return parent::notFound(); }
-        return parent::output(__METHOD__, [
-            'examType' => $examType,
-        ]);
-
+        if (!$examType) { return $this->notFound(); }
+        return $this->output(__METHOD__, ['examType' => $examType]);
+        
     }
-
+    
     /**
-     * Show the form for editing the specified resource.
+     * 显示编辑指定考试类型记录的表单
      *
      * @param $id
-     * @return \Illuminate\Http\Response
-     * @internal param ExamType $examType
+     * @return bool|\Illuminate\Http\JsonResponse
      */
-    public function edit($id)
-    {
+    public function edit($id) {
+        
         $examType = $this->examType->find($id);
-
-        if (!$examType) { return parent::notFound(); }
-        return parent::output(__METHOD__, [
-            'examType' => $examType,
-        ]);
+        if (!$examType) { return $this->notFound(); }
+        return $this->output(__METHOD__, ['examType' => $examType]);
+    
     }
-
+    
     /**
-     * Update the specified resource in storage.
+     * 更新指定的考试类型记录
      *
-     * @param ExamTypeRequest $examTypeRequest
+     * @param ExamTypeRequest $request
      * @param $id
-     * @return \Illuminate\Http\Response
-     * @internal param \Illuminate\Http\Request $request
-     * @internal param ExamType $examType
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function update(ExamTypeRequest $examTypeRequest, $id)
-    {
-        $data = ExamType::find($id);
-
-        if (!$data) { return parent::notFound(); }
-
-        $data->name = $examTypeRequest->input('name');
-        $data->remark = $examTypeRequest->input('remark');
-        $data->enabled = $examTypeRequest->input('enabled');
-        $row = $this->examType->where(['name' => $data->name])->first();
-        if(!empty($row) && $row->id != $id){
-
-            return $this->fail('名称重复！');
-        }else{
-
-            return $data->save() ? $this->succeed() : $this->fail();
-        }
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param $id
-     * @return \Illuminate\Http\Response
-     * @internal param ExamType $examType
-     */
-    public function destroy($id)
-    {
+    public function update(ExamTypeRequest $request, $id) {
+    
         $examType = $this->examType->find($id);
-
-        if (!$examType) { return parent::notFound(); }
-        return $examType->delete() ? parent::succeed() : parent::fail();
+        if (!$examType) { return $this->notFound(); }
+        return $examType->update($request->all()) ? $this->succeed() : $this->fail();
+        
     }
+    
+    /**
+     * 删除指定的考试类型记录
+     *
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function destroy($id) {
+        
+        $examType = $this->examType->find($id);
+        if (!$examType) { return $this->notFound(); }
+        return $examType->delete() ? $this->succeed() : $this->fail();
+        
+    }
+    
 }

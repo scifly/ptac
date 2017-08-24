@@ -1,1 +1,1 @@
-$(crud.edit('formProcedureType'));
+$(crud.edit('formProcedureType', 'procedure_types'));

@@ -18,9 +18,9 @@ class ActionController extends Controller {
     }
     
     /**
-     * 显示action列表
+     * 显示Action列表
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
 

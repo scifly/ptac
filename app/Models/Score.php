@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Http\Requests\ScoreRequest;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
@@ -46,16 +47,28 @@ class Score extends Model {
         'enabled'
     ];
     
-    public function student() {
-        return $this->belongsTo('App\Models\Student');
-    }
+    public function student() { return $this->belongsTo('App\Models\Student'); }
     
-    public function subject() {
-        return $this->belongsTo('App\Models\Subject');
-    }
+    public function subject() { return $this->belongsTo('App\Models\Subject'); }
     
-    public function exam() {
-        return $this->belongsTo('App\Models\Exam');
+    public function exam() { return $this->belongsTo('App\Models\Exam'); }
+    
+    public function existed(ScoreRequest $request, $id = NULL) {
+        
+        if (!$id) {
+            $score = $this->where('student_id', $request->input('student_id'))
+                ->where('subject_id', $request->input('subject_id'))
+                ->where('exam_id', $request->input('exam_id'))
+                ->first();
+        } else {
+            $score = $this->where('student_id', $request->input('student_id'))
+                ->where('id', '<>' , $id)
+                ->where('subject_id', $request->input('subject_id'))
+                ->where('exam_id', $request->input('exam_id'))
+                ->first();
+        }
+        return $score ? true : false;
+        
     }
     
     public function datatable() {

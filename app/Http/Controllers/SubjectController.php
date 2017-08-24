@@ -26,14 +26,7 @@ class SubjectController extends Controller {
         if (Request::get('draw')) {
             return response()->json($this->subject->datatable());
         }
-
-        return view('subject.index', [
-            'js' => 'js/subject/index.js',
-            'dialog' => true,
-            'datatable' => true,
-            'form' => true,
-            'show' => true
-        ]);
+        return parent::output(__METHOD__);
         
     }
     
@@ -42,10 +35,8 @@ class SubjectController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function create() {
-        return view('subject.create', [
-            'js' => 'js/subject/create.js',
-            'form' => true
-        ]);
+
+        return parent::output(__METHOD__);
     }
     
     /**
@@ -59,15 +50,8 @@ class SubjectController extends Controller {
         $data = $request->except('_token');
 
         $data['grade_ids'] = implode(',', $data['grade_ids']);
-        
-        if ($this->subject->create($data)) {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-            $this->result['message'] = self::MSG_CREATE_OK;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '添加失败';
-        }
-        return response()->json($this->result);
+
+        return $this->subject->create($data) ? parent::succeed() : parent::fail();
         
     }
     
@@ -110,12 +94,18 @@ class SubjectController extends Controller {
             $grade = Grade::whereId($id)->first();
             $selectedGrades[$id] = $grade['name'];
         }
-        return view('subject.edit', [
-            'js' => 'js/subject/edit.js',
-            'form' => true,
+        dd($subject);
+        if (!$subject) { return parent::notFound(); }
+        return parent::output(__METHOD__, [
             'subject' => $subject,
             'selectedGrades' => $selectedGrades
         ]);
+//        return view('subject.edit', [
+//            'js' => 'js/subject/edit.js',
+//            'form' => true,
+//            'subject' => $subject,
+//            'selectedGrades' => $selectedGrades
+//        ]);
         
     }
 

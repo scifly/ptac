@@ -3,7 +3,9 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Http\Requests\SquadRequest;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -26,8 +28,8 @@ use Illuminate\Database\Eloquent\Model;
  * @mixin \Eloquent
  * 班级
  * @property-read \App\Models\Grade $grade
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Student[] $students
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\EducatorClass[] $educatorClass
+ * @property-read Collection|Student[] $students
+ * @property-read Collection|EducatorClass[] $educatorClass
  */
 class Squad extends Model {
     
@@ -40,26 +42,31 @@ class Squad extends Model {
         'enabled',
     ];
     
-    public function students() {
-        return $this->hasMany('App\Models\Student', 'class_id', 'id');
+    public function students() { return $this->hasMany('App\Models\Student'); }
+    
+    public function grade() { return $this->belongsTo('App\Models\Grade'); }
+
+    public function educators() {
+        
+        return $this->belongsToMany('App\Models\Educator', 'educators_classes');
+        
     }
     
-    public function grade() {
-        return $this->belongsTo('App\Models\Grade');
-    }
-
-
-
-
-
-//    public function educator()
-//    {
-//        return $this->belongsToMany('App\Models\Educator', 'educators_classes','class_id','educator_id');
-//
-//    }
-    
-    public function educatorClass() {
-        return $this->hasMany('App\Models\EducatorClass', 'class_id', 'id');
+    public function existed(SquadRequest $request, $id = NULL) {
+        
+        if (!$id) {
+            $class = $this->where([
+                'grade_id' => $request->input('grade_id'),
+                'name' => $request->input('name')
+            ])->first();
+        } else {
+            $class = $this->where('grade_id', $request->input('grade_id'))
+                ->where('id', '<>', $id)
+                ->where('name', $request->input('name'))
+                ->first();
+        }
+        return $class ? true : false;
+        
     }
     
     

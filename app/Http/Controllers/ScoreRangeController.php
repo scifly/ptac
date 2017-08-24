@@ -16,7 +16,7 @@ class ScoreRangeController extends Controller
     function __construct(ScoreRange $scoreRange) { $this->scoreRange = $scoreRange; }
 
     /**
-     * Display a listing of the resource.
+     * 显示成绩统计项列表
      *
      * @return \Illuminate\Http\Response
      */
@@ -33,7 +33,7 @@ class ScoreRangeController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * 显示创建成绩统计项的表单
      *
      * @return \Illuminate\Http\Response
      */
@@ -46,7 +46,8 @@ class ScoreRangeController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * 保存新创建的成绩统计项
+     *
      * @param ScoreRangeRequest $request
      * @return \Illuminate\Http\Response
      * @internal param \Illuminate\Http\Request|Request $request
@@ -65,7 +66,8 @@ class ScoreRangeController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * 显示指定的成绩统计项
+     *
      * @param $id
      * @return \Illuminate\Http\Response
      * @internal param ScoreRange $scoreRange
@@ -84,11 +86,10 @@ class ScoreRangeController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * 显示编辑指定成绩统计项的表单
      *
      * @param $id
-     * @return \Illuminate\Http\Response
-     * @internal param ScoreRange $scoreRange
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function edit($id)
     {
@@ -102,13 +103,13 @@ class ScoreRangeController extends Controller
         ]);
     }
 
+
     /**
-     * Update the specified resource in storage.
+     * 更新指定的成绩统计项
+     *
      * @param ScoreRangeRequest $request
      * @param $id
-     * @return \Illuminate\Http\Response
-     * @internal param \Illuminate\Http\Request $request
-     * @internal param ScoreRange $scoreRange
+     * @return \Illuminate\Http\JsonResponse
      */
     public function update(ScoreRangeRequest $request, $id)
     {
@@ -124,11 +125,10 @@ class ScoreRangeController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * 删除指定的成绩统计项
      *
      * @param $id
-     * @return \Illuminate\Http\Response
-     * @internal param ScoreRange $scoreRange
+     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id)
     {
@@ -140,6 +140,11 @@ class ScoreRangeController extends Controller
         }
     }
 
+    /**
+     * 显示成绩统计页面
+     *
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function statisticsShow(){
         $grades = DB::table('grades')->pluck('name', 'id');
         $classes = DB::table('classes')->pluck('name', 'id');
@@ -153,6 +158,13 @@ class ScoreRangeController extends Controller
         ]);
     }
 
+
+    /**
+     * 展示统计成绩段
+     *
+     * @param HttpRequest $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function statistics(HttpRequest $request){
         //获取请求参数
         $request = $request->all();
