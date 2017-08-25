@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use App\Http\Requests\StudentRequest;
 
 /**
  * App\Models\Student
@@ -89,7 +90,25 @@ class Student extends Model {
     public function scoreTotal() {
         return $this->hasMany('App\Models\ScoreTotal');
     }
-    
+
+    public function existed(StudentRequest $request, $id = NULL) {
+
+        if (!$id) {
+            $student = $this->where('user_id',$request->input('user_id'))
+                ->where('class_id',$request->input('class_id'))
+                ->where('student_number',$request->input('student_number'))
+                ->first();
+        } else {
+            $student = $this->where('user_id',$request->input('user_id'))
+                ->where('id','<>',$id)
+                ->where('class_id',$request->input('class_id'))
+                ->where('student_number',$request->input('student_number'))
+                ->first();
+        }
+        return $student ? true : false;
+
+    }
+
     public function datatable() {
         
         $columns = [

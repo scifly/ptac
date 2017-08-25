@@ -35,27 +35,19 @@ class SubjectModuleController extends Controller {
 
         return parent::output(__METHOD__);
     }
-    
+
     /**
      * 添加新次分类.
-     * @param SubjectModuleRequest|\Illuminate\Http\Request $request
+     *
+     * @param SubjectModuleRequest $request
      * @return \Illuminate\Http\Response
      */
     public function store(SubjectModuleRequest $request) {
         $data = $request->except('_token');
-        $result = $this->subjectModule
-            ->where('name',$data['name'])
-            ->where('subject_id',$data['subject_id'])
-            ->where('weight',$data['weight'])
-            ->first();
-        if (!empty($result)){
-            $this->result['statusCode'] = self::MSG_BAD_REQUEST;
-            $this->result['message'] = '该条数据已经存在,请勿重复添加!';
-            return response()->json($this->result);
-        }else{
-            return $this->subjectModule->create($data) ? parent::succeed() : parent::fail();
+        if ($this->subjectModule->existed($request)) {
+            return $this->fail('已经有此记录');
         }
-
+        return $this->subjectModule->create($data) ? parent::succeed() : parent::fail();
 
     }
     
@@ -106,28 +98,12 @@ class SubjectModuleController extends Controller {
      * @internal param SubjectModule $subjectModule
      */
     public function update(SubjectModuleRequest $request, $id) {
-        $data = $request->all();
-        $result = $this->subjectModule
-            ->where('name',$data['name'])
-            ->where('subject_id',$data['subject_id'])
-            ->where('weight',$data['weight'])
-            ->first();
-        if(!empty($result) && $result->id!=$id)
-        {
-            $this->result['statusCode'] = self::MSG_BAD_REQUEST;
-            $this->result['message'] = '该条数据已经存在,请勿重复添加!';
-        }else{
-            $subject = $this->subjectModule->findOrFail($id);
-            if ($subject->update($data)) {
-                $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-                $this->result['message'] = self::MSG_EDIT_OK;
-            } else {
-                $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-                $this->result['message'] = '更新失败';
-            }
+        $subjectModule = $this->subjectModule->find($id);
+        if (!$subjectModule) { return $this->notFound(); }
+        if ($this->subjectModule->existed($request, $id)) {
+            return $this->fail('已经有此记录');
         }
-
-        return response()->json($this->result);
+        return $subjectModule->update($request->all()) ? $this->succeed() : $this->fail();
     }
     
     /**

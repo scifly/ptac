@@ -1,1 +1,1 @@
-$(crud.create('formEducatorClass'))
+$(crud.create('formEducatorClass','educators_classes'))

@@ -75,7 +75,7 @@ class SubjectController extends Controller {
             $this->result['message'] = '';
         }
         return response()->json($this->result);
-//       
+//        return view('subject.show', ['subject' => $this->subject->findOrFail($id)]);
         
     }
     

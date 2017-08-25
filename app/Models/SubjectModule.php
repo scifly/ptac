@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use App\Http\Requests\SubjectModuleRequest;
 
 /**
  * App\Models\SubjectModule
@@ -45,7 +46,26 @@ class SubjectModule extends Model {
         return $this->belongsTo('App\Models\Subject', 'subject_id', 'id');
         
     }
-    
+
+    public function existed(SubjectModuleRequest $request, $id = NULL) {
+
+        if (!$id) {
+            $subjectModules = $this->where('name',$request->input('name'))
+                ->where('subject_id',$request->input('subject_id'))
+                ->where('weight',$request->input('weight'))
+                ->first();
+        } else {
+            $subjectModules = $this->where('name', $request->input('name'))
+                ->where('id', '<>', $id)
+                ->where('subject_id',$request->input('subject_id'))
+                ->where('weight',$request->input('weight'))
+                ->first();
+        }
+        return $subjectModules ? true : false;
+
+    }
+
+
     public function datatable() {
         
         $columns = [
