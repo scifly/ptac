@@ -35,21 +35,14 @@ class Media extends Model {
     public function mediaType() {
         return $this->belongsTo('App\Models\MediaType');
     }
-    
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function wapsitemoudle() {
-        
-        return $this->hasOne('App\Models\WapSiteModule');
-        
-    }
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function wasmarticle() {
 
-        return $this->hasOne('App\Models\WsmArticle', 'thumbnail_media_id', 'id');
-
+    public function medias($mediaIds) {
+        $mediaIds = explode(',', $mediaIds);
+        $medias = [];
+        foreach ($mediaIds as $mediaId) {
+            $medias[] = $this->find($mediaId);
+        }
+        return $medias;
     }
+
 }

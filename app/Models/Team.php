@@ -31,7 +31,16 @@ class Team extends Model {
     protected $fillable = [
         'name', 'enabled', 'school_id', 'remark'
     ];
-    
+    public function teams(array $teamIds) {
+
+        $teams = [];
+        foreach ($teamIds as $id) {
+            $team = $this->find($id);
+            $teams[$team->id] = $team->name;
+        }
+        return $teams;
+
+    }
     public function datatable() {
         
         $columns = [

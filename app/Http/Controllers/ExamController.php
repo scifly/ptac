@@ -79,28 +79,13 @@ class ExamController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function edit($id) {
-        
         $exam = $this->exam->find($id);
         if (!$exam) { return $this->notFound(); }
-        
-        $classes = $this->exam->classes(explode(',', $exam->class_ids));
-        $selectedClasses = [];
-        foreach ($classes as $class) {
-            $selectedClasses[$class->id] = $class->name;
-        }
-        
-        $subjects = $this->exam->subjects(explode(',', $exam->subject_ids));
-        $selectedSubjects = [];
-        foreach ($subjects as $subject) {
-            $selectedSubjects[$subject->id] = $subject->name;
-        }
-        
         return $this->output(__METHOD__, [
             'exam' => $exam,
-            'selectedClasses' => $selectedClasses,
-            'selectedSubjects' => $selectedSubjects,
+            'selectedClasses' => $this->exam->classes($exam->class_ids),
+            'selectedSubjects' => $this->exam->subjects($exam->subject_ids),
         ]);
-        
     }
     
     /**

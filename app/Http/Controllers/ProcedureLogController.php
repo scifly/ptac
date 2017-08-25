@@ -128,11 +128,7 @@ class ProcedureLogController extends Controller {
     public function create()
     {
         $procedure_id = DB::table('procedures')->pluck('name', 'id');
-        return view('procedure_log.create',[
-            'js' => 'js/procedure_log/create.js',
-            'procedure_id' => $procedure_id,
-            'form' => true
-        ]);
+        return $this->output(__METHOD__, ['procedure_id' => $procedure_id]);
     }
 
     /**
@@ -165,13 +161,10 @@ class ProcedureLogController extends Controller {
         if($id = $this->procedureLog->insertGetId($data))
         {
             $this->procedureLog->where('id', $id)->update(['first_log_id' => $id]);
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-            $this->result['message'] = self::MSG_CREATE_OK;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '';
+            return $this->succeed();
         }
-        return response()->json($this->result);
+        return $this->fail();
+
     }
 
     /**
@@ -189,35 +182,31 @@ class ProcedureLogController extends Controller {
                 'operator_media_ids' => empty($request['media_ids']) ? 0 : implode(',', $request['media_ids'])
             ]);
 
-        if($update){
-            if($request['step_status'] == 0){
-                $procedure_step = DB::table('procedure_steps')->where([
-                    ['procedure_id', '=', $request['procedure_id']],
-                    ['id', '>', $request['procedure_step_id']]
-                ])->orderBy('id','asc')->first();
-                if(!empty($procedure_step)){
-                    $data = [
-                        'procedure_id' => $request['procedure_id'],
-                        'initiator_user_id' => $request['initiator_user_id'],
-                        'procedure_step_id' => $procedure_step->id,
-                        'operator_user_id' => 0,
-                        'operator_msg' => 0,
-                        'operator_media_ids' => 0,
-                        'step_status' => 2,
-                        'first_log_id' => $request['first_log_id'],
-                        'initiator_msg' => $request['initiator_msg'],
-                        'initiator_media_ids' => empty($request['initiator_media_ids']) ? 0 : $request['initiator_media_ids']
-                    ];
-                    $this->procedureLog->insertGetId($data);
-                }
+        if(!$update){ return $this->fail();}
+
+        if($request['step_status'] == 0){
+            $procedure_step = DB::table('procedure_steps')->where([
+                ['procedure_id', '=', $request['procedure_id']],
+                ['id', '>', $request['procedure_step_id']]
+            ])->orderBy('id','asc')->first();
+            if(!empty($procedure_step)){
+                $data = [
+                    'procedure_id' => $request['procedure_id'],
+                    'initiator_user_id' => $request['initiator_user_id'],
+                    'procedure_step_id' => $procedure_step->id,
+                    'operator_user_id' => 0,
+                    'operator_msg' => 0,
+                    'operator_media_ids' => 0,
+                    'step_status' => 2,
+                    'first_log_id' => $request['first_log_id'],
+                    'initiator_msg' => $request['initiator_msg'],
+                    'initiator_media_ids' => empty($request['initiator_media_ids']) ? 0 : $request['initiator_media_ids']
+                ];
+                $this->procedureLog->insertGetId($data);
             }
-            $result['statusCode'] = self::HTTP_STATUSCODE_OK;
-            $result['message'] = '保存成功';
-        }else{
-            $result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $result['message'] = '请求失败';
         }
-        return response()->json($result);
+        return $this->succeed();
+
     }
 
 
