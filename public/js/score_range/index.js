@@ -1,1 +1,1 @@
-$(crud.index());
+$(crud.index('score_ranges'));

@@ -4,14 +4,6 @@
     <h2>
         姓名：{{ $studentname['realname'] }}
     </h2>
-    <a href="{{ url('score_totals/' . 'edit/' . $score_total->id) }}">
-        <span class="glyphicon glyphicon-edit"></span>
-        Edit
-    </a>
-    <a href="{{ url('score_totals/' . 'delete/' . $score_total->id ) }}">
-        <span class="glyphicon glyphicon-trash"></span>
-        Delete
-    </a>
     <p>Last edited: {{ $score_total->updated_at->diffForHumans() }}</p>
 @endsection
 @section('content')

@@ -3,197 +3,135 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\UserRequest;
-use App\Models\Group;
 use App\Models\User;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Request;
-use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller {
     protected $user;
-
-    function __construct(User $user) {
-        $this->user = $user;
-    }
-
+    
+    function __construct(User $user) { $this->user = $user; }
+    
     /**
-     * Display a listing of the resource.
+     * 显示用户列表
      *
-     * @return \Illuminate\Http\Response
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
+        
         if (Request::get('draw')) {
             return response()->json($this->user->datatable());
         }
-
-        return view('user.index', [
-            'js' => 'js/user/index.js',
-            'dialog' => true,
-            'datatable' => true,
-            'show' => true
-        ]);
+        return $this->output(__METHOD__);
+        
     }
-
+    
     /**
-     * Show the form for creating a new resource.
+     * 显示创建用户记录的表单
      *
-     * @return \Illuminate\Http\Response
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function create() {
-        return view('user.create', ['js' => 'js/user/create.js', 'form' => true]);
+        
+        return $this->output(__METHOD__);
+        
     }
-
+    
     /**
-     * Store a newly created resource in storage.
+     * 保存新创建的用户记录
+     *
      * @param UserRequest $request
-     * @return \Illuminate\Http\Response
-     * @internal param \Illuminate\Http\Request|Request $request
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(UserRequest $request) {
-        //创建一个考勤机空记录
-        //将request 请求中包含的表单数据填入空记录对应的字段中
-        //保存记录
-
-        $user = new User;
-        $user->group_id = $request->group_id;
-        $user->username = $request->username;
-        //TODO:remeber_token、wechatid、password 需要特殊处理
-        $user->remember_token = $request->_token;
-        //使用默认值
-        $user->password = '111111';
-        $user->email = $request->email;
-        $user->gender = $request->gender;
-        $user->realname = $request->realname;
-        $user->avatar_url = $request->avatar_url;
-        $user->wechatid = $request->wechatid;
-        $user->enabled = $request->enabled;
-
-        if ($user->save()) {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-            $this->result['message'] = self::MSG_CREATE_OK;
-        }else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = self::MSG_BAD_REQUEST;
+        
+        if ($this->user->existed($request)) {
+            return $this->fail('已经有此记录');
         }
-
-        return response()->json($this->result);
+        return $this->user->create($request->all()) ? $this->succeed() : $this->fail();
+        
     }
-
+    
     /**
-     * Display the specified resource.
-     * @return \Illuminate\Http\Response
-     * @internal param AttendanceMachine $attendanceMachine
-     */
-    public function show($id) {
-        //根据id 查找单条记录
-
-        $user = $this->user->whereId($id)
-            ->first(['username','group_id' ,'realname','gender','email', 'wechatid','created_at','updated_at','enabled']);
-
-        $user->group_id = $user->group->name;
-        $user->gender = $user->gender==1 ? '男':'女' ;
-        $user->enabled = $user->enabled==1 ? '已启用' : '已禁用' ;
-        if ($user) {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-            $this->result['showData'] = $user;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '';
-        }
-
-        return response()->json($this->result);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     * @param $id
-     * @return \Illuminate\Http\Response
-     * @internal param AttendanceMachine $attendanceMachine
-     */
-    public function edit($id) {
-        //根据id 查找单条记录
-        $user = User::findOrFail($id);
-
-        //记录返回给view
-        return view('user.edit', [
-            'js' => 'js/user/edit.js',
-            'user' => $user,
-            'form' => true
-        ]);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     * @param UserRequest $request
-     * @param $id
-     * @return \Illuminate\Http\Response
-     * @internal param \Illuminate\Http\Request|Request $request
-     * @internal param AttendanceMachine $attendanceMachine
-     */
-    public function update(UserRequest $request, $id) {
-        //根据id查找记录，
-        //把request 传的值，赋值给对应的字段
-        //保存当前记录
-        //根据操作结果返回不同的json数据
-        $user = User::findOrFail($id);
-        $user->group_id = $request->group_id;
-        $user->username = $request->username;
-        $user->remember_token = $request->_token;
-        $user->email = $request->email;
-        $user->gender = $request->gender;
-        $user->realname = $request->realname;
-        $user->avatar_url = $request->avatar_url;
-        $user->wechatid = $request->wechatid;
-        $user->enabled = $request->enabled;
-
-        if ($user->save()) {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-            $this->result['message'] = self::MSG_EDIT_OK;
-        }else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = self::MSG_BAD_REQUEST;
-        }
-
-        return response()->json($this->result);
-
-
-    }
-
-    /**
-     * Remove the specified resource from storage.
+     * 显示指定的用户记录详情
      *
      * @param $id
-     * @return \Illuminate\Http\Response
-     * @internal param Procedure $user
-     * @internal param AttendanceMachine $attendanceMachine
+     * @return bool|\Illuminate\Http\JsonResponse
+     */
+    public function show($id) {
+        
+        $user = $this->user->find($id);
+        if (!$user) {
+            return $this->notFound();
+        }
+        return $this->output(__METHOD__, ['user' => $user]);
+        
+    }
+    
+    /**
+     * 显示编辑指定用户记录的表单
+     *
+     * @param $id
+     * @return bool|\Illuminate\Http\JsonResponse
+     */
+    public function edit($id) {
+        
+        $user = $this->user->find($id);
+        if (!$user) {
+            return $this->notFound();
+        }
+        return $this->output(__METHOD__, ['user' => $user]);
+        
+    }
+    
+    /**
+     * 更新指定的用户记录
+     *
+     * @param UserRequest $request
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function update(UserRequest $request, $id) {
+        
+        $user = $this->user->find($id);
+        if (!$user) {
+            return $this->notFound();
+        }
+        if ($this->user->existed($request, $id)) {
+            return $this->fail('已经有此记录');
+        }
+        return $user->update($request->all()) ? $this->succeed() : $this->fail();
+        
+    }
+    
+    /**
+     * 删除指定的用户记录
+     *
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
-        //根据id查找需要删除表数据
-        //TODO:是否删除关联数据？？进行删除操作
-        //返回json 格式的操作结果
-
-        $user = User::findOrFail($id);
-
-        if ($user->delete()) {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-            $this->result['message'] = self::MSG_DEL_OK;
-        }else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = self::MSG_BAD_REQUEST;
+        
+        $user = $this->user->find($id);
+        if (!$user) {
+            return $this->notFound();
         }
-
-        return response()->json($this->result);
+        return $user->delete() ? $this->succeed() : $this->fail();
+        
     }
-
+    
     /**
-     * 上传头像处理
+     * 上传用户头像
+     *
      * @param $id
      * @return \Illuminate\Http\JsonResponse
      */
     public function uploadAvatar($id) {
+        
         $file = Request::file('avatar');
         $check = $this->checkFile($file);
         if (!$check['status']) {
-            return response()->json(['statusCode' => self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR, 'message' => $check['msg']]);
+            return $this->fail($check['msg']);
         }
         // 存项目路径
         $ymd = date("Ymd");
@@ -208,44 +146,42 @@ class UserController extends Controller {
         }
         // 移动
         if (!$file->move($path, $fileName)) {
-            return response()->json(['statusCode' => self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR, 'message' => '头像保存失败']);
+            return $this->fail('头像保存失败');
         }
-
+        
         //如果是create操作，图片路径不能直接存储数据库
         //TODO:需要处理默认头像、图片缓存问题
-        if($id<1)
-        {
+        if ($id < 1) {
             $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
             $this->result['fileName'] = $fileName;
-
             return response()->json($this->result);
         }
-
         return $this->saveImg($id, $fileName);
+        
     }
-
+    
     /**
      * 将图片路径存入数据库
+     *
      * @param $id
      * @param $imgName
      * @return \Illuminate\Http\JsonResponse
      */
     private function saveImg($id, $imgName) {
-
-        $personalImg = $this->user->whereId($id)->first();
-
+        
+        $user = $this->user->find($id);
         //判断数据库头像是否相同
-        if ($imgName !== $personalImg->avatar_url) {
-
-            $removeOldImg = storage_path('app/avauploads/') . $personalImg->avatar_url;
-
-            if (is_file($removeOldImg)&&strcmp($personalImg->avatar_url, 'default_avatar.png')!=0) {
-                unlink($removeOldImg);
+        if ($imgName !== $user->avatar_url) {
+            $imgToRemove = storage_path('app/avauploads/') . $user->avatar_url;
+            if (
+                is_file($imgToRemove) &&
+                strcmp($user->avatar_url, 'default_avatar.png') != 0
+            ) {
+                unlink($imgToRemove);
             }
-
-            $personalImg->avatar_url = $imgName;
-
-            if ($personalImg->save()) {
+            $user->avatar_url = $imgName;
+            if ($user->save()) {
+                
                 $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
                 $this->result['fileName'] = $imgName;
             } else {
@@ -254,14 +190,17 @@ class UserController extends Controller {
             }
         }
         return response()->json($this->result);
+        
     }
-
+    
     /**
      * 验证文件是否上传成功
+     *
      * @param $file
      * @return array
      */
-    private function checkFile($file) {
+    private function checkFile(UploadedFile $file) {
+        
         if (!$file->isValid()) {
             return ['status' => false, 'msg' => '文件上传失败'];
         }
@@ -269,6 +208,7 @@ class UserController extends Controller {
             return ['status' => false, 'msg' => '图片过大'];
         }
         return ['status' => true];
+        
     }
-
+    
 }

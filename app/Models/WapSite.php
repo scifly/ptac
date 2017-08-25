@@ -47,15 +47,19 @@ class WapSite extends Model
         'enabled',
     ];
 
-    public function wapSiteModules()
-    {
-        return $this->hasMany('App\Models\WapSiteModule', 'wap_site_id', 'id');
+    
+    public function wapSiteModules() {
+        
+        return $this->hasMany('App\Models\WapSiteModule');
+        
     }
-
-    public function school()
-    {
+    
+    public function school() {
+        
         return $this->belongsTo('App\Models\School');
+        
     }
+    
 
     public function store(WapSiteRequest $request)
     {

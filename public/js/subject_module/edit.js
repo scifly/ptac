@@ -1,1 +1,1 @@
-$(crud.edit('formSubjectModule'));
+$(crud.edit('formSubjectModule','subject_modules'));

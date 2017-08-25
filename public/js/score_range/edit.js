@@ -1,4 +1,4 @@
-$(crud.edit('formScoreRange'));
+$(crud.edit('formScoreRange','score_ranges'));
 
 getSubjectBySchoolId();
 

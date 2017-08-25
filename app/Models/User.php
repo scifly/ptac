@@ -3,10 +3,11 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
-use App\Models\PollQuestionnaireAnswer;
-use App\Models\PollQuestionnaireParticipant;
+use App\Http\Requests\UserRequest;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\DatabaseNotification;
+use Illuminate\Notifications\DatabaseNotificationCollection;
 use Illuminate\Notifications\Notifiable;
 
 /**
@@ -26,7 +27,7 @@ use Illuminate\Notifications\Notifiable;
  * @property \Carbon\Carbon|null $created_at
  * @property \Carbon\Carbon|null $updated_at
  * @property int $enabled
- * @property-read \Illuminate\Notifications\DatabaseNotificationCollection|\Illuminate\Notifications\DatabaseNotification[] $notifications
+ * @property-read DatabaseNotificationCollection|DatabaseNotification[] $notifications
  * @property string $userid 成员userid
  * @property string|null $english_name 英文名
  * @property string $department_ids 用户所属部门IDs
@@ -79,15 +80,13 @@ class User extends Authenticatable {
      * @var array
      */
     protected $fillable = [
-        'group_id',
-        'username',
-        'email',
-        'realname',
-        'gender',
-        'realname',
-        'avatar_url',
-        'wechatid',
-        'enabled',
+        'group_id', 'username', 'password',
+        'email', 'gender', 'realname',
+        'gender', 'realname', 'avatar_url',
+        'wechatid', 'userid', 'english_name',
+        'department_ids', 'isleader', 'position',
+        'telephone', 'order', 'mobile',
+        'avatar_mediaid', 'enabled',
     ];
     
     /**
@@ -95,9 +94,7 @@ class User extends Authenticatable {
      *
      * @var array
      */
-    protected $hidden = [
-        'password', 'remember_token',
-    ];
+    protected $hidden = ['password', 'remember_token'];
     
     public function custodian() { return $this->hasOne('App\Models\Custodian'); }
     
@@ -111,13 +108,32 @@ class User extends Authenticatable {
     
     public function order() { return $this->hasOne('App\Models\Order'); }
     
-    public function pollquestionnaires() { return $this->hasOne('App\Models\PollQuestionnaire'); }
+    public function pollQuestionnaires() { return $this->hasMany('App\Models\PollQuestionnaire'); }
     
-    public function pollquestionnaireAnswer() { return $this->hasOne('App\Models\PollQuestionnaireAnswer'); }
+    public function pollQuestionnaireAnswers() { return $this->hasMany('App\Models\PollQuestionnaireAnswer'); }
     
-    public function pollquestionnairePartcipant() { return $this->hasOne('App\Models\PollQuestionnaireParticipant'); }
-    public function message() {
-        return $this->hasMany('App\Models\Message');
+    public function pollQuestionnairePartcipants() { return $this->hasMany('App\Models\PollQuestionnaireParticipant'); }
+    
+    public function messages() { return $this->hasMany('App\Models\Message'); }
+    
+    public function existed(UserRequest $request, $id = NULL) {
+        
+        if (!$id) {
+            $user = $this->where('username', $request->input('username'))
+                ->orWhere('email', $request->input('email'))
+                ->orWhere('wechatid', $request->input('wechatid'))
+                ->orWhere('mobile', $request->input('mobile'))
+                ->first();
+        } else {
+            $user = $this->where('username', $request->input('username'))
+                ->where('id', '<>', $id)
+                ->orWhere('email', $request->input('email'))
+                ->orWhere('wechatid', $request->input('wechatid'))
+                ->orWhere('mobile', $request->input('mobile'))
+                ->first();
+        }
+        return $user ? true : false;
+        
     }
     public function users(array $userIds) {
 
@@ -129,6 +145,7 @@ class User extends Authenticatable {
         return $users;
 
     }
+
     public function datatable() {
         
         $columns = [
@@ -167,4 +184,5 @@ class User extends Authenticatable {
         
         return Datatable::simple($this, $columns, $joins);
     }
+    
 }

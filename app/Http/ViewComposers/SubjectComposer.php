@@ -19,7 +19,6 @@ class SubjectComposer {
 
     public function compose(View $view) {
 
-        // $view->with('schoolTypes', $this->schoolTypes->pluck('name', 'id'));
         $view->with([
             'schools' => $this->school->pluck('name', 'id'),
             'grades' => $this->grade->pluck('name', 'id'),

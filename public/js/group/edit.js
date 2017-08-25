@@ -1,1 +1,1 @@
-$(crud.edit('formGroup'));
+$(crud.edit('formGroup','groups'));

@@ -21,9 +21,9 @@ class TabController extends Controller {
     }
     
     /**
-     * Display a listing of the resource.
+     * 显示卡片列表
      *
-     * @return \Illuminate\Http\Response
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
 
@@ -35,9 +35,9 @@ class TabController extends Controller {
     }
     
     /**
-     * Show the form for creating a new resource.
-     * @return \Illuminate\Http\Response
-     * @internal param $tabId
+     * 显示创建卡片记录的表单
+     *
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function create() {
         
@@ -46,7 +46,7 @@ class TabController extends Controller {
     }
     
     /**
-     * Store a newly created resource in storage.
+     * 保存新创建的卡片记录
      *
      * @param TabRequest $request
      * @return \Illuminate\Http\JsonResponse
@@ -58,10 +58,10 @@ class TabController extends Controller {
     }
     
     /**
-     * Display the specified resource.
+     * 显示指定的卡片记录详情
      *
-     * @param  int $id
-     * @return \Illuminate\Http\Response
+     * @param $id
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function show($id) {
 
@@ -72,10 +72,10 @@ class TabController extends Controller {
     }
     
     /**
-     * Show the form for editing the specified resource.
+     * 显示编辑指定卡片记录的表单
      *
-     * @param  int $id
-     * @return \Illuminate\Http\Response
+     * @param $id
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function edit($id) {
         
@@ -95,10 +95,10 @@ class TabController extends Controller {
     }
     
     /**
-     * Update the specified resource in storage.
+     * 更新指定的卡片记录
      *
      * @param TabRequest $request
-     * @param  int $id
+     * @param $id
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(TabRequest $request, $id) {
@@ -110,13 +110,15 @@ class TabController extends Controller {
     }
     
     /**
-     * Remove the specified resource from storage.
+     * 删除指定的卡片记录
      *
-     * @param  int $id
-     * @return \Illuminate\Http\Response
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
-    
+
+        $tab = $this->tab->find($id);
+        if (!$tab) { return parent::notFound(); }
         return $this->tab->remove($id) ? parent::succeed() : parent::fail();
         
     }

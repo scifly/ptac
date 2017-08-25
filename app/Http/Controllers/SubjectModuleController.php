@@ -7,157 +7,111 @@ use App\Models\SubjectModule;
 use Illuminate\Support\Facades\Request;
 
 class SubjectModuleController extends Controller {
+    
     protected $subjectModule;
     
-    /**
-     * SubjectModulesController constructor.
-     * @param SubjectModule $subjectModule
-     */
-    function __construct(SubjectModule $subjectModule) { $this->subjectModule = $subjectModule; }
+    function __construct(SubjectModule $subjectModule) {
+        
+        $this->subjectModule = $subjectModule;
+        
+    }
     
     /**
-     * 显示次分类列表.
-     * @return \Illuminate\Http\Response
+     * 显示科目次分类列表
+     *
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
         if (Request::get('draw')) {
             return response()->json($this->subjectModule->datatable());
         }
-        return view('subject_module.index', [
-            'js' => 'js/subject_module/index.js',
-            'dialog' => true,
-            'datatable' => true,
-            'form' => true,
-            'show' => true,
-        ]);
+        return $this->output(__METHOD__);
     }
     
     /**
-     * 显示创建新的次分类
-     * @return \Illuminate\Http\Response
+     * 显示创建科目次分类记录的表单
+     *
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function create() {
-        return view('subject_module.create', [
-            'js' => 'js/subject_module/create.js',
-            'form' => true
-        ]);
+        
+        return $this->output(__METHOD__);
+        
     }
     
     /**
-     * 添加新次分类.
-     * @param SubjectModuleRequest|\Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
+     * 保存新创建的科目次分类记录
+     *
+     * @param SubjectModuleRequest $request
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(SubjectModuleRequest $request) {
-        $data = $request->except('_token');
-        dd($data);
-        $result = $this->subjectModule
-            ->where('name',$data['name'])
-            ->where('subject_id',$data['subject_id'])
-            ->where('weight',$data['weight'])
-            ->first();
-        if (!empty($result)){
-            $this->result['statusCode'] = self::MSG_BAD_REQUEST;
-            $this->result['message'] = '该条数据已经存在,请勿重复添加!';
-        }else{
-            if ($this->subjectModule->create($data)) {
-                $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-                $this->result['message'] = self::MSG_CREATE_OK;
-            }else{
-                $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-                $this->result['message'] = '添加失败!';
-            }
+        
+        if ($this->subjectModule->existed($request)) {
+            return $this->fail('已经有此记录');
         }
-
-        return response()->json($this->result);
+        return $this->subjectModule->create($request->all()) ? $this->succeed() : $this->fail();
 
     }
     
     /**
-     * Display the specified resource.
-     * @param  \App\Models\SubjectModule $subjectModule
-     * @return \Illuminate\Http\Response
+     * 显示指定的科目次分类记录详情
+     *
+     * @param $id
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function show($id) {
-        $subjectModule = $this->subjectModule->whereId($id)
-            ->first(['subject_id','name','weight','created_at','updated_at','enabled']);
-        $subjectModule->subject_id = $subjectModule->subject->name;
-        $subjectModule->enabled = $subjectModule->enabled==1 ? '已启用' : '已禁用' ;
-        if ($subjectModule) {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-            $this->result['showData'] = $subjectModule;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '';
-        }
-        return response()->json($this->result);
-//        return view('subject_module.show',[
-//            'subjectModule' => $this->subjectModule->FindOrfail($id)
-//        ]);
+        
+        $subjectModule = $this->subjectModule->find($id);
+        if (!$subjectModule) { return $this->notFound(); }
+        return $this->output(__METHOD__, ['subjectModule' => $subjectModule]);
+        
     }
     
     /**
-     * 编辑次分类.
+     * 显示编辑指定科目次分类记录的表单
+     *
      * @param $id
-     * @return \Illuminate\Http\Response
-     * @internal param SubjectModule $subjectModule
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function edit($id) {
-        $subjectModules = $this->subjectModule->findOrFail($id)->toArray();
         
-        return view('subject_module.edit', [
-            'js' => 'js/subject_module/edit.js',
-            'form' => true,
-            'subjectModules' => $subjectModules,
+        $subjectModule = $this->subjectModule->find($id);
+        if (!$subjectModule) { return $this->notFound(); }
+        return $this->output(__METHOD__, ['subjectModule' => $subjectModule]);
         
-        ]);
     }
     
     /**
-     * 更改次分类
-     * @param SubjectModuleRequest|\Illuminate\Http\Request $request
+     * 更新指定的科目次分类记录
+     *
+     * @param SubjectModuleRequest $request
      * @param $id
-     * @return \Illuminate\Http\Response
-     * @internal param SubjectModule $subjectModule
+     * @return \Illuminate\Http\JsonResponse
      */
     public function update(SubjectModuleRequest $request, $id) {
-        $data = $request->all();
-        $result = $this->subjectModule
-            ->where('name',$data['name'])
-            ->where('subject_id',$data['subject_id'])
-            ->where('weight',$data['weight'])
-            ->first();
-        if(!empty($result) && $result->id!=$id)
-        {
-            $this->result['statusCode'] = self::MSG_BAD_REQUEST;
-            $this->result['message'] = '该条数据已经存在,请勿重复添加!';
-        }else{
-            $subject = $this->subjectModule->findOrFail($id);
-            if ($subject->update($data)) {
-                $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-                $this->result['message'] = self::MSG_EDIT_OK;
-            } else {
-                $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-                $this->result['message'] = '更新失败';
-            }
+    
+        $subjectModule = $this->subjectModule->find($id);
+        if (!$subjectModule) { return $this->notFound(); }
+        if ($this->subjectModule->existed($request, $id)) {
+            return $this->fail('已经有此记录');
         }
-
-        return response()->json($this->result);
+        return $subjectModule->update($request->all()) ? $this->succeed() : $this->fail();
+        
     }
     
     /**
-     * 删除次分类
+     * 删除指定的科目次分类记录
+     *
      * @param $id
-     * @return \Illuminate\Http\Response
-     * @internal param SubjectModule $subjectModule
+     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
-        if ($this->subjectModule->findOrFail($id)->delete()) {
-            $this->result['message'] = self::MSG_DEL_OK;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '删除失败';
-        }
-        return response()->json($this->result);
+    
+        $subjectModule = $this->subjectModule->find($id);
+        if (!$subjectModule) { return $this->notFound(); }
+        return $subjectModule->delete() ? $this->succeed() : $this->fail();
+        
     }
+    
 }
