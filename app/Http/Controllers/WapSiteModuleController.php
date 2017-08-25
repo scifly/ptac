@@ -29,12 +29,7 @@ class WapSiteModuleController extends Controller
         if (Request::get('draw')) {
             return response()->json($this->wapSiteModule->datatable());
         }
-        return view('wap_site_module.index' , [
-            'js' => 'js/wap_site_module/index.js',
-            'dialog' => true,
-            'datatable' => true,
-            'form' => true,
-        ]);
+        return $this->output(__METHOD__);
     }
 
     /**
@@ -44,16 +39,14 @@ class WapSiteModuleController extends Controller
      */
     public function create()
     {
-        return view('wap_site_module.create',[
-            'js' => 'js/wap_site_module/create.js',
-            'form' => true
-        ]);
+        return $this->output(__METHOD__);
+
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param WapSiteModuleRequest $request
      * @return \Illuminate\Http\Response
      */
     public function store(WapSiteModuleRequest $request)
@@ -66,7 +59,6 @@ class WapSiteModuleController extends Controller
             'enabled' => $request->input('enabled')
         ];
 
-        //删除原有的图片
         $del_id = $request->input('del_id');
         if($del_id){
             $media = Media::whereIn('id',$del_id)->get(['id','path']);
@@ -79,56 +71,50 @@ class WapSiteModuleController extends Controller
             }
             $delStatus = Media::whereIn('id',$del_id)->delete();
         }
-        if($this->wapSiteModule->create($data))
-        {
-            $this->result['message'] = self::MSG_CREATE_OK;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '';
-        }
-
-
-        return response()->json($this->result);
+        return $this->wapSiteModule->create($data) ? $this->succeed() : $this->fail();
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\WapSiteModule  $wapSiteModule
+     * @param $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
     {
-        $module = WapSiteModule::whereId($id)->first();
+        $module = $this->wapSiteModule->find($id);
+        if (!$module) { return parent::notFound(); }
 
-        return view('wap_site_module.show', [
-            'module' => $module,
-            'ws' =>true
+
+        return parent::output(__METHOD__, [
+            '$module' => $module,
         ]);
+
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\WapSiteModule  $wapSiteModule
+     * @param $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
     {
-        $module = $this->wapSiteModule->whereId($id)->first();
-        return view('wap_site_module.edit', [
-            'js' => 'js/wap_site_module/edit.js',
-            'module' => $module,
-            'form' => true
+        $module = $this->wapSiteModule->find($id);
 
+        if (!$module) { return parent::notFound(); }
+
+        return parent::output(__METHOD__, [
+            'module' => $module,
         ]);
+
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\WapSiteModule  $wapSiteModule
+     * @param WapSiteModuleRequest $request
+     * @param $id
      * @return \Illuminate\Http\Response
      */
     public function update(WapSiteModuleRequest $request, $id)
@@ -153,16 +139,8 @@ class WapSiteModuleController extends Controller
             }
             $delStatus = Media::whereIn('id',$del_id)->delete();
         }
-        if($data->save())
-        {
-            $this->result['message'] = self::MSG_EDIT_OK;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '';
+        return $data->save() ? $this->succeed() : $this->fail();
 
-        }
-
-        return response()->json($this->result);
     }
 
     /**
@@ -173,13 +151,10 @@ class WapSiteModuleController extends Controller
      */
     public function destroy($id)
     {
-        if ($this->wapSiteModule->findOrFail($id)->delete()) {
-            $this->result['message'] = self::MSG_DEL_OK;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '';
-        }
-        return response()->json($this->result);
+        $wapsitemodule = $this->wapSiteModule->find($id);
+
+        if (!$wapsitemodule) { return parent::notFound(); }
+        return $wapsitemodule->delete() ? parent::succeed() : parent::fail();
     }
     public function webindex($id){
 

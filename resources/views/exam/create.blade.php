@@ -1,9 +1,4 @@
-@extends('layouts.master')
-@section('header')
-    <h1>添加新考试</h1>
-@endsection
-@section('content')
-    {!! Form::open(['method' => 'post', 'id' => 'formExam', 'data-parsley-validate' => 'true' ]) !!}
+
+    {!! Form::open(['url' => '/exams', 'method' => 'post', 'id' => 'formExam', 'data-parsley-validate' => 'true' ]) !!}
     @include('exam.create_edit')
     {!! Form::close() !!}
-@endsection

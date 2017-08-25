@@ -1,1 +1,1 @@
-$(crud.index('wapsites'));
+$(crud.index('messages'));

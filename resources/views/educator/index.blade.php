@@ -1,19 +1,8 @@
-@extends('layouts.master')
-@section('header')
-    <div class="panel-heading">
-        <div class="btn-group">
-            <a href="{{ url('educators/create') }}" class="btn btn-primary pull-right">
-                添加新教职员工
-            </a>
-        </div>
+<div class="box box-widget">
+    <div class="box-header with-border">
+        @include('partials.list_header')
     </div>
-@endsection
-@section('breadcrumb')
-    用户/通信录管理/教职员工
-@endsection
-@section('content')
-    <div class="panel-body">
-        <div class="table-responsive">
+    <div class="box-body">
             <table id="data-table" class="table table-striped table-bordered table-hover table-condensed">
                 <thead>
                 <tr>
@@ -30,5 +19,4 @@
                 <tbody></tbody>
             </table>
         </div>
-    </div>
-@endsection
+</div>

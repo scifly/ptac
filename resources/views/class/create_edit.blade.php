@@ -1,7 +1,18 @@
-<div class="box box-primary">
-    <div class="box-header"></div>
+<div class="box box-widget">
+    <div class="box-header with-border">
+        @include('partials.form_header')
+    </div>
     <div class="box-body">
         <div class="form-horizontal">
+            <div class="form-group">
+                {!! Form::label('id', 'id',['class' => 'col-sm-4 control-label']) !!}
+                <div class="col-sm-2">
+                    {!! Form::hidden('id', null, [
+                        'class' => 'form-control',
+                    ]) !!}
+                </div>
+
+            </div>
             <div class="form-group">
                 {!! Form::label('name', '名称',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-2">

@@ -419,4 +419,6 @@ Route::get('message_types/edit/{id}', 'MessageTypeController@edit');
 Route::put('message_types/update/{id}', 'MessageTypeController@update');
 Route::delete('message_types/delete/{id}', 'MessageTypeController@destroy');
 
-Route::get('test', 'TestController@test');
+
+Route::get('test', 'TestController@index');
+
