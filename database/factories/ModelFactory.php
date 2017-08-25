@@ -135,14 +135,18 @@ $factory->define(App\Models\Procedure::class, function (Faker\Generator $faker) 
 });
 
 $factory->define(App\Models\Subject::class, function (Faker\Generator $faker) {
-
+    $subject = ['语文','数学','英语','物理','化学','生物','政治','历史','地理','体育','音乐','美术',
+        '高等数学','线性代数','计算机组成原理','计算机英语','大学英语','汇编','离散数学','心理咨询与辅导'
+        ];
+    $max= [100,150];
+    $pass= [60,90];
     return [
         'school_id' => 1,
-        'name' => $faker->name,
+        'name' => $subject[rand(0,19)],
         'isaux' => 1,
-        'max_score' => 150,
-        'pass_score' => 90,
-        'grade_ids' => '1|33|22',
+        'max_score' => $max[rand(0,1)],
+        'pass_score' => $pass[rand(0,1)],
+        'grade_ids' => '1,33,22',
         'enabled' => 1
 
     ];
@@ -242,8 +246,8 @@ $factory->define(App\Models\Exam::class, function (Faker\Generator $faker) {
         'name' => $faker->name,
         'remark' => $faker->sentence(10),
         'exam_type_id' => 1,
-        'class_ids' => '1|2|3',
-        'subject_ids' => '1|2|3',
+        'class_ids' => '1,2,3',
+        'subject_ids' => '1,2,3',
         'max_scores' => 150,
         'pass_scores' => 90,
         'start_date' => $faker->dateTime,

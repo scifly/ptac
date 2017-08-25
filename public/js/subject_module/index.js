@@ -1,1 +1,1 @@
-$(crud.index('modal-show-subject_module'));
+$(crud.index('subject_modules'));

@@ -1,19 +1,8 @@
-@extends('layouts.master')
-@section('header')
-    <div class="panel-heading">
-        <div class="btn-group">
-            <a href="{{ url('grades/create') }}" class="btn btn-primary pull-right">
-                添加新年级
-            </a>
-        </div>
+<div class="box box-widget">
+    <div class="box-header with-border">
+        @include('partials.list_header', ['addBtn' => true])
     </div>
-@endsection
-@section('breadcrumb')
-    系统设置/年级班级设置
-@endsection
-@section('content')
-    <div class="panel-body">
-        <div class="table-responsive">
+    <div class="box-body">
             <table id="data-table" class="table table-striped table-bordered table-hover table-condensed">
                 <thead>
                 <tr>
@@ -29,5 +18,4 @@
                 <tbody></tbody>
             </table>
         </div>
-    </div>
-@endsection
+</div>

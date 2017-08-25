@@ -1,7 +1,18 @@
-<div class="box box-primary">
-    <div class="box-header"></div>
+<div class="box box-widget">
+    <div class="box-header with-border">
+        @include('partials.form_header')
+    </div>
     <div class="box-body">
         <div class="form-horizontal">
+            <div class="form-group">
+                {!! Form::label('id', 'id',['class' => 'col-sm-4 control-label']) !!}
+                <div class="col-sm-2">
+                    {!! Form::hidden('id', null, [
+                        'class' => 'form-control',
+                    ]) !!}
+                </div>
+
+            </div>
             <div class="form-group">
                 {!! Form::label('name', '名称',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-2">
@@ -35,7 +46,7 @@
             </div>
             <div class="form-group">
                 {!! Form::label('class_ids', '班级',['class' => 'col-sm-4 control-label']) !!}
-                <div class="col-sm-3">
+                <div class="col-sm-2">
                     <select multiple="multiple" name="class_ids[]" id="class_ids">
                         @foreach($classes as $key => $value)
                             @if(isset($selectedClasses))
@@ -51,7 +62,7 @@
             </div>
             <div class="form-group">
                 {!! Form::label('subject_ids', '科目',['class' => 'col-sm-4 control-label']) !!}
-                <div class="col-sm-5">
+                <div class="col-sm-2">
                     <select multiple="multiple" name="subject_ids[]" id="subject_ids">
                         @foreach($subjects as $key => $value)
                             @if(isset($selectedSubjects))
@@ -121,13 +132,5 @@
 
         </div>
     </div>
-    <div class="box-footer">
-        {{--button--}}
-        <div class="form-group">
-            <div class="col-sm-3 col-sm-offset-4">
-                {!! Form::submit('保存', ['class' => 'btn btn-primary pull-left', 'id' => 'save']) !!}
-                {!! Form::reset('取消', ['class' => 'btn btn-default pull-right', 'id' => 'cancel']) !!}
-            </div>
-        </div>
-    </div>
+    @include('partials.form_buttons')
 </div>

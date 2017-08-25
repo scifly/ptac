@@ -1,4 +1,4 @@
-$(crud.edit('formMessage'));
+$(crud.edit('formMessage', 'messages'));
 $(function () {
     var $pre = $('.preview');
     var $uploadFile = $('#uploadFile');
