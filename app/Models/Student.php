@@ -3,9 +3,10 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Http\Requests\StudentRequest;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use App\Http\Requests\StudentRequest;
+
 
 /**
  * App\Models\Student
@@ -57,57 +58,61 @@ class Student extends Model {
     
     
     public function squad() {
-        return $this->belongsTo('App\Models\Squad', 'class_id', 'id');
-    }
-    
-    
-    public function beLongsToSquad() {
+        
         return $this->belongsTo('App\Models\Squad', 'class_id', 'id');
         
     }
     
-    public function custodianStudent() {
-        return $this->hasMany('App\Models\CustodianStudent');
+    public function custodians() {
+        
+        return $this->belongsToMany('App\Models\Custodian', 'custodians_students');
         
     }
     
     public function user() {
+        
         return $this->belongsTo('App\Models\User');
+        
     }
     
     /**
      * 获取学生所有分数
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function score() {
+    public function scores() {
+        
         return $this->hasMany('App\Models\Score');
+        
     }
     
     /**
      * 获取学生总分
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function scoreTotal() {
+    public function scoreTotals() {
+        
         return $this->hasMany('App\Models\ScoreTotal');
+        
     }
-
+    
     public function existed(StudentRequest $request, $id = NULL) {
-
+        
         if (!$id) {
-            $student = $this->where('user_id',$request->input('user_id'))
-                ->where('class_id',$request->input('class_id'))
-                ->where('student_number',$request->input('student_number'))
+            $student = $this->where('user_id', $request->input('user_id'))
+                ->where('class_id', $request->input('class_id'))
+                ->where('student_number', $request->input('student_number'))
                 ->first();
         } else {
-            $student = $this->where('user_id',$request->input('user_id'))
-                ->where('id','<>',$id)
-                ->where('class_id',$request->input('class_id'))
-                ->where('student_number',$request->input('student_number'))
+            $student = $this->where('user_id', $request->input('user_id'))
+                ->where('id', '<>', $id)
+                ->where('class_id', $request->input('class_id'))
+                ->where('student_number', $request->input('student_number'))
                 ->first();
         }
         return $student ? true : false;
-
+        
     }
+
 
     public function datatable() {
         
@@ -134,10 +139,7 @@ class Student extends Model {
                     return Datatable::dtOps($this, $d, $row);
                 }
             ],
-        
-        
         ];
-        
         $joins = [
             [
                 'table' => 'users',
@@ -158,10 +160,8 @@ class Student extends Model {
         
         ];
         
-        
         return Datatable::simple($this, $columns, $joins);
         
     }
-    
     
 }

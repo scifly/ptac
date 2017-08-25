@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Http\Requests\WapSiteRequest;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
@@ -43,11 +44,22 @@ class WapSite extends Model {
     ];
     
     public function wapSiteModules() {
-        return $this->hasMany('App\Models\WapSiteModule', 'wap_site_id', 'id');
+        
+        return $this->hasMany('App\Models\WapSiteModule');
+        
     }
     
     public function school() {
+        
         return $this->belongsTo('App\Models\School');
+        
+    }
+    
+    public function store(WapSiteRequest $request) {
+        
+        $mediaIds = explode(',', $request->input('media_ids'));
+        
+        
     }
     
     /**

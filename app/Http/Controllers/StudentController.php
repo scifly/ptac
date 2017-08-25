@@ -6,113 +6,108 @@ use App\Http\Requests\StudentRequest;
 use App\Models\Student;
 use Illuminate\Support\Facades\Request;
 
-class StudentController extends Controller
-{
+class StudentController extends Controller {
+    
     protected $student;
-
-    function __construct(Student $student){ $this->student = $student; }
-
+    
+    function __construct(Student $student) { $this->student = $student; }
+    
     /**
      * 显示学生列表
-     * @return \Illuminate\Http\Response
+     *
      */
-    public function index()
-    {
+    public function index() {
+        
         if (Request::get('draw')) {
             return response()->json($this->student->datatable());
         }
-        return parent::output(__METHOD__);
+        return $this->output(__METHOD__);
+        
     }
-
-    /*
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        return parent::output(__METHOD__);
-    }
-
+    
     /**
-     * 添加学生
-     * @param StudentRequest $request
-     * @return \Illuminate\Http\Response
-     * @internal param $StudentRequest
+     * 显示创建学生记录的表单
+     *
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function store(StudentRequest $request)
-    {
-        $data = $request->except('_token');
+    public function create() {
+        
+        return $this->output(__METHOD__);
+        
+    }
+    
+    /**
+     * 保存新创建的学生记录
+     *
+     * @param StudentRequest $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function store(StudentRequest $request) {
+        
         if ($this->student->existed($request)) {
             return $this->fail('已经有此记录');
         }
-        return $this->student->create($data) ? $this->succeed() : $this->fail();
-
+        return $this->student->create($request->all()) ? $this->succeed() : $this->fail();
+        
     }
-
+    
     /**
-     * 学生详情页面.
+     * 显示指定的学生记录详情
+     *
      * @param $id
-     * @return \Illuminate\Http\Response
-     * @internal param Student $student
+     * @return bool|\Illuminate\Http\JsonResponse
      */
-    public function show($id){
-        $students = $this->student->whereId($id)
-            ->first([
-                'user_id','class_id',
-                'student_number',
-                'card_number',
-                'oncampus',
-                'birthday',
-                'remark',
-                'enabled'
-            ]);
-        $students->user_id = $students->user->realname;
-        $students->class_id = $students->squad->name;
-        $students->oncampus = $students->oncampus==1 ? '是' : '否' ;
-        $students->enabled = $students->enabled==1 ? '已启用' : '已禁用' ;
-        if (!$students) { return $this->notFound(); }
-        return $this->output(__METHOD__, ['students' => $students]);
-    }
-
-    /**
-     *  编辑学生页面
-     * @param $id
-     * @return \Illuminate\Http\Response
-     * @internal param Student $student
-     */
-    public function edit($id){
-
+    public function show($id) {
+        
         $student = $this->student->find($id);
         if (!$student) { return $this->notFound(); }
         return $this->output(__METHOD__, ['student' => $student]);
+        
     }
-
+    
     /**
-     * 更新指定学生的信息
+     * 显示编辑指定学生记录的表单
+     *
+     * @param $id
+     * @return bool|\Illuminate\Http\JsonResponse
+     */
+    public function edit($id) {
+    
+        $student = $this->student->find($id);
+        if (!$student) { return $this->notFound(); }
+        return $this->output(__METHOD__, ['student' => $student]);
+        
+    }
+    
+    /**
+     * 更新指定的学生记录
+     *
      * @param StudentRequest $request
      * @param $id
-     * @return \Illuminate\Http\Response
-     * @internal param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function update(StudentRequest $request, $id){
+    public function update(StudentRequest $request, $id) {
+        
         $student = $this->student->find($id);
         if (!$student) { return $this->notFound(); }
         if ($this->student->existed($request, $id)) {
             return $this->fail('已经有此记录');
         }
         return $student->update($request->all()) ? $this->succeed() : $this->fail();
+        
     }
-
+    
     /**
-     * 删除学生
+     * 删除指定的学生记录
+     *
      * @param $id
-     * @return \Illuminate\Http\Response
-     * @internal param Student $student
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy($id){
+    public function destroy($id) {
 
         $student = $this->student->find($id);
         if (!$student) { return $this->notFound(); }
         return $student->delete() ? $this->succeed() : $this->fail();
-
+        
     }
 }

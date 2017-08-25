@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Http\Requests\SubjectModuleRequest;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use App\Http\Requests\SubjectModuleRequest;
@@ -28,8 +29,8 @@ use App\Http\Requests\SubjectModuleRequest;
  * @property int $wap_site_id 所属微网站ID
  * @property int $media_id 模块图片多媒体ID
  * @property-read \App\Models\Subject $belongsToWs
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\SubjectModule whereMediaId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\SubjectModule whereWapSiteId($value)
+ * @method static Builder|SubjectModule whereMediaId($value)
+ * @method static Builder|SubjectModule whereWapSiteId($value)
  * @property-read \App\Models\Subject $subject
  */
 class SubjectModule extends Model {
@@ -42,8 +43,23 @@ class SubjectModule extends Model {
         'enabled',
     ];
     
-    public function subject() {
-        return $this->belongsTo('App\Models\Subject', 'subject_id', 'id');
+    public function subject() { return $this->belongsTo('App\Models\Subject'); }
+    
+    public function existed(SubjectModuleRequest $request, $id = NULL) {
+        
+        if (!$id) {
+            $subjectModule = $this->where('name',$request->input('name'))
+                ->where('subject_id',$request->input('subject_id'))
+                ->where('weight',$request->input('weight'))
+                ->first();
+        } else {
+            $subjectModule = $this->where('name',$request->input('name'))
+                ->where('id', '<>', $id)
+                ->where('subject_id',$request->input('subject_id'))
+                ->where('weight',$request->input('weight'))
+                ->first();
+        }
+        return $subjectModule ? true : false;
         
     }
 
@@ -84,7 +100,6 @@ class SubjectModule extends Model {
         
         
         ];
-        
         $joins = [
             [
                 'table' => 'subjects',
@@ -101,17 +116,4 @@ class SubjectModule extends Model {
         
     }
     
-    protected function prepareForValidation() {
-        
-        $input = $this->all();
-        
-        if (isset($input['enabled']) && $input['enabled'] === 'on') {
-            $input['enabled'] = 1;
-        }
-        if (!isset($input['enabled'])) {
-            $input['enabled'] = 0;
-        }
-        
-        $this->replace($input);
-    }
 }

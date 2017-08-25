@@ -11,15 +11,12 @@ class SubjectController extends Controller {
     
     protected $subject;
     
-    /**
-     * SubjectController constructor.
-     * @param Subject $subject
-     */
     function __construct(Subject $subject) { $this->subject = $subject; }
     
     /**
-     * 显示科目列表.
-     * @return \Illuminate\Http\Response
+     * 显示科目列表
+     *
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
         
@@ -31,122 +28,98 @@ class SubjectController extends Controller {
     }
     
     /**
-     * 显示创建新的科目.
-     * @return \Illuminate\Http\Response
+     * 显示创建新科目的表单
+     *
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function create() {
 
         return parent::output(__METHOD__);
+        
     }
     
     /**
-     * 添加新科目
+     * 保存新创建的科目记录
+     *
      * @param SubjectRequest $request
-     * @return \Illuminate\Http\Response
-     * @internal param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(SubjectRequest $request) {
         
-        $data = $request->except('_token');
         if ($this->subject->existed($request)) {
             return $this->fail('已经有此记录');
         }
-        return $this->subject->create($data) ? parent::succeed() : parent::fail();
+        return $this->subject->create($request->all()) ? $this->succeed() : $this->fail();
         
     }
     
     /**
-     *科目详情
+     * 显示指定科目记录的详情
+     *
      * @param $id
-     * @return \Illuminate\Http\Response
-     * @internal param Subject $subject
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function show($id) {
-        $subjects = $this->subject->whereId($id)
-            ->first(['name','school_id','isaux','max_score','pass_score','enabled']);
-        $subjects->school_id = $subjects->school->name;
-        $subjects->isaux = $subjects->isaux==1 ? '是' : '否' ;
-        $subjects->enabled = $subjects->enabled==1 ? '已启用' : '已禁用' ;
-        if ($subjects) {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-            $this->result['showData'] = $subjects;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '';
-        }
-        return response()->json($this->result);
-//        return view('subject.show', ['subject' => $this->subject->findOrFail($id)]);
+        
+        $subject = $this->subject->find($id);
+        if (!$subject) { return $this->notFound(); }
+        return $this->output(__METHOD__, ['subject' => $subject]);
         
     }
     
     /**
-     * 编辑
+     * 显示编辑指定科目记录的表单
+     *
      * @param $id
-     * @return \Illuminate\Http\Response
-     * @internal param Subject $subject
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function edit($id) {
-        
-        $subject = $this->subject->findOrFail($id)->toArray();
-        $ids = explode(',', $subject['grade_ids']);
+
+        $subject = $this->subject->find($id);
+        if (!$subject) { return $this->notFound(); }
+        $gradeIds = explode(',', $subject['grade_ids']);
         $selectedGrades = [];
-        foreach ($ids as $id) {
-            $grade = Grade::whereId($id)->first();
-            $selectedGrades[$id] = $grade['name'];
+        foreach ($gradeIds as $gradeId) {
+            $grade = Grade::whereId($gradeId)->first();
+            $selectedGrades[$gradeId] = $grade['name'];
         }
-        if (!$subject) { return parent::notFound(); }
         return parent::output(__METHOD__, [
             'subject' => $subject,
             'selectedGrades' => $selectedGrades
         ]);
-
+        
     }
-
+    
     /**
-     * 更新科目.
+     * 更新指定的科目记录
      *
      * @param SubjectRequest $request
      * @param $id
-     * @return \Illuminate\Http\Response
-     * @internal param $SubjectRequest
-     * @internal param Subject $subject
+     * @return \Illuminate\Http\JsonResponse
      */
     public function update(SubjectRequest $request, $id) {
+        
         $subject = $this->subject->find($id);
         if (!$subject) { return $this->notFound(); }
         if ($this->subject->existed($request, $id)) {
             return $this->fail('已经有此记录');
         }
         return $subject->update($request->all()) ? $this->succeed() : $this->fail();
+        
     }
     
     /**
-     * 删除科目.
+     * 删除指定的科目记录
      *
      * @param $id
-     * @return \Illuminate\Http\Response
-     * @internal param Subject $subject
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy($id)
-    {
+    public function destroy($id) {
+        
         $subject = $this->subject->find($id);
-        if (!$subject) { return parent::notFound(); }
-        return $subject->delete() ? parent::succeed() : parent::fail();
-
+        if (!$subject) { return $this->notFound(); }
+        return $subject->delete() ? $this->succeed() : $this->fail();
+        
     }
     
-    /**
-     * 根据条件查询科目
-     * @param $school_id
-     * @return \Illuminate\Http\Response
-     * @internal param Subject $subject
-     */
-    public function query($school_id) {
-        $subjects = $this->subject->where('school_id', $school_id)->get(['id', 'name']);
-        if ($subjects) {
-            return response()->json(['statusCode' => 200, 'subjects' => $subjects]);
-        } else {
-            return response()->json(['statusCode' => 500, 'message' => '查询失败!']);
-        }
-    }
 }

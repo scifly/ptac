@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Http\Requests\MenuRequest;
 use App\Models\MenuTab as MenuTab;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Mockery\Exception;
@@ -39,14 +40,14 @@ use Mockery\Exception;
  * @method static Builder|Menu whereUpdatedAt($value)
  * @method static Builder|Menu wherePosition($value)
  * @mixin \Eloquent
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tab[] $tabs
+ * @property-read Collection|\App\Models\Tab[] $tabs
  * @property int|null $icon_id 图标ID
- * @property-read \Illuminate\Database\Eloquent\Collection|Menu[] $children
+ * @property-read Collection|Menu[] $children
  * @property-read Menu|null $parent
  * @method static Builder|Menu whereIconId($value)
- * @property-read \App\Models\Icon|null $icon
- * @property-read \App\Models\Action|null $action
- * @property-read \App\Models\School $school
+ * @property-read Icon|null $icon
+ * @property-read Action|null $action
+ * @property-read School $school
  */
 class Menu extends Model {
     
@@ -118,7 +119,7 @@ class Menu extends Model {
      * 获取所有叶节点菜单
      *
      * @param null $schoolId
-     * @return \Illuminate\Database\Eloquent\Collection|static[]
+     * @return Collection|static[]
      */
     public function leaves($schoolId = NULL) {
         
