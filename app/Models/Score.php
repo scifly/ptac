@@ -6,6 +6,7 @@ use App\Facades\DatatableFacade as Datatable;
 use App\Http\Requests\ScoreRequest;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 /**
  * App\Models\Score
@@ -134,6 +135,72 @@ class Score extends Model {
             ]
         ];
         return Datatable::simple($this, $columns, $joins);
+    }
+
+    public function statistics($exam_id) {
+        $class_ids = DB::table('exams')->where('id', $exam_id)->value('class_ids');
+        $class = DB::table('classes')
+            ->whereIn('id', explode(',', $class_ids))
+            ->select('id', 'grade_id')
+            ->get();
+        //通过年级分组
+        $grades = [];
+        foreach ($class as $item) {
+            $grades[$item->grade_id][] = $item->id;
+        }
+        //循环每个年级
+        foreach ($grades as $class_ids_arr) {
+            //查找此年级所有班级的学生的各科成绩
+            $score = $this
+                ->join('students', 'students.id', '=', 'scores.student_id')
+                ->whereIn('students.class_id', $class_ids_arr)
+                ->where('scores.exam_id', $exam_id)
+                ->select('scores.id', 'scores.student_id', 'scores.subject_id', 'scores.score', 'students.class_id')
+                ->orderBy('scores.score', 'desc')
+                ->get();
+            //通过科目分组
+            $subject = [];
+            foreach ($score as $item) {
+                $subject[$item->subject_id][] = $item;
+            }
+            //循环每个科目
+            foreach ($subject as $val) {
+                foreach ($val as $k => $v) {
+                    $v->grade_rank = $k + 1;
+                    if ($k > 0) {
+                        if ($v->score == $val[$k - 1]->score) {
+                            $v->grade_rank = $val[$k - 1]->grade_rank;
+                        }
+                    }
+                }
+                //写入年级排名
+                foreach ($val as $grade_rank) {
+                    $this->where('id', $grade_rank->id)->update(['grade_rank' => $grade_rank->grade_rank]);
+                }
+
+                //通过班级分组
+                $classes = [];
+                foreach ($val as $item) {
+                    $classes[$item->class_id][] = $item;
+                }
+                //循环每个班级
+                foreach ($classes as $v) {
+                    foreach ($v as $class_k => $class_v) {
+                        $class_v->class_rank = $class_k + 1;
+                        if ($class_k > 0) {
+                            if ($class_v->score == $v[$class_k - 1]->score) {
+                                $class_v->class_rank = $v[$class_k - 1]->class_rank;
+                            }
+                        }
+                    }
+                    //写入年级排名
+                    foreach ($v as $class_rank) {
+                        $this->where('id', $class_rank->id)->update(['class_rank' => $class_rank->class_rank]);
+                    }
+                }
+            }
+        }
+        return true;
     }
     
 }

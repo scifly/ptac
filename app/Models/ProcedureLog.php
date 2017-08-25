@@ -166,9 +166,7 @@ class ProcedureLog extends Model {
                     }
 
                     $id = $row['first_log_id'];
-                    $showLink = '<a id = '. $id .' href="show/'.$id.'" class="btn btn-primary btn-icon btn-circle btn-xs" data-toggle="modal">
-            <i class="fa fa-eye"></i>
-        </a>';
+                    $showLink = '<a id = '. $id .' href="show/'.$id.'" class="btn btn-primary btn-icon btn-circle btn-xs" data-toggle="modal"><i class="fa fa-eye"></i></a>';
 
                     return $status . Datatable::DT_SPACE . $showLink;
 
