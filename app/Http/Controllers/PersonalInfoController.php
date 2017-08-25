@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\PersonalInfoRequest;
 use App\Models\User;
 use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\Session;
 
 class PersonalInfoController extends Controller {
     protected $user;
@@ -21,8 +22,10 @@ class PersonalInfoController extends Controller {
      * @return \Illuminate\Http\Response
      * @internal param User $user
      */
-    public function edit($id) {
-        $personalInfo = $this->user->whereId($id)->first();
+    public function index() {
+        //$id = Session::get('user');
+        $id = 1;
+        $personalInfo = $this->user->find($id);
         $group = $personalInfo->group()->whereId($personalInfo->group_id)->first();
         return view('personal_info.edit', [
             'js' => 'js/personal_info/edit.js',

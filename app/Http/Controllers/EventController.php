@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\EventRequest;
 use App\Models\Educator;
 use App\Models\Event;
-use App\Models\Subject;
+use App\Models\User;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
 
@@ -16,12 +17,16 @@ class EventController extends Controller {
     }
 
     /**
-     * 根据用户id 显示列表 个人的日历事件信息
-     * @param $userId
+     * 根据用户id显示列表和个人的日历事件信息
+     *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @internal param $userId
      * @internal param $id = user_id
      */
-    public function show($userId) {
+    public function index() {
+        //$userId = Session::get('user');
+        $userId = 1;
+
         $events = $this->event
             ->where('User_id', $userId)
             ->where('enabled', '0')
@@ -29,7 +34,8 @@ class EventController extends Controller {
         return view('event.index', [
             'js' => 'js/event/index.js',
             'fullcalendar' => true,
-            'events' => $events
+            'events' => $events,
+            'userId' => $userId
         ]);
     }
 
@@ -40,6 +46,7 @@ class EventController extends Controller {
      */
     public function calendarEvents($userId) {
         //判断userID的权限 1.管理员及以上  2.用户
+        $role = $this->getRole($userId);
 
         //通过userId找出educator_id
         $educator = Educator::where('user_id', $userId)->first();
@@ -64,7 +71,7 @@ class EventController extends Controller {
         //全部公共事件
         $pubEvents = $this->event->where('ispublic', 1)->get()->toArray();
         //如果是管理员
-        if ($userId == 1) {
+        if ($role == "管理员") {
             return response()->json(array_merge($pubEvents, $perEvents));
         }
         //如果是用户
@@ -74,21 +81,12 @@ class EventController extends Controller {
     /**
      * 新增一个列表事件
      *
+     * @param EventRequest $request
      * @return \Illuminate\Http\Response
      * @internal param \Illuminate\Http\Request $request
      */
-    public function store() {
-        $inputEvent = Request::all();
-        if ($inputEvent['iscourse'] == 0) {
-            $inputEvent['educator_id'] = '0';
-            $inputEvent['subject_id'] = '0';
-        }
-        if ($inputEvent['alertable'] == 0) {
-            $inputEvent['alert_mins'] = '0';
-        }
-        $inputEvent['start'] = "1970-01-01 00:00:00";
-        $inputEvent['end'] = "1970-01-01 00:00:00";
-        $inputEvent['enabled'] = 0;
+    public function store(EventRequest $request) {
+        $inputEvent = $request->all();
         $listDate = $this->event->create($inputEvent);
         if ($listDate) {
             $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
@@ -109,7 +107,10 @@ class EventController extends Controller {
      */
     public function edit($id) {
         //判断当前用户权限
-
+        $row = Request::all();
+        if($row['ispublic'] == 0){
+            dd(1111111111);
+        }
         $data = view('event.show', ['events' => $this->event->findOrFail($id)])->render();
         if (!empty($data)) {
             $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
@@ -125,13 +126,16 @@ class EventController extends Controller {
     /**
      * 更新指定日历事件
      *
+     * @param EventRequest $request
+     * @param $id
      * @return \Illuminate\Http\Response
      * @internal param \Illuminate\Http\Request $request
      * @internal param Event $event
      */
-    public function update($id) {
-        $data = Request::all();
-        if ($this->event->findOrFail($id)->update($data)) {
+    public function update(EventRequest $request, $id) {
+        $input = $request->all();
+        $input['enable'] = 1;
+        if ($this->event->findOrFail($id)->update($input)) {
             $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
             $this->result['message'] = self::MSG_EDIT_OK;
         } else {
@@ -142,7 +146,7 @@ class EventController extends Controller {
     }
 
     /**
-     *删除事件 包括日历事件和列表时间
+     *删除事件 包括日历事件和列表事件
      *
      * @param $id
      * @return \Illuminate\Http\Response
@@ -183,7 +187,7 @@ class EventController extends Controller {
     }
 
     /**
-     * 拖动实时保存
+     * 拖动实时保存日历事件
      *
      * @return \Illuminate\Http\JsonResponse
      */
@@ -213,23 +217,11 @@ class EventController extends Controller {
      * 判断当前用户权限
      */
 //    private function getPermissions(){
-//
 //        $uId = Session::get('user');
 //    }
 
-    /**
-     * 获取当前user_id 对应的学校的所有教职工id
-     *
-     * @param $userId
-     * @return array
-     */
-    private function getEducators($userId) {
-        $educator = Educator::where('user_id', $userId)->first();
-        return Educator::where('school_id', $educator->school_id)->get()->toArray();
-    }
-
-    private function getSubjects($userId) {
-        $educator = Educator::where('user_id', $userId)->first();
-        return Subject::where('school_id', $educator->school_id)->get()->toArray();
+    private function getRole($userId) {
+        $role = User::find($userId)->group;
+        return $role->name;
     }
 }

@@ -5,157 +5,105 @@ namespace App\Http\Controllers;
 use App\Http\Requests\MessageTypeRequest;
 use App\Models\MessageType;
 use Illuminate\Support\Facades\Request;
-class MessageTypeController extends Controller
-{
+
+class MessageTypeController extends Controller {
+    
     protected $messageType;
-
-    function __construct(MessageType $messageType) {
-        $this->messageType = $messageType;
-
-    }
-
+    
+    function __construct(MessageType $messageType) { $this->messageType = $messageType; }
+    
     /**
-     * Display a listing of the resource.
-     * @return \Illuminate\Http\Response
-     * @internal param Request $request
+     * 显示消息类型列表
+     *
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
-
+        
         if (Request::get('draw')) {
             return response()->json($this->messageType->datatable());
         }
-        return view('message_type.index' ,
-            [
-                'js' => 'js/message_type/index.js',
-                'dialog' => true,
-                'datatable' => true,
-            ]);
-
+        return $this->output(__METHOD__);
+        
     }
-
+    
     /**
-     * Show the form for creating a new resource.
+     * 显示创建消息类型记录的表单
      *
-     * @return \Illuminate\Http\Response
+     * @return bool|\Illuminate\Http\JsonResponse
      */
-    public function create()
-    {
-        return view('message_type.create',[
-            'js' => 'js/message_type/create.js',
-            'form' => true
-        ]);
+    public function create() {
+        
+        return $this->output(__METHOD__);
+        
     }
-
+    
     /**
-     * Store a newly created resource in storage.
+     * 保存新创建的消息类型记录
      *
      * @param MessageTypeRequest $request
-     * @return \Illuminate\Http\Response
-     * @internal param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function store(MessageTypeRequest $request)
-    {
-        // request
-        $data = $request->all();
-        $row = $this->messageType->where(['name' => $data['name']])->first();
-        if(!empty($row)){
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '名称重复！';
-        }else{
-            if($this->messageType->create($data))
-            {
-                $this->result['message'] = self::MSG_CREATE_OK;
-            } else {
-                $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-                $this->result['message'] = '';
-            }
-        }
-
-        return response()->json($this->result);
+    public function store(MessageTypeRequest $request) {
+        
+        return $this->messageType->create($request->all()) ? $this->succeed() : $this->fail();
+        
     }
-
+    
     /**
-     * Display the specified resource.
+     * 显示指定的消息类型记录详情
      *
      * @param $id
-     * @return \Illuminate\Http\Response
+     * @return bool|\Illuminate\Http\JsonResponse
      */
-    public function show($id)
-    {
-        $messageType = MessageType::whereId($id)->first();
-
-        return view('message_type.show', [
-            'messageType' => $messageType,
-        ]);
+    public function show($id) {
+        
+        $messageType = $this->messageType->find($id);
+        if (!$messageType) { return $this->notFound(); }
+        return $this->output(__METHOD__, ['messageType' => $messageType]);
+        
     }
-
+    
     /**
-     * Show the form for editing the specified resource.
+     * 显示编辑指定消息类型记录的表单
      *
      * @param $id
-     * @return \Illuminate\Http\Response
+     * @return bool|\Illuminate\Http\JsonResponse
      */
-    public function edit($id)
-    {
-        $messageType = $this->messageType->whereId($id)->first();
-
-        return view('message_type.edit', [
-            'js' => 'js/message_type/edit.js',
-            'messageType' => $messageType,
-            'form' => true
-
-        ]);
+    public function edit($id) {
+    
+        $messageType = $this->messageType->find($id);
+        if (!$messageType) { return $this->notFound(); }
+        return $this->output(__METHOD__, ['messageType' => $messageType]);
+    
     }
-
+    
     /**
-     * Update the specified resource in storage.
+     * 更新指定的消息类型记录
      *
      * @param MessageTypeRequest $request
      * @param $id
-     * @return \Illuminate\Http\Response
-     * @internal param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function update(MessageTypeRequest $request, $id)
-    {
-        $data = MessageType::find($id);
-
-        $data->name = $request->input('name');
-        $data->remark = $request->input('remark');
-        $data->enabled = $request->input('enabled');
-        $row = $this->messageType->where(['name' => $data->name])->first();
-        if(!empty($row) && $row->id != $id){
-
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '名称重复！';
-
-        }else{
-            if($data->save())
-            {
-                $this->result['message'] = self::MSG_EDIT_OK;
-            } else {
-                $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-                $this->result['message'] = '';
-
-            }
-        }
-
-        return response()->json($this->result);
+    public function update(MessageTypeRequest $request, $id) {
+        
+        $messageType = $this->messageType->find($id);
+        if (!$messageType) { return $this->notFound(); }
+        return $messageType->update($request->all()) ? $this->succeed() : $this->fail();
+        
     }
-
+    
     /**
-     * Remove the specified resource from storage.
+     * 删除指定的消息类型记录
      *
      * @param $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy($id)
-    {
-        if ($this->messageType->findOrFail($id)->delete()) {
-            $this->result['message'] = self::MSG_DEL_OK;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '';
-        }
-        return response()->json($this->result);
+    public function destroy($id) {
+        
+        $messageType = $this->messageType->find($id);
+        if (!$messageType) { return $this->notFound(); }
+        return $messageType->delete() ? $this->succeed() : $this->fail();
+        
     }
+    
 }

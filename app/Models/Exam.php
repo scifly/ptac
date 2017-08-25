@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 /**
  * App\Models\Exam
@@ -58,9 +59,22 @@ class Exam extends Model {
     ];
     
     public function examType() {
+        
         return $this->belongsTo('App\models\ExamType');
+        
     }
     
+    public function classes(array $classIds) {
+        
+        return DB::table('classes')->whereIn('id', $classIds)->get(['id', 'name']);
+        
+    }
+    
+    public function subjects(array $subjectIds) {
+        
+        return DB::table('subjects')->whereIn('id', $subjectIds)->get(['id', 'name']);
+        
+    }
     
     //获取当前考试班级
     public function examClasses($classIds) {
@@ -98,8 +112,9 @@ class Exam extends Model {
     
     /**
      * 获取当前考试的科目
-     * @param $subjectIds
+     * @param $examId
      * @return array
+     * @internal param $subjectIds
      */
     public function subjectsByExamId($examId) {
         

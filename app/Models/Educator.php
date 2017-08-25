@@ -34,30 +34,41 @@ use Illuminate\Database\Eloquent\Model;
 class Educator extends Model {
     
     protected $fillable = [
-        'id',
         'user_id',
         'team_ids',
         'school_id',
         'sms_quote',
         'enabled',
-    
     ];
     
-    public function user() {
-        return $this->belongsTo('App\Models\User');
-    }
+    public function user() { return $this->belongsTo('App\Models\User'); }
     
-    public function school() {
-        return $this->belongsTo('App\Models\School');
-    }
+    public function school() { return $this->belongsTo('App\Models\School'); }
     
     public function classes() {
-        return $this->belongsToMany('App\Models\Squad', 'educators_classes', 'class_id', 'educator_id');
+        
+        return $this->belongsToMany(
+            'App\Models\Squad',
+            'educators_classes',
+            'class_id',
+            'educator_id'
+        );
+        
     }
     
-    public function educatorClass() {
-        return $this->hasOne('App\Models\EducatorClass');
+    public function educators(array $educatorIds) {
+        
+        $educators = [];
+        foreach ($educatorIds as $id) {
+            $educator = $this->find($id);
+            $user = $educator->user;
+            $educators[$educator->id] = $user->username;
+        }
+        return $educators;
+        
     }
+    
+    public function educatorClass() { return $this->hasOne('App\Models\EducatorClass'); }
     
     public function datatable() {
         

@@ -13,106 +13,105 @@ class CorpController extends Controller {
     function __construct(Corp $corp) {
         $this->corp = $corp;
     }
-
+    
     /**
      * 显示企业列表
      *
-     * @return \Illuminate\Http\Response
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
 
         if (Request::get('draw')) {
             return response()->json($this->corp->datatable());
         }
-        return parent::output(__METHOD__);
+        return $this->output(__METHOD__);
+        
     }
-
+    
     /**
      * 显示创建企业记录的表单
      *
-     * @return \Illuminate\Http\Response
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function create() {
+        
         return $this->output(__METHOD__);
+        
     }
-
+    
     /**
      * 保存新创建的企业记录
+     *
      * @param CorpRequest $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(CorpRequest $request) {
-        $input = $request->all();
-        $record = $this->corp->where('name', $input['name'])
-            ->where('company_id', $input['company_id'])
-            ->first();
-        if (!empty($record)) {
-            return response()->json(['statusCode' => self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR, 'message' => '已经有该记录！']);
+        
+        if ($this->corp->existed($request)) {
+            return $this->fail('记录已经存在');
         }
         return $this->corp->create($request->all()) ? $this->succeed() : $this->fail();
+        
     }
-
+    
     /**
-     * 显示企业记录详情
+     * 显示指定的企业记录详情
      *
      * @param $id
-     * @return \Illuminate\Http\Response
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function show($id) {
+        
         $corp = $this->corp->find($id);
-        if (!$corp) {
-            return $this->notFound();
-        }
+        if (!$corp) { return $this->notFound(); }
         return $this->output(__METHOD__, ['corp' => $corp]);
+        
     }
-
+    
     /**
-     * 显示编辑企业记录的表单
+     * 显示编辑指定企业记录的表单
      *
      * @param $id
-     * @return \Illuminate\Http\Response
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function edit($id) {
+    
         $corp = $this->corp->find($id);
-        if (!$corp) {
-            return $this->notFound();
-        }
+        if (!$corp) { return $this->notFound(); }
         return $this->output(__METHOD__, ['corp' => $corp]);
+        
     }
-
+    
     /**
-     * 更新指定企业记录
+     * 更新指定的企业记录
      *
-     * @param CorpRequest|\Illuminate\Http\Request $request
+     * @param CorpRequest $request
      * @param $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function update(CorpRequest $request, $id) {
-        $input = $request->all();
-        $record = $this->corp->where('name', $input['name'])
-            ->where('company_id', $input['company_id'])
-            ->first();
-        if (!empty($record) && ($record->id != $id)) {
-            return response()->json(['statusCode' => self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR, 'message' => '已经有该记录！']);
-        }
+        
         $corp = $this->corp->find($id);
-        if (!$corp) {
-            return $this->notFound();
+        if (!$corp) { return $this->notFound(); }
+        if ($this->corp->existed($request, $id)) {
+            return $this->fail('已经有此记录');
         }
         return $corp->update($request->all()) ? $this->succeed() : $this->fail();
+        
     }
-
+    
     /**
-     *删除指定企业记录
+     * 删除指定的企业记录
      *
      * @param $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
+        
         $corp = $this->corp->find($id);
-        if (!$corp) {
-            return $this->notFound();
-        }
+        if (!$corp) { return $this->notFound(); }
         return $corp->delete() ? $this->succeed() : $this->fail();
+        
     }
+    
 }

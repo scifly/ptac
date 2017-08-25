@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Http\Requests\ProcedureStepRequest;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
@@ -48,6 +49,24 @@ class ProcedureStep extends Model {
     public function procedure() {
         
         return $this->belongsTo('App\Models\Procedure');
+        
+    }
+    
+    public function existed(ProcedureStepRequest $request, $id = NULL) {
+    
+        if (!$id) {
+            $procedureStep = $this->where('procedure_id', $request->input('procedure_id'))
+                ->where('name', $request->input('name'))
+                ->where('approver_user_ids', $request->input('approver_user_ids'))
+                ->first();
+        } else {
+            $procedureStep = $this->where('procedure_id', $request->input('procedure_id'))
+                ->where('id', '<>', $id)
+                ->where('name', $request->input('name'))
+                ->where('approver_user_ids', $request->input('approver_user_ids'))
+                ->first();
+        }
+        return $procedureStep ? true : false;
         
     }
     

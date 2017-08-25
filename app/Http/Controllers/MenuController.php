@@ -18,6 +18,11 @@ class MenuController extends Controller {
         $this->menuTab = $menuTab;
     }
     
+    /**
+     * 显示菜单列表
+     *
+     * @return bool|\Illuminate\Http\JsonResponse
+     */
     public function index() {
         
         if (Request::method() === 'POST' ) {
@@ -27,7 +32,11 @@ class MenuController extends Controller {
         
     }
     
-    /** 显示创建菜单记录的表单 */
+    /**
+     * 显示创建新菜单的表单
+     *
+     * @return bool|\Illuminate\Http\JsonResponse
+     */
     public function create() {
         
         return parent::output(__METHOD__);
@@ -131,7 +140,9 @@ class MenuController extends Controller {
         
     }
     
-    /** 保存菜单的顺序 */
+    /**
+     * 保存菜单的排列顺序
+     */
     public function sort() {
         
         $positions = Request::get('data');

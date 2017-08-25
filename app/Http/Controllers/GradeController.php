@@ -5,194 +5,121 @@ namespace App\Http\Controllers;
 use App\Http\Requests\GradeRequest;
 use App\Models\Educator;
 use App\Models\Grade;
-use App\Models\School;
-use App\Models\User;
 use Illuminate\Support\Facades\Request;
 
-
-/**
- * @property array message
- */
-class GradeController extends Controller
-{
-    protected $grade;
-
-    function __construct(Grade $grade) {
+class GradeController extends Controller {
+    
+    protected $grade, $educator;
+    
+    function __construct(Grade $grade, Educator $educator) {
+        
         $this->grade = $grade;
-
+        $this->educator = $educator;
+        
     }
-
+    
     /**
-     * Display a listing of the resource.
-     * @return \Illuminate\Http\Response
-     * @internal param Request $request
+     * 显示年级列表
+     *
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
-
+        
         if (Request::get('draw')) {
             return response()->json($this->grade->datatable());
         }
-        return view('grade.index' ,
-            [
-                'js' => 'js/grade/index.js',
-                'dialog' => true,
-                'datatable' => true,
-            ]);
-
+        return $this->output(__METHOD__);
+        
     }
-
-
+    
     /**
-     * 显示创建年级的表单
+     * 显示创建年级记录的表单
      *
-     * @return \Illuminate\Http\Response
+     * @return bool|\Illuminate\Http\JsonResponse
      */
-    public function create()
-    {
-        return view('grade.create',[
-            'js' => 'js/grade/create.js',
-            'form' => true
-        ]);
+    public function create() {
+        
+        return $this->output(__METHOD__);
+        
     }
-
+    
     /**
      * 保存新创建的年级记录
+     *
      * @param GradeRequest $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function store(GradeRequest $request)
-    {
-        // request
-        $ids = $request->input('educator_ids');
-
-        $data['name'] = $request->input('name');
-        $data['school_id'] = $request->input('school_id');
-        $data['educator_ids'] = implode(',', $ids);
-        $data['enabled'] = $request->input('enabled');
-
-        $row = $this->grade->where([
-                    'school_id' => $data['school_id'],
-                    'name' => $data['name']
-                ])->first();
-        if(!empty($row)){
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '年级名称重复！';
-        }else{
-            if($this->grade->create($data))
-            {
-                $this->result['message'] = self::MSG_CREATE_OK;
-            } else {
-                $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-                $this->result['message'] = '';
-            }
+    public function store(GradeRequest $request) {
+        
+        if ($this->grade->existed($request)) {
+            return $this->fail('已经有此记录');
         }
-
-        return response()->json($this->result);
-
+        return $this->grade->create($request->all()) ? $this->succeed() : $this->fail();
+        
     }
-
+    
     /**
-     * 显示年级记录详情
+     * 显示指定的年级记录详情
+     *
      * @param $id
-     * @return \Illuminate\Http\Response
+     * @return bool|\Illuminate\Http\JsonResponse
      */
-    public function show($id)
-    {
-        $grade = Grade::whereId($id)->first();
-        $educators = User::whereHas('educator' , function($query) use ($grade) {
-
-                $f = explode(",", $grade->educator_ids);
-                $query->whereIn('id', $f);
-
-        })->get(['id','username'])->toArray();
-
-        return view('grade.show', [
+    public function show($id) {
+        
+        $grade = $this->grade->find($id);
+        if (!$grade) { return $this->notFound(); }
+        return $this->output(__METHOD__, [
             'grade' => $grade,
-            'educators' => $educators
+            'educators' => $this->educator->educators($grade->educator_ids)
         ]);
+        
     }
-
+    
     /**
      * 显示编辑年级记录的表单
      * @param $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id) {
-        $grade = $this->grade->whereId($id)->first();
-
-        $educators = User::whereHas('educator' , function($query) use ($grade) {
-
-            $f = explode(",", $grade->educator_ids);
-            $query->whereIn('id', $f);
-
-        })->get(['id','username'])->toArray();
-
-        $selectedEducators = [];
-        foreach ($educators as $value) {
-            $selectedEducators[$value['id']] = $value['username'];
-        }
-        return view('grade.edit', [
-            'js' => 'js/grade/edit.js',
+        
+        $grade = $this->grade->find($id);
+        if (!$grade) { return $this->notFound(); }
+        return $this->output(__METHOD__, [
             'grade' => $grade,
-            'selectedEducators' => $selectedEducators,
-            'form' => true
+            'selectedEducators' => $this->educator->educators($grade->educator_ids)
         ]);
+        
     }
-
+    
     /**
-     * 更新指定年级记录
-     * @param GradeRequest $gradeRequest
+     * 更新指定的年级记录
+     *
+     * @param GradeRequest $request
      * @param $id
-     * @return \Illuminate\Http\Response
-     * @internal param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function update(GradeRequest $gradeRequest ,$id)
-    {
-        // find the record by id
-        // update the record with the request data
-        $data = Grade::find($id);
-        $ids = $gradeRequest->input('educator_ids');
-
-        $data->name = $gradeRequest->input('name');
-        $data->school_id = $gradeRequest->input('school_id');
-        $data->educator_ids = implode(',', $ids);
-        $data->enabled = $gradeRequest->input('enabled');
-        $row = $this->grade->where([
-                'school_id' => $data->school_id,
-                'name' => $data->name
-            ])->first();
-        if(!empty($row) && $row->id != $id){
-
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '年级名称重复！';
-
-        }else{
-            if($data->save())
-            {
-                $this->result['message'] = self::MSG_EDIT_OK;
-            } else {
-                $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-                $this->result['message'] = '';
-
-            }
+    public function update(GradeRequest $request, $id) {
+        
+        $grade = $this->grade->find($id);
+        if (!$grade) { return $this->notFound(); }
+        if ($this->grade->existed($request, $id)) {
+            return $this->fail('已经有此记录');
         }
-
-        return response()->json($this->result);
+        return $grade->update($request->all()) ? $this->succeed() : $this->fail();
     }
-
+    
     /**
-     * 删除指定年级记录
-     * @return \Illuminate\Http\Response
+     * 删除指定的年级记录
+     *
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy($id)
-    {
-        if ($this->grade->findOrFail($id)->delete()) {
-            $this->result['message'] = self::MSG_DEL_OK;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '';
-        }
-        return response()->json($this->result);
-
+    public function destroy($id) {
+    
+        $grade = $this->grade->find($id);
+        if (!$grade) { return $this->notFound(); }
+        return $grade->delete() ? $this->succeed() : $this->fail();
+        
     }
+    
 }

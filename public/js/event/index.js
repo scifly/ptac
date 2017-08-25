@@ -1,6 +1,6 @@
 $(function () {
-    var id = window.location.href.substring(window.location.href.lastIndexOf('/') + 1);
-
+    //var id = window.location.href.substring(window.location.href.lastIndexOf('/') + 1);
+    var id = $('input[name="user_id"]').val();
     function init_events(ele) {
         ele.each(function () {
             // create an Event Object
@@ -40,7 +40,7 @@ $(function () {
         },
         eventLimit: true,
         editable: true,
-        events: '../calendar_events/' + id,
+        events: './calendar_events/' + id,
         /**
          * 拖动插入
          */
@@ -79,7 +79,7 @@ $(function () {
                 $.ajax({
                     type: 'POST',
                     dataType: 'json',
-                    url: '../drag_events',
+                    url: './drag_events',
                     data: copiedEventObject,
                     success: function (result) {
                         if (result.statusCode === 200) {
@@ -97,24 +97,27 @@ $(function () {
          * @param calEvent
          * @returns {boolean}
          */
-        eventClick: function (calEvent) {
-            if (calEvent.user_id != id) {
-                alert('只有管理员才能编辑此事件！');
-                return false;
-            }
+        eventClick: function (event) {
+            // if (event.user_id != id) {
+            //     alert('只有管理员才能编辑此事件！');
+            //     return false;
+            // }
+            // alert(event.ispublic);
             $.ajax({
                 type: 'GET',
                 dataType: 'json',
-                url: '../edit/' + calEvent.id,
+                url: './edit/' + event.id,
+                data: {ispublic: event.ispublic},
                 success: function (result) {
                     if (result.statusCode === 200) {
                         $('.show-form').html(result.data);
+
                         $('#confirm-update').on("click", function () {
                             var data = $('#formEventEdit').serialize();
                             $.ajax({
                                 type: 'PUT',
                                 dataType: 'json',
-                                url: '../update/' + calEvent.id,
+                                url: './update/' + event.id,
                                 data: data,
                                 success: function (result) {
                                     if (result.statusCode === 200) {
@@ -127,12 +130,12 @@ $(function () {
                             alert('确定删除当前日程事件？');
                             $.ajax({
                                 type: 'DELETE',
-                                url: '../delete/' + calEvent.id,
+                                url: './delete/' + event.id,
                                 data: {_token: $('#csrf_token').attr('content')},
                                 success: function (result) {
                                     if (result.statusCode === 200) {
                                         //删除成功
-                                        $('#calendar').fullCalendar('removeEvents', calEvent.id);
+                                        $('#calendar').fullCalendar('removeEvents', event.id);
                                     }
                                 }
                             });
@@ -143,7 +146,7 @@ $(function () {
                     $('#modal-edit-event').modal({backdrop: true});
                 }
             });
-            if (calEvent.url) {
+            if (event.url) {
                 // window.open(event.url);
                 return false;
             }
@@ -160,7 +163,7 @@ $(function () {
             $.ajax({
                 type: 'POST',
                 dataType: 'json',
-                url: '../update_time',
+                url: './update_time',
                 data: {
                     id: event.id,
                     dayDiff: delta._days,
@@ -183,7 +186,7 @@ $(function () {
             $.ajax({
                 type: 'POST',
                 dataType: 'json',
-                url: '../update_time',
+                url: './update_time',
                 data: {
                     id: event.id,
                     dayDiff: delta._days,
@@ -231,17 +234,27 @@ $(function () {
         }).addClass('external-event');
 
         $('#modal-show-event').modal({backdrop: true});
-        $('.iscourse-from input[name="iscourse"]').change(function () {
+
+        $('.ispublic-form input[name="ispublic"]').change(function () {
             //console.log($('input[name="iscourse"]:checked').val());
-            if ($(".educator_id-from").css("display") === "none") {
-                $(".educator_id-from").show();
-                $(".subject_id-from").show();
+            if ($(".iscourse-form").css("display") === "none") {
+                $(".iscourse-form").show();
             } else {
-                $(".educator_id-from").hide();
-                $(".subject_id-from").hide();
+                $(".iscourse-form").hide();
             }
         });
-        $('.alertable-from input[name="alertable"]').change(function () {
+
+        $('.iscourse-form input[name="iscourse"]').change(function () {
+            //console.log($('input[name="iscourse"]:checked').val());
+            if ($(".educator_id-form").css("display") === "none") {
+                $(".educator_id-form").show();
+                $(".subject_id-form").show();
+            } else {
+                $(".educator_id-form").hide();
+                $(".subject_id-form").hide();
+            }
+        });
+        $('.alertable-form input[name="alertable"]').change(function () {
             //console.log($('input[name="iscourse"]:checked').val());
             if ($(".alert_mins").css("display") === "none") {
                 $(".alert_mins").show();
@@ -256,7 +269,7 @@ $(function () {
             $.ajax({
                 type: 'POST',
                 dataType: 'json',
-                url: '../store',
+                url: './store',
                 data: data,
                 success: function (result) {
                     if (result.statusCode === 200) {

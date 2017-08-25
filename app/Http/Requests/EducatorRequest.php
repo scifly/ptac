@@ -45,9 +45,11 @@ class EducatorRequest extends FormRequest
     }
 
     public function messages(){
+        
         $rules = $this->rules();
         $k_array = $this->strings_key;
         $v_array = $this->strings_val;
+        $array = [];
         foreach ($rules as $key => $value) {
             $new_arr = explode('|', $value);//分割成数组
             foreach ($new_arr as $k => $v) {
@@ -58,7 +60,9 @@ class EducatorRequest extends FormRequest
         }
 
         return $array;
+        
     }
+    
     public function wantsJson() { return true; }
 
     protected function prepareForValidation() {
@@ -70,6 +74,11 @@ class EducatorRequest extends FormRequest
         if (!isset($input['enabled'])) {
             $input['enabled'] = 0;
         }
+        if (isset($input['team_ids'])) {
+            $input['team_ids'] = implode(',', $input['team_ids']);
+        }
         $this->replace($input);
+        
     }
+    
 }
