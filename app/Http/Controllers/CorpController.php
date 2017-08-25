@@ -13,137 +13,105 @@ class CorpController extends Controller {
     function __construct(Corp $corp) {
         $this->corp = $corp;
     }
-
+    
     /**
      * 显示企业列表
-     * @return \Illuminate\Http\Response
+     *
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
 
         if (Request::get('draw')) {
             return response()->json($this->corp->datatable());
         }
-        return view('corp.index', [
-            'js' => 'js/corp/index.js',
-            'dialog' => true,
-            'datatable' => true,
-            'form' => true
-        ]);
+        return $this->output(__METHOD__);
+        
     }
-
+    
     /**
      * 显示创建企业记录的表单
      *
-     * @return \Illuminate\Http\Response
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function create() {
-        return view('corp.create', [
-            'js' => 'js/corp/create.js',
-            'form' => true
-        ]);
+        
+        return $this->output(__METHOD__);
+        
     }
-
+    
     /**
      * 保存新创建的企业记录
+     *
      * @param CorpRequest $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(CorpRequest $request) {
-        $data = $request->all();
-        $record = $this->corp->where('name', $data['name'])
-            ->where('company_id', $data['company_id'])
-            ->first();
-        if (!empty($record)) {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '已经有该记录';
-        } else {
-            if ($this->corp->create($request->all())) {
-                $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-                $this->result['message'] = self::MSG_CREATE_OK;
-            } else {
-                $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-                $this->result['message'] = '';
-            }
+        
+        if ($this->corp->existed($request)) {
+            return $this->fail('记录已经存在');
         }
-        return response()->json($this->result);
+        return $this->corp->create($request->all()) ? $this->succeed() : $this->fail();
+        
     }
-
+    
     /**
-     * 显示企业记录详情
+     * 显示指定的企业记录详情
      *
      * @param $id
-     * @return \Illuminate\Http\Response
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function show($id) {
-        //return view('corp.show', ['corp' => $this->corp->findOrFail($id)]);
-        $showData = $this->corp->whereId($id)->first(['name','company_id','corpid','created_at','updated_at','enabled']);
-        if($showData->enabled = ($showData->enabled == 0 ? "已禁用" : "已启用"));
-        $showData->company_id = $showData->company->name;
-        if ($showData) {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-            $this->result['showData'] = $showData;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '';
-        }
-        return response()->json($this->result);
+        
+        $corp = $this->corp->find($id);
+        if (!$corp) { return $this->notFound(); }
+        return $this->output(__METHOD__, ['corp' => $corp]);
+        
     }
-
+    
     /**
-     * 显示编辑企业记录的表单
+     * 显示编辑指定企业记录的表单
      *
      * @param $id
-     * @return \Illuminate\Http\Response
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function edit($id) {
-        return view('corp.edit', [
-            'js' => 'js/corp/edit.js',
-            'corp' => $this->corp->findOrFail($id),
-            'form' => true
-        ]);
+    
+        $corp = $this->corp->find($id);
+        if (!$corp) { return $this->notFound(); }
+        return $this->output(__METHOD__, ['corp' => $corp]);
+        
     }
-
+    
     /**
-     * 更新指定企业记录
+     * 更新指定的企业记录
      *
-     * @param CorpRequest|\Illuminate\Http\Request $request
+     * @param CorpRequest $request
      * @param $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function update(CorpRequest $request, $id) {
-        $data = $request->all();
-        $record = $this->corp->where('name', $data['name'])
-            ->where('company_id', $data['company_id'])
-            ->first();
-        if (!empty($record) && ($record->id != $id)) {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '已有该记录';
-        } else {
-            if ($this->corp->findOrFail($id)->update($data)) {
-                $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-                $this->result['message'] = self::MSG_EDIT_OK;
-            } else {
-                $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-                $this->result['message'] = '';
-            }
+        
+        $corp = $this->corp->find($id);
+        if (!$corp) { return $this->notFound(); }
+        if ($this->corp->existed($request, $id)) {
+            return $this->fail('已经有此记录');
         }
-        return response()->json($this->result);
+        return $corp->update($request->all()) ? $this->succeed() : $this->fail();
+        
     }
-
+    
     /**
-     *删除指定企业记录
+     * 删除指定的企业记录
      *
      * @param $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
-        if ($this->corp->findOrFail($id)->delete()) {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-            $this->result['message'] = self::MSG_DEL_OK;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '';
-        }
-        return response()->json($this->result);
+        
+        $corp = $this->corp->find($id);
+        if (!$corp) { return $this->notFound(); }
+        return $corp->delete() ? $this->succeed() : $this->fail();
+        
     }
+    
 }

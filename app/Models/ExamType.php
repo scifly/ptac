@@ -25,13 +25,13 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read \App\Models\Exam $Exam
  */
 class ExamType extends Model {
-    //
-    protected $table = 'exam_types';
+
+    protected $fillable = ['name', 'remark', 'enabled'];
     
-    protected $fillable = ['name', 'remark', 'created_at', 'updated_at', 'enabled'];
-    
-    public function Exam() {
+    public function exams() {
+        
         return $this->hasMany('App\Models\Exam');
+        
     }
     
     public function datatable() {
@@ -53,4 +53,5 @@ class ExamType extends Model {
         
         return Datatable::simple($this, $columns);
     }
+    
 }

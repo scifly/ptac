@@ -5,7 +5,7 @@ namespace App\Models;
 use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-
+use App\Http\Requests\SubjectRequest;
 /**
  * App\Models\Subject
  *
@@ -65,7 +65,29 @@ class Subject extends Model {
     public function educatorClass() {
         return $this->hasOne('App\Models\EducatorClass');
     }
-    
+    public function existed(SubjectRequest $request, $id = NULL) {
+
+        if (!$id) {
+            $subject = $this->where('name',$request->input('name'))
+                ->where('max_score', $request->input('max_score'))
+                ->where('pass_score', $request->input('pass_score'))
+                ->where('school_id', $request->input('school_id'))
+                ->where('grade_ids', $request->input('grade_ids'))
+                ->first();
+        } else {
+            $subject = $this->where('name', $request->input('name'))
+                ->where('id', '<>', $id)
+                ->where('max_score', $request->input('max_score'))
+                ->where('pass_score', $request->input('pass_score'))
+                ->where('school_id', $request->input('school_id'))
+                ->where('grade_ids', $request->input('grade_ids'))
+                ->first();
+        }
+        return $subject ? true : false;
+
+    }
+
+
     public function datatable() {
         
         $columns = [

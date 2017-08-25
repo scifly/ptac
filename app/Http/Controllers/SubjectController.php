@@ -48,9 +48,9 @@ class SubjectController extends Controller {
     public function store(SubjectRequest $request) {
         
         $data = $request->except('_token');
-
-        $data['grade_ids'] = implode(',', $data['grade_ids']);
-
+        if ($this->subject->existed($request)) {
+            return $this->fail('已经有此记录');
+        }
         return $this->subject->create($data) ? parent::succeed() : parent::fail();
         
     }
@@ -75,7 +75,7 @@ class SubjectController extends Controller {
             $this->result['message'] = '';
         }
         return response()->json($this->result);
-//        return view('subject.show', ['subject' => $this->subject->findOrFail($id)]);
+//       
         
     }
     
@@ -112,18 +112,12 @@ class SubjectController extends Controller {
      * @internal param Subject $subject
      */
     public function update(SubjectRequest $request, $id) {
-        $data = $request->all();
-        $data['grade_ids'] = implode(',', $request->get('grade_ids'));
-        $subject = $this->subject->findOrFail($id);
-        if ($subject->update($data)) {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-            $this->result['message'] = self::MSG_EDIT_OK;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '更新失败';
+        $subject = $this->subject->find($id);
+        if (!$subject) { return $this->notFound(); }
+        if ($this->subject->existed($request, $id)) {
+            return $this->fail('已经有此记录');
         }
-        return response()->json($this->result);
-        
+        return $subject->update($request->all()) ? $this->succeed() : $this->fail();
     }
     
     /**

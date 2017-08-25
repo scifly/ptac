@@ -13,123 +13,97 @@ class IconTypeController extends Controller {
     function __construct(IconType $iconType) { $this->iconType = $iconType; }
     
     /**
-     * Display a listing of the resource.
+     * 显示图标类型列表
      *
-     * @return \Illuminate\Http\Response
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
         
         if (Request::get('draw')) {
             return response()->json($this->iconType->datatable());
         }
-        return view('icon_type.index', [
-            'js' => 'js/icon_type/index.js',
-            'datatable' => true,
-            'dialog' => true
-        ]);
+        return $this->output(__METHOD__);
         
     }
     
     /**
-     * Show the form for creating a new resource.
+     * 显示创建图表类型记录的表单
      *
-     * @return \Illuminate\Http\Response
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function create() {
         
-        return view('icon_type.create', [
-            'js' => 'js/icon_type/create.js',
-            'form' => true
-        ]);
+        return $this->output(__METHOD__);
         
     }
     
     /**
-     * Store a newly created resource in storage.
+     * 保存新创建的图标类型记录
      *
      * @param IconTypeRequest $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(IconTypeRequest $request) {
         
-        if ($this->iconType->create($request->all())) {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-            $this->result['message'] = self::MSG_CREATE_OK;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '';
-        }
-        return response()->json($this->result);
+        return $this->iconType->create($request->all()) ? $this->succeed() : $this->fail();
         
     }
     
     /**
-     * Display the specified resource.
+     * 显示指定图表类型记录的详情
      *
      * @param $id
-     * @return \Illuminate\Http\Response
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function show($id) {
         
-        $iconType = $this->iconType->findOrFail($id);
-        return view('icon_type.show', ['action' => $iconType]);
+        $iconType = $this->iconType->find($id);
+        if (!$iconType) { return $this->notFound(); }
+        return $this->output(__METHOD__, ['iconType' => $iconType]);
         
     }
     
     /**
-     * Show the form for editing the specified resource.
+     * 显示编辑指定图标记录的表单
      *
      * @param $id
-     * @return \Illuminate\Http\Response
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function edit($id) {
-        
-        $iconType = $this->iconType->findOrFail($id);
-        return view('icon_type.edit', [
-            'icon' => $iconType,
-            'form' => true,
-            'js' => 'js/icon_type/edit.js'
-        ]);
+    
+        $iconType = $this->iconType->find($id);
+        if (!$iconType) { return $this->notFound(); }
+        return $this->output(__METHOD__, ['iconType' => $iconType]);
         
     }
     
     /**
-     * Update the specified resource in storage.
+     * 更新指定的图标类型记录
      *
      * @param IconTypeRequest $request
      * @param $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function update(IconTypeRequest $request, $id) {
-        
-        $e = $this->iconType->findOrFail($id)->update($request->all());
-        if (!$e) {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-            $this->result['message'] = self::MSG_EDIT_OK;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '保存失败';
-        }
-        return response()->json($this->result);
+    
+        $iconType = $this->iconType->find($id);
+        if (!$iconType) { return $this->notFound(); }
+        return $iconType->update($request->all()) ? $this->succeed() : $this->fail();
         
     }
     
     /**
-     * Remove the specified resource from storage.
+     * 删除指定的图标类型记录
      *
      * @param $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
-        
-        if ($this->iconType->findOrFail($id)->delete()) {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-            $this->result['message'] = self::MSG_DEL_OK;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '';
-        }
-        return response()->json($this->result);
-        
+    
+        $iconType = $this->iconType->find($id);
+        if (!$iconType) { return $this->notFound(); }
+        return $iconType->delete() ? $this->succeed() : $this->fail();
+    
     }
+    
 }
