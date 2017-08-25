@@ -7,25 +7,26 @@ use App\Models\Educator;
 use App\Models\Grade;
 use App\Models\Media;
 use App\Models\WapSite;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Storage;
 
-class WapSiteController extends Controller
-{
+class WapSiteController extends Controller {
     protected $wapSite;
+    protected $media;
 
-    public function __construct(WapSite $wapSite)
-    {
+    public function __construct(WapSite $wapSite, Media $media) {
         $this->wapSite = $wapSite;
+        $this->media = $media;
     }
+
     /**
-     * Display a listing of the resource.
+     * 显示微网站列表
      *
-     * @return \Illuminate\Http\Response
+     * @return bool|\Illuminate\Http\JsonResponse
      */
-    public function index()
-    {
+    public function index() {
         if (Request::get('draw')) {
             return response()->json($this->wapSite->datatable());
         }
@@ -33,237 +34,165 @@ class WapSiteController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * 显示创建微网站记录的表单
      *
-     * @return \Illuminate\Http\Response
+     * @return bool|\Illuminate\Http\JsonResponse
      */
-    public function create()
-    {
+    public function create() {
         return $this->output(__METHOD__);
 
     }
 
     /**
-     * Store a newly created resource in storage.
+     * 保存新创建的微网站记录
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param WapSiteRequest $request
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function store(WapSiteRequest $request)
-    {
+    public function store(WapSiteRequest $request) {
 
-        $media_ids = $request->input('media_ids');
-        $data = [
-            'school_id' => $request->input('school_id'),
-            'site_title' => $request->input('site_title'),
-            'media_ids' => implode(',', $media_ids),
-            'enabled' => $request->input('enabled')
-        ];
-
-        $row = $this->wapSite->where([
-                'school_id' => $data['school_id']
-            ])->first();
-        if(!empty($row) ){
-
-            return $this->fail('该学校已存在微网站！');
-        }else{
-            //删除原有的图片
-            $del_ids = $request->input('del_ids');
-            if($del_ids){
-                $medias = Media::whereIn('id',$del_ids)->get(['id','path']);
-
-                foreach ($medias as $v)
-                {
-                    $path_arr = explode("/",$v->path);
-                    Storage::disk('uploads')->delete($path_arr[5]);
-
-                }
-                $delStatus = Media::whereIn('id',$del_ids)->delete();
-            }
-            return $this->wapSite->create($data) ? $this->succeed() : $this->fail();
-        }
+        return $this->wapSite->store($request) ? $this->succeed() : $this->fail();
 
     }
 
+
     /**
-     * Display the specified resource.
+     * 显示指定的微网站记录详情
      *
      * @param $id
-     * @return \Illuminate\Http\Response
-     * @internal param WapSite $wapSite
+     * @return bool|\Illuminate\Http\JsonResponse
      */
-    public function show($id)
-    {
+    public function show($id) {
 
         $wapsite = $this->wapSite->find($id);
-        if (!$wapsite) { return parent::notFound(); }
-        $f = explode(",", $wapsite->media_ids);
-
-        $medias = Media::whereIn('id',$f)->get(['id','path']);
-
+        if (!$wapsite) {
+            return parent::notFound();
+        }
         return parent::output(__METHOD__, [
             'wapsite' => $wapsite,
-            'medias' => $medias,
+            'medias' => $this->media->medias($wapsite->media_ids),
         ]);
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * 显示编辑指定微网站记录的表单
      *
      * @param $id
-     * @return \Illuminate\Http\Response
-     * @internal param WapSite $wapSite
+     * @return bool|\Illuminate\Http\JsonResponse
      */
-    public function edit( $id)
-    {
+    public function edit($id) {
         $wapsite = $this->wapSite->find($id);
-
-        if (!$wapsite) { return parent::notFound(); }
-        $f = explode(",", $wapsite->media_ids);
-
-        $medias = Media::whereIn('id',$f)->get(['id','path']);
-
+        if (!$wapsite) {
+            return parent::notFound();
+        }
         return parent::output(__METHOD__, [
             'wapsite' => $wapsite,
-            'medias' => $medias,
+            'medias' => $this->media->medias($wapsite->media_ids),
         ]);
 
     }
 
     /**
-     * Update the specified resource in storage.
+     * 更新指定的微网站记录
      *
-     * @param WapSiteRequest $siteRequest
+     * @param WapSiteRequest $request
      * @param $id
-     * @return \Illuminate\Http\Response
-     * @internal param \Illuminate\Http\Request $request
-     * @internal param WapSite $wapSite
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function update( WapSiteRequest $siteRequest, $id)
-    {
-        $data = WapSite::find($id);
-        if (!$data) { return parent::notFound(); }
-
-        $media_ids = $siteRequest->input('media_ids');
-
-        $data->school_id = $siteRequest->input('school_id');
-        $data->site_title = $siteRequest->input('site_title');
-        $data->enabled = $siteRequest->input('enabled');
-        $data->media_ids = implode(',', $media_ids);
-
-        $row = $this->wapSite->where([
-            'school_id' => $data->school_id,
-        ])->first();
-        if(!empty($row) && $row->id != $id){
-
-            return $this->fail('所属学校重复！');
-        }else{
-            //删除原有的图片
-            $del_ids = $siteRequest->input('del_ids');
-            if($del_ids){
-                $medias = Media::whereIn('id',$del_ids)->get(['id','path']);
-
-                foreach ($medias as $v)
-                {
-                    $path_arr = explode("/",$v->path);
-                    Storage::disk('uploads')->delete($path_arr[5]);
-
-                }
-                $delStatus = Media::whereIn('id',$del_ids)->delete();
-            }
-
-            return $data->save() ? $this->succeed() : $this->fail();
-        }
+    public function update(WapSiteRequest $request, $id) {
+        return $this->wapSite->modify($request, $id) ? $this->succeed() : $this->fail();
 
     }
 
     /**
-     * Remove the specified resource from storage.
+     * 删除指定的微网站记录
      *
      * @param $id
-     * @return \Illuminate\Http\Response
-     * @internal param WapSite $wapSite
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy($id)
-    {
+    public function destroy($id) {
         $wapsite = $this->wapSite->find($id);
 
-        if (!$wapsite) { return parent::notFound(); }
+        if (!$wapsite) {
+            return parent::notFound();
+        }
         return $wapsite->delete() ? parent::succeed() : parent::fail();
     }
 
     /**
-     * @param Request $request
+     * 上传图片
+     *
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function uploadImages(){
+    public function uploadImages() {
 
-//        if (Request::isMethod('post')) {
-
-            $files = Request::file('img');
-
-            if (empty($files)){
-                $result['statusCode'] = 0;
-                $result['message'] = '您还未选择图片！';
-                return $result;
-            }else{
-            $result['data']=array();
+        $files = Request::file('img');
+        if (empty($files)) {
+            $result['statusCode'] = 0;
+            $result['message'] = '您还未选择图片！';
+            return $result;
+        } else {
+            $result['data'] = array();
             $mes = [];
-
-                foreach ($files  as $key=>$v){
-
-                if ($v->isValid()) {
-                    // 获取文件相关信息
-                    $originalName = $v->getClientOriginalName(); // 文件原名
-                    $ext = $v->getClientOriginalExtension();     // 扩展名//
-                    $realPath = $v->getRealPath();   //临时文件的绝对路径
-                    $type = $v->getClientMimeType();     // image/jpeg/
-//                    dd($originalName,$ext,$realPath);die;
-
-                    // 上传图片
-                    $filename =  uniqid() . '.' . $ext;
-                    // 使用我们新建的uploads本地存储空间（目录）
-                    $init=0;
-                    $bool = Storage::disk('uploads')->put($filename,file_get_contents($realPath));
-
-                    $filePath = '/storage/app/uploads/'.date('Y-m-d').'/'.$filename;
-                    $data = [
-                        'path' => $filePath,
-                        'remark' => '微网站轮播图',
-                        'media_type_id' => '1',
-                        'enabled' => '1',
-                    ];
-                    $mediaId = Media::insertGetId($data);
-                    $mes [] = [
-                        'id' => $mediaId,
-                        'path' => $filePath,
-                    ];
-                }
+            foreach ($files as $key => $file) {
+                $this->validateFile($file, $mes);
             }
             $result['statusCode'] = 1;
             $result['message'] = '上传成功！';
             $result['data'] = $mes;
-            }
-            return response()->json($result);
-//        }
+        }
+        return response()->json($result);
 
     }
 
+    /**
+     * 打开微网站首页
+     *
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function wapHome() {
 
-    public function webindex(){
-
-//        $school_id = isset($_GET['school_id']) ? $_GET['school_id'] : '';
-
-        $wapsite = $this->wapSite->whereId(3)->first();
-
-        $f = explode(",", $wapsite['media_ids']);
-
-        $medias = Media::whereIn('id',$f)->get(['id','path']);
+        $wapSite = $this->wapSite
+            ->where('school_id', Request::get('school_id'))
+            ->first();
 
         return view('frontend.wap_site.index', [
-            'wapsite' => $wapsite,
-            'medias' => $medias,
-            'ws' =>true
+            'wapsite' => $wapSite,
+            'medias' => $this->media->medias($wapSite->media_ids),
+            'ws' => true
         ]);
+
+    }
+
+    private function validateFile(UploadedFile $file, array &$filePaths) {
+
+        if ($file->isValid()) {
+            // 获取文件相关信息
+            # 文件原名
+            $file->getClientOriginalName();
+            # 扩展名
+            $ext = $file->getClientOriginalExtension();
+            # 临时文件的绝对路径
+            $realPath = $file->getRealPath();
+            # image/jpeg/
+            $file->getClientMimeType();
+            // 上传图片
+            $filename = uniqid() . '.' . $ext;
+            // 使用我们新建的uploads本地存储空间（目录）
+            if (Storage::disk('uploads')->put($filename, file_get_contents($realPath))) {
+                $filePath = '/storage/app/uploads/' . date('Y-m-d') . '/' . $filename;
+                $mediaId = Media::insertGetId([
+                    'path' => $filePath,
+                    'remark' => '微网站轮播图',
+                    'media_type_id' => '1',
+                    'enabled' => '1',
+                ]);
+                $filePaths[] = [
+                    'id' => $mediaId,
+                    'path' => $filePath,
+                ];
+            }
+        }
 
     }
 }

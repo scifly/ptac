@@ -119,6 +119,16 @@ class User extends Authenticatable {
     public function message() {
         return $this->hasMany('App\Models\Message');
     }
+    public function users(array $userIds) {
+
+        $users = [];
+        foreach ($userIds as $id) {
+            $user = $this->find($id);
+            $users[$user->id] = $user->realname;
+        }
+        return $users;
+
+    }
     public function datatable() {
         
         $columns = [

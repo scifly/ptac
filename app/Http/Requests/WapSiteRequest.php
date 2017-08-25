@@ -9,7 +9,7 @@ class WapSiteRequest extends FormRequest
 {
 
     protected $rules = [
-        'school_id' => 'required|integer',
+        'school_id' => 'required|integer|unique:wap_sites',
         'site_title' => 'required|string|max:255',
         'media_ids' => 'required|array',
         'enabled' => 'required|boolean'
@@ -72,6 +72,9 @@ class WapSiteRequest extends FormRequest
         }
         if (!isset($input['enabled'])) {
             $input['enabled'] = 0;
+        }
+        if (isset($input['media_ids'])) {
+            $input['media_ids'] = implode(',', $input['media_ids']);
         }
         $this->replace($input);
     }

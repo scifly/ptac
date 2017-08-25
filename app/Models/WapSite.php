@@ -3,8 +3,12 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Http\Requests\WapSiteRequest;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Mockery\Exception;
 
 /**
  * App\Models\WapSite
@@ -30,7 +34,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\WapSiteModule[] $wapsiteModules
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\WapSiteModule[] $wapSiteModules
  */
-class WapSite extends Model {
+class WapSite extends Model
+{
     //
     protected $fillable = [
         'id',
@@ -41,27 +46,80 @@ class WapSite extends Model {
         'updated_at',
         'enabled',
     ];
-    
-    public function wapSiteModules() {
+
+    public function wapSiteModules()
+    {
         return $this->hasMany('App\Models\WapSiteModule', 'wap_site_id', 'id');
     }
-    
-    public function school() {
+
+    public function school()
+    {
         return $this->belongsTo('App\Models\School');
     }
-    
+
+    public function store(WapSiteRequest $request)
+    {
+        try {
+            $exception = DB::transaction(function () use ($request) {
+                //删除原有的图片
+                $this->removeMedias($request);
+                $this->create($request->all());
+            });
+            return is_null($exception) ? true : $exception;
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
+    public function modify(WapSiteRequest $request, $id)
+    {
+        $wapSite = $this->find($id);
+        if (!$wapSite) {
+            return false;
+        }
+        try {
+            $exception = DB::transaction(function () use ($request) {
+                $this->removeMedias($request);
+                $this->update($request->all());
+            });
+            return is_null($exception) ? true : $exception;
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
+    /**
+     * @param $request
+     */
+    private function removeMedias(WapSiteRequest $request)
+    {
+        //删除原有的图片
+        $mediaIds = $request->input('del_ids');
+        if ($mediaIds) {
+            $medias = Media::whereIn('id', $mediaIds)->get(['id', 'path']);
+
+            foreach ($medias as $media) {
+                $paths = explode("/", $media->path);
+                Storage::disk('uploads')->delete($paths[5]);
+
+            }
+            Media::whereIn('id', $mediaIds)->delete();
+        }
+    }
+
     /**
      * @return array
      */
-    public function datatable() {
-        
+    public function datatable()
+    {
+
         $columns = [
             ['db' => 'WapSite.id', 'dt' => 0],
             ['db' => 'School.name', 'dt' => 1],
             ['db' => 'WapSite.site_title', 'dt' => 2],
             ['db' => 'WapSite.created_at', 'dt' => 3],
             ['db' => 'WapSite.updated_at', 'dt' => 4],
-            
+
             [
                 'db' => 'WapSite.enabled', 'dt' => 5,
                 'formatter' => function ($d, $row) {
@@ -79,7 +137,7 @@ class WapSite extends Model {
                 ]
             ]
         ];
-        
+
         return Datatable::simple($this, $columns, $joins);
     }
 }
