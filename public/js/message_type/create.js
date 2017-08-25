@@ -1,4 +1,4 @@
 /**
  * Created by Administrator on 2017-07-21 0021.
  */
-$(crud.create('formMessageType'));
+$(crud.create('formMessageType', 'message_types'));

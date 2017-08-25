@@ -1,4 +1,4 @@
-$(crud.edit('formWapSiteModule'));
+$(crud.edit('formWapSiteModule', 'wap_site_modules'));
 $(function () {
     var $pre = $('.preview');
     var $uploadFile = $('#uploadFile');

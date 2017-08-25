@@ -1,1 +1,1 @@
-$(crud.create('formSubjectModule'))
+$(crud.create('formSubjectModule','subject_modules'))

@@ -24,7 +24,7 @@ class DatabaseSeeder extends Seeder {
 //        $this->call(CustodianSeeder::class);
 //        $this->call(ClassesSeeder::class);
 //        $this->call(StudentSeeder::class);
-//        $this->call(GroupSeeder::class);
+        $this->call(GroupSeeder::class);
 //        $this->call(UserSeeder::class);
 //        $this->call(TeamSeeder::class);
 //        $this->call(StudentSeeder::class);
@@ -33,7 +33,7 @@ class DatabaseSeeder extends Seeder {
 //        $this->call(EducatorClassSeeder::class);
 //        $this->call(CustodianStudentSeeder::class);
 //        $this->call(TabSeeder::class);
-        $this->call(IconSeeder::class);
-        $this->call(IconTypeSeeder::class);
+//        $this->call(IconSeeder::class);
+//        $this->call(IconTypeSeeder::class);
     }
 }

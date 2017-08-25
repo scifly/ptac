@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use App\Http\Requests\GroupRequest;
 
 /**
  * App\Models\Group
@@ -33,7 +34,20 @@ class Group extends Model {
     ];
     
     public function users() { return $this->hasMany('App\Models\User'); }
-    
+
+    public function existed(GroupRequest $request, $id = NULL) {
+
+        if (!$id) {
+            $group = $this->where('name', $request->input('name'))
+                ->first();
+        } else {
+            $group = $this->where('name', $request->input('name'))
+                ->where('id', '<>' , $id)
+                ->first();
+        }
+        return $group ? true : false;
+
+    }
     
     public function datatable() {
         

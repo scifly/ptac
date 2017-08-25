@@ -1,1 +1,1 @@
-$(crud.edit('formGrade'));
+$(crud.edit('formGrade', 'grades'));
