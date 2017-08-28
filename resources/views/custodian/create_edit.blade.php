@@ -10,7 +10,7 @@
             <div class="form-group">
                 {!! Form::label('user_id', '监护人姓名',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-2">
-                    {!! Form::select('user_id', $user, null, ['class' => 'form-control']) !!}
+                    {!! Form::select('user_id', $custodianName, null, ['class' => 'form-control']) !!}
                 </div>
             </div>
 

@@ -70,7 +70,7 @@ class CustodianController extends Controller
      */
     public function edit($id)
     {
-        echo 123;exit;
+
         $custodian = $this->custodian->find($id);
         if (!$custodian) { return $this->notFound(); }
         return $this->output(__METHOD__, ['custodian' => $custodian]);
@@ -78,15 +78,19 @@ class CustodianController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Custodian  $custodian
-     * @return \Illuminate\Http\Response
+     * 更新监护人.
+     * @param CustodianRequest $request
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function update(Request $request, Custodian $custodian)
+    public function update(CustodianRequest $request,$id)
     {
-        //
+        $custodian = $this->custodian->find($id);
+        if (!$custodian) { return $this->notFound(); }
+        if ($this->custodian->existed($request, $id)) {
+            return $this->fail('已经有此记录');
+        }
+        return $custodian->update($request->all()) ? $this->succeed() : $this->fail();
     }
 
     /**
@@ -95,8 +99,10 @@ class CustodianController extends Controller
      * @param  \App\Models\Custodian  $custodian
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Custodian $custodian)
+    public function destroy($id)
     {
-        //
+        $custodian = $this->custodian->find($id);
+        if (!$custodian) { return $this->notFound(); }
+        return $custodian->delete() ? $this->succeed() : $this->fail();
     }
 }

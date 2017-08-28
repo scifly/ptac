@@ -1,3 +1,3 @@
-{!! Form::open(['method' => 'post','id' => 'formCustodian','data-parsley-validate' => 'true']) !!}
+{!! Form::open(['method' => 'post','id' => 'formCustodian']) !!}
 @include('custodian.create_edit')
 {!! Form::close() !!}

@@ -19,6 +19,7 @@ class ComposerServiceProvider extends ServiceProvider {
         View::composer('class.create_edit', 'App\Http\ViewComposers\SquadComposer');
         View::composer('educator.create_edit', 'App\Http\ViewComposers\EducatorComposer');
         View::composer('educator_class.create_edit', 'App\Http\ViewComposers\EducatorClassComposer');
+        View::composer('custodian.create_edit', 'App\Http\ViewComposers\CustodianComposer');
         View::composer('custodian_student.create_edit', 'App\Http\ViewComposers\CustodianStudentComposer');
         View::composer('score.create_edit', 'App\Http\ViewComposers\ScoreComposer');
         View::composer('subject.create_edit', 'App\Http\ViewComposers\SubjectComposer');
