@@ -79,8 +79,31 @@ class Subject extends Model {
         return $subject ? true : false;
         
     }
-    
-    
+
+    public function subjects($subjectIds) {
+
+        $subjectIds = explode(',', $subjectIds);
+        $subjects = [];
+        foreach ($subjectIds as $subjectId) {
+            $subjects[] = $this->find($subjectId);
+        }
+
+        return $subjects;
+
+    }
+
+    public function naSubjects($naSubjectIds) {
+
+        $naSubjectIds = explode(',', $naSubjectIds);
+        $subjects = [];
+        foreach ($naSubjectIds as $subjectId) {
+            $subjects[] = $this->find($subjectId);
+        }
+
+        return $subjects;
+
+    }
+
     public function datatable() {
         
         $columns = [
