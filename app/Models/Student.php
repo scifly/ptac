@@ -7,6 +7,7 @@ use App\Http\Requests\StudentRequest;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
+
 /**
  * App\Models\Student
  *
@@ -111,7 +112,8 @@ class Student extends Model {
         return $student ? true : false;
         
     }
-    
+
+
     public function datatable() {
         
         $columns = [

@@ -135,7 +135,17 @@ class User extends Authenticatable {
         return $user ? true : false;
         
     }
-    
+    public function users(array $userIds) {
+
+        $users = [];
+        foreach ($userIds as $id) {
+            $user = $this->find($id);
+            $users[$user->id] = $user->realname;
+        }
+        return $users;
+
+    }
+
     public function datatable() {
         
         $columns = [

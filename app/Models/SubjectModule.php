@@ -7,6 +7,7 @@ use App\Http\Requests\SubjectModuleRequest;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
+
 /**
  * App\Models\SubjectModule
  *

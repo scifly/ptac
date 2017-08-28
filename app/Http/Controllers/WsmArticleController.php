@@ -12,15 +12,18 @@ use Illuminate\Support\Facades\Storage;
 class WsmArticleController extends Controller
 {
     protected $article;
+    protected $media;
 
-    public function __construct(WsmArticle $article)
+    public function __construct(WsmArticle $article, Media $media)
     {
         $this->article = $article;
+        $this->media = $media;
     }
+
     /**
-     * Display a listing of the resource.
+     * 显示微网站文章列表
      *
-     * @return \Illuminate\Http\Response
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index()
     {
@@ -31,9 +34,9 @@ class WsmArticleController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * 显示创建微网站文章记录的表单
      *
-     * @return \Illuminate\Http\Response
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function create()
     {
@@ -42,147 +45,92 @@ class WsmArticleController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * 保存新创建的微网站文章记录
      *
      * @param WsmArticleRequest $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(WsmArticleRequest $request)
     {
-        // request
-        $media_ids = $request->input('media_ids');
-
-        $data = [
-            'wsm_id' => $request->input('wsm_id'),
-            'name' => $request->input('name'),
-            'summary' => $request->input('summary'),
-            'thumbnail_media_id' => $media_ids[0],
-            'content' => $request->input('content'),
-            'media_ids' => implode(',',$media_ids),
-            'enabled' => $request->input('enabled')
-        ];
-        //删除原有的图片
-        $del_ids = $request->input('del_ids');
-        if($del_ids){
-            $medias = Media::whereIn('id',$del_ids)->get(['id','path']);
-
-            foreach ($medias as $v)
-            {
-                $path_arr = explode("/",$v->path);
-                Storage::disk('uploads')->delete($path_arr[5]);
-
-            }
-            $delStatus = Media::whereIn('id',$del_ids)->delete();
-        }
-        return $this->wapSite->create($data) ? $this->succeed() : $this->fail();
+        return $this->article->store($request) ? $this->succeed() : $this->fail();
     }
 
     /**
-     * Display the specified resource.
+     * 显示指定的微网站文章记录详情
      *
      * @param $id
-     * @return \Illuminate\Http\Response
-     * @internal param WsmArticle $wsmArticle
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function show($id)
     {
         $article = $this->article->find($id);
         if (!$article) { return parent::notFound(); }
-        $f = explode(",", $article->media_ids);
 
-        $medias = Media::whereIn('id',$f)->get(['id','path']);
         return parent::output(__METHOD__, [
             'article' => $article,
-            'medias' => $medias,
+            'medias' => $this->media->medias($article->media_ids),
+//            'thumbnailMedia' => $this->media->find($article->thumbnail_media_id),
         ]);
 
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * 显示编辑指定微网站文章记录的表单
      *
      * @param $id
-     * @return \Illuminate\Http\Response
-     * @internal param WsmArticle $wsmArticle
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function edit($id)
     {
-        $article = $this->article->whereId($id)->first();
-
+        $article = $this->article->find($id);
         if (!$article) { return parent::notFound(); }
-        $f = explode(",", $article->media_ids);
 
-        $medias = Media::whereIn('id',$f)->get(['id','path']);
         return parent::output(__METHOD__, [
             'article' => $article,
-            'medias' => $medias,
+            'medias' => $this->media->medias($article->media_ids),
+//            'thumbnailMedia' => $this->media->find($article->thumbnail_media_id),
         ]);
 
     }
 
     /**
-     * Update the specified resource in storage.
+     * 更新指定的微网站文章记录
      *
      * @param WsmArticleRequest $request
      * @param $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function update(WsmArticleRequest $request, $id)
     {
-        $data = WsmArticle::find($id);
-        $media_ids = $request->input('media_ids');
-
-        $data->wsm_id = $request->input('wsm_id');
-        $data->name = $request->input('name');
-        $data->summary = $request->input('summary');
-        $data->thumbnail_media_id = $media_ids[0];
-        $data->content = $request->input('content');
-        $data->media_ids = implode(",", $media_ids);
-        $data->enabled = $request->input('enabled');
-
-        //删除原有的图片
-        $del_ids = $request->input('del_ids');
-        if($del_ids){
-            $medias = Media::whereIn('id',$del_ids)->get(['id','path']);
-
-            foreach ($medias as $v)
-            {
-                $path_arr = explode("/",$v->path);
-                Storage::disk('uploads')->delete($path_arr[5]);
-
-            }
-            $delStatus = Media::whereIn('id',$del_ids)->delete();
-        }
-
-        return $data->save() ? $this->succeed() : $this->fail();
+        return $this->article->modify($request, $id) ? $this->succeed() : $this->fail();
     }
 
     /**
-     * Remove the specified resource from storage.
+     * 删除指定的微网站文章记录
      *
      * @param $id
-     * @return \Illuminate\Http\Response
-     * @internal param WsmArticle $wsmArticle
+     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id)
     {
-        $wsm = $this->article->find($id);
-
-        if (!$wsm) { return parent::notFound(); }
-        return $wsm->delete() ? parent::succeed() : parent::fail();
+        $article = $this->article->find($id);
+        if (!$article) { return parent::notFound(); }
+        return $article->delete() ? parent::succeed() : parent::fail();
     }
 
+    /**
+     * 显示微网站文章详情
+     *
+     * @param $id
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function detail($id)
     {
-        $article = WsmArticle::whereId($id)->first();
-        $f = explode(",", $article->media_ids);
-
-        $medias = Media::whereIn('id',$f)->get(['id','path']);
+        $article = $this->article->find($id);
 
         return view('frontend.wap_site.article', [
             'article' => $article,
-            'medias' => $medias,
-            'ws' =>true
+            'medias' => $this->media->medias($article->media_ids),
         ]);
     }
 }

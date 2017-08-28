@@ -80,6 +80,13 @@ class MessageRequest extends FormRequest
         if (!isset($input['enabled'])) {
             $input['enabled'] = 0;
         }
+        if (isset($input['media_ids'])) {
+            $input['media_ids'] = implode(',', $input['media_ids']);
+        }
+        if (isset($input['user_ids'])) {
+            $input['user_ids'] = implode(',', $input['user_ids']);
+        }
+
         $this->replace($input);
     }
 }

@@ -9,7 +9,7 @@ class GradeRequest extends FormRequest {
     protected $rules = [
         'name' => 'required|string|max:255',
         'school_id' => 'required|integer',
-        'educator_ids' => 'required|array',
+        'educator_ids' => 'required|string',
         'enabled' => 'required|boolean'
     ];
     protected $strings_key = [
@@ -22,7 +22,6 @@ class GradeRequest extends FormRequest {
         'required' => '为必填项',
         'string' => '为字符串',
         'max' => '最大为:max',
-        'array' => '必须为数组',
         'integer' => '必须为整数',
         'boolean' => '为0或1',
     ];

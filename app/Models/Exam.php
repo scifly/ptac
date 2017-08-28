@@ -66,13 +66,13 @@ class Exam extends Model {
     
     public function classes(array $classIds) {
         
-        return DB::table('classes')->whereIn('id', $classIds)->get(['id', 'name']);
+        return Squad::whereIn('id', $classIds)->get(['id', 'name']);
         
     }
     
     public function subjects(array $subjectIds) {
         
-        return DB::table('subjects')->whereIn('id', $subjectIds)->get(['id', 'name']);
+        return Subject::whereIn('id', $subjectIds)->get(['id', 'name']);
         
     }
     

@@ -1,1 +1,1 @@
-$(crud.index('modal-show-student'));
+$(crud.index('students'));

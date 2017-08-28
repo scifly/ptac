@@ -44,8 +44,12 @@ Route::group(['prefix' => 'exam_types'], routes('ExamTypeController'));
 // 成绩管理 - 成绩录入/导入.总成绩录入/导入.成绩统计项设置
 Route::group(['prefix' => 'scores'], routes('ScoreController'));
 Route::get('scores/statistics/{exam_id}', 'ScoreController@statistics');
-Route::group(['prefix' => 'score_totals'], routes('ScoreTotalController'));
-Route::get('score_totals/statistics/{exam_id}', 'ScoreTotalController@statistics');
+Route::group(['prefix' => 'score_totals'], function() {
+    $ctlr = 'ScoreTotalController';
+    Route::get('index', $ctlr . '@index');
+    Route::get('show/{id}', $ctlr . '@show');
+    Route::get('statistics/{exam_id}', $ctlr . '@statistics');
+});
 Route::group(['prefix' => 'score_ranges'], routes('ScoreRangeController'));
 Route::group(['prefix' => 'score_ranges'], function() {
     $ctlr = 'ScoreRangeController';
@@ -134,7 +138,7 @@ Route::group(['prefix' => 'personal_infos'], function() {
     Route::get('index', $ctlr . '@index');
     Route::put('update/{id}', $ctlr . '@update');
     Route::post('upload_ava/{id}', $ctlr . '@uploadAvatar');
-    
+
 });
 
 /** 系统设置 */
@@ -145,6 +149,7 @@ Route::group(['prefix' => 'teams'], routes('TeamController'));
 Route::group(['prefix' => 'school_types'], routes('SchoolTypeController'));
 // 科目设置 - 科目管理.科目次分类设置
 Route::group(['prefix' => 'subjects'], routes('SubjectController'));
+Route::get('subjects/query/{id}', 'SubjectController@query');
 Route::group(['prefix' => 'subject_modules'], routes('SubjectModuleController'));
 // 角色/权限 - 角色管理.权限管理
 Route::group(['prefix' => 'groups'], routes('GroupController'));
