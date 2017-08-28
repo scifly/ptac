@@ -136,7 +136,7 @@ Route::group(['prefix' => 'messages'], routes('MessageController'));
 // 个人信息
 Route::group(['prefix' => 'personal_infos'], function() {
     $ctlr = 'PersonalInfoController';
-    Route::get('edit/{id}', $ctlr . '@edit');
+    Route::get('index', $ctlr . '@index');
     Route::put('update/{id}', $ctlr . '@update');
     Route::post('upload_ava/{id}', $ctlr . '@uploadAvatar');
 
