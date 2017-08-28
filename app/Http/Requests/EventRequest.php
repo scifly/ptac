@@ -30,6 +30,9 @@ class EventRequest extends FormRequest
 
     protected function prepareForValidation() {
         $input = $this->all();
+        if(!isset($input['ispublic'])) {
+            $input['ispublic'] = 0;
+        }
         if ($input['iscourse'] == 0) {
             $input['educator_id'] = '0';
             $input['subject_id'] = '0';

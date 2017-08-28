@@ -17,9 +17,8 @@ class PersonalInfoController extends Controller {
 
     /**
      * 修改个人信息的表单
-     *
-     * @param $id
      * @return \Illuminate\Http\Response
+     * @internal param $id
      * @internal param User $user
      */
     public function index() {
@@ -50,7 +49,7 @@ class PersonalInfoController extends Controller {
             $this->result['message'] = self::MSG_EDIT_OK;
         } else {
             $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '';
+            $this->result['message'] = '更新个人信息失败';
         }
         return response()->json($this->result);
     }

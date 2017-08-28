@@ -8,9 +8,8 @@ class UserRequest extends FormRequest {
 
     protected $rules = [
         'group_id' => 'required|integer',
-        'username' => 'required|string|max:255',
-        '_token' => 'required|string|max:255',
-        'email' => 'required|string|max:255',
+        'username' => 'required|string|max:255|unique:users',
+        'email' => 'required|email|max:255|unique:users',
         'gender' => 'required|boolean',
         'realname' => 'required|string|max:60',
         'avatar_url' => 'required|string|max:255',
@@ -42,18 +41,14 @@ class UserRequest extends FormRequest {
      *
      * @return bool
      */
-    public function authorize() {
-        return true;
-    }
+    public function authorize() { return true; }
 
     /**
      * Get the validation rules that apply to the request.
      *
      * @return array
      */
-    public function rules() {
-        return $this->rules;
-    }
+    public function rules() { return $this->rules; }
 
     public function messages(){
 
@@ -75,5 +70,18 @@ class UserRequest extends FormRequest {
     }
 
     public function wantsJson() { return true; }
-
+    
+    protected function prepareForValidation() {
+    
+        $input = $this->all();
+        if (isset($input['enabled']) && $input['enabled'] === 'on') {
+            $input['enabled'] = 1;
+        }
+        if (!isset($input['enabled'])) { $input['enabled'] = 0; }
+        $input['password'] = '12345678';
+    
+        $this->replace($input);
+        
+    }
+    
 }

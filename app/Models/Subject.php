@@ -3,7 +3,12 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Http\Requests\SubjectRequest;
+use App\Models\EducatorClass;
+use App\Models\Grade;
+use App\Models\School;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -30,10 +35,10 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|Subject whereSchoolId($value)
  * @method static Builder|Subject whereUpdatedAt($value)
  * @mixin \Eloquent
- * @property-read \App\Models\Grade $grade
- * @property-read \App\Models\School $school
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\SubjectModule[] $subjectModules
- * @property-read \App\Models\EducatorClass $educatorClass
+ * @property-read Grade $grade
+ * @property-read School $school
+ * @property-read Collection|SubjectModule[] $subjectModules
+ * @property-read EducatorClass $educatorClass
  */
 class Subject extends Model {
     
@@ -46,30 +51,39 @@ class Subject extends Model {
         'pass_score',
         'grade_ids',
         'enabled'
-    
     ];
     
     public function subjectModules() {
-        return $this->hasOne('App\Models\SubjectModule');
+        
+        return $this->hasMany('App\Models\SubjectModule');
+        
     }
     
     
     public function school() {
+        
         return $this->belongsTo('App\Models\School');
+        
+    }
+
+    public function existed(SubjectRequest $request, $id = NULL) {
+        
+        if (!$id) {
+            $subject = $this->where('school_id', $request->input('school_id'))
+                ->where('name', $request->input('name'))->first();
+        } else {
+            $subject = $this->where('school_id', $request->input('school_id'))
+                ->where('id', '<>', $id)
+                ->where('name', $request->input('name'))->first();
+        }
+        return $subject ? true : false;
+        
     }
     
-    public function grade() {
-        return $this->belongsTo('App\Models\Grade', 'grade_ids');
-    }
-    
-    public function educatorClass() {
-        return $this->hasOne('App\Models\EducatorClass');
-    }
     
     public function datatable() {
         
         $columns = [
-            
             ['db' => 'Subject.id', 'dt' => 0],
             ['db' => 'Subject.name', 'dt' => 1],
             ['db' => 'School.name as schoolname', 'dt' => 2],
@@ -91,7 +105,6 @@ class Subject extends Model {
                 }
             ]
         ];
-        
         $joins = [
             [
                 'table' => 'schools',
@@ -104,7 +117,9 @@ class Subject extends Model {
         
         
         ];
+        
         return Datatable::simple($this, $columns, $joins);
+        
     }
     
     

@@ -22,7 +22,7 @@ class TabRequest extends FormRequest {
     public function rules() {
         
         return [
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:255|unique:tabs',
             'remark' => 'string|max:255',
             'enabled' => 'required|boolean'
         ];

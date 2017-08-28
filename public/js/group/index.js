@@ -1,1 +1,1 @@
-$(crud.index('modal-show-group'));
+$(crud.index('groups'));

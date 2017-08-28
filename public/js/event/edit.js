@@ -1,17 +1,15 @@
 $(function () {
-    //var id = window.location.href.substring(window.location.href.lastIndexOf('/') + 1);
     //后台传过来的user_id
     var id = $('input[name="user_id"]').val();
     //前端判断是否为管理员
     var isAdmin = $('input[name="isAdmin"]').val();
+    // 初始化列表事件
     function init_events(ele) {
         ele.each(function () {
-            // create an Event Object
             var eventObject = {
                 title: $.trim($(this).text()), // use the element's text as the event title
                 id: $(this).attr('id'),
                 user_id: id,
-                allDay:true
             }
             // store the Event Object in the DOM element so we can get to it later
             $(this).data('eventObject', eventObject);
@@ -24,6 +22,7 @@ $(function () {
         })
     }
     init_events($('#external-events div.external-event'));
+
     /**
      * 初始化日历事件
      */
@@ -42,6 +41,8 @@ $(function () {
         eventLimit: true,
         editable: true,
         events: './calendar_events/' + id,
+
+
         /**
          * 拖动插入
          */
