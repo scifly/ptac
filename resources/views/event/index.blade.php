@@ -22,9 +22,14 @@
                     <div class="box-body">
                         <!-- the events -->
                         <div id="external-events">
+                            @if (!empty($userId))
+                                <input hidden name="user_id" value={{$userId}}>
+                            @endif
+                            <input hidden name="isAdmin" value={{$isAdmin}}>
                             @foreach($events as $event)
-                            <div id={{$event['id']}}; class="external-event bg-light-blue">{{$event['title']}}</div>
+                                <div id={{$event['id']}}; class="external-event bg-light-blue">{{$event['title']}}</div>
                             @endforeach
+
                             <div class="checkbox">
                                 <label for="drop-remove">
                                     <input type="checkbox" id="drop-remove">

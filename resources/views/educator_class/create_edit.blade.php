@@ -1,8 +1,12 @@
-<div class="box box-primary">
-    <div class="box-header"></div>
+<div class="box box-widget">
+    <div class="box-header with-border">
+        @include('partials.form_header')
+    </div>
     <div class="box-body">
         <div class="form-horizontal">
-
+            @if (!empty($educatorClass['id']))
+                {{ Form::hidden('id', null, ['id' => 'id', 'value' => $educatorClass['id']]) }}
+            @endif
             <div class="form-group">
                 {!! Form::label('educator_id', '教职工姓名',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-2">
@@ -37,13 +41,5 @@
             </div>
         </div>
     </div>
-    <div class="box-footer">
-        {{--button--}}
-        <div class="form-group">
-            <div class="col-sm-3 col-sm-offset-4">
-                {!! Form::submit('保存', ['class' => 'btn btn-primary pull-left', 'id' => 'save']) !!}
-                {!! Form::reset('取消', ['class' => 'btn btn-default pull-right', 'id' => 'cancel']) !!}
-            </div>
-        </div>
-    </div>
+    @include('partials.form_buttons')
 </div>

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Http\Requests\EducatorRequest;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
@@ -67,7 +68,23 @@ class Educator extends Model {
         return $educators;
         
     }
-    
+    public function existed(EducatorRequest $request, $id = NULL) {
+
+        if (!$id) {
+            $educator = $this->where([
+                'school_id' => $request->input('school_id'),
+                'user_id' => $request->input('user_id')
+            ])->first();
+        } else {
+            $educator = $this->where('school_id', $request->input('school_id'))
+                ->where('id', '<>', $id)
+                ->where('user_id', $request->input('user_id'))
+                ->first();
+        }
+        return $educator ? true : false;
+
+    }
+
     public function educatorClass() { return $this->hasOne('App\Models\EducatorClass'); }
     
     public function datatable() {

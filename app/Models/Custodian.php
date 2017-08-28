@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use App\Http\Requests\CustodianRequest;
 
 /**
  * App\Models\Custodian
@@ -37,6 +39,52 @@ class Custodian extends Model {
     
     public function custodianStudent() {
         return $this->hasMany('App\Models\CustodianStudent');
+    }
+
+    public function existed(CustodianRequest $request, $id = NULL) {
+
+        if (!$id) {
+            $custodian = $this->where('user_id',$request->input('user_id'))
+                ->first();
+        } else {
+            $custodian = $this->where('user_id',$request->input('user_id'))
+                ->where('id','<>',$id)
+                ->first();
+        }
+        return $custodian ? true : false;
+
+    }
+
+    public function datatable() {
+
+        $columns = [
+            ['db' => 'Custodian.id', 'dt' => 0],
+            ['db' => 'User.realname as custodianname', 'dt' => 1],
+            ['db' => 'Custodian.expiry', 'dt' => 2],
+            ['db' => 'Custodian.created_at', 'dt' => 3],
+            [
+                'db' => 'Custodian.updated_at', 'dt' => 4,
+                'formatter' => function ($d, $row) {
+                    return Datatable::dtOps($this, $d, $row);
+                }
+            ],
+
+        ];
+
+        $joins = [
+            [
+                'table' => 'users',
+                'alias' => 'User',
+                'type' => 'INNER',
+                'conditions' => [
+                    'User.id = Custodian.user_id'
+                ]
+            ],
+
+        ];
+
+        return Datatable::simple($this, $columns, $joins);
+
     }
     
 }

@@ -30,6 +30,7 @@ Route::get('pages/{id}', 'HomeController@menu');
 Route::group(['prefix' => 'educators'], routes('EducatorController'));
 Route::group(['prefix' => 'educators_classes'], routes('EducatorClassController'));
 // 监护人
+Route::group(['prefix' => 'custodians'], routes('CustodianController'));
 Route::group(['prefix' => 'custodians_students'], routes('CustodianStudentController'));
 // 学生
 Route::group(['prefix' => 'students'], routes('StudentController'));
@@ -135,7 +136,7 @@ Route::group(['prefix' => 'messages'], routes('MessageController'));
 // 个人信息
 Route::group(['prefix' => 'personal_infos'], function() {
     $ctlr = 'PersonalInfoController';
-    Route::get('edit/{id}', $ctlr . '@edit');
+    Route::get('index', $ctlr . '@index');
     Route::put('update/{id}', $ctlr . '@update');
     Route::post('upload_ava/{id}', $ctlr . '@uploadAvatar');
 

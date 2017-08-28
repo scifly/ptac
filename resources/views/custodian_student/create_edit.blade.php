@@ -1,8 +1,12 @@
-<div class="box box-primary">
-    <div class="box-header"></div>
+<div class="box box-widget">
+    <div class="box-header with-border">
+        @include('partials.form_header')
+    </div>
     <div class="box-body">
         <div class="form-horizontal">
-
+            @if (!empty($custodianStudent['id']))
+                {{ Form::hidden('id', null, ['id' => 'id', 'value' => $custodianStudent['id']]) }}
+            @endif
             <div class="form-group">
                 {!! Form::label('custodian_id', '监护人姓名',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-2">

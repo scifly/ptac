@@ -6,7 +6,7 @@
                     &times;
                 </button>
                 <h4 class="modal-title" id="myModalLabel">
-                    编辑列表事件
+                    编辑日历事件
                 </h4>
             </div>
             <div class="modal-body show-form">

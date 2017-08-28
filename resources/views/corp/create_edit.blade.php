@@ -4,6 +4,9 @@
     </div>
     <div class="box-body">
         <div class="form-horizontal">
+            @if (!empty($corp['id']))
+                {{ Form::hidden('id', null, ['id' => 'id', 'value' => $corp['id']]) }}
+            @endif
             <div class="form-group">
                 {!! Form::label('name', '名称',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-2">
