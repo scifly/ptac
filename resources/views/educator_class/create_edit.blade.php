@@ -27,18 +27,7 @@
                     {!! Form::select('subject_id', $subject, null, ['class' => 'form-control']) !!}
                 </div>
             </div>
-
-            <div class="form-group">
-                {!! Form::label('enabled', '是否启用', [
-                    'class' => 'col-sm-4 control-label'
-                ]) !!}
-                <div class="col-sm-6" style="margin-top: 5px;">
-                    <input id="enabled" type="checkbox" name="enabled" data-render="switchery"
-                           data-theme="default" data-switchery="true"
-                           @if(!empty($educatorClass['enabled'])) checked @endif
-                           data-classname="switchery switchery-small"/>
-                </div>
-            </div>
+            @include('partials.enabled', ['enabled' => $educatorClass['enabled']])
         </div>
     </div>
     @include('partials.form_buttons')

@@ -1,5 +1,7 @@
-<div class="box box-primary">
-    <div class="box-header"></div>
+<div class="box box-widget">
+    <div class="box-header with-border">
+        @include('partials.form_header')
+    </div>
     <div class="box-body">
         <div class="form-horizontal">
             <div class="form-group">
@@ -42,15 +44,15 @@
                     ]) !!}
                 </div>
             </div>
-            <div class="form-group">
-                <div class="col-sm-3 col-sm-offset-4">
-                    {!! Form::radio('enabled', '1', true) !!}
-                    {!! Form::label('enabled', '启用') !!}
-                    {!! Form::radio('enabled', '0') !!}
-                    {!! Form::label('enabled', '禁用') !!}
-                </div>
-            </div>
-
+            {{--<div class="form-group">--}}
+                {{--<div class="col-sm-3 col-sm-offset-4">--}}
+                    {{--{!! Form::radio('enabled', '1', true) !!}--}}
+                    {{--{!! Form::label('enabled', '启用') !!}--}}
+                    {{--{!! Form::radio('enabled', '0') !!}--}}
+                    {{--{!! Form::label('enabled', '禁用') !!}--}}
+                {{--</div>--}}
+            {{--</div>--}}
+            @include('partials.enabled', ['enabled' => $attendance['enabled']])
         </div>
     </div>
     @include('partials.form_buttons')

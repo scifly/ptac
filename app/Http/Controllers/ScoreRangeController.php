@@ -5,15 +5,18 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ScoreRangeRequest;
 use App\Models\ScoreRange;
 use App\Models\Subject;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Http\Request as HttpRequest;
 
 class ScoreRangeController extends Controller
 {
     protected $scoreRange;
+    protected $subject;
 
-    function __construct(ScoreRange $scoreRange) { $this->scoreRange = $scoreRange; }
+    function __construct(ScoreRange $scoreRange, Subject $subject) {
+        $this->scoreRange = $scoreRange;
+        $this->subject = $subject;
+    }
 
     /**
      * 显示成绩统计项列表
@@ -68,10 +71,10 @@ class ScoreRangeController extends Controller
         $scoreRange = $this->scoreRange->find($id);
         if (!$scoreRange) { return $this->notFound(); }
 
-        $subjects_arr = explode(',', $scoreRange['subject_ids']);
+        $subjectsArr = explode(',', $scoreRange['subject_ids']);
         $str = '';
-        foreach ($subjects_arr as $val){
-            $str .= ',' . Subject::findOrFail($val)['name'];
+        foreach ($subjectsArr as $val){
+            $str .= ',' . $this->subject->find($val)->name;
         }
         $scoreRange['subject_ids'] = substr($str,1);
 
@@ -130,15 +133,11 @@ class ScoreRangeController extends Controller
     /**
      * 显示成绩统计页面
      *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return bool|\Illuminate\Http\JsonResponse
      */
-    public function statisticsShow(){
+    public function showStatistics(){
 
-        $grades = DB::table('grades')->pluck('name', 'id');
-        $classes = DB::table('classes')->pluck('name', 'id');
-        $exams = DB::table('exams')->pluck('name', 'id');
-
-        return $this->output(__METHOD__, ['grades' => $grades, 'classes' => $classes, 'exams' => $exams, ]);
+        return $this->output(__METHOD__);
     }
 
 

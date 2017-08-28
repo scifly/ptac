@@ -21,8 +21,6 @@ class ScoreComposer {
 
     public function compose(View $view) {
 
-        // $view->with('schoolTypes', $this->schoolTypes->pluck('name', 'id'));
-
         $view->with([
             'students' => $this->students->pluck('student_number', 'id'),
             'subjects' => $this->subjects->pluck('name', 'id'),
