@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\PersonalInfoRequest;
 use App\Models\User;
 use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\Session;
 
 class PersonalInfoController extends Controller {
     protected $user;
@@ -16,12 +17,13 @@ class PersonalInfoController extends Controller {
 
     /**
      * 修改个人信息的表单
-     *
-     * @param $id
      * @return \Illuminate\Http\Response
+     * @internal param $id
      * @internal param User $user
      */
-    public function edit($id) {
+    public function index() {
+        //$id = Session::get('user');
+        $id = 1;
         $personalInfo = $this->user->find($id);
         $group = $personalInfo->group()->whereId($personalInfo->group_id)->first();
         return view('personal_info.edit', [
@@ -47,7 +49,7 @@ class PersonalInfoController extends Controller {
             $this->result['message'] = self::MSG_EDIT_OK;
         } else {
             $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '';
+            $this->result['message'] = '更新个人信息失败';
         }
         return response()->json($this->result);
     }

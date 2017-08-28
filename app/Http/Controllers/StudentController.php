@@ -15,7 +15,6 @@ class StudentController extends Controller {
     /**
      * 显示学生列表
      *
-     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
         
@@ -29,7 +28,7 @@ class StudentController extends Controller {
     /**
      * 显示创建学生记录的表单
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return \Illuminate\Http\JsonResponse
      */
     public function create() {
         

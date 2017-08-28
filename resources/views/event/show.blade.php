@@ -72,13 +72,13 @@
     <div class="form-group educator_id-from">
         {!! Form::label('educator_id', '教师姓名',['class' => 'col-sm-4 control-label']) !!}
         <div class="col-sm-4">
-            {!! Form::text('educator_id', null, [ 'class' => 'form-control']) !!}
+            {!! Form::select('educator_id', $educators, null, [ 'class' => 'form-control']) !!}
         </div>
     </div>
     <div class="form-group subject_id-from">
         {!! Form::label('subject_id', '科目名称',['class' => 'col-sm-4 control-label']) !!}
         <div class="col-sm-4">
-            {!! Form::text('subject_id', null, [ 'class' => 'form-control']) !!}
+            {!! Form::select('subject_id', $subjects, null, [ 'class' => 'form-control']) !!}
         </div>
     </div>
     <div class="form-group">

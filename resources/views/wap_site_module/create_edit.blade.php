@@ -4,15 +4,9 @@
     </div>
     <div class="box-body">
         <div class="form-horizontal">
-            <div class="form-group">
-                {!! Form::label('id', 'id',['class' => 'col-sm-4 control-label']) !!}
-                <div class="col-sm-2">
-                    {!! Form::hidden('id', null, [
-                        'class' => 'form-control',
-                    ]) !!}
-                </div>
-
-            </div>
+            @if (!empty($tab['id']))
+                {{ Form::hidden('id', null, ['id' => 'id', 'value' => $tab['id']]) }}
+            @endif
             <div class="form-group">
                 {!! Form::label('wap_site_id', '所属网站',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-2">
@@ -32,25 +26,15 @@
                     ]) !!}
                 </div>
             </div>
-            {{--<div class="form-group">--}}
-            {{--{!! Form::label('media_ids', '轮播图',['class' => 'col-sm-4 control-label']) !!}--}}
-            {{--<div class="col-sm-6">--}}
-            {{--@if(isset($module))--}}
-            {{--<img src="../../..{{$module->media->path}}">--}}
-            {{--<input type="hidden" name="media_id" value="{{$module->media->id}}"/>--}}
-            {{--@endif--}}
-            {{--<div class="preview" style="width: 100px;overflow: hidden;"></div>--}}
-            {{--<a class="btn btn-primary" data-toggle="modal" data-target="#modalPic">上传</a>--}}
-            {{--</div>--}}
-            {{--</div>--}}
+
             <div class="form-group">
-                {!! Form::label('media_ids', '轮播图',['class' => 'col-sm-4 control-label']) !!}
+                {!! Form::label('media_id', '模块图片',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-6">
                     <div class="preview">
-                        @if(isset($module))
+                        @if(isset($media))
                             <div class="img-item">
-                                <img src="../../..{{$module->media->path}}" id="{{$module->media->id}}">
-                                <input type="hidden" name="media_id" value="{{$module->media->id}}"/>
+                                <img src="../../..{{$media->path}}" id="{{$media->id}}">
+                                <input type="hidden" name="media_id" value="{{$media->id}}"/>
                                 <div class="del-mask"><i class="delete fa fa-trash-o"></i></div>
                             </div>
                         @endif

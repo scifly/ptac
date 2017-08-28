@@ -180,7 +180,6 @@ $factory->define(App\Models\Custodian::class, function (Faker\Generator $faker) 
 });
 
 $factory->define(App\Models\Student::class, function (Faker\Generator $faker) {
-
     return [
         'user_id' => 1,
         'class_id' => 1,

@@ -19,6 +19,7 @@ class EducatorClassController extends Controller
     /**
      * SubjectModulesController constructor.
      * @param EducatorClass $educatorClass
+     * @param Educator $educator
      */
     function __construct(EducatorClass $educatorClass, Educator $educator)
     {
@@ -35,12 +36,7 @@ class EducatorClassController extends Controller
         if (Request::get('draw')) {
             return response()->json($this->educatorClass->datatable());
         }
-        return view('educator_class.index', [
-            'js' => 'js/educator_class/index.js',
-            'dialog' => true,
-            'datatable' => true,
-            'form'=>true,
-        ]);
+        return parent::output(__METHOD__);
     }
 
     /**
@@ -49,10 +45,7 @@ class EducatorClassController extends Controller
      */
     public function create()
     {
-        return view('educator_class.create',[
-            'js' => 'js/educator_class/create.js',
-            'form' => true,
-        ]);
+        return parent::output(__METHOD__);
     }
 
     /**
@@ -73,19 +66,13 @@ class EducatorClassController extends Controller
         {
             $this->result['statusCode'] = self::MSG_BAD_REQUEST;
             $this->result['message'] = '该条数据已经存在!';
+            return response()->json($this->result);
         }else{
-            if($this->educatorClass->create($data)){
-                $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-                $this->result['message'] = self::MSG_CREATE_OK;
-
-            }else{
-                $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-                $this->result['message'] = '添加失败';
-            }
+            return $this->educatorClass->create($data) ? $this->succeed() : $this->fail();
         }
 
 
-        return response()->json($this->result);
+
     }
 
     /**
@@ -107,20 +94,16 @@ class EducatorClassController extends Controller
      */
     public function edit($id)
     {
-        $educatorClass = $this->educatorClass->findOrFail($id)->toArray();
-        return view('educator_class.edit', [
-            'js' => 'js/educator_class/edit.js',
-            'educatorClass' => $educatorClass,
-            'form' => true
-        ]);
+        $educatorClass = $this->educatorClass->find($id);
+        if (!$educatorClass) { return $this->notFound(); }
+        return $this->output(__METHOD__, ['educatorClass' => $educatorClass]);
+
     }
 
     /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\EducatorClass  $educatorClass
-     * @return \Illuminate\Http\Response
+     * @param EducatorClassRequest $request
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
      */
     public function update(EducatorClassRequest $request, $id)
     {
@@ -153,17 +136,14 @@ class EducatorClassController extends Controller
 
     /**
      * 删除教职员工
-     * @param  \App\Models\EducatorClass  $educatorClass
+     * @param $id
      * @return \Illuminate\Http\Response
+     * @internal param EducatorClass $educatorClass
      */
     public function destroy($id)
     {
-        if ($this->educatorClass->findOrFail($id)->delete()) {
-            $this->result['message'] = self::MSG_DEL_OK;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '删除失败';
-        }
-        return response()->json($this->result);
+        $educatorClass = $this->educatorClass->find($id);
+        if (!$educatorClass) { return $this->notFound(); }
+        return $educatorClass->delete() ? $this->succeed() : $this->fail();
     }
 }

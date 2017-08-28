@@ -14,9 +14,11 @@ use Illuminate\Support\Facades\Request;
 class EducatorController extends Controller {
     
     protected $educator;
-    
-    public function __construct(Educator $educator) {
+    protected $team;
+
+    public function __construct(Educator $educator, Team $team) {
         $this->educator = $educator;
+        $this->team = $team;
     }
     
     /**
@@ -25,7 +27,7 @@ class EducatorController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
-        
+
         if (Request::get('draw')) {
             return response()->json($this->educator->datatable());
         }
@@ -34,43 +36,28 @@ class EducatorController extends Controller {
     }
     
     /**
-     * Show the form for creating a new resource.
+     * 显示创建教职员工记录的表单
      *
      * @return \Illuminate\Http\Response
      */
     public function create() {
-        //
-        return view('educator.create', [
-            'js' => 'js/educator/create.js',
-            'form' => true
-        ]);
+        return $this->output(__METHOD__);
     }
-    
+
     /**
      * Store a newly created resource in storage.
      *
-     * @param EducatorRequest $educatorRequest
+     * @param EducatorRequest $request
      * @return \Illuminate\Http\Response
+     * @internal param EducatorRequest $educatorRequest
      * @internal param \Illuminate\Http\Request $request
      */
-    public function store(EducatorRequest $educatorRequest) {
-        // request
-        $data['user_id'] = $educatorRequest->input('user_id');
-        $ids = $educatorRequest->input('team_ids');
-        $data['team_ids'] = implode(',', $ids);
-        $data['school_id'] = $educatorRequest->input('school_id');
-        $data['sms_quote'] = $educatorRequest->input('sms_quote');
-        $data['enabled'] = $educatorRequest->input('enabled');
-        
-        if ($this->educator->create($data)) {
-            $this->result['message'] = self::MSG_CREATE_OK;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '';
-            
+    public function store(EducatorRequest $request) {
+
+        if ($this->educator->existed($request)) {
+            return $this->fail('已经有此记录');
         }
-        return response()->json($this->result);
-        
+        return $this->educator->create($request->all()) ? $this->succeed() : $this->fail();
     }
     
     /**
@@ -81,46 +68,28 @@ class EducatorController extends Controller {
      * @internal param Educator $educator
      */
     public function show($id) {
-        
-        $educator = $this->educator->whereId($id)->first();
-        $f = explode(",", $educator->team_ids);
-        $teams = Team::whereIn('id', $f)->get(['id', 'name']);
-
-//        $teams = DB::table('teams')
-//            ->whereIn('id', $f )
-//            ->get(['id','name']);
-        
-        return view('educator.show', [
+        $educator = $this->educator->find($id);
+        if (!$educator) { return $this->notFound(); }
+        return $this->output(__METHOD__, [
             'educator' => $educator,
-            'show' => true,
-            
-            'teams' => $teams
+            'educators' => $this->educator->teams($educator->team_ids)
         ]);
         
     }
-    
+
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Educator $educator
+     * @param $id
      * @return \Illuminate\Http\Response
+     * @internal param Educator $educator
      */
     public function edit($id) {
-        $educator = $this->educator->whereId($id)->first();
-        $ids = explode(",", $educator->team_ids);
-        
-        $teams = DB::table('teams')
-            ->whereIn('id', $ids)
-            ->get(['id', 'name']);
-        $selectedTeams = [];
-        foreach ($teams as $value) {
-            $selectedTeams[$value->id] = $value->name;
-        }
-        return view('educator.edit', [
-            'js' => 'js/educator/edit.js',
+        $educator = $this->educator->find($id);
+        if (!$educator) { return $this->notFound(); }
+        return $this->output(__METHOD__, [
             'educator' => $educator,
-            'selectedTeams' => $selectedTeams,
-            'form' => true
+            'selectedTeams' => $this->team->teams($educator->educator_ids)
         ]);
     }
     
@@ -133,25 +102,12 @@ class EducatorController extends Controller {
      * @internal param Educator $educator
      */
     public function update(EducatorRequest $request, $id) {
-        // find the record by id
-        // update the record with the request data
-        $data = Educator::find($id);
-        $ids = $request->input('team_ids');
-        
-        $data->user_id = $request->input('user_id');
-        $data->school_id = $request->input('school_id');
-        $data->team_ids = implode(',', $ids);
-        $data->sms_quote = $request->input('sms_quote');
-        $data->enabled = $request->input('enabled');
-        
-        if ($data->save()) {
-            $this->result['message'] = self::MSG_EDIT_OK;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '';
-            
+        $educator = $this->educator->find($id);
+        if (!$educator) { return $this->notFound(); }
+        if ($this->educator->existed($request, $id)) {
+            return $this->fail('已经有此记录');
         }
-        return response()->json($this->result);
+        return $educator->update($request->all()) ? $this->succeed() : $this->fail();
     }
     
     /**
@@ -162,12 +118,9 @@ class EducatorController extends Controller {
      * @internal param Educator $educator
      */
     public function destroy($id) {
-        if ($this->educator->findOrFail($id)->delete()) {
-            $this->result['message'] = self::MSG_DEL_OK;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '';
-        }
-        return response()->json($this->result);
+        $educator = $this->educator->find($id);
+        if (!$educator) { return $this->notFound(); }
+        return $educator->delete() ? $this->succeed() : $this->fail();
+
     }
 }
