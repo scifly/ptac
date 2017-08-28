@@ -1,8 +1,9 @@
-<div class="box box-primary">
-    <div class="box-header"></div>
+<div class="box box-widget">
+    <div class="box-header with-border">
+        @include('partials.form_header')
+    </div>
     <div class="box-body">
         <div class="form-horizontal">
-
             <div class="form-group">
                 {!! Form::label('custodian_id', '监护人姓名',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-2">
@@ -27,17 +28,18 @@
                     ]) !!}
                 </div>
             </div>
-            <div class="form-group">
-                <label for="enabled" class="col-sm-3 control-label">
-                    是否启用
-                </label>
-                <div class="col-sm-6" style="margin-top: 5px;">
-                    <input id="enabled" type="checkbox" name="enabled" data-render="switchery"
-                           data-theme="default" data-switchery="true"
-                           @if(!empty($custodianStudent['enabled'])) checked @endif
-                           data-classname="switchery switchery-small"/>
-                </div>
-            </div>
+            {{--<div class="form-group">--}}
+                {{--<label for="enabled" class="col-sm-3 control-label">--}}
+                    {{--是否启用--}}
+                {{--</label>--}}
+                {{--<div class="col-sm-6" style="margin-top: 5px;">--}}
+                    {{--<input id="enabled" type="checkbox" name="enabled" data-render="switchery"--}}
+                           {{--data-theme="default" data-switchery="true"--}}
+                           {{--@if(!empty($custodianStudent['enabled'])) checked @endif--}}
+                           {{--data-classname="switchery switchery-small"/>--}}
+                {{--</div>--}}
+            {{--</div>--}}
+            @include('partials.enabled', ['enabled' => $custodianStudent['enabled']])
         </div>
     </div>
     @include('partials.form_buttons')

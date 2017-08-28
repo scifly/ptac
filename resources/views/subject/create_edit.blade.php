@@ -58,7 +58,7 @@
                 {!! Form::label('grade_ids', '年级名称',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-2">
                     {{--{!! Form::select('grade_ids[]', $grades, $abcs, ['class' => 'form-control', 'multiple' => 'multiple']) !!}--}}
-                    <select multiple name="grade_ids[]" id="grade_ids"  data-parsley-required="true">
+                    <select multiple name="grade_ids[]" id="grade_ids" data-parsley-required="true">
                         @foreach($grades as $key => $value)
                             @if(isset($selectedGrades))
                                 <option value="{{$key}}" @if(array_key_exists($key, $selectedGrades)) selected @endif>
@@ -82,17 +82,18 @@
                            data-classname="switchery switchery-small"/>
                 </div>
             </div>
-            <div class="form-group">
-                {!! Form::label('enabled', '是否启用', [
-                    'class' => 'col-sm-4 control-label'
-                ]) !!}
-                <div class="col-sm-6" style="margin-top: 5px;">
-                    <input id="enabled" type="checkbox" name="enabled" data-render="switchery"
-                           data-theme="default" data-switchery="true"
-                           @if(!empty($subject['enabled'])) checked @endif
-                           data-classname="switchery switchery-small"/>
-                </div>
-            </div>
+            {{--<div class="form-group">--}}
+            {{--{!! Form::label('enabled', '是否启用', [--}}
+            {{--'class' => 'col-sm-4 control-label'--}}
+            {{--]) !!}--}}
+            {{--<div class="col-sm-6" style="margin-top: 5px;">--}}
+            {{--<input id="enabled" type="checkbox" name="enabled" data-render="switchery"--}}
+            {{--data-theme="default" data-switchery="true"--}}
+            {{--@if(!empty($subject['enabled'])) checked @endif--}}
+            {{--data-classname="switchery switchery-small"/>--}}
+            {{--</div>--}}
+            {{--</div>--}}
+            @include('partials.enabled', ['enabled' => $subject['enabled']])
         </div>
     </div>
     @include('partials.form_buttons')
