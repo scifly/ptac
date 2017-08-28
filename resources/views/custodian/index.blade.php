@@ -8,11 +8,9 @@
             <tr>
                 <th>#</th>
                 <th>监护人姓名</th>
-                <th>学生姓名</th>
-                <th>关系</th>
+                <th>服务到期时间</th>
                 <th>创建时间</th>
                 <th>更新时间</th>
-                <th>状态</th>
             </tr>
             </thead>
             <tbody></tbody>

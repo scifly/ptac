@@ -17,7 +17,6 @@ class CustodianComposer{
     public function compose(View $view)
     {
         $user =Custodian::with('user')->get()->toArray();
-
         $view->with(['user' => $user,]);
     }
 }

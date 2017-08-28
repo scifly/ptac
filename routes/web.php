@@ -30,6 +30,7 @@ Route::get('pages/{id}', 'HomeController@menu');
 Route::group(['prefix' => 'educators'], routes('EducatorController'));
 Route::group(['prefix' => 'educators_classes'], routes('EducatorClassController'));
 // 监护人
+Route::group(['prefix' => 'custodians'], routes('CustodianController'));
 Route::group(['prefix' => 'custodians_students'], routes('CustodianStudentController'));
 // 学生
 Route::group(['prefix' => 'students'], routes('StudentController'));

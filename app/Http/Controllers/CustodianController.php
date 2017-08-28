@@ -17,7 +17,6 @@ class CustodianController extends Controller
     }
     /**
      * 显示监护人列表.
-     *
      * @return \Illuminate\Http\Response
      */
     public function index()
@@ -39,36 +38,43 @@ class CustodianController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
+     * 新增一个监护人.
+     * @param CustodianRequest $request
      * @return \Illuminate\Http\Response
      */
     public function store(CustodianRequest $request)
     {
-        //
+        $data = $request->except('_token');
+        if ($this->custodian->existed($request)) {
+            return $this->fail('已经有此记录');
+        }
+        return $this->custodian->create($data) ? $this->succeed() : $this->fail();
+
     }
 
     /**
      * Display the specified resource.
-     *
      * @param  \App\Models\Custodian  $custodian
      * @return \Illuminate\Http\Response
      */
     public function show(Custodian $custodian)
     {
-        //
+
     }
 
     /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Custodian  $custodian
+     * 编辑监护人.
+     * @param $id
      * @return \Illuminate\Http\Response
+     * @internal param Custodian $custodian
      */
-    public function edit(Custodian $custodian)
+    public function edit($id)
     {
-        //
+        echo 123;exit;
+        $custodian = $this->custodian->find($id);
+        if (!$custodian) { return $this->notFound(); }
+        return $this->output(__METHOD__, ['custodian' => $custodian]);
+
     }
 
     /**
