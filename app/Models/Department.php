@@ -58,4 +58,66 @@ class Department extends Model {
     public function school() {
         return $this->belongsTo('App\Models\School');
     }
+
+    public function datatable() {
+
+        $columns = [
+            ['db' => 'Department.id', 'dt' => 0],
+            ['db' => 'Department.parent_id', 'dt' => 1],
+            ['db' => 'Department.corp_id', 'dt' => 2],
+            ['db' => 'Department.school_id', 'dt' => 3],
+            ['db' => 'Department.name', 'dt' => 4],
+            ['db' => 'Department.remark', 'dt' => 5],
+            ['db' => 'Department.order', 'dt' => 6],
+            ['db' => 'Department.created_at', 'dt' => 7],
+            ['db' => 'Department.updated_at', 'dt' => 8],
+            [
+                'db' => 'Department.enabled', 'dt' => 9,
+                'formatter' => function ($d, $row) {
+                    return Datatable::dtOps($this, $d, $row);
+                }
+            ],
+
+        ];
+
+        $joins = [
+            [
+                'table' => 'custodians',
+                'alias' => 'Custodian',
+                'type' => 'INNER',
+                'conditions' => [
+                    'Custodian.id = CustodianStudent.custodian_id'
+                ]
+            ],
+            [
+                'table' => 'users',
+                'alias' => 'User',
+                'type' => 'INNER',
+                'conditions' => [
+                    'User.id = Custodian.user_id'
+                ]
+            ],
+
+            [
+                'table' => 'students',
+                'alias' => 'Student',
+                'type' => 'INNER',
+                'conditions' => [
+                    'Student.id = CustodianStudent.student_id',
+                ]
+            ],
+//            [
+//                'table' => 'users',
+//                'alias' => 'User',
+//                'type' => 'INNER',
+//                'conditions' => [
+//                    'Student.user_id = User.id'
+//                ]
+//            ],
+
+        ];
+
+        return Datatable::simple($this, $columns, $joins);
+
+    }
 }

@@ -1,1 +1,1 @@
-$(crud.edit('formEducatorClass'));
+$(crud.edit('formEducatorClass','educators_classes'));

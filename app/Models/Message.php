@@ -42,6 +42,7 @@ use Illuminate\Support\Facades\Storage;
  * @method static Builder|Message whereUserIds($value)
  * @mixin \Eloquent
  * @property-read \App\Models\MessageType $messageType
+ * @property-read \App\Models\User $user
  */
 class Message extends Model {
     //

@@ -23,6 +23,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|ExamType whereUpdatedAt($value)
  * @mixin \Eloquent
  * @property-read \App\Models\Exam $Exam
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Exam[] $exams
  */
 class ExamType extends Model {
 

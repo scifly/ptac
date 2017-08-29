@@ -121,11 +121,11 @@ class ScoreController extends Controller {
     /**
      * 统计成绩排名
      *
-     * @param $id
+     * @param $examId
      * @return \Illuminate\Http\JsonResponse
      */
-    public function statistics($exam_id) {
-        return $this->score->statistics($exam_id) ? $this->succeed() : $this->fail();
+    public function statistics($examId) {
+        return $this->score->statistics($examId) ? $this->succeed() : $this->fail();
     }
 }
 

@@ -40,7 +40,7 @@ class TabController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function create() {
-        
+
         return parent::output(__METHOD__, ['menus' => $this->menu->leaves(1)]);
         
     }

@@ -4,14 +4,21 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\SubjectRequest;
 use App\Models\Grade;
+use App\Models\Major;
 use App\Models\Subject;
 use Illuminate\Support\Facades\Request;
 
 class SubjectController extends Controller {
     
-    protected $subject;
+    protected $subject, $major, $grade;
     
-    function __construct(Subject $subject) { $this->subject = $subject; }
+    function __construct(Subject $subject, Major $major, Grade $grade) {
+        
+        $this->subject = $subject;
+        $this->major = $major;
+        $this->grade = $grade;
+    
+    }
     
     /**
      * 显示科目列表
@@ -34,7 +41,10 @@ class SubjectController extends Controller {
      */
     public function create() {
 
-        return parent::output(__METHOD__);
+        return parent::output(__METHOD__, [
+            'majors' => $this->major->majors(1),
+            'grades' => $this->grade->grades(1)
+        ]);
         
     }
     
@@ -83,9 +93,17 @@ class SubjectController extends Controller {
             $grade = Grade::whereId($gradeId)->first();
             $selectedGrades[$gradeId] = $grade['name'];
         }
+        $subjectMajors = $this->subject->majors;
+        $selectedMajors = [];
+        foreach ($subjectMajors as $major) {
+            $selectedMajors[$major->id] = $major->name;
+        }
         return parent::output(__METHOD__, [
             'subject' => $subject,
-            'selectedGrades' => $selectedGrades
+            'grades' => $this->grade->grades(1),
+            'selectedGrades' => $selectedGrades,
+            'majors' => $this->major->majors(1),
+            'selectedMajors' => $selectedMajors
         ]);
         
     }

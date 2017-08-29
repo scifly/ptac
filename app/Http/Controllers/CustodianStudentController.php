@@ -25,12 +25,7 @@ class CustodianStudentController extends Controller {
         if (Request::get('draw')) {
             return response()->json($this->custodianStudent->datatable());
         }
-        return view('custodian_student.index', [
-            'js' => 'js/custodian_student/index.js',
-            'dialog' => true,
-            'datatable' => true,
-            'form' => true,
-        ]);
+        return parent::output(__METHOD__);
     }
     
     /**
@@ -38,10 +33,8 @@ class CustodianStudentController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function create() {
-        return view('custodian_student.create', [
-            'js' => 'js/custodian_student/create.js',
-            'form' => true
-        ]);
+
+        return parent::output(__METHOD__);
     }
     
     /**
@@ -51,26 +44,14 @@ class CustodianStudentController extends Controller {
      * @internal param $CustodianStudentRequest
      */
     public function store(CustodianStudentRequest $request) {
+
         $data = $request->except('_token');
-        $result = $this->custodianStudent
-            ->where('custodian_id', $data['custodian_id'])
-            ->where('student_id', $data['student_id'])
-            ->get()
-            ->toArray();
-        if (!empty($result)) {
-            $this->result['statusCode'] = self::MSG_BAD_REQUEST;
-            $this->result['message'] = '该条数据已经存在!';
-        } else {
-            if ($this->custodianStudent->create($data)) {
-                $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-                $this->result['message'] = self::MSG_CREATE_OK;
-            } else {
-                $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-                $this->result['message'] = self::添加失败;
-            }
+        if ($this->custodianStudent->existed($request)) {
+            return $this->fail('已经有此记录');
         }
-        
-        return response()->json($this->result);
+        return $this->custodianStudent->create($data) ? $this->succeed() : $this->fail();
+
+
     }
     
     /**
@@ -92,13 +73,10 @@ class CustodianStudentController extends Controller {
      * @internal param CustodianStudent $custodianStudent
      */
     public function edit($id) {
-        $custodianStudent = $this->custodianStudent->findOrFail($id);
-        
-        return view('custodian_student.edit', [
-            'js' => 'js/custodian_student/edit.js',
-            'custodianStudent' => $custodianStudent,
-            'form' => true
-        ]);
+
+        $custodianStudent = $this->custodianStudent->find($id);
+        if (!$custodianStudent) { return $this->notFound(); }
+        return $this->output(__METHOD__, ['custodianStudent' => $custodianStudent]);
         
     }
     
@@ -110,27 +88,12 @@ class CustodianStudentController extends Controller {
      * @internal param CustodianStudent $custodianStudent
      */
     public function update(CustodianStudentRequest $request, $id) {
-        $data = $request->all();
-        $custodianStudent = $this->custodianStudent->findOrFail($id);
-        $result = $this->custodianStudent
-            ->where('custodian_id', $data['custodian_id'])
-            ->where('student_id', $data['student_id'])
-            ->first();
-        
-        if (!empty($result) && ($result->id != $id)) {
-            $this->result['statusCode'] = self::MSG_BAD_REQUEST;
-            $this->result['message'] = '该条数据已经存在!';
-        } else {
-            if ($custodianStudent->update($data)) {
-                $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-                $this->result['message'] = self::MSG_EDIT_OK;
-            } else {
-                $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-                $this->result['message'] = '更新失败';
-            }
+        $custodianStudent = $this->custodianStudent->find($id);
+        if (!$custodianStudent) { return $this->notFound(); }
+        if ($this->custodianStudent->existed($request, $id)) {
+            return $this->fail('已经有此记录');
         }
-        
-        return response()->json($this->result);
+        return $custodianStudent->update($request->all()) ? $this->succeed() : $this->fail();
     }
     
     /**
@@ -140,12 +103,8 @@ class CustodianStudentController extends Controller {
      * @internal param CustodianStudent $custodianStudent
      */
     public function destroy($id) {
-        if ($this->custodianStudent->findOrFail($id)->delete()) {
-            $this->result['message'] = self::MSG_DEL_OK;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '删除失败';
-        }
-        return response()->json($this->result);
+        $custodianStudent = $this->custodianStudent->find($id);
+        if (!$custodianStudent) { return $this->notFound(); }
+        return $custodianStudent->delete() ? $this->succeed() : $this->fail();
     }
 }

@@ -3,7 +3,9 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use App\Http\Requests\GroupRequest;
 
@@ -23,7 +25,7 @@ use App\Http\Requests\GroupRequest;
  * @method static Builder|Group whereRemark($value)
  * @method static Builder|Group whereUpdatedAt($value)
  * @mixin \Eloquent
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\User[] $users
+ * @property-read Collection|User[] $users
  */
 class Group extends Model {
     

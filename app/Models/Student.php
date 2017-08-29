@@ -7,6 +7,7 @@ use App\Http\Requests\StudentRequest;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
+
 /**
  * App\Models\Student
  *
@@ -39,6 +40,9 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\ScoreTotal[] $scoreTotal
  * @property-read \App\Models\Squad $squad
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Student whereEnabled($value)
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Custodian[] $custodians
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\ScoreTotal[] $scoreTotals
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Score[] $scores
  */
 class Student extends Model {
     
@@ -111,7 +115,8 @@ class Student extends Model {
         return $student ? true : false;
         
     }
-    
+
+
     public function datatable() {
         
         $columns = [

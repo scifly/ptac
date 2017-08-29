@@ -1,1 +1,1 @@
-$(crud.edit('formTeam'));
+$(crud.edit('formTeam', 'teams'));

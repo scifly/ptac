@@ -36,6 +36,7 @@ use Illuminate\Support\Facades\Storage;
  * 网站内容
  * @property-read \App\Models\WapSiteModule $wapSiteModule
  * @property-read \App\Models\WapSiteModule $wapsitemodule
+ * @property-read \App\Models\Media $thumbnailmedia
  */
 class WsmArticle extends Model {
     
