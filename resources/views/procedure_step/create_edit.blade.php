@@ -4,12 +4,11 @@
     </div>
     <div class="box-body">
         <div class="form-horizontal">
-            <div class="form-group">
-                {!! Form::label('procedure_id', '流程',['class' => 'col-sm-4 control-label']) !!}
-                <div class="col-sm-2">
-                    {!! Form::select('procedure_id', $procedures, null, ['class' => 'form-control']) !!}
-                </div>
-            </div>
+            @include('partials.single_select', [
+                'label' => '流程',
+                'id' => 'procedure_id',
+                'items' => $procedures
+            ])
             <div class="form-group">
                 {!! Form::label('name', '步骤',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-2">
@@ -48,17 +47,6 @@
                     ]) !!}
                 </div>
             </div>
-            {{--<div class="form-group">--}}
-                {{--{!! Form::label('enabled', '是否启用', [--}}
-                    {{--'class' => 'col-sm-4 control-label'--}}
-                {{--]) !!}--}}
-                {{--<div class="col-sm-6" style="margin-top: 5px;">--}}
-                    {{--<input id="enabled" type="checkbox" name="enabled" data-render="switchery"--}}
-                           {{--data-theme="default" data-switchery="true"--}}
-                           {{--@if(!empty($procedureStep['enabled'])) checked @endif--}}
-                           {{--data-classname="switchery switchery-small"/>--}}
-                {{--</div>--}}
-            {{--</div>--}}
             @include('partials.enabled', ['enabled' => $procedureStep['enabled']])
         </div>
     </div>

@@ -96,40 +96,12 @@
                     ]) !!}
                 </div>
             </div>
-            <div class="form-group">
-                {!! Form::label('action_type_ids', 'HTTP请求类型', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
-                <div class="col-sm-9">
-                    <!--suppress HtmlFormInputWithoutLabel -->
-                    <select name="action_type_ids[]" id="action_type_ids" multiple class="col-sm-3">
-                        @foreach($actionTypes as $key => $value)
-                            @if(isset($selectedActionTypes))
-                                <option value="{{$key}}"
-                                        @if(array_key_exists($key, $selectedActionTypes))
-                                        selected
-                                        @endif
-                                >
-                                    {{$value}}
-                                </option>
-                            @else
-                                <option value="{{$key}}">{{$value}}</option>
-                            @endif
-                        @endforeach
-                    </select>
-                </div>
-            </div>
-            {{--<div class="form-group">--}}
-                {{--<label for="enabled" class="col-sm-3 control-label">--}}
-                    {{--是否启用--}}
-                {{--</label>--}}
-                {{--<div class="col-sm-6" style="margin-top: 5px;">--}}
-                    {{--<input id="enabled" type="checkbox" name="enabled" data-render="switchery"--}}
-                           {{--data-theme="default" data-switchery="true"--}}
-                           {{--@if(!empty($action['enabled'])) checked @endif--}}
-                           {{--data-classname="switchery switchery-small"/>--}}
-                {{--</div>--}}
-            {{--</div>--}}
+            @include('partials.multiple_select', [
+                'label' => 'HTTP请求类型',
+                'for' => 'action_type_ids',
+                'items' => $actionTypes,
+                'selectedItems' => isset($selectedActionTypes) ? $selectedActionTypes : []
+            ])
             @include('partials.enabled', ['enabled' => $action['enabled']])
         </div>
     </div>

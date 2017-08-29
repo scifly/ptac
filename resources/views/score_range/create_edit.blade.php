@@ -41,26 +41,21 @@
                     ]) !!}
                 </div>
             </div>
-            <div class="form-group">
-                {!! Form::label('school_id', '所属学校',['class' => 'col-sm-4 control-label']) !!}
-                <div class="col-sm-2">
-                    {!! Form::select('school_id', $schools, null, ['class' => 'form-control']) !!}
-                </div>
-            </div>
+            @include('partials.single_select', [
+                'label' => '所属学校',
+                'id' => 'school_id',
+                'items' => $schools
+            ])
             <div class="form-group">
                 {!! Form::label('subject_ids', '统计科目',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-3">
                     <input type="hidden" id="subject_select_ids" value="{{ $scoreRange['subject_ids'] or '' }}">
-                    <select name="subject_ids[]" id="subject_ids" class="form-control" multiple="multiple" data-parsley-required="true">
+                    <select name="subject_ids[]" id="subject_ids" class="form-control" multiple="multiple"
+                            data-parsley-required="true">
                     </select>
                 </div>
             </div>
-            <div class="form-group">
-                <label for="enabled" class="col-sm-4 control-label">启用</label>
-                <div class="col-sm-3" style="padding-top: 5px;">
-                    <input type="checkbox" name="enabled" id="enabled" class="form-control js-switch" enabled>
-                </div>
-            </div>
+            @include('partials.enabled', ['enabled' => $scoreRange['enabled']])
         </div>
     </div>
     @include('partials.form_buttons')

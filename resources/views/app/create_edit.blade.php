@@ -131,50 +131,20 @@
                     ]) !!}
                 </div>
             </div>
-            <div class="form-group">
-                <label for="report_location_flag" class="col-sm-3 control-label">
-                    是否打开地理位置上报
-                </label>
-                <div class="col-sm-3" style="padding-top: 5px;">
-                    <input id="report_location_flag" type="checkbox" name="report_location_flag" data-render="switchery"
-                           data-theme="default" data-switchery="true"
-                           @if(!empty($app['enabled'])) checked @endif
-                           data-classname="switchery switchery-small"/>
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="isreportuser" class="col-sm-3 control-label">
-                    是否接收用户变更通知
-                </label>
-                <div class="col-sm-3" style="padding-top: 5px;">
-                    <input id="isreportuser" type="checkbox" name="isreportuser" data-render="switchery"
-                           data-theme="default" data-switchery="true"
-                           @if(!empty($app['enabled'])) checked @endif
-                           data-classname="switchery switchery-small"/>
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="isreportenter" class="col-sm-3 control-label">
-                    是否上报用户进入应用事件
-                </label>
-                <div class="col-sm-3" style="padding-top: 5px;">
-                    <input id="isreportenter" type="checkbox" name="isreportenter" data-render="switchery"
-                           data-theme="default" data-switchery="true"
-                           @if(!empty($app['enabled'])) checked @endif
-                           data-classname="switchery switchery-small"/>
-                </div>
-            </div>
+            @include('partials.enabled', ['enabled' => $app['enabled'], 'label' =>'是否打开地理位置上报'])
+            @include('partials.enabled', ['enabled' => $app['enabled'], 'label' => '是否接收用户变更通知'])
             {{--<div class="form-group">--}}
-                {{--<label for="enabled" class="col-sm-3 control-label">--}}
-                    {{--是否启用--}}
-                {{--</label>--}}
-                {{--<div class="col-sm-6" style="margin-top: 5px;">--}}
-                    {{--<input id="enabled" type="checkbox" name="enabled" data-render="switchery"--}}
-                           {{--data-theme="default" data-switchery="true"--}}
-                           {{--@if(!empty($app['enabled'])) checked @endif--}}
-                           {{--data-classname="switchery switchery-small"/>--}}
-                {{--</div>--}}
+            {{--<label for="isreportenter" class="col-sm-3 control-label">--}}
+            {{--是否上报用户进入应用事件--}}
+            {{--</label>--}}
+            {{--<div class="col-sm-3" style="padding-top: 5px;">--}}
+            {{--<input id="isreportenter" type="checkbox" name="isreportenter" data-render="switchery"--}}
+            {{--data-theme="default" data-switchery="true"--}}
+            {{--@if(!empty($app['enabled'])) checked @endif--}}
+            {{--data-classname="switchery switchery-small"/>--}}
             {{--</div>--}}
+            {{--</div>--}}
+            @include('partials.enabled', ['enabled' => $app['enabled'], 'label' => '是否上报用户进入应用事件'])
             @include('partials.enabled', ['enabled' => $app['enabled']])
         </div>
     </div>

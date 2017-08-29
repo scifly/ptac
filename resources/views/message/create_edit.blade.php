@@ -56,35 +56,50 @@
                     <a class="btn btn-primary" data-toggle="modal" data-target="#modalPic">上传</a>
                 </div>
             </div>
-            <div class="form-group">
-                {!! Form::label('user_id', '发送者用户',['class' => 'col-sm-2 control-label']) !!}
-                <div class="col-sm-2">
-                    {!! Form::select('user_id', $users, null, ['class' => 'form-control']) !!}
-                </div>
-            </div>
-            <div class="form-group">
-                {!! Form::label('user_ids', '接收者用户',['class' => 'col-sm-2 control-label']) !!}
-                <div class="col-sm-2">
-                    <select multiple="multiple" name="user_ids[]" id="user_ids">
-                        @foreach($users as $key => $value)
-                            @if(isset($selectedUsers))
-                                <option value="{{$key}}" @if(array_key_exists($key,$selectedUsers))selected="selected"@endif>
-                                    {{$value}}
-                                </option>
-                            @else
-                                <option value="{{$key}}">{{$value}}</option>
-                            @endif
-                        @endforeach
-                    </select>
-                </div>
-            </div>
-            <div class="form-group">
-                {!! Form::label('message_type_id', '消息类型',['class' => 'col-sm-2 control-label']) !!}
-                <div class="col-sm-2">
-                    {!! Form::select('message_type_id', $messageTypes, null, ['class' => 'form-control']) !!}
-                </div>
-            </div>
-
+            {{--<div class="form-group">--}}
+            {{--{!! Form::label('user_id', '发送者用户',['class' => 'col-sm-2 control-label']) !!}--}}
+            {{--<div class="col-sm-2">--}}
+            {{--{!! Form::select('user_id', $users, null, ['class' => 'form-control']) !!}--}}
+            {{--</div>--}}
+            {{--</div>--}}
+            @include('partials.single_select', [
+                'label' => '发送者用户',
+                'id' => 'user_id',
+                'items' => $users
+            ])
+            {{--<div class="form-group">--}}
+            {{--{!! Form::label('user_ids', '接收者用户',['class' => 'col-sm-2 control-label']) !!}--}}
+            {{--<div class="col-sm-2">--}}
+            {{--<select multiple="multiple" name="user_ids[]" id="user_ids">--}}
+            {{--@foreach($users as $key => $value)--}}
+            {{--@if(isset($selectedUsers))--}}
+            {{--<option value="{{$key}}" @if(array_key_exists($key,$selectedUsers))selected="selected"@endif>--}}
+            {{--{{$value}}--}}
+            {{--</option>--}}
+            {{--@else--}}
+            {{--<option value="{{$key}}">{{$value}}</option>--}}
+            {{--@endif--}}
+            {{--@endforeach--}}
+            {{--</select>--}}
+            {{--</div>--}}
+            {{--</div>--}}
+            @include('partials.multiple_select', [
+                'label' => '接收者用户',
+                'for' => 'user_ids',
+                'items' => $users,
+                'selectedItems' => isset($selectedUsers) ? $selectedUsers : []
+            ])
+            {{--<div class="form-group">--}}
+            {{--{!! Form::label('message_type_id', '消息类型',['class' => 'col-sm-2 control-label']) !!}--}}
+            {{--<div class="col-sm-2">--}}
+            {{--{!! Form::select('message_type_id', $messageTypes, null, ['class' => 'form-control']) !!}--}}
+            {{--</div>--}}
+            {{--</div>--}}
+            @include('partials.single_select', [
+                'label' => '消息类型',
+                'id' => 'message_type_id',
+                'items' => $messageTypes
+            ])
         </div>
     </div>
     @include('partials.form_buttons')
