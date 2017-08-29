@@ -57,21 +57,10 @@ class EducatorClassController extends Controller
     public function store(EducatorClassRequest $request)
     {
         $data = $request->all();
-        $result = $this->educatorClass
-            ->where('class_id',$data['class_id'])
-            ->where('subject_id',$data['subject_id'])
-            ->get()
-            ->toArray();
-        if($result!=null)
-        {
-            $this->result['statusCode'] = self::MSG_BAD_REQUEST;
-            $this->result['message'] = '该条数据已经存在!';
-            return response()->json($this->result);
-        }else{
-            return $this->educatorClass->create($data) ? $this->succeed() : $this->fail();
+        if ($this->educator->existed($request)) {
+            return $this->fail('已经有此记录');
         }
-
-
+        return $this->educatorClass->create($data) ? $this->succeed() : $this->fail();
 
     }
 
@@ -107,30 +96,12 @@ class EducatorClassController extends Controller
      */
     public function update(EducatorClassRequest $request, $id)
     {
-        $data = $request->except('_token');
-
-        $result = $this->educatorClass
-            ->where('class_id',$data['class_id'])
-            ->where('subject_id',$data['subject_id'])
-            ->first();
-
-        if(!empty($result)&&($result->educator_id!= $data['educator_id']))
-        {
-            $this->result['statusCode'] = self::MSG_BAD_REQUEST;
-            $this->result['message'] = '同一个班级的同一个科目不能有两个老师教!';
-
-        }else{
-            if ($this->educatorClass->findOrFail($id)->update($data))
-            {
-                $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-                $this->result['message'] = self::MSG_EDIT_OK;
-            } else {
-                $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-                $this->result['message'] = '更新失败';
-            }
+        $educatorClass = $this->educatorClass->find($id);
+        if (!$educatorClass) { return $this->notFound(); }
+        if ($this->educatorClass->existed($request, $id)) {
+            return $this->fail('已经有此记录');
         }
-
-        return response()->json($this->result);
+        return $educatorClass->update($request->all()) ? $this->succeed() : $this->fail();
 
     }
 

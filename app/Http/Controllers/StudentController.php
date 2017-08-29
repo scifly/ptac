@@ -50,7 +50,7 @@ class StudentController extends Controller {
         return $this->student->create($request->all()) ? $this->succeed() : $this->fail();
         
     }
-    
+
     /**
      * 显示指定的学生记录详情
      *

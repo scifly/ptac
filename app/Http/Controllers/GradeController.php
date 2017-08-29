@@ -15,7 +15,6 @@ class GradeController extends Controller {
         
         $this->grade = $grade;
         $this->educator = $educator;
-        
     }
     
     /**

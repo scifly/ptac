@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use App\Http\Requests\DepartmentRequest;
 
 /**
  * App\Models\Department
@@ -36,7 +38,7 @@ class Department extends Model {
     //
     protected $table = 'departments';
     protected $fillable = [
-        'praent_id',
+        'parent_id',
         'corp_id',
         'school_id',
         'name',
@@ -59,20 +61,38 @@ class Department extends Model {
         return $this->belongsTo('App\Models\School');
     }
 
+    public function existed(DepartmentRequest $request, $id = NULL) {
+
+        if (!$id) {
+            $student = $this->where('user_id', $request->input('user_id'))
+                ->where('class_id', $request->input('class_id'))
+                ->where('student_number', $request->input('student_number'))
+                ->first();
+        } else {
+            $student = $this->where('user_id', $request->input('user_id'))
+                ->where('id', '<>', $id)
+                ->where('class_id', $request->input('class_id'))
+                ->where('student_number', $request->input('student_number'))
+                ->first();
+        }
+        return $student ? true : false;
+
+    }
+
     public function datatable() {
 
         $columns = [
             ['db' => 'Department.id', 'dt' => 0],
-            ['db' => 'Department.parent_id', 'dt' => 1],
-            ['db' => 'Department.corp_id', 'dt' => 2],
-            ['db' => 'Department.school_id', 'dt' => 3],
-            ['db' => 'Department.name', 'dt' => 4],
-            ['db' => 'Department.remark', 'dt' => 5],
-            ['db' => 'Department.order', 'dt' => 6],
-            ['db' => 'Department.created_at', 'dt' => 7],
-            ['db' => 'Department.updated_at', 'dt' => 8],
+//            ['db' => 'Department.parent_id', 'dt' => 1],
+            ['db' => 'Corp.name as corpname', 'dt' => 1],
+            ['db' => 'School.name as schoolname', 'dt' => 2],
+            ['db' => 'Department.name', 'dt' => 3],
+            ['db' => 'Department.remark', 'dt' => 4],
+            ['db' => 'Department.order', 'dt' => 5],
+            ['db' => 'Department.created_at', 'dt' => 6],
+            ['db' => 'Department.updated_at', 'dt' => 7],
             [
-                'db' => 'Department.enabled', 'dt' => 9,
+                'db' => 'Department.enabled', 'dt' => 8,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
                 }
@@ -82,42 +102,26 @@ class Department extends Model {
 
         $joins = [
             [
-                'table' => 'custodians',
-                'alias' => 'Custodian',
+                'table' => 'corps',
+                'alias' => 'Corp',
                 'type' => 'INNER',
                 'conditions' => [
-                    'Custodian.id = CustodianStudent.custodian_id'
+                    'Corp.id = Department.corp_id'
                 ]
             ],
             [
-                'table' => 'users',
-                'alias' => 'User',
+                'table' => 'schools',
+                'alias' => 'School',
                 'type' => 'INNER',
                 'conditions' => [
-                    'User.id = Custodian.user_id'
+                    'School.id = Department.school_id'
                 ]
             ],
 
-            [
-                'table' => 'students',
-                'alias' => 'Student',
-                'type' => 'INNER',
-                'conditions' => [
-                    'Student.id = CustodianStudent.student_id',
-                ]
-            ],
-//            [
-//                'table' => 'users',
-//                'alias' => 'User',
-//                'type' => 'INNER',
-//                'conditions' => [
-//                    'Student.user_id = User.id'
-//                ]
-//            ],
 
         ];
 
-        return Datatable::simple($this, $columns, $joins);
+        return Datatable::simple($this, $columns,$joins);
 
     }
 }

@@ -38,7 +38,7 @@
                     <div class="preview">
                         @if(isset($media))
                             <div class="img-item">
-                                <img src="../../..{{$media->path}}" id="{{$media->id}}">
+                                <img src="../../{{$media->path}}" id="{{$media->id}}">
                                 <input type="hidden" name="media_id" value="{{$media->id}}"/>
                                 <div class="del-mask"><i class="delete fa fa-trash-o"></i></div>
                             </div>

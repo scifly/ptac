@@ -45,12 +45,10 @@ class EducatorController extends Controller {
     }
 
     /**
-     * Store a newly created resource in storage.
+     * 保存新创建的教职员工记录
      *
      * @param EducatorRequest $request
-     * @return \Illuminate\Http\Response
-     * @internal param EducatorRequest $educatorRequest
-     * @internal param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(EducatorRequest $request) {
 
@@ -59,13 +57,12 @@ class EducatorController extends Controller {
         }
         return $this->educator->create($request->all()) ? $this->succeed() : $this->fail();
     }
-    
+
     /**
-     * Display the specified resource.
+     * 显示指定的教职员工记录详情
      *
      * @param $id
-     * @return \Illuminate\Http\Response
-     * @internal param Educator $educator
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function show($id) {
         $educator = $this->educator->find($id);
@@ -78,11 +75,10 @@ class EducatorController extends Controller {
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * 显示编辑指定教职员工记录的表单
      *
      * @param $id
-     * @return \Illuminate\Http\Response
-     * @internal param Educator $educator
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function edit($id) {
         $educator = $this->educator->find($id);
@@ -92,14 +88,13 @@ class EducatorController extends Controller {
             'selectedTeams' => $this->team->teams($educator->educator_ids)
         ]);
     }
-    
+
     /**
-     * Update the specified resource in storage.
+     * 更新指定的教职员工记录
      *
-     * @param EducatorRequest|\Illuminate\Http\Request $request
+     * @param EducatorRequest $request
      * @param $id
-     * @return \Illuminate\Http\Response
-     * @internal param Educator $educator
+     * @return \Illuminate\Http\JsonResponse
      */
     public function update(EducatorRequest $request, $id) {
         $educator = $this->educator->find($id);
@@ -109,13 +104,12 @@ class EducatorController extends Controller {
         }
         return $educator->update($request->all()) ? $this->succeed() : $this->fail();
     }
-    
+
     /**
-     * Remove the specified resource from storage.
+     * 删除指定的教职员工记录
      *
      * @param $id
-     * @return \Illuminate\Http\Response
-     * @internal param Educator $educator
+     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
         $educator = $this->educator->find($id);
