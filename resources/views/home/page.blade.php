@@ -22,6 +22,8 @@
     <link rel="stylesheet" href="{{ URL::asset('css/wapSite.css') }}">
     {{--审核详情--}}
     <link rel="stylesheet" href="{{ URL::asset('css/procedure_info.css') }}">
+    {{--上传--}}
+    <link rel="stylesheet" href="{{ URL::asset('css/imgInput.css') }}">
     <!-- fileinput-->
     <link rel="stylesheet" href="{{ URL::asset('js/plugins/fileinput/css/fileinput.min.css') }}">
     <link rel="stylesheet" href="{{ URL::asset('js/plugins/fileinput/themes/explorer/theme.css') }}">

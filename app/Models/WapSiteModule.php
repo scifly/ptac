@@ -71,7 +71,7 @@ class WapSiteModule extends Model {
         }
     }
 
-    public function modify(WapSiteRequest $request, $id)
+    public function modify(WapSiteModuleRequest $request, $id)
     {
         $wapSite = $this->find($id);
         if (!$wapSite) {
@@ -91,7 +91,7 @@ class WapSiteModule extends Model {
     /**
      * @param $request
      */
-    private function removeMedias(WapSiteRequest $request)
+    private function removeMedias(WapSiteModuleRequest $request)
     {
         //删除原有的图片
         $mediaIds = $request->input('del_ids');

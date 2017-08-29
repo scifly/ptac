@@ -10,11 +10,7 @@ use Illuminate\Support\Facades\Request;
 class ExamTypeController extends Controller {
     protected $examType;
     
-    function __construct(ExamType $examType) {
-        
-        $this->examType = $examType;
-        
-    }
+    function __construct(ExamType $examType) { $this->examType = $examType; }
     
     /**
      * 显示考试类型列表

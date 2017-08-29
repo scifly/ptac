@@ -14,7 +14,7 @@ class WsmArticleRequest extends FormRequest
         'summary' => 'required|string|max:255',
 //        'thumbnail_media_id' => 'required|integer',
         'content' => 'required|string',
-        'media_ids' => 'required|array',
+        'media_ids' => 'required|string',
         'enabled' => 'required|boolean'
     ];
     protected $strings_key = [
@@ -78,6 +78,10 @@ class WsmArticleRequest extends FormRequest
         }
         if (!isset($input['enabled'])) {
             $input['enabled'] = 0;
+        }
+        if (isset($input['media_ids'])) {
+            $input['thumbnail_media_id'] = $input['media_ids'][0];
+            $input['media_ids'] = implode(',', $input['media_ids']);
         }
         $this->replace($input);
     }
