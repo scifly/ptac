@@ -4,6 +4,9 @@
     </div>
     <div class="box-body">
         <div class="form-horizontal">
+            @if (!empty($procedureType['id']))
+                {{ Form::hidden('id', null, ['id' => 'id', 'value' => $procedureType['id']]) }}
+            @endif
             <div class="form-group">
                 {!! Form::label('name', '名称',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-2">
@@ -37,7 +40,7 @@
                            {{--data-classname="switchery switchery-small"/>--}}
                 {{--</div>--}}
             {{--</div>--}}
-            @include('partials.enabled', ['enabled' => $pt['enabled']])
+            @include('partials.enabled', ['enabled' => isset($procedureType['enabled']) ? $procedureType['enabled'] : ''])
         </div>
     </div>
     @include('partials.form_buttons')

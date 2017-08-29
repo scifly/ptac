@@ -9,7 +9,8 @@ $(function () {
             var eventObject = {
                 title: $.trim($(this).text()), // use the element's text as the event title
                 id: $(this).attr('id'),
-                user_id: id
+                user_id: id,
+                dow: [1, 4]
             }
             // store the Event Object in the DOM element so we can get to it later
             $(this).data('eventObject', eventObject);
@@ -41,7 +42,7 @@ $(function () {
     //                 //     default: break;
     //                 //}
     //             }else {
-    //                 revertFunc();
+    //                 revertFunc();//外部不能调用
     //             }
     //             page.inform(
     //                 '操作结果', result.message,
@@ -59,7 +60,7 @@ $(function () {
     /**
      * 初始化日历事件
      */
-    $('#calendar').fullCalendar({
+        $('#calendar').fullCalendar({
         header: {
             left: 'prev,next today',
             center: 'title',
@@ -72,8 +73,8 @@ $(function () {
             day: 'day'
         },
         eventLimit: true,
-        editable: true,
         events: '../events/calendar_events/' + id,
+        editable: true,
         droppable: true, // this allows things to be dropped onto the calendar !!!
 
         /**
@@ -330,7 +331,7 @@ $(function () {
             $.ajax({
                 type: 'POST',
                 dataType: 'json',
-                url: './store',
+                url: '../events/store',
                 data: data,
                 success: function (result) {
                     if (result.statusCode === 200) {
