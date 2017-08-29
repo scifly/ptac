@@ -130,14 +130,6 @@ class MessageController extends Controller {
         ]);
     }
     
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param Message|\Illuminate\Http\Request $request
-     * @param $id
-     * @return \Illuminate\Http\Response
-     * @internal param Message $message
-     */
     public function update(MessageRequest $request, $id) {
         $data = Message::find($id);
         $media_ids = $request->input('media_ids');
@@ -179,18 +171,16 @@ class MessageController extends Controller {
     }
     
     /**
-     * Remove the specified resource from storage.
+     * 删除指定的消息记录
      *
      * @param $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
-        if ($this->message->findOrFail($id)->delete()) {
-            $this->result['message'] = self::MSG_DEL_OK;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '';
-        }
-        return response()->json($this->result);
+       
+        $message = $this->message->find($id);
+        if (!$message) { return $this->notFound(); }
+        return $message->delete() ? $this->succeed() : $this->fail();
+        
     }
 }

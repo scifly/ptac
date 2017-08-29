@@ -25,6 +25,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|Media whereRemark($value)
  * @method static Builder|Media whereUpdatedAt($value)
  * @property-read \App\Models\WapSiteModule $wapsitemoudle
+ * @property-read \App\Models\WsmArticle $wasmarticle
  */
 class Media extends Model {
     //

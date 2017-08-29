@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Facades\DatatableFacade as Datatable;
 use App\Http\Requests\TabRequest;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Mockery\Exception;
@@ -25,11 +26,14 @@ use Mockery\Exception;
  * @method static Builder|Tab whereRemark($value)
  * @method static Builder|Tab whereUpdatedAt($value)
  * @mixin \Eloquent
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Action[] $actions
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Menu[] $menus
+ * @property-read Collection|Action[] $actions
+ * @property-read Collection|Menu[] $menus
  * @property int|null $icon_id 图标ID
  * @method static Builder|Tab whereIconId($value)
  * @property-read \App\Models\Icon|null $icon
+ * @property int $action_id 默认加载的Action ID
+ * @property-read \App\Models\Action $action
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Tab whereActionId($value)
  */
 class Tab extends Model {
     

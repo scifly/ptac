@@ -30,6 +30,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read \App\Models\School $school
  * @property-read Collection|\App\Models\Squad[] $squads
  * @property-read Collection|\App\Models\Subject[] $subject
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Squad[] $classes
  */
 class Grade extends Model {
     
@@ -55,6 +56,15 @@ class Grade extends Model {
                 ->where('name', $request->input('name'))->first();
         }
         return $grade ? true : false;
+        
+    }
+    
+    public function grades($schoolId = NULL) {
+        
+        if (isset($schoolId)) {
+            return $this->where('id', $schoolId)->get()->pluck('id', 'name');
+        }
+        return $this->pluck('id', 'name');
         
     }
     

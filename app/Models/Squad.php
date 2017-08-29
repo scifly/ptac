@@ -30,6 +30,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read \App\Models\Grade $grade
  * @property-read Collection|Student[] $students
  * @property-read Collection|EducatorClass[] $educatorClass
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Educator[] $educators
  */
 class Squad extends Model {
     

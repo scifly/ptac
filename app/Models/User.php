@@ -68,6 +68,10 @@ use Illuminate\Notifications\Notifiable;
  * @property-read PollQuestionnaireAnswer $pollquestionnaireAnswer
  * @property-read PollQuestionnaireParticipant $pollquestionnairePartcipant
  * @property-read PollQuestionnaire $pollquestionnaires
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Message[] $messages
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\PollQuestionnaireAnswer[] $pollQuestionnaireAnswers
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\PollQuestionnaireParticipant[] $pollQuestionnairePartcipants
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\PollQuestionnaire[] $pollQuestionnaires
  */
 class User extends Authenticatable {
     

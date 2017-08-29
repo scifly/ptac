@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class TabRequest extends FormRequest {
+class MajorRequest extends FormRequest {
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -18,15 +18,12 @@ class TabRequest extends FormRequest {
      * @return array
      */
     public function rules() {
-        
         return [
             'name' => 'required|string|max:255',
-            'remark' => 'nullable|string|max:255',
-            'action_id' => 'required|integer',
-            'icon_id' => 'nullable|integer',
+            'remark' => 'required|string|max:255',
+            'school_id' => 'required|integer',
             'enabled' => 'required|boolean'
         ];
-        
     }
     
     protected function prepareForValidation() {
@@ -35,8 +32,11 @@ class TabRequest extends FormRequest {
         if (isset($input['enabled']) && $input['enabled'] === 'on') {
             $input['enabled'] = 1;
         }
-        if (!isset($input['enabled'])) { $input['enabled'] = 0; }
+        if (!isset($input['enabled'])) {
+            $input['enabled'] = 0;
+        }
         $this->replace($input);
         
     }
+    
 }
