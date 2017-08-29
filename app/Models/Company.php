@@ -44,7 +44,6 @@ class Company extends Model {
     }
     
     public function existed(CompanyRequest $request, $id = NULL) {
-        
         if (!$id) {
             $company = $this->where('name', $request->input('name'))
                 ->where('corpid', $request->input('corpid'))->first();
@@ -63,7 +62,7 @@ class Company extends Model {
             ['db' => 'Company.id', 'dt' => 0],
             ['db' => 'Company.name', 'dt' => 1],
             ['db' => 'Company.remark', 'dt' => 2],
-            ['db' => 'Company.corpid', 'dt' => 3],
+            ['db' => 'Company.corpid as companyCorpid', 'dt' => 3],
             ['db' => 'Company.created_at', 'dt' => 4],
             ['db' => 'Company.updated_at', 'dt' => 5],
             [

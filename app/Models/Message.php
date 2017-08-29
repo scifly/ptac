@@ -2,9 +2,12 @@
 
 namespace App\Models;
 
+use App\Http\Requests\MessageRequest;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use App\Facades\DatatableFacade as Datatable;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * App\Models\Message
@@ -65,7 +68,70 @@ class Message extends Model {
     public function user() {
         return $this->belongsTo('App\Models\User');
     }
+    public function classes(array $classIds) {
 
+        return Squad::whereIn('id', $classIds)->get(['id', 'name']);
+
+    }
+
+
+    public function store(MessageRequest $request)
+    {
+        try {
+            $exception = DB::transaction(function () use ($request) {
+                //删除原有的图片
+                $this->removeMedias($request);
+                $this->create($request->all());
+            });
+            return is_null($exception) ? true : $exception;
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
+    public function modify(WapSiteRequest $request, $id)
+    {
+        try {
+            $exception = DB::transaction(function () use ($request) {
+                $this->removeMedias($request);
+                $this->update($request->all());
+            });
+            return is_null($exception) ? true : $exception;
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
+    /**
+     * @param $request
+     */
+    private function removeMedias(MessageRequest $request)
+    {
+        //删除原有的图片
+        $mediaIds = $request->input('del_ids');
+        if ($mediaIds) {
+            $medias = Media::whereIn('id', $mediaIds)->get(['id', 'path']);
+
+            foreach ($medias as $media) {
+                $paths = explode("/", $media->path);
+                Storage::disk('uploads')->delete($paths[5]);
+
+            }
+            Media::whereIn('id', $mediaIds)->delete();
+        }
+    }
+
+//    public function medias(array $educatorIds) {
+//
+//        $educators = [];
+//        foreach ($educatorIds as $id) {
+//            $educator = $this->find($id);
+//            $user = $educator->user;
+//            $educators[$educator->id] = $user->username;
+//        }
+//        return $educators;
+//
+//    }
     /**
      * @return array
      */

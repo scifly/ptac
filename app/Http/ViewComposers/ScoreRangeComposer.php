@@ -21,7 +21,6 @@ class ScoreRangeComposer {
 
     public function compose(View $view) {
 
-        // $view->with('schoolTypes', $this->schoolTypes->pluck('name', 'id'));
         $view->with([
             'schools' => $this->schools->pluck('name', 'id'),
             'subjects' => $this->subjects->pluck('name', 'id'),

@@ -40,18 +40,19 @@
     {!! Form::label('icon_id', '图标', [
         'class' => 'col-sm-3 control-label'
     ]) !!}
-    <div class="col-sm-6" style="overflow-y: scroll; height: 200px; border: 1px solid gray; margin-left: 15px; width: 393px;">
+    <div class="col-sm-6"
+         style="overflow-y: scroll; height: 200px; border: 1px solid gray; margin-left: 15px; width: 393px;">
         @foreach($icons as $group => $_icons)
             @foreach ($_icons as $key => $value)
                 <label for="icon_id">
                     <input id="icon_id" type="radio" name="icon_id"
                            value="{{ $key }}" class="minimal"
                            @if(isset($menu) && $menu['icon_id'] == $key)
-                               checked
-                           @endif
+                           checked
+                            @endif
                     >
                 </label>
-                <i class="{{ $value }}" style="margin-left: 10px;">&nbsp; {{ $value }}</i><br />
+                <i class="{{ $value }}" style="margin-left: 10px;">&nbsp; {{ $value }}</i><br/>
             @endforeach
         @endforeach
     </div>
@@ -72,21 +73,6 @@
         </select>
     </div>
 </div>
-<div class="form-group">
-    <label for="enabled" class="col-sm-3 control-label">是否启用</label>
-    <div class="col-sm-6" style="margin-top:5px;">
-        <input id="enabled" type="checkbox" name="enabled"
-               @if(!empty($menu['enabled'])) checked @endif
-               data-render="switchery" data-theme="default"
-               data-switchery="true" data-classname="switchery switchery-small" />
-    </div>
-</div>
+@include('partials.enabled', ['enabled' => $menu['enabled']])
 {!! Form::hidden('id') !!}
-<div class="form-group">
-    <div class="col-sm-6 col-sm-offset-3">
-        {!! Form::hidden('nodeid', null, ['id' => 'nodeid']) !!}
-        {!! Form::hidden('parent_id', null, ['id' => 'parent_id']) !!}
-        {!! Form::submit('保存', ['class' => 'btn btn-primary pull-left', 'id' => 'save']) !!}
-        {!! Form::reset('取消', ['class' => 'btn btn-default pull-right', 'id' => 'cancel']) !!}
-    </div>
-</div>
+@include('partials.form_buttons')

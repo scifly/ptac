@@ -1,1 +1,1 @@
-$(crud.create('formCustodianStudent'))
+$(crud.create('formCustodianStudent','custodians_students'))

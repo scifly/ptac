@@ -4,15 +4,9 @@
     </div>
     <div class="box-body">
         <div class="form-horizontal">
-            <div class="form-group">
-                {!! Form::label('id', 'id',['class' => 'col-sm-4 control-label']) !!}
-                <div class="col-sm-2">
-                    {!! Form::hidden('id', null, [
-                        'class' => 'form-control',
-                    ]) !!}
-                </div>
-
-            </div>
+            @if (!empty($tab['id']))
+                {{ Form::hidden('id', null, ['id' => 'id', 'value' => $tab['id']]) }}
+            @endif
             <div class="form-group">
                 {!! Form::label('site_title', '首页抬头',['class' => 'col-sm-2 control-label']) !!}
                 <div class="col-sm-3">
@@ -50,17 +44,18 @@
                     <a class="btn btn-primary" data-toggle="modal" data-target="#modalPic">上传</a>
                 </div>
             </div>
-            <div class="form-group">
-                {!! Form::label('enabled', '是否启用', [
-                    'class' => 'col-sm-2 control-label'
-                ]) !!}
-                <div class="col-sm-6" style="margin-top: 5px;">
-                    <input id="enabled" type="checkbox" name="enabled" data-render="switchery"
-                           data-theme="default" data-switchery="true"
-                           @if(!empty($wapsite['enabled'])) checked @endif
-                           data-classname="switchery switchery-small"/>
-                </div>
-            </div>
+            {{--<div class="form-group">--}}
+                {{--{!! Form::label('enabled', '是否启用', [--}}
+                    {{--'class' => 'col-sm-2 control-label'--}}
+                {{--]) !!}--}}
+                {{--<div class="col-sm-6" style="margin-top: 5px;">--}}
+                    {{--<input id="enabled" type="checkbox" name="enabled" data-render="switchery"--}}
+                           {{--data-theme="default" data-switchery="true"--}}
+                           {{--@if(!empty($wapsite['enabled'])) checked @endif--}}
+                           {{--data-classname="switchery switchery-small"/>--}}
+                {{--</div>--}}
+            {{--</div>--}}
+            @include('partials.enabled', ['enabled' => $wapsite['enabled']])
         </div>
     </div>
     @include('partials.form_buttons')

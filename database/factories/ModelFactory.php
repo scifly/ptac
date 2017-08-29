@@ -180,7 +180,6 @@ $factory->define(App\Models\Custodian::class, function (Faker\Generator $faker) 
 });
 
 $factory->define(App\Models\Student::class, function (Faker\Generator $faker) {
-
     return [
         'user_id' => 1,
         'class_id' => 1,
@@ -325,5 +324,20 @@ $factory->define(App\Models\Event::class, function (Faker\Generator $faker) {
         'enabled' => '0',
     ];
 });
+
+$factory->define(App\Models\Department::class, function (Faker\Generator $faker) {
+
+    return [
+        'parent_id' => rand(1, 10),
+        'corp' => rand(1, 10),
+        'school_id' => '父子',
+        'name' =>1,
+        'remark' =>'测试',
+        'order' => $faker->creditCardNumber,
+        'enabled' =>rand(0,1)
+
+    ];
+});
+
 
 

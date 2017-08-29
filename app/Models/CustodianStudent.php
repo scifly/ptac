@@ -6,6 +6,7 @@ use App\Facades\DatatableFacade as Datatable;
 use App\Models\Student as Student;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use App\Http\Requests\CustodianStudentRequest;
 
 /**
  * App\Models\CustodianStudent
@@ -44,6 +45,22 @@ class CustodianStudent extends Model {
     
     public function student() {
         return $this->belongsTo('App\Models\Student');
+    }
+
+    public function existed(CustodianStudentRequest $request, $id = NULL) {
+
+        if (!$id) {
+            $custodianStudent = $this->where('custodian_id',$request->input('custodian_id'))
+                ->where('student_id',$request->input('student_id'))
+                ->first();
+        } else {
+            $custodianStudent = $this->where('custodian_id',$request->input('custodian_id'))
+                ->where('id','<>',$id)
+                ->where('student_id',$request->input('student_id'))
+                ->first();
+        }
+        return $custodianStudent ? true : false;
+
     }
     
     public function datatable() {

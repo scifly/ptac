@@ -3,8 +3,12 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Http\Requests\WapSiteModuleRequest;
+use App\Http\Requests\WapSiteRequest;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * App\Models\WapSiteModule
@@ -52,12 +56,56 @@ class WapSiteModule extends Model {
         return $this->belongsTo('App\Models\WapSite');
         
     }
-    
-    public function media() {
-        return $this->belongsTo('App\Models\Media');
-        
+
+    public function store(WapSiteModuleRequest $request)
+    {
+        try {
+            $exception = DB::transaction(function () use ($request) {
+                //删除原有的图片
+                $this->removeMedias($request);
+                $this->create($request->all());
+            });
+            return is_null($exception) ? true : $exception;
+        } catch (Exception $e) {
+            return false;
+        }
     }
-    
+
+    public function modify(WapSiteRequest $request, $id)
+    {
+        $wapSite = $this->find($id);
+        if (!$wapSite) {
+            return false;
+        }
+        try {
+            $exception = DB::transaction(function () use ($request) {
+                $this->removeMedias($request);
+                $this->update($request->all());
+            });
+            return is_null($exception) ? true : $exception;
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
+    /**
+     * @param $request
+     */
+    private function removeMedias(WapSiteRequest $request)
+    {
+        //删除原有的图片
+        $mediaIds = $request->input('del_ids');
+        if ($mediaIds) {
+            $medias = Media::whereIn('id', $mediaIds)->get(['id', 'path']);
+
+            foreach ($medias as $media) {
+                $paths = explode("/", $media->path);
+                Storage::disk('uploads')->delete($paths[5]);
+
+            }
+            Media::whereIn('id', $mediaIds)->delete();
+        }
+    }
     /**
      * @return array
      */

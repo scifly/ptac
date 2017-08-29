@@ -38,7 +38,6 @@ class MenuController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function create() {
-        
         return parent::output(__METHOD__);
         
     }
