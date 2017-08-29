@@ -78,8 +78,7 @@ class EducatorController extends Controller {
     }
 
     /**
-     * Show the form for editing the specified resource.
-     *
+     * 显示编辑教职员工记录的表单.
      * @param $id
      * @return \Illuminate\Http\Response
      * @internal param Educator $educator
