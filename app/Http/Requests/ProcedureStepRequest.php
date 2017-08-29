@@ -8,8 +8,8 @@ class ProcedureStepRequest extends FormRequest {
 
     protected $rules = [
         'name' => 'required|string|max:60',
-        'approver_user_ids' => 'required|array',
-        'related_user_ids' =>  'required|array',
+        'approver_user_ids' => 'required|string',
+        'related_user_ids' =>  'required|string',
         'remark' => 'required|string|max:255',
         'enabled' => 'required|boolean'
     ];
@@ -70,6 +70,12 @@ class ProcedureStepRequest extends FormRequest {
     protected function prepareForValidation() {
 
         $input = $this->all();
+        if (isset($input['approver_user_ids'])) {
+            $input['approver_user_ids'] = implode(',', $input['approver_user_ids']);
+        }
+        if (isset($input['related_user_ids'])) {
+            $input['related_user_ids'] = implode(',', $input['related_user_ids']);
+        }
         if (isset($input['enabled']) && $input['enabled'] === 'on') {
             $input['enabled'] = 1;
         }

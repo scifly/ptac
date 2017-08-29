@@ -39,7 +39,7 @@
                      ]) !!}
                 </div>
             </div>
-            @include('partials.enabled', ['enabled' => $company['enabled']])
+            @include('partials.enabled', ['enabled' => isset($company['enabled']) ? $company['enabled'] : ''])
         </div>
     </div>
     @include('partials.form_buttons')

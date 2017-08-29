@@ -75,11 +75,9 @@ class ProcedureStepController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function edit($id) {
-        
         $procedureStep = $this->procedureStep->find($id);
         if (!$procedureStep) { return $this->notFound(); }
-        return $this->output(__METHOD__) ? $this->succeed() : $this->fail();
-    
+        return $this->output(__METHOD__, ['procedureStep' => $procedureStep]);
     }
     
     /**
@@ -120,7 +118,7 @@ class ProcedureStepController extends Controller {
         $educators = [];
         if (!empty($data)) {
             foreach ($data as $v) {
-                $educators[$v['user_id']] = $v['user']['username'];
+                $educators[$v['user_id']] = $v['user']['realname'];
             }
             return response()->json(['statusCode' => 200, 'educators' => $educators]);
         }
