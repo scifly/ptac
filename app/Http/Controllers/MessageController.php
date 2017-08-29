@@ -45,7 +45,13 @@ class MessageController extends Controller {
         return $this->output(__METHOD__);
         
     }
-    
+
+    /**
+     * 保存新创建的消息记录
+     *
+     * @param MessageRequest $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function store(MessageRequest $request) {
 
         return $this->message->store($request->all()) ? $this->succeed() : $this->fail();

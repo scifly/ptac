@@ -88,7 +88,7 @@ class Message extends Model {
         }
     }
 
-    public function modify(WapSiteRequest $request, $id)
+    public function modify(MessageRequest $request, $id)
     {
         try {
             $exception = DB::transaction(function () use ($request) {

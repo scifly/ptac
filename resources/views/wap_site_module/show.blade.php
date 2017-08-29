@@ -25,7 +25,7 @@
         <br/>
         <dt>模块图：</dt>
         <dd>
-            <img src="../../..{{$media->path}}">
+            <img src="../..{{$media->path}}">
         </dd>
         <br/>
 

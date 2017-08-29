@@ -178,9 +178,9 @@ class WapSiteController extends Controller {
             $file->getClientMimeType();
             // 上传图片
             $filename = uniqid() . '.' . $ext;
-            // 使用我们新建的uploads本地存储空间（目录）
+            // 使用新建的uploads本地存储空间（目录）
             if (Storage::disk('uploads')->put($filename, file_get_contents($realPath))) {
-                $filePath = '/storage/app/uploads/' . date('Y-m-d') . '/' . $filename;
+                $filePath = 'storage/app/uploads/' . date('Y-m-d') . '/' . $filename;
                 $mediaId = Media::insertGetId([
                     'path' => $filePath,
                     'remark' => '微网站轮播图',

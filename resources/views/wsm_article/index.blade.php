@@ -1,6 +1,6 @@
 <div class="box box-widget">
     <div class="box-header with-border">
-        @include('partials.list_header', ['addBtn' => true])
+        @include('partials.list_header')
     </div>
     <div class="box-body">
             <table id="data-table" class="table table-striped table-bordered table-hover table-condensed">
