@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Route;
 use Mockery\Exception;
 use ReflectionClass;
 use Doctrine\Common\Inflector\Inflector;
+use ReflectionMethod;
 
 /**
  * App\Models\Action
@@ -322,32 +323,21 @@ HTML;
                     $method->isUserDefined() &&
                     $method->isPublic()
                 ) {
-                    $selfDefinedMethods[$className][$action]['name'] = '';
-                    $selfDefinedMethods[$className][$action]['method'] = $action;
-                    $selfDefinedMethods[$className][$action]['remark'] = '';
                     $ctlr = $this->getControllerName($className);
-                    $selfDefinedMethods[$className][$action]['controller'] = $ctlr;
-                    $selfDefinedMethods[$className][$action]['view'] = $this->getViewPath($ctlr, $action);
-                    $selfDefinedMethods[$className][$action]['route'] = $this->getRoute($ctlr, $action);
-                    $selfDefinedMethods[$className][$action]['action_type_ids'] = $this->getActionTypeIds($ctlr, $action);
-                    if (!in_array($ctlr, $this->excludedControllers)) {
-                        switch ($action) {
-                            case 'index':
-                            case 'create':
-                            case 'edit':
-                                $selfDefinedMethods[$className][$action]['js'] =
-                                    'js/' . str_singular($this->getTableName($ctlr)) . '/' . $action . '.js';
-                                break;
-                            default:
-                                $selfDefinedMethods[$className][$action]['js'] = NULL;
-                                break;
-                        }
-                    } else {
-                        $selfDefinedMethods[$className][$action]['js'] = NULL;
-                    }
+                    $selfDefinedMethods[$className][$action] = [
+                        'name' => $this->getMethodComment($obj, $method),
+                        'method' => $action,
+                        'remark' => '',
+                        'controller' => $ctlr,
+                        'view' => $this->getViewPath($ctlr, $action),
+                        'route' => $this->getRoute($ctlr, $action),
+                        'action_type_ids' => $this->getActionTypeIds($ctlr, $action),
+                        'js' => $this->getJsPath($ctlr, $action)
+                    ];
                 }
             }
         }
+        // dd($selfDefinedMethods);
         // dd($selfDefinedMethods);
         foreach ($selfDefinedMethods as $actions) {
             foreach ($actions as $action) {
@@ -356,11 +346,12 @@ HTML;
                     ['method', $action['method']]
                 ])->first();
                 if ($a) {
-                    // $a->route = $action['route'];
-                    // $a->action_type_ids = $action['action_type_ids'];
+                    $a->name = $action['name'];
+                    $a->route = $action['route'];
+                    $a->action_type_ids = $action['action_type_ids'];
                     $a->save();
                 } else {
-                    $data = [
+                    $this->create( [
                         'name' => $action['name'],
                         'method' => $action['method'],
                         'remark' => $action['remark'],
@@ -370,8 +361,7 @@ HTML;
                         'action_type_ids' => $action['action_type_ids'],
                         'js' => $action['js'],
                         'enabled' => 1
-                    ];
-                    $this->create($data);
+                    ]);
                 }
             }
         }
@@ -397,6 +387,23 @@ HTML;
             }
         }
         return implode(', ', $actionTypes);
+        
+    }
+    
+    private function getMethodComment(ReflectionClass $controllerObj, ReflectionMethod $method) {
+    
+        $comment = $controllerObj->getMethod($method->getName())->getDocComment();
+        $name = 'n/a';
+        preg_match_all("#\/\*\*\n\s{5}\*[^\*]*\*#", $comment, $matches);
+        if (isset($matches[0][0])) {
+            $name = str_replace(str_split("\n/* "), '', $matches[0][0]);
+        } else {
+            preg_match_all("#\/\*\*\r\n\s{5}\*[^\*]*\*#", $comment, $matches);
+            if (isset($matches[0][0])) {
+                $name = str_replace(str_split("\n/* "), '', $matches[0][0]);
+            }
+        }
+        return $name;
         
     }
     
@@ -610,6 +617,29 @@ HTML;
                 }
             }
             return implode(',', $actionTypeIds);
+        }
+        return NULL;
+        
+    }
+    
+    /**
+     * 返回指定action对应的js路径
+     *
+     * @param $ctlr
+     * @param $action
+     * @return mixed
+     */
+    private function getJsPath($ctlr, $action) {
+        
+        if (!in_array($ctlr, $this->excludedControllers)) {
+            switch ($action) {
+                case 'index':
+                case 'create':
+                case 'edit':
+                    return 'js/' . str_singular($this->getTableName($ctlr)) . '/' . $action . '.js';
+                default:
+                    return NULL;
+            }
         }
         return NULL;
         

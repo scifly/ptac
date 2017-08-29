@@ -19,8 +19,8 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|MajorSubject whereSubjectId($value)
  * @method static Builder|MajorSubject whereUpdatedAt($value)
  * @mixin \Eloquent
- * @property-read \App\Models\Major $major
- * @property-read \App\Models\Subject $subject
+ * @property-read Major $major
+ * @property-read Subject $subject
  */
 class MajorSubject extends Model {
     
@@ -34,6 +34,28 @@ class MajorSubject extends Model {
     
     public function subject() {
         return $this->belongsTo('App\Models\Subject');
+    }
+    
+    public function storeByMajorId($majorId, array $subjectIds) {
+        
+        foreach ($subjectIds as $subjectId) {
+            $this->create([
+                'major_id' => $majorId,
+                'subject_id' => $subjectId
+            ]);
+        }
+        
+    }
+    
+    public function storeBySubjectId($subjectId, $majorIds) {
+        
+        foreach ($majorIds as $majorId) {
+            $this->create([
+                'major_id' => $majorId,
+                'subject_id' => $subjectId
+            ]);
+        }
+        
     }
     
 }

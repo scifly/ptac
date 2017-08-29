@@ -30,6 +30,7 @@ Route::get('pages/{id}', 'HomeController@menu');
 Route::group(['prefix' => 'educators'], routes('EducatorController'));
 Route::group(['prefix' => 'educators_classes'], routes('EducatorClassController'));
 // 监护人
+Route::group(['prefix' => 'custodians'], routes('CustodianController'));
 Route::group(['prefix' => 'custodians_students'], routes('CustodianStudentController'));
 // 学生
 Route::group(['prefix' => 'students'], routes('StudentController'));
@@ -43,17 +44,17 @@ Route::group(['prefix' => 'exams'], routes('ExamController'));
 Route::group(['prefix' => 'exam_types'], routes('ExamTypeController'));
 // 成绩管理 - 成绩录入/导入.总成绩录入/导入.成绩统计项设置
 Route::group(['prefix' => 'scores'], routes('ScoreController'));
-Route::get('scores/statistics/{exam_id}', 'ScoreController@statistics');
+Route::get('scores/statistics/{examId}', 'ScoreController@statistics');
 Route::group(['prefix' => 'score_totals'], function() {
     $ctlr = 'ScoreTotalController';
     Route::get('index', $ctlr . '@index');
     Route::get('show/{id}', $ctlr . '@show');
-    Route::get('statistics/{exam_id}', $ctlr . '@statistics');
+    Route::get('statistics/{examId}', $ctlr . '@statistics');
 });
 Route::group(['prefix' => 'score_ranges'], routes('ScoreRangeController'));
 Route::group(['prefix' => 'score_ranges'], function() {
     $ctlr = 'ScoreRangeController';
-    Route::get('statistics_show', $ctlr . '@statisticsShow');
+    Route::get('show_statistics', $ctlr . '@showStatistics');
     Route::post('statistics', $ctlr . '@statistics');
 });
 // 成绩统计/打印
@@ -117,7 +118,7 @@ Route::group(['prefix' => 'procedure_logs'], function() {
     $ctlr = 'ProcedureLogController';
     Route::get('index', $ctlr . '@myProcedure');
     Route::get('pending', $ctlr . '@pending');
-    Route::get('show/{first_log_id}    ', $ctlr . '@procedureInfo');
+    Route::get('show/{firstLogId}    ', $ctlr . '@procedureInfo');
     Route::get('create', $ctlr . '@create');
     Route::post('store', $ctlr . '@store');
     Route::post('decision', $ctlr . '@decision');

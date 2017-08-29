@@ -103,8 +103,8 @@ class CustodianStudentController extends Controller {
      * @internal param CustodianStudent $custodianStudent
      */
     public function destroy($id) {
-        $cusdodianStudent = $this->custodianStudent->find($id);
-        if (!$cusdodianStudent) { return $this->notFound(); }
-        return $cusdodianStudent->delete() ? $this->succeed() : $this->fail();
+        $custodianStudent = $this->custodianStudent->find($id);
+        if (!$custodianStudent) { return $this->notFound(); }
+        return $custodianStudent->delete() ? $this->succeed() : $this->fail();
     }
 }

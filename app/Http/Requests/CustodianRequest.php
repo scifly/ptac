@@ -27,4 +27,11 @@ class CustodianRequest extends FormRequest
             //
         ];
     }
+
+    protected function prepareForValidation() {
+
+        $input = $this->all();
+
+        $this->replace($input);
+    }
 }

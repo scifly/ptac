@@ -16,8 +16,15 @@ class CustodianComposer{
 
     public function compose(View $view)
     {
-        $user =Custodian::with('user')->get()->toArray();
+        $custodians =Custodian::with('user')->get()->toArray();
 
-        $view->with(['user' => $user,]);
+        if(!empty($custodians))
+        {
+            foreach ($custodians as $k=>$v)
+            {
+                $custodianName[$v['id']] = $v['user']['realname'];
+            }
+        }
+        $view->with(['custodianName' => $custodianName]);
     }
 }

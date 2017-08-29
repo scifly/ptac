@@ -17,7 +17,6 @@ class CustodianController extends Controller
     }
     /**
      * 显示监护人列表.
-     *
      * @return \Illuminate\Http\Response
      */
     public function index()
@@ -39,48 +38,59 @@ class CustodianController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
+     * 新增一个监护人.
+     * @param CustodianRequest $request
      * @return \Illuminate\Http\Response
      */
     public function store(CustodianRequest $request)
     {
-        //
+        $data = $request->except('_token');
+        if ($this->custodian->existed($request)) {
+            return $this->fail('已经有此记录');
+        }
+        return $this->custodian->create($data) ? $this->succeed() : $this->fail();
+
     }
 
     /**
      * Display the specified resource.
-     *
      * @param  \App\Models\Custodian  $custodian
      * @return \Illuminate\Http\Response
      */
     public function show(Custodian $custodian)
     {
-        //
+
     }
 
     /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Custodian  $custodian
+     * 编辑监护人.
+     * @param $id
      * @return \Illuminate\Http\Response
+     * @internal param Custodian $custodian
      */
-    public function edit(Custodian $custodian)
+    public function edit($id)
     {
-        //
+
+        $custodian = $this->custodian->find($id);
+        if (!$custodian) { return $this->notFound(); }
+        return $this->output(__METHOD__, ['custodian' => $custodian]);
+
     }
 
     /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Custodian  $custodian
-     * @return \Illuminate\Http\Response
+     * 更新监护人.
+     * @param CustodianRequest $request
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function update(Request $request, Custodian $custodian)
+    public function update(CustodianRequest $request,$id)
     {
-        //
+        $custodian = $this->custodian->find($id);
+        if (!$custodian) { return $this->notFound(); }
+        if ($this->custodian->existed($request, $id)) {
+            return $this->fail('已经有此记录');
+        }
+        return $custodian->update($request->all()) ? $this->succeed() : $this->fail();
     }
 
     /**
@@ -89,8 +99,10 @@ class CustodianController extends Controller
      * @param  \App\Models\Custodian  $custodian
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Custodian $custodian)
+    public function destroy($id)
     {
-        //
+        $custodian = $this->custodian->find($id);
+        if (!$custodian) { return $this->notFound(); }
+        return $custodian->delete() ? $this->succeed() : $this->fail();
     }
 }

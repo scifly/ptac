@@ -62,7 +62,7 @@ class SubjectModule extends Model {
         return $subjectModule ? true : false;
         
     }
-    
+
     public function datatable() {
         
         $columns = [

@@ -215,9 +215,9 @@
         </section>
         <!--content-->
         <section class="content">
-                @include('partials.modal_dialog')
+            @include('partials.modal_dialog')
             {{--@yield('content')--}}
-            @if(isset($tabs))
+            @if(!empty($tabs))
                 <div class="col-lg-12">
                     <div class="nav-tabs-custom">
                         <ul class="nav nav-tabs">
@@ -236,6 +236,8 @@
                         </div>
                     </div>
                 </div>
+            @else
+                菜单配置错误, 请检查后重试
             @endif
         </section>
     </div>
