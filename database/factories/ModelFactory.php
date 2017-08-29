@@ -50,7 +50,7 @@ $factory->define(App\Models\School::class, function (Faker\Generator $faker) {
         'latitude' => 30.0244,
         'sms_max_cnt' => 30,
         'sms_used' => 10,
-        'corp_id' => 1,
+        'corp_id' => rand(1,10),
         'enabled' => 1
     ];
 
@@ -329,15 +329,32 @@ $factory->define(App\Models\Department::class, function (Faker\Generator $faker)
 
     return [
         'parent_id' => rand(1, 10),
-        'corp' => rand(1, 10),
-        'school_id' => '父子',
+        'corp_id' => rand(1, 10),
+        'school_id' => rand(1,20),
         'name' =>1,
         'remark' =>'测试',
-        'order' => $faker->creditCardNumber,
+        'order' =>rand(12121451,454612421),
         'enabled' =>rand(0,1)
 
     ];
 });
+
+$factory->define(App\Models\Corp::class, function (Faker\Generator $faker) {
+    $company = [
+        '北京中科软件有限公司', '北京华宇软件股份有限公司', '金蝶国际软件集团有限公司','成都智能软件公司', '润物软件技术有限公司',
+        '北京希尔信息技术有限公司','亚太博大软件', '成都卓越精算软件有限责任公司', '冠群金辰软件公司', '福建富士通信息软件有限公司',
+        '北京有生博大软件技术有限公司', '云南保会通软件公司', '西安博达软件有限公司', '上海启明软件股份有限公司', '深圳市伊登软件有限公司',
+        '厦门搜企软件有限公司', '北京日桥信息技术有限公司', '南京橙红信息科技有限公司'
+];
+    return [
+        'name' => $company[rand(0, 17)],
+        'corpid' => strtolower(str_random(18)),
+        'enabled' =>rand(0,1),
+        'company_id' =>rand(1,10),
+
+    ];
+});
+
 
 
 

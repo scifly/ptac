@@ -16,6 +16,7 @@ class DepartmentController extends Controller
 
     }
 
+
     public function index()
     {
         if (Request::get('draw')) {
@@ -25,68 +26,80 @@ class DepartmentController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
+     * 显示创建部门记录的表单
      * @return \Illuminate\Http\Response
      */
     public function create()
     {
-        //
+        return $this->output(__METHOD__);
     }
 
     /**
      * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param DepartmentRequest $request
      */
-    public function store(Request $request)
+    public function store(DepartmentRequest $request)
     {
-        //
+        if ($this->department->existed($request)) {
+            return $this->fail('已经有此记录');
+        }
+        return $this->department->create($request->all()) ? $this->succeed() : $this->fail();
     }
 
     /**
      * Display the specified resource.
-     *
-     * @param  \App\Models\Department  $department
-     * @return \Illuminate\Http\Response
+     * @param $id
+     * @return bool|\Illuminate\Http\JsonResponse
      */
-    public function show(Department $department)
+    public function show($id)
     {
-        //
+        $department= $this->department->find($id);
+        if (!$department) { return $this->notFound(); }
+        return $this->output(__METHOD__, [
+            'deparment' => $department,
+        ]);
     }
 
     /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Department  $department
+     * 显示编辑部门记录的表单.
+     * @param $id
      * @return \Illuminate\Http\Response
+     * @internal param Department $department
      */
-    public function edit(Department $department)
+    public function edit($id)
     {
-        //
+        $department= $this->department->find($id);
+        if (!$department) { return $this->notFound(); }
+        return $this->output(__METHOD__, [
+            'deparment' => $department,
+        ]);
     }
 
     /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Department  $department
-     * @return \Illuminate\Http\Response
+     * 更新部门信息.
+     * @param DepartmentRequest $request
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function update(Request $request, Department $department)
+    public function update(DepartmentRequest $request,$id)
     {
-        //
+        $department = $this->department->find($id);
+        if (!$department) { return $this->notFound(); }
+        if ($this->department->existed($request, $id)) {
+            return $this->fail('已经有此记录');
+        }
+        return $department->update($request->all()) ? $this->succeed() : $this->fail();
     }
 
     /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Department  $department
-     * @return \Illuminate\Http\Response
+     * 删除部门.
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy(Department $department)
+    public function destroy($id)
     {
-        //
+        $department = $this->department->find($id);
+        if (!$department) { return $this->notFound(); }
+        return $department->delete() ? $this->succeed() : $this->fail();
     }
 }
