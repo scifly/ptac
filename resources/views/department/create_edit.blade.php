@@ -4,8 +4,8 @@
     </div>
     <div class="box-body">
         <div class="form-horizontal">
-            @if (!empty($custodianStudent['id']))
-                {{ Form::hidden('id', null, ['id' => 'id', 'value' => $custodianStudent['id']]) }}
+            @if (!empty($department['id']))
+                {{ Form::hidden('id', null, ['id' => 'id', 'value' => $department['id']]) }}
             @endif
             <div class="form-group">
                 {!! Form::label('custodian_id', '监护人姓名',['class' => 'col-sm-4 control-label']) !!}

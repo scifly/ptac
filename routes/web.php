@@ -165,6 +165,7 @@ Route::group(['prefix' => 'icon_types'], routes('IconTypeController'));
 // 消息类型设置 - 消息类型管理
 Route::group(['prefix' => 'message_types'], routes('MessageTypeController'));
 // 运营者设置 - 企业设置
+Route::group(['prefix' => 'departments'], routes('DepartmentController'));
 Route::group(['prefix' => 'companies'], routes('CompanyController'));
 Route::group(['prefix' => 'corps'], routes('CorpController'));
 // 菜单管理 - action设置.卡片设置.菜单设置

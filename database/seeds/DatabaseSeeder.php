@@ -14,7 +14,7 @@ class DatabaseSeeder extends Seeder {
 //        $this->call(SchoolTypeSeeder::class);
 //        $this->call(SubjectSeeder::class);
 //        $this->call(ScoreRangeSeeder::class);
-//        $this->call(CorpSeeder::class);
+        $this->call(CorpSeeder::class);
 //        $this->call(SchoolSeeder::class);
 //        $this->call(GradeSeeder::class);
 //        $this->call(EducatorSeeder::class);
@@ -35,6 +35,6 @@ class DatabaseSeeder extends Seeder {
 //        $this->call(TabSeeder::class);
 //        $this->call(IconSeeder::class);
 //        $this->call(IconTypeSeeder::class);
-        $this->call(DepartmentSeeder::class);
+//        $this->call(DepartmentSeeder::class);
     }
 }
