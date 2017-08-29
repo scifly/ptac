@@ -54,13 +54,13 @@
                 'label' => '所属年级',
                 'for' => 'grade_ids',
                 'items' => $grades,
-                'selectedItems' => $selectedGrades
+                'selectedItems' => isset($selectedGrades) ? $selectedGrades : NULL
             ])
             @include('partials.multiple_select', [
                 'label' => '包含专业',
                 'for' => 'major_ids',
                 'items' => $majors,
-                'selectedItems' => $selectedMajors
+                'selectedItems' => isset($selectedMajors) ? $selectedMajors : NULL
             ])
             @include('partials.enabled', ['enabled' => $subject['isaux'], 'label' => '是否为副科'])
             @include('partials.enabled', ['enabled' => $subject['enabled']])
