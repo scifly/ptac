@@ -8,8 +8,8 @@
                 {{ Form::hidden('id', null, ['id' => 'id', 'value' => $tab['id']]) }}
             @endif
             <div class="form-group">
-                {!! Form::label('name', '名称',['class' => 'col-sm-4 control-label']) !!}
-                <div class="col-sm-2">
+                {!! Form::label('name', '名称',['class' => 'col-sm-3 control-label']) !!}
+                <div class="col-sm-4">
                     {!! Form::text('name', null, [
                         'class' => 'form-control',
                         'placeholder' => '(不超过40个汉字)',
@@ -24,8 +24,8 @@
             </div>
 
             <div class="form-group">
-                {!! Form::label('remark', '备注',['class' => 'col-sm-4 control-label']) !!}
-                <div class="col-sm-3">
+                {!! Form::label('remark', '备注',['class' => 'col-sm-3 control-label']) !!}
+                <div class="col-sm-4">
                     {!! Form::text('remark', null, [
                     'class' => 'form-control',
                     'placeholder' => '不能超过20个汉字',
@@ -35,17 +35,6 @@
                     ]) !!}
                 </div>
             </div>
-            {{--<div class="form-group">--}}
-            {{--{!! Form::label('enabled', '是否启用', [--}}
-            {{--'class' => 'col-sm-4 control-label'--}}
-            {{--]) !!}--}}
-            {{--<div class="col-sm-6" style="margin-top: 5px;">--}}
-            {{--<input id="enabled" type="checkbox" name="enabled" data-render="switchery"--}}
-            {{--data-theme="default" data-switchery="true"--}}
-            {{--@if(!empty($examType['enabled'])) checked @endif--}}
-            {{--data-classname="switchery switchery-small"/>--}}
-            {{--</div>--}}
-            {{--</div>--}}
             @include('partials.enabled', ['enabled' => $examType['enabled']])
         </div>
     </div>

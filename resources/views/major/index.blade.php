@@ -8,8 +8,8 @@
             <tr>
                 <th>#</th>
                 <th>名称</th>
-                <th>图标</th>
                 <th>备注</th>
+                <th>所属学校</th>
                 <th>创建时间</th>
                 <th>更新时间</th>
                 <th>状态</th>

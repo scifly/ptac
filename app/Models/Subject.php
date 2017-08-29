@@ -39,6 +39,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read School $school
  * @property-read Collection|SubjectModule[] $subjectModules
  * @property-read EducatorClass $educatorClass
+ * @property-read Collection|Major[] $majors
  */
 class Subject extends Model {
     
@@ -65,7 +66,18 @@ class Subject extends Model {
         return $this->belongsTo('App\Models\School');
         
     }
-
+    
+    public function majors() {
+        
+        return $this->belongsToMany(
+            'App\Models\Major',
+            'majors_subjects',
+            'subject_id',
+            'major_id'
+        );
+        
+    }
+    
     public function existed(SubjectRequest $request, $id = NULL) {
         
         if (!$id) {
@@ -79,31 +91,14 @@ class Subject extends Model {
         return $subject ? true : false;
         
     }
-
-    public function subjects($subjectIds) {
-
-        $subjectIds = explode(',', $subjectIds);
-        $subjects = [];
-        foreach ($subjectIds as $subjectId) {
-            $subjects[] = $this->find($subjectId);
-        }
-
-        return $subjects;
-
+    
+    public function subjects($schoolId) {
+        
+        return $this->where('school_id', $schoolId)->get()->pluck('id', 'name');
+        
     }
-
-    public function naSubjects($naSubjectIds) {
-
-        $naSubjectIds = explode(',', $naSubjectIds);
-        $subjects = [];
-        foreach ($naSubjectIds as $subjectId) {
-            $subjects[] = $this->find($subjectId);
-        }
-
-        return $subjects;
-
-    }
-
+    
+    
     public function datatable() {
         
         $columns = [
@@ -112,7 +107,7 @@ class Subject extends Model {
             ['db' => 'School.name as schoolname', 'dt' => 2],
             [
                 'db' => 'Subject.isaux', 'dt' => 3,
-                'formatter' => function ($d, $row) {
+                'formatter' => function ($d) {
                     $subject = Subject::whereId($d)->first();
                     return $subject->isaux == 1 ? '是' : '否';
                 }

@@ -45,6 +45,8 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|Event whereUrl($value)
  * @method static Builder|Event whereUserId($value)
  * @mixin \Eloquent
+ * @property-read \App\Models\Educator $educator
+ * @property-read \App\Models\Subject $subject
  */
 class Event extends Model {
     protected $table = 'events';

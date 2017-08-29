@@ -1,6 +1,10 @@
 <div class="form-group">
-    <label for="enabled" class="col-sm-3 control-label">
-        是否启用
+    <label for="enabled" class="col-sm-4 control-label">
+        @if (!isset($label))
+            是否启用
+        @else
+            {{ $label }}
+        @endif
     </label>
     <div class="col-sm-6" style="margin-top: 5px;">
         <input id="enabled" type="checkbox" name="enabled" data-render="switchery"

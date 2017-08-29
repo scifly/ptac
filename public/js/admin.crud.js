@@ -66,7 +66,6 @@ var crud = {
         $('#data-table').dataTable({
             processing: true,
             serverSide: true,
-            displayStart: 0,
             ajax: page.siteRoot() + table + '/index',
             order: [[0, 'desc']],
             stateSave: true,

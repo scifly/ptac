@@ -5,7 +5,7 @@
     <div class="box-body">
         <div class="form-horizontal">
             @if (!empty($tab['id']))
-            {{ Form::hidden('id', null, ['id' => 'id', 'value' => $tab['id']]) }}
+                {{ Form::hidden('id', null, ['id' => 'id', 'value' => $tab['id']]) }}
             @endif
             <div class="form-group">
                 {!! Form::label('name', '卡片名称',[
@@ -63,48 +63,17 @@
 
                 </div>
             </div>
-            <div class="form-group">
-                {!! Form::label('action_id', '默认Action', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
-                <div class="col-sm-6">
-                    {!! Form::select('action_id', $actions, null, [
-                        'id' => 'action_id',
-                        'style' => 'width: 100%;'
-                    ]) !!}
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="menu_ids" class="col-sm-3 control-label">所属菜单</label>
-                <div class="col-sm-6">
-                    <select multiple name="menu_ids[]" id="menu_ids" style="width: 100%;">
-                        @foreach ($menus as $key => $value)
-                            @if(isset($selectedMenus))
-                                <option value="{{ $key }}"
-                                    @if(array_key_exists($key, $selectedMenus))
-                                        selected
-                                    @endif
-                                >
-                                    {{ $value }}
-                                </option>
-                            @else
-                                <option value="{{ $key }}">{{ $value }}</option>
-                            @endif
-                        @endforeach
-                    </select>
-                </div>
-            </div>
-            {{--<div class="form-group">--}}
-                {{--<label for="enabled" class="col-sm-3 control-label">--}}
-                    {{--是否启用--}}
-                {{--</label>--}}
-                {{--<div class="col-sm-6" style="margin-top: 5px;">--}}
-                    {{--<input id="enabled" type="checkbox" name="enabled" data-render="switchery"--}}
-                           {{--data-theme="default" data-switchery="true"--}}
-                           {{--@if(!empty($tab['enabled'])) checked @endif--}}
-                           {{--data-classname="switchery switchery-small"/>--}}
-                {{--</div>--}}
-            {{--</div>--}}
+            @include('partials.single_select', [
+                'label' => '默认Action',
+                'id' => 'action_id',
+                'items' => $actions
+            ])
+            @include('partials.multiple_select', [
+                'label' => '所属菜单',
+                'for' => 'menu_ids',
+                'items' => $menus,
+                'selectedItems' => $selectedMenus
+            ]);
             @include('partials.enabled', ['enabled' => $tab['enabled']])
         </div>
     </div>
