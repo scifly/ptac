@@ -4,8 +4,8 @@
     </div>
     <div class="box-body">
         <div class="form-horizontal">
-            @if (!empty($tab['id']))
-                {{ Form::hidden('id', null, ['id' => 'id', 'value' => $tab['id']]) }}
+            @if (isset($wapsite) && !empty($wapsite['id']))
+                {{ Form::hidden('id', null, ['id' => 'id', 'value' => $wapsite['id']]) }}
             @endif
             <div class="form-group">
                 {!! Form::label('site_title', '首页抬头',['class' => 'col-sm-2 control-label']) !!}
@@ -19,12 +19,12 @@
                     ]) !!}
                 </div>
             </div>
-            <div class="form-group">
-                {!! Form::label('school_id', '所属学校',['class' => 'col-sm-2 control-label']) !!}
-                <div class="col-sm-2">
-                    {!! Form::select('school_id', $schools, null, ['class' => 'form-control']) !!}
-                </div>
-            </div>
+            @include('partials.single_select', [
+                'label' => '所属学校',
+                'id' => 'school_id',
+                'items' => $schools
+            ])
+
             <div class="form-group">
                 {!! Form::label('media_ids', '轮播图',['class' => 'col-sm-2 control-label']) !!}
                 <div class="col-sm-10">
@@ -55,7 +55,7 @@
                            {{--data-classname="switchery switchery-small"/>--}}
                 {{--</div>--}}
             {{--</div>--}}
-            @include('partials.enabled', ['enabled' => $wapsite['enabled']])
+            @include('partials.enabled', ['enabled' => isset($wapsite['enabled']) ? $wapsite['enabled'] : ""])
         </div>
     </div>
     @include('partials.form_buttons')

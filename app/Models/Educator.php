@@ -62,8 +62,8 @@ class Educator extends Model {
         $educators = [];
         foreach ($educatorIds as $id) {
             $educator = $this->find($id);
-            $user = $educator->user;
-            $educators[$educator->id] = $user->username;
+            $user = User::find($educator['user_id']);
+            $educators[$id] = $user['realname'];
         }
         return $educators;
         

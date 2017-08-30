@@ -36,7 +36,7 @@ class Team extends Model {
         $teams = [];
         foreach ($teamIds as $id) {
             $team = $this->find($id);
-            $teams[$team->id] = $team->name;
+            $teams[$team['id']] = $team['name'];
         }
         return $teams;
 

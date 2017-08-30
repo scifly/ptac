@@ -65,15 +65,25 @@ class Exam extends Model {
     }
     
     public function classes(array $classIds) {
+        $selectedClasses = [];
+        foreach ($classIds as $classId) {
+            $class = Squad::whereId($classId)->first();
+            $selectedClasses[$classId] = $class['name'];
+        }
         
-        return Squad::whereIn('id', $classIds)->get(['id', 'name']);
+        return $selectedClasses;
         
     }
     
     public function subjects(array $subjectIds) {
-        
-        return Subject::whereIn('id', $subjectIds)->get(['id', 'name']);
-        
+        $selectedSubjects = [];
+        foreach ($subjectIds as $subjectId) {
+            $subject = Squad::whereId($subjectId)->first();
+            $selectedSubjects[$subjectId] = $subject['name'];
+        }
+
+        return $selectedSubjects;
+
     }
     
     //获取当前考试班级

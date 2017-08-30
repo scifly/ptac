@@ -68,9 +68,11 @@ class WapSiteController extends Controller {
         if (!$wapsite) {
             return parent::notFound();
         }
+        $mediaIds = explode(",", $wapsite->media_ids);
+
         return parent::output(__METHOD__, [
             'wapsite' => $wapsite,
-            'medias' => $this->media->medias($wapsite->media_ids),
+            'medias' => $this->media->medias($mediaIds),
         ]);
     }
 
