@@ -28,7 +28,7 @@
                 'label' => '包含科目',
                 'for' => 'subject_ids',
                 'items' => $subjects,
-                'selectedItems' => $selectedSubjects
+                'selectedItems' => isset($selectedSubjects) ? $selectedSubjects : []
             ])
             <div class="form-group">
                 {!! Form::label('remark', '备注',['class' => 'col-sm-4 control-label']) !!}

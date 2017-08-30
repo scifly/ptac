@@ -19,28 +19,39 @@
                     ]) !!}
                 </div>
             </div>
-            <div class="form-group">
-                {!! Form::label('school_id', '所属学校',['class' => 'col-sm-4 control-label']) !!}
-                <div class="col-sm-2">
-                    {!! Form::select('school_id', $schools, null, ['class' => 'form-control']) !!}
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="educator_ids" class="col-sm-4 control-label">年级主任</label>
-                <div class="col-sm-3">
-                    <select multiple name="educator_ids[]" id="educator_ids">
-                        @foreach($educators as $key => $value)
-                            @if(isset($selectedEducators))
-                                <option value="{{$key}}" @if(array_key_exists($key,$selectedEducators)) selected @endif>
-                                    {{$value}}
-                                </option>
-                            @else
-                                <option value="{{$key}}">{{$value}}</option>
-                            @endif
-                        @endforeach
-                    </select>
-                </div>
-            </div>
+            {{--<div class="form-group">--}}
+            {{--{!! Form::label('school_id', '所属学校',['class' => 'col-sm-4 control-label']) !!}--}}
+            {{--<div class="col-sm-2">--}}
+            {{--{!! Form::select('school_id', $schools, null, ['class' => 'form-control']) !!}--}}
+            {{--</div>--}}
+            {{--</div>--}}
+            @include('partials.single_select', [
+                'label' => '所属学校',
+                'id' => 'school_id',
+                'items' => $schools
+            ])
+            {{--<div class="form-group">--}}
+            {{--<label for="educator_ids" class="col-sm-4 control-label">年级主任</label>--}}
+            {{--<div class="col-sm-3">--}}
+            {{--<select multiple name="educator_ids[]" id="educator_ids">--}}
+            {{--@foreach($educators as $key => $value)--}}
+            {{--@if(isset($selectedEducators))--}}
+            {{--<option value="{{$key}}" @if(array_key_exists($key,$selectedEducators)) selected @endif>--}}
+            {{--{{$value}}--}}
+            {{--</option>--}}
+            {{--@else--}}
+            {{--<option value="{{$key}}">{{$value}}</option>--}}
+            {{--@endif--}}
+            {{--@endforeach--}}
+            {{--</select>--}}
+            {{--</div>--}}
+            {{--</div>--}}
+            @include('partials.multiple_select', [
+                'label' => '年级主任',
+                'for' => 'educator_ids',
+                'items' => $educators,
+                'selectedItems' => isset($selectedEducators) ? $selectedEducators:[]
+            ])
             @include('partials.enabled', ['enabled' => $grade['enabled']])
         </div>
     </div>

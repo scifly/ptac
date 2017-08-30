@@ -22,20 +22,25 @@
                     <p class="form-control-static text-danger">{{ $errors->first('name') }}</p>
                 </div>
             </div>
-
-            <div class="form-group">
-                {!! Form::label('grade_id', '所属年级',['class' => 'col-sm-4 control-label']) !!}
-                <div class="col-sm-2">
-                    {!! Form::select('grade_id', $grades, null, ['class' => 'form-control']) !!}
-                </div>
-            </div>
+            {{--<div class="form-group">--}}
+            {{--{!! Form::label('grade_id', '所属年级',['class' => 'col-sm-4 control-label']) !!}--}}
+            {{--<div class="col-sm-2">--}}
+            {{--{!! Form::select('grade_id', $grades, null, ['class' => 'form-control']) !!}--}}
+            {{--</div>--}}
+            {{--</div>--}}
+            @include('partials.single_select', [
+                'label' => '所属年级',
+                'id' => 'grade_id',
+                'items' => $grades
+            ])
             <div class="form-group">
                 <label for="educator_ids" class="col-sm-4 control-label">年级主任</label>
                 <div class="col-sm-3">
                     <select multiple name="educator_ids[]" id="educator_ids">
                         @foreach($educators as $key => $value)
                             @if(isset($selectedEducators))
-                                <option value="{{$key}}" @if(array_key_exists($key,$selectedEducators))selected="selected"@endif>
+                                <option value="{{$key}}"
+                                        @if(array_key_exists($key,$selectedEducators))selected="selected"@endif>
                                     {{$value}}
                                 </option>
                             @else
@@ -45,17 +50,12 @@
                     </select>
                 </div>
             </div>
-            {{--<div class="form-group">--}}
-                {{--<label for="enabled" class="col-sm-3 control-label">--}}
-                    {{--是否启用--}}
-                {{--</label>--}}
-                {{--<div class="col-sm-6" style="margin-top: 5px;">--}}
-                    {{--<input id="enabled" type="checkbox" name="enabled" data-render="switchery"--}}
-                           {{--data-theme="default" data-switchery="true"--}}
-                           {{--@if(!empty($class['enabled'])) checked @endif--}}
-                           {{--data-classname="switchery switchery-small"/>--}}
-                {{--</div>--}}
-            {{--</div>--}}
+            @include('partials.multiple_select', [
+                'label' => '年级主任',
+                'for' => 'educator_ids',
+                'items' => $educators,
+                'selectedItems' => isset($selectedEducators) ? $selectedEducators:[]
+            ])
             @include('partials.enabled', ['enabled' => $class['enabled']])
         </div>
     </div>
