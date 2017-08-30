@@ -22,19 +22,22 @@
                     <p class="form-control-static text-danger">{{ $errors->first('name') }}</p>
                 </div>
             </div>
+
             @include('partials.single_select', [
                 'label' => '所属年级',
                 'id' => 'grade_id',
                 'items' => $grades
             ])
+
             @include('partials.multiple_select', [
                 'label' => '年级主任',
                 'for' => 'educator_ids',
                 'items' => $educators,
-                'selectedItems' => isset($selectedEducators) ? $selectedEducators : array()
+                'selectedItems' => isset($selectedEducators) ? $selectedEducators : []
             ])
 
             @include('partials.enabled', ['enabled' => isset($class['enabled']) ? $class['enabled'] : ""])
+
         </div>
     </div>
     @include('partials.form_buttons')

@@ -18,7 +18,7 @@ class CustodianStudentController extends Controller {
     }
     
     /**
-     * 显示监护人列表
+     * 显示监护人学生关系列表
      * @return \Illuminate\Http\Response
      */
     public function index() {

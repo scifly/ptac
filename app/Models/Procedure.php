@@ -69,7 +69,7 @@ class Procedure extends Model {
             $procedure = $this->where('procedure_type_id', $request->input('procedure_type_id'))
                 ->where('id', '<>', $id)
                 ->where('school_id', $request->input('school_id'))
-                ->where('name', $$request->input('name'))
+                ->where('name', $request->input('name'))
                 ->first();
         }
         return $procedure ? true : false;

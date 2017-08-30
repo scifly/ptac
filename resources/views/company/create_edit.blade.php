@@ -28,29 +28,18 @@
                     ]) !!}
                 </div>
             </div>
-            <div class="form-group">
-                {!! Form::label('corpid', '企业号ID',['class' => 'col-sm-4 control-label']) !!}
-                <div class="col-sm-3">
-                    {!! Form::text('corpid', null, [
-                         'class' => 'form-control',
-                         'placeholder' => '(36个小写字母与阿拉伯数字)',
-                         'data-parsley-required' => 'true',
-                         'data-parsley-type' => 'alphanum'
-                     ]) !!}
-                </div>
-            </div>
             {{--<div class="form-group">--}}
-                {{--<label for="enabled" class="col-sm-4 control-label">--}}
-                    {{--是否启用--}}
-                {{--</label>--}}
-                {{--<div class="col-sm-3" style="margin-top: 5px;">--}}
-                    {{--<input id="enabled" type="checkbox" name="enabled" data-render="switchery"--}}
-                           {{--data-theme="default" data-switchery="true"--}}
-                           {{--@if(!empty($company['enabled'])) checked @endif--}}
-                           {{--data-classname="switchery switchery-small"/>--}}
+                {{--{!! Form::label('corpid', '企业号ID',['class' => 'col-sm-4 control-label']) !!}--}}
+                {{--<div class="col-sm-3">--}}
+                    {{--{!! Form::text('corpid', null, [--}}
+                         {{--'class' => 'form-control',--}}
+                         {{--'placeholder' => '(36个小写字母与阿拉伯数字)',--}}
+                         {{--'data-parsley-required' => 'true',--}}
+                         {{--'data-parsley-type' => 'alphanum'--}}
+                     {{--]) !!}--}}
                 {{--</div>--}}
             {{--</div>--}}
-            @include('partials.enabled', ['enabled' => $company['enabled']])
+            @include('partials.enabled', ['enabled' => isset($company['enabled']) ? $company['enabled'] : ''])
         </div>
     </div>
     @include('partials.form_buttons')

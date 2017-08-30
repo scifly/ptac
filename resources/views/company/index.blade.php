@@ -9,7 +9,6 @@
                 <th>#</th>
                 <th>名称</th>
                 <th>备注</th>
-                <th>企业号ID</th>
                 <th>创建时间</th>
                 <th>更新时间</th>
                 <th>状态</th>

@@ -49,9 +49,9 @@ class CompanyController extends Controller {
      */
     public function store(CompanyRequest $request) {
         
-        if ($this->company->existed($request)) {
-            return $this->fail('已经有此记录');
-        }
+//        if ($this->company->existed($request)) {
+//            return $this->fail('已经有此记录');
+//        }
         return $this->company->create($request->all()) ? $this->succeed() : $this->fail();
         
     }
@@ -95,9 +95,9 @@ class CompanyController extends Controller {
         
         $company = $this->company->find($id);
         if (!$company) { return $this->notFound(); }
-        if ($this->company->existed($request,$id)) {
-            return $this->fail('已经有此记录');
-        }
+//        if ($this->company->existed($request,$id)) {
+//            return $this->fail('已经有此记录');
+//        }
         return $company->update($request->all()) ? $this->succeed() : $this->fail();
         
     }

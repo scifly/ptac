@@ -100,6 +100,6 @@
 <div class="modal-footer">
     <a href="#" class="btn  btn-default" data-dismiss="modal">取消</a>
     <a id="confirm-update" href="#" class="btn btn-primary" data-dismiss="modal">确定</a>
-    <a id="confirm-delete" href="#" class="btn btn-primary pull-left" data-dismiss="modal">删除</a>
+    <a id="confirm-delete-event" href="#" class="btn btn-primary pull-left" data-dismiss="modal">删除</a>
 </div>
 {!! Form::close() !!}

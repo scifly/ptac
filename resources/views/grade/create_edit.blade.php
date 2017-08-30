@@ -19,19 +19,22 @@
                     ]) !!}
                 </div>
             </div>
+
             @include('partials.single_select', [
                 'label' => '所属学校',
                 'id' => 'school_id',
                 'items' => $schools
             ])
+
             @include('partials.multiple_select', [
                 'label' => '年级主任',
                 'for' => 'educator_ids',
                 'items' => $educators,
-                'selectedItems' => isset($selectedEducators) ? $selectedEducators : array()
+                'selectedItems' => isset($selectedEducators) ? $selectedEducators : []
             ])
 
             @include('partials.enabled', ['enabled' => isset($grade['enabled']) ? $grade['enabled'] : ""])
+
         </div>
     </div>
     @include('partials.form_buttons')

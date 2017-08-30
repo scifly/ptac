@@ -28,7 +28,9 @@ function getSchoolEducators() {
         success: function (result) {
             if (result.statusCode === 200) {
                 if (result.educators.length === 0) {
-                    crud.inform('出现异常', '该学校暂未添加教职员工', crud.failure);
+                    page.inform(
+                        '加载失败', '该学校暂未添加教职员工', page.failure
+                    );
                 } else {
                     var $obj = eval(result.educators);
                     for (var key in $obj) {
@@ -39,9 +41,9 @@ function getSchoolEducators() {
             }
             return false;
         },
-        error: function (e) {
+        error: function(e) {
             var obj = JSON.parse(e.responseText);
-            crud.inform('出现异常', obj['message'], crud.failure);
+            page.inform('出现异常', obj['message'], page.failure);
         }
     });
 }

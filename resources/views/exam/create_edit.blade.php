@@ -19,7 +19,6 @@
                     ]) !!}
                 </div>
             </div>
-
             <div class="form-group">
                 {!! Form::label('remark', '备注',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-3">
@@ -41,13 +40,13 @@
                     'label' => '所属班级',
                     'for' => 'class_ids',
                     'items' => $classes,
-                    'selectedItems' => isset($selectedClasses) ? $selectedClasses : array()
+                    'selectedItems' => isset($selectedClasses) ? $selectedClasses : []
                 ])
                 @include('partials.multiple_select', [
                     'label' => '科目',
                     'for' => 'subject_ids',
                     'items' => $subjects,
-                    'selectedItems' => isset($selectedSubjects) ? $selectedSubjects : array()
+                    'selectedItems' => isset($selectedSubjects) ? $selectedSubjects : []
                 ])
 
             <div class="form-group">
@@ -105,6 +104,7 @@
             {{--</div>--}}
 
             @include('partials.enabled', ['enabled' => isset($exam['enabled']) ? $exam['enabled'] : ""])
+
 
         </div>
     </div>

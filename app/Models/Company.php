@@ -33,7 +33,6 @@ class Company extends Model {
     protected $fillable = [
         'name',
         'remark',
-        'corpid',
         'enabled'
     ];
     
@@ -62,11 +61,11 @@ class Company extends Model {
             ['db' => 'Company.id', 'dt' => 0],
             ['db' => 'Company.name', 'dt' => 1],
             ['db' => 'Company.remark', 'dt' => 2],
-            ['db' => 'Company.corpid as companyCorpid', 'dt' => 3],
-            ['db' => 'Company.created_at', 'dt' => 4],
-            ['db' => 'Company.updated_at', 'dt' => 5],
+//            ['db' => 'Company.corpid as companyCorpid', 'dt' => 3],
+            ['db' => 'Company.created_at', 'dt' => 3],
+            ['db' => 'Company.updated_at', 'dt' => 4],
             [
-                'db' => 'Company.enabled', 'dt' => 6,
+                'db' => 'Company.enabled', 'dt' => 5,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
                 }]
