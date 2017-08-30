@@ -59,7 +59,7 @@ $(function () {
     /**
      * 初始化日历事件
      */
-        $('#calendar').fullCalendar({
+    $('#calendar').fullCalendar({
         header: {
             left: 'prev,next today',
             center: 'title',
@@ -141,6 +141,12 @@ $(function () {
                 success: function (result) {
                     if (result.statusCode === 200) {
                         $('.show-form').html(result.message);
+                        $(".start-datepicker").datetimepicker({
+                            dateFormat: 'yy-mm-dd'
+                        });
+                        $(".end-datepicker").datetimepicker({
+                            dateFormat: 'yy-mm-dd'
+                        });
                         $('#confirm-update').on("click", function () {
                             var data = $('#formEventEdit').serialize();
                             data += "&" + "user_id" + "=" + id;

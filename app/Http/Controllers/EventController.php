@@ -15,7 +15,7 @@ class EventController extends Controller {
     }
 
     /**
-     * 根据用户id显示列表和个人的日历事件信息
+     * 显示列表和个人的日历事件信息
      *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      * @internal param $userId

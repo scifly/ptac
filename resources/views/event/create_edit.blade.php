@@ -75,6 +75,11 @@
                             {!! Form::select('educator_id', $educators, null, [ 'class' => 'form-control']) !!}
                         </div>
                     </div>
+                    {{--@include('partials.single_select', [--}}
+                    {{--'label' => '教师姓名',--}}
+                    {{--'id' => 'educator_id',--}}
+                    {{--'items' => $educators--}}
+                    {{--])--}}
                     <div class="form-group subject_id-form" style="display:none">
                         {!! Form::label('subject_id', '科目名称',['class' => 'col-sm-4 control-label']) !!}
                         <div class="col-sm-4">
