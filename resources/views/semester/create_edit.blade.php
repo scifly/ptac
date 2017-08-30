@@ -15,12 +15,17 @@
                     ]) !!}
                 </div>
             </div>
-            <div class="form-group">
-                {!! Form::label('school_id', '所属学校',['class' => 'col-sm-4 control-label']) !!}
-                <div class="col-sm-2">
-                    {!! Form::select('school_type_id', $schools, null, ['class' => 'form-control']) !!}
-                </div>
-            </div>
+            {{--<div class="form-group">--}}
+                {{--{!! Form::label('school_id', '所属学校',['class' => 'col-sm-4 control-label']) !!}--}}
+                {{--<div class="col-sm-2">--}}
+                    {{--{!! Form::select('school_id', $schools, null, ['class' => 'form-control']) !!}--}}
+                {{--</div>--}}
+            {{--</div>--}}
+            @include('partials.single_select', [
+              'label' => '所属学校',
+              'id' => 'school_id',
+              'items' => $schools
+          ])
             <div class="form-group">
                 {!! Form::label('remark', '备注', ['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-3">
@@ -72,7 +77,7 @@
                            {{--data-classname="switchery switchery-small"/>--}}
                 {{--</div>--}}
             {{--</div>--}}
-            @include('partials.enabled', ['enabled' => $semester['enabled']])
+            @include('partials.enabled', ['enabled' => isset($semester['enabled']) ? $semester['enabled'] : ''])
         </div>
     </div>
     @include('partials.form_buttons')

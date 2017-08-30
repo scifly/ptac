@@ -30,26 +30,36 @@
                     ]) !!}
                 </div>
             </div>
-            <div class="form-group">
-                {!! Form::label('school_type_id', '类型',[
-                    'class' => 'col-sm-4 control-label'
-                ]) !!}
-                <div class="col-sm-2">
-                    {!! Form::select('school_type_id', $schoolTypes, null, [
-                        'class' => 'form-control'
-                    ]) !!}
-                </div>
-            </div>
-            <div class="form-group">
-                {!! Form::label('corp_id', '所属企业',[
-                    'class' => 'col-sm-4 control-label'
-                ]) !!}
-                <div class="col-sm-2">
-                    {!! Form::select('corp_id', $corps, null, [
-                        'class' => 'form-control'
-                    ]) !!}
-                </div>
-            </div>
+            {{--<div class="form-group">--}}
+                {{--{!! Form::label('school_type_id', '类型',[--}}
+                    {{--'class' => 'col-sm-4 control-label'--}}
+                {{--]) !!}--}}
+                {{--<div class="col-sm-2">--}}
+                    {{--{!! Form::select('school_type_id', $schoolTypes, null, [--}}
+                        {{--'class' => 'form-control'--}}
+                    {{--]) !!}--}}
+                {{--</div>--}}
+            {{--</div>--}}
+            @include('partials.single_select', [
+                'label' => '类型',
+                'id' => 'school_type_id',
+                'items' => $schoolTypes
+            ])
+            {{--<div class="form-group">--}}
+                {{--{!! Form::label('corp_id', '所属企业',[--}}
+                    {{--'class' => 'col-sm-4 control-label'--}}
+                {{--]) !!}--}}
+                {{--<div class="col-sm-2">--}}
+                    {{--{!! Form::select('corp_id', $corps, null, [--}}
+                        {{--'class' => 'form-control'--}}
+                    {{--]) !!}--}}
+                {{--</div>--}}
+            {{--</div>--}}
+            @include('partials.single_select', [
+               'label' => '所属企业',
+               'id' => 'corp_id',
+               'items' => $corps
+           ])
             {{--<div class="form-group">--}}
                 {{--<label for="enabled" class="col-sm-4 control-label">--}}
                     {{--是否启用--}}
@@ -61,7 +71,7 @@
                            {{--data-classname="switchery switchery-small"/>--}}
                 {{--</div>--}}
             {{--</div>--}}
-            @include('partials.enabled', ['enabled' => $school['enabled']])
+            @include('partials.enabled', ['enabled' => isset($school['enabled']) ? $school['enabled'] : ''])
         </div>
     </div>
     @include('partials.form_buttons')

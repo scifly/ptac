@@ -9,8 +9,7 @@ $(function () {
             var eventObject = {
                 title: $.trim($(this).text()), // use the element's text as the event title
                 id: $(this).attr('id'),
-                user_id: id,
-                dow: [1, 4]
+                user_id: id
             }
             // store the Event Object in the DOM element so we can get to it later
             $(this).data('eventObject', eventObject);

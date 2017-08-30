@@ -36,7 +36,7 @@
                            {{--data-classname="switchery switchery-small"/>--}}
                 {{--</div>--}}
             {{--</div>--}}
-            @include('partials.enabled', ['enabled' => $schoolType['enabled']])
+            @include('partials.enabled', ['enabled' => isset($schoolType['enabled']) ? $schoolType['enabled'] : ''])
         </div>
     </div>
     @include('partials.form_buttons')
