@@ -1,17 +1,15 @@
 $(function () {
-    //var id = window.location.href.substring(window.location.href.lastIndexOf('/') + 1);
     //后台传过来的user_id
     var id = $('input[name="user_id"]').val();
     //前端判断是否为管理员
     var isAdmin = $('input[name="isAdmin"]').val();
+    // 初始化列表事件
     function init_events(ele) {
         ele.each(function () {
-            // create an Event Object
             var eventObject = {
                 title: $.trim($(this).text()), // use the element's text as the event title
                 id: $(this).attr('id'),
-                user_id: id,
-                allDay:true
+                user_id: id
             }
             // store the Event Object in the DOM element so we can get to it later
             $(this).data('eventObject', eventObject);
@@ -23,11 +21,45 @@ $(function () {
             });
         })
     }
+
     init_events($('#external-events div.external-event'));
+
+    // /**
+    //  * ajax请求
+    //  */
+    // function ajaxRequests(requestType, ajaxUrl,data) {
+    //     $.ajax({
+    //         type: requestType,
+    //         dataType: 'json',
+    //         url: ajaxUrl,
+    //         data: data,
+    //         success: function (result) {
+    //             if (result.statusCode === 200) {
+    //                 // switch(requestType) {
+    //                 //     case 'POST': obj.reset(); break;
+    //                 //     case 'DELETE': obj.remove(); break;
+    //                 //     default: break;
+    //                 //}
+    //             }else {
+    //                 revertFunc();//外部不能调用
+    //             }
+    //             page.inform(
+    //                 '操作结果', result.message,
+    //                 result.statusCode === 200 ? page.success : page.failure
+    //             );
+    //             return false;
+    //         },
+    //         error: function (e) {
+    //             var obj = JSON.parse(e.responseText);
+    //             page.inform('出现异常', obj['message'], page.failure);
+    //         }
+    //     });
+    // }
+    //
     /**
      * 初始化日历事件
      */
-    $('#calendar').fullCalendar({
+        $('#calendar').fullCalendar({
         header: {
             left: 'prev,next today',
             center: 'title',
@@ -40,17 +72,16 @@ $(function () {
             day: 'day'
         },
         eventLimit: true,
+        events: '../events/calendar_events/' + id,
         editable: true,
-        events: './calendar_events/' + id,
+        droppable: true, // this allows things to be dropped onto the calendar !!!
+
         /**
          * 拖动插入
          */
-        droppable: true, // this allows things to be dropped onto the calendar !!!
         drop: function (date) {
             var originalEventObject = $(this).data('eventObject');
             var copiedEventObject = $.extend({}, originalEventObject);
-
-            // console.log(copiedEventObject);
             //弹窗显示表单
             $('#modal-create-event').modal({backdrop: true});
             //定义一个参数判断是否删除拖动的这个列表
@@ -59,12 +90,12 @@ $(function () {
                 isRemoveList = true;
                 $(this).remove();
             }
+
             copiedEventObject.isRemoveList = isRemoveList;
             //初始化表单中的开始时间和结束时间
             $(".start-datepicker").val(moment(date).format('YYYY-MM-DD HH:mm:ss'));
             $(".end-datepicker").val(moment(date).format('YYYY-MM-DD HH:mm:ss'));
-            //获取一个开始时间让拖动固定到日历上
-            copiedEventObject.start = moment(date).format('YYYY-MM-DD HH:mm:ss');
+
             copiedEventObject._token = $('#csrf_token').attr('content');
             //调用日期时间选择器，格式化时间
             $(".start-datepicker").datetimepicker({
@@ -80,14 +111,17 @@ $(function () {
                 $.ajax({
                     type: 'POST',
                     dataType: 'json',
-                    url: './drag_events',
+                    url: '../events/drag_events',
                     data: copiedEventObject,
                     success: function (result) {
                         if (result.statusCode === 200) {
-
                             //重新获取events
                             $('#calendar').fullCalendar('refetchEvents');
                         }
+                        page.inform(
+                            '操作结果', result.message,
+                            result.statusCode === 200 ? page.success : page.failure
+                        );
                     }
                 });
             });
@@ -95,57 +129,64 @@ $(function () {
 
         /**
          * 日程事件单击事件
-         * @param calEvent
          * @returns {boolean}
+         * @param event
          */
         eventClick: function (event) {
-
             $.ajax({
                 type: 'GET',
                 dataType: 'json',
-                url: './edit/' + event.id,
+                url: '../events/edit/' + event.id,
                 data: {ispublic: event.ispublic, userId: id},
                 success: function (result) {
                     if (result.statusCode === 200) {
-                        $('.show-form').html(result.data);
+                        $('.show-form').html(result.message);
                         $('#confirm-update').on("click", function () {
                             var data = $('#formEventEdit').serialize();
                             data += "&" + "user_id" + "=" + id;
                             $.ajax({
                                 type: 'PUT',
                                 dataType: 'json',
-                                url: './update/' + event.id,
+                                url: '../events/update/' + event.id,
                                 data: data,
                                 success: function (result) {
                                     if (result.statusCode === 200) {
                                         //保存成功
                                     }
+                                    page.inform(
+                                        '操作结果', result.message,
+                                        result.statusCode === 200 ? page.success : page.failure
+                                    );
                                 }
                             });
                         });
-                        $('#confirm-delete').on("click", function () {
-                            alert('确定删除当前日程事件？');
-                            $.ajax({
-                                type: 'DELETE',
-                                url: './delete/' + event.id,
-                                data: {_token: $('#csrf_token').attr('content')},
-                                success: function (result) {
-                                    if (result.statusCode === 200) {
-                                        //删除成功
-                                        $('#calendar').fullCalendar('removeEvents', event.id);
+                        $('#confirm-delete-event').on("click", function () {
+                            var ret = confirm("确定删除当前日程事件？");
+                            if (ret) {
+                                $.ajax({
+                                    type: 'DELETE',
+                                    url: '../events/delete/' + event.id,
+                                    data: {_token: $('#csrf_token').attr('content')},
+                                    success: function (result) {
+                                        if (result.statusCode === 200) {
+                                            $('#calendar').fullCalendar('removeEvents', event.id);
+                                        }
+                                        page.inform(
+                                            '操作结果', result.message,
+                                            result.statusCode === 200 ? page.success : page.failure
+                                        );
                                     }
-                                }
-                            });
+                                });
+                            }
                         });
                     } else {
-                        alert(result.message);
+                        page.inform('提示！', result.message, page.failure);
                         return;
                     }
                     $('#modal-edit-event').modal({backdrop: true});
                 }
             });
             if (event.url) {
-                // window.open(event.url);
                 return false;
             }
         },
@@ -153,15 +194,21 @@ $(function () {
         /**
          * 拖动更新
          * @param event
-         * @param dayDelta
-         * @param minuteDelta
+         * @param delta
          * @param revertFunc
          */
         eventDrop: function (event, delta, revertFunc) {
+            if (isAdmin == 0) {
+                if (event.ispublic === 1) {
+                    alert('此事件需要管理员权限');
+                    revertFunc();
+                    return false;
+                }
+            }
             $.ajax({
                 type: 'POST',
                 dataType: 'json',
-                url: './update_time',
+                url: '../events/update_time',
                 data: {
                     id: event.id,
                     ispublic: event.ispublic,
@@ -172,20 +219,28 @@ $(function () {
                 },
                 success: function (result) {
                     if (result.statusCode === 200) {
-                        //保存成功
-                        // crud.inform('操作结果', result['message'], crud.success);
                     } else {
                         revertFunc();
-                        //crud.inform('操作结果', result['message'], crud.failure);
                     }
+                    page.inform(
+                        '操作结果', result.message,
+                        result.statusCode === 200 ? page.success : page.failure
+                    );
                 }
             });
         },
         eventResize: function (event, delta, revertFunc) {
+            if (isAdmin == 0) {
+                if (event.ispublic === 1) {
+                    alert('此事件需要管理员权限');
+                    revertFunc();
+                    return false;
+                }
+            }
             $.ajax({
                 type: 'POST',
                 dataType: 'json',
-                url: './update_time',
+                url: '../events/update_time',
                 data: {
                     id: event.id,
                     dayDiff: delta._days,
@@ -196,12 +251,14 @@ $(function () {
                 },
                 success: function (result) {
                     if (result.statusCode === 200) {
-                        //保存成功
-                        // crud.inform('操作结果', result['message'], crud.success);
                     } else {
+                        alert(result.message);
                         revertFunc();
-                        //crud.inform('操作结果', result['message'], crud.failure);
                     }
+                    page.inform(
+                        '操作结果', result.message,
+                        result.statusCode === 200 ? page.success : page.failure
+                    );
                 }
             });
         }
@@ -234,12 +291,13 @@ $(function () {
 
         $('#modal-show-event').modal({backdrop: true});
 
-        if(isAdmin == 0){
-            $('.ispublic-form input[name="ispublic"]').attr("disabled",true);
+        if (isAdmin == 0) {
+            $('.ispublic-form input[name="ispublic"]').attr("disabled", true);
         }
+
         $('.ispublic-form input[name="ispublic"]').change(function () {
             //console.log($('input[name="iscourse"]:checked').val());
-            if ($(".iscourse-form").css("display") === "none") {
+            if ($('.ispublic-form  input[name="ispublic"]:checked').val() == 1) {
                 $(".iscourse-form").show();
             } else {
                 $(".iscourse-form").hide();
@@ -248,7 +306,7 @@ $(function () {
 
         $('.iscourse-form input[name="iscourse"]').change(function () {
             //console.log($('input[name="iscourse"]:checked').val());
-            if ($(".educator_id-form").css("display") === "none") {
+            if ($('.iscourse-form input[name="iscourse"]:checked').val() == 1) {
                 $(".educator_id-form").show();
                 $(".subject_id-form").show();
             } else {
@@ -256,9 +314,10 @@ $(function () {
                 $(".subject_id-form").hide();
             }
         });
+
         $('.alertable-form input[name="alertable"]').change(function () {
             //console.log($('input[name="iscourse"]:checked').val());
-            if ($(".alert_mins").css("display") === "none") {
+            if ($('.alertable-form input[name="alertable"]:checked').val() == 1) {
                 $(".alert_mins").show();
             } else {
                 $(".alert_mins").hide();
@@ -271,11 +330,11 @@ $(function () {
             $.ajax({
                 type: 'POST',
                 dataType: 'json',
-                url: './store',
+                url: '../events/store',
                 data: data,
                 success: function (result) {
                     if (result.statusCode === 200) {
-                        var $obj = eval(result.listDate);
+                        var $obj = eval(result.message);
                         event.attr('id', $obj.id);
                         event.html($obj.title);
                         $('#external-events').prepend(event);
@@ -287,42 +346,3 @@ $(function () {
         })
     })
 });
-
-// $('#add-new-event').on("click", function () {
-//     $('#modal-show-event').modal({backdrop: true});
-//     $('.iscourse-from input[name="iscourse"]').change(function () {
-//         //console.log($('input[name="iscourse"]:checked').val());
-//         if ($(".educator_id-from").css("display") === "none") {
-//             $(".educator_id-from").show();
-//             $(".subject_id-from").show();
-//         } else {
-//             $(".educator_id-from").hide();
-//             $(".subject_id-from").hide();
-//         }
-//     });
-//     $('.alertable-from input[name="alertable"]').change(function () {
-//         //console.log($('input[name="iscourse"]:checked').val());
-//         if ($(".alert_mins").css("display") === "none") {
-//             $(".alert_mins").show();
-//         } else {
-//             $(".alert_mins").hide();
-//         }
-//     });
-//
-//     $('#confirm-create').on("click", function () {
-//         var data = $('#formEvent').serialize();
-//         data += "&" + "user_id" + "=" + id;
-//         $.ajax({
-//             type: 'POST',
-//             dataType: 'json',
-//             url: '../store',
-//             data: data,
-//             success: function (result) {
-//                 if (result.statusCode === 200) {
-//                     window.location.reload();
-//                 }
-//
-//             }
-//         });
-//     })
-// });

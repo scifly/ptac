@@ -56,21 +56,14 @@
                 'items' => $grades,
                 'selectedItems' => isset($selectedGrades) ? $selectedGrades : []
             ])
-                {{--@include('partials.multiple_select', [--}}
-                    {{--'label' => '包含专业',--}}
-                    {{--'for' => 'major_ids',--}}
-                    {{--'items' => $majors,--}}
-                    {{--'selectedItems' => isset($selectedMajors) ? $selectedMajors : []--}}
-                {{--])--}}
-            @include('partials.enabled', [
-            'label' => '是否为副科',
-            'for' => 'isaux',
-            'value' => isset($subject['isaux'])?$subject['isaux']:'', ])
-            @include('partials.enabled', [
-            'label' => '是否启用',
-            'for' => 'enabled',
-            'value' => isset($subject['enabled'])?$subject['enabled']:''
-            ])
+            {{--@include('partials.multiple_select', [--}}
+                {{--'label' => '包含专业',--}}
+                {{--'for' => 'major_ids',--}}
+                {{--'items' => $majors,--}}
+                {{--'selectedItems' => isset($selectedMajors) ? $selectedMajors : []--}}
+            {{--])--}}
+            @include('partials.enabled', ['enabled' => isset($subject['isaux']) ? $subject['isaux']: '', 'label' => '是否为副科'])
+            @include('partials.enabled', ['enabled' => isset($subject['enabled']) ? $subject['enabled'] : ''])
         </div>
     </div>
     @include('partials.form_buttons')

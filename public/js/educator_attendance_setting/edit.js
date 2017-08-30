@@ -1,1 +1,1 @@
-$(crud.edit('formEducatorAttendanceSetting','educatorAttendanceSetting'));
+$(crud.edit('formEducatorAttendanceSetting','educator_attendance_settings'));

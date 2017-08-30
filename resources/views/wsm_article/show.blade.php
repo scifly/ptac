@@ -28,7 +28,7 @@
         <dt>轮播图：</dt>
         @foreach($medias as $v)
             <dd>
-                <img src="../../..{{$v->path}}">
+                <img src="../../{{$v->path}}">
             </dd>
         @endforeach
         <br/>

@@ -35,7 +35,7 @@ class DepartmentController extends Controller
     }
 
     /**
-     * 添加新部门.
+     * 保存新创建的部门记录.
      * @param DepartmentRequest $request
      * @return \Illuminate\Http\JsonResponse
      */

@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class EaSettingRequest extends FormRequest
+class EducatorAttendanceSettingRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -13,7 +13,7 @@ class EaSettingRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -26,5 +26,19 @@ class EaSettingRequest extends FormRequest
         return [
             //
         ];
+    }
+
+    protected function prepareForValidation() {
+
+        $input = $this->all();
+        dd($input);
+        if (isset($input['inorout']) && $input['inorout'] === 'on') {
+            $input['inorout'] = 1;
+        }
+        if (!isset($input['inorout'])) {
+            $input['inorout'] = 0;
+        }
+
+        $this->replace($input);
     }
 }

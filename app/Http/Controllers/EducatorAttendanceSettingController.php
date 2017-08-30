@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\EaSettingRequest;
+use App\Http\Requests\EducatorAttendanceSettingRequest;
 use App\Models\EducatorAttendanceSetting;
 use Illuminate\Support\Facades\Request;
 
-class EaSettingController extends Controller
+class EducatorAttendanceSettingController extends Controller
 {
     protected $educatorAttendanceSetting;
 
@@ -17,11 +17,12 @@ class EaSettingController extends Controller
     }
 
     /**
-     * 显示教职员工考勤列表.
+     * 显示教职员工考勤设置列表.
      * @return \Illuminate\Http\Response
      */
     public function index()
     {
+
         if (Request::get('draw')) {
             return response()->json($this->educatorAttendanceSetting->datatable());
         }
@@ -29,22 +30,26 @@ class EaSettingController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * 显示创建教职工考勤设置表单.
      *
      * @return \Illuminate\Http\Response
      */
     public function create()
     {
-        //
+        return $this->output(__METHOD__);
     }
 
     /**
-     * Store a newly created resource in storage.
-     * @param EaSettingRequest $request
+     * 保存新创建的教职工考勤设置记录.
+     * @param EducatorAttendanceSettingRequest $request
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function store(EaSettingRequest $request)
+    public function store(EducatorAttendanceSettingRequest $request)
     {
-        //
+        if ($this->educatorAttendanceSetting->existed($request)) {
+            return $this->fail('已经有此记录');
+        }
+        return $this->educatorAttendanceSetting->create($request->all()) ? $this->succeed() : $this->fail();
     }
 
     /**

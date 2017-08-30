@@ -57,12 +57,17 @@
                     {!! Form::label('gender', '女') !!}
                 </div>
             </div>
-            <div class="form-group">
-                {!! Form::label('group_id', '所属组别',['class' => 'col-sm-4 control-label']) !!}
-                <div class="col-sm-2">
-                    {!! Form::select('group_id', $groups, null, ['class' => 'form-control']) !!}
-                </div>
-            </div>
+            {{--<div class="form-group">--}}
+                {{--{!! Form::label('group_id', '所属组别',['class' => 'col-sm-4 control-label']) !!}--}}
+                {{--<div class="col-sm-2">--}}
+                    {{--{!! Form::select('group_id', $groups, null, ['class' => 'form-control']) !!}--}}
+                {{--</div>--}}
+            {{--</div>--}}
+            @include('partials.single_select', [
+                'label' => '所属组别',
+                'id' => 'group_id',
+                'items' => $groups
+            ])
             <div class="form-group">
                 {!! Form::label('email', '电子邮箱',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-2">
@@ -86,25 +91,8 @@
                     ]) !!}
                 </div>
             </div>
-            {{--<div class="form-group">--}}
-            {{--<div class="col-sm-3 col-sm-offset-4">--}}
-            {{--{!! Form::radio('enabled', '1', true) !!}--}}
-            {{--{!! Form::label('enabled', '启用') !!}--}}
-            {{--{!! Form::radio('enabled', '0') !!}--}}
-            {{--{!! Form::label('enabled', '禁用') !!}--}}
-            {{--</div>--}}
-            {{--</div>--}}
             @include('partials.enabled', ['enabled' => $user['enabled']])
         </div>
     </div>
     @include('partials.form_buttons')
-    {{--<div class="box-footer">--}}
-    {{--button--}}
-    {{--<div class="form-group">--}}
-    {{--<div class="col-sm-3 col-sm-offset-4">--}}
-    {{--{!! Form::submit('保存', ['class' => 'btn btn-primary pull-left', 'id' => 'save']) !!}--}}
-    {{--{!! Form::reset('取消', ['class' => 'btn btn-default pull-right', 'id' => 'cancel']) !!}--}}
-    {{--</div>--}}
-    {{--</div>--}}
-    {{--</div>--}}
 </div>

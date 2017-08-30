@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Http\Requests\WsmArticleRequest;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -57,7 +58,7 @@ class WsmArticle extends Model {
         return $this->belongsTo('App\Models\WapSiteModule', 'wsm_id', 'id');
     }
 
-    public function store(WapSiteModuleRequest $request)
+    public function store(WsmArticleRequest $request)
     {
         try {
             $exception = DB::transaction(function () use ($request) {
@@ -71,7 +72,7 @@ class WsmArticle extends Model {
         }
     }
 
-    public function modify(WapSiteRequest $request, $id)
+    public function modify(WsmArticleRequest $request, $id)
     {
         $wapSite = $this->find($id);
         if (!$wapSite) {
@@ -91,7 +92,7 @@ class WsmArticle extends Model {
     /**
      * @param $request
      */
-    private function removeMedias(WapSiteRequest $request)
+    private function removeMedias(WsmArticleRequest $request)
     {
         //删除原有的图片
         $mediaIds = $request->input('del_ids');

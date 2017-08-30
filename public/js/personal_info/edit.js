@@ -1,4 +1,4 @@
-$(crud.edit('formPersonalInfo'));
+$(crud.edit('formPersonalInfo','personal_infos'));
 
 $(function () {
     $('#avatar_upload').change(function () {
@@ -7,7 +7,7 @@ $(function () {
         formData.append('_token', $('#csrf_token').attr('content'));
         var id = $('input[name=avatar_url]').attr("id");
         $.ajax({
-            url: "../upload_ava/" + id,
+            url: "../personal_infos/upload_ava/" + id,
             data: formData,
             type: 'POST',
             dataType: 'json',
@@ -16,12 +16,13 @@ $(function () {
             cache: false,
             success: function (data) {
                 if (data.statusCode === 200) {
-                    $('#avatar_thumb_img').attr('src', '/ptac/storage/app/avauploads/' + data.fileName);
-                    $('input[name=avatar_url]').val(data.fileName);
-                    crud.inform('更新头像', data.message, crud.success);
-                }else{
-                    crud.inform('出现异常', data.message, crud.failure);
+                    $('#avatar_thumb_img').attr('src', '/ptac/storage/app/avauploads/' + data.message);
+                    $('input[name=avatar_url]').val(data.message);
                 }
+                page.inform(
+                    '操作结果',  data.statusCode === 200 ? '更新头像成功' : '更新头像失败',
+                    data.statusCode === 200 ? page.success : page.failure
+                );
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
                 var number = XMLHttpRequest.status;

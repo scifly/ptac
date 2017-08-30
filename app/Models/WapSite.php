@@ -34,8 +34,7 @@ use Mockery\Exception;
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\WapSiteModule[] $wapsiteModules
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\WapSiteModule[] $wapSiteModules
  */
-class WapSite extends Model
-{
+class WapSite extends Model {
     //
     protected $fillable = [
         'id',
@@ -47,22 +46,20 @@ class WapSite extends Model
         'enabled',
     ];
 
-    
-    public function wapSiteModules() {
-        
-        return $this->hasMany('App\Models\WapSiteModule');
-        
-    }
-    
-    public function school() {
-        
-        return $this->belongsTo('App\Models\School');
-        
-    }
-    
 
-    public function store(WapSiteRequest $request)
-    {
+    public function wapSiteModules() {
+
+        return $this->hasMany('App\Models\WapSiteModule');
+
+    }
+
+    public function school() {
+
+        return $this->belongsTo('App\Models\School');
+
+    }
+
+    public function store(WapSiteRequest $request) {
         try {
             $exception = DB::transaction(function () use ($request) {
                 //删除原有的图片
@@ -75,8 +72,7 @@ class WapSite extends Model
         }
     }
 
-    public function modify(WapSiteRequest $request, $id)
-    {
+    public function modify(WapSiteRequest $request, $id) {
         $wapSite = $this->find($id);
         if (!$wapSite) {
             return false;
@@ -95,13 +91,11 @@ class WapSite extends Model
     /**
      * @param $request
      */
-    private function removeMedias(WapSiteRequest $request)
-    {
+    private function removeMedias(WapSiteRequest $request) {
         //删除原有的图片
         $mediaIds = $request->input('del_ids');
         if ($mediaIds) {
             $medias = Media::whereIn('id', $mediaIds)->get(['id', 'path']);
-
             foreach ($medias as $media) {
                 $paths = explode("/", $media->path);
                 Storage::disk('uploads')->delete($paths[5]);
@@ -114,8 +108,7 @@ class WapSite extends Model
     /**
      * @return array
      */
-    public function datatable()
-    {
+    public function datatable() {
 
         $columns = [
             ['db' => 'WapSite.id', 'dt' => 0],

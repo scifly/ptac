@@ -1,1 +1,1 @@
-$(crud.index('educatorAttendanceSetting'));
+$(crud.index('educator_attendance_settings'));

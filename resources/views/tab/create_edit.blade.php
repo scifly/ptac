@@ -72,7 +72,7 @@
                 'label' => '所属菜单',
                 'for' => 'menu_ids',
                 'items' => $menus,
-                'selectedItems' => $selectedMenus
+                'selectedItems' => isset($selectedMenus) ? $selectedMenus : []
             ]);
             @include('partials.enabled', ['enabled' => $tab['enabled']])
         </div>

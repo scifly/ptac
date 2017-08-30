@@ -69,10 +69,163 @@ class Event extends Model {
         'updated_at',
         'enabled'
     ];
-    public function educator(){
+
+    public function educator() {
         return $this->belongsTo('App\Models\Educator');
     }
-    public function subject(){
+
+    public function subject() {
         return $this->belongsTo('APP\Models\Subject');
     }
+
+
+    /**
+     * 显示日历事件
+     */
+    public function showCalendar($userId) {
+        //通过userId找出educator_id
+        $educator = Educator::where('user_id', $userId)->first();
+        //先选出公开事件中 非课程的事件
+        $pubNoCourseEvents = $this
+            ->where('ispublic', 1)
+            ->where('iscourse', 0)
+            ->get()->toArray();
+        //选出公开事件中 课程事件
+        $pubCourEvents = $this
+            ->where('ispublic', 1)
+            ->where('iscourse', 1)
+            ->where('educator_id', $educator->id)
+            ->get()->toArray();
+        //再选个人未公开事件
+        $perEvents = $this
+            ->where('User_id', $userId)
+            ->where('ispublic', 0)
+            ->where('enabled', '1')
+            ->get()->toArray();
+        //全部公共事件
+        $pubEvents = $this->where('ispublic', 1)->get()->toArray();
+        //如果是管理员
+        if ($this->getRole($userId)) {
+            return response()->json(array_merge($pubEvents, $perEvents));
+        }
+        //如果是用户
+        return response()->json(array_merge($pubNoCourseEvents, $perEvents, $pubCourEvents));
+    }
+
+    /**
+     * 判断当前用户权限
+     */
+    public function getRole($userId) {
+        $role = User::find($userId)->group;
+        return $role->name == '管理员' ? true : false;
+    }
+
+    /**
+     * 验证用户添加事件是否有重复
+     */
+    public function isRepeatTimeUser($userId, $start, $end, $id = null) {
+        //通过userId 找到educator_id
+        $educator = Educator::where('user_id', $userId)->first();
+        //验证是否和课表时间有冲突
+        $event = $this
+            ->where('id', '<>', $id)
+            ->where('educator_id', $educator->id)
+            ->where('start', '<=', $start)
+            ->where('end', '>', $start)
+            ->first();
+        if (empty($event)) {
+            $event = $this
+                ->where('id', '<>', $id)
+                ->where('educator_id', $educator->id)
+                ->where('start', '>=', $start)
+                ->where('start', '<', $end)
+                ->first();
+        }
+        //验证个人时间是否有冲突和其余除开课表的公共事件是否有冲突
+        if (empty($event)) {
+            $event = $this
+                ->where('id', '<>', $id)
+                ->where('user_id', $userId)
+                ->where('start', '<=', $start)
+                ->where('end', '>', $start)
+                ->first();
+        }
+        if (empty($event)) {
+            $event = $this
+                ->where('id', '<>', $id)
+                ->where('user_id', $userId)
+                ->where('start', '>=', $start)
+                ->where('start', '<', $end)
+                ->first();
+        }
+        if (empty($event)) {
+            $event = $this
+                ->where('id', '<>', $id)
+                ->where('ispublic', 1)
+                ->where('iscourse', 0)
+                ->where('start', '<=', $start)
+                ->where('end', '>', $start)
+                ->first();
+        }
+        if (empty($event)) {
+            $event = $this
+                ->where('id', '<>', $id)
+                ->where('ispublic', 1)
+                ->where('iscourse', 0)
+                ->where('start', '>=', $start)
+                ->where('end', '<', $end)
+                ->first();
+        }
+        return !empty($event);
+    }
+
+    /**
+     * 验证管理员添加事件是否有重复
+     */
+    public function isRepeatTimeAdmin($educatorId, $start, $end, $id = null) {
+        $event = $this
+            ->where('id', '<>', $id)
+            ->where('educator_id', $educatorId)
+            ->where('start', '<=', $start)
+            ->where('end', '>=', $start)
+            ->first();
+        if (empty($event)) {
+            $event = $this
+                ->where('id', '<>', $id)
+                ->where('educator_id', $educatorId)
+                ->where('start', '>=', $start)
+                ->where('start', '<=', $end)
+                ->first();
+        }
+        if (empty($event)) {
+            $event = $this
+                ->where('id', '<>', $id)
+                ->where('ispublic', 1)
+                ->where('iscourse', 0)
+                ->where('start', '<=', $start)
+                ->where('end', '>=', $start)
+                ->first();
+        }
+        if (empty($event)) {
+            $event = $this
+                ->where('id', '<>', $id)
+                ->where('ispublic', 1)
+                ->where('iscourse', 0)
+                ->where('start', '<=', $start)
+                ->where('end', '>=', $start)
+                ->first();
+        }
+        return !empty($event);
+    }
+
+    /**
+     * 计算拖动后的时间差
+     */
+    public function timeDiff($day, $hour, $minute) {
+        $days = $day * 24 * 60 * 60;
+        $hours = $hour * 60 * 60;
+        $minutes = $minute * 60;
+        return $diffTime = $days + $hours + $minutes;
+    }
+
 }

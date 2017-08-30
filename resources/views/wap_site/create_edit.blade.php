@@ -19,12 +19,17 @@
                     ]) !!}
                 </div>
             </div>
-            <div class="form-group">
-                {!! Form::label('school_id', '所属学校',['class' => 'col-sm-2 control-label']) !!}
-                <div class="col-sm-2">
-                    {!! Form::select('school_id', $schools, null, ['class' => 'form-control']) !!}
-                </div>
-            </div>
+            {{--<div class="form-group">--}}
+            {{--{!! Form::label('school_id', '所属学校',['class' => 'col-sm-2 control-label']) !!}--}}
+            {{--<div class="col-sm-2">--}}
+            {{--{!! Form::select('school_id', $schools, null, ['class' => 'form-control']) !!}--}}
+            {{--</div>--}}
+            {{--</div>--}}
+            @include('partials.single_select', [
+                'label' => '所属学校',
+                'id' => 'school_id',
+                'items' => $schools
+            ])
             <div class="form-group">
                 {!! Form::label('media_ids', '轮播图',['class' => 'col-sm-2 control-label']) !!}
                 <div class="col-sm-10">
@@ -32,7 +37,7 @@
                         @if(isset($medias))
                             @foreach($medias as $key => $value)
                                 <div class="img-item">
-                                    <img src="../../../{{$value->path}}" id="{{$value->id}}">
+                                    <img src="../../{{$value->path}}" id="{{$value->id}}">
                                     <input type="hidden" name="media_ids[]" value="{{$value->id}}"/>
                                     <div class="del-mask">
                                         <i class="delete fa fa-trash"></i>
@@ -44,17 +49,6 @@
                     <a class="btn btn-primary" data-toggle="modal" data-target="#modalPic">上传</a>
                 </div>
             </div>
-            {{--<div class="form-group">--}}
-                {{--{!! Form::label('enabled', '是否启用', [--}}
-                    {{--'class' => 'col-sm-2 control-label'--}}
-                {{--]) !!}--}}
-                {{--<div class="col-sm-6" style="margin-top: 5px;">--}}
-                    {{--<input id="enabled" type="checkbox" name="enabled" data-render="switchery"--}}
-                           {{--data-theme="default" data-switchery="true"--}}
-                           {{--@if(!empty($wapsite['enabled'])) checked @endif--}}
-                           {{--data-classname="switchery switchery-small"/>--}}
-                {{--</div>--}}
-            {{--</div>--}}
             @include('partials.enabled', ['enabled' => $wapsite['enabled']])
         </div>
     </div>
