@@ -52,4 +52,40 @@ class EducatorAttendanceSetting extends Model {
     public function schools() {
         return $this->belongsTo('App\Models\School');
     }
+
+    public function datatable() {
+
+        $columns = [
+            ['db' => 'EducatorAttendanceSetting.id', 'dt' => 0],
+            ['db' => 'EducatorAttendanceSetting.name', 'dt' => 1],
+            ['db' => 'EducatorAttendanceSetting.school_id ', 'dt' => 2],
+            ['db' => 'EducatorAttendanceSetting.start', 'dt' => 3],
+            ['db' => 'EducatorAttendanceSetting.end', 'dt' => 4],
+            ['db' => 'EducatorAttendanceSetting.inorout', 'dt' => 5],
+            ['db' => 'EducatorAttendanceSetting.created_at', 'dt' => 6],
+            [
+                'db' => 'EducatorAttendanceSetting.updated_at', 'dt' => 8,
+                'formatter' => function ($d, $row) {
+                    return Datatable::dtOps($this, $d, $row);
+                }
+            ],
+
+        ];
+
+        $joins = [
+            [
+                'table' => 'schools',
+                'alias' => 'School',
+                'type' => 'INNER',
+                'conditions' => [
+                    'School.id = EducatorAttendanceSetting.school_id'
+                ]
+            ],
+
+
+        ];
+
+        return Datatable::simple($this, $columns,$joins);
+
+    }
 }

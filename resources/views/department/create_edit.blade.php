@@ -8,21 +8,21 @@
                 {{ Form::hidden('id', null, ['id' => 'id', 'value' => $department['id']]) }}
             @endif
             <div class="form-group">
-                {!! Form::label('custodian_id', '监护人姓名',['class' => 'col-sm-4 control-label']) !!}
+                {!! Form::label('name', '名称',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-2">
-                    {!! Form::select('custodian_id', $custodianName, null, ['class' => 'form-control']) !!}
+                    {!! Form::text('name', null, [
+                        'class' => 'form-control',
+                        'placeholder' => '不能超过20个汉字',
+                        'data-parsley-required' => 'true',
+                        'data-parsley-maxlength' => '20',
+                        'data-parsley-minlength' => '2',
+                    ]) !!}
                 </div>
             </div>
             <div class="form-group">
-                {!! Form::label('student_id', '学生姓名',['class' => 'col-sm-4 control-label']) !!}
+                {!! Form::label('remark', '备注',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-2">
-                    {!! Form::select('student_id', $studentName, null, ['class' => 'form-control']) !!}
-                </div>
-            </div>
-            <div class="form-group">
-                {!! Form::label('relationship', '关系',['class' => 'col-sm-4 control-label']) !!}
-                <div class="col-sm-2">
-                    {!! Form::text('relationship', null, [
+                    {!! Form::text('remark', null, [
                     'class' => 'form-control',
                     'placeholder' => '不能少于2个汉字',
                     'data-parsley-required' => 'true',
@@ -32,16 +32,36 @@
                 </div>
             </div>
             <div class="form-group">
-                <label for="enabled" class="col-sm-3 control-label">
-                    是否启用
-                </label>
-                <div class="col-sm-6" style="margin-top: 5px;">
-                    <input id="enabled" type="checkbox" name="enabled" data-render="switchery"
-                           data-theme="default" data-switchery="true"
-                           @if(!empty($custodianStudent['enabled'])) checked @endif
-                           data-classname="switchery switchery-small"/>
+                {!! Form::label('order', '次序值',['class' => 'col-sm-4 control-label']) !!}
+                <div class="col-sm-2">
+                    {!! Form::text('order', null, [
+                    'class' => 'form-control',
+                    'placeholder' => '不能少于2个汉字',
+                    'data-parsley-required' => 'true',
+                    'data-parsley-minlength' => '2',
+
+                    ]) !!}
                 </div>
             </div>
+                @include('partials.single_select', [
+                      'label' => '所属父类',
+                      'id' => 'parent_id',
+                      'items' => $parents
+                  ])
+                @include('partials.single_select', [
+                       'label' => '所属企业',
+                       'id' => 'corp_id',
+                       'items' =>$corps
+                   ])
+                @include('partials.single_select', [
+                      'label' => '所属学校',
+                      'id' => 'school_id',
+                      'items' =>$schools
+                  ])
+                @include('partials.enabled', [
+                'label' => '是否启用',
+                'for' => 'enabled',
+                'value' => isset($department['enabled'])?$department['enabled']:''])
         </div>
     </div>
     @include('partials.form_buttons')

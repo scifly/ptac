@@ -35,11 +35,13 @@ class DepartmentController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * 添加新部门.
      * @param DepartmentRequest $request
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(DepartmentRequest $request)
     {
+
         if ($this->department->existed($request)) {
             return $this->fail('已经有此记录');
         }
@@ -71,7 +73,7 @@ class DepartmentController extends Controller
         $department= $this->department->find($id);
         if (!$department) { return $this->notFound(); }
         return $this->output(__METHOD__, [
-            'deparment' => $department,
+            'department' => $department,
         ]);
     }
 

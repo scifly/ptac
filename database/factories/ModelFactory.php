@@ -355,6 +355,16 @@ $factory->define(App\Models\Corp::class, function (Faker\Generator $faker) {
     ];
 });
 
+$factory->define(App\Models\EducatorAttendanceSetting::class, function (Faker\Generator $faker) {
+    return [
+        'name' => $faker->name,
+        'school_id' => rand(1,20),
+        'start' =>date('Y-m-d H:i:s',time()),
+        'end' => date('Y-m-d H:i:s',strtotime("+8 hours")),
+        'inorout' =>rand(0,1),
+
+    ];
+});
 
 
 
