@@ -66,7 +66,6 @@ class Grade extends Model {
         
     }
     
-    public function educators($educatorIds)
     
     public function datatable() {
         

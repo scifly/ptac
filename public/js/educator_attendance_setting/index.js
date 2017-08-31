@@ -1,0 +1,1 @@
+$(crud.index('educator_attendance_settings'));

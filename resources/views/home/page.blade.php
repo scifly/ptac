@@ -20,6 +20,9 @@
     <link rel="stylesheet" href="{{ URL::asset('js/plugins/switchery/switchery.min.css') }}">
     <link rel="stylesheet" href="{{ URL::asset('js/plugins/datatables/datatables.min.css') }}">
     <link rel="stylesheet" href="{{ URL::asset('css/wapSite.css') }}">
+    {{--日历--}}
+    <link rel="stylesheet" href="{{ URL::asset('js/plugins/fullcalendar/css/fullcalendar.min.css') }}">
+    <link rel="stylesheet" href="{{ URL::asset('js/plugins/fullcalendar/css/jquery-ui.min.css') }}">
     {{--审核详情--}}
     <link rel="stylesheet" href="{{ URL::asset('css/procedure_info.css') }}">
     {{--上传--}}
@@ -439,6 +442,11 @@
 <script src="{{ URL::asset('js/plugins/fileinput/js/fileinput.min.js') }}"></script>
 <script src="{{ URL::asset('js/plugins/fileinput/js/locales/zh.js') }}"></script>
 <script src="{{ URL::asset('js/plugins/fileinput/themes/explorer/theme.js') }}"></script>
+{{--日历--}}
+<script src="{{ URL::asset('js/plugins/fullcalendar/js/jquery-ui.min.js') }}"></script>
+<script src="{{ URL::asset('js/plugins/fullcalendar/js/jquery-ui-timepicker-addon.js') }}"></script>
+<script src="{{ URL::asset('js/plugins/fullcalendar/js/moment.min.js') }}"></script>
+<script src="{{ URL::asset('js/plugins/fullcalendar/js/fullcalendar.min.js') }}"></script>
 <!-- AdminLTE for demo purposes -->
 <script src="{{ URL::asset('js/demo.js') }}"></script>
 {{--@isset($ued)--}}

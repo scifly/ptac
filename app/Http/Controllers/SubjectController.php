@@ -55,7 +55,6 @@ class SubjectController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(SubjectRequest $request) {
-        
         if ($this->subject->existed($request)) {
             return $this->fail('已经有此记录');
         }

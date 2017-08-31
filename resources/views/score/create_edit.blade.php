@@ -4,24 +4,24 @@
     </div>
     <div class="box-body">
         <div class="form-horizontal">
-            <div class="form-group">
-                {!! Form::label('student_id', '学号',['class' => 'col-sm-4 control-label']) !!}
-                <div class="col-sm-3">
-                    {!! Form::select('student_id', $students, null, ['class' => 'form-control']) !!}
-                </div>
-            </div>
-            <div class="form-group">
-                {!! Form::label('subject_id', '科目名称',['class' => 'col-sm-4 control-label']) !!}
-                <div class="col-sm-3">
-                    {!! Form::select('subject_id', $subjects, null, ['class' => 'form-control']) !!}
-                </div>
-            </div>
-            <div class="form-group">
-                {!! Form::label('exam_id', '考试名称',['class' => 'col-sm-4 control-label']) !!}
-                <div class="col-sm-3">
-                    {!! Form::select('exam_id', $exams, null, ['class' => 'form-control']) !!}
-                </div>
-            </div>
+            @if (!empty($score['id']))
+                {{ Form::hidden('id', null, ['id' => 'id', 'value' => $score['id']]) }}
+            @endif
+            @include('partials.single_select', [
+            'label' => '学号',
+            'id' => 'student_id',
+            'items' => $students
+        ])
+            @include('partials.single_select', [
+            'label' => '科目名称',
+            'id' => 'subject_id',
+            'items' => $subjects
+        ])
+            @include('partials.single_select', [
+            'label' => '考试名称',
+            'id' => 'exam_id',
+            'items' => $exams
+        ])
             <div class="form-group">
                 {!! Form::label('score', '分数',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-3">
@@ -34,28 +34,8 @@
                         ]) !!}
                 </div>
             </div>
-            {{--<div class="form-group">--}}
-                {{--{!! Form::label('enabled', '是否启用', [--}}
-                    {{--'class' => 'col-sm-4 control-label'--}}
-                {{--]) !!}--}}
-                {{--<div class="col-sm-6" style="margin-top: 5px;">--}}
-                    {{--<input id="enabled" type="checkbox" name="enabled" data-render="switchery"--}}
-                           {{--data-theme="default" data-switchery="true"--}}
-                           {{--@if(!empty($score['enabled'])) checked @endif--}}
-                           {{--data-classname="switchery switchery-small"/>--}}
-                {{--</div>--}}
-            {{--</div>--}}
-            @include('partials.enabled', ['enabled' => $score['enabled']])
+            @include('partials.enabled', ['enabled' => isset($score['enabled']) ? $score['enabled'] : ''])
         </div>
     </div>
-    {{--<div class="box-footer">--}}
-        {{--button--}}
-        {{--<div class="form-group">--}}
-            {{--<div class="col-sm-3 col-sm-offset-4">--}}
-                {{--{!! Form::submit('保存', ['class' => 'btn btn-primary pull-left', 'id' => 'save']) !!}--}}
-                {{--{!! Form::reset('取消', ['class' => 'btn btn-default pull-right', 'id' => 'cancel']) !!}--}}
-            {{--</div>--}}
-        {{--</div>--}}
-    {{--</div>--}}
     @include('partials.form_buttons')
 </div>

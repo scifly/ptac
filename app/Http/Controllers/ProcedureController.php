@@ -93,6 +93,7 @@ class ProcedureController extends Controller {
         if ($this->procedure->existed($request, $id)) {
             return $this->fail('已经有此记录');
         }
+
         return $procedure->update($request->all()) ? $this->succeed() : $this->fail();
     
     }

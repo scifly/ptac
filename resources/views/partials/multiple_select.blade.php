@@ -1,8 +1,8 @@
 <div class="form-group">
-    <label for="{{ $for }}" class="col-sm-3 control-label">
+    <label for="{{ $for }}" class="col-sm-4 control-label">
         {{ $label }}
     </label>
-    <div class="col-sm-6">
+    <div class="col-sm-3">
         <select multiple name="{{ $for }}[]" id="{{ $for }}" style="width: 100%;">
             @foreach ($items as $key => $value)
                 @if(isset($selectedItems))

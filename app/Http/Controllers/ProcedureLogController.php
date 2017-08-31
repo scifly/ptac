@@ -34,19 +34,6 @@ class ProcedureLogController extends Controller {
         }
         return $this->output(__METHOD__);
 
-//        $userId = 6;
-//        //查询我发布的流程最后一条log记录
-//        $ids = $this->procedureLog->select(DB::raw('max(procedure_logs.id) as id'))
-//            ->where('initiator_user_id',$userId)
-//            ->groupBy('first_log_id')
-//            ->pluck('id')->toArray();
-//        //根据IDs查询数据
-//        $data = $this->procedureLog
-//            ->with('procedure', 'procedure_step')
-//            ->whereIn('id', $ids)
-//            ->orderBy('id', 'desc')
-//            ->get();
-//        return response()->json($data);
     }
 
 
@@ -62,33 +49,28 @@ class ProcedureLogController extends Controller {
                 ->groupBy('first_log_id')
                 ->pluck('id')
                 ->toArray();
-            $where = 'ProcedureLog.id in (' . implode(',', $ids) . ') and FIND_IN_SET('. $userId .',ProcedureStep.related_user_ids)';
+            $where = 'ProcedureLog.id in (' . implode(',', $ids) . ') and FIND_IN_SET('. $userId .',ProcedureStep.approver_user_ids)';
 
             return response()->json($this->procedureLog->datatable($where));
 
         }
         return $this->output(__METHOD__);
 
-//        $user_id = 3;
-//        //查询待审核的流程最后一条log记录
-//        $ids = $this->procedureLog->select(DB::raw('max(procedure_logs.id) as id'))
-//            ->where('step_status',2)
-//            ->groupBy('first_log_id')
-//            ->pluck('id')
-//            ->toArray();
-//        //根据IDs查询数据
-//        $data = $this->procedureLog
-//            ->with('procedure', 'procedure_step', 'initiator_user')
-//            ->whereIn('procedure_logs.id', $ids)
-//            ->orderBy('id', 'desc')
-//            ->get();
-//        $result = [];
-//        foreach ($data as $val){
-//            if(in_array($user_id, explode(',',$val->procedure_step->approver_user_ids))){
-//                $result[]=$val;
-//            }
-//        }
-//        return response()->json($result);
+    }
+
+
+    /**
+     * 相关流程列表
+     */
+    public function related(){
+        if (Request::get('draw')) {
+            $userId = 3;
+            $where = '(FIND_IN_SET('. $userId .',ProcedureStep.related_user_ids) or FIND_IN_SET('. $userId .',ProcedureStep.approver_user_ids))';
+            return response()->json($this->procedureLog->datatable($where));
+
+        }
+        return $this->output(__METHOD__);
+
     }
 
     /**

@@ -4,15 +4,15 @@
     </div>
     <div class="box-body">
         <div class="form-horizontal">
-            @if (!empty($tab['id']))
-                {{ Form::hidden('id', null, ['id' => 'id', 'value' => $tab['id']]) }}
+            @if (isset($article) && !empty($article['id']))
+                {{ Form::hidden('id', null, ['id' => 'id', 'value' => $article['id']]) }}
             @endif
-            <div class="form-group">
-                {!! Form::label('wsm_id', '所属网站模块',['class' => 'col-sm-2 control-label']) !!}
-                <div class="col-sm-2">
-                    {!! Form::select('wsm_id', $wsms, null, ['class' => 'form-control']) !!}
-                </div>
-            </div>
+            @include('partials.single_select', [
+                'label' => '所属网站模块',
+                'id' => 'wsm_id',
+                'items' => $wsms
+            ])
+
             <div class="form-group">
                 {!! Form::label('name', '名称',['class' => 'col-sm-2 control-label']) !!}
                 <div class="col-sm-3">
@@ -60,26 +60,17 @@
             </div>
             <div class="form-group">
                 {!! Form::label('content', '文章内容',['class' => 'col-sm-2 control-label']) !!}
-                <div class="col-sm-6" >
-                    <script id="container" name="content" type="text/plain" >
+                <div class="col-sm-6">
+                    <script id="container" name="content" type="text/plain">
                         @if(isset($article->content))
                             {!!($article->content)!!}
                         @endif
                     </script>
                 </div>
             </div>
-            {{--<div class="form-group">--}}
-                {{--{!! Form::label('enabled', '是否启用', [--}}
-                    {{--'class' => 'col-sm-2 control-label'--}}
-                {{--]) !!}--}}
-                {{--<div class="col-sm-6" style="margin-top: 5px;">--}}
-                    {{--<input id="enabled" type="checkbox" name="enabled" data-render="switchery"--}}
-                           {{--data-theme="default" data-switchery="true"--}}
-                           {{--@if(!empty($article['enabled'])) checked @endif--}}
-                           {{--data-classname="switchery switchery-small"/>--}}
-                {{--</div>--}}
-            {{--</div>--}}
-            @include('partials.enabled', ['enabled' => $article['enabled']])
+
+            @include('partials.enabled', ['enabled' => isset($article['enabled']) ? $article['enabled'] : ""])
+
         </div>
     </div>
     @include('partials.form_buttons')

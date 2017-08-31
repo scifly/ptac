@@ -1,17 +1,7 @@
-@extends('layouts.master')
-@section('header')
-    <section class="content-header">
-        <h1>
-            Calendar
-            <small>Control panel</small>
-        </h1>
-        <ol class="breadcrumb">
-            <li><a href="#"><i class="fa fa-dashboard"></i> 用户中心</a></li>
-            <li class="active">日历</li>
-        </ol>
-    </section>
-@endsection
-@section('content')
+<div class="box box-widget">
+    <div class="box-header with-border">
+        @include('partials.form_header')
+    </div>
     <section class="content">
         <div class="row">
             <div class="col-md-3">
@@ -25,11 +15,10 @@
                             @if (!empty($userId))
                                 <input hidden name="user_id" value={{$userId}}>
                             @endif
-                            <input hidden name="isAdmin" value={{$isAdmin}}>
+                                <input hidden name="isAdmin" value={{$isAdmin}}>
                             @foreach($events as $event)
                                 <div id={{$event['id']}}; class="external-event bg-light-blue">{{$event['title']}}</div>
                             @endforeach
-
                             <div class="checkbox">
                                 <label for="drop-remove">
                                     <input type="checkbox" id="drop-remove">
@@ -95,4 +84,4 @@
     @include('event.create_edit')
     @include('event.create')
     @include('event.edit')
-@endsection
+</div>

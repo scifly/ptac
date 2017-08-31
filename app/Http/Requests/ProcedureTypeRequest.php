@@ -5,7 +5,6 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ProcedureTypeRequest extends FormRequest {
-
     protected $rules = [
         'name' => 'required|string|max:60|unique:procedure_types',
         'remark' => 'required|string|max:255',
@@ -20,7 +19,8 @@ class ProcedureTypeRequest extends FormRequest {
         'required'=> '为必填项',
         'string'=> '为字符串',
         'max'=> '最大为:max',
-        'boolean'=> '为0或1',
+        'unique' => '已有该流程类型名称',
+        'boolean'=> '为0或1'
     ];
 
     /**

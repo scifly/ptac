@@ -7,10 +7,12 @@
             <thead>
             <tr>
                 <th>#</th>
-                <th>名称</th>
-                <th>备注</th>
+                <th>考勤设置名称</th>
+                <th>所属学校</th>
+                <th>起始时间</th>
+                <th>结束时间</th>
+                <th>进或出</th>
                 <th>创建时间</th>
-                <th>更新时间</th>
                 <th>状态</th>
             </tr>
             </thead>
