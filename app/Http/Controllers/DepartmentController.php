@@ -17,6 +17,10 @@ class DepartmentController extends Controller
     }
 
 
+    /**
+     * 显示部门列表
+     * @return \Illuminate\Http\Response
+     */
     public function index()
     {
         if (Request::get('draw')) {
