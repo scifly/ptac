@@ -1,3 +1,4 @@
+{{ Form::hidden('parent_id', null, ['id' => 'parent_id']) }}
 <div class="form-group">
     {!! Form::label('name', '名称',[
         'class' => 'col-sm-3 control-label'
@@ -25,17 +26,11 @@
         ]) !!}
     </div>
 </div>
-<div class="form-group">
-    {!! Form::label('school_id', '所属学校',[
-        'class' => 'col-sm-3 control-label'
-    ]) !!}
-    <div class="col-sm-6">
-        {!! Form::select('school_id', $schools, null, [
-            'id' => 'school_id',
-            'style' => 'width: 100%;'
-        ]) !!}
-    </div>
-</div>
+@include('partials.single_select', [
+    'label' => '所属学校',
+    'id' => 'school_id',
+    'items' => $schools
+])
 <div class="form-group">
     {!! Form::label('icon_id', '图标', [
         'class' => 'col-sm-3 control-label'
@@ -57,22 +52,16 @@
         @endforeach
     </div>
 </div>
-<div class="form-group">
-    <label for="tab_ids" class="col-sm-3 control-label">包含卡片</label>
-    <div class="col-sm-6">
-        <select multiple name="tab_ids[]" id="tab_ids" style="width: 100%;">
-            @foreach ($tabs as $key => $value)
-                @if(isset($selectedTabs))
-                    <option value="{{ $key }}" @if(array_key_exists($key, $selectedTabs)) selected @endif>
-                        {{ $value }}
-                    </option>
-                @else
-                    <option value="{{ $key }}">{{ $value }}</option>
-                @endif
-            @endforeach
-        </select>
-    </div>
-</div>
-@include('partials.enabled', ['enabled' => $menu['enabled']])
-{!! Form::hidden('id') !!}
+@include('partials.multiple_select', [
+    'label' => '包含卡片',
+    'for' => 'tab_ids',
+    'items' => $tabs,
+    'selectedItems' => isset($selectedTabs) ? $selectedTabs : NULL
+])
+@include('partials.enabled', [
+    'label' => '是否启用',
+    'for' => 'enabled',
+    'value' => isset($menu['enabled']) ? $menu['enabled'] : NULL
+])
+{!! Form::hidden('id', null, ['id' => 'id']) !!}
 @include('partials.form_buttons')

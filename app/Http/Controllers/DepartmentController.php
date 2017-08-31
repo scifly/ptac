@@ -6,100 +6,136 @@ use App\Http\Requests\DepartmentRequest;
 use App\Models\Department;
 use Illuminate\Support\Facades\Request;
 
-class DepartmentController extends Controller
-{
+class DepartmentController extends Controller {
+    
     protected $department;
-
-    function __construct(Department $department) {
-
-        $this->department = $department;
-
-    }
-
-
-    public function index()
-    {
-        if (Request::get('draw')) {
-            return response()->json($this->department->datatable());
+    
+    function __construct(Department $department) { $this->department = $department; }
+    
+    /**
+     * 显示部门列表
+     *
+     * @return bool|\Illuminate\Http\JsonResponse
+     */
+    public function index() {
+        
+        if (Request::method() === 'POST') {
+            return response()->json($this->department->tree(1));
         }
         return parent::output(__METHOD__);
+        
     }
-
+    
     /**
      * 显示创建部门记录的表单
-     * @return \Illuminate\Http\Response
+     *
+     * @return bool|\Illuminate\Http\JsonResponse
      */
-    public function create()
-    {
+    public function create() {
+        
         return $this->output(__METHOD__);
+        
     }
-
+    
     /**
-     * Store a newly created resource in storage.
+     * 保存新创建的部门记录
+     *
      * @param DepartmentRequest $request
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function store(DepartmentRequest $request)
-    {
+    public function store(DepartmentRequest $request) {
+        
         if ($this->department->existed($request)) {
             return $this->fail('已经有此记录');
         }
         return $this->department->create($request->all()) ? $this->succeed() : $this->fail();
+        
     }
-
+    
     /**
-     * Display the specified resource.
+     * 显示指定的部门记录详情
+     *
      * @param $id
      * @return bool|\Illuminate\Http\JsonResponse
      */
-    public function show($id)
-    {
-        $department= $this->department->find($id);
+    public function show($id) {
+        
+        $department = $this->department->find($id);
         if (!$department) { return $this->notFound(); }
         return $this->output(__METHOD__, [
             'deparment' => $department,
         ]);
+        
     }
-
+    
     /**
-     * 显示编辑部门记录的表单.
+     * 显示编辑指定部门记录的表单
+     *
      * @param $id
-     * @return \Illuminate\Http\Response
-     * @internal param Department $department
+     * @return bool|\Illuminate\Http\JsonResponse
      */
-    public function edit($id)
-    {
-        $department= $this->department->find($id);
-        if (!$department) { return $this->notFound(); }
+    public function edit($id) {
+        
+        $department = $this->department->find($id);
+        if (!$department) {
+            return $this->notFound();
+        }
         return $this->output(__METHOD__, [
             'deparment' => $department,
         ]);
+        
     }
-
+    
     /**
-     * 更新部门信息.
+     * 更新指定的部门记录
+     *
      * @param DepartmentRequest $request
      * @param $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function update(DepartmentRequest $request,$id)
-    {
+    public function update(DepartmentRequest $request, $id) {
+        
         $department = $this->department->find($id);
-        if (!$department) { return $this->notFound(); }
+        if (!$department) {
+            return $this->notFound();
+        }
         if ($this->department->existed($request, $id)) {
             return $this->fail('已经有此记录');
         }
         return $department->update($request->all()) ? $this->succeed() : $this->fail();
+        
     }
-
+    
     /**
-     * 删除部门.
+     * 删除指定的部门记录
+     *
      * @param $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy($id)
-    {
+    public function destroy($id) {
+        
         $department = $this->department->find($id);
         if (!$department) { return $this->notFound(); }
         return $department->delete() ? $this->succeed() : $this->fail();
+        
     }
+    
+    /**
+     * 更新部门所处位置
+     *
+     * @param $id
+     * @param $parentId
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function move($id, $parentId) {
+        
+        $department = $this->department->find($id);
+        $parentDepartment = $this->department->find($parentId);
+        if (!$department || !$parentDepartment) {
+            return parent::notFound();
+        }
+        return $this->department->move($id, $parentId) ? parent::succeed() : parent::fail();
+        
+    }
+    
 }

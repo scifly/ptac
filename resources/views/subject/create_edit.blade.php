@@ -62,8 +62,16 @@
                 'items' => $majors,
                 'selectedItems' => isset($selectedMajors) ? $selectedMajors : NULL
             ])
-            @include('partials.enabled', ['enabled' => $subject['isaux'], 'label' => '是否为副科'])
-            @include('partials.enabled', ['enabled' => $subject['enabled']])
+            @include('partials.enabled', [
+                'label' => '是否为副科',
+                'for' => 'isaux',
+                'value' => $subject['isaux']
+            ])
+            @include('partials.enabled', [
+                'label' => '是否启用',
+                'for' => 'enabled',
+                'value' => $subject['enabled']
+            ])
         </div>
     </div>
     @include('partials.form_buttons')

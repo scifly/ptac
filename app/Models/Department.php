@@ -33,95 +33,203 @@ use App\Http\Requests\DepartmentRequest;
  * @mixin \Eloquent
  * @property-read \App\Models\Corp $corp
  * @property-read \App\Models\School $school
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Menu[] $children
+ * @property-read \App\Models\Department|null $parent
  */
 class Department extends Model {
-    //
-    protected $table = 'departments';
+
     protected $fillable = [
-        'parent_id',
-        'corp_id',
-        'school_id',
-        'name',
-        'remark',
-        'order',
-        'enabled'
+        'parent_id', 'corp_id', 'school_id', 'name',
+        'remark', 'order', 'enabled'
     ];
     
     /**
-     * 部门与所属企业
+     * 返回所属企业对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function corp() {
-        return $this->belongsTo('App\Models\Corp');
+    public function corp() { return $this->belongsTo('App\Models\Corp'); }
+    
+    /**
+     * 返回所属学校对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function school() { return $this->belongsTo('App\Models\School'); }
+    
+    /**
+     * 返回上级部门对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function parent() {
+        
+        return $this->belongsTo('App\Models\Department', 'parent_id');
+        
     }
     
     /**
-     * 部门与所属学校
+     * 获取指定部门的子部门
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function school() {
-        return $this->belongsTo('App\Models\School');
+    public function children() {
+        
+        return $this->hasMany('App\Models\Menu', 'parent_id', 'id');
+        
     }
-
+    
+    /**
+     * 返回所有叶节点部门
+     *
+     * @param array $schoolIds
+     * @param array $corpIds
+     * @return array
+     */
+    public function leaves($schoolIds = [], $corpIds = []) {
+        
+        $leaves = [];
+        $leafPath = [];
+        $departments = $this->nodes($schoolIds, $corpIds);
+        foreach ($departments as $department) {
+            /** @noinspection PhpUndefinedMethodInspection */
+            if (empty($department->children()->count())) {
+                $path = $this->leafPath($department->id, $leafPath);
+                $leaves[$department->id] = $path;
+                $leafPath = [];
+            }
+        }
+        return $leaves;
+        
+    }
+    
+    /**
+     * 返回Department列表
+     *
+     * @param array $schoolIds
+     * @param array $corpIds
+     * @return array
+     */
+    public function departments(array $schoolIds = [], array $corpIds = []) {
+        
+        $departments = $this->nodes($schoolIds, $corpIds);
+        $departmentList = [];
+        foreach ($departments as $department) {
+            $departmentList[$department->id] = $department->name;
+        }
+        return $departmentList;
+        
+    }
+    
+    /**
+     * 判断部门记录是否已经存在
+     *
+     * @param DepartmentRequest $request
+     * @param null $id
+     * @return bool
+     */
     public function existed(DepartmentRequest $request, $id = NULL) {
 
         if (!$id) {
-            $student = $this->where('user_id', $request->input('user_id'))
-                ->where('class_id', $request->input('class_id'))
-                ->where('student_number', $request->input('student_number'))
+            $student = $this->where('corp_id', $request->input('corp_id'))
+                ->where('school_id', $request->input('school_id'))
+                ->where('parent_id', $request->input('parent_id'))
+                ->where('name', $request->input('name'))
                 ->first();
         } else {
-            $student = $this->where('user_id', $request->input('user_id'))
+            $student = $this->where('corp_id', $request->input('corp_id'))
                 ->where('id', '<>', $id)
-                ->where('class_id', $request->input('class_id'))
-                ->where('student_number', $request->input('student_number'))
+                ->where('school_id', $request->input('school_id'))
+                ->where('parent_id', $request->input('parent_id'))
+                ->where('name', $request->input('name'))
                 ->first();
         }
         return $student ? true : false;
 
     }
-
-    public function datatable() {
-
-        $columns = [
-            ['db' => 'Department.id', 'dt' => 0],
-//            ['db' => 'Department.parent_id', 'dt' => 1],
-            ['db' => 'Corp.name as corpname', 'dt' => 1],
-            ['db' => 'School.name as schoolname', 'dt' => 2],
-            ['db' => 'Department.name', 'dt' => 3],
-            ['db' => 'Department.remark', 'dt' => 4],
-            ['db' => 'Department.order', 'dt' => 5],
-            ['db' => 'Department.created_at', 'dt' => 6],
-            ['db' => 'Department.updated_at', 'dt' => 7],
-            [
-                'db' => 'Department.enabled', 'dt' => 8,
-                'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($this, $d, $row);
-                }
-            ],
-
-        ];
-
-        $joins = [
-            [
-                'table' => 'corps',
-                'alias' => 'Corp',
-                'type' => 'INNER',
-                'conditions' => [
-                    'Corp.id = Department.corp_id'
-                ]
-            ],
-            [
-                'table' => 'schools',
-                'alias' => 'School',
-                'type' => 'INNER',
-                'conditions' => [
-                    'School.id = Department.school_id'
-                ]
-            ],
-
-
-        ];
-
-        return Datatable::simple($this, $columns,$joins);
-
+    
+    /**
+     * 更改部门所处位置
+     *
+     * @param $id
+     * @param $parentId
+     * @return bool
+     */
+    public function move($id, $parentId) {
+        
+        $deparment = $this->find($id);
+        if (!isset($deparment)) { return false; }
+        $deparment->parent_id = $parentId === '#' ? NULL : intval($parentId);
+        return $deparment->save();
+        
     }
+    
+    /**
+     * 获取用于显示jstree的部门数据
+     *
+     * @param array $schoolIds
+     * @param array $corpIds
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function tree(array $schoolIds = [], array $corpIds = []) {
+        
+        $departments = $this->nodes($schoolIds, $corpIds);
+        $data = [];
+        foreach ($departments as $department) {
+            $parentId = isset($department['parent_id']) ? $department['parent_id'] : '#';
+            $data[] = [
+                'id' => $department['id'],
+                'parent' => $parentId,
+                'text' => $department['name']
+            ];
+        }
+        return response()->json($data);
+        
+    }
+    
+    /**
+     * 获取指定部门的完整路径
+     *
+     * @param $id
+     * @param array $path
+     * @return string
+     */
+    private function leafPath($id, array &$path) {
+        
+        $department = $this->find($id);
+        if (!isset($department)) {
+            return '';
+        }
+        $path[] = $department->name;
+        if (isset($department->parent_id)) {
+            $this->leafPath($department->parent_id, $path);
+        }
+        krsort($path);
+        return implode(' . ', $path);
+        
+    }
+    
+    /**
+     * 根据schoolId和corpId返回节点
+     *
+     * @param array $schoolIds
+     * @param array $corpIds
+     * @return \Illuminate\Database\Eloquent\Collection|static[]
+     */
+    private function nodes(array $schoolIds = [], array $corpIds = []) {
+        
+        if (empty($schoolIds) && empty($corpIds)) {
+            $nodes = $this::all();
+        } elseif (!empty($schoolIds) && empty($corpIds)) {
+            $nodes = $this->whereIn('school_id', $schoolIds)->get();
+        } elseif (!empty($corpIds) && empty($schoolIds)) {
+            $nodes = $this->whereIn('corp_id', $corpIds)->get();
+        } else {
+            $nodes = $this->whereIn('school_id', $schoolIds)
+                ->whereIn('corp_id', $corpIds)->get();
+        }
+        return $nodes;
+        
+    }
+    
 }

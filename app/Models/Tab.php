@@ -7,6 +7,7 @@ use App\Http\Requests\TabRequest;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Mockery\Exception;
 
@@ -112,7 +113,7 @@ class Tab extends Model {
         
     }
     
-    public function modify(TabRequest $request, $tabId) {
+    public function modify(Request $request, $tabId) {
         
         $tab = $this->find($tabId);
         if (!isset($tab)) { return false; }

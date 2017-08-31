@@ -3,6 +3,8 @@ var crud = {
         $('#add-record').unbind('click');
         $(document).off('click', '.fa-edit');
         $(document).off('click', '.fa-eye');
+        // $(document).off('click', '.fa-trash');
+        $('#confirm-delete').unbind('click');
     },
     ajaxRequest: function(requestType, ajaxUrl, data, obj) {
         $.ajax({
@@ -83,7 +85,6 @@ var crud = {
             var url = $(this).parents().eq(0).attr('id');
             url = url.replace('_', '/');
             page.getTabContent($activeTabPane, page.siteRoot() + table + '/' + url);
-            // $(document).off('click', '.fa-edit');
             crud.unbindEvents();
         });
 
@@ -106,7 +107,6 @@ var crud = {
                 'DELETE', page.siteRoot() + '/' + table + '/delete/' + id,
                 { _token: $('#csrf_token').attr('content') }, $row
             );
-            $(this).unbind('click');
         });
     },
     create: function(formId, table) {

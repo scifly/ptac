@@ -27,105 +27,38 @@ use App\Http\Requests\CustodianStudentRequest;
  * @property int $enabled 是否启用
  * @property-read \App\Models\Custodian $custodian
  * @property-read \App\Models\Student $student
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\CustodianStudent whereEnabled($value)
+ * @method static Builder|CustodianStudent whereEnabled($value)
  */
 class CustodianStudent extends Model {
     
     protected $table = 'custodians_students';
+    
     protected $fillable = [
-        'custodian_id',
-        'student_id',
-        'relationship',
-        'enabled'
+        'custodian_id', 'student_id',
+        'relationship', 'enabled'
     ];
-    
-    public function custodian() {
-        return $this->belongsTo('App\Models\Custodian');
-    }
-    
-    public function student() {
-        return $this->belongsTo('App\Models\Student');
-    }
 
-    public function existed(CustodianStudentRequest $request, $id = NULL) {
-
-        if (!$id) {
-            $custodianStudent = $this->where('custodian_id',$request->input('custodian_id'))
-                ->where('student_id',$request->input('student_id'))
-                ->first();
-        } else {
-            $custodianStudent = $this->where('custodian_id',$request->input('custodian_id'))
-                ->where('id','<>',$id)
-                ->where('student_id',$request->input('student_id'))
-                ->first();
+    public function storeByCustodianId($custodianId, array $studentIds) {
+        
+        foreach ($studentIds as $studentId) {
+            $this->create([
+               'custodian_id' => $custodianId,
+               'student_id' => $studentId,
+               'enabled' => 1
+            ]);
         }
-        return $custodianStudent ? true : false;
-
+        
     }
     
-    public function datatable() {
+    public function storeByStudentId($studentId, array $custodianIds) {
         
-        $columns = [
-            ['db' => 'CustodianStudent.id', 'dt' => 0],
-//            ['db' => 'User.realname as studentname', 'dt' => 2],
-            ['db' => 'User.realname as custodianname', 'dt' => 1],
-            [
-                'db' => 'Student.id as studentname', 'dt' => 2,
-                'formatter' => function ($d, $row) {
-                    $student = Student::whereId($d)->first();
-                    return $student->user->realname;
-                }
-            ],
-            ['db' => 'CustodianStudent.relationship', 'dt' => 3],
-            ['db' => 'CustodianStudent.created_at', 'dt' => 4],
-            ['db' => 'CustodianStudent.updated_at', 'dt' => 5],
-            [
-                'db' => 'CustodianStudent.enabled', 'dt' => 6,
-                'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($this, $d, $row);
-                }
-            ],
-        
-        ];
-        
-        $joins = [
-            [
-                'table' => 'custodians',
-                'alias' => 'Custodian',
-                'type' => 'INNER',
-                'conditions' => [
-                    'Custodian.id = CustodianStudent.custodian_id'
-                ]
-            ],
-            [
-                'table' => 'users',
-                'alias' => 'User',
-                'type' => 'INNER',
-                'conditions' => [
-                    'User.id = Custodian.user_id'
-                ]
-            ],
-            
-            [
-                'table' => 'students',
-                'alias' => 'Student',
-                'type' => 'INNER',
-                'conditions' => [
-                    'Student.id = CustodianStudent.student_id',
-                ]
-            ],
-//            [
-//                'table' => 'users',
-//                'alias' => 'User',
-//                'type' => 'INNER',
-//                'conditions' => [
-//                    'Student.user_id = User.id'
-//                ]
-//            ],
-        
-        ];
-        
-        return Datatable::simple($this, $columns, $joins);
+        foreach ($custodianIds as $custodianId) {
+            $this->create([
+                'student_id' => $studentId,
+                'custodian_id' => $custodianId,
+                'enabled' => 1
+            ]);
+        }
         
     }
     

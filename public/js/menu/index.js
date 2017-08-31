@@ -100,9 +100,7 @@ var menu = {
                 } else {
                     $save = $('#save');
                     $cancel = $('#cancel');
-                    if (action === 'create') {
-                        $('#parent_id').val(id);
-                    }
+                    if (action === 'create') { $('#parent_id').val(id); }
                     $('select').select2();
                     Switcher.init();
                     $('input[type="checkbox"].minimal, input[type="radio"].minimal').iCheck({
