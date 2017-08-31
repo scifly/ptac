@@ -367,4 +367,32 @@ $factory->define(App\Models\EducatorAttendanceSetting::class, function (Faker\Ge
 });
 
 
+$factory->define(App\Models\StudentAttendanceSetting::class, function (Faker\Generator $faker) {
+    $day = ['星期一','星期二','星期三','星期四','星期五','星期六','星期日'];
+    return [
+        'name' => $faker->name,
+        'grade_id' => rand(1,20),
+        'semester_id' =>rand(1,6),
+        'ispublic' =>1,
+        'start' =>date('Y-m-d H:i:s',time()),
+        'end' => date('Y-m-d H:i:s',strtotime("+8 hours")),
+        'day'=>$day[rand(0,6)],
+        'inorout' =>rand(0,1),
+        'msg_template'=>$faker->name
+    ];
+});
+
+
+$factory->define(App\Models\Semester::class, function (Faker\Generator $faker) {
+    $name = ['第一学期','第二学期','第三学期','第四学期','第五学期','第六学期'];
+    return [
+        'school_id' => rand(1,20),
+        'name' =>$name[rand(0,5)],
+        'remark' =>1,
+        'start_date' =>date('Y-m-d H:i:s',time()),
+        'end_date' => date('Y-m-d H:i:s',strtotime("+4 month")),
+        'enabled' =>rand(0,1),
+
+    ];
+});
 

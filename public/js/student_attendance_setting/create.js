@@ -1,0 +1,1 @@
+$(crud.create('formStudentAttendanceSetting','student_attendance_settings'))

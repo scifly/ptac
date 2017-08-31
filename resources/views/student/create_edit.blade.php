@@ -78,8 +78,8 @@
                     ]) !!}
                 </div>
             </div>
-            @include('partials.enabled', ['enabled' => $student['oncampus'], 'label' => '是否住校'])
-            @include('partials.enabled', ['enabled' => $student['enabled']])
+            @include('partials.enabled', ['enabled' => isset($student['oncampus'])?$student['oncampus']:'', 'label' => '是否住校'])
+            @include('partials.enabled', ['enabled' => isset($student['enabled'])?$student['enabled']:''])
         </div>
     </div>
     @include('partials.form_buttons')

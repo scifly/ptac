@@ -73,7 +73,7 @@
                 'for' => 'menu_ids',
                 'items' => $menus,
                 'selectedItems' => isset($selectedMenus) ? $selectedMenus : NULL
-            ]);
+            ])
             @include('partials.enabled', [
                 'label' => '是否启用',
                 'for' => 'enabled',
