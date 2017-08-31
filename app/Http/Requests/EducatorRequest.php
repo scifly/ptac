@@ -10,7 +10,7 @@ class EducatorRequest extends FormRequest
 
     protected $rules = [
         'user_id' => 'required|integer',
-        'team_ids' => 'required|array',
+        'team_ids' => 'required|string',
         'school_id' => 'required|integer',
         'sms_quote' => 'required|integer'
     ];
@@ -22,7 +22,7 @@ class EducatorRequest extends FormRequest
     ];
     protected $strings_val = [
         'required'=> '为必填项',
-        'array'=> '必须为数组',
+        'string'=> '必须为字符串',
         'integer'=> '必须为整数',
     ];
 

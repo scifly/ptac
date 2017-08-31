@@ -1,3 +1,8 @@
-{!! Form::open(['method' => 'post','id' => 'formDepartment','data-parsley-validate' => 'true']) !!}
+{!! Form::open([
+    'method' => 'post',
+    'id' => 'formDepartment',
+    'class' => 'form-horizontal form-borderd',
+    'data-parsley-validate' => 'true'
+]) !!}
 @include('department.create_edit')
 {!! Form::close() !!}

@@ -51,18 +51,9 @@ class Subject extends Model {
         'enabled'
     ];
     
-    public function subjectModules() {
-        
-        return $this->hasMany('App\Models\SubjectModule');
-        
-    }
+    public function subjectModules() { return $this->hasMany('App\Models\SubjectModule'); }
     
-    
-    public function school() {
-        
-        return $this->belongsTo('App\Models\School');
-        
-    }
+    public function school() { return $this->belongsTo('App\Models\School'); }
     
     public function majors() {
         
@@ -94,7 +85,6 @@ class Subject extends Model {
         return $this->where('school_id', $schoolId)->get()->pluck('id', 'name');
         
     }
-    
     
     public function datatable() {
         

@@ -4,16 +4,19 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ExamRequest;
 use App\Models\Exam;
+use App\Models\Squad;
 use Illuminate\Support\Facades\Request;
 
 class ExamController extends Controller {
     
     protected $exam;
-    
-    function __construct(Exam $exam) {
+    protected $squad;
+
+    function __construct(Exam $exam, Squad $squad) {
 
         $this->exam = $exam;
-        
+        $this->squad = $squad;
+
     }
     
     /**
@@ -81,10 +84,12 @@ class ExamController extends Controller {
     public function edit($id) {
         $exam = $this->exam->find($id);
         if (!$exam) { return $this->notFound(); }
+        $classIds = explode(",", $exam->class_ids);
+        $subjectIds = explode(",", $exam->class_ids);
         return $this->output(__METHOD__, [
             'exam' => $exam,
-            'selectedClasses' => $this->exam->classes($exam->class_ids),
-            'selectedSubjects' => $this->exam->subjects($exam->subject_ids),
+            'selectedClasses' => $this->exam->classes($classIds),
+            'selectedSubjects' => $this->exam->subjects($subjectIds),
         ]);
     }
     

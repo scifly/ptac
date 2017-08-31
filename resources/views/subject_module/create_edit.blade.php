@@ -17,14 +17,8 @@
                     ]) !!}
                 </div>
             </div>
-            {{--<div class="form-group">--}}
-            {{--{!! Form::label('subject_id', '科目名称',['class' => 'col-sm-4 control-label']) !!}--}}
-            {{--<div class="col-sm-2">--}}
-            {{--{!! Form::select('subject_id', $subjects, null, ['class' => 'form-control']) !!}--}}
-            {{--</div>--}}
-            {{--</div>--}}
             @include('partials.single_select', [
-                'label' => '科目名称',
+                'label' => '所属科目',
                 'id' => 'subject_id',
                 'items' => $subjects
             ])

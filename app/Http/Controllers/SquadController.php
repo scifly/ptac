@@ -72,9 +72,11 @@ class SquadController extends Controller {
 
         $class = $this->class->find($id);
         if (!$class) { return $this->notFound(); }
+        $educatorIds = explode(",", $class->educator_ids);
+
         return $this->output(__METHOD__, [
             'class' => $class,
-            'educators' => $this->educator->educators($class->educator_ids)
+            'educators' => $this->educator->educators($educatorIds)
         ]);
         
     }
@@ -89,9 +91,11 @@ class SquadController extends Controller {
     
         $class = $this->class->find($id);
         if (!$class) { return $this->notFound(); }
+        $educatorIds = explode(",", $class->educator_ids);
+
         return $this->output(__METHOD__, [
             'class' => $class,
-            'selectedEducators' => $this->educator->educators($class->educator_ids)
+            'selectedEducators' => $this->educator->educators($educatorIds)
         ]);
         
         

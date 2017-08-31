@@ -72,9 +72,13 @@
                 'label' => '所属菜单',
                 'for' => 'menu_ids',
                 'items' => $menus,
-                'selectedItems' => isset($selectedMenus) ? $selectedMenus : []
+                'selectedItems' => isset($selectedMenus) ? $selectedMenus : NULL
             ]);
-            @include('partials.enabled', ['enabled' => $tab['enabled']])
+            @include('partials.enabled', [
+                'label' => '是否启用',
+                'for' => 'enabled',
+                'value' => isset($tab['enabled']) ? $tab['enabled'] : NULL
+            ])
         </div>
     </div>
     @include('partials.form_buttons')

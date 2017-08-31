@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use App\Http\Requests\MajorRequest;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use App\Facades\DatatableFacade as Datatable;
+use Illuminate\Support\Facades\DB;
+use Mockery\Exception;
 
 /**
  * App\Models\Major
@@ -88,5 +91,59 @@ class Major extends Model {
         
     }
     
+    public function store(MajorRequest $request) {
+    
+        try {
+            $exception = DB::transaction(function() use ($request) {
+                $m = $this->create($request->all());
+                $majorSubject = new MajorSubject();
+                $subjectIds = $request->input('subject_ids', []);
+                $majorSubject->storeByMajorId($m->id, $subjectIds);
+            });
+            return is_null($exception) ? true : $exception;
+        } catch (Exception $e) {
+            return false;
+        }
+        
+    }
+    
+    public function modify(MajorRequest $request, $majorId) {
+        
+        $major = $this->find($majorId);
+        if (!isset($major)) { return false; }
+        try {
+            $exception = DB::transaction(function() use($request, $majorId, $major) {
+                $major->update($request->all());
+                $subjectIds = $request->input('subject_ids', []);
+                $majorSubject = new MajorSubject();
+                $majorSubject::whereMajorId($majorId)->delete();
+                $majorSubject->storeByMajorId($majorId, $subjectIds);
+            });
+            
+            return is_null($exception) ? true : $exception;
+        } catch (Exception $e) {
+            return false;
+        }
+        
+    }
+    
+    public function remove($majorId) {
+        
+        $major = $this->find($majorId);
+        if (!isset($major)) { return false; }
+        try {
+            $exception = DB::transaction(function() use ($majorId, $major) {
+                # 删除指定的专业记录
+                $major->delete();
+                # 删除与指定专业绑定的科目记录
+                MajorSubject::whereMajorId($majorId)->delete();
+            });
+            
+            return is_null($exception) ? true : $exception;
+        } catch (Exception $e) {
+            return false;
+        }
+        
+    }
     
 }

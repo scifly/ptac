@@ -26,7 +26,7 @@ class MenuController extends Controller {
     public function index() {
         
         if (Request::method() === 'POST' ) {
-            return $this->menu->tree();
+            return $this->menu->tree(1);
         }
         return parent::output(__METHOD__);
         
@@ -38,6 +38,7 @@ class MenuController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function create() {
+        
         return parent::output(__METHOD__);
         
     }

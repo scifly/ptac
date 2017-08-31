@@ -83,9 +83,11 @@ class GradeController extends Controller {
         
         $grade = $this->grade->find($id);
         if (!$grade) { return $this->notFound(); }
+        $gradeIds = explode(",", $grade->educator_ids);
+
         return $this->output(__METHOD__, [
             'grade' => $grade,
-            'selectedEducators' => $this->educator->educators($grade->educator_ids)
+            'selectedEducators' => $this->educator->educators($gradeIds)
         ]);
         
     }

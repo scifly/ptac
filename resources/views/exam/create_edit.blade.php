@@ -4,8 +4,8 @@
     </div>
     <div class="box-body">
         <div class="form-horizontal">
-            @if (!empty($tab['id']))
-                {{ Form::hidden('id', null, ['id' => 'id', 'value' => $tab['id']]) }}
+            @if (isset($exam) && !empty($exam['id']))
+                {{ Form::hidden('id', null, ['id' => 'id', 'value' => $exam['id']]) }}
             @endif
             <div class="form-group">
                 {!! Form::label('name', '名称',['class' => 'col-sm-4 control-label']) !!}
@@ -31,61 +31,24 @@
                     ]) !!}
                 </div>
             </div>
-            {{--<div class="form-group">--}}
-            {{--{!! Form::label('exam_type_id', '所属考试类型',['class' => 'col-sm-4 control-label']) !!}--}}
-            {{--<div class="col-sm-2">--}}
-            {{--{!! Form::select('exam_type_id', $examtypes, null, ['class' => 'form-control']) !!}--}}
-            {{--</div>--}}
-            {{--</div>--}}
-            @include('partials.single_select', [
-                'label' => '所属考试类型',
-                'id' => 'exam_type_id',
-                'items' => $examtypes
-            ])
-            {{--<div class="form-group">--}}
-            {{--{!! Form::label('class_ids', '班级',['class' => 'col-sm-4 control-label']) !!}--}}
-            {{--<div class="col-sm-2">--}}
-            {{--<select multiple="multiple" name="class_ids[]" id="class_ids">--}}
-            {{--@foreach($classes as $key => $value)--}}
-            {{--@if(isset($selectedClasses))--}}
-            {{--<option value="{{$key}}" @if(array_key_exists($key,$selectedClasses))selected="selected"@endif>--}}
-            {{--{{$value}}--}}
-            {{--</option>--}}
-            {{--@else--}}
-            {{--<option value="{{$key}}">{{$value}}</option>--}}
-            {{--@endif--}}
-            {{--@endforeach--}}
-            {{--</select>--}}
-            {{--</div>--}}
-            {{--</div>--}}
-            @include('partials.multiple_select', [
-                'label' => '班级',
-                'for' => 'class_ids',
-                'items' => $classes,
-                'selectedItems' => isset($selectedClasses) ? $selectedClasses:[]
-            ])
-            {{--<div class="form-group">--}}
-            {{--{!! Form::label('subject_ids', '科目',['class' => 'col-sm-4 control-label']) !!}--}}
-            {{--<div class="col-sm-2">--}}
-            {{--<select multiple="multiple" name="subject_ids[]" id="subject_ids">--}}
-            {{--@foreach($subjects as $key => $value)--}}
-            {{--@if(isset($selectedSubjects))--}}
-            {{--<option value="{{$key}}" @if(array_key_exists($key,$selectedSubjects))selected="selected"@endif>--}}
-            {{--{{$value}}--}}
-            {{--</option>--}}
-            {{--@else--}}
-            {{--<option value="{{$key}}">{{$value}}</option>--}}
-            {{--@endif--}}
-            {{--@endforeach--}}
-            {{--</select>--}}
-            {{--</div>--}}
-            {{--</div>--}}
-            @include('partials.multiple_select', [
-                'label' => '科目',
-                'for' => 'subject_ids',
-                'items' => $subjects,
-                'selectedItems' => isset($selectedSubjects) ? $selectedSubjects:[]
-            ])
+                @include('partials.single_select', [
+                    'label' => '所属考试类型',
+                    'id' => 'exam_type_id',
+                    'items' => $examtypes
+                ])
+                @include('partials.multiple_select', [
+                    'label' => '所属班级',
+                    'for' => 'class_ids',
+                    'items' => $classes,
+                    'selectedItems' => isset($selectedClasses) ? $selectedClasses : []
+                ])
+                @include('partials.multiple_select', [
+                    'label' => '科目',
+                    'for' => 'subject_ids',
+                    'items' => $subjects,
+                    'selectedItems' => isset($selectedSubjects) ? $selectedSubjects : []
+                ])
+
             <div class="form-group">
                 {!! Form::label('max_scores', '科目满分',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-2">
@@ -128,7 +91,21 @@
                     ]) !!}
                 </div>
             </div>
-            @include('partials.enabled', ['enabled' => $exam['enabled']])
+            {{--<div class="form-group">--}}
+                {{--{!! Form::label('enabled', '是否启用', [--}}
+                    {{--'class' => 'col-sm-4 control-label'--}}
+                {{--]) !!}--}}
+                {{--<div class="col-sm-6" style="margin-top: 5px;">--}}
+                    {{--<input id="enabled" type="checkbox" name="enabled" data-render="switchery"--}}
+                           {{--data-theme="default" data-switchery="true"--}}
+                           {{--@if(!empty($exam['enabled'])) checked @endif--}}
+                           {{--data-classname="switchery switchery-small"/>--}}
+                {{--</div>--}}
+            {{--</div>--}}
+
+            @include('partials.enabled', ['enabled' => isset($exam['enabled']) ? $exam['enabled'] : ""])
+
+
         </div>
     </div>
     @include('partials.form_buttons')

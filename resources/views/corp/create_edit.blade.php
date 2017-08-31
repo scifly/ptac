@@ -18,6 +18,12 @@
                     ]) !!}
                 </div>
             </div>
+            <div class="form-group">
+                {!! Form::label('company_id', '所属运营者',['class' => 'col-sm-4 control-label']) !!}
+                <div class="col-sm-2">
+                    {!! Form::select('company_id', $companies, null, ['class' => 'form-control']) !!}
+                </div>
+            </div>
             @include('partials.single_select', [
                 'label' => '所属运营者',
                 'id' => 'company_id',
@@ -34,7 +40,7 @@
                     ]) !!}
                 </div>
             </div>
-            @include('partials.enabled', ['enabled' => isset($corp['enabled']) ? $corp['enabled'] : ''])
+            @include('partials.enabled', ['enabled' => $corp['enabled']])
         </div>
     </div>
     @include('partials.form_buttons')

@@ -1,68 +1,45 @@
-<div class="box box-widget">
-    <div class="box-header with-border">
-        @include('partials.form_header')
-    </div>
-    <div class="box-body">
-        <div class="form-horizontal">
-            @if (!empty($department['id']))
-                {{ Form::hidden('id', null, ['id' => 'id', 'value' => $department['id']]) }}
-            @endif
-            <div class="form-group">
-                {!! Form::label('name', '名称',['class' => 'col-sm-4 control-label']) !!}
-                <div class="col-sm-2">
-                    {!! Form::text('name', null, [
-                        'class' => 'form-control',
-                        'placeholder' => '不能超过20个汉字',
-                        'data-parsley-required' => 'true',
-                        'data-parsley-maxlength' => '20',
-                        'data-parsley-minlength' => '2',
-                    ]) !!}
-                </div>
-            </div>
-            <div class="form-group">
-                {!! Form::label('remark', '备注',['class' => 'col-sm-4 control-label']) !!}
-                <div class="col-sm-2">
-                    {!! Form::text('remark', null, [
-                    'class' => 'form-control',
-                    'placeholder' => '不能少于2个汉字',
-                    'data-parsley-required' => 'true',
-                    'data-parsley-minlength' => '2',
+{{ Form::hidden('parent_id', null, ['id' => 'parent_id']) }}
+<div class="form-group">
+    {!! Form::label('name', '部门名称',[
+        'class' => 'col-sm-3 control-label'
+    ]) !!}
+    <div class="col-sm-6">
+        {!! Form::text('name', null, [
+            'class' => 'form-control special-form-control',
+            'placeholder' => '(请输入部门名称)',
+            'data-parsley-required' => 'true',
+            'data-parsley-maxlength' => '255'
+        ]) !!}
 
-                    ]) !!}
-                </div>
-            </div>
-            <div class="form-group">
-                {!! Form::label('order', '次序值',['class' => 'col-sm-4 control-label']) !!}
-                <div class="col-sm-2">
-                    {!! Form::text('order', null, [
-                    'class' => 'form-control',
-                    'placeholder' => '不能少于2个汉字',
-                    'data-parsley-required' => 'true',
-                    'data-parsley-minlength' => '2',
-
-                    ]) !!}
-                </div>
-            </div>
-                @include('partials.single_select', [
-                      'label' => '所属父类',
-                      'id' => 'parent_id',
-                      'items' => $parents
-                  ])
-                @include('partials.single_select', [
-                       'label' => '所属企业',
-                       'id' => 'corp_id',
-                       'items' =>$corps
-                   ])
-                @include('partials.single_select', [
-                      'label' => '所属学校',
-                      'id' => 'school_id',
-                      'items' =>$schools
-                  ])
-                @include('partials.enabled', [
-                'label' => '是否启用',
-                'for' => 'enabled',
-                'value' => isset($department['enabled'])?$department['enabled']:''])
-        </div>
     </div>
-    @include('partials.form_buttons')
 </div>
+<div class="form-group">
+    {!! Form::label('remark', '备注', [
+        'class' => 'col-sm-3 control-label'
+    ]) !!}
+    <div class="col-sm-6">
+        {!! Form::text('remark', null, [
+            'class' => 'form-control special-form-control',
+            'placeholder' => '(请输入备注)',
+            'data-parsley-required' => 'true',
+            'data-parsley-maxlength' => '255'
+        ]) !!}
+    </div>
+</div>
+@include('partials.single_select', [
+    'label' => '所属企业',
+    'id' => 'corp_id',
+    'items' => $corps
+])
+@include('partials.single_select', [
+    'label' => '所属学校',
+    'id' => 'school_id',
+    'items' => $schools
+])
+@include('partials.enabled', [
+    'label' => '是否启用',
+    'for' => 'enabled',
+    'value' => $department['enabled']
+])
+{!! Form::hidden('id') !!}
+@include('partials.form_buttons')

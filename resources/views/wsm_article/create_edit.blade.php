@@ -4,14 +4,15 @@
     </div>
     <div class="box-body">
         <div class="form-horizontal">
-            @if (!empty($tab['id']))
-                {{ Form::hidden('id', null, ['id' => 'id', 'value' => $tab['id']]) }}
+            @if (isset($article) && !empty($article['id']))
+                {{ Form::hidden('id', null, ['id' => 'id', 'value' => $article['id']]) }}
             @endif
             @include('partials.single_select', [
                 'label' => '所属网站模块',
                 'id' => 'wsm_id',
                 'items' => $wsms
             ])
+
             <div class="form-group">
                 {!! Form::label('name', '名称',['class' => 'col-sm-2 control-label']) !!}
                 <div class="col-sm-3">
@@ -67,7 +68,9 @@
                     </script>
                 </div>
             </div>
-            @include('partials.enabled', ['enabled' => $article['enabled']])
+
+            @include('partials.enabled', ['enabled' => isset($article['enabled']) ? $article['enabled'] : ""])
+
         </div>
     </div>
     @include('partials.form_buttons')

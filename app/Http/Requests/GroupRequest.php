@@ -18,7 +18,7 @@ class GroupRequest extends FormRequest {
     public function rules() {
         
         return [
-            'name' => 'required|string|max:20|min:2|unique:groups',
+            'name' => 'required|string|max:20|min:2|unique:groups, name, ' . $this->input('id') . ',id',
             'remark' => 'required|string|max:20|min:2',
         ];
         
@@ -35,10 +35,6 @@ class GroupRequest extends FormRequest {
         ];
     }
     
-    protected function formatErrors(Validator $validator) {
-        return $validator->errors()->all();
-    }
-
     public function wantsJson() { return true; }
     
     protected function prepareForValidation() {

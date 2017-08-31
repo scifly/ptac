@@ -4,7 +4,9 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Http\Requests\EducatorRequest;
+use App\Models\EducatorClass;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -28,8 +30,8 @@ use Illuminate\Database\Eloquent\Model;
  * @mixin \Eloquent
  * @property-read \App\Models\School $school
  * @property int $enabled
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Squad[] $classes
- * @property-read \App\Models\EducatorClass $educatorClass
+ * @property-read Collection|\App\Models\Squad[] $classes
+ * @property-read EducatorClass $educatorClass
  * @method static Builder|Educator whereEnabled($value)
  */
 class Educator extends Model {
@@ -57,17 +59,27 @@ class Educator extends Model {
         
     }
     
-    public function educators(array $educatorIds) {
+    /**
+     * 根据SchoolIds返回教职员工列表
+     *
+     * @param array $schoolIds
+     * @return array
+     */
+    public function educators(array $schoolIds = []) {
         
-        $educators = [];
-        foreach ($educatorIds as $id) {
-            $educator = $this->find($id);
-            $user = $educator->user;
-            $educators[$educator->id] = $user->username;
+        $educatorList = [];
+        if (empty($schoolIds)) {
+            $educators = $this->all();
+        } else {
+            $educators = $this->whereIn('school_id', $schoolIds)->get();
         }
-        return $educators;
+        foreach ($educators as $educator) {
+            $educatorList[$educator->id] = $educator->user->realname;
+        }
+        return $educatorList;
         
     }
+    
     public function existed(EducatorRequest $request, $id = NULL) {
 
         if (!$id) {
@@ -97,7 +109,6 @@ class Educator extends Model {
             ['db' => 'Educator.sms_quote', 'dt' => 4],
             ['db' => 'Educator.created_at', 'dt' => 5],
             ['db' => 'Educator.updated_at', 'dt' => 6],
-            
             [
                 'db' => 'Educator.enabled', 'dt' => 7,
                 'formatter' => function ($d, $row) {

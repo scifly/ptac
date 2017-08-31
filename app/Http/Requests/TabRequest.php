@@ -20,7 +20,7 @@ class TabRequest extends FormRequest {
     public function rules() {
         
         return [
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:255|unique:tabs,name, ' . $this->input('id') . ',id',
             'remark' => 'nullable|string|max:255',
             'action_id' => 'required|integer',
             'icon_id' => 'nullable|integer',

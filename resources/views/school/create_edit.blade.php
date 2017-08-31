@@ -31,7 +31,7 @@
                 </div>
             </div>
             @include('partials.single_select', [
-                'label' => '类型',
+                'label' => '学校类型',
                 'id' => 'school_type_id',
                 'items' => $schoolTypes
             ])
