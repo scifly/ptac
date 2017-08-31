@@ -3,12 +3,14 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use App\Http\Requests\DepartmentRequest;
 
 /**
- * App\Models\Department
+ * App\Models\Department 部门
  *
  * @property int $id
  * @property int|null $parent_id 父部门ID
@@ -17,8 +19,8 @@ use App\Http\Requests\DepartmentRequest;
  * @property string $name 部门名称
  * @property string|null $remark 部门备注
  * @property int|null $order 在父部门中的次序值。order值大的排序靠前
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property int $enabled
  * @method static Builder|Department whereCorpId($value)
  * @method static Builder|Department whereCreatedAt($value)
@@ -31,10 +33,11 @@ use App\Http\Requests\DepartmentRequest;
  * @method static Builder|Department whereSchoolId($value)
  * @method static Builder|Department whereUpdatedAt($value)
  * @mixin \Eloquent
- * @property-read \App\Models\Corp $corp
- * @property-read \App\Models\School $school
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Menu[] $children
- * @property-read \App\Models\Department|null $parent
+ * @property-read Corp $corp
+ * @property-read School $school
+ * @property-read Collection|Menu[] $children
+ * @property-read Department|null $parent
+ * @property-read Collection|Department[] $users
  */
 class Department extends Model {
 
@@ -44,18 +47,18 @@ class Department extends Model {
     ];
     
     /**
-     * 返回所属企业对象
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function corp() { return $this->belongsTo('App\Models\Corp'); }
-    
-    /**
      * 返回所属学校对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function school() { return $this->belongsTo('App\Models\School'); }
+    
+    /**
+     * 获取指定部门包含的所有用户对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function users() { return $this->belongsToMany('App\Models\Department', 'departments_users'); }
     
     /**
      * 返回上级部门对象
@@ -214,7 +217,7 @@ class Department extends Model {
      *
      * @param array $schoolIds
      * @param array $corpIds
-     * @return \Illuminate\Database\Eloquent\Collection|static[]
+     * @return Collection|static[]
      */
     private function nodes(array $schoolIds = [], array $corpIds = []) {
         

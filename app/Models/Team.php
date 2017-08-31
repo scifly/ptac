@@ -3,16 +3,19 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Models\School;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * App\Models\Team
+ * App\Models\Team 教职员工组
  *
  * @property int $id
  * @property string $name 教职员工组名称
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property int $enabled
  * @method static Builder|Team whereCreatedAt($value)
  * @method static Builder|Team whereEnabled($value)
@@ -20,17 +23,37 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|Team whereName($value)
  * @method static Builder|Team whereUpdatedAt($value)
  * @mixin \Eloquent
- * 教师员工组
  * @property int $school_id 所属学校ID
  * @property string|null $remark 备注
  * @method static Builder|Team whereRemark($value)
  * @method static Builder|Team whereSchoolId($value)
+ * @property-read Collection|Educator[] $educators
+ * @property-read School $school
  */
 class Team extends Model {
     
-    protected $fillable = [
-        'name', 'enabled', 'school_id', 'remark'
-    ];
+    protected $fillable = ['name', 'school_id', 'remark', 'enabled'];
+    
+    /**
+     * 返回指定教职员工组所属的学校对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function school() { return $this->belongsTo('App\Models\School'); }
+    
+    /**
+     * 获取指定教职员工组包含的所有教职员工对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function educators() { return $this->belongsToMany('App\Models\Educator', 'educators_teams'); }
+    
+    /**
+     * 获取教职员工组列表
+     *
+     * @param array $teamIds
+     * @return array
+     */
     public function teams(array $teamIds) {
 
         $teams = [];
@@ -41,6 +64,7 @@ class Team extends Model {
         return $teams;
 
     }
+    
     public function datatable() {
         
         $columns = [

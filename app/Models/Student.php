@@ -56,36 +56,44 @@ class Student extends Model {
         'remark', 'enabled'
     ];
     
+    /**
+     * 返回指定学生所属的班级对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function squad() { return $this->belongsTo('App\Models\Squad', 'class_id', 'id'); }
     
-    public function squad() {
-        
-        return $this->belongsTo('App\Models\Squad', 'class_id', 'id');
-        
-    }
-    
+    /**
+     * 获取指定学生的所有监护人对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
     public function custodians() {
         
         return $this->belongsToMany('App\Models\Custodian', 'custodians_students');
         
     }
     
+    /**
+     * 获取指定学生对应的用户对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function user() { return $this->belongsTo('App\Models\User'); }
     
     /**
-     * 获取学生所有分数
+     * 获取指定学生所有的分数对象
+     *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function scores() { return $this->hasMany('App\Models\Score'); }
     
     /**
-     * 获取学生总分
+     * 获取指定学生所有的总分对象
+     *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function scoreTotals() {
-        
-        return $this->hasMany('App\Models\ScoreTotal');
-        
-    }
+    public function scoreTotals() { return $this->hasMany('App\Models\ScoreTotal'); }
     
     /**
      * 返回学生列表
@@ -108,7 +116,13 @@ class Student extends Model {
     
     }
     
-    
+    /**
+     * 判断学生记录是否已经存在
+     *
+     * @param StudentRequest $request
+     * @param null $id
+     * @return bool
+     */
     public function existed(StudentRequest $request, $id = NULL) {
         
         if (!$id) {
@@ -126,7 +140,6 @@ class Student extends Model {
         return $student ? true : false;
         
     }
-
 
     public function datatable() {
         

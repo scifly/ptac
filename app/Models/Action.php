@@ -5,7 +5,9 @@ namespace App\Models;
 use App\Facades\DatatableFacade as Datatable;
 use App\Http\Requests\ActionRequest;
 use App\Models\ActionType as ActionType;
+use App\Models\Tab;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
@@ -52,7 +54,7 @@ use ReflectionMethod;
  * @method static Builder|Action whereUpdatedAt($value)
  * @method static Builder|Action whereView($value)
  * @mixin \Eloquent
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tab[] $tabs
+ * @property-read Collection|Tab[] $tabs
  */
 class Action extends Model {
     
