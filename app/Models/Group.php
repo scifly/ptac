@@ -51,6 +51,17 @@ class Group extends Model {
 
     }
     
+    /**
+     * 根据角色名称获取角色对象
+     * @param $groupName
+     * @return Model|null|static
+     */
+    public function group($groupName) {
+        
+        return $this->where('name', $groupName)->first();
+        
+    }
+    
     public function datatable() {
         
         $columns = [

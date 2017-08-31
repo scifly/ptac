@@ -41,6 +41,10 @@ class TabController extends Controller {
      */
     public function create() {
 
+        /*return view('tab.create', [
+            'breadcrumb' => 'test',
+            'menus' => $this->menu->leaves(1),
+        ]);*/
         return parent::output(__METHOD__, ['menus' => $this->menu->leaves(1)]);
         
     }

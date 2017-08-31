@@ -12,10 +12,11 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
-# Auth::routes();
-# Route::get('/', function() { return 'Dashboard'; });
-# Route::get('/', 'HomeController@index');
-# Route::get('/home', 'HomeController@index')->name('home');
+// Auth::route();
+Route::auth();
+Route::get('/', function() { return 'Dashboard'; });
+Route::get('/', 'HomeController@index');
+Route::get('/home', 'HomeController@index')->name('home');
 
 /** 测试用路由 */
 Route::get('test/index', 'TestController@index');
@@ -73,6 +74,7 @@ Route::group(['prefix' => 'scoreSend'], function() {
 /** 考勤管理 */
 // 考勤设置 - 考勤时段设置.考勤机设置
 Route::group(['prefix' => 'attendance_machines'], routes('AttendanceMachineController'));
+Route::group(['prefix' => 'educator_attendance_settings'], routes('EducatorAttendanceSettingController'));
 // 考勤查询/统计
 
 /** 课程表管理 */

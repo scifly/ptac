@@ -57,17 +57,12 @@
                     {!! Form::label('gender', '女') !!}
                 </div>
             </div>
-            {{--<div class="form-group">--}}
-                {{--{!! Form::label('group_id', '所属组别',['class' => 'col-sm-4 control-label']) !!}--}}
-                {{--<div class="col-sm-2">--}}
-                    {{--{!! Form::select('group_id', $groups, null, ['class' => 'form-control']) !!}--}}
-                {{--</div>--}}
-            {{--</div>--}}
-            @include('partials.single_select', [
-                'label' => '所属组别',
-                'id' => 'group_id',
-                'items' => $groups
-            ])
+            <div class="form-group">
+                {!! Form::label('group_id', '所属组别',['class' => 'col-sm-4 control-label']) !!}
+                <div class="col-sm-2">
+                    {!! Form::select('group_id', $groups, null, ['class' => 'form-control']) !!}
+                </div>
+            </div>
             <div class="form-group">
                 {!! Form::label('email', '电子邮箱',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-2">
@@ -91,7 +86,11 @@
                     ]) !!}
                 </div>
             </div>
-            @include('partials.enabled', ['enabled' => $user['enabled']])
+            @include('partials.enabled', [
+                'label' => '是否启用',
+                'for' => 'enabled',
+                'value' => $user['enabled']
+            ])
         </div>
     </div>
     @include('partials.form_buttons')

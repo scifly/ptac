@@ -53,7 +53,7 @@ class MajorController extends Controller {
      */
     public function store(MajorRequest $request) {
         
-        return $this->major->create($request->all()) ? $this->succeed() : $this->fail();
+        return $this->major->store($request) ? $this->succeed() : $this->fail();
 
     }
     
@@ -105,7 +105,7 @@ class MajorController extends Controller {
     
         $major = $this->major->find($id);
         if (!$major) { return $this->notFound(); }
-        return $major->update($request->all()) ? $this->succeed() : $this->fail();
+        return $major->modify($request, $id) ? $this->succeed() : $this->fail();
     
     }
     
@@ -119,7 +119,7 @@ class MajorController extends Controller {
     
         $major = $this->major->find($id);
         if (!$major) { return $this->notFound(); }
-        return $major->delete() ? $this->succeed() : $this->fail();
+        return $major->remove($id) ? $this->succeed() : $this->fail();
     
     }
     

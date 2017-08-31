@@ -5,7 +5,9 @@
     <div class="box-body">
         <div class="form-horizontal">
             <div class="form-group">
-                {!! Form::label('name', '名称',['class' => 'col-sm-4 control-label']) !!}
+                {!! Form::label('name', '名称', [
+                    'class' => 'col-sm-4 control-label'
+                ]) !!}
                 <div class="col-sm-2">
                     {!! Form::text('name', null, [
                         'class' => 'form-control',
@@ -16,7 +18,9 @@
                 </div>
             </div>
             <div class="form-group">
-                {!! Form::label('location', '安装位置',['class' => 'col-sm-4 control-label']) !!}
+                {!! Form::label('location', '安装位置', [
+                    'class' => 'col-sm-4 control-label'
+                ]) !!}
                 <div class="col-sm-3">
                     {!! Form::text('location', null, [
                         'class' => 'form-control',
@@ -27,12 +31,14 @@
                 </div>
             </div>
             @include('partials.single_select', [
-               'label' => '所属学校',
-               'id' => 'school_id',
-               'items' => $schools
+                'label' => '所属学校',
+                'id' => 'school_id',
+                'items' => $schools
             ])
             <div class="form-group">
-                {!! Form::label('machineid', '考勤机id',['class' => 'col-sm-4 control-label']) !!}
+                {!! Form::label('machineid', '考勤机id', [
+                    'class' => 'col-sm-4 control-label'
+                ]) !!}
                 <div class="col-sm-2">
                     {!! Form::text('machineid', null, [
                         'class' => 'form-control',
@@ -43,7 +49,7 @@
                     ]) !!}
                 </div>
             </div>
-            @include('partials.enabled', ['enabled' => $attendance['enabled']])
+            @include('partials.enabled', ['enabled' => $am['enabled']])
         </div>
     </div>
     @include('partials.form_buttons')

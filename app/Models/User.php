@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Facades\DatatableFacade as Datatable;
 use App\Http\Requests\UserRequest;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Notifications\DatabaseNotificationCollection;
@@ -68,10 +69,10 @@ use Illuminate\Notifications\Notifiable;
  * @property-read PollQuestionnaireAnswer $pollquestionnaireAnswer
  * @property-read PollQuestionnaireParticipant $pollquestionnairePartcipant
  * @property-read PollQuestionnaire $pollquestionnaires
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Message[] $messages
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\PollQuestionnaireAnswer[] $pollQuestionnaireAnswers
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\PollQuestionnaireParticipant[] $pollQuestionnairePartcipants
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\PollQuestionnaire[] $pollQuestionnaires
+ * @property-read Collection|Message[] $messages
+ * @property-read Collection|PollQuestionnaireAnswer[] $pollQuestionnaireAnswers
+ * @property-read Collection|PollQuestionnaireParticipant[] $pollQuestionnairePartcipants
+ * @property-read Collection|PollQuestionnaire[] $pollQuestionnaires
  */
 class User extends Authenticatable {
     
@@ -85,8 +86,7 @@ class User extends Authenticatable {
      */
     protected $fillable = [
         'group_id', 'username', 'password',
-        'email', 'gender', 'realname',
-        'gender', 'realname', 'avatar_url',
+        'email', 'realname', 'gender', 'avatar_url',
         'wechatid', 'userid', 'english_name',
         'department_ids', 'isleader', 'position',
         'telephone', 'order', 'mobile',
@@ -116,7 +116,9 @@ class User extends Authenticatable {
     
     public function pollQuestionnaireAnswers() { return $this->hasMany('App\Models\PollQuestionnaireAnswer'); }
     
-    public function pollQuestionnairePartcipants() { return $this->hasMany('App\Models\PollQuestionnaireParticipant'); }
+    public function pollQuestionnairePartcipants() {
+        return $this->hasMany('App\Models\PollQuestionnaireParticipant');
+    }
     
     public function messages() { return $this->hasMany('App\Models\Message'); }
     
@@ -139,6 +141,7 @@ class User extends Authenticatable {
         return $user ? true : false;
         
     }
+    
     public function users(array $userIds) {
 
         $users = [];
@@ -148,6 +151,22 @@ class User extends Authenticatable {
         }
         return $users;
 
+    }
+    
+    /**
+     * 返回部门名称字符串
+     *
+     * @param $departmentIds
+     * @return string
+     */
+    public function departments($departmentIds) {
+        
+        $departments = [];
+        foreach ($departmentIds as $departmentId) {
+            $departments[] = Department::whereId($departmentId)->first()->name;
+        }
+        return implode(',', $departments);
+        
     }
 
     public function datatable() {

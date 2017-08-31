@@ -15,15 +15,9 @@
                     ]) !!}
                 </div>
             </div>
-            {{--<div class="form-group">--}}
-                {{--{!! Form::label('school_id', '所属学校',['class' => 'col-sm-4 control-label']) !!}--}}
-                {{--<div class="col-sm-2">--}}
-                    {{--{!! Form::select('school_type_id', $schools, null, ['class' => 'form-control']) !!}--}}
-                {{--</div>--}}
-            {{--</div>--}}
             @include('partials.single_select', [
                 'label' => '所属学校',
-                'id' => 'school_type_id',
+                'id' => 'school_id',
                 'items' => $schools
             ])
             <div class="form-group">

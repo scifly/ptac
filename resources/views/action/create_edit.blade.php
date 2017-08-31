@@ -100,7 +100,7 @@
                 'label' => 'HTTP请求类型',
                 'for' => 'action_type_ids',
                 'items' => $actionTypes,
-                'selectedItems' => isset($selectedActionTypes) ? $selectedActionTypes : []
+                'selectedItems' => isset($selectedActionTypes) ? $selectedActionTypes : NULL
             ])
             @include('partials.enabled', ['enabled' => $action['enabled']])
         </div>

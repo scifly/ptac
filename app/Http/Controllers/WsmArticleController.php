@@ -84,10 +84,11 @@ class WsmArticleController extends Controller
     {
         $article = $this->article->find($id);
         if (!$article) { return parent::notFound(); }
+        $mediaIds = explode(",", $article->media_ids);
 
         return parent::output(__METHOD__, [
             'article' => $article,
-            'medias' => $this->media->medias($article->media_ids),
+            'medias' => $this->media->medias($mediaIds),
 //            'thumbnailMedia' => $this->media->find($article->thumbnail_media_id),
         ]);
 

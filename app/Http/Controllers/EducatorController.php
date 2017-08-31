@@ -83,9 +83,10 @@ class EducatorController extends Controller {
     public function edit($id) {
         $educator = $this->educator->find($id);
         if (!$educator) { return $this->notFound(); }
+        $teamIds = explode(",", $educator->team_ids);
         return $this->output(__METHOD__, [
             'educator' => $educator,
-            'selectedTeams' => $this->team->teams($educator->educator_ids)
+            'selectedTeams' => $this->team->teams($teamIds)
         ]);
     }
 

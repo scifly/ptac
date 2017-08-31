@@ -4,7 +4,11 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Http\Requests\StudentRequest;
+use App\Models\CustodianStudent;
+use App\Models\Score;
+use App\Models\ScoreTotal;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 
@@ -35,28 +39,21 @@ use Illuminate\Database\Eloquent\Model;
  * @mixin \Eloquent
  * @property int $enabled
  * @property-read \App\Models\Squad $beLongsToSquad
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\CustodianStudent[] $custodianStudent
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Score[] $score
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\ScoreTotal[] $scoreTotal
+ * @property-read Collection|CustodianStudent[] $custodianStudent
+ * @property-read Collection|Score[] $score
+ * @property-read Collection|ScoreTotal[] $scoreTotal
  * @property-read \App\Models\Squad $squad
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Student whereEnabled($value)
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Custodian[] $custodians
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\ScoreTotal[] $scoreTotals
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Score[] $scores
+ * @method static Builder|Student whereEnabled($value)
+ * @property-read Collection|Custodian[] $custodians
+ * @property-read Collection|ScoreTotal[] $scoreTotals
+ * @property-read Collection|Score[] $scores
  */
 class Student extends Model {
     
-    protected $table = 'students';
-    
     protected $fillable = [
-        'user_id',
-        'class_id',
-        'student_number',
-        'card_number',
-        'oncampus',
-        'birthday',
-        'remark',
-        'enabled'
+        'user_id', 'class_id', 'student_number',
+        'card_number', 'oncampus', 'birthday',
+        'remark', 'enabled'
     ];
     
     
@@ -72,21 +69,13 @@ class Student extends Model {
         
     }
     
-    public function user() {
-        
-        return $this->belongsTo('App\Models\User');
-        
-    }
+    public function user() { return $this->belongsTo('App\Models\User'); }
     
     /**
      * 获取学生所有分数
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function scores() {
-        
-        return $this->hasMany('App\Models\Score');
-        
-    }
+    public function scores() { return $this->hasMany('App\Models\Score'); }
     
     /**
      * 获取学生总分
@@ -97,6 +86,28 @@ class Student extends Model {
         return $this->hasMany('App\Models\ScoreTotal');
         
     }
+    
+    /**
+     * 返回学生列表
+     *
+     * @param array $classIds
+     * @return array
+     */
+    public function students(array $classIds = []) {
+
+        $studentList = [];
+        if (empty($classIds)) {
+            $students = $this->all();
+        } else {
+            $students = $this->whereIn('class_id', $classIds)->get();
+        }
+        foreach ($students as $student) {
+            $studentList[$student->id] = $student->user->realname;
+        }
+        return $studentList;
+    
+    }
+    
     
     public function existed(StudentRequest $request, $id = NULL) {
         

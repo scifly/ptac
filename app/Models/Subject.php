@@ -4,9 +4,6 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Http\Requests\SubjectRequest;
-use App\Models\EducatorClass;
-use App\Models\Grade;
-use App\Models\School;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -54,18 +51,9 @@ class Subject extends Model {
         'enabled'
     ];
     
-    public function subjectModules() {
-        
-        return $this->hasMany('App\Models\SubjectModule');
-        
-    }
+    public function subjectModules() { return $this->hasMany('App\Models\SubjectModule'); }
     
-    
-    public function school() {
-        
-        return $this->belongsTo('App\Models\School');
-        
-    }
+    public function school() { return $this->belongsTo('App\Models\School'); }
     
     public function majors() {
         
@@ -97,7 +85,6 @@ class Subject extends Model {
         return $this->where('school_id', $schoolId)->get()->pluck('id', 'name');
         
     }
-    
     
     public function datatable() {
         

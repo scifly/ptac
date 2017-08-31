@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -35,65 +36,34 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|School whereUpdatedAt($value)
  * @mixin \Eloquent
  * @property-read \App\Models\Corp $corp
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Educator[] $educator
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Grade[] $grade
+ * @property-read Collection|Educator[] $educator
+ * @property-read Collection|Grade[] $grade
  * @property-read \App\Models\SchoolType $schoolType
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Semester[] $semesters
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Subject[] $subject
+ * @property-read Collection|Semester[] $semesters
+ * @property-read Collection|Subject[] $subject
  * @property-read \App\Models\WapSite $wapsite
  * @property-read \App\Models\WapSite $wapSite
  */
 class School extends Model {
     
     protected $fillable = [
-        'name',
-        'address',
-        'school_type_id',
-        'corp_id',
-        'enabled'
+        'name', 'address', 'school_type_id',
+        'corp_id', 'enabled'
     ];
     
-    public function semesters() {
-        
-        return $this->hasMany('App\Models\Semester');
-        
-    }
+    public function semesters() { return $this->hasMany('App\Models\Semester'); }
     
-    public function subject() {
-        
-        return $this->hasMany('App\Models\Subject');
-        
-    }
+    public function subjects() { return $this->hasMany('App\Models\Subject'); }
     
-    public function schoolType() {
-        
-        return $this->belongsTo('App\Models\SchoolType');
-        
-    }
+    public function schoolType() { return $this->belongsTo('App\Models\SchoolType'); }
     
-    public function corp() {
-        
-        return $this->belongsTo('App\Models\Corp');
-        
-    }
+    public function corp() { return $this->belongsTo('App\Models\Corp'); }
     
-    public function grade() {
-        
-        return $this->hasMany('App\Models\Grade');
-        
-    }
+    public function grades() { return $this->hasMany('App\Models\Grade'); }
     
-    public function educator() {
-        
-        return $this->hasMany('App\Models\Educator');
-        
-    }
+    public function educators() { return $this->hasMany('App\Models\Educator'); }
     
-    public function wapSite() {
-        
-        return $this->hasOne('App\Models\WapSite');
-        
-    }
+    public function wapSite() { return $this->hasOne('App\Models\WapSite'); }
     
     public function datatable() {
         
@@ -133,4 +103,5 @@ class School extends Model {
         return Datatable::simple($this, $columns, $joins);
         
     }
+    
 }

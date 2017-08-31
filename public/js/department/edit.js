@@ -1,1 +1,0 @@
-$(crud.edit('formDepartment','departments'));

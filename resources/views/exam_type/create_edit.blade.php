@@ -4,8 +4,8 @@
     </div>
     <div class="box-body">
         <div class="form-horizontal">
-            @if (!empty($tab['id']))
-                {{ Form::hidden('id', null, ['id' => 'id', 'value' => $tab['id']]) }}
+            @if (isset($examType) && !empty($examType['id']))
+                {{ Form::hidden('id', null, ['id' => 'id', 'value' => $examType['id']]) }}
             @endif
             <div class="form-group">
                 {!! Form::label('name', '名称',['class' => 'col-sm-3 control-label']) !!}
@@ -35,7 +35,7 @@
                     ]) !!}
                 </div>
             </div>
-            @include('partials.enabled', ['enabled' => $examType['enabled']])
+            @include('partials.enabled', ['enabled' => isset($examType['enabled']) ? $examType['enabled'] : ""])
         </div>
     </div>
     @include('partials.form_buttons')

@@ -1,30 +1,24 @@
 <?php
+
 namespace App\Http\ViewComposers;
 
-use App\Models\Custodian;
-use App\Models\User;
+use App\Models\Group;
 use Illuminate\Contracts\View\View;
 
-class CustodianComposer{
+class CustodianComposer {
 
-    protected $user;
-
-    public function __construct(User $user) {
-        $this->user = $user;
-
+    protected $group;
+    
+    public function __construct(Group $group) {
+        
+        $this->group = $group;
+        
     }
-
-    public function compose(View $view)
-    {
-        $custodians =Custodian::with('user')->get()->toArray();
-
-        if(!empty($custodians))
-        {
-            foreach ($custodians as $k=>$v)
-            {
-                $custodianName[$v['id']] = $v['user']['realname'];
-            }
-        }
-        $view->with(['custodianName' => $custodianName]);
+    
+    public function compose(View $view) {
+    
+        $view->with(['groups' => $this->group->pluck('name', 'id')]);
+        
     }
+    
 }

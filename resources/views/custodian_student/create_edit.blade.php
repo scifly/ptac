@@ -41,7 +41,7 @@
                     ]) !!}
                 </div>
             </div>
-            @include('partials.enabled', ['enabled' => $custodianStudent['enabled']])
+            @include('partials.enabled', ['enabled' => isset($custodianStudent['enabled']) ? $custodianStudent['enabled']:""])
         </div>
     </div>
     @include('partials.form_buttons')
