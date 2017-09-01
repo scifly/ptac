@@ -5,7 +5,9 @@ namespace App\Models;
 use App\Facades\DatatableFacade as Datatable;
 use App\Http\Requests\ActionRequest;
 use App\Models\ActionType as ActionType;
+use App\Models\Tab;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
@@ -52,7 +54,7 @@ use ReflectionMethod;
  * @method static Builder|Action whereUpdatedAt($value)
  * @method static Builder|Action whereView($value)
  * @mixin \Eloquent
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tab[] $tabs
+ * @property-read Collection|Tab[] $tabs
  */
 class Action extends Model {
     
@@ -547,7 +549,9 @@ HTML;
                 case 'create':
                 case 'edit':
                 case 'show':
-                    $viewPath = str_singular($this->getTableName($controller)) . '.' . $action;
+                    $prefix = str_singular($this->getTableName($controller));
+                    $prefix = ($prefix === 'corps') ? 'corp' : $prefix;
+                    $viewPath = $prefix . '.' . $action;
                     break;
                 default:
                     $viewPath = '';
@@ -569,7 +573,9 @@ HTML;
             $controller, 0,
             strlen($controller) - strlen('Controller')
         );
-        
+        if ($modelName === 'Squad') {
+            return 'classes';
+        }
         return Inflector::pluralize(Inflector::tableize($modelName));
         
     }
@@ -636,7 +642,9 @@ HTML;
                 case 'index':
                 case 'create':
                 case 'edit':
-                    return 'js/' . str_singular($this->getTableName($ctlr)) . '/' . $action . '.js';
+                    $prefix = str_singular($this->getTableName($ctlr));
+                    $prefix = ($prefix === 'corps') ? 'corp' : $prefix;
+                    return 'js/' .  $prefix . '/' . $action . '.js';
                 default:
                     return NULL;
             }

@@ -10,7 +10,7 @@
                     {!! Form::text('name', null, [
                         'class' => 'form-control',
                         'placeholder' => '(不得超过20个汉字)',
-                        'data-parsley-required' => 'true',
+                        'required' => 'true',
                         'max' => '60'
                     ]) !!}
                 </div>
@@ -40,7 +40,7 @@
                         {!! Form::text('start_date', null, [
                             'class' => 'form-control pull-right',
                             'placeholder' => '(请选择起始日期)',
-                            'data-parsley-required' => 'true',
+                            'required' => 'true',
                         ]) !!}
                     </div>
                 </div>
@@ -55,7 +55,7 @@
                         {!! Form::text('start_date', null, [
                             'class' => 'form-control pull-right',
                             'placeholder' => '(请选择结束日期)',
-                            'data-parsley-required' => 'true',
+                            'required' => 'true',
                         ]) !!}
                     </div>
                 </div>

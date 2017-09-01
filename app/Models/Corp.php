@@ -5,11 +5,13 @@ namespace App\Models;
 use App\Facades\DatatableFacade as Datatable;
 use App\Http\Requests\CompanyRequest;
 use App\Http\Requests\CorpRequest;
+use App\Models\Department;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * App\Models\Corp
+ * App\Models\Corp 企业
  *
  * @property int $id
  * @property string $name 企业名称
@@ -28,28 +30,70 @@ use Illuminate\Database\Eloquent\Model;
  * @mixin \Eloquent
  * @property int $company_id 所属运营者公司ID
  * @property-read \App\Models\Company $company
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Department[] $departments
+ * @property-read Collection|Department[] $departments
  * @method static Builder|Corp whereCompanyId($value)
+ * @property-read Collection|Grade[] $grades
+ * @property-read Collection|School[] $schools
+ * @property-read Collection|Team[] $teams
  */
 class Corp extends Model {
     
-    protected $fillable = [
-        'name',
-        'company_id',
-        'corpid',
-        'enabled'
-    ];
+    protected $fillable = ['name', 'company_id', 'corpid', 'enabled'];
     
+    /**
+     * 获取所属运营者公司对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function company() { return $this->belongsTo('App\Models\Company'); }
     
-    public function departments() {
-        return $this->hasMany('App\Models\Department');
-    }
+    /**
+     * 获取下属学校对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function schools() { return $this->hasMany('App\Models\School'); }
     
-    public function company() {
+    /**
+     * 通过School中间对象获取所有年级对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
+     */
+    public function grades() {
         
-        return $this->belongsTo('App\Models\Company');
+        return $this->hasManyThrough('App\Models\Grade', 'App\Models\School');
+        
     }
     
+    /**
+     * 通过School中间对象获取所有部门对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
+     */
+    public function departments() {
+        
+        return $this->hasManyThrough('App\Models\Department', 'App\Models\School');
+        
+    }
+    
+    /**
+     * 通过School中间对象获取所有教职员工组对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
+     */
+    public function teams() {
+        
+        return $this->hasManyThrough('App\Models\Team', 'App\Models\School');
+        
+    }
+    
+    /**
+     * 判断企业对象记录是否已经存在
+     *
+     * @param CorpRequest $request
+     * @param null $id
+     * @return bool
+     */
     public function existed(CorpRequest $request, $id = NULL) {
         
         if (!$id) {
@@ -96,4 +140,5 @@ class Corp extends Model {
         ];
         return Datatable::simple($this, $columns, $joins);
     }
+    
 }

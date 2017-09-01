@@ -8,9 +8,8 @@
             'id' => 'name',
             'class' => 'form-control',
             'placeholder' => '(不超过40个汉字)',
-            'data-parsley-required' => 'true',
-            'data-parsley-minlength' => '2',
-            'data-parsley-maxlength' => '40'
+            'required' => 'true',
+            'data-parsley-length' => '[2, 40]'
         ]) !!}
     </div>
 </div>
@@ -22,7 +21,7 @@
         {!! Form::text('remark', null, [
             'id' => 'remark',
             'class' => 'form-control',
-            'data-parsley-required' => 'true'
+            'required' => 'true'
         ]) !!}
     </div>
 </div>
@@ -54,13 +53,13 @@
 </div>
 @include('partials.multiple_select', [
     'label' => '包含卡片',
-    'for' => 'tab_ids',
+    'id' => 'tab_ids',
     'items' => $tabs,
     'selectedItems' => isset($selectedTabs) ? $selectedTabs : NULL
 ])
 @include('partials.enabled', [
     'label' => '是否启用',
-    'for' => 'enabled',
+    'id' => 'enabled',
     'value' => isset($menu['enabled']) ? $menu['enabled'] : NULL
 ])
 {!! Form::hidden('id', null, ['id' => 'id']) !!}

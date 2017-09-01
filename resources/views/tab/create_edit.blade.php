@@ -5,7 +5,7 @@
     <div class="box-body">
         <div class="form-horizontal">
             @if (!empty($tab['id']))
-                {{ Form::hidden('id', null, ['id' => 'id', 'value' => $tab['id']]) }}
+                {{ Form::hidden('id', $tab['id'], ['id' => 'id']) }}
             @endif
             <div class="form-group">
                 {!! Form::label('name', '卡片名称',[
@@ -13,10 +13,10 @@
                 ]) !!}
                 <div class="col-sm-6">
                     {!! Form::text('name', null, [
-                        'class' => 'form-control special-form-control',
+                        'class' => 'form-control',
                         'placeholder' => '(请输入卡片名称)',
-                        'data-parsley-required' => 'true',
-                        'data-parsley-maxlength' => '80'
+                        'required' => 'true',
+                        'maxlength' => '80'
                     ]) !!}
 
                 </div>
@@ -27,10 +27,10 @@
                 ]) !!}
                 <div class="col-sm-6">
                     {!! Form::text('remark', null, [
-                        'class' => 'form-control special-form-control',
+                        'class' => 'form-control',
                         'placeholder' => '(请输入备注)',
-                        'data-parsley-required' => 'true',
-                        'data-parsley-maxlength' => '255'
+                        'required' => 'true',
+                        'maxlength' => '255'
                     ]) !!}
                 </div>
             </div>
@@ -70,13 +70,13 @@
             ])
             @include('partials.multiple_select', [
                 'label' => '所属菜单',
-                'for' => 'menu_ids',
+                'id' => 'menu_ids',
                 'items' => $menus,
                 'selectedItems' => isset($selectedMenus) ? $selectedMenus : NULL
-            ]);
+            ])
             @include('partials.enabled', [
                 'label' => '是否启用',
-                'for' => 'enabled',
+                'id' => 'enabled',
                 'value' => isset($tab['enabled']) ? $tab['enabled'] : NULL
             ])
         </div>

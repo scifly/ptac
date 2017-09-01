@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -25,28 +26,20 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|Icon whereRemark($value)
  * @method static Builder|Icon whereUpdatedAt($value)
  * @mixin \Eloquent
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Menu[] $menus
+ * @property-read Collection|Menu[] $menus
  */
 class Icon extends Model {
     
     protected $fillable = ['name', 'remark', 'icon_type_id', 'enabled'];
     
-    public function iconType() {
-        
-        return $this->belongsTo('App\Models\IconType');
-        
-    }
+    public function iconType() { return $this->belongsTo('App\Models\IconType'); }
     
     /**
      * 返回Icon包含的菜单
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function menus() {
-        
-        return $this->hasMany('App\Models\Menu');
-        
-    }
+    public function menus() { return $this->hasMany('App\Models\Menu'); }
     
     /**
      * 返回Icon列表

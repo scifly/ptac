@@ -106,7 +106,7 @@ class CustodianController extends Controller {
     }
     
     public function destroy($id) {
-        
+        $this->custodian->remove($id);
         $custodian = $this->custodian->find($id);
         if (!$custodian) {
             return $this->notFound();

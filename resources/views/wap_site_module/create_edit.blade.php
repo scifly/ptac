@@ -4,36 +4,32 @@
     </div>
     <div class="box-body">
         <div class="form-horizontal">
-            @if (isset($module) && !empty($module['id']))
-                {{ Form::hidden('id', null, ['id' => 'id', 'value' => $module['id']]) }}
+            @if (!empty($wapSiteModule['id']))
+                {{ Form::hidden('id', $wapSiteModule['id'], ['id' => 'id']) }}
+
             @endif
-            {{--<div class="form-group">--}}
-            {{--{!! Form::label('wap_site_id', '所属网站',['class' => 'col-sm-4 control-label']) !!}--}}
-            {{--<div class="col-sm-2">--}}
-            {{--{!! Form::select('wap_site_id', $wapSites, null, ['class' => 'form-control']) !!}--}}
-            {{--</div>--}}
-            {{--</div>--}}
             @include('partials.single_select', [
                 'label' => '所属网站',
                 'id' => 'wap_site_id',
                 'items' => $wapSites
             ])
             <div class="form-group">
-                {!! Form::label('name', '名称',['class' => 'col-sm-4 control-label']) !!}
-                <div class="col-sm-3">
+                {!! Form::label('name', '名称', [
+                    'class' => 'col-sm-3 control-label'
+                ]) !!}
+                <div class="col-sm-6">
                     {!! Form::text('name', null, [
-                    'class' => 'form-control',
-                    'placeholder' => '不能超过40个汉字',
-                    'data-parsley-required' => 'true',
-                    'data-parsley-maxlength' => '40',
-                    'data-parsley-minlength' => '2',
-
+                        'class' => 'form-control',
+                        'placeholder' => '不能超过40个汉字',
+                        'required' => 'true',
+                        'data-parsley-length' => '[2, 40]'
                     ]) !!}
                 </div>
             </div>
-
             <div class="form-group">
-                {!! Form::label('media_id', '模块图片',['class' => 'col-sm-4 control-label']) !!}
+                {!! Form::label('media_id', '模块图片', [
+                    'class' => 'col-sm-3 control-label'
+                ]) !!}
                 <div class="col-sm-6">
                     <div class="preview">
                         @if(isset($media))
@@ -49,8 +45,9 @@
             </div>
             @include('partials.enabled', [
                 'label' => '是否启用',
-                'for' => 'enabled',
-                'value' => isset($module['enabled']) ? $module['enabled'] : ''])
+                'id' => 'enabled', 
+                'enabled' => isset($wapSiteModule['enabled']) ? $wapSiteModule['enabled'] : NULL
+            ])
         </div>
     </div>
     @include('partials.form_buttons')

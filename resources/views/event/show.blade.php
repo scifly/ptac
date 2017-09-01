@@ -6,9 +6,9 @@
             {!! Form::text('title', null, [
                 'class' => 'form-control',
                 'placeholder' => '(不超过40个汉字)',
-                'data-parsley-required' => 'true',
-                'data-parsley-minlength' => '4',
-                'data-parsley-maxlength' => '40'
+                'required' => 'true',
+                'minlength' => '4',
+                'maxlength' => '40'
             ]) !!}
         </div>
     </div>
@@ -17,7 +17,7 @@
         <div class="col-sm-4">
             {!! Form::text('remark', null, [
             'class' => 'form-control',
-            'data-parsley-required' => 'true'
+            'required' => 'true'
             ]) !!}
         </div>
     </div>

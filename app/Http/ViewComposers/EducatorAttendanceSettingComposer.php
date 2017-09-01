@@ -7,12 +7,11 @@ use Illuminate\Contracts\View\View;
 
 class EducatorAttendanceSettingComposer {
 
-    protected $educatorAttendanceSetting;
+
     protected $school;
 
-    public function __construct(EducatorAttendanceSetting $educatorAttendanceSetting , School $school) {
+    public function __construct(School $school) {
 
-        $this->educatorAttendanceSetting = $educatorAttendanceSetting;
         $this->school = $school;
 
     }

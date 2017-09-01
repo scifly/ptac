@@ -10,7 +10,7 @@
                     {!! Form::text('username', null, [
                         'class' => 'form-control',
                         'placeholder' => '(用户名不能为空)',
-                        'data-parsley-required' => 'true',
+                        'required' => 'true',
                         'maxlength' => '255'
                     ]) !!}
                 </div>
@@ -44,7 +44,7 @@
                     {!! Form::text('realname', null, [
                         'class' => 'form-control',
                         'placeholder' => '(不得超过20个汉字)',
-                        'data-parsley-required' => 'true',
+                        'required' => 'true',
                         'maxlength' => '60'
                     ]) !!}
                 </div>
@@ -69,7 +69,7 @@
                     {!! Form::text('email', null, [
                         'class' => 'form-control',
                         'placeholder' => '(电子邮箱)',
-                        'data-parsley-required' => 'true',
+                        'required' => 'true',
                         'maxlength' => '255'
                     ]) !!}
                 </div>
@@ -80,7 +80,7 @@
                     {!! Form::text('wechatid', null, [
                         'class' => 'form-control',
                         'placeholder' => '(小写字母和数字)',
-                        'data-parsley-required' => 'true',
+                        'required' => 'true',
                         'data-parsley-type' => 'alphanum',
                         'maxlength' => '255'
                     ]) !!}
@@ -88,7 +88,7 @@
             </div>
             @include('partials.enabled', [
                 'label' => '是否启用',
-                'for' => 'enabled',
+                'id' => 'enabled',
                 'value' => $user['enabled']
             ])
         </div>

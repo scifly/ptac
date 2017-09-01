@@ -21,6 +21,7 @@ class ComposerServiceProvider extends ServiceProvider {
         View::composer('educator.create_edit', 'App\Http\ViewComposers\EducatorComposer');
         View::composer('educator_class.create_edit', 'App\Http\ViewComposers\EducatorClassComposer');
         View::composer('educator_attendance_setting.create_edit', 'App\Http\ViewComposers\EducatorAttendanceSettingComposer');
+        View::composer('student_attendance_setting.create_edit', 'App\Http\ViewComposers\StudentAttendanceSettingComposer');
         View::composer('custodian.create_edit', 'App\Http\ViewComposers\CustodianComposer');
         View::composer('custodian_student.create_edit', 'App\Http\ViewComposers\CustodianStudentComposer');
         View::composer('department.create_edit', 'App\Http\ViewComposers\DepartmentComposer');
@@ -50,6 +51,7 @@ class ComposerServiceProvider extends ServiceProvider {
         View::composer('major.create_edit', 'App\Http\ViewComposers\MajorComposer');
         View::composer('department.create_edit', 'App\Http\ViewComposers\DepartmentComposer');
         View::composer('message.create_edit', 'App\Http\ViewComposers\MessageComposer');
+        View::composer('team.create_edit', 'App\Http\ViewComposers\TeamComposer');
 
     }
 

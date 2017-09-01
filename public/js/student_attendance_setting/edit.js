@@ -1,0 +1,1 @@
+$(crud.edit('formStudentAttendanceSetting','student_attendance_settings'));

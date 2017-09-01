@@ -95,7 +95,6 @@ class ProcedureController extends Controller {
         }
 
         return $procedure->update($request->all()) ? $this->succeed() : $this->fail();
-    
     }
     
     /**
@@ -105,7 +104,7 @@ class ProcedureController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
-        
+
         $procedure = $this->procedure->find($id);
         if (!$procedure) { return $this->notFound(); }
         return $procedure->delete() ? $this->succeed() : $this->fail();
