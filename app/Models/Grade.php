@@ -42,6 +42,11 @@ class Grade extends Model {
     public function school() { return $this->belongsTo('App\Models\School'); }
     
     public function classes() { return $this->hasMany('App\Models\Squad'); }
+
+    public function studentAttendanceSetting()
+    {
+        return $this->hasOne('App\Models\StudentAttendanceSetting');
+    }
     
     public function existed(GradeRequest $request, $id = NULL) {
         

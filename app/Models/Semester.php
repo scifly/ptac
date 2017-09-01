@@ -48,6 +48,12 @@ class Semester extends Model {
 
     }
 
+
+    public function studentAttendanceSetting()
+    {
+        return $this->hasOne('App\Models\StudentAttendanceSetting','semester_id','id');
+    }
+
     public function datatable() {
 
         $columns = [

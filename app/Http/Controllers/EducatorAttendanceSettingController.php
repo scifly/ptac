@@ -54,11 +54,11 @@ class EducatorAttendanceSettingController extends Controller
 
     /**
      * Display the specified resource.
-     * @param  \App\Models\EducatorAttendanceSetting $educatorAttendanceSetting
      * @param $id
      * @return \Illuminate\Http\Response
+     * @internal param EducatorAttendanceSetting $educatorAttendanceSetting
      */
-    public function show(EducatorAttendanceSetting $educatorAttendanceSetting,$id)
+    public function show($id)
     {
         $educatorAttendanceSetting = $this->educatorAttendanceSetting->find($id);
         if (!$educatorAttendanceSetting) { return $this->notFound(); }
@@ -105,6 +105,8 @@ class EducatorAttendanceSettingController extends Controller
      */
     public function destroy($id)
     {
-
+        $educatorAttendanceSetting = $this->educatorAttendanceSetting->find($id);
+        if (!$educatorAttendanceSetting) { return $this->notFound(); }
+        return $educatorAttendanceSetting->delete() ? $this->succeed() : $this->fail();
     }
 }

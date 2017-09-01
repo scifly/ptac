@@ -1,6 +1,6 @@
 <div class="form-group">
     {!! Form::label($id, $label, [
-        'class' => 'col-sm-3 control-label',
+        'class' => 'col-sm-4 control-label',
     ]) !!}
     <div class="col-sm-6">
         {!! Form::select($id, $items, null, [
