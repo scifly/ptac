@@ -23,7 +23,8 @@ class DepartmentController extends Controller {
             return response()->json($this->department->tree(1));
         }
         return parent::output(__METHOD__);
-        
+
+
     }
     
     /**
@@ -63,7 +64,7 @@ class DepartmentController extends Controller {
         $department = $this->department->find($id);
         if (!$department) { return $this->notFound(); }
         return $this->output(__METHOD__, [
-            'deparment' => $department,
+            'department' => $department,
         ]);
         
     }

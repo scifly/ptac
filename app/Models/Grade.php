@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * App\Models\Grade
+ * App\Models\Grade 年级
  *
  * @property int $id
  * @property string $name 年级名称
@@ -26,11 +26,11 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|Grade whereSchoolId($value)
  * @method static Builder|Grade whereUpdatedAt($value)
  * @mixin \Eloquent
- * 年级
  * @property-read \App\Models\School $school
- * @property-read Collection|\App\Models\Squad[] $squads
- * @property-read Collection|\App\Models\Subject[] $subject
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Squad[] $classes
+ * @property-read Collection|Squad[] $squads
+ * @property-read Collection|Subject[] $subject
+ * @property-read Collection|Squad[] $classes
+ * @property-read Collection|Student[] $students
  */
 class Grade extends Model {
     
@@ -39,10 +39,76 @@ class Grade extends Model {
         'educator_ids', 'enabled',
     ];
     
+    /**
+     * 返回指定年级所属的学校对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function school() { return $this->belongsTo('App\Models\School'); }
     
+    /**
+     * 获取指定年级包含的所有班级对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function classes() { return $this->hasMany('App\Models\Squad'); }
+
+    public function studentAttendanceSetting()
+    {
+        return $this->hasOne('App\Models\StudentAttendanceSetting');
+    }
     
+    /**
+     * 通过Squad中间对象获取指定年级包含的所有学生对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
+     */
+    public function students() { return $this->hasManyThrough('App\Models\Student', 'App\Models\Squad'); }
+    
+    /**
+     * 根据学校ID返回年级列表(id, name)
+     *
+     * @param array $schoolIds
+     * @return array|\Illuminate\Support\Collection
+     */
+    public function grades(array $schoolIds = []) {
+        
+        if (sizeof($schoolIds) === 1) {
+            return $this->where('school_id', $schoolIds[0])
+                ->where('enabled', 1)
+                ->get()->pluck('id', 'name');
+        }
+        # 获取学校列表
+        $schools = School::whereEnabled(1)->get()->pluck('id', 'name');
+        # 获取所有年级对象
+        if (empty($schoolIds)) {
+            $grades = $this->whereEnabled(1)->get(['id', 'name', 'school_id']);
+            return $this->getGradesList($grades, $schools);
+        }
+        # 获取指定学校的所有年级列表
+        $grades = $this->whereIn('school_id', $schoolIds)
+            ->where('enabled', 1)->get();
+        return $this->getGradesList($grades, $schools);
+        
+    }
+    
+    private function getGradesList($grades, $schools) {
+        
+        $gradesList = [];
+        foreach ($grades as $grade) {
+            $gradesList[$schools[$grade['school_id']]][$grade['id']] = $grade['name'];
+        }
+        return $gradesList;
+        
+    }
+
+    /**
+     * 判断年级记录是否存在
+     *
+     * @param GradeRequest $request
+     * @param null $id
+     * @return bool
+     */
     public function existed(GradeRequest $request, $id = NULL) {
         
         if (!$id) {
@@ -56,16 +122,6 @@ class Grade extends Model {
         return $grade ? true : false;
         
     }
-    
-    public function grades($schoolId = NULL) {
-        
-        if (isset($schoolId)) {
-            return $this->where('id', $schoolId)->get()->pluck('id', 'name');
-        }
-        return $this->pluck('id', 'name');
-        
-    }
-    
     
     public function datatable() {
         

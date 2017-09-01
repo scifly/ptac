@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Models\Department;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -35,14 +36,27 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|School whereSmsUsed($value)
  * @method static Builder|School whereUpdatedAt($value)
  * @mixin \Eloquent
- * @property-read \App\Models\Corp $corp
+ * @property-read Corp $corp
  * @property-read Collection|Educator[] $educator
  * @property-read Collection|Grade[] $grade
- * @property-read \App\Models\SchoolType $schoolType
+ * @property-read SchoolType $schoolType
  * @property-read Collection|Semester[] $semesters
  * @property-read Collection|Subject[] $subject
- * @property-read \App\Models\WapSite $wapsite
- * @property-read \App\Models\WapSite $wapSite
+ * @property-read WapSite $wapsite
+ * @property-read WapSite $wapSite
+ * @property-read Collection|AttendanceMachine[] $attendanceMachines
+ * @property-read Collection|Squad[] $classes
+ * @property-read Collection|ConferenceRoom[] $conferenceRooms
+ * @property-read Collection|Department[] $departments
+ * @property-read Collection|Educator[] $educators
+ * @property-read Collection|Grade[] $grades
+ * @property-read Collection|Major[] $majors
+ * @property-read Collection|Menu[] $menus
+ * @property-read Collection|PollQuestionnaire[] $pollQuestionnaires
+ * @property-read Collection|Procedure[] $procedures
+ * @property-read Collection|Subject[] $subjects
+ * @property-read Collection|Team[] $teams
+ * @property-read Collection|WapSiteModule[] $wapSiteModules
  */
 class School extends Model {
     
@@ -51,19 +65,148 @@ class School extends Model {
         'corp_id', 'enabled'
     ];
     
-    public function semesters() { return $this->hasMany('App\Models\Semester'); }
-    
-    public function subjects() { return $this->hasMany('App\Models\Subject'); }
-    
+    /**
+     * 返回所属学校类型对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function schoolType() { return $this->belongsTo('App\Models\SchoolType'); }
     
+    /**
+     * 返回所属企业对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function corp() { return $this->belongsTo('App\Models\Corp'); }
     
+    /**
+     * 获取指定学校所有的考勤机对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function attendanceMachines() { return $this->hasMany('App\Models\AttendanceMachine'); }
+    
+    /**
+     * 获取所有的会议室对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function conferenceRooms() { return $this->hasMany('App\Models\ConferenceRoom'); }
+    
+    /**
+     * 获取指定学校所有的部门对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function departments() { return $this->hasMany('App\Models\Department'); }
+    
+    /**
+     * 获取指定学校的所有调查问卷对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function pollQuestionnaires() { return $this->hasMany('App\Models\PollQuestionnaire'); }
+    
+    /**
+     * 获取指定学校的所有审批流程对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function procedures() { return $this->hasMany('App\Models\Procedure'); }
+    
+    /**
+     * 获取指定学校所有的学期对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function semesters() { return $this->hasMany('App\Models\Semester'); }
+    
+    /**
+     * 获取指定学校所有的科目对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function subjects() { return $this->hasMany('App\Models\Subject'); }
+    
+    /**
+     * 获取指定学校的所有教职员工组对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function teams() { return $this->hasMany('App\Models\Team'); }
+    
+    /**
+     * 获取指定学校所有的年级对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function grades() { return $this->hasMany('App\Models\Grade'); }
     
+    /**
+     * 获取指定学校的所有专业对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function majors() { return $this->hasMany('App\Models\Major'); }
+    
+    /**
+     * 通过Grade中间对象获取所有的班级对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
+     */
+    public function classes() {
+        
+        return $this->hasManyThrough(
+            'App\Models\Squad', 'App\Models\Grade',
+            'school_id', 'grade_id'
+        );
+        
+    }
+    
+    /**
+     * 获取指定学校所有的教职员工对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function educators() { return $this->hasMany('App\Models\Educator'); }
     
+    /**
+     * 获取指定管理/操作员管理的所有学校对象
+     *
+     * @param $operatorId
+     * @return Collection|static[]
+     */
+    public function operatorSchools($operatorId) {
+    
+        $schoolIds = Operator::whereId($operatorId)->where('enabled', 1)->first()->school_ids;
+        return $this->whereIn('id', explode(',', $schoolIds))->whereEnabled(1)->get();
+    
+    }
+    
+    /**
+     * 获取指定学校的所有菜单对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function menus() { return $this->hasMany('App\Models\Menu'); }
+    
+    /**
+     * 获取指定学校的微网站对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
     public function wapSite() { return $this->hasOne('App\Models\WapSite'); }
+    
+    /**
+     * 通过WapSite中间对象获取所有的微网站模块对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
+     */
+    public function wapSiteModules() {
+        
+        return $this->hasManyThrough('App\Models\WapSiteModule', 'App\Models\WapSite');
+        
+    }
     
     public function datatable() {
         

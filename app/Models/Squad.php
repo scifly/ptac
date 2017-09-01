@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * App\Models\Squad
+ * App\Models\Squad 班级
  *
  * @property int $id
  * @property int $grade_id 所属年级ID
@@ -26,33 +26,52 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|Squad whereName($value)
  * @method static Builder|Squad whereUpdatedAt($value)
  * @mixin \Eloquent
- * 班级
  * @property-read \App\Models\Grade $grade
  * @property-read Collection|Student[] $students
  * @property-read Collection|EducatorClass[] $educatorClass
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Educator[] $educators
+ * @property-read Collection|Educator[] $educators
  */
 class Squad extends Model {
     
     protected $table = 'classes';
+    
     protected $fillable = [
-        'id',
-        'grade_id',
-        'name',
-        'educator_ids',
-        'enabled',
+        'id', 'grade_id', 'name',
+        'educator_ids', 'enabled',
     ];
     
+    /**
+     * 返回指定班级所属的年级对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function grade() { return $this->belongsTo('App\Models\Grade'); }
+    
+    /**
+     * 获取指定班级包含的所有学生对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function students() { return $this->hasMany('App\Models\Student'); }
     
-    public function grade() { return $this->belongsTo('App\Models\Grade'); }
-
+    /**
+     * 获取指定班级包含的所有教职员工对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
     public function educators() {
         
         return $this->belongsToMany('App\Models\Educator', 'educators_classes');
         
     }
     
+    /**
+     * 判断班级记录是否已经存在
+     *
+     * @param SquadRequest $request
+     * @param null $id
+     * @return bool
+     */
     public function existed(SquadRequest $request, $id = NULL) {
         
         if (!$id) {
@@ -69,7 +88,6 @@ class Squad extends Model {
         return $class ? true : false;
         
     }
-    
     
     public function datatable() {
         
