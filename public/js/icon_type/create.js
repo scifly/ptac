@@ -1,1 +1,1 @@
-$(crud.create('formIconType'));
+$(crud.create('formIconType', 'icon_types'));

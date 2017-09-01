@@ -49,6 +49,7 @@ class ComposerServiceProvider extends ServiceProvider {
         View::composer('exam.create_edit', 'App\Http\ViewComposers\ExamComposer');
         View::composer('major.create_edit', 'App\Http\ViewComposers\MajorComposer');
         View::composer('department.create_edit', 'App\Http\ViewComposers\DepartmentComposer');
+        View::composer('team.create_edit', 'App\Http\ViewComposers\TeamComposer');
 
     }
 

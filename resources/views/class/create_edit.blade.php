@@ -5,17 +5,18 @@
     <div class="box-body">
         <div class="form-horizontal">
             @if (!empty($class['id']))
-                {{ Form::hidden('id', null, ['id' => 'id', 'value' => $class['id']]) }}
+                {{ Form::hidden('id', $class['id'], ['id' => 'id']) }}
             @endif
             <div class="form-group">
-                {!! Form::label('name', '名称',['class' => 'col-sm-4 control-label']) !!}
+                {!! Form::label('name', '名称', [
+                    'class' => 'col-sm-3 control-label'
+                ]) !!}
                 <div class="col-sm-2">
                     {!! Form::text('name', null, [
                         'class' => 'form-control',
                         'placeholder' => '(不超过40个汉字)',
-                        'data-parsley-required' => 'true',
-                        'data-parsley-minlength' => '4',
-                        'data-parsley-maxlength' => '40'
+                        'required' => 'true',
+                        'data-parsley-length' => '[4, 40]'
                     ]) !!}
                 </div>
             </div>
@@ -26,11 +27,15 @@
             ])
             @include('partials.multiple_select', [
                 'label' => '班级主任',
-                'for' => 'educator_ids',
+                'id' => 'educator_ids',
                 'items' => $educators,
                 'selectedItems' => isset($selectedEducators) ? $selectedEducators : NULL
             ])
-            @include('partials.enabled', ['enabled' => $class['enabled']])
+            @include('partials.enabled', [
+                'label' => '是否启用',
+                'id' => 'enabled',
+                'value' => isset($class['enabled']) ? $class['enabled'] : NULL
+            ])
         </div>
     </div>
     @include('partials.form_buttons')

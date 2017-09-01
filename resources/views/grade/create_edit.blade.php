@@ -5,36 +5,37 @@
     <div class="box-body">
         <div class="form-horizontal">
             @if (isset($grade) && !empty($grade['id']))
-                {{ Form::hidden('id', null, ['id' => 'id', 'value' => $grade['id']]) }}
+                {{ Form::hidden('id', $grade['id'], ['id' => 'id']) }}
             @endif
             <div class="form-group">
-                {!! Form::label('name', '名称',['class' => 'col-sm-4 control-label']) !!}
-                <div class="col-sm-2">
+                {!! Form::label('name', '名称', [
+                    'class' => 'col-sm-3 control-label'
+                ]) !!}
+                <div class="col-sm-6">
                     {!! Form::text('name', null, [
                         'class' => 'form-control',
                         'placeholder' => '(不超过40个汉字)',
-                        'data-parsley-required' => 'true',
-                        'data-parsley-minlength' => '4',
-                        'data-parsley-maxlength' => '40'
+                        'required' => 'true',
+                        'data-parsley-length' => '[4, 40]'
                     ]) !!}
                 </div>
             </div>
-
             @include('partials.single_select', [
                 'label' => '所属学校',
                 'id' => 'school_id',
                 'items' => $schools
             ])
-
             @include('partials.multiple_select', [
                 'label' => '年级主任',
-                'for' => 'educator_ids',
+                'id' => 'educator_ids',
                 'items' => $educators,
                 'selectedItems' => isset($selectedEducators) ? $selectedEducators : []
             ])
-
-            @include('partials.enabled', ['enabled' => isset($grade['enabled']) ? $grade['enabled'] : ""])
-
+            @include('partials.enabled', [
+                'label' => '是否启用',
+                'id' => 'enabled',
+                'value' => isset($grade['enabled']) ? $grade['enabled'] : NULL
+            ])
         </div>
     </div>
     @include('partials.form_buttons')

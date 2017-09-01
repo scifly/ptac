@@ -4,18 +4,19 @@
     </div>
     <div class="box-body">
         <div class="form-horizontal">
-            @if (!empty($tab['id']))
-                {{ Form::hidden('id', null, ['id' => 'id', 'value' => $tab['id']]) }}
+            @if (!empty($wapSite['id']))
+                {{ Form::hidden('id', $wapSite['id'], ['id' => 'id']) }}
             @endif
             <div class="form-group">
-                {!! Form::label('site_title', '首页抬头',['class' => 'col-sm-2 control-label']) !!}
+                {!! Form::label('site_title', '首页抬头', [
+                    'class' => 'col-sm-3 control-label'
+                ]) !!}
                 <div class="col-sm-3">
                     {!! Form::text('site_title', null, [
-                    'class' => 'form-control',
-                    'placeholder' => '不能超过40个汉字',
-                    'data-parsley-required' => 'true',
-                    'data-parsley-maxlength' => '40',
-                    'data-parsley-minlength' => '2',
+                        'class' => 'form-control',
+                        'placeholder' => '不能超过40个汉字',
+                        'required' => 'true',
+                        'data-parsley-length' => '[2, 40]'
                     ]) !!}
                 </div>
             </div>
@@ -25,7 +26,9 @@
                 'items' => $schools
             ])
             <div class="form-group">
-                {!! Form::label('media_ids', '轮播图',['class' => 'col-sm-2 control-label']) !!}
+                {!! Form::label('media_ids', '轮播图', [
+                    'class' => 'col-sm-3 control-label'
+                ]) !!}
                 <div class="col-sm-10">
                     <div class="preview">
                         @if(isset($medias))
@@ -43,7 +46,11 @@
                     <a class="btn btn-primary" data-toggle="modal" data-target="#modalPic">上传</a>
                 </div>
             </div>
-            @include('partials.enabled', ['enabled' => $wapsite['enabled']])
+            @include('partials.enabled', [
+                'label' => '是否启用',
+                'id' => 'enabled',
+                'value' => isset($wapSite['enabled']) ? $wapSite['enabled'] : NULL
+            ])
         </div>
     </div>
     @include('partials.form_buttons')

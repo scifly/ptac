@@ -10,9 +10,7 @@ class SchoolRequest extends FormRequest {
      *
      * @return bool
      */
-    public function authorize() {
-        return false;
-    }
+    public function authorize() { return true; }
     
     /**
      * Get the validation rules that apply to the request.
@@ -27,5 +25,18 @@ class SchoolRequest extends FormRequest {
             'school_type_id' => 'required|integer',
             'enabled' => 'required|boolean'
         ];
+    }
+    
+    protected function prepareForValidation() {
+        
+        $input = $this->all();
+        if (isset($input['enabled']) && $input['enabled'] === 'on') {
+            $input['enabled'] = 1;
+        }
+        if (!isset($input['enabled'])) {
+            $input['enabled'] = 0;
+        }
+        $this->replace($input);
+        
     }
 }

@@ -10,10 +10,10 @@
                 ]) !!}
                 <div class="col-sm-6">
                     {!! Form::text('name', null, [
-                        'class' => 'form-control special-form-control',
+                        'class' => 'form-control',
                         'placeholder' => '(请输入功能名称)',
-                        'data-parsley-required' => 'true',
-                        'data-parsley-maxlength' => '80'
+                        'required' => 'true',
+                        'maxlength' => '80'
                     ]) !!}
 
                 </div>
@@ -25,7 +25,7 @@
             {{--<div class="col-sm-6">--}}
             {{--{!! Form::select('icon_type_id', $iconTypes, null, [--}}
             {{--'style' => 'width: 50%;',--}}
-            {{--'data-parsley-required' => 'true',--}}
+            {{--'required' => 'true',--}}
             {{--]) !!}--}}
             {{--</div>--}}
             {{--</div>--}}
@@ -40,10 +40,10 @@
                 ]) !!}
                 <div class="col-sm-6">
                     {!! Form::text('remark', null, [
-                        'class' => 'form-control special-form-control',
+                        'class' => 'form-control',
                         'placeholder' => '(请输入备注)',
-                        'data-parsley-required' => 'true',
-                        'data-parsley-maxlength' => '255'
+                        'required' => 'true',
+                        'maxlength' => '255'
                     ]) !!}
                 </div>
             </div>
