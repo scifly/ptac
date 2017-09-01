@@ -27,11 +27,6 @@
     </div>
 </div>
 @include('partials.single_select', [
-    'label' => '所属企业',
-    'id' => 'corp_id',
-    'items' => $corps
-])
-@include('partials.single_select', [
     'label' => '所属学校',
     'id' => 'school_id',
     'items' => $schools

@@ -11,6 +11,8 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * App\Models\Educator
+ * 
+ * 教职员工
  *
  * @property int $id
  * @property int $user_id 教职员工用户ID
@@ -33,21 +35,34 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read Collection|\App\Models\Squad[] $classes
  * @property-read EducatorClass $educatorClass
  * @method static Builder|Educator whereEnabled($value)
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Team[] $teams
  */
 class Educator extends Model {
     
     protected $fillable = [
-        'user_id',
-        'team_ids',
-        'school_id',
-        'sms_quote',
-        'enabled',
+        'user_id', 'team_ids', 'school_id',
+        'sms_quote', 'enabled',
     ];
     
+    /**
+     * 返回指定教职员工对应的用户对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function user() { return $this->belongsTo('App\Models\User'); }
     
+    /**
+     * 返回指定教职员工所属的学校对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function school() { return $this->belongsTo('App\Models\School'); }
     
+    /**
+     * 获取指定教职员工所属的所有班级对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
     public function classes() {
         
         return $this->belongsToMany(
@@ -60,7 +75,40 @@ class Educator extends Model {
     }
     
     /**
-     * 根据SchoolIds返回教职员工列表
+     * 获取指定教职员工所属的所有教职员工组对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function teams() { return $this->belongsToMany('App\Models\Team', 'educators_teams'); }
+    
+    /**
+     * 获取指定年级的年级主任教职员工对象
+     *
+     * @param $gradeId
+     * @return Collection|static[]
+     */
+    public function gradeDeans($gradeId) {
+    
+        $educatorIds = Grade::whereId($gradeId)->where('enabled', 1)->first()->educator_ids;
+        return $this->whereIn('id', explode(',', $educatorIds))->whereEnabled(1)->get();
+    
+    }
+    
+    /**
+     * 获取指定班级的班级主任教职员工对象
+     *
+     * @param $classId
+     * @return Collection|static[]
+     */
+    public function classDeans($classId) {
+        
+        $educatorIds = Squad::whereId($classId)->where('enabled', 1)->first()->educator_ids;
+        return $this->whereIn('id', explode(',', $educatorIds))->whereEnabled(1)->get();
+        
+    }
+    
+    /**
+     * 获取指定学校的教职员工列表
      *
      * @param array $schoolIds
      * @return array
@@ -80,6 +128,13 @@ class Educator extends Model {
         
     }
     
+    /**
+     * 判断教职员工记录是否已经存在
+     *
+     * @param EducatorRequest $request
+     * @param null $id
+     * @return bool
+     */
     public function existed(EducatorRequest $request, $id = NULL) {
 
         if (!$id) {
@@ -97,8 +152,6 @@ class Educator extends Model {
 
     }
 
-    public function educatorClass() { return $this->hasOne('App\Models\EducatorClass'); }
-    
     public function datatable() {
         
         $columns = [

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * App\Models\Operator
+ * App\Models\Operator 管理/操作员
  *
  * @property int $id
  * @property int $company_id 所属运营者公司ID
@@ -27,18 +27,25 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read \App\Models\User $user
  */
 class Operator extends Model {
-    //
-    protected $table = 'operators';
+
+    protected $fillable = [
+        'company_id', 'user_id', 'school_ids',
+        'type', 'enabled'
+    ];
     
-    protected $fillable = ['company_id', 'user_id', 'school_id', 'type', 'created_at', 'updated_at'];
+    /**
+     * 返回指定管理/操作员所属的运营者公司对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function company() {return $this->belongsTo('App\Models\Company'); }
     
-    public function company() {
-        return $this->belongsTo('App\Models\Company');
-    }
-    
-    public function user() {
-        return $this->belongsTo('App\Models\User');
-    }
+    /**
+     * 获取指定管理/操作员对应的用户对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function user() {return $this->belongsTo('App\Models\User'); }
     
     
 }
