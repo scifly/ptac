@@ -71,7 +71,7 @@ class EventController extends Controller {
                 return $this->fail('此事件只有管理员可编辑！');
             }
         }
-        $data = view('event.show', ['events' => $this->event->findOrFail($id)])->render();
+        $data = view('event.show', ['events' => $this->event->find($id)])->render();
         return !empty($data) ? $this->succeed($data) : $this->fail();
     }
 
@@ -143,9 +143,6 @@ class EventController extends Controller {
             if ($this->event->isRepeatTimeAdmin($event['educator_id'], $event['start'], $event['end'])) {
                 return $this->fail('时间有冲突！');
             }
-        }
-        if ($listJson['isRemoveList'] == "true") {
-            $this->destroy($listJson['id']);
         }
         return $this->event->create($event) ? $this->succeed() : $this->fail();
     }
