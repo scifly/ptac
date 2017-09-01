@@ -4,8 +4,8 @@
     </div>
     <div class="box-body">
         <div class="form-horizontal">
-            @if (!empty($tab['id']))
-                {{ Form::hidden('id', null, ['id' => 'id', 'value' => $tab['id']]) }}
+            @if (isset($message) && !empty($message['id']))
+                {{ Form::hidden('id', null, ['id' => 'id', 'value' => $message['id']]) }}
             @endif
             <div class="form-group">
                 {!! Form::label('content', '消息内容',['class' => 'col-sm-2 control-label']) !!}
@@ -43,13 +43,16 @@
                     <div class="preview">
                         @if(isset($medias))
                             @foreach($medias as $key => $value)
-                                <div class="img-item">
-                                    <img src="../../../{{$value->path}}" id="{{$value->id}}">
-                                    <input type="hidden" name="media_ids[]" value="{{$value->id}}"/>
-                                    <div class="del-mask">
-                                        <i class="delete fa fa-trash"></i>
+                                @if(!empty($value))
+
+                                    <div class="img-item">
+                                        <img src="../../{{$value->path}}" id="{{$value->id}}">
+                                        <input type="hidden" name="media_ids[]" value="{{$value->id}}"/>
+                                        <div class="del-mask">
+                                            <i class="delete fa fa-trash"></i>
+                                        </div>
                                     </div>
-                                </div>
+                                @endif
                             @endforeach
                         @endif
                     </div>
@@ -67,34 +70,14 @@
                 'id' => 'user_id',
                 'items' => $users
             ])
-            {{--<div class="form-group">--}}
-            {{--{!! Form::label('user_ids', '接收者用户',['class' => 'col-sm-2 control-label']) !!}--}}
-            {{--<div class="col-sm-2">--}}
-            {{--<select multiple="multiple" name="user_ids[]" id="user_ids">--}}
-            {{--@foreach($users as $key => $value)--}}
-            {{--@if(isset($selectedUsers))--}}
-            {{--<option value="{{$key}}" @if(array_key_exists($key,$selectedUsers))selected="selected"@endif>--}}
-            {{--{{$value}}--}}
-            {{--</option>--}}
-            {{--@else--}}
-            {{--<option value="{{$key}}">{{$value}}</option>--}}
-            {{--@endif--}}
-            {{--@endforeach--}}
-            {{--</select>--}}
-            {{--</div>--}}
-            {{--</div>--}}
+
             @include('partials.multiple_select', [
                 'label' => '接收者用户',
                 'for' => 'user_ids',
                 'items' => $users,
                 'selectedItems' => isset($selectedUsers) ? $selectedUsers : []
             ])
-            {{--<div class="form-group">--}}
-            {{--{!! Form::label('message_type_id', '消息类型',['class' => 'col-sm-2 control-label']) !!}--}}
-            {{--<div class="col-sm-2">--}}
-            {{--{!! Form::select('message_type_id', $messageTypes, null, ['class' => 'form-control']) !!}--}}
-            {{--</div>--}}
-            {{--</div>--}}
+
             @include('partials.single_select', [
                 'label' => '消息类型',
                 'id' => 'message_type_id',

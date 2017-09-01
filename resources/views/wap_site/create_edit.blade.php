@@ -4,8 +4,8 @@
     </div>
     <div class="box-body">
         <div class="form-horizontal">
-            @if (!empty($tab['id']))
-                {{ Form::hidden('id', null, ['id' => 'id', 'value' => $tab['id']]) }}
+            @if (isset($wapsite) && !empty($wapsite['id']))
+                {{ Form::hidden('id', null, ['id' => 'id', 'value' => $wapsite['id']]) }}
             @endif
             <div class="form-group">
                 {!! Form::label('site_title', '首页抬头',['class' => 'col-sm-2 control-label']) !!}
@@ -30,20 +30,25 @@
                     <div class="preview">
                         @if(isset($medias))
                             @foreach($medias as $key => $value)
-                                <div class="img-item">
-                                    <img src="../../{{$value->path}}" id="{{$value->id}}">
-                                    <input type="hidden" name="media_ids[]" value="{{$value->id}}"/>
-                                    <div class="del-mask">
-                                        <i class="delete fa fa-trash"></i>
+                                @if(!empty($value))
+                                    <div class="img-item">
+                                        <img src="../../{{$value->path}}" id="{{$value->id}}">
+                                        <input type="hidden" name="media_ids[]" value="{{$value->id}}"/>
+                                        <div class="del-mask">
+                                            <i class="delete fa fa-trash"></i>
+                                        </div>
                                     </div>
-                                </div>
+                                @endif
                             @endforeach
                         @endif
                     </div>
                     <a class="btn btn-primary" data-toggle="modal" data-target="#modalPic">上传</a>
                 </div>
             </div>
-            @include('partials.enabled', ['enabled' => $wapsite['enabled']])
+            @include('partials.enabled', [
+            'label' => '是否启用',
+            'for' => 'enabled',
+            'value' => isset($wapsite['enabled']) ? $wapsite['enabled'] : ''])
         </div>
     </div>
     @include('partials.form_buttons')

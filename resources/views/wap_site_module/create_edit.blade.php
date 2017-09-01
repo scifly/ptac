@@ -4,8 +4,8 @@
     </div>
     <div class="box-body">
         <div class="form-horizontal">
-            @if (!empty($tab['id']))
-                {{ Form::hidden('id', null, ['id' => 'id', 'value' => $tab['id']]) }}
+            @if (isset($module) && !empty($module['id']))
+                {{ Form::hidden('id', null, ['id' => 'id', 'value' => $module['id']]) }}
             @endif
             {{--<div class="form-group">--}}
             {{--{!! Form::label('wap_site_id', '所属网站',['class' => 'col-sm-4 control-label']) !!}--}}
@@ -47,7 +47,10 @@
                     <a class="btn btn-primary" data-toggle="modal" data-target="#modalPic">上传</a>
                 </div>
             </div>
-            @include('partials.enabled', ['enabled' => $module['enabled']])
+            @include('partials.enabled', [
+                'label' => '是否启用',
+                'for' => 'enabled',
+                'value' => isset($module['enabled']) ? $module['enabled'] : ''])
         </div>
     </div>
     @include('partials.form_buttons')

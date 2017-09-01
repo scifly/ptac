@@ -142,8 +142,8 @@ class User extends Authenticatable {
         
     }
     
-    public function users(array $userIds) {
-
+    public function users($userIds) {
+        $userIds = explode("," ,$userIds);
         $users = [];
         foreach ($userIds as $id) {
             $user = $this->find($id);
