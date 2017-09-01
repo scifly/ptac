@@ -4,16 +4,19 @@
     </div>
     <div class="box-body">
         <div class="form-horizontal">
+            @if (!empty($subjectModule['id']))
+                {!! Form::hidden('id', $subjectModule['id'], ['id' => 'id']) !!}
+            @endif
             <div class="form-group">
-                {!! Form::label('name', '名称',['class' => 'col-sm-4 control-label']) !!}
-                <div class="col-sm-2">
+                {!! Form::label('name', '名称', [
+                    'class' => 'col-sm-3 control-label'
+                ]) !!}
+                <div class="col-sm-6">
                     {!! Form::text('name', null, [
-                    'class' => 'form-control',
-                    'placeholder' => '不能超过20个汉字',
-                    'data-parsley-required' => 'true',
-                    'data-parsley-maxlength' => '20',
-                    'data-parsley-minlength' => '2',
-
+                        'class' => 'form-control',
+                        'placeholder' => '不能超过20个汉字',
+                        'required' => 'true',
+                        'data-parsley-length' => '[2, 20]'
                     ]) !!}
                 </div>
             </div>
@@ -23,18 +26,23 @@
                 'items' => $subjects
             ])
             <div class="form-group">
-                {!! Form::label('weight', '次分类权重',['class' => 'col-sm-4 control-label']) !!}
-                <div class="col-sm-2">
+                {!! Form::label('weight', '次分类权重', [
+                    'class' => 'col-sm-3 control-label'
+                ]) !!}
+                <div class="col-sm-6">
                     {!! Form::text('weight', null, [
-                    'class' => 'form-control',
-                    'placeholder' => '次分类权重是数字',
-                    'data-parsley-required' => 'true',
-                    'data-parsley-type' => 'integer',
-
+                        'class' => 'form-control',
+                        'placeholder' => '次分类权重是数字',
+                        'required' => 'true',
+                        'type' => 'integer',
                     ]) !!}
                 </div>
             </div>
-            @include('partials.enabled', ['enabled' => $subjectModules['enabled']])
+            @include('partials.enabled', [
+                'label' => '是否启用',
+                'id' => 'enabled', 
+                'value' => isset($subjectModules['enabled']) ? $subjectModules['enabled'] : NULL
+            ])
         </div>
     </div>
     @include('partials.form_buttons')

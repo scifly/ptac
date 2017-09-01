@@ -155,6 +155,7 @@ Route::group(['prefix' => 'school_types'], routes('SchoolTypeController'));
 Route::group(['prefix' => 'subjects'], routes('SubjectController'));
 Route::get('subjects/query/{id}', 'SubjectController@query');
 Route::group(['prefix' => 'subject_modules'], routes('SubjectModuleController'));
+Route::group(['prefix' => 'majors'], routes('MajorController'));
 // 角色/权限 - 角色管理.权限管理
 Route::group(['prefix' => 'groups'], routes('GroupController'));
 // 年级/班级设置 - 年级管理.班级管理

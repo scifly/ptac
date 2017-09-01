@@ -1,9 +1,9 @@
 <div class="form-group">
-    <label for="{{ $for }}" class="col-sm-4 control-label">
+    <label for="{{ $id }}" class="col-sm-3 control-label">
         {{ $label }}
     </label>
-    <div class="col-sm-3">
-        <select multiple name="{{ $for }}[]" id="{{ $for }}" style="width: 100%;">
+    <div class="col-sm-6">
+        <select multiple name="{{ $id }}[]" id="{{ $id }}" style="width: 100%;">
             @foreach ($items as $key => $value)
                 @if(isset($selectedItems))
                     <option value="{{ $key }}"

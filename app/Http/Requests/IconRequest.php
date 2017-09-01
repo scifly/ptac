@@ -10,9 +10,7 @@ class IconRequest extends FormRequest {
      *
      * @return bool
      */
-    public function authorize() {
-        return true;
-    }
+    public function authorize() { return true; }
     
     /**
      * Get the validation rules that apply to the request.
@@ -20,12 +18,14 @@ class IconRequest extends FormRequest {
      * @return array
      */
     public function rules() {
+        
         return [
-            'name' => 'required|string|max:60|unique:icons',
+            'name' => 'required|string|max:60|unique:icons,name, ' . $this->input('id') . ',id',
             'remark' => 'required|string|max:255',
             'icon_type_id' => 'integer',
             'enabled' => 'required|boolean'
         ];
+        
     }
     
     protected function prepareForValidation() {

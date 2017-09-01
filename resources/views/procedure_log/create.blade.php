@@ -16,7 +16,7 @@
                     {!! Form::text('initiator_msg', null, [
                     'class' => 'form-control',
                     'placeholder' => '请输入留言',
-                    'data-parsley-required' => 'true',
+                    'required' => 'true',
                     ]) !!}
                 </div>
             </div>

@@ -105,4 +105,5 @@ class TeamController extends Controller {
         return $team->delete() ? $this->succeed() : $this->fail();
         
     }
+    
 }

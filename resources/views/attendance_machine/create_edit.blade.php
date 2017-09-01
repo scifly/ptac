@@ -4,28 +4,31 @@
     </div>
     <div class="box-body">
         <div class="form-horizontal">
+            @if(!empty($am['id'])) {
+            {{ Form::hidden('id', $am['id'], ['id' => 'id']) }}
+            @endif
             <div class="form-group">
                 {!! Form::label('name', '名称', [
-                    'class' => 'col-sm-4 control-label'
+                    'class' => 'col-sm-3 control-label'
                 ]) !!}
-                <div class="col-sm-2">
+                <div class="col-sm-6">
                     {!! Form::text('name', null, [
                         'class' => 'form-control',
                         'placeholder' => '(不得超过20个汉字)',
-                        'data-parsley-required' => 'true',
+                        'required' => 'true',
                         'maxlength' => '60'
                     ]) !!}
                 </div>
             </div>
             <div class="form-group">
                 {!! Form::label('location', '安装位置', [
-                    'class' => 'col-sm-4 control-label'
+                    'class' => 'col-sm-3 control-label'
                 ]) !!}
-                <div class="col-sm-3">
+                <div class="col-sm-6">
                     {!! Form::text('location', null, [
                         'class' => 'form-control',
                         'placeholder' => '(不得超过80个汉字)',
-                        'data-parsley-required' => 'true',
+                        'required' => 'true',
                         'maxlength' => '255'
                     ]) !!}
                 </div>
@@ -37,19 +40,23 @@
             ])
             <div class="form-group">
                 {!! Form::label('machineid', '考勤机id', [
-                    'class' => 'col-sm-4 control-label'
+                    'class' => 'col-sm-3 control-label'
                 ]) !!}
-                <div class="col-sm-2">
+                <div class="col-sm-6">
                     {!! Form::text('machineid', null, [
                         'class' => 'form-control',
                         'placeholder' => '(小写字母和数字，不超过20个字符)',
-                        'data-parsley-required' => 'true',
+                        'required' => 'true',
                         'data-parsley-type' => 'alphanum',
                         'maxlength' => '20'
                     ]) !!}
                 </div>
             </div>
-            @include('partials.enabled', ['enabled' => $am['enabled']])
+            @include('partials.enabled', [
+                'label' => '是否启用',
+                'id' => 'enabled',
+                'value' => $am['enabled']
+            ])
         </div>
     </div>
     @include('partials.form_buttons')

@@ -7,20 +7,14 @@ use Illuminate\Contracts\View\View;
 
 class TeamComposer {
     
-    protected $schools;
+    protected $school;
     
-    public function __construct(School $schools) {
-        
-        $this->schools = $schools;
-        
-    }
+    public function __construct(School $school) { $this->school = $school; }
     
     public function compose(View $view) {
         
-        // $view->with('schoolTypes', $this->schoolTypes->pluck('name', 'id'));
-        $view->with([
-            'schools' => $this->schools->pluck('name', 'id'),
-        ]);
+        $view->with(['schools' => $this->school->pluck('name', 'id')]);
+        
     }
     
 }

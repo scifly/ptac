@@ -1,1 +1,1 @@
-$(crud.edit('formIconType'));
+$(crud.edit('formIconType', 'icon_types'));

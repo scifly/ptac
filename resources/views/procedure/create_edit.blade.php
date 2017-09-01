@@ -5,43 +5,49 @@
     <div class="box-body">
         <div class="form-horizontal">
             @if (!empty($procedure['id']))
-                {{ Form::hidden('id', null, ['id' => 'id', 'value' => $procedure['id']])}}
+                {{ Form::hidden('id', $procedure['id'], ['id' => 'id']) }}
             @endif
             @include('partials.single_select', [
-              'label' => '流程类型',
-              'id' => 'procedure_type_id',
-              'items' => $procedureTypes
-               ])
+                'label' => '流程类型',
+                'id' => 'procedure_type_id',
+                'items' => $procedureTypes
+            ])
             @include('partials.single_select', [
-             'label' => '所属学校',
-             'id' => 'school_id',
-             'items' => $schools
+                'label' => '所属学校',
+                'id' => 'school_id',
+                'items' => $schools
             ])
             <div class="form-group">
-                {!! Form::label('name', '名称',['class' => 'col-sm-4 control-label']) !!}
+                {!! Form::label('name', '名称', [
+                    'class' => 'col-sm-3 control-label'
+                ]) !!}
                 <div class="col-sm-2">
                     {!! Form::text('name', null, [
                         'class' => 'form-control',
                         'placeholder' => '(不得超过20个汉字)',
-                        'data-parsley-required' => 'true',
+                        'required' => 'true',
                         'maxlength' => '60'
                     ]) !!}
                 </div>
             </div>
             <div class="form-group">
                 {!! Form::label('remark', '备注',[
-                    'class' => 'col-sm-4 control-label',
+                    'class' => 'col-sm-3 control-label',
                 ]) !!}
                 <div class="col-sm-3">
                     {!! Form::text('remark', null, [
                         'class' => 'form-control',
                          'placeholder' => '(不得超过80个汉字)',
-                         'data-parsley-required' => 'true',
+                         'required' => 'true',
                          'maxlength' => '255'
                     ]) !!}
                 </div>
             </div>
-            @include('partials.enabled', ['enabled' => isset($procedure['enabled']) ? $procedure['enabled'] : ''])
+            @include('partials.enabled', [
+                'label' => '是否启用',
+                'id' => 'enabled',
+                'value' => isset($procedure['enabled']) ? $procedure['enabled'] : NULL
+            ])
         </div>
     </div>
     @include('partials.form_buttons')

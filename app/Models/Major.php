@@ -73,18 +73,20 @@ class Major extends Model {
             ['db' => 'Major.created_at', 'dt' => 4],
             ['db' => 'Major.updated_at', 'dt' => 5],
             [
-                'db' => 'Major.id', 'dt' => 0,
+                'db' => 'Major.id', 'dt' => 6,
                 'formatter' => function($d, $row) {
                     return DataTable::dtOps($this, $d, $row);
                 }
             ],
         ];
         $joins = [
-            'table' => 'schools',
-            'alias' => 'School',
-            'type' => 'INNER',
-            'conditions' => [
-                'School.id = Major.school_id'
+            [
+                'table' => 'schools',
+                'alias' => 'School',
+                'type' => 'INNER',
+                'conditions' => [
+                    'School.id = Major.school_id'
+                ]
             ]
         ];
         return DataTable::simple($this, $columns, $joins);

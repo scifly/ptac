@@ -5,7 +5,7 @@
     <div class="box-body">
         <div class="form-horizontal">
             @if (isset($educator) && !empty($educator['id']))
-                {{ Form::hidden('id', null, ['id' => 'id', 'value' => $educator['id']]) }}
+                {{ Form::hidden('id', $educator['id'], ['id' => 'id']) }}
             @endif
 
             @include('partials.single_select', [
@@ -13,29 +13,30 @@
                 'id' => 'user_id',
                 'items' => $users
             ])
-
             @include('partials.multiple_select', [
                 'label' => '所属组',
-                'for' => 'team_ids',
+                'id' => 'team_ids',
                 'items' => $teams,
                 'selectedItems' => isset($selectedTeams) ? $selectedTeams:[]
             ])
-
             @include('partials.single_select', [
                 'label' => '所属学校',
                 'id' => 'school_id',
                 'items' => $schools
             ])
-
             <div class="form-group">
-                {!! Form::label('sms_quote', '可用短信条数',['class' => 'col-sm-4 control-label']) !!}
-                <div class="col-sm-2">
+                {!! Form::label('sms_quote', '可用短信条数', [
+                    'class' => 'col-sm-3 control-label'
+                ]) !!}
+                <div class="col-sm-6">
                     {!! Form::text('sms_quote', null, ['class' => 'form-control']) !!}
                 </div>
             </div>
-
-            @include('partials.enabled', ['enabled' => isset($educator['enabled']) ? $educator['enabled'] : ""])
-
+            @include('partials.enabled', [
+                'label' => '是否启用',
+                'id' => 'enabled',
+                'value' => isset($educator['enabled']) ? $educator['enabled'] : NULL
+            ])
         </div>
     </div>
     @include('partials.form_buttons')

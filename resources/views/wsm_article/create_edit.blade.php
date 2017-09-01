@@ -5,42 +5,43 @@
     <div class="box-body">
         <div class="form-horizontal">
             @if (isset($article) && !empty($article['id']))
-                {{ Form::hidden('id', null, ['id' => 'id', 'value' => $article['id']]) }}
+                {{ Form::hidden('id', $article['id'], ['id' => 'id']) }}
             @endif
             @include('partials.single_select', [
                 'label' => '所属网站模块',
                 'id' => 'wsm_id',
                 'items' => $wsms
             ])
-
             <div class="form-group">
-                {!! Form::label('name', '名称',['class' => 'col-sm-2 control-label']) !!}
+                {!! Form::label('name', '名称', [
+                    'class' => 'col-sm-3 control-label'
+                ]) !!}
                 <div class="col-sm-3">
                     {!! Form::text('name', null, [
-                    'class' => 'form-control',
-                    'placeholder' => '不能超过40个汉字',
-                    'data-parsley-required' => 'true',
-                    'data-parsley-maxlength' => '40',
-                    'data-parsley-minlength' => '2',
-
+                        'class' => 'form-control',
+                        'placeholder' => '不能超过40个汉字',
+                        'required' => 'true',
+                        'data-parsley-length' => '[2, 40]'
                     ]) !!}
                 </div>
             </div>
             <div class="form-group">
-                {!! Form::label('summary', '文章摘要',['class' => 'col-sm-2 control-label']) !!}
+                {!! Form::label('summary', '文章摘要', [
+                    'class' => 'col-sm-3 control-label'
+                ]) !!}
                 <div class="col-sm-3">
                     {!! Form::text('summary', null, [
-                    'class' => 'form-control',
-                    'placeholder' => '不能超过60个汉字',
-                    'data-parsley-required' => 'true',
-                    'data-parsley-maxlength' => '60',
-                    'data-parsley-minlength' => '2',
-
+                        'class' => 'form-control',
+                        'placeholder' => '不能超过60个汉字',
+                        'required' => 'true',
+                        'data-parsley-length' => '[2, 60]'
                     ]) !!}
                 </div>
             </div>
             <div class="form-group">
-                {!! Form::label('media_ids', '轮播图',['class' => 'col-sm-2 control-label']) !!}
+                {!! Form::label('media_ids', '轮播图', [
+                    'class' => 'col-sm-3 control-label'
+                ]) !!}
                 <div class="col-sm-6">
                     <div class="preview">
                         @if(isset($medias))
@@ -59,7 +60,9 @@
                 </div>
             </div>
             <div class="form-group">
-                {!! Form::label('content', '文章内容',['class' => 'col-sm-2 control-label']) !!}
+                {!! Form::label('content', '文章内容', [
+                    'class' => 'col-sm-3 control-label'
+                ]) !!}
                 <div class="col-sm-6">
                     <script id="container" name="content" type="text/plain">
                         @if(isset($article->content))
@@ -68,9 +71,11 @@
                     </script>
                 </div>
             </div>
-
-            @include('partials.enabled', ['enabled' => isset($article['enabled']) ? $article['enabled'] : ""])
-
+            @include('partials.enabled', [
+                'label' => '是否启用',
+                'id' => 'enabled',
+                'value' => isset($article['enabled']) ? $article['enabled'] : NULL
+            ])
         </div>
     </div>
     @include('partials.form_buttons')
