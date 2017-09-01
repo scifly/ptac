@@ -25,7 +25,11 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        {!! Form::label('remark', '备注',['class' => 'col-sm-4 control-label']) !!}
+                        {!! Form::label('remark', '备注',[
+                        'class' => 'col-sm-4 control-label',
+                        'placeholder' => '(不超过40个汉字)',
+                        'data-parsley-minlength' => '4'
+                        ]) !!}
                         <div class="col-sm-4">
                             {!! Form::text('remark', null, [
                             'class' => 'form-control',
@@ -34,7 +38,10 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        {!! Form::label('location', '地点',['class' => 'col-sm-4 control-label']) !!}
+                        {!! Form::label('location', '地点',[
+                        'class' => 'col-sm-4 control-label',
+                        'data-parsley-required' => 'true'
+                        ]) !!}
                         <div class="col-sm-4">
                             {!! Form::text('location', null, [ 'class' => 'form-control']) !!}
                         </div>
@@ -60,7 +67,7 @@
                             {!! Form::label('ispublic', '否') !!}
                         </div>
                     </div>
-                    <div class="form-group iscourse-form" style="display:none" >
+                    <div class="form-group iscourse-form" style="display:none">
                         {!! Form::label('iscourse', '是否为课程事件',['class' => 'col-sm-4 control-label']) !!}
                         <div class="col-sm-3">
                             {!! Form::radio('iscourse', '1') !!}
@@ -69,7 +76,7 @@
                             {!! Form::label('iscourse', '否') !!}
                         </div>
                     </div>
-                    <div class="form-group educator_id-form" style="display:none" >
+                    <div class="form-group educator_id-form" style="display:none">
                         {!! Form::label('educator_id', '教师姓名',['class' => 'col-sm-4 control-label']) !!}
                         <div class="col-sm-4">
                             {!! Form::select('educator_id', $educators, null, [ 'class' => 'form-control']) !!}

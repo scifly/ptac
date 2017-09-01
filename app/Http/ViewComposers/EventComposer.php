@@ -25,11 +25,10 @@ class EventComposer {
 
     public function compose(View $view) {
 
-//        var_dump( $this->getSubjects($this->userId));
-//        echo '*********************';
-//        var_dump( $this->getEducators($this->userId));
-//        die();
-
+//            var_dump( $this->getSubjects($this->userId));
+//            echo '*********************';
+//            var_dump( $this->getEducators($this->userId));
+//            die();
         $view->with([
             'educators' => $this->getEducators($this->userId),
             'subjects' => $this->getSubjects($this->userId)
@@ -43,11 +42,14 @@ class EventComposer {
         foreach ($data as $v) {
             $educatorArr[$v['id']] = $v['user']['realname'];
         }
+        $educatorArr[0] = "无";
         return $educatorArr;
     }
 
     private function getSubjects($userId) {
         $educator = Educator::where('user_id', $userId)->first();
-        return Subject::where('school_id', $educator->school_id)->pluck('name', 'id');
+        $subjects = Subject::where('school_id', $educator->school_id)->pluck('name', 'id');
+        $subjects[0] = "无";
+        return $subjects;
     }
 }
