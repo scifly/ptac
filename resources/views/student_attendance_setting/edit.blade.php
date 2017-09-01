@@ -1,3 +1,3 @@
-{!! Form::model($subject, ['method' => 'put', 'id' => 'formSubject','data-parsley-validate' => 'true']) !!}
-@include('subject.create_edit')
+{!! Form::model($studentAttendanceSetting, ['method' => 'put', 'id' => 'formStudentAttendanceSetting','data-parsley-validate' => 'true']) !!}
+@include('student_attendance_setting.create_edit')
 {!! Form::close() !!}

@@ -52,6 +52,11 @@ class Grade extends Model {
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function classes() { return $this->hasMany('App\Models\Squad'); }
+
+    public function studentAttendanceSetting()
+    {
+        return $this->hasOne('App\Models\StudentAttendanceSetting');
+    }
     
     /**
      * 通过Squad中间对象获取指定年级包含的所有学生对象

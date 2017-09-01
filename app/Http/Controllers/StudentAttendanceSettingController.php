@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StudentAttendanceSettingRequest;
 use App\Models\StudentAttendanceSetting;
 use Illuminate\Support\Facades\Request;
 
@@ -37,58 +38,77 @@ class StudentAttendanceSettingController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * 保存新创建的学生考勤设置记录.
+     * @param StudentAttendanceSettingRequest $request
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function store(Request $request)
+    public function store(StudentAttendanceSettingRequest $request)
     {
-        //
+        if ($this->studentAttendanceSetting->existed($request)) {
+            return $this->fail('已经有此记录');
+        }
+        return $this->studentAttendanceSetting->create($request->all()) ? $this->succeed() : $this->fail();
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\StudentAttendanceSetting  $studentAttendanceSetting
-     * @return \Illuminate\Http\Response
+     * 显示编辑指定学生考勤设置记录的详情.
+     * @param $id
+     * @return bool|\Illuminate\Http\JsonResponse
      */
-    public function show(StudentAttendanceSetting $studentAttendanceSetting)
+    public function show($id)
     {
-        //
+        $studentAttendanceSetting = $this->studentAttendanceSetting->find($id);
+        if (!$studentAttendanceSetting) { return $this->notFound(); }
+        return $this->output(__METHOD__, [
+            'studentAttendanceSetting' => $studentAttendanceSetting,
+        ]);
+
     }
 
     /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\StudentAttendanceSetting  $studentAttendanceSetting
+     * 显示编辑指定学生考勤设置记录的表单.
+     * @param $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(StudentAttendanceSetting $studentAttendanceSetting)
+    public function edit($id)
     {
-        //
+        $studentAttendanceSetting = $this->studentAttendanceSetting->find($id);
+        if (!$studentAttendanceSetting) {
+            return $this->notFound();
+        }
+        return $this->output(__METHOD__, [
+            'studentAttendanceSetting' => $studentAttendanceSetting,
+        ]);
     }
 
     /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\StudentAttendanceSetting  $studentAttendanceSetting
-     * @return \Illuminate\Http\Response
+     * 更新指定的学生考勤设置记录.
+     * @param StudentAttendanceSettingRequest $request
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function update(Request $request, StudentAttendanceSetting $studentAttendanceSetting)
+    public function update(StudentAttendanceSettingRequest $request, $id)
     {
-        //
+        $studentAttendanceSetting = $this->studentAttendanceSetting->find($id);
+        if (!$studentAttendanceSetting) {
+            return $this->notFound();
+        }
+        if ($this->studentAttendanceSetting->existed($request, $id)) {
+            return $this->fail('已经有此记录');
+        }
+        return $studentAttendanceSetting->update($request->all()) ? $this->succeed() : $this->fail();
     }
 
     /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\StudentAttendanceSetting  $studentAttendanceSetting
-     * @return \Illuminate\Http\Response
+     * 删除指定的学生考勤设置记录.
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy(StudentAttendanceSetting $studentAttendanceSetting)
+    public function destroy($id)
     {
-        //
+        $studentAttendanceSetting = $this->studentAttendanceSetting->find($id);
+        if (!$studentAttendanceSetting) { return $this->notFound(); }
+        return $studentAttendanceSetting->delete() ? $this->succeed() : $this->fail();
+
     }
 }

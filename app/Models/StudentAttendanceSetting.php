@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use App\Http\Requests\StudentAttendanceSettingRequest;
 
 /**
  * App\Models\StudentAttendanceSetting
@@ -50,6 +51,33 @@ class StudentAttendanceSetting extends Model {
         'msg_template',
     ];
 
+    public function grade()
+    {
+        return $this->belongsTo('App\Models\Grade');
+    }
+
+    public function semester()
+    {
+        return $this->belongsTo('App\Models\Semester','semester_id','id');
+    }
+
+    public function existed(StudentAttendanceSettingRequest $request, $id = NULL) {
+
+        if (!$id) {
+            $studentAttendanceSetting = $this->where('name', $request->input('name'))
+                ->where('grade_id', $request->input('grade_id'))
+                ->where('semester_id', $request->input('semester_id'))
+                ->first();
+        } else {
+            $studentAttendanceSetting = $this->where('name', $request->input('name'))
+                ->where('id', '<>', $id)
+                ->where('grade_id', $request->input('grade_id'))
+                ->where('semester_id', $request->input('semester_id'))
+                ->first();
+        }
+        return $studentAttendanceSetting ? true : false;
+
+    }
 
     public function datatable() {
 
@@ -61,14 +89,17 @@ class StudentAttendanceSetting extends Model {
             [
                 'db' => 'StudentAttendanceSetting.ispublic', 'dt' => 4,
                 'formatter' => function ($d) {
-                    $studentAttendanceSetting = StudentAttendanceSetting::whereId($d)->first();
-                    return $studentAttendanceSetting->ispublic == 1 ? '是' : '否';
+                     return $d == 1 ? '是' : '否';
                 }
             ],
             ['db' => 'StudentAttendanceSetting.start', 'dt' => 5],
             ['db' => 'StudentAttendanceSetting.end', 'dt' => 6],
             ['db' => 'StudentAttendanceSetting.day', 'dt' => 7],
-            ['db' => 'StudentAttendanceSetting.inorout', 'dt' => 8,],
+            ['db' => 'StudentAttendanceSetting.inorout', 'dt' => 8,
+                'formatter' => function ($d) {
+                    return $d == 1 ? '进' : '出';
+                }
+            ],
             ['db' => 'StudentAttendanceSetting.msg_template', 'dt' => 9],
             [
                 'db' => 'StudentAttendanceSetting.updated_at', 'dt' => 10,
