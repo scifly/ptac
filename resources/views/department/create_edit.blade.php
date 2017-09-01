@@ -5,10 +5,10 @@
     ]) !!}
     <div class="col-sm-6">
         {!! Form::text('name', null, [
-            'class' => 'form-control special-form-control',
+            'class' => 'form-control',
             'placeholder' => '(请输入部门名称)',
-            'data-parsley-required' => 'true',
-            'data-parsley-maxlength' => '255'
+            'required' => 'true',
+            'maxlength' => '255'
         ]) !!}
 
     </div>
@@ -19,10 +19,10 @@
     ]) !!}
     <div class="col-sm-6">
         {!! Form::text('remark', null, [
-            'class' => 'form-control special-form-control',
+            'class' => 'form-control',
             'placeholder' => '(请输入备注)',
-            'data-parsley-required' => 'true',
-            'data-parsley-maxlength' => '255'
+            'required' => 'true',
+            'maxlength' => '255'
         ]) !!}
     </div>
 </div>
@@ -33,7 +33,7 @@
 ])
 @include('partials.enabled', [
     'label' => '是否启用',
-    'for' => 'enabled',
+    'id' => 'enabled',
     'value' => $department['enabled']
 ])
 {!! Form::hidden('id') !!}

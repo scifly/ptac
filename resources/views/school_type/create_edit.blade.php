@@ -10,7 +10,7 @@
                     {!! Form::text('name', null, [
                         'class' => 'form-control',
                         'placeholder' => '(不得超过20个汉字)',
-                        'data-parsley-required' => 'true',
+                        'required' => 'true',
                         'max' => '60'
                     ]) !!}
                 </div>

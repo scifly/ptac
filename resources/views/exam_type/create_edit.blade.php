@@ -5,37 +5,39 @@
     <div class="box-body">
         <div class="form-horizontal">
             @if (isset($examType) && !empty($examType['id']))
-                {{ Form::hidden('id', null, ['id' => 'id', 'value' => $examType['id']]) }}
+                {{ Form::hidden('id', $examType['id'], ['id' => 'id']) }}
             @endif
             <div class="form-group">
-                {!! Form::label('name', '名称',['class' => 'col-sm-3 control-label']) !!}
-                <div class="col-sm-4">
+                {!! Form::label('name', '名称', [
+                    'class' => 'col-sm-3 control-label'
+                ]) !!}
+                <div class="col-sm-6">
                     {!! Form::text('name', null, [
                         'class' => 'form-control',
                         'placeholder' => '(不超过40个汉字)',
-                        'data-parsley-required' => 'true',
-                        'data-parsley-minlength' => '4',
-                        'data-parsley-maxlength' => '40'
+                        'required' => 'true',
+                        'data-parsley-length' => '[4, 40]'
                     ]) !!}
                 </div>
-                {{--<div class="col-sm-5">--}}
-                {{--<p class="form-control-static text-danger">{{ $errors->first('name') }}</p>--}}
-                {{--</div>--}}
             </div>
-
             <div class="form-group">
-                {!! Form::label('remark', '备注',['class' => 'col-sm-3 control-label']) !!}
-                <div class="col-sm-4">
+                {!! Form::label('remark', '备注', [
+                    'class' => 'col-sm-3 control-label'
+                ]) !!}
+                <div class="col-sm-6">
                     {!! Form::text('remark', null, [
-                    'class' => 'form-control',
-                    'placeholder' => '不能超过20个汉字',
-                    'data-parsley-required' => 'true',
-                    'data-parsley-minlength' => '2',
-                    'data-parsley-maxlength' => '20'
+                        'class' => 'form-control',
+                        'placeholder' => '不能超过20个汉字',
+                        'required' => 'true',
+                        'data-parsley-length' => '[2, 20]'
                     ]) !!}
                 </div>
             </div>
-            @include('partials.enabled', ['enabled' => isset($examType['enabled']) ? $examType['enabled'] : ""])
+            @include('partials.enabled', [
+                'label' => '是否启用',
+                'id' => 'enabled',
+                'value' => isset($examType['enabled']) ? $examType['enabled'] : NULL
+            ])
         </div>
     </div>
     @include('partials.form_buttons')

@@ -18,12 +18,11 @@ class DepartmentController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
-        
+    
         if (Request::method() === 'POST') {
-            return response()->json($this->department->tree(1));
+            return response()->json($this->department->tree([1]));
         }
         return parent::output(__METHOD__);
-
 
     }
     

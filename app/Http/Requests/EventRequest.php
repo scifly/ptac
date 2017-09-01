@@ -24,7 +24,11 @@ class EventRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'title' => 'required|string|max:40|min:1',
+            'remark' => 'required',
+            'location' => 'required|string',
+            'contact' => 'required|string',
+            'url' => 'required|string'
         ];
     }
 

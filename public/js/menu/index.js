@@ -1,5 +1,6 @@
 var formUrl = '', currentJsTree, requestType;
 var csrfToken = $('#csrf_token').attr('content');
+var breadcrumb = '';
 
 var nodeid; // id of the node to be deleted
 // var $boxBody = $('.box-body'); // the div that holds the form
@@ -96,6 +97,11 @@ var menu = {
                                 );
                             }
                         });
+                    });
+                    $(document).on('click', '#record-list', function() {
+                        $('#breadcrumb').html(breadcrumb);
+                        $('.box-tools').remove();
+                        menu.showTree();
                     });
                 } else {
                     $save = $('#save');
@@ -223,6 +229,7 @@ function customMenu() {
             action: function(node) {
                 var selector = menu.getSelector(node);
 
+                breadcrumb = $('#breadcrumb').html();
                 formUrl = urlRankTabs + selector.id;
                 requestType = 'POST';
                 menu.getForm(selector.id, urlMenuTabs + selector.id, 'rank');

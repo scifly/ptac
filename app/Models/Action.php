@@ -549,7 +549,9 @@ HTML;
                 case 'create':
                 case 'edit':
                 case 'show':
-                    $viewPath = str_singular($this->getTableName($controller)) . '.' . $action;
+                    $prefix = str_singular($this->getTableName($controller));
+                    $prefix = ($prefix === 'corps') ? 'corp' : $prefix;
+                    $viewPath = $prefix . '.' . $action;
                     break;
                 default:
                     $viewPath = '';
@@ -571,7 +573,9 @@ HTML;
             $controller, 0,
             strlen($controller) - strlen('Controller')
         );
-        
+        if ($modelName === 'Squad') {
+            return 'classes';
+        }
         return Inflector::pluralize(Inflector::tableize($modelName));
         
     }
@@ -638,7 +642,9 @@ HTML;
                 case 'index':
                 case 'create':
                 case 'edit':
-                    return 'js/' . str_singular($this->getTableName($ctlr)) . '/' . $action . '.js';
+                    $prefix = str_singular($this->getTableName($ctlr));
+                    $prefix = ($prefix === 'corps') ? 'corp' : $prefix;
+                    return 'js/' .  $prefix . '/' . $action . '.js';
                 default:
                     return NULL;
             }

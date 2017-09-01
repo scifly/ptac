@@ -5,7 +5,7 @@
     <div class="box-body">
         <div class="form-horizontal">
             @if (!empty($custodian['id']))
-                {{ Form::hidden('id', null, ['id' => 'id', 'value' => $custodian['id']]) }}
+                {{ Form::hidden('id', $custodian['id'], ['id' => 'id']) }}
             @endif
             <div class="form-group">
                 {{ Form::label('user[realname]', '姓名', [
@@ -100,7 +100,7 @@
             </div>
             @include('partials.multiple_select', [
                 'label' => '所属部门',
-                'for' => 'department_ids',
+                'id' => 'department_ids',
                 'items' => $departments,
                 'selectedItems' => isset($selectedDepartments) ? $selectedDepartments : NULL
             ])
@@ -114,7 +114,7 @@
             </div>
             @include('partials.enabled', [
                 'label' => '是否启用',
-                'for' => 'enabled',
+                'id' => 'enabled',
                 'value' => isset($custodian['enabled']) ? $custodian['enabled'] : NULL
             ])
         </div>

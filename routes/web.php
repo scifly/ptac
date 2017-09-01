@@ -155,6 +155,7 @@ Route::group(['prefix' => 'school_types'], routes('SchoolTypeController'));
 Route::group(['prefix' => 'subjects'], routes('SubjectController'));
 Route::get('subjects/query/{id}', 'SubjectController@query');
 Route::group(['prefix' => 'subject_modules'], routes('SubjectModuleController'));
+Route::group(['prefix' => 'majors'], routes('MajorController'));
 // 角色/权限 - 角色管理.权限管理
 Route::group(['prefix' => 'groups'], routes('GroupController'));
 // 年级/班级设置 - 年级管理.班级管理
@@ -169,6 +170,12 @@ Route::group(['prefix' => 'icon_types'], routes('IconTypeController'));
 Route::group(['prefix' => 'message_types'], routes('MessageTypeController'));
 // 运营者设置 - 企业设置
 Route::group(['prefix' => 'departments'], routes('DepartmentController'));
+Route::group(['prefix' => 'departments'], function() {
+    $ctlr = 'DepartmentController';
+    Route::post('index', $ctlr . '@index');
+    Route::post('move', $ctlr . '@move');
+    Route::post('sort', $ctlr . '@sort');
+});
 Route::group(['prefix' => 'companies'], routes('CompanyController'));
 Route::group(['prefix' => 'corps'], routes('CorpController'));
 // 菜单管理 - action设置.卡片设置.菜单设置
