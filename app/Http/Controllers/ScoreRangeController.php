@@ -114,7 +114,7 @@ class ScoreRangeController extends Controller
         $score_range = $request->all();
         $score_range['subject_ids'] = implode(',',$score_range['subject_ids']);
 
-        return $app->update($score_range) ? $this->succeed() : $this->fail();
+        return $scoreRange->update($score_range) ? $this->succeed() : $this->fail();
     }
 
     /**
