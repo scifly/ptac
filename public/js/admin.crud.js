@@ -15,8 +15,17 @@ var crud = {
             success: function(result) {
                 if (result.statusCode === 200) {
                     switch(requestType) {
-                        case 'POST': obj.reset(); break;
-                        case 'DELETE': obj.remove(); break;
+                        case 'POST':
+                            obj.reset();
+                            $('input[data-render="switchery"]').each(function() {
+                                // it seems dblClick() won't do the trick
+                                // so just click twice
+                                $(this).click(); $(this).click();
+                            });
+                            break;
+                        case 'DELETE':
+                            obj.remove();
+                            break;
                         default: break;
                     }
                 }
@@ -74,7 +83,7 @@ var crud = {
             autoWidth: true,
             scrollX: true,
             language: {url: '../files/ch.json'},
-            lengthMenu: [[15, 25, 50, -1], [15, 25, 50, 'All']],
+            lengthMenu: [[15, 25, 50, -1], [15, 25, 50, 'All']]
         });
 
         // 新增记录
@@ -110,6 +119,7 @@ var crud = {
                 'DELETE', page.siteRoot() + '/' + table + '/delete/' + id,
                 { _token: $('#csrf_token').attr('content') }, $row
             );
+            // crud.unbindEvents();
         });
     },
     create: function(formId, table) {

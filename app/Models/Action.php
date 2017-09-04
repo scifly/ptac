@@ -339,8 +339,6 @@ HTML;
                 }
             }
         }
-        // dd($selfDefinedMethods);
-        // dd($selfDefinedMethods);
         foreach ($selfDefinedMethods as $actions) {
             foreach ($actions as $action) {
                 $a = $this->where([

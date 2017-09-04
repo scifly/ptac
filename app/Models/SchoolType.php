@@ -26,18 +26,14 @@ use Illuminate\Database\Eloquent\Model;
  */
 class SchoolType extends Model {
     
-    protected $fillable = [
-        'name',
-        'remark',
-        'created_at',
-        'updated_at',
-    ];
+    protected $fillable = ['name', 'remark', 'enabled'];
     
-    public function schools() {
-        
-        return $this->hasMany('App\Models\School');
-        
-    }
+    /**
+     * 获取指定学校类型下属的所有学校对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function schools() { return $this->hasMany('App\Models\School'); }
     
     public function datatable() {
         
