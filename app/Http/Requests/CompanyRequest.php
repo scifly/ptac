@@ -32,9 +32,9 @@ class CompanyRequest extends FormRequest {
         
         return [
             'name.required' => '公司名称不能为空',
-            'name.max' => '公司名称不超过40个汉字',
-            'name.min' => '公司名称不能少于四个字符',
-            'remark.required' => '备注不能为空',
+            'name.between' => '公司名称应该在4~40个字符之间',
+            'name.unique' => '已有该记录',
+            'remark.required' => '备注不能为空'
         ];
         
     }
