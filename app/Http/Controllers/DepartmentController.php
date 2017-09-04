@@ -45,9 +45,6 @@ class DepartmentController extends Controller {
      */
     public function store(DepartmentRequest $request) {
         
-        if ($this->department->existed($request)) {
-            return $this->fail('已经有此记录');
-        }
         return $this->department->create($request->all()) ? $this->succeed() : $this->fail();
         
     }
@@ -98,9 +95,6 @@ class DepartmentController extends Controller {
         $department = $this->department->find($id);
         if (!$department) {
             return $this->notFound();
-        }
-        if ($this->department->existed($request, $id)) {
-            return $this->fail('已经有此记录');
         }
         return $department->update($request->all()) ? $this->succeed() : $this->fail();
         

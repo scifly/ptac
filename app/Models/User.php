@@ -240,7 +240,7 @@ class User extends Authenticatable {
             ['db' => 'User.realname', 'dt' => 4],
             [
                 'db' => 'User.gender', 'dt' => 5,
-                'formatter' => function ($d, $row) {
+                'formatter' => function ($d) {
                     return $d ? '男' : '女';
                 }
             ],

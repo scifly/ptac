@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 
 class CustodianRequest extends FormRequest {
+    
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -18,10 +19,13 @@ class CustodianRequest extends FormRequest {
      * @return array
      */
     public function rules() {
+        
         return [
-            'user_id' => 'required|integer',
+            'user_id' => 'required|integer|unique:custodians,user_id,' .
+                $this->input('id') . ',id',
             'expiry' => 'required|datetime'
         ];
+        
     }
     
     protected function prepareForValidation() {
@@ -30,4 +34,5 @@ class CustodianRequest extends FormRequest {
         $this->replace($input);
         
     }
+    
 }

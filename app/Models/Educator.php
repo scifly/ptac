@@ -79,7 +79,14 @@ class Educator extends Model {
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function teams() { return $this->belongsToMany('App\Models\Team', 'educators_teams'); }
+    public function teams() {
+        
+        return $this->belongsToMany(
+            'App\Models\Team',
+            'educators_teams'
+        );
+    
+    }
     
     /**
      * 获取指定年级的年级主任教职员工对象
@@ -128,30 +135,6 @@ class Educator extends Model {
         
     }
     
-    /**
-     * 判断教职员工记录是否已经存在
-     *
-     * @param EducatorRequest $request
-     * @param null $id
-     * @return bool
-     */
-    public function existed(EducatorRequest $request, $id = NULL) {
-
-        if (!$id) {
-            $educator = $this->where([
-                'school_id' => $request->input('school_id'),
-                'user_id' => $request->input('user_id')
-            ])->first();
-        } else {
-            $educator = $this->where('school_id', $request->input('school_id'))
-                ->where('id', '<>', $id)
-                ->where('user_id', $request->input('user_id'))
-                ->first();
-        }
-        return $educator ? true : false;
-
-    }
-
     public function datatable() {
         
         $columns = [
@@ -189,6 +172,7 @@ class Educator extends Model {
         ];
         
         return Datatable::simple($this, $columns, $joins);
+        
     }
     
 }

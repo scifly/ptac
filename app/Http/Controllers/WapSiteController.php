@@ -83,13 +83,13 @@ class WapSiteController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function edit($id) {
-        $wapsite = $this->wapSite->find($id);
-        if (!$wapsite) {
+        $wapSite = $this->wapSite->find($id);
+        if (!$wapSite) {
             return parent::notFound();
         }
         return parent::output(__METHOD__, [
-            'wapsite' => $wapsite,
-            'medias' => $this->media->medias($wapsite->media_ids),
+            'wapSite' => $wapSite,
+            'medias' => $this->media->medias($wapSite->media_ids),
         ]);
 
     }

@@ -35,8 +35,6 @@ class WapSiteRequest extends FormRequest {
      */
     public function authorize() { return true; }
     
-    public function rules() { return $this->rules; }
-    
     public function messages() {
         $rules = $this->rules();
         $k_array = $this->strings_key;
@@ -55,6 +53,8 @@ class WapSiteRequest extends FormRequest {
         
         return $array;
     }
+    
+    public function rules() { return $this->rules; }
     
     public function wantsJson() { return true; }
     

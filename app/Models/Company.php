@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
-
 /**
  * App\Models\Company 运营者公司
  *
@@ -60,27 +59,6 @@ class Company extends Model {
      */
     public function operators() { return $this->hasMany('App\Models\Operator'); }
     
-    /**
-     * 判断运营者公司记录是否存在
-     *
-     * @param CompanyRequest $request
-     * @param null $id
-     * @return bool
-     */
-    public function existed(CompanyRequest $request, $id = NULL) {
-        
-        if (!$id) {
-            $company = $this->where('name', $request->input('name'))
-                ->where('corpid', $request->input('corpid'))->first();
-        } else {
-            $company = $this->where('name', $request->input('name'))
-                ->where('id', '<>', $id)
-                ->where('corpid', $request->input('corpid'))->first();
-        }
-        return $company ? true : false;
-        
-    }
-    
     function datatable() {
         
         $columns = [
@@ -96,6 +74,7 @@ class Company extends Model {
                 }]
         ];
         return Datatable::simple($this, $columns);
+        
     }
     
 }

@@ -23,15 +23,6 @@ class MessageTypeRequest extends FormRequest {
      */
     public function authorize() { return true; }
     
-    public function rules() {
-        
-        return [
-            'name' => 'required|string|max:255|unique:message_types, name, ' . $this->input('id') . ',id',
-            'remark' => 'required|string|max:255',
-        ];
-        
-    }
-    
     public function messages() {
         
         $rules = $this->rules();
@@ -50,6 +41,15 @@ class MessageTypeRequest extends FormRequest {
         }
         
         return $array;
+        
+    }
+    
+    public function rules() {
+        
+        return [
+            'name' => 'required|string|max:255|unique:message_types,name,' . $this->input('id') . ',id',
+            'remark' => 'required|string|max:255',
+        ];
         
     }
     

@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 
 class DepartmentRequest extends FormRequest {
+    
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -20,8 +21,11 @@ class DepartmentRequest extends FormRequest {
     public function rules() {
         
         return [
-            'name' => 'required|string|max:255',
-            'remark' => 'nullable|string|max:255',
+            'name' => 'required|string|between:2,255|unique:departments,name,' .
+                $this->input('id') . ',id,' .
+                'school_id,' . $this->input('school_id') . ',' .
+                'parent_id,' . $this->input('parent_id'),
+            'remark' => 'nullable|string|between:2,255',
             'parent_id' => 'nullable|integer',
             'corp_id' => 'required|integer',
             'school_id' => 'required|integer',

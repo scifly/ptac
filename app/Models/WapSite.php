@@ -78,9 +78,9 @@ class WapSite extends Model {
             return false;
         }
         try {
-            $exception = DB::transaction(function () use ($request) {
+            $exception = DB::transaction(function () use ($request,$id) {
                 $this->removeMedias($request);
-                $this->update($request->all());
+                return $this->where('id', $id)->update($request->except('_method','_token'));
             });
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {

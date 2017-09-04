@@ -13,7 +13,7 @@ class ScoreTotalRequest extends FormRequest {
     public function authorize() {
         return true;
     }
-
+    
     /**
      * Get the validation rules that apply to the request.
      *
@@ -22,11 +22,11 @@ class ScoreTotalRequest extends FormRequest {
     public function rules() {
         return [
             'score' => 'required|numeric|max:1000',
-            'subject_ids' =>'required|string',
+            'subject_ids' => 'required|string',
         ];
     }
-
-
+    
+    
     public function messages() {
         return [
             'score.required' => '成绩不能为空',
@@ -36,7 +36,7 @@ class ScoreTotalRequest extends FormRequest {
             'subject_ids.string' => '必须是字符串'
         ];
     }
-
+    
     public function wantsJson() {
         return true;
     }
