@@ -35,6 +35,7 @@ class ExamRequest extends FormRequest {
     public function authorize() { return true; }
     
     public function messages() {
+        
         $rules = $this->rules();
         $k_array = $this->strings_key;
         $v_array = $this->strings_val;
@@ -51,6 +52,7 @@ class ExamRequest extends FormRequest {
         }
         
         return $array;
+        
     }
     
     public function rules() {
@@ -91,4 +93,5 @@ class ExamRequest extends FormRequest {
         $this->replace($input);
         
     }
+    
 }

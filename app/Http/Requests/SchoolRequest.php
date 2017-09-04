@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 
 class SchoolRequest extends FormRequest {
+    
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -18,13 +19,16 @@ class SchoolRequest extends FormRequest {
      * @return array
      */
     public function rules() {
+        
         return [
-            'name' => 'required|string|max:255',
-            'address' => 'required|string|max:255',
+            'name' => 'required|string|between:6,255|unique:schools,name,' .
+                $this->input('id') . ',id',
+            'address' => 'required|string|between:6,255',
             'corp_id' => 'required|integer',
             'school_type_id' => 'required|integer',
             'enabled' => 'required|boolean'
         ];
+        
     }
     
     protected function prepareForValidation() {
@@ -39,4 +43,5 @@ class SchoolRequest extends FormRequest {
         $this->replace($input);
         
     }
+    
 }

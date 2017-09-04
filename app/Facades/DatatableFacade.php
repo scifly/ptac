@@ -184,7 +184,7 @@ HTML;
     static function dtOps(Model $model, $active, $row, $del = true) {
 
         $id = $row['id'];
-        $status = $active ? sprintf(self::DT_ON, '已启用') : sprintf(self::DT_OFF, '已禁用');
+        $status = $active ? sprintf(self::DT_ON, '已启用') : sprintf(self::DT_OFF, '未启用');
         $showLink = sprintf(self::DT_LINK_SHOW, 'show_' . $id);
         $editLink = sprintf(self::DT_LINK_EDIT, 'edit_' . $id);
         $delLink = sprintf(self::DT_LINK_DEL, $id);
