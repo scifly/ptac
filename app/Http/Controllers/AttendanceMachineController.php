@@ -8,13 +8,9 @@ use Illuminate\Support\Facades\Request;
 
 class AttendanceMachineController extends Controller {
     
-    protected $attendanceMachine;
+    protected $am;
 
-    function __construct(AttendanceMachine $attendanceMachine) {
-        
-        $this->attendanceMachine = $attendanceMachine;
-        
-    }
+    function __construct(AttendanceMachine $am) { $this->am = $am; }
     
     /**
      * 显示考勤机列表
@@ -24,7 +20,7 @@ class AttendanceMachineController extends Controller {
     public function index() {
         
         if (Request::get('draw')) {
-            return response()->json($this->attendanceMachine->datatable());
+            return response()->json($this->am->datatable());
         }
         return $this->output(__METHOD__);
         
@@ -49,10 +45,7 @@ class AttendanceMachineController extends Controller {
      */
     public function store(AttendanceMachineRequest $request) {
         
-        if ($this->attendanceMachine->existed($request)) {
-            return $this->fail('考勤机记录已存在');
-        }
-        return $this->attendanceMachine->create($request->all()) ? $this->succeed() : $this->fail();
+        return $this->am->create($request->all()) ? $this->succeed() : $this->fail();
         
     }
     
@@ -64,7 +57,7 @@ class AttendanceMachineController extends Controller {
      */
     public function show($id) {
         
-        $am = $this->attendanceMachine->find($id);
+        $am = $this->am->find($id);
         if (!$am) { return $this->notFound(); }
         return $this->output(__METHOD__, ['am' => $am]);
         
@@ -77,8 +70,8 @@ class AttendanceMachineController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function edit($id) {
-        
-        $am = $this->attendanceMachine->find($id);
+
+        $am = $this->am->find($id);
         if (!$am) { return $this->notFound(); }
         return $this->output(__METHOD__, ['am' => $am]);
         
@@ -93,11 +86,8 @@ class AttendanceMachineController extends Controller {
      */
     public function update(AttendanceMachineRequest $request, $id) {
  
-        $am = $this->attendanceMachine->find($id);
+        $am = $this->am->find($id);
         if (!$am) { return $this->notFound(); }
-        if ($this->attendanceMachine->existed($request)) {
-            return $this->fail('已经有此记录');
-        }
         return $am->update($request->all()) ? $this->succeed() : $this->fail();
         
     }
@@ -110,7 +100,7 @@ class AttendanceMachineController extends Controller {
      */
     public function destroy($id) {
         
-        $am = $this->attendanceMachine->find($id);
+        $am = $this->am->find($id);
         if (!$am) { return $this->notFound(); }
         return $am->delete() ? $this->succeed() : $this->fail();
         

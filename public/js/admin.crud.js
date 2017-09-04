@@ -71,7 +71,10 @@ var crud = {
             ajax: page.siteRoot() + table + '/index',
             order: [[0, 'desc']],
             stateSave: true,
-            language: {url: '../files/ch.json'}
+            autoWidth: true,
+            scrollX: true,
+            language: {url: '../files/ch.json'},
+            lengthMenu: [[15, 25, 50, -1], [15, 25, 50, 'All']],
         });
 
         // 新增记录

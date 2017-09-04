@@ -20,20 +20,20 @@ class ActionRequest extends FormRequest {
      */
     public function rules() {
         return [
-            'name' => 'required|string|max:255',
-            'method' => 'required|string|max:255',
-            'controller' => 'required|string|max:255',
-            'remark' => 'nullable|string|max:255',
-            'view' => 'nullable|string|max:255',
-            'route' => 'nullable|string|max:255',
-            'js' => 'nullable|string|max:255',
+            'name' => 'required|string|between:2,255',
+            'method' => 'required|string|between:2,255',
+            'controller' => 'required|string|between:2,255',
+            'remark' => 'nullable|string|between:2,255',
+            'view' => 'nullable|string|between:2,255',
+            'route' => 'nullable|string|between:2,255',
+            'js' => 'nullable|string|between:2,255',
             'enabled' => 'required|boolean',
-            'action_type_ids' => 'nullable|string|max:60'
+            'action_type_ids' => 'nullable|string|between:3,60'
         ];
     }
     
     protected function prepareForValidation() {
-    
+        
         $input = $this->all();
         if (isset($input['enabled']) && $input['enabled'] === 'on') {
             $input['enabled'] = 1;

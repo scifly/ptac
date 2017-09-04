@@ -2,12 +2,10 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 
-class MessageRequest extends FormRequest
-{
-
+class MessageRequest extends FormRequest {
+    
     protected $rules = [
         'content' => 'required|string|max:255',
         'serviceid' => 'required|string|max:255',
@@ -29,31 +27,23 @@ class MessageRequest extends FormRequest
         'message_type_id' => '消息类型',
     ];
     protected $strings_val = [
-        'required'=> '为必填项',
-        'string'=> '为字符串',
-        'max'=> '最大为:max',
-        'array'=> '必须为数组',
-        'integer'=> '必须为整数',
+        'required' => '为必填项',
+        'string' => '为字符串',
+        'max' => '最大为:max',
+        'array' => '必须为数组',
+        'integer' => '必须为整数',
     ];
-
-
+    
+    
     /**
      * Determine if the user is authorized to make this request.
      *
      * @return bool
      */
-    public function authorize()
-    {
+    public function authorize() {
         return true;
     }
-
-    public function rules()
-    {
-
-        return $this->rules;
-
-    }
-
+    
     public function messages() {
         $rules = $this->rules();
         $k_array = $this->strings_key;
@@ -62,17 +52,27 @@ class MessageRequest extends FormRequest
         foreach ($rules as $key => $value) {
             $new_arr = explode('|', $value);//分割成数组
             foreach ($new_arr as $k => $v) {
-                $head = strstr($v,':',true);//截取:之前的字符串
-                if ($head) {$v = $head;}
-                $array[$key.'.'.$v] = $k_array[$key].$v_array[$v];
+                $head = strstr($v, ':', true);//截取:之前的字符串
+                if ($head) {
+                    $v = $head;
+                }
+                $array[$key . '.' . $v] = $k_array[$key] . $v_array[$v];
             }
         }
-
+        
         return $array;
     }
+    
+    public function rules() {
+        
+        return $this->rules;
+        
+    }
+    
     public function wantsJson() { return true; }
+    
     protected function prepareForValidation() {
-
+        
         $input = $this->all();
         if (isset($input['enabled']) && $input['enabled'] === 'on') {
             $input['enabled'] = 1;
@@ -86,7 +86,7 @@ class MessageRequest extends FormRequest
         if (isset($input['user_ids'])) {
             $input['user_ids'] = implode(',', $input['user_ids']);
         }
-
+        
         $this->replace($input);
     }
 }

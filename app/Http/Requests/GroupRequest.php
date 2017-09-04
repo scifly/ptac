@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 
 class GroupRequest extends FormRequest {
@@ -18,7 +17,8 @@ class GroupRequest extends FormRequest {
     public function rules() {
         
         return [
-            'name' => 'required|string|max:20|min:2|unique:groups, name, ' . $this->input('id') . ',id',
+            'name' => 'required|string|max:20|min:2|unique:groups,name,' .
+                $this->input('id') . ',id',
             'remark' => 'required|string|max:20|min:2',
         ];
         

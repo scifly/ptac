@@ -26,15 +26,12 @@ class GradeRequest extends FormRequest {
         'boolean' => '为0或1',
     ];
     
-    
     /**
      * Determine if the user is authorized to make this request.
      *
      * @return bool
      */
     public function authorize() { return true; }
-    
-    public function rules() { return $this->rules; }
     
     public function messages() {
         
@@ -55,6 +52,8 @@ class GradeRequest extends FormRequest {
         return $array;
         
     }
+    
+    public function rules() { return $this->rules; }
     
     public function wantsJson() { return true; }
     

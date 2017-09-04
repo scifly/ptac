@@ -5,29 +5,32 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 
 class CompanyRequest extends FormRequest {
+    
     /**
      * Determine if the user is authorized to make this request.
      *
      * @return bool
      */
-    public function authorize() {
-        return true;
-    }
-
+    public function authorize() { return true; }
+    
     /**
      * Get the validation rules that apply to the request.
      *
      * @return array
      */
     public function rules() {
+        
         return [
-            'name' => 'required|string|max:40|min:4',
+            'name' => 'required|string|between:4,40|unique:companies,name,' .
+                $this->input('id') . ',id',
             'remark' => 'required',
             'corpid' => 'required|string|alpha_num|max:36'
         ];
+        
     }
-
+    
     public function messages() {
+        
         return [
             'name.required' => '公司名称不能为空',
             'name.max' => '公司名称不超过40个汉字',
@@ -37,14 +40,13 @@ class CompanyRequest extends FormRequest {
             'corpid.max' => '36个小写字母与阿拉伯数字',
             'corpid.alpha_num' => '36个小写字母与阿拉伯数字'
         ];
+        
     }
-
-    public function wantsJson() {
-        return true;
-    }
-
+    
+    public function wantsJson() { return true; }
+    
     protected function prepareForValidation() {
-
+        
         $input = $this->all();
         if (isset($input['enabled']) && $input['enabled'] === 'on') {
             $input['enabled'] = 1;
@@ -53,5 +55,7 @@ class CompanyRequest extends FormRequest {
             $input['enabled'] = 0;
         }
         $this->replace($input);
+        
     }
+    
 }

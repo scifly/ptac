@@ -88,28 +88,6 @@ class Corp extends Model {
     }
     
     /**
-     * 判断企业对象记录是否已经存在
-     *
-     * @param CorpRequest $request
-     * @param null $id
-     * @return bool
-     */
-    public function existed(CorpRequest $request, $id = NULL) {
-        
-        if (!$id) {
-            $corp = $this->where('name', $request->input('name'))
-                ->where('company_id', $request->input('company_id'))->first();
-        } else {
-            $corp = $this->where('name', $request->input('name'))
-                ->where('id', '<>', $id)
-                ->where('company_id', $request->input('company_id'))->first();
-        }
-        
-        return $corp ? true : false;
-        
-    }
-    
-    /**
      * @return mixed
      */
     public function datatable() {

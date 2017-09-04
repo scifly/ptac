@@ -31,48 +31,26 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\StudentAttendance[] $studentAttendances
  */
 class AttendanceMachine extends Model {
+    
     protected $table = 'attendance_machines';
     protected $fillable = [
-        'name',
-        'location',
-        'school_id',
-        'machineid',
-        'enabled'
+        'name', 'location', 'school_id',
+        'machineid', 'enabled'
     ];
     
     /**
-     * 考勤机与学校
-     */
-    public function school() {
-        
-        return $this->belongsTo('App\Models\School');
-        
-    }
-    
-    /**
-     * 考勤机与学生考勤
-     */
-    public function studentAttendances() {
-        
-        return $this->hasMany('App\Models\StudentAttendance');
-        
-    }
-    
-    /**
-     * 判断考勤机记录是否已存在
+     * 返回考勤机所属的学校对象
      *
-     * @param AttendanceMachineRequest $request
-     * @return bool
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function existed(AttendanceMachineRequest $request) {
+    public function school() { return $this->belongsTo('App\Models\School'); }
     
-        $am = $this->where('name', $request->input('name'))
-            ->where('school_id', $request->input('school_id'))
-            ->where('machineid', $request->input('machine_id'))->first();
-        
-        return $am ? true : false;
-        
-    }
+    /**
+     * 获取指定考勤机记录的学生考勤记录对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function studentAttendances() { return $this->hasMany('App\Models\StudentAttendance'); }
     
     public function datatable() {
         

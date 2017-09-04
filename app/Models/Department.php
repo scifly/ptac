@@ -125,33 +125,6 @@ class Department extends Model {
     }
     
     /**
-     * 判断部门记录是否已经存在
-     *
-     * @param DepartmentRequest $request
-     * @param null $id
-     * @return bool
-     */
-    public function existed(DepartmentRequest $request, $id = NULL) {
-
-        if (!$id) {
-            $student = $this->where('corp_id', $request->input('corp_id'))
-                ->where('school_id', $request->input('school_id'))
-                ->where('parent_id', $request->input('parent_id'))
-                ->where('name', $request->input('name'))
-                ->first();
-        } else {
-            $student = $this->where('corp_id', $request->input('corp_id'))
-                ->where('id', '<>', $id)
-                ->where('school_id', $request->input('school_id'))
-                ->where('parent_id', $request->input('parent_id'))
-                ->where('name', $request->input('name'))
-                ->first();
-        }
-        return $student ? true : false;
-
-    }
-    
-    /**
      * 更改部门所处位置
      *
      * @param $id

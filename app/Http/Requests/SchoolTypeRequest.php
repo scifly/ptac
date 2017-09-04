@@ -29,7 +29,7 @@ class SchoolTypeRequest extends FormRequest {
     
     protected function prepareForValidation() {
         
-        $input  = $this->all();
+        $input = $this->all();
         if (isset($input['enabled']) && $input['enabled'] === 'on') {
             $input['enabled'] = 1;
         }

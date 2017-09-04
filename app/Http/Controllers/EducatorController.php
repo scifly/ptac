@@ -17,8 +17,10 @@ class EducatorController extends Controller {
     protected $team;
 
     public function __construct(Educator $educator, Team $team) {
+        
         $this->educator = $educator;
         $this->team = $team;
+        
     }
     
     /**
@@ -52,10 +54,8 @@ class EducatorController extends Controller {
      */
     public function store(EducatorRequest $request) {
 
-        if ($this->educator->existed($request)) {
-            return $this->fail('已经有此记录');
-        }
         return $this->educator->create($request->all()) ? $this->succeed() : $this->fail();
+        
     }
 
     /**
@@ -65,11 +65,12 @@ class EducatorController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function show($id) {
+        
         $educator = $this->educator->find($id);
         if (!$educator) { return $this->notFound(); }
         return $this->output(__METHOD__, [
             'educator' => $educator,
-            'educators' => $this->educator->teams($educator->team_ids)
+            'educators' => $this->educator->teams()
         ]);
         
     }
@@ -81,6 +82,7 @@ class EducatorController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function edit($id) {
+        
         $educator = $this->educator->find($id);
         if (!$educator) { return $this->notFound(); }
         $teamIds = explode(",", $educator->team_ids);
@@ -88,6 +90,7 @@ class EducatorController extends Controller {
             'educator' => $educator,
             'selectedTeams' => $this->team->teams($teamIds)
         ]);
+        
     }
 
     /**
@@ -98,12 +101,11 @@ class EducatorController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(EducatorRequest $request, $id) {
+        
         $educator = $this->educator->find($id);
         if (!$educator) { return $this->notFound(); }
-        if ($this->educator->existed($request, $id)) {
-            return $this->fail('已经有此记录');
-        }
         return $educator->update($request->all()) ? $this->succeed() : $this->fail();
+        
     }
 
     /**
@@ -113,9 +115,11 @@ class EducatorController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
+        
         $educator = $this->educator->find($id);
         if (!$educator) { return $this->notFound(); }
         return $educator->delete() ? $this->succeed() : $this->fail();
 
     }
+    
 }
