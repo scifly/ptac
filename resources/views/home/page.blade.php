@@ -216,7 +216,7 @@
             </ol>
         </section>
         <!--content-->
-        <section class="content">
+        <section class="content clearfix">
             @include('partials.modal_dialog')
             {{--@yield('content')--}}
             @if(!empty($tabs))
