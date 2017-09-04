@@ -65,30 +65,6 @@ class Squad extends Model {
         
     }
     
-    /**
-     * 判断班级记录是否已经存在
-     *
-     * @param SquadRequest $request
-     * @param null $id
-     * @return bool
-     */
-    public function existed(SquadRequest $request, $id = NULL) {
-        
-        if (!$id) {
-            $class = $this->where([
-                'grade_id' => $request->input('grade_id'),
-                'name' => $request->input('name')
-            ])->first();
-        } else {
-            $class = $this->where('grade_id', $request->input('grade_id'))
-                ->where('id', '<>', $id)
-                ->where('name', $request->input('name'))
-                ->first();
-        }
-        return $class ? true : false;
-        
-    }
-    
     public function datatable() {
         
         $columns = [

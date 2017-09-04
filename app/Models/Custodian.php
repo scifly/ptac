@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Facades\DatatableFacade as Datatable;
 use App\Models\CustodianStudent;
 use App\Models\Student;
+use App\Models\Mobile;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -89,7 +90,6 @@ class Custodian extends Model {
                     'avatar_url' => '',
                     'userid' => $request->input('userid'),
                     'department_ids' => implode(',', $request->input('department_ids')),
-                    'mobile' => $request->input('mobile'),
                     'isleader' => 0,
                     'wechatid' => ''
                 ];
@@ -100,6 +100,19 @@ class Custodian extends Model {
                     'user_id' => $u->id,
                     'expiry' => time()
                 ];
+                $mobileData = [
+                    'user_id' => $u->id,
+                    'mobile' =>input('mobile'),
+                    'enabled' => 1,
+                    'isdefault' => 1,
+                ];
+                $departmentData = [
+                    'user_id' => $u->id,
+
+                ];
+                $mobile = new Mobile();
+                $m = $mobile->create($mobileData);
+                unset($mobile);
                 $c = $this->create($custodianData);
                 $custodianStudent = new CustodianStudent();
                 $studentIds = $request->input('student_ids', []);
@@ -189,9 +202,13 @@ class Custodian extends Model {
         $columns = [
             ['db' => 'Custodian.id', 'dt' => 0],
             ['db' => 'User.realname', 'dt' => 1],
-            ['db' => 'User.gender', 'dt' => 2],
+            ['db' => 'User.gender', 'dt' => 2,
+                'formatter' => function ($d, $row) {
+                    return $d == 1 ? '男' : '女';
+                }
+            ],
             ['db' => 'User.email', 'dt' => 3],
-            ['db' => 'User.mobile', 'dt' => 4],
+            ['db' => 'User.telephone', 'dt' => 4],
             ['db' => 'Custodian.expiry', 'dt' => 5],
             ['db' => 'Custodian.created_at', 'dt' => 6],
             ['db' => 'Custodian.updated_at', 'dt' => 7],

@@ -4,8 +4,8 @@
     </div>
     <div class="box-body">
         <div class="form-horizontal">
-            @if (!empty($custodian['id']))
-                {{ Form::hidden('id', $custodian['id'], ['id' => 'id']) }}
+            @if (!empty($user['id']))
+                {{ Form::hidden('id', $user['id'], ['id' => 'id']) }}
             @endif
             <div class="form-group">
                 {{ Form::label('user[realname]', '姓名', [
@@ -41,7 +41,7 @@
                     {{ Form::text('user.user_id', null, [
                         'class' => 'form-control',
                         'required' => 'true',
-                        'disabled' => isset($custodian['userid']) ? 'true' : 'false',
+                        'disabled' => isset($user['userid']) ? 'true' : 'false',
                         'placeholder' => '(成员唯一标识, 设定后不可更改)',
                         'data-parsley-type' => 'alphanum',
                         'data-parsley-length' => '[2, 255]'
@@ -104,14 +104,12 @@
                 'items' => $departments,
                 'selectedItems' => isset($selectedDepartments) ? $selectedDepartments : NULL
             ])
-            <div class="form-group">
-                {{ Form::label('group_id', '角色', [
-                    'class' => 'col-sm-3 control-label'
-                ]) }}
-                <div class="col-sm-6">
-                    {{ $group['remark'] }}{{ Form::hidden('group_id', $group['id']) }}
-                </div>
-            </div>
+                @include('partials.single_select', [
+                'label' => '角色',
+                'id' => 'group_id',
+                'items' => $groups,
+            ])
+
             @include('partials.enabled', [
                 'label' => '是否启用',
                 'id' => 'enabled',

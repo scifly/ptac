@@ -53,6 +53,8 @@ class Controller extends BaseController {
         if (!$view) { return false; }
         $menu = Menu::whereId(session('menuId'))->first();
         $tab = Tab::whereId(Request::get('tabId'))->first();
+        # 保存状态为active的卡片ID
+        session(['tabId' => $tab->id]);
         $params['breadcrumb'] = $menu->name . ' / ' . $tab->name . ' / ' . $action->name;
         return response()->json([
             'html' => view($view, $params)->render(),

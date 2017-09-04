@@ -55,9 +55,6 @@ class SquadController extends Controller {
      */
     public function store(SquadRequest $request) {
         
-        if ($this->class->existed($request)) {
-            return $this->fail('已经有此记录');
-        }
         return $this->class->create($request->all()) ? $this->succeed() : $this->fail();
         
     }
@@ -98,7 +95,6 @@ class SquadController extends Controller {
             'selectedEducators' => $this->educator->educators($educatorIds)
         ]);
         
-        
     }
     
     /**
@@ -112,9 +108,6 @@ class SquadController extends Controller {
     
         $class = $this->class->find($id);
         if (!$class) { return $this->notFound(); }
-        if ($this->class->existed($request, $id)) {
-            return $this->fail('已经有此记录');
-        }
         return $class->update($request->all()) ? $this->succeed() : $this->fail();
         
     }

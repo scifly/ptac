@@ -42,7 +42,13 @@ class HomeController extends Controller {
             }
         }
         if ($isTabLegit) {
-            $tabArray[0]['active'] = true;
+            # 刷新页面时打开当前卡片, 不一定是第一个卡片
+            if (session('tabId')) {
+                $key = array_search('tab_' . session('tabId'), array_column($tabArray, 'id'));
+                $tabArray[$key]['active'] = true;
+            } else {
+                $tabArray[0]['active'] = true;
+            }
         } else {
             $tabArray = [];
         }
