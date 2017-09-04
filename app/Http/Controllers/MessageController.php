@@ -54,7 +54,7 @@ class MessageController extends Controller {
      */
     public function store(MessageRequest $request) {
 
-        return $this->message->store($request->all()) ? $this->succeed() : $this->fail();
+        return $this->message->store($request) ? $this->succeed() : $this->fail();
 
     }
 
@@ -84,10 +84,11 @@ class MessageController extends Controller {
     public function edit($id) {
         $message = $this->message->find($id);
         if (!$message) { return $this->notFound(); }
+
         return $this->output(__METHOD__, [
             'message' => $message,
             'selectedUsers' => $this->user->users($message->user_ids),
-            'medias' => $this->media->educators($message->media_ids)
+            'medias' => $this->media->medias($message->media_ids)
         ]);
     }
 

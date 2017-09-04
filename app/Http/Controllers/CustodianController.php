@@ -6,17 +6,19 @@ use App\Http\Requests\CustodianRequest;
 use App\Models\Custodian;
 use App\Models\Department;
 use App\Models\Group;
+use App\Models\User;
 use Illuminate\Support\Facades\Request;
 
 class CustodianController extends Controller {
     
-    protected $custodian, $department, $group;
+    protected $custodian, $department, $group, $user;
     
-    function __construct(Custodian $custodian, Department $department, Group $group) {
+    function __construct(Custodian $custodian, Department $department, Group $group, User $user) {
     
         $this->custodian = $custodian;
         $this->department = $department;
         $this->group = $group;
+        $this->user = $user;
         
     }
     
@@ -77,7 +79,7 @@ class CustodianController extends Controller {
      * @internal param Custodian $custodian
      */
     public function edit($id) {
-        
+       dd($id);
         $custodian = $this->custodian->find($id);
         if (!$custodian) {
             return $this->notFound();
@@ -104,7 +106,8 @@ class CustodianController extends Controller {
         return $custodian->update($request->all()) ? $this->succeed() : $this->fail();
         
     }
-    
+
+
     public function destroy($id) {
         $this->custodian->remove($id);
         $custodian = $this->custodian->find($id);
