@@ -21,6 +21,10 @@ class ScoreRequest extends FormRequest {
      */
     public function rules() {
         return [
+            'student_id' => 'required|integer|unique:scores,student_id,' .
+                $this->input('id') . ',id',
+            'subject_id,' . $this->input('subject_id'),
+            'exam_id,' . $this->input('exam_id'),
             'score' => 'required|numeric'
         ];
     }
@@ -28,6 +32,7 @@ class ScoreRequest extends FormRequest {
     public function messages() {
         return [
             'score.required' => '分数不能为空',
+            'score.unique' => '已有该条记录',
             'score.max' => '分数不能超过3位数字',
             'score.numeric' => '分数不能超过5位数字'
         ];
