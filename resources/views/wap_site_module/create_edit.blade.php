@@ -4,8 +4,9 @@
     </div>
     <div class="box-body">
         <div class="form-horizontal">
-            @if (!empty($wapSiteMododule['id']))
+            @if (!empty($wapSiteModule['id']))
                 {{ Form::hidden('id', $wapSiteModule['id'], ['id' => 'id']) }}
+
             @endif
             @include('partials.single_select', [
                 'label' => '所属网站',

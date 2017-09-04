@@ -13,9 +13,9 @@ class MessageRequest extends FormRequest
         'serviceid' => 'required|string|max:255',
         'message_id' => 'required|integer',
         'url' => 'required|string|max:255',
-        'media_ids' => 'required|array',
+        'media_ids' => 'required|string',
         'user_id' => 'required|integer',
-        'user_ids' => 'required|array',
+        'user_ids' => 'required|string',
         'message_type_id' => 'required|integer',
     ];
     protected $strings_key = [
@@ -32,7 +32,6 @@ class MessageRequest extends FormRequest
         'required'=> '为必填项',
         'string'=> '为字符串',
         'max'=> '最大为:max',
-        'array'=> '必须为数组',
         'integer'=> '必须为整数',
     ];
 
@@ -86,7 +85,15 @@ class MessageRequest extends FormRequest
         if (isset($input['user_ids'])) {
             $input['user_ids'] = implode(',', $input['user_ids']);
         }
-
+        if (!isset($input['read_count'])) {
+            $input['read_count'] = 0;
+        }
+        if (!isset($input['recipient_count'])) {
+            $input['recipient_count'] = 0;
+        }
+        if (!isset($input['received_count'])) {
+            $input['received_count'] = 0;
+        }
         $this->replace($input);
     }
 }

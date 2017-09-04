@@ -16,7 +16,7 @@ class CustodianComposer {
     }
     
     public function compose(View $view) {
-    
+
         $view->with(['groups' => $this->group->pluck('name', 'id')]);
         
     }

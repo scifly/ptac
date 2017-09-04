@@ -46,13 +46,15 @@
                     <div class="preview">
                         @if(isset($medias))
                             @foreach($medias as $key => $value)
-                                <div class="img-item">
-                                    <img src="../../{{$value->path}}" id="{{$value->id}}">
-                                    <input type="hidden" name="media_ids[]" value="{{$value->id}}"/>
-                                    <div class="del-mask">
-                                        <i class="delete fa fa-trash"></i>
+                                @if(!empty($value))
+                                    <div class="img-item">
+                                        <img src="../../{{$value->path}}" id="{{$value->id}}">
+                                        <input type="hidden" name="media_ids[]" value="{{$value->id}}"/>
+                                        <div class="del-mask">
+                                            <i class="delete fa fa-trash"></i>
+                                        </div>
                                     </div>
-                                </div>
+                                @endif
                             @endforeach
                         @endif
                     </div>
@@ -76,6 +78,7 @@
                 'id' => 'enabled',
                 'value' => isset($article['enabled']) ? $article['enabled'] : NULL
             ])
+
         </div>
     </div>
     @include('partials.form_buttons')

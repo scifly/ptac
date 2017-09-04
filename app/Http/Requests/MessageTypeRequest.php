@@ -14,6 +14,7 @@ class MessageTypeRequest extends FormRequest {
         'required' => '为必填项',
         'string' => '为字符串',
         'max' => '最大为:max',
+        'unique' => '唯一',
     ];
     
     /**
@@ -26,7 +27,7 @@ class MessageTypeRequest extends FormRequest {
     public function rules() {
         
         return [
-            'name' => 'required|string|max:255|unique:message_types, name, ' . $this->input('id') . ',id',
+            'name' => 'required|string|max:255|unique:message_types,name,' . $this->input('id') . ',id',
             'remark' => 'required|string|max:255',
         ];
         
