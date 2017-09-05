@@ -80,42 +80,45 @@ class Custodian extends Model {
     
         try {
             $exception = DB::transaction(function() use ($request) {
+                $user = $request->input('user');
                 $userData = [
                     'username' => uniqid('custodian_'),
-                    'group_id' => $request->input('group_id'),
+                    'group_id' => $user['group_id'],
                     'password' => 'custodian8888',
-                    'email' => $request->input('email'),
-                    'realname' => $request->input('realname'),
-                    'gender' => $request->input('gender'),
-                    'avatar_url' => '',
-                    'userid' => $request->input('userid'),
-                    'department_ids' => implode(',', $request->input('department_ids')),
+                    'email' => $user['email'],
+                    'realname' => $user['realname'],
+                    'gender' => $user['gender'],
+                    'avatar_url' => '00001.jpg',
+                    'userid' => uniqid('custodian_'),
                     'isleader' => 0,
-                    'wechatid' => ''
+                    'telephone' => $user['telephone'],
+                    'wechatid' => '',
+                    'enabled' =>$user['enabled']
                 ];
+
                 $user = new User();
                 $u = $user->create($userData);
                 unset($user);
                 $custodianData = [
                     'user_id' => $u->id,
-                    'expiry' => time()
+                    'expiry' => date('Y-m-d',time())
                 ];
                 $mobileData = [
                     'user_id' => $u->id,
-                    'mobile' =>input('mobile'),
+                    'mobile' =>$request->input('mobile')['mobile'],
                     'enabled' => 1,
                     'isdefault' => 1,
                 ];
-                $departmentData = [
-                    'user_id' => $u->id,
 
-                ];
                 $mobile = new Mobile();
                 $m = $mobile->create($mobileData);
                 unset($mobile);
                 $c = $this->create($custodianData);
+                $departmentUser = new DepartmentUser();
+                $departmentIds = $request->input('department_ids');
+                $departmentUser ->storeByDepartmentId($u->id, $departmentIds);
                 $custodianStudent = new CustodianStudent();
-                $studentIds = $request->input('student_ids', []);
+                $studentIds = $request->input('student_ids');
                 $custodianStudent->storeByCustodianId($c->id, $studentIds);
                 unset($custodianStudent);
             });

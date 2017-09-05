@@ -16,6 +16,8 @@ class EducatorRequest extends FormRequest {
         'required' => '为必填项',
         'string' => '必须为字符串',
         'integer' => '必须为整数',
+        'unique' => '不唯一',
+
     ];
     
     /**
@@ -68,6 +70,9 @@ class EducatorRequest extends FormRequest {
         }
         if (!isset($input['enabled'])) {
             $input['enabled'] = 0;
+        }
+        if (isset($input['team_ids'])) {
+            $input['team_ids'] = implode(',', $input['team_ids']);
         }
         $this->replace($input);
         

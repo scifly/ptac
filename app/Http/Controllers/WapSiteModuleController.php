@@ -84,13 +84,13 @@ class WapSiteModuleController extends Controller
      */
     public function edit($id)
     {
-        $module = $this->wapSiteModule->find($id);
+        $wapSiteModule = $this->wapSiteModule->find($id);
 
-        if (!$module) { return parent::notFound(); }
+        if (!$wapSiteModule) { return parent::notFound(); }
 
         return parent::output(__METHOD__, [
-            'module' => $module,
-            'media' => $this->media->find($module->media_id),
+            'wapSiteModule' => $wapSiteModule,
+            'media' => $this->media->find($wapSiteModule->media_id),
         ]);
 
     }

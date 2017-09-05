@@ -25,6 +25,8 @@ class ExamRequest extends FormRequest {
         'integer' => '必须为整数',
         'date' => '必须为日期',
         'boolean' => '为0或1',
+        'unique' => '不唯一',
+
     ];
     
     /**
