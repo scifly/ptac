@@ -4,8 +4,11 @@
     </div>
     <div class="box-body">
         <div class="form-horizontal">
-            @if (!empty($user['id']))
-                {{ Form::hidden('id', $user['id'], ['id' => 'id']) }}
+            @if (!empty($custodian['id']))
+                {{ Form::hidden('id', $custodian['id'], ['id' => 'id']) }}
+            @endif
+            @if (!empty($custodian['user_id']))
+                 {{ Form::hidden('user_id', $custodian['user_id'], ['id' => 'user_id']) }}
             @endif
                 {{--<div class="form-group">--}}
                     {{--{{ Form::label('user[username]', '用户名', [--}}
@@ -46,20 +49,6 @@
                     ]) }}
                 </div>
             </div>
-            {{--<div class="form-group">--}}
-                {{--{!! Form::label('user.userid', '帐号', [--}}
-                    {{--'class' => 'col-sm-3 control-label'--}}
-                {{--]) !!}--}}
-                {{--<div class="col-sm-6">--}}
-                    {{--{{ Form::text('user.user_id', null, [--}}
-                        {{--'class' => 'form-control',--}}
-                        {{--'required' => 'true',--}}
-                        {{--'disabled' => isset($user['userid']) ? 'true' : 'false',--}}
-                        {{--'placeholder' => '(成员唯一标识, 设定后不可更改)',--}}
-                        {{--'data-parsley-type' => 'alphanum',--}}
-                        {{--'data-parsley-length' => '[2, 255]'--}}
-                    {{--]) }}--}}
-                {{--</div>--}}
             {{--</div>--}}
             {{--<div class="form-group">--}}
                 {{--<label for="user[gender]" class="col-sm-3 control-label">性别</label>--}}
@@ -137,6 +126,16 @@
                'items' => $students,
                'selectedItems' => isset($selectedStudents) ? $selectedStudents : NULL
            ])
+                <div class="form-group">
+                    {{ Form::label('expiry', '服务到期时间', [
+                    'class' => 'col-sm-3 control-label'
+                    ]) }}
+                    <div class="col-sm-6">
+                        {!! Form::text('expiry', null, [
+                            'class' => 'form-control expiry-date',
+                        ]) !!}
+                    </div>
+                </div>
                 {{--<div class="form-group">--}}
                     {{--{{ Form::label('user[realname]', '姓名', [--}}
                         {{--'class' => 'col-sm-3 control-label'--}}
@@ -153,7 +152,7 @@
             @include('partials.enabled', [
                 'label' => '是否启用',
                 'id' => 'user[enabled]',
-                'value' => isset($custodian['enabled']) ? $custodian['enabled'] : NULL
+                'value' => isset($user['user']['enabled']) ? $user['user']['enabled'] : NULL
             ])
         </div>
     </div>

@@ -102,7 +102,7 @@ class SubjectController extends Controller {
             'grades' => $this->grade->grades(1),
             'selectedGrades' => $selectedGrades,
             'majors' => $this->major->majors(1),
-//            'selectedMajors' => $selectedMajors
+            'selectedMajors' => $selectedMajors
         ]);
         
     }

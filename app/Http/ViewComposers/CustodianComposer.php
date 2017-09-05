@@ -30,6 +30,7 @@ class CustodianComposer {
                 $students[$v['id']] = $v['user']['realname'];
             }
         }
+
         $view->with([
             'groups' => $this->group->pluck('name', 'id'),
             'students' => $students

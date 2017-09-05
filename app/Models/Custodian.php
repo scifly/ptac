@@ -91,6 +91,7 @@ class Custodian extends Model {
                     'avatar_url' => '00001.jpg',
                     'userid' => uniqid('custodian_'),
                     'isleader' => 0,
+                    'english_name'=>$user['english_name'],
                     'telephone' => $user['telephone'],
                     'wechatid' => '',
                     'enabled' =>$user['enabled']
@@ -101,7 +102,7 @@ class Custodian extends Model {
                 unset($user);
                 $custodianData = [
                     'user_id' => $u->id,
-                    'expiry' => date('Y-m-d',time())
+                    'expiry' => $request->input('expiry')
                 ];
                 $mobileData = [
                     'user_id' => $u->id,
@@ -143,24 +144,34 @@ class Custodian extends Model {
         try {
             $exception = DB::transaction(function() use($request, $custodianId, $custodian) {
                 $userId = $request->input('user_id');
+                $userData = $request->input('user');
                 $user = new User();
                 $user->update([
-                    'username' => $request->input('username'),
-                    'email' => $request->input('email'),
-                    'department_ids' => implode(',', $request->input('department_ids')),
-                    'mobile' => $request->input('mobile'),
-                    'wechatid' => $request->input('wechatid')
+                    'group_id' => $userData['group_id'],
+                    'email' => $userData['email'],
+                    'realname' => $userData['realname'],
+                    'gender' => $userData['gender'],
+                    'isleader' => 0,
+                    'english_name'=>$userData['english_name'],
+                    'telephone' => $userData['telephone'],
+                    'enabled' =>$userData['enabled']
                 ]);
+
                 unset($user);
                 $custodian->update([
                     'user_id' => $userId,
                     'expiry' => $request->input('expiry')
                 ]);
-                $studentIds = $request->input('student_ids', []);
-                $custodianStudent = new CustodianStudent();
-                $custodianStudent::whereCustodianId($custodianId)->delete();
-                $custodianStudent->storeByCustodianId($custodianId, $studentIds);
-                unset($custodianStudent);
+                $mobile = new Mobile();
+                $mobile->update([
+                    'user_id' => $userId,
+                    'mobile' => $request->input('mobile')['mobile'],
+                ]);
+//                $studentIds = $request->input('student_ids', []);
+//                $custodianStudent = new CustodianStudent();
+//                $custodianStudent::whereCustodianId($custodianId)->delete();
+//                $custodianStudent->storeByCustodianId($custodianId, $studentIds);
+//                unset($custodianStudent);
             });
         
             return is_null($exception) ? true : $exception;
@@ -211,7 +222,7 @@ class Custodian extends Model {
                 }
             ],
             ['db' => 'User.email', 'dt' => 3],
-            ['db' => 'User.telephone', 'dt' => 4],
+            ['db' => 'Mobile.mobile', 'dt' => 4],
             ['db' => 'Custodian.expiry', 'dt' => 5],
             ['db' => 'Custodian.created_at', 'dt' => 6],
             ['db' => 'Custodian.updated_at', 'dt' => 7],
@@ -229,6 +240,14 @@ class Custodian extends Model {
                 'type' => 'INNER',
                 'conditions' => [
                     'User.id = Custodian.user_id'
+                ]
+            ],
+            [
+                'table' => 'mobiles',
+                'alias' => 'Mobile',
+                'type' => 'INNER',
+                'conditions' => [
+                    'User.id = Mobile.user_id'
                 ]
             ],
 
