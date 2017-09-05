@@ -1,5 +1,5 @@
 $(crud.create('formCustodian','custodians'))
 
-$(".start-date").datetimepicker({
+$(".expiry-date").datetimepicker({
     dateFormat: 'yy-mm-dd'
 });
