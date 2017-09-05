@@ -53,22 +53,22 @@
                 'id' => 'school_id',
                 'items' => $schools
             ])
-            @include('partials.multiple_select', [
-                'label' => '所属年级',
-                'id' => 'grade_ids',
-                'items' => $grades,
-                'selectedItems' => isset($selectedGrades) ? $selectedGrades : []
-            ])
-            @include('partials.enabled', [
-                'label' => '是否为副科',
-                'id' => 'isaux',
-                'value' => isset($subject['isaux']) ? $subject['isaux']: NULL
-            ])
-            @include('partials.enabled', [
-                'label' => '是否启用',
-                'id' => 'enabled',
-                'value' => isset($subject['enabled']) ? $subject['enabled'] : NULL
-            ])
+            {{--@include('partials.multiple_select', [--}}
+                {{--'label' => '所属年级',--}}
+                {{--'id' => 'grade_ids',--}}
+                {{--'items' => $grades,--}}
+                {{--'selectedItems' => isset($selectedGrades) ? $selectedGrades : []--}}
+            {{--])--}}
+            {{--@include('partials.enabled', [--}}
+                {{--'label' => '是否为副科',--}}
+                {{--'id' => 'isaux',--}}
+                {{--'value' => isset($subject['isaux']) ? $subject['isaux']: NULL--}}
+            {{--])--}}
+            {{--@include('partials.enabled', [--}}
+                {{--'label' => '是否启用',--}}
+                {{--'id' => 'enabled',--}}
+                {{--'value' => isset($subject['enabled']) ? $subject['enabled'] : NULL--}}
+            {{--])--}}
         </div>
     </div>
     @include('partials.form_buttons')

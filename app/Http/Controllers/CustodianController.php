@@ -123,18 +123,12 @@ class CustodianController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(CustodianRequest $request, $id) {
-        dd($this->custodian->modify($request,$id));
         return $this->custodian->modify($request,$id) ? $this->succeed() : $this->fail();
         
     }
 
-
     public function destroy($id) {
-        $this->custodian->remove($id);
-        $custodian = $this->custodian->find($id);
-        if (!$custodian) {
-            return $this->notFound();
-        }
-        return $custodian->delete() ? $this->succeed() : $this->fail();
+        dd($this->custodian->remove($id));
+        return $this->custodian->remove($id) ? $this->succeed() : $this->fail();
     }
 }

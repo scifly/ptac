@@ -63,18 +63,5 @@ class CustodianStudent extends Model {
         
     }
 
-    public function updateByCustodianId($custodianId, array $studentIds) {
-
-        foreach ($studentIds as $studentId) {
-
-            $this->create([
-                'custodian_id' => $custodianId,
-                'student_id' => $studentId,
-                'enabled' => 1,
-                'relationship'=>'父子'
-            ]);
-        }
-
-    }
     
 }

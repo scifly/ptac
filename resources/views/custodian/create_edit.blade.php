@@ -126,6 +126,21 @@
                'items' => $students,
                'selectedItems' => isset($selectedStudents) ? $selectedStudents : NULL
            ])
+
+                {{--<div class="form-group addInput">--}}
+                    {{--{{ Form::label('expiry', '服务到期时间', [--}}
+                    {{--'class' => 'col-sm-3 control-label'--}}
+                    {{--]) }}--}}
+                    {{--<div class="col-sm-6">--}}
+                        {{--<div class="input-group date">--}}
+                            {{--<input type="text" class="form-control pull-right" id="datepicker">--}}
+                            {{--<div class="input-group-addon btn btn-success btn-add">--}}
+                                {{--<i class="glyphicon glyphicon-plus"></i>--}}
+                            {{--</div>--}}
+                        {{--</div>--}}
+                    {{--</div>--}}
+                {{--</div>--}}
+
                 <div class="form-group">
                     {{ Form::label('expiry', '服务到期时间', [
                     'class' => 'col-sm-3 control-label'
