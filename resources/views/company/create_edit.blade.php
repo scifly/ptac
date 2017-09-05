@@ -31,19 +31,6 @@
                     ]) !!}
                 </div>
             </div>
-            <div class="form-group">
-                {!! Form::label('corpid', '企业号ID', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
-                <div class="col-sm-6">
-                    {!! Form::text('corpid', null, [
-                         'class' => 'form-control',
-                         'placeholder' => '(36个小写字母与阿拉伯数字)',
-                         'required' => 'true',
-                         'data-parsley-type' => 'alphanum'
-                     ]) !!}
-                </div>
-            </div>
             @include('partials.enabled', [
                 'label' => '是否启用',
                 'id' => 'enabled',

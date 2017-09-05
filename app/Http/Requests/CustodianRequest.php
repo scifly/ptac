@@ -21,18 +21,24 @@ class CustodianRequest extends FormRequest {
     public function rules() {
         
         return [
-            'user_id' => 'required|integer|unique:custodians,user_id,' .
-                $this->input('id') . ',id',
-            'expiry' => 'required|datetime'
+//            'user_id' => 'required|integer|unique:custodians,user_id,' .
+//                $this->input('id') . ',id',
+//            'expiry' => 'required|datetime'
         ];
         
     }
     
     protected function prepareForValidation() {
-        
+
         $input = $this->all();
+
+        if (isset($input['user']['enabled']) && $input['user']['enabled'] === 'on') {
+            $input['user']['enabled'] = 1;
+        }
+        if (!isset($input['user']['enabled'])) {
+            $input['user']['enabled'] = 0;
+        }
         $this->replace($input);
-        
     }
     
 }

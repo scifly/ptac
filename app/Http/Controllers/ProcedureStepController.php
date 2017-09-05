@@ -47,9 +47,6 @@ class ProcedureStepController extends Controller {
      */
     public function store(ProcedureStepRequest $request) {
         
-        if ($this->procedureStep->existed($request)) {
-            return $this->fail('已经有此记录');
-        }
         return $this->procedureStep->create($request->all()) ? $this->succeed() : $this->fail();
         
     }
@@ -91,9 +88,6 @@ class ProcedureStepController extends Controller {
     
         $procedureStep = $this->procedureStep->find($id);
         if (!$procedureStep) { return $this->notFound(); }
-        if ($this->procedureStep->existed($request, $id)) {
-            return $this->fail('已经有此记录');
-        }
         return $procedureStep->update($request->all()) ? $this->succeed() : $this->fail();
         
     }
