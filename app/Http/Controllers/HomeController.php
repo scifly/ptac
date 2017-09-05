@@ -6,6 +6,7 @@ use App\Models\Menu;
 use App\Models\MenuTab;
 use App\Models\Tab;
 use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\Session;
 
 
 class HomeController extends Controller {
@@ -22,7 +23,13 @@ class HomeController extends Controller {
 
     public function menu($id) {
 
-        session(['menuId' => $id]);
+        if (!session('menuId') || session('menuId') !== $id) {
+            session(['menuId' => $id]);
+            session(['menuChanged' => true]);
+        } else {
+            Session::forget('menuChanged');
+        }
+        
         # 获取卡片列表
         $tabArray = [];
         $tabRanks = MenuTab::whereMenuId($id)->get()->sortBy('tab_order')->toArray();
@@ -46,6 +53,9 @@ class HomeController extends Controller {
             if (session('tabId')) {
                 $key = array_search('tab_' . session('tabId'), array_column($tabArray, 'id'));
                 $tabArray[$key]['active'] = true;
+                if (!session('tabChanged') && !session('menuChanged')) {
+                    $tabArray[$key]['url'] = session('tabUrl');
+                }
             } else {
                 $tabArray[0]['active'] = true;
             }

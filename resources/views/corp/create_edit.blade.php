@@ -38,11 +38,11 @@
                     ]) !!}
                 </div>
             </div>
-                @include('partials.enabled', [
-                     'label' => '是否启用',
-                     'id' => 'enabled',
-                     'value' => isset($corp['enabled']) ? $corp['enabled'] : NULL
-                 ])
+            @include('partials.enabled', [
+                'label' => '是否启用',
+                'id' => 'enabled',
+                'value' => isset($corp['enabled']) ? $corp['enabled'] : NULL
+            ])
         </div>
     </div>
     @include('partials.form_buttons')

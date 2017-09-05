@@ -438,6 +438,7 @@
 <script src="{{ URL::asset('js/plugins/datatables/datatables.min.js') }}"></script>
 <script src="{{ URL::asset('js/plugins/datatables/dataTables.checkboxes.min.js') }}"></script>
 <script src="{{ URL::asset('js/admin.crud.js') }}"></script>
+<script src="{{ URL::asset('js/tree.crud.js') }}"></script>
 <!-- fileinput-->
 <script src="{{ URL::asset('js/plugins/fileinput/js/fileinput.min.js') }}"></script>
 <script src="{{ URL::asset('js/plugins/fileinput/js/locales/zh.js') }}"></script>
