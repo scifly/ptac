@@ -63,8 +63,9 @@ class Exam extends Model {
      * @param array $classIds
      * @return array
      */
-    public function classes(array $classIds) {
+    public function classes($classIds) {
         
+        $classIds = explode(",", $classIds);
         $selectedClasses = [];
         foreach ($classIds as $classId) {
             $class = Squad::whereId($classId)->first();
@@ -81,8 +82,9 @@ class Exam extends Model {
      * @param array $subjectIds
      * @return array
      */
-    public function subjects(array $subjectIds) {
-        
+    public function subjects($subjectIds) {
+
+        $subjectIds = explode(",", $subjectIds);
         $selectedSubjects = [];
         foreach ($subjectIds as $subjectId) {
             $subject = Squad::whereId($subjectId)->first();
