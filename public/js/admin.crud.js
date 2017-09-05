@@ -70,7 +70,8 @@ var crud = {
         // Cancel button
         $('#cancel, #record-list').on('click', function() {
             var $activeTabPane = $('#tab_' + page.getActiveTabId());
-            page.getTabContent($activeTabPane, page.siteRoot() + homeUrl)
+            page.getTabContent($activeTabPane, page.siteRoot() + homeUrl);
+            crud.unbindEvents();
         });
 
         // Parsley
@@ -84,6 +85,7 @@ var crud = {
         });
     },
     index: function (table) {
+        crud.unbindEvents();
         var $activeTabPane = $('#tab_' + page.getActiveTabId());
 
         // 显示记录列表
@@ -98,6 +100,7 @@ var crud = {
         // 编辑记录
         $(document).on('click', '.fa-edit', function() {
             var url = $(this).parents().eq(0).attr('id');
+            console.log(url);
             url = url.replace('_', '/');
             page.getTabContent($activeTabPane, page.siteRoot() + table + '/' + url);
             crud.unbindEvents();
