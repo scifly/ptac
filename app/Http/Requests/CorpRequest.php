@@ -22,7 +22,7 @@ class CorpRequest extends FormRequest {
         
         return [
             'name' => 'required|string|between:3,120|unique:corps,name,' .
-                $this->input('id') . ',id',
+                $this->input('id') . ',id,' .
                 'company_id,' . $this->input('company_id'),
             'corpid' => 'required|string|alpha_num|max:36'
         ];

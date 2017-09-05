@@ -17,8 +17,8 @@ class ProcedureRequest extends FormRequest {
 
         return [
             'name' => 'required|string|max:60|unique:procedures,name,' .
-               $this->input('id') . ',id',
-                'procedure_type_id,' . $this->input('procedure_type_id'),
+                $this->input('id') . ',id,' .
+                'procedure_type_id,' . $this->input('procedure_type_id') . ',' .
                 'school_id,' . $this->input('school_id'),
             'remark' => 'required|string|max:255',
         ];

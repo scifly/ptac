@@ -91,6 +91,7 @@ class Custodian extends Model {
                     'avatar_url' => '00001.jpg',
                     'userid' => uniqid('custodian_'),
                     'isleader' => 0,
+                    'english_name'=>$user['english_name'],
                     'telephone' => $user['telephone'],
                     'wechatid' => '',
                     'enabled' =>$user['enabled']
@@ -101,7 +102,7 @@ class Custodian extends Model {
                 unset($user);
                 $custodianData = [
                     'user_id' => $u->id,
-                    'expiry' => date('Y-m-d',time())
+                    'expiry' => $request->input('expiry')
                 ];
                 $mobileData = [
                     'user_id' => $u->id,
@@ -117,6 +118,7 @@ class Custodian extends Model {
                 $departmentUser = new DepartmentUser();
                 $departmentIds = $request->input('department_ids');
                 $departmentUser ->storeByDepartmentId($u->id, $departmentIds);
+                unset($departmentUser);
                 $custodianStudent = new CustodianStudent();
                 $studentIds = $request->input('student_ids');
                 $custodianStudent->storeByCustodianId($c->id, $studentIds);
@@ -143,20 +145,36 @@ class Custodian extends Model {
         try {
             $exception = DB::transaction(function() use($request, $custodianId, $custodian) {
                 $userId = $request->input('user_id');
+                $userData = $request->input('user');
                 $user = new User();
-                $user->update([
-                    'username' => $request->input('username'),
-                    'email' => $request->input('email'),
-                    'department_ids' => implode(',', $request->input('department_ids')),
-                    'mobile' => $request->input('mobile'),
-                    'wechatid' => $request->input('wechatid')
+                $user->where('id',$userId)
+                    ->update([
+                    'group_id' => $userData['group_id'],
+                    'email' => $userData['email'],
+                    'realname' => $userData['realname'],
+                    'gender' => $userData['gender'],
+                    'isleader' => 0,
+                    'english_name'=>$userData['english_name'],
+                    'telephone' => $userData['telephone'],
+                    'enabled' =>$userData['enabled']
                 ]);
                 unset($user);
                 $custodian->update([
                     'user_id' => $userId,
                     'expiry' => $request->input('expiry')
                 ]);
-                $studentIds = $request->input('student_ids', []);
+                $mobile = new Mobile();
+                $mobile->where('user_id',$userId)
+                    ->update([
+                    'user_id' => $userId,
+                    'mobile' => $request->input('mobile')['mobile'],
+                ]);
+                $departmentIds = $request->input('department_ids');
+                $departmentUser = new DepartmentUser();
+                $departmentUser::where('user_id',$userId)->delete();
+                $departmentUser ->storeByDepartmentId($userId, $departmentIds);
+                $studentIds = $request->input('student_ids');
+                unset($departmentUser);
                 $custodianStudent = new CustodianStudent();
                 $custodianStudent::whereCustodianId($custodianId)->delete();
                 $custodianStudent->storeByCustodianId($custodianId, $studentIds);
@@ -179,6 +197,7 @@ class Custodian extends Model {
     public function remove($custodianId) {
     
         $custodian = $this->find($custodianId);
+
         if (!isset($custodian)) { return false; }
         try {
             $exception = DB::transaction(function() use ($custodianId, $custodian) {
@@ -186,8 +205,13 @@ class Custodian extends Model {
                 $custodian->delete();
                 # 删除与指定监护人绑定的学生记录
                 CustodianStudent::whereCustodianId($custodianId)->delete();
+                # 删除与指定监护人绑定的部门记录
+                DepartmentUser::where('user_id',$custodian['user_id'])->delete();
+                # 删除与指定监护人绑定的手机记录
+                Mobile::where('user_id',$custodian['user_id'])->delete();
+
             });
-        
+
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
             return false;
@@ -211,7 +235,7 @@ class Custodian extends Model {
                 }
             ],
             ['db' => 'User.email', 'dt' => 3],
-            ['db' => 'User.telephone', 'dt' => 4],
+            ['db' => 'Mobile.mobile', 'dt' => 4],
             ['db' => 'Custodian.expiry', 'dt' => 5],
             ['db' => 'Custodian.created_at', 'dt' => 6],
             ['db' => 'Custodian.updated_at', 'dt' => 7],
@@ -229,6 +253,14 @@ class Custodian extends Model {
                 'type' => 'INNER',
                 'conditions' => [
                     'User.id = Custodian.user_id'
+                ]
+            ],
+            [
+                'table' => 'mobiles',
+                'alias' => 'Mobile',
+                'type' => 'INNER',
+                'conditions' => [
+                    'User.id = Mobile.user_id'
                 ]
             ],
 

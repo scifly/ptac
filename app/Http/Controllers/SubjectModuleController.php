@@ -78,7 +78,7 @@ class SubjectModuleController extends Controller {
         
         $subjectModule = $this->subjectModule->find($id);
         if (!$subjectModule) { return $this->notFound(); }
-        return $this->output(__METHOD__, ['subjectModule' => $subjectModule]);
+        return $this->output(__METHOD__, ['subjectModules' => $subjectModule]);
         
     }
     
