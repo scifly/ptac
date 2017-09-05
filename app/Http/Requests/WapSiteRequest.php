@@ -6,12 +6,7 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class WapSiteRequest extends FormRequest {
     
-    protected $rules = [
-        'school_id' => 'required|integer|unique:wap_sites',
-        'site_title' => 'required|string|max:255',
-        'media_ids' => 'required|array',
-        'enabled' => 'required|boolean'
-    ];
+
     protected $strings_key = [
         'school_id' => '所属学校',
         'site_title' => '首页抬头',
@@ -22,9 +17,9 @@ class WapSiteRequest extends FormRequest {
         'required' => '为必填项',
         'string' => '为字符串',
         'max' => '最大为:max',
-        'array' => '必须为数组',
         'integer' => '必须为整数',
         'boolean' => '为0或1',
+        'unique' => '不唯一',
     ];
     
     
@@ -54,7 +49,15 @@ class WapSiteRequest extends FormRequest {
         return $array;
     }
     
-    public function rules() { return $this->rules; }
+    public function rules() {
+        return [
+            'school_id' => 'required|integer|unique:wap_sites,school_id,' .
+                $this->input('id') . ',id',
+            'site_title' => 'required|string|max:255',
+            'media_ids' => 'required|string',
+            'enabled' => 'required|boolean'
+            ];
+    }
     
     public function wantsJson() { return true; }
     
