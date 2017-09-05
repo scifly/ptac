@@ -84,6 +84,8 @@ var crud = {
         });
     },
     index: function (table) {
+        crud.unbindEvents();
+
         var $activeTabPane = $('#tab_' + page.getActiveTabId());
 
         // 显示记录列表
