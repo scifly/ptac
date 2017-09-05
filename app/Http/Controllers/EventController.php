@@ -23,7 +23,7 @@ class EventController extends Controller {
      */
     public function index() {
         //$userId = Session::get('user');
-        $userId = 1;
+        $userId = 2;
         $isAdmin = $this->event->getRole($userId) ? 1 : 0;
         $events = $this->event
             ->where('User_id', $userId)

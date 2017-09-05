@@ -55,10 +55,7 @@ class CustodianController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(CustodianRequest $request) {
-        
-        if ($this->custodian->existed($request)) {
-            return $this->fail('已经有此记录');
-        }
+
         return $this->custodian->store($request) ? $this->succeed() : $this->fail();
         
     }
@@ -79,12 +76,14 @@ class CustodianController extends Controller {
      * @internal param Custodian $custodian
      */
     public function edit($id) {
-       dd($id);
-        $custodian = $this->custodian->find($id);
-        if (!$custodian) {
+
+      //  $custodian = $this->custodian->find($id);
+        $user = $this->user->find($id);
+
+        if (!$user) {
             return $this->notFound();
         }
-        return $this->output(__METHOD__, ['custodian' => $custodian]);
+        return $this->output(__METHOD__, ['user' => $user]);
         
     }
     

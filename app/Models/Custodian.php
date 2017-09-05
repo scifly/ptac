@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Facades\DatatableFacade as Datatable;
 use App\Models\CustodianStudent;
 use App\Models\Student;
+use App\Models\Mobile;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -79,30 +80,45 @@ class Custodian extends Model {
     
         try {
             $exception = DB::transaction(function() use ($request) {
+                $user = $request->input('user');
                 $userData = [
                     'username' => uniqid('custodian_'),
-                    'group_id' => $request->input('group_id'),
+                    'group_id' => $user['group_id'],
                     'password' => 'custodian8888',
-                    'email' => $request->input('email'),
-                    'realname' => $request->input('realname'),
-                    'gender' => $request->input('gender'),
-                    'avatar_url' => '',
-                    'userid' => $request->input('userid'),
-                    'department_ids' => implode(',', $request->input('department_ids')),
-                    'mobile' => $request->input('mobile'),
+                    'email' => $user['email'],
+                    'realname' => $user['realname'],
+                    'gender' => $user['gender'],
+                    'avatar_url' => '00001.jpg',
+                    'userid' => uniqid('custodian_'),
                     'isleader' => 0,
-                    'wechatid' => ''
+                    'telephone' => $user['telephone'],
+                    'wechatid' => '',
+                    'enabled' =>$user['enabled']
                 ];
+
                 $user = new User();
                 $u = $user->create($userData);
                 unset($user);
                 $custodianData = [
                     'user_id' => $u->id,
-                    'expiry' => time()
+                    'expiry' => date('Y-m-d',time())
                 ];
+                $mobileData = [
+                    'user_id' => $u->id,
+                    'mobile' =>$request->input('mobile')['mobile'],
+                    'enabled' => 1,
+                    'isdefault' => 1,
+                ];
+
+                $mobile = new Mobile();
+                $m = $mobile->create($mobileData);
+                unset($mobile);
                 $c = $this->create($custodianData);
+                $departmentUser = new DepartmentUser();
+                $departmentIds = $request->input('department_ids');
+                $departmentUser ->storeByDepartmentId($u->id, $departmentIds);
                 $custodianStudent = new CustodianStudent();
-                $studentIds = $request->input('student_ids', []);
+                $studentIds = $request->input('student_ids');
                 $custodianStudent->storeByCustodianId($c->id, $studentIds);
                 unset($custodianStudent);
             });
@@ -189,9 +205,13 @@ class Custodian extends Model {
         $columns = [
             ['db' => 'Custodian.id', 'dt' => 0],
             ['db' => 'User.realname', 'dt' => 1],
-            ['db' => 'User.gender', 'dt' => 2],
+            ['db' => 'User.gender', 'dt' => 2,
+                'formatter' => function ($d, $row) {
+                    return $d == 1 ? '男' : '女';
+                }
+            ],
             ['db' => 'User.email', 'dt' => 3],
-            ['db' => 'User.mobile', 'dt' => 4],
+            ['db' => 'User.telephone', 'dt' => 4],
             ['db' => 'Custodian.expiry', 'dt' => 5],
             ['db' => 'Custodian.created_at', 'dt' => 6],
             ['db' => 'Custodian.updated_at', 'dt' => 7],

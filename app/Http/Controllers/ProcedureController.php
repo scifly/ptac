@@ -44,9 +44,6 @@ class ProcedureController extends Controller {
      */
     public function store(ProcedureRequest $request) {
 
-        if ($this->procedure->existed($request)) {
-            return $this->fail('已经有此记录');
-        }
         return $this->procedure->create($request->all()) ? $this->succeed() : $this->fail();
         
     }
@@ -90,10 +87,6 @@ class ProcedureController extends Controller {
     
         $procedure = $this->procedure->find($id);
         if (!$procedure) { return $this->notFound(); }
-        if ($this->procedure->existed($request, $id)) {
-            return $this->fail('已经有此记录');
-        }
-
         return $procedure->update($request->all()) ? $this->succeed() : $this->fail();
     }
     

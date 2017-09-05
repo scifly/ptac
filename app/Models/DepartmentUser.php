@@ -28,5 +28,17 @@ class DepartmentUser extends Model {
     protected $fillable = [
         'department_id', 'user_id', 'enabled'
     ];
+
+    public function storeByDepartmentId($userId, array $departmentIds) {
+
+        foreach ($departmentIds as $departmentId) {
+            $this->create([
+                'user_id' => $userId,
+                'department_id' => $departmentId,
+                'enabled' => 1,
+            ]);
+        }
+
+    }
     
 }

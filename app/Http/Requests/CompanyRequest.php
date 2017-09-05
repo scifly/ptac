@@ -24,7 +24,6 @@ class CompanyRequest extends FormRequest {
             'name' => 'required|string|between:4,40|unique:companies,name,' .
                 $this->input('id') . ',id',
             'remark' => 'required',
-            'corpid' => 'required|string|alpha_num|max:36'
         ];
         
     }
@@ -33,12 +32,9 @@ class CompanyRequest extends FormRequest {
         
         return [
             'name.required' => '公司名称不能为空',
-            'name.max' => '公司名称不超过40个汉字',
-            'name.min' => '公司名称不能少于四个字符',
-            'remark.required' => '备注不能为空',
-            'corpid.required' => '企业ID不能为空',
-            'corpid.max' => '36个小写字母与阿拉伯数字',
-            'corpid.alpha_num' => '36个小写字母与阿拉伯数字'
+            'name.between' => '公司名称应该在4~40个字符之间',
+            'name.unique' => '已有该记录',
+            'remark.required' => '备注不能为空'
         ];
         
     }

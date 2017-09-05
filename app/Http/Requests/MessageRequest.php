@@ -11,9 +11,9 @@ class MessageRequest extends FormRequest {
         'serviceid' => 'required|string|max:255',
         'message_id' => 'required|integer',
         'url' => 'required|string|max:255',
-        'media_ids' => 'required|array',
+        'media_ids' => 'required|string',
         'user_id' => 'required|integer',
-        'user_ids' => 'required|array',
+        'user_ids' => 'required|string',
         'message_type_id' => 'required|integer',
     ];
     protected $strings_key = [
@@ -30,7 +30,6 @@ class MessageRequest extends FormRequest {
         'required' => '为必填项',
         'string' => '为字符串',
         'max' => '最大为:max',
-        'array' => '必须为数组',
         'integer' => '必须为整数',
     ];
     
