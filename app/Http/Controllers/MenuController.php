@@ -35,11 +35,12 @@ class MenuController extends Controller {
     /**
      * 显示创建新菜单的表单
      *
+     * @param $id integer 上级菜单ID
      * @return bool|\Illuminate\Http\JsonResponse
      */
-    public function create() {
+    public function create($id) {
         
-        return parent::output(__METHOD__);
+        return parent::output(__METHOD__, ['parentId' => $id]);
         
     }
     

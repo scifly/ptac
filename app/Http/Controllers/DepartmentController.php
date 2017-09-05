@@ -20,7 +20,7 @@ class DepartmentController extends Controller {
     public function index() {
     
         if (Request::method() === 'POST') {
-            return response()->json($this->department->tree([1]));
+            return $this->department->tree([1]);
         }
         return parent::output(__METHOD__);
 
@@ -29,11 +29,12 @@ class DepartmentController extends Controller {
     /**
      * 显示创建部门记录的表单
      *
+     * @param $id
      * @return bool|\Illuminate\Http\JsonResponse
      */
-    public function create() {
+    public function create($id) {
         
-        return $this->output(__METHOD__);
+        return $this->output(__METHOD__, ['parentId' => $id]);
         
     }
     
@@ -78,7 +79,7 @@ class DepartmentController extends Controller {
             return $this->notFound();
         }
         return $this->output(__METHOD__, [
-            'deparment' => $department,
+            'department' => $department,
         ]);
         
     }
@@ -130,6 +131,22 @@ class DepartmentController extends Controller {
         }
         return $this->department->move($id, $parentId) ? parent::succeed() : parent::fail();
         
+    }
+    
+    /**
+     * 保存部门的排列顺序
+     */
+    public function sort() {
+    
+        $orders = Request::get('data');
+        foreach ($orders as $id => $order) {
+            $department = $this->department->find($id);
+            if (isset($department)) {
+                $department->order = $order;
+                $department->save();
+            }
+        }
+    
     }
     
 }
