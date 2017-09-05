@@ -1,0 +1,1 @@
+$(tree.create('formMenu', 'menus'));

@@ -4,5 +4,5 @@
     'class' => 'form-horizontal form-borderd',
     'data-parsley-validate' => 'true'
 ]) !!}
-@include('custodian_student.create_edit')
+@include('department.create_edit')
 {!! Form::close() !!}

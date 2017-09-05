@@ -39,7 +39,9 @@
                 </div>
             </div>
             @include('partials.enabled', [
-                'value' => ($corp['enabled'] || NULL)
+                'label' => '是否启用',
+                'id' => 'enabled',
+                'value' => isset($corp['enabled']) ? $corp['enabled'] : NULL
             ])
         </div>
     </div>

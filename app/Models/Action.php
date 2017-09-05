@@ -348,6 +348,7 @@ HTML;
                 if ($a) {
                     $a->name = $action['name'];
                     $a->route = $action['route'];
+                    $a->js = $action['js'];
                     $a->action_type_ids = $action['action_type_ids'];
                     $a->save();
                 } else {
@@ -636,16 +637,18 @@ HTML;
     private function getJsPath($ctlr, $action) {
         
         if (!in_array($ctlr, $this->excludedControllers)) {
-            switch ($action) {
+            $prefix = str_singular($this->getTableName($ctlr));
+            $prefix = ($prefix === 'corps') ? 'corp' : $prefix;
+            return 'js/' .  $prefix . '/' . $action . '.js';
+            /*switch ($action) {
                 case 'index':
                 case 'create':
                 case 'edit':
-                    $prefix = str_singular($this->getTableName($ctlr));
-                    $prefix = ($prefix === 'corps') ? 'corp' : $prefix;
-                    return 'js/' .  $prefix . '/' . $action . '.js';
+                case ''
+                
                 default:
                     return NULL;
-            }
+            }*/
         }
         return NULL;
         

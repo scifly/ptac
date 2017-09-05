@@ -5,8 +5,10 @@
     <div class="box-body">
         <div class="form-horizontal">
             <div class="form-group">
-                {!! Form::label('name', '名称', ['class' => 'col-sm-4 control-label']) !!}
-                <div class="col-sm-2">
+                {!! Form::label('name', '名称', [
+                    'class' => 'col-sm-3 control-label'
+                ]) !!}
+                <div class="col-sm-6">
                     {!! Form::text('name', null, [
                         'class' => 'form-control',
                         'placeholder' => '(不得超过20个汉字)',
@@ -21,8 +23,10 @@
                 'items' => $schools
             ])
             <div class="form-group">
-                {!! Form::label('remark', '备注', ['class' => 'col-sm-4 control-label']) !!}
-                <div class="col-sm-3">
+                {!! Form::label('remark', '备注', [
+                    'class' => 'col-sm-3 control-label'
+                ]) !!}
+                <div class="col-sm-6">
                     {!! Form::text('remark', null, [
                         'class' => 'form-control',
                         'placeholder' => '(不得超过80个汉字)',
@@ -31,8 +35,10 @@
                 </div>
             </div>
             <div class="form-group">
-                {!! Form::label('start_date', '起始日期', ['class' => 'col-sm-4 control-label']) !!}
-                <div class="col-sm-2">
+                {!! Form::label('start_date', '起始日期', [
+                    'class' => 'col-sm-3 control-label'
+                ]) !!}
+                <div class="col-sm-6">
                     <div class="input-group date">
                         <div class="input-group-addon">
                             <i class="fa fa-calendar"></i>
@@ -46,8 +52,9 @@
                 </div>
             </div>
             <div class="form-group">
-                {!! Form::label('end_date', '结束日期', ['class' => 'col-sm-4 control-label']) !!}
-                <div class="col-sm-2">
+                {!! Form::label('end_date', '结束日期', [
+                    'class' => 'col-sm-3 control-label']) !!}
+                <div class="col-sm-6">
                     <div class="input-group date">
                         <div class="input-group-addon">
                             <i class="fa fa-calendar"></i>
@@ -60,7 +67,11 @@
                     </div>
                 </div>
             </div>
-            @include('partials.enabled', ['enabled' => $semester['enabled']])
+            @include('partials.enabled', [
+                'label' => '是否启用',
+                'id' => 'enabled',
+                'value' => isset($semester['enabled']) ? $semester['enabled'] : NULL
+            ])
         </div>
     </div>
     @include('partials.form_buttons')
