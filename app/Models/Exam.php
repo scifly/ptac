@@ -56,17 +56,17 @@ class Exam extends Model {
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function examType() { return $this->belongsTo('App\models\ExamType'); }
-    
+
     /**
      * 获取参与指定考试的所有班级列表
      *
-     * @param array $classIds
+     * @param $classIds
      * @return array
      */
-    public function classes(array $classIds) {
-        
+    public function classes($classIds) {
+        $classArr = explode(',', $classIds);
         $selectedClasses = [];
-        foreach ($classIds as $classId) {
+        foreach ($classArr as $classId) {
             $class = Squad::whereId($classId)->first();
             $selectedClasses[$classId] = $class['name'];
         }
@@ -74,19 +74,18 @@ class Exam extends Model {
         return $selectedClasses;
         
     }
-    
+
     /**
      * 获取指定考试包含的所有科目列表
      *
-     * @param array $subjectIds
+     * @param $subjectIds
      * @return array
      */
-    public function subjects(array $subjectIds) {
-        
+    public function subjects($subjectIds) {
+        $subjectArr = explode(',', $subjectIds);
         $selectedSubjects = [];
-        foreach ($subjectIds as $subjectId) {
-            $subject = Squad::whereId($subjectId)->first();
-            $selectedSubjects[$subjectId] = $subject['name'];
+        foreach ($subjectArr as $subjectId) {
+            $selectedSubjects[$subjectId] = Subject::whereId($subjectId)->value('name');
         }
 
         return $selectedSubjects;

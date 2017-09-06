@@ -69,8 +69,8 @@ class ExamController extends Controller {
         
         return $this->output(__METHOD__, [
             'exam' => $exam,
-            'classes' => $this->exam->classes(explode(',', $exam->class_ids)),
-            'subjects' => $this->exam->subjects(explode(',', $exam->subject_ids)),
+            'classes' => $this->exam->classes($exam->class_ids),
+            'subjects' => $this->exam->subjects(),
         ]);
         
     }
@@ -84,12 +84,10 @@ class ExamController extends Controller {
     public function edit($id) {
         $exam = $this->exam->find($id);
         if (!$exam) { return $this->notFound(); }
-        $classIds = explode(",", $exam->class_ids);
-        $subjectIds = explode(",", $exam->class_ids);
         return $this->output(__METHOD__, [
             'exam' => $exam,
-            'selectedClasses' => $this->exam->classes($classIds),
-            'selectedSubjects' => $this->exam->subjects($subjectIds),
+            'selectedClasses' => $this->exam->classes($exam->class_ids),
+            'selectedSubjects' => $this->exam->subjects($exam->subject_ids),
         ]);
     }
     

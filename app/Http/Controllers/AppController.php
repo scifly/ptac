@@ -45,9 +45,6 @@ class AppController extends Controller {
      */
     public function store(AppRequest $request) {
         
-        if ($this->app->existed($request)) {
-            return $this->fail('已经有此记录');
-        }
         return $this->app->create($request->all()) ? $this->succeed() : $this->fail();
 
     }
@@ -91,9 +88,6 @@ class AppController extends Controller {
         
         $app = $this->app->find($id);
         if (!$app) { return $this->notFound(); }
-        if ($this->app->existed($request, $id)) {
-            return $this->fail('已经有此记录');
-        }
         return $app->update($request->all()) ? $this->succeed() : $this->fail();
         
     }
