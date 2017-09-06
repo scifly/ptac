@@ -62,15 +62,11 @@
                 </div>
             </div>
             <div class="form-group">
-                {!! Form::label('content', '文章内容', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
+                {!! Form::label('content', '文章内容', ['class' => 'control-label col-sm-3']) !!}
                 <div class="col-sm-6">
-                    <script id="container" name="content" type="text/plain">
-                        @if(isset($article->content))
-                            {!!($article->content)!!}
-                        @endif
-                    </script>
+                    {!! Form::textarea('content', null, [
+                        'rows' => 10, 'cols' => 80, 'class' => 'ckeditor', 'id' => 'content'
+                    ]) !!}
                 </div>
             </div>
             @include('partials.enabled', [

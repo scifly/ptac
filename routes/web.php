@@ -178,7 +178,7 @@ Route::group(['prefix' => 'departments'], routes('DepartmentController'));
 Route::group(['prefix' => 'departments'], function() {
     $ctlr = 'DepartmentController';
     Route::post('index', $ctlr . '@index');
-    Route::post('move', $ctlr . '@move');
+    Route::post('move/{id}/{parentId}', $ctlr . '@move');
     Route::post('sort', $ctlr . '@sort');
 });
 Route::group(['prefix' => 'companies'], routes('CompanyController'));
@@ -207,7 +207,7 @@ Route::group(['prefix' => 'menus'], function() {
 function routes($ctlr) {
     return function() use($ctlr) {
         Route::get('index', $ctlr . '@index');
-        Route::get('create', $ctlr . '@create');
+        Route::get('create/{id?}', $ctlr . '@create');
         Route::post('store', $ctlr . '@store');
         Route::get('show/{id}', $ctlr . '@show');
         Route::get('edit/{id}', $ctlr . '@edit');

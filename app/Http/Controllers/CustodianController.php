@@ -5,23 +5,31 @@ namespace App\Http\Controllers;
 use App\Http\Requests\CustodianRequest;
 use App\Models\Custodian;
 use App\Models\Department;
+use App\Models\DepartmentUser;
 use App\Models\Group;
 use App\Models\User;
+use App\Models\Mobile;
+use App\Models\Student;
+use App\Models\CustodianStudent;
 use Illuminate\Support\Facades\Request;
 
 class CustodianController extends Controller {
     
-    protected $custodian, $department, $group, $user;
+    protected $custodian, $department, $group, $user,$mobile,$departmentUser,$student,$custodianStudent;
     
-    function __construct(Custodian $custodian, Department $department, Group $group, User $user) {
+    function __construct(Custodian $custodian, Department $department, Group $group, User $user,Mobile $mobile,
+    DepartmentUser $departmentUser,Student $student,CustodianStudent $custodianStudent) {
     
         $this->custodian = $custodian;
         $this->department = $department;
         $this->group = $group;
         $this->user = $user;
+        $this->mobile = $mobile;
+        $this->departmentUser = $departmentUser;
+        $this->student =$student;
+        $this->custodianStudent = $custodianStudent;
         
     }
-    
     /**
      * 显示监护人列表
      *
@@ -42,7 +50,7 @@ class CustodianController extends Controller {
     public function create() {
         
         return parent::output(__METHOD__, [
-            'group' => $this->group->group('custodian'),
+//            'group' => $this->group->group('custodian'),
             'departments' => $this->department->departments([1])
         ]);
         
@@ -55,10 +63,7 @@ class CustodianController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(CustodianRequest $request) {
-        
-        if ($this->custodian->existed($request)) {
-            return $this->fail('已经有此记录');
-        }
+
         return $this->custodian->store($request) ? $this->succeed() : $this->fail();
         
     }
@@ -79,12 +84,35 @@ class CustodianController extends Controller {
      * @internal param Custodian $custodian
      */
     public function edit($id) {
-       dd($id);
         $custodian = $this->custodian->find($id);
-        if (!$custodian) {
+        $user['user'] = $this->user->find($custodian->user_id);
+        $user['expiry'] = $custodian->expiry;
+        $user['mobile'] = $this->mobile->where('user_id',$custodian->user_id)->first();
+        $departmentIds = $this->departmentUser->where('user_id',$custodian->user_id)->get();
+        foreach ($departmentIds as $key=>$value)
+        {
+            $department = Department::whereId($value['department_id'])->first();
+            $selectedDepartments[$department['id']] = $department['name'];
+        }
+
+        $custodianStudent = $this->custodianStudent->where('custodian_id',$custodian->id)->get();
+
+        foreach ($custodianStudent as $key=>$value)
+        {
+            $studentId = $this->student->find($value['student_id']);
+            $selectedStudents[$studentId->id] = $studentId->user->realname;
+        }
+
+        if (!$user) {
             return $this->notFound();
         }
-        return $this->output(__METHOD__, ['custodian' => $custodian]);
+        return $this->output(__METHOD__, [
+            'custodian' => $custodian,
+            'user' => $user,
+            'departments'=>$this->department->departments([1]),
+            'selectedDepartments' => $selectedDepartments,
+            'selectedStudents' => $selectedStudents,
+        ]);
         
     }
     
@@ -95,25 +123,12 @@ class CustodianController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(CustodianRequest $request, $id) {
-        
-        $custodian = $this->custodian->find($id);
-        if (!$custodian) {
-            return $this->notFound();
-        }
-        if ($this->custodian->existed($request, $id)) {
-            return $this->fail('已经有此记录');
-        }
-        return $custodian->update($request->all()) ? $this->succeed() : $this->fail();
+        return $this->custodian->modify($request,$id) ? $this->succeed() : $this->fail();
         
     }
 
-
     public function destroy($id) {
-        $this->custodian->remove($id);
-        $custodian = $this->custodian->find($id);
-        if (!$custodian) {
-            return $this->notFound();
-        }
-        return $custodian->delete() ? $this->succeed() : $this->fail();
+        dd($this->custodian->remove($id));
+        return $this->custodian->remove($id) ? $this->succeed() : $this->fail();
     }
 }

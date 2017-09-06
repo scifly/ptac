@@ -61,23 +61,6 @@ class StudentAttendanceSetting extends Model {
         return $this->belongsTo('App\Models\Semester','semester_id','id');
     }
 
-    public function existed(StudentAttendanceSettingRequest $request, $id = NULL) {
-
-        if (!$id) {
-            $studentAttendanceSetting = $this->where('name', $request->input('name'))
-                ->where('grade_id', $request->input('grade_id'))
-                ->where('semester_id', $request->input('semester_id'))
-                ->first();
-        } else {
-            $studentAttendanceSetting = $this->where('name', $request->input('name'))
-                ->where('id', '<>', $id)
-                ->where('grade_id', $request->input('grade_id'))
-                ->where('semester_id', $request->input('semester_id'))
-                ->first();
-        }
-        return $studentAttendanceSetting ? true : false;
-
-    }
 
     public function datatable() {
 

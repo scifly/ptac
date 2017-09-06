@@ -44,7 +44,8 @@ class CustodianStudent extends Model {
             $this->create([
                'custodian_id' => $custodianId,
                'student_id' => $studentId,
-               'enabled' => 1
+               'enabled' => 1,
+               'relationship'=>'父子'
             ]);
         }
         
@@ -61,5 +62,6 @@ class CustodianStudent extends Model {
         }
         
     }
+
     
 }

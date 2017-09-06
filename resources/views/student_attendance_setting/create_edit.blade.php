@@ -4,8 +4,8 @@
     </div>
     <div class="box-body">
         <div class="form-horizontal">
-            @if (!empty($subject['id']))
-                {{ Form::hidden('id', $subject['id'], ['id' => 'id']) }}
+            @if (!empty($studentAttendanceSetting['id']))
+                {{ Form::hidden('id', $studentAttendanceSetting['id'], ['id' => 'id']) }}
             @endif
             <div class="form-group">
                 {!! Form::label('name', '名称', [
@@ -20,54 +20,70 @@
                     ]) !!}
                 </div>
             </div>
-            <div class="form-group">
-                {!! Form::label('max_score', '最高分', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
-                <div class="col-sm-6">
-                    {!! Form::text('max_score', null, [
-                        'class' => 'form-control',
-                        'placeholder' => '最高分必须是数字',
-                        'required' => 'true',
-                        'type' => 'integer',
-                        'data-parsley-length' => '[3, 3]'
-                    ]) !!}
-                </div>
-            </div>
-            <div class="form-group">
-                {!! Form::label('pass_score', '及格分', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
-                <div class="col-sm-6">
-                    {!! Form::text('pass_score', null, [
-                        'class' => 'form-control',
-                        'placeholder' => '及格分必须是数字',
-                        'required' => 'true',
-                        'type' => 'integer',
-                        'data-parsley-length' => '[2, 2]'
-                    ]) !!}
-                </div>
-            </div>
             @include('partials.single_select', [
-                'label' => '所属学校',
-                'id' => 'school_id',
-                'items' => $schools
+             'label' => '所属年级',
+             'id' => 'grade_id',
+             'items' => $grades
+         ])
+            @include('partials.single_select', [
+                'label' => '所属学期',
+                'id' => 'semester_id',
+                'items' => $semesters,
             ])
-            @include('partials.multiple_select', [
-                'label' => '所属年级',
-                'id' => 'grade_ids',
-                'items' => $grades,
-                'selectedItems' => isset($selectedGrades) ? $selectedGrades : []
+            @include('partials.single_select', [
+            'label' => '星期几',
+            'id' => 'day',
+            'items' => $days,
+        ])
+            <div class="form-group">
+                {!! Form::label('start', '考勤时段起始时间', [
+                    'class' => 'col-sm-3 control-label'
+                ]) !!}
+                <div class="col-sm-6">
+                    {!! Form::text('start', null, [
+                        'class' => 'form-control start-date',
+                    ]) !!}
+                </div>
+            </div>
+            <div class="form-group">
+                {!! Form::label('end', '考勤时段结束时间', [
+                    'class' => 'col-sm-3 control-label'
+                ]) !!}
+                <div class="col-sm-6">
+                    {!! Form::text('end', null, [
+                        'class' => 'form-control end-date',
+                    ]) !!}
+                </div>
+            </div>
+            <div class="form-group">
+                {!! Form::label('msg_template', '考勤消息模板', [
+                    'class' => 'col-sm-3 control-label'
+                ]) !!}
+                <div class="col-sm-6">
+                    {!! Form::text('msg_template', null, [
+                        'class' => 'form-control',
+                        'placeholder' => '消息模板必须为字符',
+                        'required' => 'true',
+                        'type' => 'integer',
+                        'data-parsley-length' => '[2, 255]'
+                    ]) !!}
+                </div>
+            </div>
+
+            @include('partials.enabled', [
+                'label' => '是否为公用',
+                'id' => 'ispublic',
+                'value' => isset($studentAttendanceSetting['ispublic']) ? $studentAttendanceSetting['ispublic']: NULL
             ])
             @include('partials.enabled', [
-                'label' => '是否为副科',
-                'id' => 'isaux',
-                'value' => isset($subject['isaux']) ? $subject['isaux']: NULL
-            ])
+              'label' => '进或出',
+              'id' => 'inorout',
+              'value' => isset($studentAttendanceSetting['ispublic']) ? $studentAttendanceSetting['ispublic']: NULL
+          ])
             @include('partials.enabled', [
                 'label' => '是否启用',
                 'id' => 'enabled',
-                'value' => isset($subject['enabled']) ? $subject['enabled'] : NULL
+                'value' => isset($studentAttendanceSetting['enabled']) ? $studentAttendanceSetting['enabled'] : NULL
             ])
         </div>
     </div>

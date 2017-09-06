@@ -27,7 +27,6 @@ class DepartmentRequest extends FormRequest {
                 'parent_id,' . $this->input('parent_id'),
             'remark' => 'nullable|string|between:2,255',
             'parent_id' => 'nullable|integer',
-            'corp_id' => 'required|integer',
             'school_id' => 'required|integer',
             'order' => 'nullable|integer',
             'enabled' => 'required|boolean'

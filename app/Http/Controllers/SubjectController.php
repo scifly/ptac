@@ -43,7 +43,7 @@ class SubjectController extends Controller {
 
         return parent::output(__METHOD__, [
             'majors' => $this->major->majors(1),
-            'grades' => $this->grade->grades(1)
+//            'grades' => $this->grade->grades(1)
         ]);
         
     }
@@ -92,17 +92,17 @@ class SubjectController extends Controller {
             $grade = Grade::whereId($gradeId)->first();
             $selectedGrades[$gradeId] = $grade['name'];
         }
-//        $subjectMajors = $this->subject->majors;
-//        $selectedMajors = [];
-//        foreach ($subjectMajors as $major) {
-//            $selectedMajors[$major->id] = $major->name;
-//        }
+        $subjectMajors = $this->subject->majors;
+        $selectedMajors = [];
+        foreach ($subjectMajors as $major) {
+            $selectedMajors[$major->id] = $major->name;
+        }
         return parent::output(__METHOD__, [
             'subject' => $subject,
             'grades' => $this->grade->grades(1),
             'selectedGrades' => $selectedGrades,
             'majors' => $this->major->majors(1),
-//            'selectedMajors' => $selectedMajors
+            'selectedMajors' => $selectedMajors
         ]);
         
     }

@@ -54,9 +54,6 @@ class ScoreController extends Controller {
      */
     public function store(ScoreRequest $request) {
         
-        if ($this->score->existed($request)) {
-            return $this->fail('已经有此记录');
-        }
         return $this->score->create($request->all()) ? $this->succeed() : $this->fail();
         
     }
@@ -106,9 +103,6 @@ class ScoreController extends Controller {
         
         $score = $this->score->find($id);
         if (!$score) { return $this->notFound(); }
-        if ($this->score->existed($request, $id)) {
-            return $this->fail('已经有此记录');
-        }
         return $score->update($request->all()) ? $this->succeed() : $this->fail();
         
     }

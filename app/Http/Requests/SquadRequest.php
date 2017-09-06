@@ -18,6 +18,8 @@ class SquadRequest extends FormRequest {
         'max' => '最大为:max',
         'integer' => '必须为整数',
         'boolean' => '为0或1',
+        'unique' => '不唯一',
+
     ];
     
     /**
