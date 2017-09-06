@@ -44,7 +44,7 @@ class StudentAttendanceSettingController extends Controller
      */
     public function store(StudentAttendanceSettingRequest $request)
     {
-        dd($request->all());
+
         return $this->studentAttendanceSetting->create($request->all()) ? $this->succeed() : $this->fail();
     }
 
@@ -88,12 +88,7 @@ class StudentAttendanceSettingController extends Controller
     public function update(StudentAttendanceSettingRequest $request, $id)
     {
         $studentAttendanceSetting = $this->studentAttendanceSetting->find($id);
-        if (!$studentAttendanceSetting) {
-            return $this->notFound();
-        }
-        if ($this->studentAttendanceSetting->existed($request, $id)) {
-            return $this->fail('已经有此记录');
-        }
+
         return $studentAttendanceSetting->update($request->all()) ? $this->succeed() : $this->fail();
     }
 
