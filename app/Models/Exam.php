@@ -63,8 +63,7 @@ class Exam extends Model {
      * @param array $classIds
      * @return array
      */
-    public function classes($classIds) {
-        
+    public function classes( $classIds) {
         $classIds = explode(",", $classIds);
         $selectedClasses = [];
         foreach ($classIds as $classId) {
