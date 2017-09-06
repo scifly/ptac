@@ -69,8 +69,8 @@ class ExamController extends Controller {
         
         return $this->output(__METHOD__, [
             'exam' => $exam,
-            'classes' => $this->exam->classes(explode(',', $exam->class_ids)),
-            'subjects' => $this->exam->subjects(explode(',', $exam->subject_ids)),
+            'classes' => $this->exam->classes($exam->class_ids),
+            'subjects' => $this->exam->subjects(),
         ]);
         
     }

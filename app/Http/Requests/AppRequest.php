@@ -21,7 +21,12 @@ class AppRequest extends FormRequest {
      */
     public function rules() {
         return [
-            'name' => 'required|string|max:36',
+            'name' => 'required|string|max:36|unique:apps,name,' .
+                $this->input('id') . ',id,' .
+                'agentid,' . $this->input('agentid') .
+                ', url,' . $this->input('url') .
+                ', token,' . $this->input('token') .
+                ', encodingaeskey,' . $this->input('encodingaeskey'),
             'description' => 'required|string|max:255',
             'agentid' => 'required|integer|max:3',
             'url' => 'required|string|max:255',

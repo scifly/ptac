@@ -3,14 +3,23 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ScoreRequest;
+use App\Models\Exam;
 use App\Models\Score;
+use App\Models\Student;
+use Excel;
 use Illuminate\Support\Facades\Request;
 
 class ScoreController extends Controller {
     
     protected $score;
-    
-    function __construct(Score $score) { $this->score = $score; }
+    protected $exam;
+    protected $student;
+
+    function __construct(Score $score, Exam $exam, Student $student) {
+        $this->score = $score;
+        $this->exam = $exam;
+        $this->student = $student;
+    }
     
     /**
      * 显示成绩列表
@@ -120,6 +129,41 @@ class ScoreController extends Controller {
      */
     public function statistics($examId) {
         return $this->score->statistics($examId) ? $this->succeed() : $this->fail();
+    }
+
+
+    /**
+     * Excel模板生成
+     * @param $examId
+     */
+    public function export($examId){
+        $exam = $this->exam->find($examId);
+        $subject = $this->exam->subjects($exam->subject_ids);
+        $heading = ['学号','姓名'];
+        foreach ($subject as $value){
+            $heading[] = $value;
+        }
+        $cellData = $this->student->studentsNum($exam->class_ids);
+        array_unshift($cellData,$heading);
+
+        Excel::create('score',function($excel) use ($cellData){
+            $excel->sheet('score', function($sheet) use ($cellData){
+                $sheet->rows($cellData);
+            });
+        })->export('xls');
+    }
+
+
+    /**
+     * 成绩导入
+     */
+    public function import(){
+        $filePath = 'storage/exports/score.xls';
+        $data = Excel::load($filePath)->get();
+        foreach ($data as $val){
+            var_dump($val->学号);
+        }
+
     }
 }
 

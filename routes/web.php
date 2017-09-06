@@ -45,7 +45,12 @@ Route::group(['prefix' => 'exams'], routes('ExamController'));
 Route::group(['prefix' => 'exam_types'], routes('ExamTypeController'));
 // 成绩管理 - 成绩录入/导入.总成绩录入/导入.成绩统计项设置
 Route::group(['prefix' => 'scores'], routes('ScoreController'));
-Route::get('scores/statistics/{examId}', 'ScoreController@statistics');
+Route::group(['prefix' => 'scores'], function() {
+    $ctlr = 'ScoreController';
+    Route::get('statistics/{examId}', $ctlr . '@statistics');
+    Route::get('export/{examId}', $ctlr . '@export');
+    Route::get('import', $ctlr . '@import');
+});
 Route::group(['prefix' => 'score_totals'], function() {
     $ctlr = 'ScoreTotalController';
     Route::get('index', $ctlr . '@index');
