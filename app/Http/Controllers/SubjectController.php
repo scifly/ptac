@@ -43,7 +43,7 @@ class SubjectController extends Controller {
 
         return parent::output(__METHOD__, [
             'majors' => $this->major->majors(1),
-            'grades' => $this->grade->grades(1)
+//            'grades' => $this->grade->grades(1)
         ]);
         
     }

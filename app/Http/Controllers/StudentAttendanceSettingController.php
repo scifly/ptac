@@ -44,9 +44,7 @@ class StudentAttendanceSettingController extends Controller
      */
     public function store(StudentAttendanceSettingRequest $request)
     {
-        if ($this->studentAttendanceSetting->existed($request)) {
-            return $this->fail('已经有此记录');
-        }
+        dd($request->all());
         return $this->studentAttendanceSetting->create($request->all()) ? $this->succeed() : $this->fail();
     }
 

@@ -21,14 +21,15 @@ class StudentAttendanceSettingRequest extends FormRequest {
      */
     public function rules() {
         return [
-            //
+            'name' => 'required|string|between:2,20' .
+                $this->input('id') . ',id',
         ];
     }
     
     protected function prepareForValidation() {
         
         $input = $this->all();
-        dd($input);
+
         if (isset($input['ispublic']) && $input['ispublic'] === 'on') {
             $input['ispublic'] = 1;
         }
@@ -47,7 +48,6 @@ class StudentAttendanceSettingRequest extends FormRequest {
         if (!isset($input['enabled'])) {
             $input['enabled'] = 0;
         }
-        
         $this->replace($input);
     }
 }
