@@ -22,10 +22,25 @@ class StudentAttendanceSettingRequest extends FormRequest {
     public function rules() {
         return [
             'name' => 'required|string|between:2,20' .
-                $this->input('id') . ',id',
+                $this->input('id') . ',id,'.
+                'grade_id,' . $this->input('grade_id').
+                'semester_id,' . $this->input('semester_id'),
+            'msg_template' => 'required|string|between:2,40'
         ];
     }
-    
+
+    public function messages() {
+
+        return [
+            'name.required' => '名称不能为空',
+            'name.between' => '公司名称应该在2~20个字符之间',
+            'name.unique' => '已有该记录',
+            'msg_template.required' => '消息模板不能为空',
+            'msg_template.between' => '消息模板应该在2~20个字符之间',
+        ];
+
+    }
+
     protected function prepareForValidation() {
         
         $input = $this->all();

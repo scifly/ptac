@@ -48,28 +48,7 @@ class Custodian extends Model {
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function students() { return $this->belongsToMany('App\Models\Student'); }
-    
-    /**
-     * 判断监护人记录是否存在
-     *
-     * @param CustodianRequest $request
-     * @param null $id
-     * @return bool
-     */
-    public function existed(CustodianRequest $request, $id = NULL) {
 
-        if (!$id) {
-            $custodian = $this->where('user_id',$request->input('user_id'))
-                ->first();
-        } else {
-            $custodian = $this->where('user_id',$request->input('user_id'))
-                ->where('id','<>',$id)
-                ->first();
-        }
-        return $custodian ? true : false;
-
-    }
-    
     /**
      * 保存新创建的监护人记录
      *
@@ -96,7 +75,6 @@ class Custodian extends Model {
                     'wechatid' => '',
                     'enabled' =>$user['enabled']
                 ];
-
                 $user = new User();
                 $u = $user->create($userData);
                 unset($user);

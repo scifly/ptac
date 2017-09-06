@@ -91,9 +91,7 @@ class StudentAttendanceSettingController extends Controller
         if (!$studentAttendanceSetting) {
             return $this->notFound();
         }
-        if ($this->studentAttendanceSetting->existed($request, $id)) {
-            return $this->fail('已经有此记录');
-        }
+
         return $studentAttendanceSetting->update($request->all()) ? $this->succeed() : $this->fail();
     }
 

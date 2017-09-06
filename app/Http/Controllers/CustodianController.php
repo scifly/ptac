@@ -128,7 +128,6 @@ class CustodianController extends Controller {
     }
 
     public function destroy($id) {
-        dd($this->custodian->remove($id));
         return $this->custodian->remove($id) ? $this->succeed() : $this->fail();
     }
 }

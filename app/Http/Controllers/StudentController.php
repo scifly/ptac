@@ -44,9 +44,7 @@ class StudentController extends Controller {
      */
     public function store(StudentRequest $request) {
         
-        if ($this->student->existed($request)) {
-            return $this->fail('已经有此记录');
-        }
+
         return $this->student->create($request->all()) ? $this->succeed() : $this->fail();
         
     }
@@ -90,9 +88,7 @@ class StudentController extends Controller {
         
         $student = $this->student->find($id);
         if (!$student) { return $this->notFound(); }
-        if ($this->student->existed($request, $id)) {
-            return $this->fail('已经有此记录');
-        }
+
         return $student->update($request->all()) ? $this->succeed() : $this->fail();
         
     }

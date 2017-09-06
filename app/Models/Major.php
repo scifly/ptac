@@ -44,14 +44,14 @@ class Major extends Model {
     public function school() { return $this->belongsTo('App\Models\School'); }
     
     public function subjects() {
-        
+
         return $this->belongsToMany(
             'App\Models\Subject',
             'majors_subjects',
             'major_id',
             'subject_id'
         );
-        
+
     }
     
     public function majors($schoolId = NULL) {
