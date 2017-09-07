@@ -396,3 +396,18 @@ $factory->define(App\Models\Semester::class, function (Faker\Generator $faker) {
     ];
 });
 
+$factory->define(App\Models\Major::class, function (Faker\Generator $faker) {
+    $name = ['法学','环境科学','环境工程','计算机科学与技术','网络工程',
+        '软件工程','通信工程','物联网工程','地理科学', '人文地理与城乡规划',
+        '自然地理与资源环境','地理信息科学','测绘工程','化学应用化学科学教育', '教育学心理学',
+        '教育技术学','历史学经济学', '国际经济与贸易市场','营销专业','工商管理会计学',
+    '数学与应用数学','信息与计算科学','信息管理与信息系统', '统计学','体育教育'];
+    return [
+        'name' =>$name[rand(0,24)],
+        'remark' =>'测试',
+        'school_id' =>rand(1,5),
+        'enabled' =>rand(0,1),
+
+    ];
+});
+
