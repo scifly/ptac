@@ -6,6 +6,12 @@ use App\Http\Requests\ProcedureTypeRequest;
 use App\Models\ProcedureType;
 use Illuminate\Support\Facades\Request;
 
+/**
+ * 审批流程类型
+ *
+ * Class ProcedureTypeController
+ * @package App\Http\Controllers
+ */
 class ProcedureTypeController extends Controller {
     
     protected $procedureType;
@@ -17,7 +23,7 @@ class ProcedureTypeController extends Controller {
     }
     
     /**
-     * 显示审批流程类型列表
+     * 审批流程类型列表
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
@@ -31,7 +37,7 @@ class ProcedureTypeController extends Controller {
     }
     
     /**
-     * 显示创建审批流程类型的表单
+     * 创建审批流程类型
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
@@ -42,7 +48,7 @@ class ProcedureTypeController extends Controller {
     }
     
     /**
-     * 显示创建审批流程类型的表单
+     * 创建审批流程类型
      *
      * @param ProcedureTypeRequest $request
      * @return \Illuminate\Http\JsonResponse
@@ -54,7 +60,7 @@ class ProcedureTypeController extends Controller {
     }
     
     /**
-     * 显示指定的审批流程类型记录详情
+     * 审批流程类型详情
      *
      * @param $id
      * @return bool|\Illuminate\Http\JsonResponse
@@ -68,7 +74,7 @@ class ProcedureTypeController extends Controller {
     }
     
     /**
-     * 显示编辑指定审批流程类型的表单
+     * 编辑审批流程类型
      *
      * @param $id
      * @return bool|\Illuminate\Http\JsonResponse
@@ -82,7 +88,7 @@ class ProcedureTypeController extends Controller {
     }
     
     /**
-     * 更新指定的审批流程类型记录
+     * 更新审批流程类型
      *
      * @param ProcedureTypeRequest $request
      * @param $id
@@ -97,7 +103,7 @@ class ProcedureTypeController extends Controller {
     }
     
     /**
-     * 删除指定的审批流程类型记录
+     * 删除审批流程类型
      *
      * @param $id
      * @return \Illuminate\Http\JsonResponse

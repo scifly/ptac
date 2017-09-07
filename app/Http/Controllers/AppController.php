@@ -6,6 +6,12 @@ use App\Http\Requests\AppRequest;
 use App\Models\App;
 use Illuminate\Support\Facades\Request;
 
+/**
+ * 微信企业应用
+ *
+ * Class AppController
+ * @package App\Http\Controllers
+ */
 class AppController extends Controller {
     
     protected $app;

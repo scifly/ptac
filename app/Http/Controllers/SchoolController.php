@@ -6,6 +6,12 @@ use App\Http\Requests\SchoolRequest;
 use App\Models\School as School;
 use Illuminate\Support\Facades\Request;
 
+/**
+ * 学校
+ *
+ * Class SchoolController
+ * @package App\Http\Controllers
+ */
 class SchoolController extends Controller {
     
     protected $school;
@@ -13,7 +19,7 @@ class SchoolController extends Controller {
     function __construct(School $school) { $this->school = $school; }
     
     /**
-     * 显示学校记录列表
+     * 学校列表
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
@@ -27,7 +33,7 @@ class SchoolController extends Controller {
     }
     
     /**
-     * 显示创建学校记录的表单
+     * 创建学校
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
@@ -38,7 +44,7 @@ class SchoolController extends Controller {
     }
     
     /**
-     * 保存新创建的学校记录
+     * 保存学校
      *
      * @param SchoolRequest $request
      * @return \Illuminate\Http\Response
@@ -50,7 +56,7 @@ class SchoolController extends Controller {
     }
     
     /**
-     * 显示指定的学校记录详情
+     * 学校详情
      *
      * @param $id
      * @return bool|\Illuminate\Http\JsonResponse
@@ -64,7 +70,7 @@ class SchoolController extends Controller {
     }
     
     /**
-     * 显示编辑指定学校记录的表单
+     * 编辑学校
      *
      * @param $id
      * @return bool|\Illuminate\Http\JsonResponse
@@ -78,7 +84,7 @@ class SchoolController extends Controller {
     }
     
     /**
-     * 更新指定的学校记录
+     * 更新学校
      *
      * @param SchoolRequest|\Illuminate\Http\Request $request
      * @param $id
@@ -93,7 +99,7 @@ class SchoolController extends Controller {
     }
     
     /**
-     * 删除指定的学校记录
+     * 删除学校
      *
      * @param $id
      * @return \Illuminate\Http\JsonResponse
@@ -105,4 +111,5 @@ class SchoolController extends Controller {
         return $school->delete() ? parent::succeed() : parent::fail();
         
     }
+    
 }

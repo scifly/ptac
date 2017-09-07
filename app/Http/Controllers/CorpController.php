@@ -6,7 +6,12 @@ use App\Http\Requests\CorpRequest;
 use App\Models\Corp;
 use Illuminate\Support\Facades\Request;
 
-
+/**
+ * 企业
+ *
+ * Class CorpController
+ * @package App\Http\Controllers
+ */
 class CorpController extends Controller {
     protected $corp;
 
