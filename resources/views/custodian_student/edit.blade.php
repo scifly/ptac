@@ -1,9 +1,3 @@
-@extends('layouts.master')
-@section('header')
-    <h1>编辑监护人/学生</h1>
-@endsection
-@section('content')
-    {!! Form::model($custodianStudent, ['method' => 'put', 'id' => 'formCustodianStudent']) !!}
-    @include('custodian_student.create_edit')
-    {!! Form::close() !!}
-@endsection
+{!! Form::model($custodianStudent, ['method' => 'put', 'id' => 'formCustodianStudent']) !!}
+@include('custodian_student.create_edit')
+{!! Form::close() !!}

@@ -10,9 +10,7 @@ class SubjectRequest extends FormRequest {
      *
      * @return bool
      */
-    public function authorize() {
-        return true;
-    }
+    public function authorize() { return true; }
     
     /**
      * Get the validation rules that apply to the request.
@@ -36,16 +34,14 @@ class SubjectRequest extends FormRequest {
             'max_score.required' => '最高分不能为空!',
             'pass_score.required' => '及格分不能为空!',
             'grade_ids.required' => '年级名称不能为空!'
-        
         ];
     }
     
     protected function prepareForValidation() {
         
         $input = $this->all();
-
-        if(isset($input['grade_ids']))
-        {
+        
+        if (isset($input['grade_ids'])) {
             $input['grade_ids'] = implode(',', $input['grade_ids']);
         }
         if (isset($input['isaux']) && $input['isaux'] === 'on') {
@@ -59,9 +55,6 @@ class SubjectRequest extends FormRequest {
         }
         if (!isset($input['enabled'])) {
             $input['enabled'] = 0;
-        }
-        if (isset($input['grade_ids'])) {
-            $input['grade_ids'] = implode(',', $input['grade_ids']);
         }
         $this->replace($input);
         

@@ -6,12 +6,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class SquadRequest extends FormRequest {
     
-    protected $rules = [
-        'name' => 'required|string|max:255',
-        'grade_id' => 'required|integer',
-        'educator_ids' => 'required|string',
-        'enabled' => 'required|boolean'
-    ];
     protected $strings_key = [
         'name' => '班级名称',
         'grade_id' => '所属年级',
@@ -24,8 +18,9 @@ class SquadRequest extends FormRequest {
         'max' => '最大为:max',
         'integer' => '必须为整数',
         'boolean' => '为0或1',
+        'unique' => '不唯一',
+
     ];
-    
     
     /**
      * Determine if the user is authorized to make this request.
@@ -34,9 +29,8 @@ class SquadRequest extends FormRequest {
      */
     public function authorize() { return true; }
     
-    public function rules() { return $this->rules; }
-    
     public function messages() {
+        
         $rules = $this->rules();
         $k_array = $this->strings_key;
         $v_array = $this->strings_val;
@@ -53,6 +47,20 @@ class SquadRequest extends FormRequest {
         }
         
         return $array;
+        
+    }
+    
+    public function rules() {
+        
+        return [
+            'name' => 'required|string|between:2,255|unique:classes,name,' .
+                $this->input('id') . ',id,' .
+                'grade_id,' . $this->input('grade_id'),
+            'grade_id' => 'required|integer',
+            'educator_ids' => 'required|string',
+            'enabled' => 'required|boolean'
+        ];
+        
     }
     
     public function wantsJson() { return true; }

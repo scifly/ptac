@@ -5,20 +5,19 @@ namespace App\Http\Controllers;
 //用到学校数据模型
 use App\Models\Exam;
 use App\Models\Grade;
-
-
 use App\Models\School;
-
 use App\Models\Score;
 use App\Models\ScoreTotal;
 use App\Models\Squad;
 use App\Models\Student;
 use App\Models\Subject;
 
-
-
-
-//成绩发送控制
+/**
+ * 成绩发送
+ *
+ * Class Score_SendController
+ * @package App\Http\Controllers
+ */
 class Score_SendController extends Controller {
     
     protected $exam, $score, $user, $student,

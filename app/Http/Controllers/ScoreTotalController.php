@@ -6,45 +6,54 @@ use App\Models\ScoreTotal;
 use App\Models\Subject;
 use Illuminate\Support\Facades\Request;
 
+/**
+ * 总成绩
+ *
+ * Class ScoreTotalController
+ * @package App\Http\Controllers
+ */
 class ScoreTotalController extends Controller {
 
-    protected $score_total;
+    protected $scoreTotal;
+    protected $subject;
 
-    function __construct(ScoreTotal $score_total) {
-        $this->score_total = $score_total;
+    function __construct(ScoreTotal $score_total, Subject $subject) {
+        
+        $this->scoreTotal = $score_total;
+        $this->subject = $subject;
+        
     }
 
     /**
-     * 显示总成绩列表
+     * 总成绩列表
      *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\JsonResponse|\Illuminate\View\View
      */
     public function index() {
 
         if (Request::get('draw')) {
-            return response()->json($this->score_total->datatable());
+            return response()->json($this->scoreTotal->datatable());
         }
         return $this->output(__METHOD__);
 
     }
 
     /**
-     * 显示总成绩记录详情
+     * 总成绩详情
      *
      * @param $id
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function show($id) {
-        $score_total = $this->score_total->find($id);
-        if (!$score_total) { return $this->notFound(); }
-        $subjects = Subject::whereIn('id', explode(',', $score_total['subject_ids']))->get(['name']);
-        $na_subjects = Subject::whereIn('id', explode(',', $score_total['na_subject_ids']))->get(['name']);
+        
+        $scoreTotal = $this->scoreTotal->find($id);
+        if (!$scoreTotal) { return $this->notFound(); }
 
         return $this->output(__METHOD__, [
-            'score_total' => $score_total,
-            'studentname' => $score_total->student->user->realname,
-            'subjects' => $subjects,
-            'na_subjects' => $na_subjects
+            'score_total' => $scoreTotal,
+            'studentname' => $scoreTotal->student->user->realname,
+            'subjects' => $this->subject->subjects($scoreTotal->subject_ids),
+            'na_subjects' => $this->subject->naSubjects($scoreTotal->na_subject_ids),
         ]);
 
     }
@@ -52,10 +61,13 @@ class ScoreTotalController extends Controller {
     /**
      * 总成绩统计
      *
-     * @param $exam_id
+     * @param $examId
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function statistics($exam_id){
-        return $this->score_total->statistics($exam_id) ? $this->succeed() : $this->fail();
+    public function statistics($examId){
+        
+        return $this->scoreTotal->statistics($examId) ? $this->succeed() : $this->fail();
+        
     }
 
 }

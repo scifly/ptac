@@ -8,6 +8,12 @@ use App\Models\MenuTab;
 use App\Models\Tab;
 use Illuminate\Support\Facades\Request;
 
+/**
+ * 菜单
+ *
+ * Class MenuController
+ * @package App\Http\Controllers
+ */
 class MenuController extends Controller {
     
     protected $menu, $menuTab;
@@ -19,32 +25,33 @@ class MenuController extends Controller {
     }
     
     /**
-     * 显示菜单列表
+     * 菜单列表
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
         
         if (Request::method() === 'POST' ) {
-            return $this->menu->tree();
+            return $this->menu->tree(1);
         }
         return parent::output(__METHOD__);
         
     }
     
     /**
-     * 显示创建新菜单的表单
+     * 创建菜单
      *
+     * @param $id integer 上级菜单ID
      * @return bool|\Illuminate\Http\JsonResponse
      */
-    public function create() {
+    public function create($id) {
         
-        return parent::output(__METHOD__);
+        return parent::output(__METHOD__, ['parentId' => $id]);
         
     }
     
     /**
-     * 保存新创建的菜单记录
+     * 保存菜单
      *
      * @param MenuRequest $request
      * @return \Illuminate\Http\JsonResponse
@@ -56,7 +63,7 @@ class MenuController extends Controller {
     }
     
     /**
-     * 显示指定的菜单记录详情
+     * 菜单详情
      *
      * @param $id
      * @return bool|\Illuminate\Http\JsonResponse
@@ -70,7 +77,7 @@ class MenuController extends Controller {
     }
     
     /**
-     * 显示编辑指定菜单记录的表单
+     * 编辑菜单
      *
      * @param $id
      * @return bool|\Illuminate\Http\JsonResponse
@@ -94,7 +101,7 @@ class MenuController extends Controller {
     }
     
     /**
-     * 更新指定的菜单记录
+     * 更新菜单
      *
      * @param MenuRequest $request
      * @param integer $id 菜单ID
@@ -127,7 +134,7 @@ class MenuController extends Controller {
     }
     
     /**
-     * 删除指定的菜单记录
+     * 删除菜单
      *
      * @param $id
      * @return \Illuminate\Http\JsonResponse
@@ -141,7 +148,7 @@ class MenuController extends Controller {
     }
     
     /**
-     * 保存菜单的排列顺序
+     * 保存菜单排列顺序
      */
     public function sort() {
         
@@ -157,7 +164,7 @@ class MenuController extends Controller {
     }
     
     /**
-     * 显示指定菜单包含的卡片
+     * 菜单包含的卡片
      *
      * @param $id
      * @return \Illuminate\Http\JsonResponse
@@ -178,7 +185,7 @@ class MenuController extends Controller {
     }
     
     /**
-     * 保存指定菜单的卡片排列顺序
+     * 保存菜单卡片排列顺序
      *
      * @param $id
      * @return \Illuminate\Http\JsonResponse

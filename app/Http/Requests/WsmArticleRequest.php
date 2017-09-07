@@ -12,16 +12,14 @@ class WsmArticleRequest extends FormRequest
         'wsm_id' => 'required|integer',
         'name' => 'required|string|max:120',
         'summary' => 'required|string|max:255',
-//        'thumbnail_media_id' => 'required|integer',
         'content' => 'required|string',
-        'media_ids' => 'required|array',
+        'media_ids' => 'required|string',
         'enabled' => 'required|boolean'
     ];
     protected $strings_key = [
         'wsm_id' => '所属网站模块',
         'name' => '名称',
         'summary' => '文章摘要',
-//        'thumbnail_media_id' => '缩略图',
         'content' => '文章内容',
         'media_ids' => '轮播图',
         'enabled' => '是否启用'
@@ -32,7 +30,6 @@ class WsmArticleRequest extends FormRequest
         'max'=> '最大为:max',
         'integer'=> '必须为整数',
         'boolean'=> '为0或1',
-        'array'=> '为数组',
     ];
 
 
@@ -78,6 +75,10 @@ class WsmArticleRequest extends FormRequest
         }
         if (!isset($input['enabled'])) {
             $input['enabled'] = 0;
+        }
+        if (isset($input['media_ids'])) {
+            $input['thumbnail_media_id'] = $input['media_ids'][0];
+            $input['media_ids'] = implode(',', $input['media_ids']);
         }
         $this->replace($input);
     }

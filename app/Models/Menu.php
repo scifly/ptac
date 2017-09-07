@@ -52,15 +52,9 @@ use Mockery\Exception;
 class Menu extends Model {
     
     protected $fillable = [
-        'parent_id',
-        'name',
-        'remark',
-        'school_id',
-        'position',
-        'media_id',
-        'action_id',
-        'icon_id',
-        'enabled'
+        'parent_id', 'name', 'remark',
+        'school_id', 'position', 'media_id',
+        'action_id', 'icon_id', 'enabled'
     ];
     
     /**
@@ -68,11 +62,7 @@ class Menu extends Model {
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function school() {
-        
-        return $this->belongsTo('App\Models\School');
-        
-    }
+    public function school() { return $this->belongsTo('App\Models\School'); }
     
     /**
      * 获取菜单包含的卡片
@@ -97,10 +87,7 @@ class Menu extends Model {
      */
     public function parent() {
         
-        return $this->belongsTo(
-            'App\Models\Menu',
-            'parent_id'
-        );
+        return $this->belongsTo('App\Models\Menu', 'parent_id');
         
     }
     
@@ -160,7 +147,7 @@ class Menu extends Model {
      * @param array $path
      * @return string
      */
-    public function leafPath($id, array &$path) {
+    private function leafPath($id, array &$path) {
         
         $menu = $this->find($id);
         if (!isset($menu)) {
@@ -287,17 +274,23 @@ class Menu extends Model {
     }
     
     /**
-     * 获取显示jstree的菜单数据
+     * 获取用于显示jstree的菜单数据
      *
+     * @param null $schoolId
      * @return \Illuminate\Http\JsonResponse
      */
-    public function tree() {
+    public function tree($schoolId = NULL) {
     
         $defaultIconHtml = '<i class="fa fa-circle-o"></i>';
         $iconHtml = '<i class="%s"></i>';
         
-        $menus = $this->get(['id', 'parent_id', 'name', 'position'])
-            ->sortBy(['position'])->toArray();
+        if (isset($schoolId)) {
+            $menus = $this::whereSchoolId($schoolId)->get(['id', 'parent_id', 'name', 'position'])
+                ->sortBy(['position'])->toArray();
+        } else {
+            $menus = $this->get(['id', 'parent_id', 'name', 'position'])
+                ->sortBy(['position'])->toArray();
+        }
         $data = [];
         foreach ($menus as $menu) {
             if (isset($menu['parent_id'])) {

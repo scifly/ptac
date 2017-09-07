@@ -50,7 +50,7 @@ $factory->define(App\Models\School::class, function (Faker\Generator $faker) {
         'latitude' => 30.0244,
         'sms_max_cnt' => 30,
         'sms_used' => 10,
-        'corp_id' => 1,
+        'corp_id' => rand(1,10),
         'enabled' => 1
     ];
 
@@ -180,7 +180,6 @@ $factory->define(App\Models\Custodian::class, function (Faker\Generator $faker) 
 });
 
 $factory->define(App\Models\Student::class, function (Faker\Generator $faker) {
-
     return [
         'user_id' => 1,
         'class_id' => 1,
@@ -326,4 +325,89 @@ $factory->define(App\Models\Event::class, function (Faker\Generator $faker) {
     ];
 });
 
+$factory->define(App\Models\Department::class, function (Faker\Generator $faker) {
+
+    return [
+        'parent_id' => rand(1, 10),
+        'corp_id' => rand(1, 10),
+        'school_id' => rand(1,20),
+        'name' =>1,
+        'remark' =>'测试',
+        'order' =>rand(12121451,454612421),
+        'enabled' =>rand(0,1)
+
+    ];
+});
+
+$factory->define(App\Models\Corp::class, function (Faker\Generator $faker) {
+    $company = [
+        '北京中科软件有限公司', '北京华宇软件股份有限公司', '金蝶国际软件集团有限公司','成都智能软件公司', '润物软件技术有限公司',
+        '北京希尔信息技术有限公司','亚太博大软件', '成都卓越精算软件有限责任公司', '冠群金辰软件公司', '福建富士通信息软件有限公司',
+        '北京有生博大软件技术有限公司', '云南保会通软件公司', '西安博达软件有限公司', '上海启明软件股份有限公司', '深圳市伊登软件有限公司',
+        '厦门搜企软件有限公司', '北京日桥信息技术有限公司', '南京橙红信息科技有限公司'
+];
+    return [
+        'name' => $company[rand(0, 17)],
+        'corpid' => strtolower(str_random(18)),
+        'enabled' =>rand(0,1),
+        'company_id' =>rand(1,10),
+
+    ];
+});
+
+$factory->define(App\Models\EducatorAttendanceSetting::class, function (Faker\Generator $faker) {
+    return [
+        'name' => $faker->name,
+        'school_id' => rand(1,20),
+        'start' =>date('Y-m-d H:i:s',time()),
+        'end' => date('Y-m-d H:i:s',strtotime("+8 hours")),
+        'inorout' =>rand(0,1),
+
+    ];
+});
+
+
+$factory->define(App\Models\StudentAttendanceSetting::class, function (Faker\Generator $faker) {
+    $day = ['星期一','星期二','星期三','星期四','星期五','星期六','星期日'];
+    return [
+        'name' => $faker->name,
+        'grade_id' => rand(1,20),
+        'semester_id' =>rand(1,6),
+        'ispublic' =>1,
+        'start' =>date('Y-m-d H:i:s',time()),
+        'end' => date('Y-m-d H:i:s',strtotime("+8 hours")),
+        'day'=>$day[rand(0,6)],
+        'inorout' =>rand(0,1),
+        'msg_template'=>$faker->name
+    ];
+});
+
+
+$factory->define(App\Models\Semester::class, function (Faker\Generator $faker) {
+    $name = ['第一学期','第二学期','第三学期','第四学期','第五学期','第六学期'];
+    return [
+        'school_id' => rand(1,20),
+        'name' =>$name[rand(0,5)],
+        'remark' =>1,
+        'start_date' =>date('Y-m-d H:i:s',time()),
+        'end_date' => date('Y-m-d H:i:s',strtotime("+4 month")),
+        'enabled' =>rand(0,1),
+
+    ];
+});
+
+$factory->define(App\Models\Major::class, function (Faker\Generator $faker) {
+    $name = ['法学','环境科学','环境工程','计算机科学与技术','网络工程',
+        '软件工程','通信工程','物联网工程','地理科学', '人文地理与城乡规划',
+        '自然地理与资源环境','地理信息科学','测绘工程','化学应用化学科学教育', '教育学心理学',
+        '教育技术学','历史学经济学', '国际经济与贸易市场','营销专业','工商管理会计学',
+    '数学与应用数学','信息与计算科学','信息管理与信息系统', '统计学','体育教育'];
+    return [
+        'name' =>$name[rand(0,24)],
+        'remark' =>'测试',
+        'school_id' =>rand(1,5),
+        'enabled' =>rand(0,1),
+
+    ];
+});
 

@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
 /**
- * App\Models\Exam
+ * App\Models\Exam 考试
  *
  * @property int $id
  * @property string $name 考试名称
@@ -44,36 +44,52 @@ class Exam extends Model {
     protected $table = 'exams';
     
     protected $fillable = [
-        'name',
-        'remark',
-        'exam_type_id',
-        'class_ids',
-        'subject_ids',
-        'max_scores',
-        'pass_scores',
-        'start_date',
-        'end_date',
-        'created_at',
-        'updated_at',
+        'name', 'remark', 'exam_type_id',
+        'class_ids', 'subject_ids', 'max_scores',
+        'pass_scores', 'start_date', 'end_date',
         'enabled'
     ];
     
-    public function examType() {
+    /**
+     * 返回指定考试所属的考试类型对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function examType() { return $this->belongsTo('App\models\ExamType'); }
+
+    /**
+     * 获取参与指定考试的所有班级列表
+     *
+     * @param $classIds
+     * @return array
+     */
+    public function classes( $classIds) {
+        $classIds = explode(",", $classIds);
+        $selectedClasses = [];
+        foreach ($classIds as $classId) {
+            $class = Squad::whereId($classId)->first();
+            $selectedClasses[$classId] = $class['name'];
+        }
         
-        return $this->belongsTo('App\models\ExamType');
+        return $selectedClasses;
         
     }
-    
-    public function classes(array $classIds) {
-        
-        return Squad::whereIn('id', $classIds)->get(['id', 'name']);
-        
-    }
-    
-    public function subjects(array $subjectIds) {
-        
-        return Subject::whereIn('id', $subjectIds)->get(['id', 'name']);
-        
+
+    /**
+     * 获取指定考试包含的所有科目列表
+     *
+     * @param $subjectIds
+     * @return array
+     */
+    public function subjects($subjectIds) {
+        $subjectIds = explode(",", $subjectIds);
+        $selectedSubjects = [];
+        foreach ($subjectIds as $subjectId) {
+            $selectedSubjects[$subjectId] = Subject::whereId($subjectId)->value('name');
+        }
+
+        return $selectedSubjects;
+
     }
     
     //获取当前考试班级
@@ -109,15 +125,14 @@ class Exam extends Model {
         
     }
     
-    
     /**
-     * 获取当前考试的科目
+     * 获取指定考试包含的的所有科目列表
+     *
      * @param $examId
      * @return array
      * @internal param $subjectIds
      */
     public function subjectsByExamId($examId) {
-        
         
         $subjectIds = self::whereid($examId)->first(["subject_ids"])->toArray();
         $subject_ids = explode(',', $subjectIds['subject_ids']);
@@ -125,9 +140,10 @@ class Exam extends Model {
         foreach ($subject_ids as $subject_id) {
             $subjects[] = Subject::whereId($subject_id)->first(['id', 'name']);
         }
+
         return $subjects;
+        
     }
-    
     
     public function datatable() {
         
@@ -163,6 +179,7 @@ class Exam extends Model {
         ];
         
         return Datatable::simple($this, $columns, $joins);
+        
     }
     
 }

@@ -6,13 +6,20 @@ use App\Http\Requests\ProcedureRequest;
 use App\Models\Procedure;
 use Illuminate\Support\Facades\Request;
 
+/**
+ * 审批流程
+ *
+ * Class ProcedureController
+ * @package App\Http\Controllers
+ */
 class ProcedureController extends Controller {
+    
     protected $procedure;
     
     function __construct(Procedure $procedure) { $this->procedure = $procedure; }
     
     /**
-     * 显示审批流程列表
+     * 审批流程列表
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
@@ -26,7 +33,7 @@ class ProcedureController extends Controller {
     }
     
     /**
-     * 显示创建审批流程记录的表单
+     * 创建审批流程
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
@@ -37,22 +44,19 @@ class ProcedureController extends Controller {
     }
     
     /**
-     * 保存新创建的审批流程记录
+     * 保存审批流程
      *
      * @param ProcedureRequest $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(ProcedureRequest $request) {
 
-        if ($this->procedure->existed($request)) {
-            return $this->fail('已经有此记录');
-        }
         return $this->procedure->create($request->all()) ? $this->succeed() : $this->fail();
         
     }
     
     /**
-     * 显示指定的审批流程记录详情
+     * 审批流程详情
      *
      * @param $id
      * @return bool|\Illuminate\Http\JsonResponse
@@ -66,7 +70,7 @@ class ProcedureController extends Controller {
     }
     
     /**
-     * 显示编辑指定审批流程记录的表单
+     * 编辑审批流程
      *
      * @param $id
      * @return bool|\Illuminate\Http\JsonResponse
@@ -80,7 +84,7 @@ class ProcedureController extends Controller {
     }
     
     /**
-     * 更新指定的审批流程记录
+     * 更新审批流程
      *
      * @param ProcedureRequest $request
      * @param $id
@@ -90,21 +94,17 @@ class ProcedureController extends Controller {
     
         $procedure = $this->procedure->find($id);
         if (!$procedure) { return $this->notFound(); }
-        if ($this->procedure->existed($request, $id)) {
-            return $this->fail('已经有此记录');
-        }
         return $procedure->update($request->all()) ? $this->succeed() : $this->fail();
-    
     }
     
     /**
-     * 删除指定的审批流程记录
+     * 删除审批流程
      *
      * @param $id
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
-        
+
         $procedure = $this->procedure->find($id);
         if (!$procedure) { return $this->notFound(); }
         return $procedure->delete() ? $this->succeed() : $this->fail();

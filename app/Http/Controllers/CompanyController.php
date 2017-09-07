@@ -6,6 +6,12 @@ use App\Http\Requests\CompanyRequest;
 use App\Models\Company;
 use Illuminate\Support\Facades\Request;
 
+/**
+ * 运营者
+ *
+ * Class CompanyController
+ * @package App\Http\Controllers
+ */
 class CompanyController extends Controller {
     
     protected $company;
@@ -49,9 +55,6 @@ class CompanyController extends Controller {
      */
     public function store(CompanyRequest $request) {
         
-        if ($this->company->existed($request)) {
-            return $this->fail('已经有此记录');
-        }
         return $this->company->create($request->all()) ? $this->succeed() : $this->fail();
         
     }
@@ -95,9 +98,6 @@ class CompanyController extends Controller {
         
         $company = $this->company->find($id);
         if (!$company) { return $this->notFound(); }
-        if ($this->company->existed($request)) {
-            return $this->fail('已经有此记录');
-        }
         return $company->update($request->all()) ? $this->succeed() : $this->fail();
         
     }
@@ -115,5 +115,6 @@ class CompanyController extends Controller {
         return $company->delete() ? $this->succeed() : $this->fail();
         
     }
+    
 }
 

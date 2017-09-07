@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use App\Http\Requests\OperatorRequest;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use App\Facades\DatatableFacade as Datatable;
 
 /**
- * App\Models\Operator
+ * App\Models\Operator 管理/操作员
  *
  * @property int $id
  * @property int $company_id 所属运营者公司ID
@@ -27,18 +29,104 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read \App\Models\User $user
  */
 class Operator extends Model {
-    //
-    protected $table = 'operators';
+
+    protected $fillable = [
+        'company_id', 'user_id', 'school_ids',
+        'type', 'enabled'
+    ];
     
-    protected $fillable = ['company_id', 'user_id', 'school_id', 'type', 'created_at', 'updated_at'];
+    /**
+     * 返回指定管理/操作员所属的运营者公司对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function company() {return $this->belongsTo('App\Models\Company'); }
     
-    public function company() {
-        return $this->belongsTo('App\Models\Company');
+    /**
+     * 获取指定管理/操作员对应的用户对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function user() { return $this->belongsTo('App\Models\User'); }
+    
+    /**
+     * 返回指定管理/操作员管理的所有学校对象
+     *
+     * @param $schoolIds
+     * @return \Illuminate\Database\Eloquent\Collection|static[]
+     */
+    public function schools($schoolIds) {
+        
+        return School::whereEnabled(1)->
+            whereIn('id', explode(',', $schoolIds))->
+            get();
+        
     }
     
-    public function user() {
-        return $this->belongsTo('App\Models\User');
+    public function store(OperatorRequest $request) {
+        
+        return true;
+        
     }
     
+    public function modify(OperatorRequest $request, $id) {
+        
+        return true;
+        
+    }
+    
+    public function remove($id) {
+        
+        return true;
+        
+    }
+    
+    public function datatable() {
+    
+        $columns = [
+            ['db' => 'Operator.id', 'dt' => 0],
+            ['db' => 'User.realname', 'dt' => 1],
+            ['db' => 'User.username', 'dt' => 2],
+            ['db' => 'Groups.name as groupname', 'dt' => 3],
+            ['db' => 'Company.name as companyname', 'dt' => 4],
+            ['db' => 'User.userid', 'dt' => 5],
+            ['db' => 'Mobile.mobile', 'dt' => 6],
+            ['db' => 'Operator.created_at', 'dt' => 7],
+            ['db' => 'Operator.updated_at', 'dt' => 8],
+            ['db' => 'User.enabled', 'dt' => 9],
+        ];
+        $joins = [
+            [
+                'table' => 'users',
+                'alias' => 'User',
+                'type' => 'INNER',
+                'conditions' => ['User.id = Operator.user_id']
+            ],
+            [
+                'table' => 'companies',
+                'alias' => 'Company',
+                'type' => 'INNER',
+                'conditions' => ['Company.id = Operator.company_id']
+            ],
+            [
+                'table' => 'groups',
+                'alias' => 'Groups',
+                'type' => 'INNER',
+                'conditions' => ['Groups.id = User.group_id']
+            ],
+            [
+                'table' => 'mobiles',
+                'alias' => 'Mobile',
+                'type' => 'LEFT',
+                'conditions' => [
+                    'User.id = Mobile.user_id',
+                    'Mobile.isdefault = 1'
+                ]
+            ]
+        ];
+        
+        return Datatable::simple($this, $columns, $joins);
+    
+    }
     
 }

@@ -1,0 +1,1 @@
+c$(crud.edit('formMajor', 'majors'));

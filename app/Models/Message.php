@@ -42,6 +42,7 @@ use Illuminate\Support\Facades\Storage;
  * @method static Builder|Message whereUserIds($value)
  * @mixin \Eloquent
  * @property-read \App\Models\MessageType $messageType
+ * @property-read \App\Models\User $user
  */
 class Message extends Model {
     //
@@ -73,7 +74,6 @@ class Message extends Model {
 
     }
 
-
     public function store(MessageRequest $request)
     {
         try {
@@ -88,12 +88,16 @@ class Message extends Model {
         }
     }
 
-    public function modify(WapSiteRequest $request, $id)
+    public function modify(MessageRequest $request, $id)
     {
+        $message = $this->find($id);
+        if (!$message) {
+            return false;
+        }
         try {
-            $exception = DB::transaction(function () use ($request) {
+            $exception = DB::transaction(function () use ($request,$id) {
                 $this->removeMedias($request);
-                $this->update($request->all());
+                return $this->where('id', $id)->update($request->except('_method','_token'));
             });
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {

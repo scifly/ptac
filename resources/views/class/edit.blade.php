@@ -1,4 +1,4 @@
 
-    {!! Form::model($squad, ['url' => '/classes/' . $squad->id, 'method' => 'put', 'id' => 'formSquad', 'data-parsley-validate' => 'true']) !!}
+    {!! Form::model($class, ['url' => '/classes/' . $class->id, 'method' => 'put', 'id' => 'formSquad', 'data-parsley-validate' => 'true']) !!}
     @include('class.create_edit')
     {!! Form::close() !!}

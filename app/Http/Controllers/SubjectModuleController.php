@@ -6,6 +6,12 @@ use App\Http\Requests\SubjectModuleRequest;
 use App\Models\SubjectModule;
 use Illuminate\Support\Facades\Request;
 
+/**
+ * 科目次分类
+ *
+ * Class SubjectModuleController
+ * @package App\Http\Controllers
+ */
 class SubjectModuleController extends Controller {
     
     protected $subjectModule;
@@ -17,19 +23,21 @@ class SubjectModuleController extends Controller {
     }
     
     /**
-     * 显示科目次分类列表
+     * 科目次分类列表
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
+        
         if (Request::get('draw')) {
             return response()->json($this->subjectModule->datatable());
         }
         return $this->output(__METHOD__);
+        
     }
     
     /**
-     * 显示创建科目次分类记录的表单
+     * 创建科目次分类
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
@@ -40,7 +48,7 @@ class SubjectModuleController extends Controller {
     }
     
     /**
-     * 保存新创建的科目次分类记录
+     * 保存科目次分类
      *
      * @param SubjectModuleRequest $request
      * @return \Illuminate\Http\JsonResponse
@@ -55,7 +63,7 @@ class SubjectModuleController extends Controller {
     }
     
     /**
-     * 显示指定的科目次分类记录详情
+     * 科目次分类详情
      *
      * @param $id
      * @return bool|\Illuminate\Http\JsonResponse
@@ -69,7 +77,7 @@ class SubjectModuleController extends Controller {
     }
     
     /**
-     * 显示编辑指定科目次分类记录的表单
+     * 编辑目次分类
      *
      * @param $id
      * @return bool|\Illuminate\Http\JsonResponse
@@ -78,12 +86,12 @@ class SubjectModuleController extends Controller {
         
         $subjectModule = $this->subjectModule->find($id);
         if (!$subjectModule) { return $this->notFound(); }
-        return $this->output(__METHOD__, ['subjectModule' => $subjectModule]);
+        return $this->output(__METHOD__, ['subjectModules' => $subjectModule]);
         
     }
     
     /**
-     * 更新指定的科目次分类记录
+     * 更新科目次分类
      *
      * @param SubjectModuleRequest $request
      * @param $id
@@ -101,7 +109,7 @@ class SubjectModuleController extends Controller {
     }
     
     /**
-     * 删除指定的科目次分类记录
+     * 删除科目次分类
      *
      * @param $id
      * @return \Illuminate\Http\JsonResponse

@@ -5,11 +5,11 @@ namespace App\Models;
 use App\Facades\DatatableFacade as Datatable;
 use App\Http\Requests\CompanyRequest;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
-
 /**
- * App\Models\Company
+ * App\Models\Company 运营者公司
  *
  * @property int $id
  * @property string $name 运营者公司名称
@@ -26,36 +26,38 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|Company whereRemark($value)
  * @method static Builder|Company whereUpdatedAt($value)
  * @mixin \Eloquent
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Company[] $corps
+ * @property-read Collection|Company[] $corps
+ * @property-read Collection|Operator[] $operators
+ * @property-read Collection|School[] $schools
  */
 class Company extends Model {
     
-    protected $fillable = [
-        'name',
-        'remark',
-        'corpid',
-        'enabled'
-    ];
+    protected $fillable = ['name', 'remark', 'enabled'];
     
-    public function corps() {
+    /**
+     * 获取指定运营者公司下属的企业对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function corps() { return $this->hasMany('App\Models\Company'); }
+    
+    /**
+     * 通过Corp中间对象获取所有的学校对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
+     */
+    public function schools() {
         
-        return $this->hasMany('App\Models\Company');
+        return $this->hasManyThrough('App\Models\School', 'App\Models\Corp');
         
     }
     
-    public function existed(CompanyRequest $request, $id = NULL) {
-        
-        if (!$id) {
-            $company = $this->where('name', $request->input('name'))
-                ->where('corpid', $request->input('corpid'))->first();
-        } else {
-            $company = $this->where('name', $request->input('name'))
-                ->where('id', '<>', $id)
-                ->where('corpid', $request->input('corpid'))->first();
-        }
-        return $company ? true : false;
-        
-    }
+    /**
+     * 获取指定运营者公司内部的所有管理/操作员对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function operators() { return $this->hasMany('App\Models\Operator'); }
     
     function datatable() {
         
@@ -63,17 +65,16 @@ class Company extends Model {
             ['db' => 'Company.id', 'dt' => 0],
             ['db' => 'Company.name', 'dt' => 1],
             ['db' => 'Company.remark', 'dt' => 2],
-            ['db' => 'Company.corpid', 'dt' => 3],
-            ['db' => 'Company.created_at', 'dt' => 4],
-            ['db' => 'Company.updated_at', 'dt' => 5],
+            ['db' => 'Company.created_at', 'dt' => 3],
+            ['db' => 'Company.updated_at', 'dt' => 4],
             [
-                'db' => 'Company.enabled', 'dt' => 6,
+                'db' => 'Company.enabled', 'dt' => 5,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
                 }]
         ];
         return Datatable::simple($this, $columns);
+        
     }
-    
     
 }

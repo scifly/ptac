@@ -6,9 +6,9 @@
             {!! Form::text('title', null, [
                 'class' => 'form-control',
                 'placeholder' => '(不超过40个汉字)',
-                'data-parsley-required' => 'true',
-                'data-parsley-minlength' => '4',
-                'data-parsley-maxlength' => '40'
+                'required' => 'true',
+                'minlength' => '4',
+                'maxlength' => '40'
             ]) !!}
         </div>
     </div>
@@ -17,7 +17,7 @@
         <div class="col-sm-4">
             {!! Form::text('remark', null, [
             'class' => 'form-control',
-            'data-parsley-required' => 'true'
+            'required' => 'true'
             ]) !!}
         </div>
     </div>
@@ -72,13 +72,13 @@
     <div class="form-group educator_id-from">
         {!! Form::label('educator_id', '教师姓名',['class' => 'col-sm-4 control-label']) !!}
         <div class="col-sm-4">
-            {!! Form::text('educator_id', null, [ 'class' => 'form-control']) !!}
+            {!! Form::select('educator_id', $educators, null, [ 'class' => 'form-control']) !!}
         </div>
     </div>
     <div class="form-group subject_id-from">
         {!! Form::label('subject_id', '科目名称',['class' => 'col-sm-4 control-label']) !!}
         <div class="col-sm-4">
-            {!! Form::text('subject_id', null, [ 'class' => 'form-control']) !!}
+            {!! Form::select('subject_id', $subjects, null, [ 'class' => 'form-control']) !!}
         </div>
     </div>
     <div class="form-group">
@@ -100,6 +100,6 @@
 <div class="modal-footer">
     <a href="#" class="btn  btn-default" data-dismiss="modal">取消</a>
     <a id="confirm-update" href="#" class="btn btn-primary" data-dismiss="modal">确定</a>
-    <a id="confirm-delete" href="#" class="btn btn-primary pull-left" data-dismiss="modal">删除</a>
+    <a id="confirm-delete-event" href="#" class="btn btn-primary pull-left" data-dismiss="modal">删除</a>
 </div>
 {!! Form::close() !!}

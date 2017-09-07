@@ -6,6 +6,12 @@ use App\Http\Requests\TeamRequest;
 use App\Models\Team;
 use Illuminate\Support\Facades\Request;
 
+/**
+ * 教职员工组
+ *
+ * Class TeamController
+ * @package App\Http\Controllers
+ */
 class TeamController extends Controller {
     
     protected $team;
@@ -13,7 +19,7 @@ class TeamController extends Controller {
     public function __construct(Team $team) { $this->team = $team; }
     
     /**
-     * 显示教职员工组记录列表
+     * 教职员工组列表
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
@@ -27,7 +33,7 @@ class TeamController extends Controller {
     }
     
     /**
-     * 显示创建教职员工组记录的表单
+     * 创建教职员工组
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
@@ -38,7 +44,7 @@ class TeamController extends Controller {
     }
     
     /**
-     * 保存新创建的教职员工组记录
+     * 保存教职员工组
      *
      * @param TeamRequest $request
      * @return \Illuminate\Http\JsonResponse
@@ -50,7 +56,7 @@ class TeamController extends Controller {
     }
     
     /**
-     * 显示指定的教职员工组记录详情
+     * 教职员工组详情
      *
      * @param $id
      * @return bool|\Illuminate\Http\JsonResponse
@@ -64,7 +70,7 @@ class TeamController extends Controller {
     }
     
     /**
-     * 显示编辑指定教职员工组记录的表单
+     * 编辑教职员工组
      *
      * @param $id
      * @return bool|\Illuminate\Http\JsonResponse
@@ -78,7 +84,7 @@ class TeamController extends Controller {
     }
     
     /**
-     * 更新指定的教职员工组记录
+     * 更新教职员工组
      *
      * @param TeamRequest $request
      * @param $id
@@ -93,7 +99,7 @@ class TeamController extends Controller {
     }
     
     /**
-     * 删除指定的教职员工组记录
+     * 删除教职员工组
      *
      * @param $id
      * @return \Illuminate\Http\JsonResponse
@@ -105,4 +111,5 @@ class TeamController extends Controller {
         return $team->delete() ? $this->succeed() : $this->fail();
         
     }
+    
 }

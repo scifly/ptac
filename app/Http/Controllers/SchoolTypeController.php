@@ -6,6 +6,12 @@ use App\Http\Requests\SchoolTypeRequest;
 use App\Models\SchoolType;
 use Illuminate\Support\Facades\Request;
 
+/**
+ * 学校类型
+ *
+ * Class SchoolTypeController
+ * @package App\Http\Controllers
+ */
 class SchoolTypeController extends Controller {
     
     protected $schoolType;
@@ -15,7 +21,7 @@ class SchoolTypeController extends Controller {
     }
     
     /**
-     * 显示学校类型列表
+     * 学校类型列表
      *
      * @return \Illuminate\Http\Response
      * @internal param SchoolType $schoolType
@@ -30,7 +36,7 @@ class SchoolTypeController extends Controller {
     }
     
     /**
-     * 返回创建学校类型的表单
+     * 创建学校类型
      *
      * @return \Illuminate\Http\Response
      */
@@ -41,7 +47,7 @@ class SchoolTypeController extends Controller {
     }
     
     /**
-     * 保存新创建的学校类型记录
+     * 保存学校类型
      *
      * @param SchoolTypeRequest|\Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
@@ -53,7 +59,7 @@ class SchoolTypeController extends Controller {
     }
     
     /**
-     * 显示指定的学校类型记录详情
+     * 学校类型详情
      *
      * @param $id
      * @internal param SchoolType $schoolType
@@ -68,7 +74,7 @@ class SchoolTypeController extends Controller {
     }
     
     /**
-     * 显示编辑学校类型记录的表单
+     * 编辑学校类型
      *
      * @param $id
      * @internal param $ \Ap p\Models\SchoolType $schoolType
@@ -83,7 +89,7 @@ class SchoolTypeController extends Controller {
     }
     
     /**
-     * 更新指定的学校类型记录
+     * 更新学校类型
      *
      * @param SchoolTypeRequest $request
      * @param $id
@@ -100,11 +106,10 @@ class SchoolTypeController extends Controller {
     }
     
     /**
-     * Remove the specified resource from storage.
+     * 删除学校类型
      *
      * @param $id
-     * @return \Illuminate\Http\Response
-     * @internal param SchoolType $schoolType
+     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
 
@@ -113,4 +118,5 @@ class SchoolTypeController extends Controller {
         return $schoolType->delete() ? parent::succeed() : parent::fail();
         
     }
+    
 }

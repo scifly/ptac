@@ -18,6 +18,7 @@ class ExamTypeRequest extends FormRequest {
         'required' => '为必填项',
         'string' => '为字符串',
         'max' => '最大为:max',
+        'unique' => '不唯一',
     ];
     
     
@@ -27,8 +28,6 @@ class ExamTypeRequest extends FormRequest {
      * @return bool
      */
     public function authorize() { return true; }
-    
-    public function rules() { return $this->rules; }
     
     public function messages() {
         $rules = $this->rules();
@@ -48,6 +47,8 @@ class ExamTypeRequest extends FormRequest {
         
         return $array;
     }
+    
+    public function rules() { return $this->rules; }
     
     public function wantsJson() { return true; }
     

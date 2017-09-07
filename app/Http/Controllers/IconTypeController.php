@@ -6,6 +6,12 @@ use App\Http\Requests\IconTypeRequest;
 use App\Models\IconType;
 use Illuminate\Support\Facades\Request as Request;
 
+/**
+ * 图标类型
+ *
+ * Class IconTypeController
+ * @package App\Http\Controllers
+ */
 class IconTypeController extends Controller {
     
     protected $iconType;
@@ -13,7 +19,7 @@ class IconTypeController extends Controller {
     function __construct(IconType $iconType) { $this->iconType = $iconType; }
     
     /**
-     * 显示图标类型列表
+     * 图标类型列表
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
@@ -27,7 +33,7 @@ class IconTypeController extends Controller {
     }
     
     /**
-     * 显示创建图表类型记录的表单
+     * 创建图标类型
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
@@ -38,7 +44,7 @@ class IconTypeController extends Controller {
     }
     
     /**
-     * 保存新创建的图标类型记录
+     * 保存图标类型
      *
      * @param IconTypeRequest $request
      * @return \Illuminate\Http\JsonResponse
@@ -50,7 +56,7 @@ class IconTypeController extends Controller {
     }
     
     /**
-     * 显示指定图表类型记录的详情
+     * 图标类型详情
      *
      * @param $id
      * @return bool|\Illuminate\Http\JsonResponse
@@ -64,7 +70,7 @@ class IconTypeController extends Controller {
     }
     
     /**
-     * 显示编辑指定图标记录的表单
+     * 编辑图标类型
      *
      * @param $id
      * @return bool|\Illuminate\Http\JsonResponse
@@ -78,7 +84,7 @@ class IconTypeController extends Controller {
     }
     
     /**
-     * 更新指定的图标类型记录
+     * 更新图标类型
      *
      * @param IconTypeRequest $request
      * @param $id
@@ -93,7 +99,7 @@ class IconTypeController extends Controller {
     }
     
     /**
-     * 删除指定的图标类型记录
+     * 删除图标类型
      *
      * @param $id
      * @return \Illuminate\Http\JsonResponse

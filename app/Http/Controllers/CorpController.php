@@ -6,7 +6,12 @@ use App\Http\Requests\CorpRequest;
 use App\Models\Corp;
 use Illuminate\Support\Facades\Request;
 
-
+/**
+ * 企业
+ *
+ * Class CorpController
+ * @package App\Http\Controllers
+ */
 class CorpController extends Controller {
     protected $corp;
 
@@ -47,9 +52,6 @@ class CorpController extends Controller {
      */
     public function store(CorpRequest $request) {
         
-        if ($this->corp->existed($request)) {
-            return $this->fail('记录已经存在');
-        }
         return $this->corp->create($request->all()) ? $this->succeed() : $this->fail();
         
     }
@@ -93,9 +95,6 @@ class CorpController extends Controller {
         
         $corp = $this->corp->find($id);
         if (!$corp) { return $this->notFound(); }
-        if ($this->corp->existed($request, $id)) {
-            return $this->fail('已经有此记录');
-        }
         return $corp->update($request->all()) ? $this->succeed() : $this->fail();
         
     }

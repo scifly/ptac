@@ -41,8 +41,6 @@ var Switcher = function() {
     return {
         init:function() {
             renderSwitcher();
-            // checkSwitcherState();
-            // renderPowerRangeSlider()
         }
     }
 } ();

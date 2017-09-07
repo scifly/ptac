@@ -63,7 +63,7 @@ class Handler extends ExceptionHandler {
             return response()->json($response, $status);
         }
         return parent::render($request, $exception);
-        
+
     }
     
     /**

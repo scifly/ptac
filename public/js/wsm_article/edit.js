@@ -1,7 +1,8 @@
 $(crud.edit('formWsmArticle', 'wsm_articles'));
 $(function () {
-    var editor = UE.getEditor('container');//初始化富文本编辑器
-
+    // var editor = UE.getEditor('container').render('container');//初始化富文本编辑器
+    UE.delEditor('container');
+    var ue = UE.getEditor('container');
     var $pre = $('.preview');
     var $uploadFile = $('#uploadFile');
     // 初始化
@@ -47,5 +48,5 @@ $(function () {
     $('body').on('click', '.delete', function () {
         $(this).parent().parent().remove();
         $pre.append('<input type="hidden" name="del_ids[]" value="' + $(this).parent().siblings().attr('id') + '">');
-    })
+    });
 });

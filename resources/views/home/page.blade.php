@@ -20,8 +20,13 @@
     <link rel="stylesheet" href="{{ URL::asset('js/plugins/switchery/switchery.min.css') }}">
     <link rel="stylesheet" href="{{ URL::asset('js/plugins/datatables/datatables.min.css') }}">
     <link rel="stylesheet" href="{{ URL::asset('css/wapSite.css') }}">
+    {{--日历--}}
+    <link rel="stylesheet" href="{{ URL::asset('js/plugins/fullcalendar/css/fullcalendar.min.css') }}">
+    <link rel="stylesheet" href="{{ URL::asset('js/plugins/fullcalendar/css/jquery-ui.min.css') }}">
     {{--审核详情--}}
     <link rel="stylesheet" href="{{ URL::asset('css/procedure_info.css') }}">
+    {{--上传--}}
+    <link rel="stylesheet" href="{{ URL::asset('css/imgInput.css') }}">
     <!-- fileinput-->
     <link rel="stylesheet" href="{{ URL::asset('js/plugins/fileinput/css/fileinput.min.css') }}">
     <link rel="stylesheet" href="{{ URL::asset('js/plugins/fileinput/themes/explorer/theme.css') }}">
@@ -211,10 +216,10 @@
             </ol>
         </section>
         <!--content-->
-        <section class="content">
-                @include('partials.modal_dialog')
+        <section class="content clearfix">
+            @include('partials.modal_dialog')
             {{--@yield('content')--}}
-            @if(isset($tabs))
+            @if(!empty($tabs))
                 <div class="col-lg-12">
                     <div class="nav-tabs-custom">
                         <ul class="nav nav-tabs">
@@ -233,6 +238,8 @@
                         </div>
                     </div>
                 </div>
+            @else
+                菜单配置错误, 请检查后重试
             @endif
         </section>
     </div>
@@ -431,19 +438,22 @@
 <script src="{{ URL::asset('js/plugins/datatables/datatables.min.js') }}"></script>
 <script src="{{ URL::asset('js/plugins/datatables/dataTables.checkboxes.min.js') }}"></script>
 <script src="{{ URL::asset('js/admin.crud.js') }}"></script>
+<script src="{{ URL::asset('js/tree.crud.js') }}"></script>
 <!-- fileinput-->
 <script src="{{ URL::asset('js/plugins/fileinput/js/fileinput.min.js') }}"></script>
 <script src="{{ URL::asset('js/plugins/fileinput/js/locales/zh.js') }}"></script>
 <script src="{{ URL::asset('js/plugins/fileinput/themes/explorer/theme.js') }}"></script>
+{{--日历--}}
+<script src="{{ URL::asset('js/plugins/fullcalendar/js/jquery-ui.min.js') }}"></script>
+<script src="{{ URL::asset('js/plugins/fullcalendar/js/jquery-ui-timepicker-addon.js') }}"></script>
+<script src="{{ URL::asset('js/plugins/fullcalendar/js/moment.min.js') }}"></script>
+<script src="{{ URL::asset('js/plugins/fullcalendar/js/fullcalendar.min.js') }}"></script>
 <!-- AdminLTE for demo purposes -->
 <script src="{{ URL::asset('js/demo.js') }}"></script>
 {{--@isset($ued)--}}
+{{--<script type="text/javascript" src="{{ URL::asset('js/plugins/ckeditor/ckeditor.js') }}"></script>--}}
 <script type="text/javascript" src="{{ URL::asset('js/plugins/UEditor/ueditor.config.js') }}"></script>
-<!-- 编辑器源码文件 -->
 <script type="text/javascript" src="{{ URL::asset('js/plugins/UEditor/ueditor.all.js') }}"></script>
-<!-- 实例化编辑器 -->
-<script type="text/javascript">
-</script>
 {{--@endisset--}}
 <script src="{{ URL::asset($js) }}"></script>
 </body>

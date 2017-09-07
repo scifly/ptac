@@ -4,17 +4,30 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\SubjectRequest;
 use App\Models\Grade;
+use App\Models\Major;
 use App\Models\Subject;
 use Illuminate\Support\Facades\Request;
 
+/**
+ * 科目
+ *
+ * Class SubjectController
+ * @package App\Http\Controllers
+ */
 class SubjectController extends Controller {
     
-    protected $subject;
+    protected $subject, $major, $grade;
     
-    function __construct(Subject $subject) { $this->subject = $subject; }
+    function __construct(Subject $subject, Major $major, Grade $grade) {
+        
+        $this->subject = $subject;
+        $this->major = $major;
+        $this->grade = $grade;
+    
+    }
     
     /**
-     * 显示科目列表
+     * 科目列表
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
@@ -28,24 +41,26 @@ class SubjectController extends Controller {
     }
     
     /**
-     * 显示创建新科目的表单
+     * 创建科目
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function create() {
 
-        return parent::output(__METHOD__);
+        return parent::output(__METHOD__, [
+            'majors' => $this->major->majors(1),
+//            'grades' => $this->grade->grades(1)
+        ]);
         
     }
     
     /**
-     * 保存新创建的科目记录
+     * 保存科目
      *
      * @param SubjectRequest $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(SubjectRequest $request) {
-        
         if ($this->subject->existed($request)) {
             return $this->fail('已经有此记录');
         }
@@ -54,7 +69,7 @@ class SubjectController extends Controller {
     }
     
     /**
-     * 显示指定科目记录的详情
+     * 科目详情
      *
      * @param $id
      * @return bool|\Illuminate\Http\JsonResponse
@@ -68,7 +83,7 @@ class SubjectController extends Controller {
     }
     
     /**
-     * 显示编辑指定科目记录的表单
+     * 编辑科目
      *
      * @param $id
      * @return bool|\Illuminate\Http\JsonResponse
@@ -83,15 +98,23 @@ class SubjectController extends Controller {
             $grade = Grade::whereId($gradeId)->first();
             $selectedGrades[$gradeId] = $grade['name'];
         }
+        $subjectMajors = $this->subject->majors;
+        $selectedMajors = [];
+        foreach ($subjectMajors as $major) {
+            $selectedMajors[$major->id] = $major->name;
+        }
         return parent::output(__METHOD__, [
             'subject' => $subject,
-            'selectedGrades' => $selectedGrades
+            'grades' => $this->grade->grades(1),
+            'selectedGrades' => $selectedGrades,
+            'majors' => $this->major->majors(1),
+            'selectedMajors' => $selectedMajors
         ]);
         
     }
     
     /**
-     * 更新指定的科目记录
+     * 更新科目
      *
      * @param SubjectRequest $request
      * @param $id
@@ -109,7 +132,7 @@ class SubjectController extends Controller {
     }
     
     /**
-     * 删除指定的科目记录
+     * 删除科目
      *
      * @param $id
      * @return \Illuminate\Http\JsonResponse

@@ -5,153 +5,175 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ScoreRangeRequest;
 use App\Models\ScoreRange;
 use App\Models\Subject;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Request;
 use Illuminate\Http\Request as HttpRequest;
+use Illuminate\Support\Facades\Request;
 
-class ScoreRangeController extends Controller
-{
+/**
+ * 成绩统计项
+ *
+ * Class ScoreRangeController
+ * @package App\Http\Controllers
+ */
+class ScoreRangeController extends Controller {
+    
     protected $scoreRange;
-
-    function __construct(ScoreRange $scoreRange) { $this->scoreRange = $scoreRange; }
-
+    protected $subject;
+    
+    function __construct(ScoreRange $scoreRange, Subject $subject) {
+        
+        $this->scoreRange = $scoreRange;
+        $this->subject = $subject;
+        
+    }
+    
     /**
-     * 显示成绩统计项列表
+     * 成绩统计项列表
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
-    {
+    public function index() {
+        
         if (Request::get('draw')) {
             return response()->json($this->scoreRange->datatable());
         }
         return $this->output(__METHOD__);
+        
     }
-
+    
     /**
-     * 显示创建成绩统计项的表单
+     * 创建成绩统计项
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
-    {
+    public function create() {
         return $this->output(__METHOD__);
     }
-
+    
     /**
-     * 保存新创建的成绩统计项
+     * 保存成绩统计项
      *
      * @param ScoreRangeRequest $request
      * @return \Illuminate\Http\Response
      * @internal param \Illuminate\Http\Request|Request $request
      */
-    public function store(ScoreRangeRequest $request)
-    {
+    public function store(ScoreRangeRequest $request) {
+        
         //添加新数据
         $score_range = $request->all();
-        $score_range['subject_ids'] = implode(',',$score_range['subject_ids']);
+        $score_range['subject_ids'] = implode(',', $score_range['subject_ids']);
         if ($this->scoreRange->existed($request)) {
             return $this->fail('已经有此记录');
         }
+        $score_range['subject_ids'] = implode(',',$score_range['subject_ids']);
         return $this->scoreRange->create($score_range) ? $this->succeed() : $this->fail();
+        
     }
-
+    
     /**
-     * 显示指定的成绩统计项
+     * 成绩统计项详情
      *
      * @param $id
      * @return \Illuminate\Http\Response
      * @internal param ScoreRange $scoreRange
      */
-    public function show($id)
-    {
+    public function show($id) {
+        
         $scoreRange = $this->scoreRange->find($id);
-        if (!$scoreRange) { return $this->notFound(); }
-
-        $subjects_arr = explode(',', $scoreRange['subject_ids']);
-        $str = '';
-        foreach ($subjects_arr as $val){
-            $str .= ',' . Subject::findOrFail($val)['name'];
+        if (!$scoreRange) {
+            return $this->notFound();
         }
-        $scoreRange['subject_ids'] = substr($str,1);
-
+        
+        $subjectsArr = explode(',', $scoreRange['subject_ids']);
+        $str = '';
+        foreach ($subjectsArr as $val) {
+            $str .= ',' . $this->subject->find($val)->name;
+        }
+        $scoreRange['subject_ids'] = substr($str, 1);
+        
         return $this->output(__METHOD__, ['scoreRange' => $scoreRange]);
+        
     }
-
+    
     /**
-     * 显示编辑指定成绩统计项的表单
+     * 编辑成绩统计项
      *
      * @param $id
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function edit($id)
-    {
+    public function edit($id) {
+        
         $scoreRange = $this->scoreRange->find($id);
-        if (!$scoreRange) { return $this->notFound(); }
+        if (!$scoreRange) {
+            return $this->notFound();
+        }
         return $this->output(__METHOD__, ['scoreRange' => $scoreRange]);
+        
     }
-
-
+    
     /**
-     * 更新指定的成绩统计项
+     * 更新成绩统计项
      *
      * @param ScoreRangeRequest $request
      * @param $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function update(ScoreRangeRequest $request, $id)
-    {
+    public function update(ScoreRangeRequest $request, $id) {
+        
         $scoreRange = $this->scoreRange->find($id);
-
-        if (!$scoreRange) { return $this->notFound(); }
+        if (!$scoreRange) {
+            return $this->notFound();
+        }
         if ($this->$scoreRange->existed($request, $id)) {
             return $this->fail('已经有此记录');
         }
 
+        if (!$scoreRange) { return $this->notFound(); }
         $score_range = $request->all();
-        $score_range['subject_ids'] = implode(',',$score_range['subject_ids']);
-
-        return $app->update($score_range) ? $this->succeed() : $this->fail();
+        $score_range['subject_ids'] = implode(',', $score_range['subject_ids']);
+        
+        return $scoreRange->update($score_range) ? $this->succeed() : $this->fail();
+        
     }
-
+    
     /**
-     * 删除指定的成绩统计项
+     * 删除成绩统计项
      *
      * @param $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy($id)
-    {
-        $scoreRange =$this->scoreRange->find($id);
-        if (!$scoreRange) { return $this->notFound(); }
+    public function destroy($id) {
+        
+        $scoreRange = $this->scoreRange->find($id);
+        if (!$scoreRange) {
+            return $this->notFound();
+        }
         return $scoreRange->delete() ? $this->succeed() : $this->fail();
+        
     }
-
+    
     /**
-     * 显示成绩统计页面
+     * 成绩统计项详情
      *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return bool|\Illuminate\Http\JsonResponse
      */
-    public function statisticsShow(){
-
-        $grades = DB::table('grades')->pluck('name', 'id');
-        $classes = DB::table('classes')->pluck('name', 'id');
-        $exams = DB::table('exams')->pluck('name', 'id');
-
-        return $this->output(__METHOD__, ['grades' => $grades, 'classes' => $classes, 'exams' => $exams, ]);
+    public function showStatistics() {
+        
+        return $this->output(__METHOD__);
+        
     }
-
-
+    
+    
     /**
-     * 展示统计成绩段
+     * 按统计项进行统计
      *
      * @param HttpRequest $request
      * @return \Illuminate\Http\JsonResponse
      */
-
+    
     public function statistics(HttpRequest $request) {
-
+        
         return $this->scoreRange->statistics($request->all());
+        
     }
-
+    
 }

@@ -11,11 +11,7 @@ class RegisterUser extends FormRequest {
      *
      * @return bool
      */
-    public function authorize() {
-        
-        return false;
-        
-    }
+    public function authorize() { return true; }
     
     /**
      * Get the validation rules that apply to the request.
@@ -26,13 +22,27 @@ class RegisterUser extends FormRequest {
         
         return [
             'realname' => 'required|string|max:255',
-            'group_id' => '',
+            'group_id' => 'required|integer',
             'gender' => 'required|boolean',
-            'username' => 'required|string|between:6,30',
+            'username' => 'required|string',
             'email' => 'required|string|email|max:255|unique:users',
             'mobile' => 'required|string|size:11|regex:/^0?(13|14|15|17|18)[0-9]{9}$/',
-            'password' => 'required|string|min:8|confirmed',
+            'password' => 'required|string|min:6|confirmed',
         ];
+        
+    }
+    
+    protected function prepareForValidation() {
+        
+        $input = $this->all();
+        if (isset($input['enabled']) && $input['enabled'] === 'on') {
+            $input['enabled'] = 1;
+        }
+        if (!isset($input['enabled'])) {
+            $input['enabled'] = 0;
+        }
+        $input['password'] = bcrypt($input['password']);
+        $this->replace($input);
         
     }
     

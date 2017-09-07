@@ -29,46 +29,26 @@ class RegisterController extends Controller {
      * @var string
      */
     protected $redirectTo = '/home';
+    protected $user;
     
     /**
      * Create a new controller instance.
-     *
+     * @param User $user
      */
-    public function __construct() {
+    public function __construct(User $user) {
         
         $this->middleware('guest');
+        $this->user = $user;
         
     }
     
-    /**
-     * Get a validator for an incoming registration request.
-     *
-     * @param RegisterUser|Request $request
-     * @return \Illuminate\Contracts\Validation\Validator
-     * @internal param array $data
-     */
-    /*protected function validator(array $data) {
-        
-        return Validator::make($data, [
-            'realname' => 'required|string|max:255',
-            'username' => 'required|string|max:30',
-            'email' => 'required|string|email|max:255|unique:users',
-            'mobile' => 'required|string|',
-            'password' => 'required|string|min:6|confirmed',
-        ]);
-        
-    }*/
-    
     public function register(RegisterUser $request) {
         
-        // $this->validator($request->all())->validate();
-        
         event(new Registered($user = $this->create($request->all())));
-        
         $this->guard()->login($user);
-        
         return $this->registered($request, $user)
             ?: redirect($this->redirectPath());
+        
     }
     
     /**
@@ -78,10 +58,12 @@ class RegisterController extends Controller {
      * @return User
      */
     protected function create(array $data) {
-        
-        return User::create([
-            'realname' => $data['name'],
+       
+        return $this->user->create([
+            'realname' => $data['realname'],
+            'username' => $data['username'],
             'email' => $data['email'],
+            'mobile' => $data['mobile'],
             'password' => bcrypt($data['password']),
         ]);
         

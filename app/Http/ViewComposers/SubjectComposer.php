@@ -10,7 +10,7 @@ class SubjectComposer {
     protected $school;
     protected $grade;
 
-    public function __construct(School $school,Grade $grade) {
+    public function __construct(School $school, Grade $grade) {
 
         $this->school = $school;
         $this->grade = $grade;

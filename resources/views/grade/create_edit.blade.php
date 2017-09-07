@@ -4,59 +4,38 @@
     </div>
     <div class="box-body">
         <div class="form-horizontal">
-            @if (!empty($tab['id']))
-                {{ Form::hidden('id', null, ['id' => 'id', 'value' => $tab['id']]) }}
+            @if (isset($grade) && !empty($grade['id']))
+                {{ Form::hidden('id', $grade['id'], ['id' => 'id']) }}
             @endif
             <div class="form-group">
-                {!! Form::label('name', '名称',['class' => 'col-sm-4 control-label']) !!}
-                <div class="col-sm-2">
+                {!! Form::label('name', '名称', [
+                    'class' => 'col-sm-3 control-label'
+                ]) !!}
+                <div class="col-sm-6">
                     {!! Form::text('name', null, [
                         'class' => 'form-control',
                         'placeholder' => '(不超过40个汉字)',
-                        'data-parsley-required' => 'true',
-                        'data-parsley-minlength' => '4',
-                        'data-parsley-maxlength' => '40'
+                        'required' => 'true',
+                        'data-parsley-length' => '[4, 40]'
                     ]) !!}
                 </div>
-                {{--<div class="col-sm-5">--}}
-                    {{--<p class="form-control-static text-danger">{{ $errors->first('name') }}</p>--}}
-                {{--</div>--}}
             </div>
-
-            <div class="form-group">
-                {!! Form::label('school_id', '所属学校',['class' => 'col-sm-4 control-label']) !!}
-                <div class="col-sm-2">
-                    {!! Form::select('school_id', $schools, null, ['class' => 'form-control']) !!}
-                </div>
-            </div>
-            <div class="form-group">
-                {!! Form::label('educator_ids', '年级主任',['class' => 'col-sm-4 control-label']) !!}
-                <div class="col-sm-3">
-                    <select multiple="multiple" name="educator_ids[]" id="educator_ids">
-                        @foreach($educators as $key => $value)
-                            @if(isset($selectedEducators))
-                                <option value="{{$key}}" @if(array_key_exists($key,$selectedEducators))selected="selected"@endif>
-                                    {{$value}}
-                                </option>
-                            @else
-                                <option value="{{$key}}">{{$value}}</option>
-                            @endif
-                        @endforeach
-                    </select>
-                </div>
-            </div>
-            <div class="form-group">
-                {!! Form::label('enabled', '是否启用', [
-                    'class' => 'col-sm-4 control-label'
-                ]) !!}
-                <div class="col-sm-6" style="margin-top: 5px;">
-                    <input id="enabled" type="checkbox" name="enabled" data-render="switchery"
-                           data-theme="default" data-switchery="true"
-                           @if(!empty($grade['enabled'])) checked @endif
-                           data-classname="switchery switchery-small"/>
-                </div>
-            </div>
-
+            @include('partials.single_select', [
+                'label' => '所属学校',
+                'id' => 'school_id',
+                'items' => $schools
+            ])
+            @include('partials.multiple_select', [
+                'label' => '年级主任',
+                'id' => 'educator_ids',
+                'items' => $educators,
+                'selectedItems' => isset($selectedEducators) ? $selectedEducators : []
+            ])
+            @include('partials.enabled', [
+                'label' => '是否启用',
+                'id' => 'enabled',
+                'value' => isset($grade['enabled']) ? $grade['enabled'] : NULL
+            ])
         </div>
     </div>
     @include('partials.form_buttons')

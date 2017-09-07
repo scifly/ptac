@@ -6,18 +6,19 @@ use App\Http\Requests\ExamTypeRequest;
 use App\Models\ExamType;
 use Illuminate\Support\Facades\Request;
 
-
+/**
+ * 考试类型
+ *
+ * Class ExamTypeController
+ * @package App\Http\Controllers
+ */
 class ExamTypeController extends Controller {
     protected $examType;
     
-    function __construct(ExamType $examType) {
-        
-        $this->examType = $examType;
-        
-    }
+    function __construct(ExamType $examType) { $this->examType = $examType; }
     
     /**
-     * 显示考试类型列表
+     * 考试类型列表
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
@@ -31,7 +32,7 @@ class ExamTypeController extends Controller {
     }
     
     /**
-     * 显示创建考试类型记录的表单
+     * 创建考试类型
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
@@ -42,7 +43,7 @@ class ExamTypeController extends Controller {
     }
     
     /**
-     * 保存新创建的考试类型记录
+     * 保存考试类型
      *
      * @param ExamTypeRequest $request
      * @return \Illuminate\Http\JsonResponse
@@ -54,7 +55,7 @@ class ExamTypeController extends Controller {
     }
     
     /**
-     * 显示指定的考试类型记录详情
+     * 考试类型详情
      *
      * @param $id
      * @return bool|\Illuminate\Http\JsonResponse
@@ -68,7 +69,7 @@ class ExamTypeController extends Controller {
     }
     
     /**
-     * 显示编辑指定考试类型记录的表单
+     * 编辑考试类型
      *
      * @param $id
      * @return bool|\Illuminate\Http\JsonResponse
@@ -82,7 +83,7 @@ class ExamTypeController extends Controller {
     }
     
     /**
-     * 更新指定的考试类型记录
+     * 更新考试类型
      *
      * @param ExamTypeRequest $request
      * @param $id
@@ -97,7 +98,7 @@ class ExamTypeController extends Controller {
     }
     
     /**
-     * 删除指定的考试类型记录
+     * 删除考试类型
      *
      * @param $id
      * @return \Illuminate\Http\JsonResponse

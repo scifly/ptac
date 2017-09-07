@@ -1,5 +1,7 @@
-<div class="box box-primary">
-    <div class="box-header"></div>
+<div class="box box-widget">
+    <div class="box-header with-border">
+        @include('partials.form_header')
+    </div>
     <div class="box-body">
         <div class="form-horizontal">
             <div class="form-group">
@@ -8,7 +10,7 @@
                     {!! Form::text('username', null, [
                         'class' => 'form-control',
                         'placeholder' => '(用户名不能为空)',
-                        'data-parsley-required' => 'true',
+                        'required' => 'true',
                         'maxlength' => '255'
                     ]) !!}
                 </div>
@@ -23,11 +25,12 @@
                              @endif
                              style="width:100px; height: 100px;max-width: 100px;max-height: 100px; border-radius:50%; overflow:hidden;"/>
 
-                        <input @if(isset($user))id= "{{$user->id}}"@else id="0" @endif
-                            type="text" size="50" name="avatar_url" class="hide"
-                               @if(isset($user)) value="{{$user->avatar_url}}"@else value="default_avatar.png" @endif/>
+                        <input @if(isset($user))id="{{$user->id}}" @else id="0" @endif
+                        type="text" size="50" name="avatar_url" class="hide"
+                               @if(isset($user)) value="{{$user->avatar_url}}" @else value="default_avatar.png" @endif/>
 
-                        <a class="btn btn-upload" style=" margin-left:50px; border:1px solid #3c8dbc; color:#3c8dbc !important; border-radius:40px; position: relative; overflow: hidden;">
+                        <a class="btn btn-upload"
+                           style=" margin-left:50px; border:1px solid #3c8dbc; color:#3c8dbc !important; border-radius:40px; position: relative; overflow: hidden;">
                             <span>上传头像</span>
                             <input id="avatar_upload" type="file" name="file" multiple="multiple" style="position: absolute;
                              top: 0; right: 0; margin: 0; padding: 0; font-size: 20px; cursor: pointer; opacity: 0; filter: alpha(opacity=0);"/>
@@ -41,7 +44,7 @@
                     {!! Form::text('realname', null, [
                         'class' => 'form-control',
                         'placeholder' => '(不得超过20个汉字)',
-                        'data-parsley-required' => 'true',
+                        'required' => 'true',
                         'maxlength' => '60'
                     ]) !!}
                 </div>
@@ -66,7 +69,7 @@
                     {!! Form::text('email', null, [
                         'class' => 'form-control',
                         'placeholder' => '(电子邮箱)',
-                        'data-parsley-required' => 'true',
+                        'required' => 'true',
                         'maxlength' => '255'
                     ]) !!}
                 </div>
@@ -77,30 +80,18 @@
                     {!! Form::text('wechatid', null, [
                         'class' => 'form-control',
                         'placeholder' => '(小写字母和数字)',
-                        'data-parsley-required' => 'true',
+                        'required' => 'true',
                         'data-parsley-type' => 'alphanum',
                         'maxlength' => '255'
                     ]) !!}
                 </div>
             </div>
-            <div class="form-group">
-                <div class="col-sm-3 col-sm-offset-4">
-                    {!! Form::radio('enabled', '1', true) !!}
-                    {!! Form::label('enabled', '启用') !!}
-                    {!! Form::radio('enabled', '0') !!}
-                    {!! Form::label('enabled', '禁用') !!}
-                </div>
-            </div>
-
+            @include('partials.enabled', [
+                'label' => '是否启用',
+                'id' => 'enabled',
+                'value' => $user['enabled']
+            ])
         </div>
     </div>
-    <div class="box-footer">
-        {{--button--}}
-        <div class="form-group">
-            <div class="col-sm-3 col-sm-offset-4">
-                {!! Form::submit('保存', ['class' => 'btn btn-primary pull-left', 'id' => 'save']) !!}
-                {!! Form::reset('取消', ['class' => 'btn btn-default pull-right', 'id' => 'cancel']) !!}
-            </div>
-        </div>
-    </div>
+    @include('partials.form_buttons')
 </div>

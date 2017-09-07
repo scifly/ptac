@@ -4,61 +4,50 @@
     </div>
     <div class="box-body">
         <div class="form-horizontal">
-            @if (!empty($tab['id']))
-                {{ Form::hidden('id', null, ['id' => 'id', 'value' => $tab['id']]) }}
-            @endif
-            <div class="form-group">
-                {!! Form::label('wap_site_id', '所属网站',['class' => 'col-sm-4 control-label']) !!}
-                <div class="col-sm-2">
-                    {!! Form::select('wap_site_id', $wapSites, null, ['class' => 'form-control']) !!}
-                </div>
-            </div>
-            <div class="form-group">
-                {!! Form::label('name', '名称',['class' => 'col-sm-4 control-label']) !!}
-                <div class="col-sm-3">
-                    {!! Form::text('name', null, [
-                    'class' => 'form-control',
-                    'placeholder' => '不能超过40个汉字',
-                    'data-parsley-required' => 'true',
-                    'data-parsley-maxlength' => '40',
-                    'data-parsley-minlength' => '2',
+            @if (!empty($wapSiteModule['id']))
+                {{ Form::hidden('id', $wapSiteModule['id'], ['id' => 'id']) }}
 
+            @endif
+            @include('partials.single_select', [
+                'label' => '所属网站',
+                'id' => 'wap_site_id',
+                'items' => $wapSites
+            ])
+            <div class="form-group">
+                {!! Form::label('name', '名称', [
+                    'class' => 'col-sm-3 control-label'
+                ]) !!}
+                <div class="col-sm-6">
+                    {!! Form::text('name', null, [
+                        'class' => 'form-control',
+                        'placeholder' => '不能超过40个汉字',
+                        'required' => 'true',
+                        'data-parsley-length' => '[2, 40]'
                     ]) !!}
                 </div>
             </div>
-
             <div class="form-group">
-                {!! Form::label('media_id', '模块图片',['class' => 'col-sm-4 control-label']) !!}
+                {!! Form::label('media_id', '模块图片', [
+                    'class' => 'col-sm-3 control-label'
+                ]) !!}
                 <div class="col-sm-6">
                     <div class="preview">
                         @if(isset($media))
                             <div class="img-item">
-                                <img src="../../..{{$media->path}}" id="{{$media->id}}">
+                                <img src="../../{{$media->path}}" id="{{$media->id}}">
                                 <input type="hidden" name="media_id" value="{{$media->id}}"/>
                                 <div class="del-mask"><i class="delete fa fa-trash-o"></i></div>
                             </div>
                         @endif
                     </div>
                     <a class="btn btn-primary" data-toggle="modal" data-target="#modalPic">上传</a>
-                    {{-- @if(isset($module))
-                         <img src="../../..{{$module->media->path}}">
-                         <input type="hidden" name="media_id" value="{{$module->media->id}}"/>
-                     @endif
-                     <div class="preview" style="width: 100px;overflow: hidden;"></div>
-                     <a class="btn btn-primary" data-toggle="modal" data-target="#modalPic">上传</a>--}}
                 </div>
             </div>
-            <div class="form-group">
-                {!! Form::label('enabled', '是否启用', [
-                    'class' => 'col-sm-4 control-label'
-                ]) !!}
-                <div class="col-sm-6" style="margin-top: 5px;">
-                    <input id="enabled" type="checkbox" name="enabled" data-render="switchery"
-                           data-theme="default" data-switchery="true"
-                           @if(!empty($module['enabled'])) checked @endif
-                           data-classname="switchery switchery-small"/>
-                </div>
-            </div>
+            @include('partials.enabled', [
+                'label' => '是否启用',
+                'id' => 'enabled', 
+                'value' => isset($wapSiteModule['enabled']) ? $wapSiteModule['enabled'] : NULL
+            ])
         </div>
     </div>
     @include('partials.form_buttons')

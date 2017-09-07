@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use App\Http\Requests\EducatorClassRequest;
 
 /**
  * App\Models\EducatorClass
@@ -49,6 +50,22 @@ class EducatorClass extends Model {
     
     public function squad() {
         return $this->belongsTo('App\Models\Squad', 'class_id', 'id');
+    }
+
+    public function existed(EducatorClassRequest $request, $id = NULL) {
+
+        if (!$id) {
+            $student = $this->where('class_id', $request->input('class_id'))
+                ->where('subject_id', $request->input('subject_id'))
+                ->first();
+        } else {
+            $student = $this->where('class_id', $request->input('class_id'))
+                ->where('id', '<>', $id)
+                ->where('subject_id', $request->input('subject_id'))
+                ->first();
+        }
+        return $student ? true : false;
+
     }
     
     public function datatable() {

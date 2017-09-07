@@ -1,34 +1,32 @@
 <?php
+
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StudentRequest extends FormRequest
-{
+class StudentRequest extends FormRequest {
     /**
      * Determine if the user is authorized to make this request.
      *
      * @return bool
      */
-    public function authorize()
-    {
+    public function authorize() {
         return true;
     }
-
+    
     /**
      * Get the validation rules that apply to the request.
      *
      * @return array
      */
-    public function rules()
-    {
+    public function rules() {
         return [
             'student_number' => 'required|alphanum|max:32|min:2',
             'card_number' => 'required|alphanum|max:32|min:2',
             'remark' => 'required|string|max:32|min:2',
         ];
     }
-
+    
     public function messages() {
         return [
             'student_number.required' => '学号不能为空!',
@@ -42,18 +40,18 @@ class StudentRequest extends FormRequest
             'remark.min' => '备注不能少于2个字符!',
         ];
     }
-
-
+    
+    
     public function wantsJson() {
-
+        
         return true;
-
+        
     }
-
+    
     protected function prepareForValidation() {
-
+        
         $input = $this->all();
-
+        
         if (isset($input['oncampus']) && $input['oncampus'] === 'on') {
             $input['oncampus'] = 1;
         }
@@ -66,7 +64,7 @@ class StudentRequest extends FormRequest
         if (!isset($input['enabled'])) {
             $input['enabled'] = 0;
         }
-
+        
         $this->replace($input);
     }
 }

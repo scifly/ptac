@@ -10,11 +10,13 @@ use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\Session;
 
 class Controller extends BaseController {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
     
     protected $menu;
+    protected $menuId;
     
     const HTTP_STATUSCODE_OK = 200;
     const HTTP_STATUSCODE_BAD_REQUEST = 400;
@@ -53,7 +55,23 @@ class Controller extends BaseController {
         if (!$view) { return false; }
         $menu = Menu::whereId(session('menuId'))->first();
         $tab = Tab::whereId(Request::get('tabId'))->first();
-        $params['breadcrumb'] = $menu->name . ' / ' . $tab->name . ' / ' . $action->name;
+        # 保存状态为active的卡片ID
+        if (!session('tabId') || session('tabId') !== $tab->id) {
+            session(['tabId' => $tab->id]);
+            session(['tabChanged' => 1]);
+        } else {
+            Session::forget('tabChanged');
+        }
+        session(['tabUrl' => Request::path()]);
+        session(['tabJs' => $action->js]);
+        
+        if ($menu) {
+            $params['breadcrumb'] = $menu->name . ' / ' . $tab->name . ' / ' . $action->name;
+        } else {
+            $menuName = session('menuName');
+            $params['breadcrumb'] = "<span style=\"color: red\">菜单 - <strong>{$menuName}</strong> - 配置错误, 请检查后</span>" .
+                '<a href="' . session('pageUrl') . '">重试</a>';
+        }
         return response()->json([
             'html' => view($view, $params)->render(),
             'js' => $action->js,

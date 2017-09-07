@@ -382,7 +382,7 @@ class Wechat extends Facade {
                 'userid' => $userId,
                 'name' => $name,
                 'english_name' => $englishName,
-                'modbile' => $mobile,
+                'mobile' => $mobile,
                 'department' => $department,
                 'order' => $order,
                 'position' => $position,

@@ -5,18 +5,15 @@
     <div class="box-body">
         <div class="form-horizontal">
             @if (!empty($tab['id']))
-            {{ Form::hidden('id', null, ['id' => 'id', 'value' => $tab['id']]) }}
+                {{ Form::hidden('id', $tab['id'], ['id' => 'id']) }}
             @endif
             <div class="form-group">
-                {!! Form::label('name', '卡片名称',[
-                    'class' => 'col-sm-3 control-label'
+                {!! Form::label('name', '卡片名称', [
+                    'class' => 'col-sm-3 control-label',
                 ]) !!}
                 <div class="col-sm-6">
                     {!! Form::text('name', null, [
-                        'class' => 'form-control special-form-control',
-                        'placeholder' => '(请输入卡片名称)',
-                        'data-parsley-required' => 'true',
-                        'data-parsley-maxlength' => '80'
+                        'disabled' => true
                     ]) !!}
 
                 </div>
@@ -27,10 +24,10 @@
                 ]) !!}
                 <div class="col-sm-6">
                     {!! Form::text('remark', null, [
-                        'class' => 'form-control special-form-control',
+                        'class' => 'form-control',
                         'placeholder' => '(请输入备注)',
-                        'data-parsley-required' => 'true',
-                        'data-parsley-maxlength' => '255'
+                        'required' => 'true',
+                        'maxlength' => '255'
                     ]) !!}
                 </div>
             </div>
@@ -63,48 +60,22 @@
 
                 </div>
             </div>
-            <div class="form-group">
-                {!! Form::label('action_id', '默认Action', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
-                <div class="col-sm-6">
-                    {!! Form::select('action_id', $actions, null, [
-                        'id' => 'action_id',
-                        'style' => 'width: 100%;'
-                    ]) !!}
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="menu_ids" class="col-sm-3 control-label">所属菜单</label>
-                <div class="col-sm-6">
-                    <select multiple name="menu_ids[]" id="menu_ids" style="width: 100%;">
-                        @foreach ($menus as $key => $value)
-                            @if(isset($selectedMenus))
-                                <option value="{{ $key }}"
-                                    @if(array_key_exists($key, $selectedMenus))
-                                        selected
-                                    @endif
-                                >
-                                    {{ $value }}
-                                </option>
-                            @else
-                                <option value="{{ $key }}">{{ $value }}</option>
-                            @endif
-                        @endforeach
-                    </select>
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="enabled" class="col-sm-3 control-label">
-                    是否启用
-                </label>
-                <div class="col-sm-6" style="margin-top: 5px;">
-                    <input id="enabled" type="checkbox" name="enabled" data-render="switchery"
-                           data-theme="default" data-switchery="true"
-                           @if(!empty($tab['enabled'])) checked @endif
-                           data-classname="switchery switchery-small"/>
-                </div>
-            </div>
+            @include('partials.single_select', [
+                'label' => '默认Action',
+                'id' => 'action_id',
+                'items' => $actions
+            ])
+            @include('partials.multiple_select', [
+                'label' => '所属菜单',
+                'id' => 'menu_ids',
+                'items' => $menus,
+                'selectedItems' => isset($selectedMenus) ? $selectedMenus : NULL
+            ])
+            @include('partials.enabled', [
+                'label' => '是否启用',
+                'id' => 'enabled',
+                'value' => isset($tab['enabled']) ? $tab['enabled'] : NULL
+            ])
         </div>
     </div>
     @include('partials.form_buttons')

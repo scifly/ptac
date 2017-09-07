@@ -4,8 +4,13 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Http\Requests\StudentRequest;
+use App\Models\CustodianStudent;
+use App\Models\Score;
+use App\Models\ScoreTotal;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+
 
 /**
  * App\Models\Student
@@ -34,66 +39,107 @@ use Illuminate\Database\Eloquent\Model;
  * @mixin \Eloquent
  * @property int $enabled
  * @property-read \App\Models\Squad $beLongsToSquad
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\CustodianStudent[] $custodianStudent
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Score[] $score
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\ScoreTotal[] $scoreTotal
+ * @property-read Collection|CustodianStudent[] $custodianStudent
+ * @property-read Collection|Score[] $score
+ * @property-read Collection|ScoreTotal[] $scoreTotal
  * @property-read \App\Models\Squad $squad
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Student whereEnabled($value)
+ * @method static Builder|Student whereEnabled($value)
+ * @property-read Collection|Custodian[] $custodians
+ * @property-read Collection|ScoreTotal[] $scoreTotals
+ * @property-read Collection|Score[] $scores
  */
 class Student extends Model {
     
-    protected $table = 'students';
-    
     protected $fillable = [
-        'user_id',
-        'class_id',
-        'student_number',
-        'card_number',
-        'oncampus',
-        'birthday',
-        'remark',
-        'enabled'
+        'user_id', 'class_id', 'student_number',
+        'card_number', 'oncampus', 'birthday',
+        'remark', 'enabled'
     ];
     
+    /**
+     * 返回指定学生所属的班级对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function squad() { return $this->belongsTo('App\Models\Squad', 'class_id', 'id'); }
     
-    public function squad() {
-        
-        return $this->belongsTo('App\Models\Squad', 'class_id', 'id');
-        
-    }
-    
+    /**
+     * 获取指定学生的所有监护人对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
     public function custodians() {
         
         return $this->belongsToMany('App\Models\Custodian', 'custodians_students');
         
     }
     
-    public function user() {
-        
-        return $this->belongsTo('App\Models\User');
-        
+    /**
+     * 获取指定学生对应的用户对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function user() { return $this->belongsTo('App\Models\User'); }
+    
+    /**
+     * 获取指定学生所有的分数对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function scores() { return $this->hasMany('App\Models\Score'); }
+    
+    /**
+     * 获取指定学生所有的总分对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function scoreTotals() { return $this->hasMany('App\Models\ScoreTotal'); }
+    
+    /**
+     * 返回学生列表
+     *
+     * @param array $classIds
+     * @return array
+     */
+    public function students(array $classIds = []) {
+
+        $studentList = [];
+        if (empty($classIds)) {
+            $students = $this->all();
+        } else {
+            $students = $this->whereIn('class_id', $classIds)->get();
+        }
+        foreach ($students as $student) {
+            $studentList[$student->id] = $student->user->realname;
+        }
+        return $studentList;
+    
+    }
+
+    /**
+     * 返回学生学号姓名列表
+     *
+     * @param $classIds
+     * @return array
+     */
+    public function studentsNum($classIds) {
+
+        $studentList = [];
+        $students = $this->whereIn('class_id', explode(',', $classIds))->get();
+        foreach ($students as $student) {
+            $studentList[] = [$student->student_number, $student->user->realname];
+        }
+        return $studentList;
+
     }
     
     /**
-     * 获取学生所有分数
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * 判断学生记录是否已经存在
+     *
+     * @param StudentRequest $request
+     * @param null $id
+     * @return bool
      */
-    public function scores() {
-        
-        return $this->hasMany('App\Models\Score');
-        
-    }
-    
-    /**
-     * 获取学生总分
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function scoreTotals() {
-        
-        return $this->hasMany('App\Models\ScoreTotal');
-        
-    }
-    
     public function existed(StudentRequest $request, $id = NULL) {
         
         if (!$id) {
@@ -111,7 +157,7 @@ class Student extends Model {
         return $student ? true : false;
         
     }
-    
+
     public function datatable() {
         
         $columns = [

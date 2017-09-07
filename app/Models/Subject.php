@@ -4,9 +4,6 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Http\Requests\SubjectRequest;
-use App\Models\EducatorClass;
-use App\Models\Grade;
-use App\Models\School;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -39,6 +36,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read School $school
  * @property-read Collection|SubjectModule[] $subjectModules
  * @property-read EducatorClass $educatorClass
+ * @property-read Collection|Major[] $majors
  */
 class Subject extends Model {
     
@@ -53,19 +51,21 @@ class Subject extends Model {
         'enabled'
     ];
     
-    public function subjectModules() {
+    public function subjectModules() { return $this->hasMany('App\Models\SubjectModule'); }
+    
+    public function school() { return $this->belongsTo('App\Models\School'); }
+    
+    public function majors() {
         
-        return $this->hasMany('App\Models\SubjectModule');
+        return $this->belongsToMany(
+            'App\Models\Major',
+            'majors_subjects',
+            'subject_id',
+            'major_id'
+        );
         
     }
     
-    
-    public function school() {
-        
-        return $this->belongsTo('App\Models\School');
-        
-    }
-
     public function existed(SubjectRequest $request, $id = NULL) {
         
         if (!$id) {
@@ -80,6 +80,19 @@ class Subject extends Model {
         
     }
     
+    public function subjects($schoolId) {
+        
+        return $this->where('school_id', $schoolId)->get()->pluck('id', 'name');
+        
+    }
+
+    public  function getId(array $subjects){
+        $result = [];
+        foreach ($subjects as $v){
+            $result[$v] = $this->whereName($v)->value('id');
+        }
+        return $result;
+    }
     
     public function datatable() {
         
@@ -89,7 +102,7 @@ class Subject extends Model {
             ['db' => 'School.name as schoolname', 'dt' => 2],
             [
                 'db' => 'Subject.isaux', 'dt' => 3,
-                'formatter' => function ($d, $row) {
+                'formatter' => function ($d) {
                     $subject = Subject::whereId($d)->first();
                     return $subject->isaux == 1 ? '是' : '否';
                 }

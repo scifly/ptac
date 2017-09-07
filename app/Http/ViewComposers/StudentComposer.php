@@ -7,14 +7,11 @@ use Illuminate\Contracts\View\View;
 
 class StudentComposer {
 
-    protected $user;
-
-    protected $class;
+    protected $user,$class,$custodian;
 
     public function __construct(User $user,Squad $class) {
 
         $this->user = $user;
-
         $this->class = $class;
 
     }
@@ -23,10 +20,6 @@ class StudentComposer {
 
         $view->with([
             'user' => $this->user->pluck('realname','id'),
-
-        ]);
-
-        $view->with([
             'class' => $this->class->pluck('name', 'id'),
 
         ]);

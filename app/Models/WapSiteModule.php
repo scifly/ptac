@@ -71,16 +71,16 @@ class WapSiteModule extends Model {
         }
     }
 
-    public function modify(WapSiteRequest $request, $id)
+    public function modify(WapSiteModuleRequest $request, $id)
     {
         $wapSite = $this->find($id);
         if (!$wapSite) {
             return false;
         }
         try {
-            $exception = DB::transaction(function () use ($request) {
+            $exception = DB::transaction(function () use ($request,$id) {
                 $this->removeMedias($request);
-                $this->update($request->all());
+                return $this->where('id', $id)->update($request->except('_method','_token'));
             });
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
@@ -91,7 +91,7 @@ class WapSiteModule extends Model {
     /**
      * @param $request
      */
-    private function removeMedias(WapSiteRequest $request)
+    private function removeMedias(WapSiteModuleRequest $request)
     {
         //删除原有的图片
         $mediaIds = $request->input('del_ids');

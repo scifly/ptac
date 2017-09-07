@@ -9,7 +9,10 @@ use App\Models\User;
 use Illuminate\Support\Facades\Request;
 
 /**
- * @property array message
+ * 班级
+ *
+ * Class SquadController
+ * @package App\Http\Controllers
  */
 class SquadController extends Controller {
     
@@ -23,7 +26,7 @@ class SquadController extends Controller {
     }
     
     /**
-     * 显示班级列表
+     * 班级列表
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
@@ -37,7 +40,7 @@ class SquadController extends Controller {
     }
     
     /**
-     * 显示创建班级记录的表单
+     * 创建班级
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
@@ -48,22 +51,19 @@ class SquadController extends Controller {
     }
     
     /**
-     * 保存新创建的班级记录
+     * 保存班级
      *
      * @param SquadRequest $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(SquadRequest $request) {
         
-        if ($this->class->existed($request)) {
-            return $this->fail('已经有此记录');
-        }
         return $this->class->create($request->all()) ? $this->succeed() : $this->fail();
         
     }
     
     /**
-     * 显示指定的班级记录详情
+     * 班级详情
      *
      * @param $id
      * @return bool|\Illuminate\Http\JsonResponse
@@ -72,15 +72,17 @@ class SquadController extends Controller {
 
         $class = $this->class->find($id);
         if (!$class) { return $this->notFound(); }
+        $educatorIds = explode(",", $class->educator_ids);
+
         return $this->output(__METHOD__, [
             'class' => $class,
-            'educators' => $this->educator->educators($class->educator_ids)
+            'educators' => $this->educator->educators($educatorIds)
         ]);
         
     }
     
     /**
-     * 显示编辑指定班级记录的表单
+     * 编辑班级
      *
      * @param $id
      * @return bool|\Illuminate\Http\JsonResponse
@@ -89,16 +91,17 @@ class SquadController extends Controller {
     
         $class = $this->class->find($id);
         if (!$class) { return $this->notFound(); }
+        $educatorIds = explode(",", $class->educator_ids);
+
         return $this->output(__METHOD__, [
             'class' => $class,
-            'selectedEducators' => $this->educator->educators($class->educator_ids)
+            'selectedEducators' => $this->educator->educators($educatorIds)
         ]);
-        
         
     }
     
     /**
-     * 更新指定的班级记录
+     * 更新班级
      *
      * @param SquadRequest $request
      * @param $id
@@ -108,15 +111,12 @@ class SquadController extends Controller {
     
         $class = $this->class->find($id);
         if (!$class) { return $this->notFound(); }
-        if ($this->class->existed($request, $id)) {
-            return $this->fail('已经有此记录');
-        }
         return $class->update($request->all()) ? $this->succeed() : $this->fail();
         
     }
     
     /**
-     * 删除指定的班级记录
+     * 删除班级
      *
      * @param $id
      * @return \Illuminate\Http\JsonResponse

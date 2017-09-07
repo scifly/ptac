@@ -5,13 +5,14 @@ namespace App\Models;
 use App\Facades\DatatableFacade as Datatable;
 use App\Http\Requests\UserRequest;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Notifications\DatabaseNotificationCollection;
 use Illuminate\Notifications\Notifiable;
 
 /**
- * App\User
+ * App\User 用户
  *
  * @mixin \Eloquent
  * @property int $id
@@ -62,12 +63,18 @@ use Illuminate\Notifications\Notifiable;
  * @method static Builder|User wherePosition($value)
  * @method static Builder|User whereTelephone($value)
  * @method static Builder|User whereUserid($value)
- * 用户
  * @property-read Group $group
  * @property-read Operator $operator
  * @property-read PollQuestionnaireAnswer $pollquestionnaireAnswer
  * @property-read PollQuestionnaireParticipant $pollquestionnairePartcipant
  * @property-read PollQuestionnaire $pollquestionnaires
+ * @property-read Collection|Message[] $messages
+ * @property-read Collection|PollQuestionnaireAnswer[] $pollQuestionnaireAnswers
+ * @property-read Collection|PollQuestionnaireParticipant[] $pollQuestionnairePartcipants
+ * @property-read Collection|PollQuestionnaire[] $pollQuestionnaires
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Department[] $departments
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Mobile[] $mobiles
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Order[] $orders
  */
 class User extends Authenticatable {
     
@@ -81,8 +88,7 @@ class User extends Authenticatable {
      */
     protected $fillable = [
         'group_id', 'username', 'password',
-        'email', 'gender', 'realname',
-        'gender', 'realname', 'avatar_url',
+        'email', 'realname', 'gender', 'avatar_url',
         'wechatid', 'userid', 'english_name',
         'department_ids', 'isleader', 'position',
         'telephone', 'order', 'mobile',
@@ -96,26 +102,114 @@ class User extends Authenticatable {
      */
     protected $hidden = ['password', 'remember_token'];
     
-    public function custodian() { return $this->hasOne('App\Models\Custodian'); }
-    
-    public function educator() { return $this->hasOne('App\Models\Educator'); }
-    
-    public function student() { return $this->hasOne('App\Models\Student'); }
-    
+    /**
+     * 返回指定用户所属的角色对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function group() { return $this->belongsTo('App\Models\Group'); }
     
+    /**
+     * 获取指定用户对应的监护人对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function custodian() { return $this->hasOne('App\Models\Custodian'); }
+    
+    /**
+     * 获取指定用户对应的教职员工对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function educator() { return $this->hasOne('App\Models\Educator'); }
+    
+    /**
+     * 获取指定用户对应的学生对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function student() { return $this->hasOne('App\Models\Student'); }
+    
+    /**
+     * 获取指定用户对应的管理/操作员对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
     public function operator() { return $this->hasOne('App\Models\Operator'); }
     
-    public function order() { return $this->hasOne('App\Models\Order'); }
+    /**
+     * 获取指定用户的所有订单对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function orders() { return $this->hasMany('App\Models\Order'); }
     
+    /**
+     * 获取指定用户的所有手机号码对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function mobiles() { return $this->hasMany('App\Models\Mobile'); }
+    
+    /**
+     * 获取指定用户所属的所有部门对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function departments() { return $this->belongsToMany('App\Models\Department', 'departments_users'); }
+    
+    /**
+     * 获取指定用户发起的所有调查问卷对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function pollQuestionnaires() { return $this->hasMany('App\Models\PollQuestionnaire'); }
     
+    /**
+     * 获取指定用户参与的调查问卷所给出的答案对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function pollQuestionnaireAnswers() { return $this->hasMany('App\Models\PollQuestionnaireAnswer'); }
     
+    /**
+     * 获取指定用户参与的所有调查问卷对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function pollQuestionnairePartcipants() { return $this->hasMany('App\Models\PollQuestionnaireParticipant'); }
     
+    /**
+     * 获取指定用户发出的消息对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function messages() { return $this->hasMany('App\Models\Message'); }
     
+    /**
+     * 返回用户列表(id, name)
+     *
+     * @param array $userIds
+     * @return array
+     */
+    public function users(array $userIds) {
+
+        $users = [];
+        foreach ($userIds as $id) {
+            $user = $this->find($id);
+            $users[$user->id] = $user->realname;
+        }
+        return $users;
+
+    }
+    
+    /**
+     * 判断用户记录是否已经存在
+     *
+     * @param UserRequest $request
+     * @param null $id
+     * @return bool
+     */
     public function existed(UserRequest $request, $id = NULL) {
         
         if (!$id) {
@@ -135,17 +229,7 @@ class User extends Authenticatable {
         return $user ? true : false;
         
     }
-    public function users(array $userIds) {
-
-        $users = [];
-        foreach ($userIds as $id) {
-            $user = $this->find($id);
-            $users[$user->id] = $user->realname;
-        }
-        return $users;
-
-    }
-
+    
     public function datatable() {
         
         $columns = [
@@ -156,7 +240,7 @@ class User extends Authenticatable {
             ['db' => 'User.realname', 'dt' => 4],
             [
                 'db' => 'User.gender', 'dt' => 5,
-                'formatter' => function ($d, $row) {
+                'formatter' => function ($d) {
                     return $d ? '男' : '女';
                 }
             ],

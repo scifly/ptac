@@ -12,10 +12,10 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
-# Auth::routes();
-# Route::get('/', function() { return 'Dashboard'; });
-# Route::get('/', 'HomeController@index');
-# Route::get('/home', 'HomeController@index')->name('home');
+Route::auth();
+Route::get('/', function() { return 'Dashboard'; });
+Route::get('/', 'HomeController@index');
+Route::get('/home', 'HomeController@index')->name('home');
 
 /** 测试用路由 */
 Route::get('test/index', 'TestController@index');
@@ -30,6 +30,7 @@ Route::get('pages/{id}', 'HomeController@menu');
 Route::group(['prefix' => 'educators'], routes('EducatorController'));
 Route::group(['prefix' => 'educators_classes'], routes('EducatorClassController'));
 // 监护人
+Route::group(['prefix' => 'custodians'], routes('CustodianController'));
 Route::group(['prefix' => 'custodians_students'], routes('CustodianStudentController'));
 // 学生
 Route::group(['prefix' => 'students'], routes('StudentController'));
@@ -43,17 +44,22 @@ Route::group(['prefix' => 'exams'], routes('ExamController'));
 Route::group(['prefix' => 'exam_types'], routes('ExamTypeController'));
 // 成绩管理 - 成绩录入/导入.总成绩录入/导入.成绩统计项设置
 Route::group(['prefix' => 'scores'], routes('ScoreController'));
-Route::get('scores/statistics/{exam_id}', 'ScoreController@statistics');
+Route::group(['prefix' => 'scores'], function() {
+    $ctlr = 'ScoreController';
+    Route::get('statistics/{examId}', $ctlr . '@statistics');
+    Route::get('export/{examId}', $ctlr . '@export');
+    Route::get('import', $ctlr . '@import');
+});
 Route::group(['prefix' => 'score_totals'], function() {
     $ctlr = 'ScoreTotalController';
     Route::get('index', $ctlr . '@index');
     Route::get('show/{id}', $ctlr . '@show');
-    Route::get('statistics/{exam_id}', $ctlr . '@statistics');
+    Route::get('statistics/{examId}', $ctlr . '@statistics');
 });
 Route::group(['prefix' => 'score_ranges'], routes('ScoreRangeController'));
 Route::group(['prefix' => 'score_ranges'], function() {
     $ctlr = 'ScoreRangeController';
-    Route::get('statistics_show', $ctlr . '@statisticsShow');
+    Route::get('show_statistics', $ctlr . '@showStatistics');
     Route::post('statistics', $ctlr . '@statistics');
 });
 // 成绩统计/打印
@@ -72,6 +78,8 @@ Route::group(['prefix' => 'scoreSend'], function() {
 /** 考勤管理 */
 // 考勤设置 - 考勤时段设置.考勤机设置
 Route::group(['prefix' => 'attendance_machines'], routes('AttendanceMachineController'));
+Route::group(['prefix' => 'educator_attendance_settings'], routes('EducatorAttendanceSettingController'));
+Route::group(['prefix' => 'student_attendance_settings'], routes('StudentAttendanceSettingController'));
 // 考勤查询/统计
 
 /** 课程表管理 */
@@ -117,7 +125,7 @@ Route::group(['prefix' => 'procedure_logs'], function() {
     $ctlr = 'ProcedureLogController';
     Route::get('index', $ctlr . '@myProcedure');
     Route::get('pending', $ctlr . '@pending');
-    Route::get('show/{first_log_id}    ', $ctlr . '@procedureInfo');
+    Route::get('show/{firstLogId}    ', $ctlr . '@procedureInfo');
     Route::get('create', $ctlr . '@create');
     Route::post('store', $ctlr . '@store');
     Route::post('decision', $ctlr . '@decision');
@@ -135,7 +143,7 @@ Route::group(['prefix' => 'messages'], routes('MessageController'));
 // 个人信息
 Route::group(['prefix' => 'personal_infos'], function() {
     $ctlr = 'PersonalInfoController';
-    Route::get('edit/{id}', $ctlr . '@edit');
+    Route::get('index', $ctlr . '@index');
     Route::put('update/{id}', $ctlr . '@update');
     Route::post('upload_ava/{id}', $ctlr . '@uploadAvatar');
 
@@ -151,6 +159,7 @@ Route::group(['prefix' => 'school_types'], routes('SchoolTypeController'));
 Route::group(['prefix' => 'subjects'], routes('SubjectController'));
 Route::get('subjects/query/{id}', 'SubjectController@query');
 Route::group(['prefix' => 'subject_modules'], routes('SubjectModuleController'));
+Route::group(['prefix' => 'majors'], routes('MajorController'));
 // 角色/权限 - 角色管理.权限管理
 Route::group(['prefix' => 'groups'], routes('GroupController'));
 // 年级/班级设置 - 年级管理.班级管理
@@ -164,6 +173,13 @@ Route::group(['prefix' => 'icon_types'], routes('IconTypeController'));
 // 消息类型设置 - 消息类型管理
 Route::group(['prefix' => 'message_types'], routes('MessageTypeController'));
 // 运营者设置 - 企业设置
+Route::group(['prefix' => 'departments'], routes('DepartmentController'));
+Route::group(['prefix' => 'departments'], function() {
+    $ctlr = 'DepartmentController';
+    Route::post('index', $ctlr . '@index');
+    Route::post('move/{id}/{parentId}', $ctlr . '@move');
+    Route::post('sort', $ctlr . '@sort');
+});
 Route::group(['prefix' => 'companies'], routes('CompanyController'));
 Route::group(['prefix' => 'corps'], routes('CorpController'));
 // 菜单管理 - action设置.卡片设置.菜单设置
@@ -179,6 +195,7 @@ Route::group(['prefix' => 'menus'], function() {
     Route::post('ranktabs/{id}', $ctlr . '@rankTabs');
 });
 // 管理员
+Route::group(['prefix' => 'operators'], routes('OperatorController'));
 
 /**
  * routes - Helper function
@@ -190,7 +207,7 @@ Route::group(['prefix' => 'menus'], function() {
 function routes($ctlr) {
     return function() use($ctlr) {
         Route::get('index', $ctlr . '@index');
-        Route::get('create', $ctlr . '@create');
+        Route::get('create/{id?}', $ctlr . '@create');
         Route::post('store', $ctlr . '@store');
         Route::get('show/{id}', $ctlr . '@show');
         Route::get('edit/{id}', $ctlr . '@edit');

@@ -5,13 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 
 class GradeRequest extends FormRequest {
-    
-    protected $rules = [
-        'name' => 'required|string|max:255',
-        'school_id' => 'required|integer',
-        'educator_ids' => 'required|string',
-        'enabled' => 'required|boolean'
-    ];
+
     protected $strings_key = [
         'name' => '年级名称',
         'school_id' => '所属学校',
@@ -24,17 +18,25 @@ class GradeRequest extends FormRequest {
         'max' => '最大为:max',
         'integer' => '必须为整数',
         'boolean' => '为0或1',
+        'unique' => '不唯一',
+
     ];
-    
-    
+    public function rules() {
+        return [
+            'name' => 'required|string|max:255|unique:grades,name,' .
+                $this->input('id') . ',id,' .
+                'school_id,' . $this->input('school_id'),
+            'school_id' => 'required|integer',
+            'educator_ids' => 'required|string',
+            'enabled' => 'required|boolean'
+        ];
+    }
     /**
      * Determine if the user is authorized to make this request.
      *
      * @return bool
      */
     public function authorize() { return true; }
-    
-    public function rules() { return $this->rules; }
     
     public function messages() {
         

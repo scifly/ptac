@@ -5,13 +5,16 @@ namespace App\Models;
 use App\Facades\DatatableFacade as Datatable;
 use App\Http\Requests\ActionRequest;
 use App\Models\ActionType as ActionType;
+use App\Models\Tab;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Mockery\Exception;
 use ReflectionClass;
 use Doctrine\Common\Inflector\Inflector;
+use ReflectionMethod;
 
 /**
  * App\Models\Action
@@ -51,7 +54,7 @@ use Doctrine\Common\Inflector\Inflector;
  * @method static Builder|Action whereUpdatedAt($value)
  * @method static Builder|Action whereView($value)
  * @mixin \Eloquent
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tab[] $tabs
+ * @property-read Collection|Tab[] $tabs
  */
 class Action extends Model {
     
@@ -140,14 +143,6 @@ HTML;
         }
         ksort($actions);
         return $actions;
-        
-    }
-    
-    public function existed(ActionRequest $request) {
-        
-        $action = $this->where('controller', $request->input('controller'))
-            ->where('method', $request->input('method'))->first();
-        return $action ? true : false;
         
     }
     
@@ -282,7 +277,6 @@ HTML;
         
     }
     
-    
     public function scan() {
         
         $actionType = new ActionType();
@@ -322,33 +316,20 @@ HTML;
                     $method->isUserDefined() &&
                     $method->isPublic()
                 ) {
-                    $selfDefinedMethods[$className][$action]['name'] = '';
-                    $selfDefinedMethods[$className][$action]['method'] = $action;
-                    $selfDefinedMethods[$className][$action]['remark'] = '';
                     $ctlr = $this->getControllerName($className);
-                    $selfDefinedMethods[$className][$action]['controller'] = $ctlr;
-                    $selfDefinedMethods[$className][$action]['view'] = $this->getViewPath($ctlr, $action);
-                    $selfDefinedMethods[$className][$action]['route'] = $this->getRoute($ctlr, $action);
-                    $selfDefinedMethods[$className][$action]['action_type_ids'] = $this->getActionTypeIds($ctlr, $action);
-                    if (!in_array($ctlr, $this->excludedControllers)) {
-                        switch ($action) {
-                            case 'index':
-                            case 'create':
-                            case 'edit':
-                                $selfDefinedMethods[$className][$action]['js'] =
-                                    'js/' . str_singular($this->getTableName($ctlr)) . '/' . $action . '.js';
-                                break;
-                            default:
-                                $selfDefinedMethods[$className][$action]['js'] = NULL;
-                                break;
-                        }
-                    } else {
-                        $selfDefinedMethods[$className][$action]['js'] = NULL;
-                    }
+                    $selfDefinedMethods[$className][$action] = [
+                        'name' => $this->getMethodComment($obj, $method),
+                        'method' => $action,
+                        'remark' => '',
+                        'controller' => $ctlr,
+                        'view' => $this->getViewPath($ctlr, $action),
+                        'route' => $this->getRoute($ctlr, $action),
+                        'action_type_ids' => $this->getActionTypeIds($ctlr, $action),
+                        'js' => $this->getJsPath($ctlr, $action)
+                    ];
                 }
             }
         }
-        // dd($selfDefinedMethods);
         foreach ($selfDefinedMethods as $actions) {
             foreach ($actions as $action) {
                 $a = $this->where([
@@ -356,11 +337,13 @@ HTML;
                     ['method', $action['method']]
                 ])->first();
                 if ($a) {
-                    // $a->route = $action['route'];
-                    // $a->action_type_ids = $action['action_type_ids'];
+                    $a->name = $action['name'];
+                    $a->route = $action['route'];
+                    $a->js = $action['js'];
+                    $a->action_type_ids = $action['action_type_ids'];
                     $a->save();
                 } else {
-                    $data = [
+                    $this->create( [
                         'name' => $action['name'],
                         'method' => $action['method'],
                         'remark' => $action['remark'],
@@ -370,8 +353,7 @@ HTML;
                         'action_type_ids' => $action['action_type_ids'],
                         'js' => $action['js'],
                         'enabled' => 1
-                    ];
-                    $this->create($data);
+                    ]);
                 }
             }
         }
@@ -400,6 +382,23 @@ HTML;
         
     }
     
+    private function getMethodComment(ReflectionClass $controllerObj, ReflectionMethod $method) {
+    
+        $comment = $controllerObj->getMethod($method->getName())->getDocComment();
+        $name = 'n/a';
+        preg_match_all("#\/\*\*\n\s{5}\*[^\*]*\*#", $comment, $matches);
+        if (isset($matches[0][0])) {
+            $name = str_replace(str_split("\n/* "), '', $matches[0][0]);
+        } else {
+            preg_match_all("#\/\*\*\r\n\s{5}\*[^\*]*\*#", $comment, $matches);
+            if (isset($matches[0][0])) {
+                $name = str_replace(str_split("\n/* "), '', $matches[0][0]);
+            }
+        }
+        return $name;
+        
+    }
+    
     /**
      * 返回所有控制器的完整路径
      *
@@ -407,7 +406,7 @@ HTML;
      * @param array $allData
      * @return array
      */
-    private function scanDirectories($rootDir, $allData = array()) {
+    public function scanDirectories($rootDir, $allData = array()) {
         
         // set filenames invisible if you want
         $invisibleFileNames = array(".", "..", ".htaccess", ".htpasswd");
@@ -438,7 +437,7 @@ HTML;
      *
      * @param $controllers
      */
-    private function getControllerNamespaces(&$controllers) {
+    public function getControllerNamespaces(&$controllers) {
         
         for ($i = 0; $i < sizeof($controllers); $i++) {
             $controllers[$i] = str_replace('/', '\\', $controllers[$i]);
@@ -454,7 +453,7 @@ HTML;
      * @param $controllers
      * @return array
      */
-    private function getControllerNames($controllers) {
+    public function getControllerNames($controllers) {
         
         $controllerNames = [];
         foreach ($controllers as $controller) {
@@ -518,7 +517,7 @@ HTML;
      * @param $controller
      * @return mixed
      */
-    private function getControllerName($controller) {
+    public function getControllerName($controller) {
         
         $nameSpacePaths = explode('\\', $controller);
         return $nameSpacePaths[sizeof($nameSpacePaths) - 1];
@@ -540,7 +539,9 @@ HTML;
                 case 'create':
                 case 'edit':
                 case 'show':
-                    $viewPath = str_singular($this->getTableName($controller)) . '.' . $action;
+                    $prefix = str_singular($this->getTableName($controller));
+                    $prefix = ($prefix === 'corps') ? 'corp' : $prefix;
+                    $viewPath = $prefix . '.' . $action;
                     break;
                 default:
                     $viewPath = '';
@@ -562,7 +563,9 @@ HTML;
             $controller, 0,
             strlen($controller) - strlen('Controller')
         );
-        
+        if ($modelName === 'Squad') {
+            return 'classes';
+        }
         return Inflector::pluralize(Inflector::tableize($modelName));
         
     }
@@ -610,6 +613,33 @@ HTML;
                 }
             }
             return implode(',', $actionTypeIds);
+        }
+        return NULL;
+        
+    }
+    
+    /**
+     * 返回指定action对应的js路径
+     *
+     * @param $ctlr
+     * @param $action
+     * @return mixed
+     */
+    private function getJsPath($ctlr, $action) {
+        
+        if (!in_array($ctlr, $this->excludedControllers)) {
+            $prefix = str_singular($this->getTableName($ctlr));
+            $prefix = ($prefix === 'corps') ? 'corp' : $prefix;
+            return 'js/' .  $prefix . '/' . $action . '.js';
+            /*switch ($action) {
+                case 'index':
+                case 'create':
+                case 'edit':
+                case ''
+                
+                default:
+                    return NULL;
+            }*/
         }
         return NULL;
         

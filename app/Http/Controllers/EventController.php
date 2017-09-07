@@ -2,12 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Educator;
+use App\Http\Requests\EventRequest;
 use App\Models\Event;
-use App\Models\Subject;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
 
+/**
+ * 日历
+ *
+ * Class EventController
+ * @package App\Http\Controllers
+ */
 class EventController extends Controller {
     protected $event;
 
@@ -16,88 +21,51 @@ class EventController extends Controller {
     }
 
     /**
-     * 根据用户id 显示列表 个人的日历事件信息
-     * @param $userId
+     * 事件列表
+     *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @internal param $userId
      * @internal param $id = user_id
      */
-    public function show($userId) {
+    public function index() {
+        
+        $userId = 2;
+        $isAdmin = $this->event->getRole($userId) ? 1 : 0;
         $events = $this->event
             ->where('User_id', $userId)
             ->where('enabled', '0')
             ->get()->toArray();
-        return view('event.index', [
-            'js' => 'js/event/index.js',
-            'fullcalendar' => true,
-            'events' => $events
+        return $this->output(__METHOD__, [
+            'events' => $events,
+            'userId' => $userId,
+            'isAdmin' => $isAdmin
         ]);
+        
     }
 
     /**
      *显示日历事件
      *
+     * @param $userId
      * @return \Illuminate\Http\Response
      */
     public function calendarEvents($userId) {
-        //判断userID的权限 1.管理员及以上  2.用户
+        
+        return $this->event->showCalendar($userId);
 
-        //通过userId找出educator_id
-        $educator = Educator::where('user_id', $userId)->first();
-        //先选出公开事件中 非课程的事件
-        $pubNoCourseEvents = $this->event
-            ->where('ispublic', 1)
-            ->where('iscourse', 0)
-            ->get()->toArray();
-        //选出公开事件中 课程事件
-        $pubCourEvents = $this->event
-            ->where('ispublic', 1)
-            ->where('iscourse', 1)
-            ->where('educator_id', $educator->id)
-            ->get()->toArray();
-
-        //再选个人未公开事件
-        $perEvents = $this->event
-            ->where('User_id', $userId)
-            ->where('ispublic', 0)
-            ->where('enabled', '1')
-            ->get()->toArray();
-        //全部公共事件
-        $pubEvents = $this->event->where('ispublic', 1)->get()->toArray();
-        //如果是管理员
-        if ($userId == 1) {
-            return response()->json(array_merge($pubEvents, $perEvents));
-        }
-        //如果是用户
-        return response()->json(array_merge($pubNoCourseEvents, $perEvents, $pubCourEvents));
     }
 
     /**
      * 新增一个列表事件
      *
+     * @param EventRequest $request
      * @return \Illuminate\Http\Response
      * @internal param \Illuminate\Http\Request $request
      */
-    public function store() {
-        $inputEvent = Request::all();
-        if ($inputEvent['iscourse'] == 0) {
-            $inputEvent['educator_id'] = '0';
-            $inputEvent['subject_id'] = '0';
-        }
-        if ($inputEvent['alertable'] == 0) {
-            $inputEvent['alert_mins'] = '0';
-        }
-        $inputEvent['start'] = "1970-01-01 00:00:00";
-        $inputEvent['end'] = "1970-01-01 00:00:00";
-        $inputEvent['enabled'] = 0;
+    public function store(EventRequest $request) {
+        $inputEvent = $request->all();
         $listDate = $this->event->create($inputEvent);
-        if ($listDate) {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-            $this->result['listDate'] = $listDate;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '';
-        }
-        return response()->json($this->result);
+        return $listDate ? $this->succeed($listDate) : $this->fail();
     }
 
     /**
@@ -109,54 +77,61 @@ class EventController extends Controller {
      */
     public function edit($id) {
         //判断当前用户权限
-
-        $data = view('event.show', ['events' => $this->event->findOrFail($id)])->render();
-        if (!empty($data)) {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-            $this->result['data'] = $data;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '';
+        $row = Request::all();
+        if ($row['ispublic'] == 1) {
+            if (!$this->event->getRole($row['userId'])) {
+                return $this->fail('此事件只有管理员可编辑！');
+            }
         }
-        return response()->json($this->result);
+        $data = view('event.show', ['events' => $this->event->find($id)])->render();
+        return !empty($data) ? $this->succeed($data) : $this->fail();
     }
-
 
     /**
      * 更新指定日历事件
      *
+     * @param EventRequest $request
+     * @param $id
      * @return \Illuminate\Http\Response
      * @internal param \Illuminate\Http\Request $request
      * @internal param Event $event
      */
-    public function update($id) {
-        $data = Request::all();
-        if ($this->event->findOrFail($id)->update($data)) {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-            $this->result['message'] = self::MSG_EDIT_OK;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '';
+    public function update(EventRequest $request, $id) {
+        $input = $request->all();
+        $input['enabled'] = 1;
+        if ($input['end'] <= $input['start']) {
+            return $this->fail('结束时间必须大于开始时间！');
         }
-        return response()->json($this->result);
+        //根据角色验证重复冲突
+        if (!$this->event->getRole($input['user_id'])) {
+            if ($this->event->isRepeatTimeUser($input['user_id'], $input['start'], $input['end'], $id)) {
+                return $this->fail('时间有冲突！');
+            }
+        } else {
+            if ($this->event->isRepeatTimeAdmin($input['educator_id'], $input['start'], $input['end'], $id)) {
+                return $this->fail('时间有冲突！');
+            }
+        }
+        $event = $this->event->find($id);
+        if (!$event) {
+            return $this->notFound();
+        }
+        return $event->update($input) ? $this->succeed() : $this->fail();
     }
 
     /**
-     *删除事件 包括日历事件和列表时间
+     *删除事件包括日历事件和列表事件
      *
      * @param $id
      * @return \Illuminate\Http\Response
      * @internal param Event $event
      */
     public function destroy($id) {
-        if ($this->event->findOrFail($id)->delete()) {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-            $this->result['message'] = self::MSG_DEL_OK;
-        } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '';
+        $event = $this->event->find($id);
+        if (!$event) {
+            return $this->notFound();
         }
-        return response()->json($this->result);
+        return $event->delete() ? $this->succeed() : $this->fail();
     }
 
     /**
@@ -164,26 +139,28 @@ class EventController extends Controller {
      */
     public function dragEvents() {
         $listJson = Request::all();
-        $listEvent = $this->event->whereId($listJson['id'])->first(['title', 'remark', 'location', 'contact', 'url', 'start', 'end', 'ispublic', 'iscourse', 'educator_id', 'subject_id', 'alertable', 'alert_mins', 'user_id', 'enabled'])->toArray();
-        $listEvent['start'] = $listJson['start'];
-        $listEvent['end'] = $listJson['end'];
-        $listEvent['enabled'] = 1;
-
-        if ($listJson['isRemoveList'] == "true") {
-            $this->destroy($listJson['id']);
+        $event = $this->event->whereId($listJson['id'])->first(['title', 'remark', 'location', 'contact', 'url', 'start', 'end', 'ispublic', 'iscourse', 'educator_id', 'subject_id', 'alertable', 'alert_mins', 'user_id', 'enabled'])->toArray();
+        $event['start'] = $listJson['start'];
+        $event['end'] = $listJson['end'];
+        $event['enabled'] = 1;
+        if ($event['end'] <= $event['start']) {
+            return $this->fail('结束时间必须大于开始时间！');
         }
-        if ($this->event->create($listEvent)) {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-            $this->result['message'] = self::MSG_CREATE_OK;
+        //根据角色验证重复冲突
+        if (!$this->event->getRole($event['user_id'])) {
+            if ($this->event->isRepeatTimeUser($event['user_id'], $event['start'], $event['end'])) {
+                return $this->fail('时间有冲突！');
+            }
         } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '';
+            if ($this->event->isRepeatTimeAdmin($event['educator_id'], $event['start'], $event['end'])) {
+                return $this->fail('时间有冲突！');
+            }
         }
-        return response()->json($this->result);
+        return $this->event->create($event) ? $this->succeed() : $this->fail();
     }
 
     /**
-     * 拖动实时保存
+     * 拖动实时保存日历事件
      *
      * @return \Illuminate\Http\JsonResponse
      */
@@ -191,45 +168,22 @@ class EventController extends Controller {
         $data = Request::all();
         $event = $this->event->whereId($data['id'])->first();
         //计算多少秒
-        $days = $data['dayDiff'] * 24 * 60 * 60;
-        $hours = $data['hoursDiff'] * 60 * 60;
-        $minutes = $data['minutesDiff'] * 60;
-        $diffTime = $days + $hours + $minutes;
+        $diffTime = $this->event->timeDiff($data['dayDiff'], $data['hoursDiff'], $data['minutesDiff']);
+        //判断动作是否为拖动（拖动需同时改变start和end，缩放只需改变end）
         if (!isset($data['action'])) {
             $event->start = date("Y-m-d H:i:s", strtotime($event->start) + $diffTime);
         }
         $event->end = date("Y-m-d H:i:s", strtotime($event->end) + $diffTime);
-        if ($event->save()) {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
-            $this->result['message'] = self::MSG_CREATE_OK;
+        //根据角色验证重复冲突
+        if (!$this->event->getRole($event->user_id)) {
+            if ($this->event->isRepeatTimeUser($event->user_id, $event->start, $event->end, $event->id)) {
+                return $this->fail('时间有冲突！');
+            }
         } else {
-            $this->result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $this->result['message'] = '';
+            if ($this->event->isRepeatTimeAdmin($event->educator_id, $event->start, $event->end, $event->id)) {
+                return $this->fail('时间有冲突！');
+            }
         }
-        return response()->json($this->result);
-    }
-
-    /**
-     * 判断当前用户权限
-     */
-//    private function getPermissions(){
-//
-//        $uId = Session::get('user');
-//    }
-
-    /**
-     * 获取当前user_id 对应的学校的所有教职工id
-     *
-     * @param $userId
-     * @return array
-     */
-    private function getEducators($userId) {
-        $educator = Educator::where('user_id', $userId)->first();
-        return Educator::where('school_id', $educator->school_id)->get()->toArray();
-    }
-
-    private function getSubjects($userId) {
-        $educator = Educator::where('user_id', $userId)->first();
-        return Subject::where('school_id', $educator->school_id)->get()->toArray();
+        return $event->save() ? $this->succeed() : $this->fail();
     }
 }

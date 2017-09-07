@@ -6,6 +6,12 @@ use App\Http\Requests\SemesterRequest;
 use App\Models\Semester;
 use Illuminate\Support\Facades\Request;
 
+/**
+ * 学期
+ *
+ * Class SemesterController
+ * @package App\Http\Controllers
+ */
 class SemesterController extends Controller {
     
     protected $semester;
@@ -13,7 +19,7 @@ class SemesterController extends Controller {
     function __construct(Semester $semester) { $this->semester = $semester; }
     
     /**
-     * 显示学期记录列表
+     * 学期列表
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
@@ -27,7 +33,7 @@ class SemesterController extends Controller {
     }
     
     /**
-     * 显示创建学期记录的表单
+     * 创建学期
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
@@ -38,7 +44,7 @@ class SemesterController extends Controller {
     }
     
     /**
-     * 保存新创建的学期记录
+     * 保存学期
      *
      * @param SemesterRequest $request
      * @return \Illuminate\Http\JsonResponse
@@ -50,7 +56,7 @@ class SemesterController extends Controller {
     }
     
     /**
-     * 显示指定的学期记录详情
+     * 学期详情
      *
      * @param $id
      * @return bool|\Illuminate\Http\JsonResponse
@@ -62,7 +68,7 @@ class SemesterController extends Controller {
     }
     
     /**
-     * 显示编辑指定学期记录的表单
+     * 编辑学期
      *
      * @param $id
      * @return bool|\Illuminate\Http\JsonResponse
@@ -76,7 +82,7 @@ class SemesterController extends Controller {
     }
     
     /**
-     * 更新指定的学期记录
+     * 更新学期
      *
      * @param SemesterRequest $request
      * @param $id
@@ -91,7 +97,7 @@ class SemesterController extends Controller {
     }
     
     /**
-     * 删除指定的学期记录
+     * 删除学期
      *
      * @param $id
      * @return \Illuminate\Http\JsonResponse

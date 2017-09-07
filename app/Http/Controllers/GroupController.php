@@ -6,6 +6,12 @@ use App\Http\Requests\GroupRequest;
 use App\Models\Group;
 use Illuminate\Support\Facades\Request;
 
+/**
+ * 角色
+ *
+ * Class GroupController
+ * @package App\Http\Controllers
+ */
 class GroupController extends Controller {
     
     protected $group;
@@ -13,7 +19,7 @@ class GroupController extends Controller {
     function __construct(Group $group) { $this->group = $group; }
     
     /**
-     * 显示角色列表
+     * 角色列表
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
@@ -27,7 +33,7 @@ class GroupController extends Controller {
     }
     
     /**
-     * 显示创建新角色的表单
+     * 创建角色
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
@@ -38,7 +44,7 @@ class GroupController extends Controller {
     }
     
     /**
-     * 保存新创建的角色记录
+     * 保存角色
      *
      * @param GroupRequest $request
      * @return \Illuminate\Http\JsonResponse
@@ -53,7 +59,7 @@ class GroupController extends Controller {
     }
     
     /**
-     * 显示指定的角色记录详情
+     * 角色详情
      *
      * @param $id
      * @return bool|\Illuminate\Http\JsonResponse
@@ -67,7 +73,7 @@ class GroupController extends Controller {
     }
     
     /**
-     * 显示编辑指定角色记录的表单
+     * 编辑角色
      *
      * @param $id
      * @return bool|\Illuminate\Http\JsonResponse
@@ -81,7 +87,7 @@ class GroupController extends Controller {
     }
     
     /**
-     * 更新指定的角色记录
+     * 更新角色
      *
      * @param GroupRequest $request
      * @param $id
@@ -98,7 +104,7 @@ class GroupController extends Controller {
     }
     
     /**
-     * 删除指定的角色记录
+     * 删除角色
      *
      * @param $id
      * @return \Illuminate\Http\JsonResponse

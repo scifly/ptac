@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Http\Requests\WsmArticleRequest;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -35,6 +36,7 @@ use Illuminate\Support\Facades\Storage;
  * 网站内容
  * @property-read \App\Models\WapSiteModule $wapSiteModule
  * @property-read \App\Models\WapSiteModule $wapsitemodule
+ * @property-read \App\Models\Media $thumbnailmedia
  */
 class WsmArticle extends Model {
     
@@ -56,13 +58,13 @@ class WsmArticle extends Model {
         return $this->belongsTo('App\Models\WapSiteModule', 'wsm_id', 'id');
     }
 
-    public function store(WapSiteModuleRequest $request)
+    public function store(WsmArticleRequest $request)
     {
         try {
             $exception = DB::transaction(function () use ($request) {
                 //删除原有的图片
                 $this->removeMedias($request);
-                $this->create($request->all());
+                return $this->create($request->all());
             });
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
@@ -70,16 +72,16 @@ class WsmArticle extends Model {
         }
     }
 
-    public function modify(WapSiteRequest $request, $id)
+    public function modify(WsmArticleRequest $request, $id)
     {
         $wapSite = $this->find($id);
         if (!$wapSite) {
             return false;
         }
         try {
-            $exception = DB::transaction(function () use ($request) {
+            $exception = DB::transaction(function () use ($request,$id) {
                 $this->removeMedias($request);
-                $this->update($request->all());
+                return $this->where('id', $id)->update($request->except('_method','_token'));
             });
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
@@ -90,7 +92,7 @@ class WsmArticle extends Model {
     /**
      * @param $request
      */
-    private function removeMedias(WapSiteRequest $request)
+    private function removeMedias(WsmArticleRequest $request)
     {
         //删除原有的图片
         $mediaIds = $request->input('del_ids');
