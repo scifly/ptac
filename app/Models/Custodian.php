@@ -154,7 +154,8 @@ class Custodian extends Model {
                 $studentIds = $request->input('student_ids');
                 unset($departmentUser);
                 $custodianStudent = new CustodianStudent();
-                $custodianStudent::whereCustodianId($custodianId)->delete();
+//                $custodianStudent::whereCustodianId($custodianId)->delete();
+                $custodianStudent::where('custodian_id',$custodianId)->delete();
                 $custodianStudent->storeByCustodianId($custodianId, $studentIds);
                 unset($custodianStudent);
             });

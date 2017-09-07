@@ -124,6 +124,12 @@ class CustodianController extends Controller {
         
     }
 
+    /**
+     * 删除指定的监护人
+     *
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function destroy($id) {
         return $this->custodian->remove($id) ? $this->succeed() : $this->fail();
     }

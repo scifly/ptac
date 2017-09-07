@@ -193,7 +193,106 @@ class Student extends Model {
 
     }
 
-    public function datatable() {
+    /**
+     * 更新指定的学生记录
+     *
+     * @param StudentRequest $request
+     * @param $studentId
+     * @return bool|mixed
+     */
+    public function modify(StudentRequest $request, $studentId) {
+
+        $student = $this->find($studentId);
+        if (!isset($student)) { return false; }
+        try {
+            $exception = DB::transaction(function() use($request, $studentId, $student) {
+                $userId = $request->input('user_id');
+                $userData = $request->input('user');
+                $user = new User();
+                $user->where('id',$userId)
+                    ->update([
+                        'group_id' => $userData['group_id'],
+                        'email' => $userData['email'],
+                        'realname' => $userData['realname'],
+                        'gender' => $userData['gender'],
+                        'isleader' => 0,
+                        'english_name'=>$userData['english_name'],
+                        'telephone' => $userData['telephone'],
+                        'enabled' =>$userData['enabled']
+                    ]);
+                unset($user);
+                $studentData = $request->input('student');
+                $student->update([
+                    'user_id' => $userId,
+                    'class_id' => $studentData['class_id'],
+                    'student_number' => $studentData['student_number'],
+                    'card_number' => $studentData['card_number'],
+                    'oncampus' => $studentData['oncampus'],
+                    'birthday' => $studentData['birthday'],
+                    'remark' => $studentData['remark'],
+                    'enabled' => 1
+                ]);
+                $mobile = new Mobile();
+                $mobile->where('user_id',$userId)
+                    ->update([
+                        'user_id' => $userId,
+                        'mobile' => $request->input('mobile')['mobile'],
+                    ]);
+                unset($mobile);
+                $departmentIds = $request->input('department_ids');
+                $departmentUser = new DepartmentUser();
+                $departmentUser::where('user_id',$userId)->delete();
+                $departmentUser ->storeByDepartmentId($userId, $departmentIds);
+                unset($departmentUser);
+                $custodianStudent = new CustodianStudent();
+                $custodianIds = $request->input('custodian_ids');
+                $custodianStudent::where('student_id',$studentId)->delete();
+                $custodianStudent->storeByStudentId($studentId, $custodianIds);
+                unset($custodianStudent);
+            });
+
+            return is_null($exception) ? true : $exception;
+        } catch (Exception $e) {
+            return false;
+        }
+
+    }
+
+    /**
+     * 删除指定的学生记录
+     *
+     * @param $studentId
+     * @return bool|mixed
+     */
+    public function remove($studentId)
+    {
+
+        $student = $this->find($studentId);
+
+        if (!isset($custodian)) {
+            return false;
+        }
+        try {
+            $exception = DB::transaction(function () use ($studentId, $student) {
+                # 删除指定的监护人记录
+                $student->delete();
+                # 删除与指定监护人绑定的监护人记录
+                CustodianStudent::where('student_id', $studentId)->delete();
+                # 删除与指定监护人绑定的部门记录
+                DepartmentUser::where('user_id', $student['user_id'])->delete();
+                # 删除与指定监护人绑定的手机记录
+                Mobile::where('user_id', $student['user_id'])->delete();
+
+            });
+
+            return is_null($exception) ? true : $exception;
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
+
+        public function datatable() {
         
         $columns = [
             ['db' => 'Student.id', 'dt' => 0],

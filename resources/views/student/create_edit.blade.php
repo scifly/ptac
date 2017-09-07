@@ -4,9 +4,9 @@
     </div>
     <div class="box-body">
         <div class="form-horizontal">
-            @if (!empty($student['id']))
-                {{ Form::hidden('id', $student['id'], ['id' => 'id']) }}
-            @endif
+                @if (!empty($student['id']))
+                    {{ Form::hidden('id', $student['id'], ['id' => 'id']) }}
+                @endif
 
                 @if (!empty($student['user_id']))
                     {{ Form::hidden('user_id', $student['user_id'], ['id' => 'user_id']) }}
@@ -99,9 +99,9 @@
                 ])
                 @include('partials.multiple_select', [
                 'label' => '监护人',
-                'id' => 'student_ids',
-                'items' => $students,
-                'selectedItems' => isset($selectedStudents) ? $selectedStudents : NULL
+                'id' => 'custodian_ids',
+                'items' => $custodian,
+                'selectedItems' => isset($selectedCustodians) ? $selectedCustodians : NULL
              ])
             @include('partials.single_select', [
                 'label' => '班级名称',
