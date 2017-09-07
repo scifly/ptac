@@ -7,6 +7,12 @@ use App\Models\Event;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
 
+/**
+ * 日历
+ *
+ * Class EventController
+ * @package App\Http\Controllers
+ */
 class EventController extends Controller {
     protected $event;
 
@@ -15,21 +21,26 @@ class EventController extends Controller {
     }
 
     /**
-     * 显示列表和个人的日历事件信息
+     * 事件列表
      *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      * @internal param $userId
      * @internal param $id = user_id
      */
     public function index() {
-        //$userId = Session::get('user');
-        $userId = 1;
+        
+        $userId = 2;
         $isAdmin = $this->event->getRole($userId) ? 1 : 0;
         $events = $this->event
             ->where('User_id', $userId)
             ->where('enabled', '0')
             ->get()->toArray();
-        return $this->output(__METHOD__, ['events' => $events, 'userId' => $userId, 'isAdmin' => $isAdmin]);
+        return $this->output(__METHOD__, [
+            'events' => $events,
+            'userId' => $userId,
+            'isAdmin' => $isAdmin
+        ]);
+        
     }
 
     /**
@@ -39,6 +50,7 @@ class EventController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function calendarEvents($userId) {
+        
         return $this->event->showCalendar($userId);
 
     }

@@ -2,13 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Action;
 use App\Models\Menu;
 use App\Models\MenuTab;
 use App\Models\Tab;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
 
-
+/**
+ * 首页
+ *
+ * Class HomeController
+ * @package App\Http\Controllers
+ */
 class HomeController extends Controller {
     
     protected $menu;
@@ -25,6 +31,8 @@ class HomeController extends Controller {
 
         if (!session('menuId') || session('menuId') !== $id) {
             session(['menuId' => $id]);
+            session(['menuName' => Menu::whereId($id)->first()->name]);
+            session(['pageUrl' => Request::fullUrl()]);
             session(['menuChanged' => true]);
         } else {
             Session::forget('menuChanged');
@@ -32,8 +40,9 @@ class HomeController extends Controller {
         
         # 获取卡片列表
         $tabArray = [];
-        $tabRanks = MenuTab::whereMenuId($id)->get()->sortBy('tab_order')->toArray();
         $isTabLegit = true;
+        $tabRanks = MenuTab::whereMenuId($id)->get()->sortBy('tab_order')->toArray();
+        if (empty($tabRanks)) { $isTabLegit = false; };
         foreach ($tabRanks as $rank) {
             $tab = Tab::whereId($rank['tab_id'])->first();
             if (!empty($tab->action->route)) {
@@ -62,9 +71,23 @@ class HomeController extends Controller {
         } else {
             $tabArray = [];
         }
+        # 如果菜单没有配置或配置有误, 则显示卡片
+        
+        if (!$isTabLegit) {
+            session(['menuId' => 0]);
+            $actionId = Action::whereEnabled(1)->where('controller', 'MenuController')->
+                where('method', 'index')->first()->id;
+            $tab = Tab::whereEnabled('1')->where('controller', 'MenuController')->
+                where('action_id', $actionId)->first();
+            $tabArray[] = [
+                'id' => 'tab_' . $tab->id,
+                'name' => $tab->name,
+                'active' => true,
+                'url' => $tab->action->route
+            ];
+        }
         # 获取菜单列表
         $menu = $this->menu->getMenuHtml($id);
-        
         return view('home.page', [
             'menu' => $menu,
             'tabs' => $tabArray,

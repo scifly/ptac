@@ -6,6 +6,12 @@ use App\Http\Requests\StudentRequest;
 use App\Models\Student;
 use Illuminate\Support\Facades\Request;
 
+/**
+ * 学生
+ *
+ * Class StudentController
+ * @package App\Http\Controllers
+ */
 class StudentController extends Controller {
     
     protected $student;
@@ -13,8 +19,9 @@ class StudentController extends Controller {
     function __construct(Student $student) { $this->student = $student; }
     
     /**
-     * 显示学生列表
+     * 学生记录列表
      *
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
         
@@ -26,7 +33,7 @@ class StudentController extends Controller {
     }
     
     /**
-     * 显示创建学生记录的表单
+     * 创建学生记录
      *
      * @return \Illuminate\Http\JsonResponse
      */
@@ -37,7 +44,7 @@ class StudentController extends Controller {
     }
     
     /**
-     * 保存新创建的学生记录
+     * 保存学生记录
      *
      * @param StudentRequest $request
      * @return \Illuminate\Http\JsonResponse
@@ -52,7 +59,7 @@ class StudentController extends Controller {
     }
 
     /**
-     * 显示指定的学生记录详情
+     * 学生记录详情
      *
      * @param $id
      * @return bool|\Illuminate\Http\JsonResponse
@@ -66,7 +73,7 @@ class StudentController extends Controller {
     }
     
     /**
-     * 显示编辑指定学生记录的表单
+     * 编辑学生记录
      *
      * @param $id
      * @return bool|\Illuminate\Http\JsonResponse
@@ -80,7 +87,7 @@ class StudentController extends Controller {
     }
     
     /**
-     * 更新指定的学生记录
+     * 更新学生记录
      *
      * @param StudentRequest $request
      * @param $id
@@ -98,7 +105,7 @@ class StudentController extends Controller {
     }
     
     /**
-     * 删除指定的学生记录
+     * 删除学生记录
      *
      * @param $id
      * @return \Illuminate\Http\JsonResponse
@@ -110,4 +117,5 @@ class StudentController extends Controller {
         return $student->delete() ? $this->succeed() : $this->fail();
         
     }
+    
 }

@@ -146,14 +146,6 @@ HTML;
         
     }
     
-    public function existed(ActionRequest $request) {
-        
-        $action = $this->where('controller', $request->input('controller'))
-            ->where('method', $request->input('method'))->first();
-        return $action ? true : false;
-        
-    }
-    
     /**
      * 保存新创建的Action记录
      *
@@ -285,7 +277,6 @@ HTML;
         
     }
     
-    
     public function scan() {
         
         $actionType = new ActionType();
@@ -415,7 +406,7 @@ HTML;
      * @param array $allData
      * @return array
      */
-    private function scanDirectories($rootDir, $allData = array()) {
+    public function scanDirectories($rootDir, $allData = array()) {
         
         // set filenames invisible if you want
         $invisibleFileNames = array(".", "..", ".htaccess", ".htpasswd");
@@ -446,7 +437,7 @@ HTML;
      *
      * @param $controllers
      */
-    private function getControllerNamespaces(&$controllers) {
+    public function getControllerNamespaces(&$controllers) {
         
         for ($i = 0; $i < sizeof($controllers); $i++) {
             $controllers[$i] = str_replace('/', '\\', $controllers[$i]);
@@ -462,7 +453,7 @@ HTML;
      * @param $controllers
      * @return array
      */
-    private function getControllerNames($controllers) {
+    public function getControllerNames($controllers) {
         
         $controllerNames = [];
         foreach ($controllers as $controller) {
@@ -526,7 +517,7 @@ HTML;
      * @param $controller
      * @return mixed
      */
-    private function getControllerName($controller) {
+    public function getControllerName($controller) {
         
         $nameSpacePaths = explode('\\', $controller);
         return $nameSpacePaths[sizeof($nameSpacePaths) - 1];

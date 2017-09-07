@@ -18,17 +18,6 @@
 
                 </div>
             </div>
-            {{--<div class="form-group">--}}
-            {{--{!! Form::label('icon_type_id', 'icon类型', [--}}
-            {{--'class' => 'col-sm-3 control-label'--}}
-            {{--]) !!}--}}
-            {{--<div class="col-sm-6">--}}
-            {{--{!! Form::select('icon_type_id', $iconTypes, null, [--}}
-            {{--'style' => 'width: 50%;',--}}
-            {{--'required' => 'true',--}}
-            {{--]) !!}--}}
-            {{--</div>--}}
-            {{--</div>--}}
             @include('partials.single_select', [
                 'label' => 'icon类型',
                 'id' => 'icon_type_id',
@@ -47,7 +36,11 @@
                     ]) !!}
                 </div>
             </div>
-            @include('partials.enabled', ['enabled' => $icon['enabled']])
+            @include('partials.enabled', [
+                'label' => '是否启用',
+                'id' => 'enabled',
+                'value' => isset($icon['enabled']) ? $icon['enabled'] : NULL
+            ])
         </div>
     </div>
     @include('partials.form_buttons')

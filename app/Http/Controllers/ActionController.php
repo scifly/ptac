@@ -7,6 +7,12 @@ use App\Models\Action;
 use App\Models\ActionType;
 use Illuminate\Support\Facades\Request;
 
+/**
+ * Action
+ *
+ * Class ActionController
+ * @package App\Http\Controllers
+ */
 class ActionController extends Controller {
     
     protected $action;

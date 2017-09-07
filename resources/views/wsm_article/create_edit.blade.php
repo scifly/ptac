@@ -64,9 +64,13 @@
             <div class="form-group">
                 {!! Form::label('content', '文章内容', ['class' => 'control-label col-sm-3']) !!}
                 <div class="col-sm-6">
-                    {!! Form::textarea('content', null, [
-                        'rows' => 10, 'cols' => 80, 'class' => 'ckeditor', 'id' => 'content'
-                    ]) !!}
+                    <div class="preview">
+                        <script id="container" name="content" type="text/plain">
+                            @if(isset($article))
+                                {!! $article['content'] !!}
+                            @endif
+                        </script>
+                    </div>
                 </div>
             </div>
             @include('partials.enabled', [

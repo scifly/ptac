@@ -6,6 +6,12 @@ use App\Http\Requests\CompanyRequest;
 use App\Models\Company;
 use Illuminate\Support\Facades\Request;
 
+/**
+ * 运营者
+ *
+ * Class CompanyController
+ * @package App\Http\Controllers
+ */
 class CompanyController extends Controller {
     
     protected $company;

@@ -10,19 +10,28 @@ use App\Models\User;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Storage;
 
+/**
+ * 消息
+ *
+ * Class MessageController
+ * @package App\Http\Controllers
+ */
 class MessageController extends Controller {
+    
     protected $message;
     protected $user;
     protected $media;
 
     public function __construct(Message $message, User $user, Media $media) {
+        
         $this->message = $message;
         $this->user = $user;
         $this->media = $media;
+        
     }
     
     /**
-     * 显示消息列表
+     * 消息列表
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
@@ -36,7 +45,7 @@ class MessageController extends Controller {
     }
     
     /**
-     * 显示创建新消息记录的表单
+     * 创建消息
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
@@ -47,7 +56,7 @@ class MessageController extends Controller {
     }
 
     /**
-     * 保存新创建的消息记录
+     * 保存消息
      *
      * @param MessageRequest $request
      * @return \Illuminate\Http\JsonResponse
@@ -59,12 +68,13 @@ class MessageController extends Controller {
     }
 
     /**
-     * 显示指定的消息记录详情
+     * 消息详情
      *
      * @param $id
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function show($id) {
+        
         $message = $this->message->find($id);
         if (!$message) { return $this->notFound(); }
         return $this->output(__METHOD__, [
@@ -72,16 +82,18 @@ class MessageController extends Controller {
             'users' => $this->user->users($message->user_ids),
             'medias' => $this->media->educators($message->media_ids)
         ]);
+        
     }
 
     /**
-     * 显示编辑指定消息记录的表单
+     * 编辑消息
      *
      * @param $id
      * @return bool|\Illuminate\Http\JsonResponse
      *
      */
     public function edit($id) {
+        
         $message = $this->message->find($id);
         if (!$message) { return $this->notFound(); }
 
@@ -90,10 +102,11 @@ class MessageController extends Controller {
             'selectedUsers' => $this->user->users($message->user_ids),
             'medias' => $this->media->medias($message->media_ids)
         ]);
+        
     }
 
     /**
-     * 更新指定的消息记录
+     * 更新消息
      *
      * @param MessageRequest $request
      * @param $id
@@ -102,17 +115,21 @@ class MessageController extends Controller {
     public function update(MessageRequest $request, $id) {
 
         return $this->message->modify($request, $id) ? $this->succeed() : $this->fail();
+        
     }
 
     /**
-     * 删除指定的消息记录
+     * 删除消息
      *
      * @param $id
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
+        
         $message = $this->message->find($id);
         if (!$message) { return $this->notFound(); }
         return $message->delete() ? $this->succeed() : $this->fail();
+        
     }
+    
 }

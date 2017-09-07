@@ -6,18 +6,26 @@ use App\Models\ScoreTotal;
 use App\Models\Subject;
 use Illuminate\Support\Facades\Request;
 
+/**
+ * 总成绩
+ *
+ * Class ScoreTotalController
+ * @package App\Http\Controllers
+ */
 class ScoreTotalController extends Controller {
 
     protected $scoreTotal;
     protected $subject;
 
     function __construct(ScoreTotal $score_total, Subject $subject) {
+        
         $this->scoreTotal = $score_total;
         $this->subject = $subject;
+        
     }
 
     /**
-     * 显示总成绩列表
+     * 总成绩列表
      *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\JsonResponse|\Illuminate\View\View
      */
@@ -31,12 +39,13 @@ class ScoreTotalController extends Controller {
     }
 
     /**
-     * 显示总成绩记录详情
+     * 总成绩详情
      *
      * @param $id
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function show($id) {
+        
         $scoreTotal = $this->scoreTotal->find($id);
         if (!$scoreTotal) { return $this->notFound(); }
 
@@ -56,7 +65,9 @@ class ScoreTotalController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function statistics($examId){
+        
         return $this->scoreTotal->statistics($examId) ? $this->succeed() : $this->fail();
+        
     }
 
 }

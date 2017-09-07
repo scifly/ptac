@@ -7,6 +7,12 @@ use App\Models\Educator;
 use App\Models\Grade;
 use Illuminate\Support\Facades\Request;
 
+/**
+ * 年级
+ *
+ * Class GradeController
+ * @package App\Http\Controllers
+ */
 class GradeController extends Controller {
     
     protected $grade, $educator;
@@ -18,7 +24,7 @@ class GradeController extends Controller {
     }
     
     /**
-     * 显示年级列表
+     * 年级列表
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
@@ -32,7 +38,7 @@ class GradeController extends Controller {
     }
     
     /**
-     * 显示创建年级记录的表单
+     * 创建年级
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
@@ -43,7 +49,7 @@ class GradeController extends Controller {
     }
     
     /**
-     * 保存新创建的年级记录
+     * 保存年级
      *
      * @param GradeRequest $request
      * @return \Illuminate\Http\JsonResponse
@@ -58,7 +64,7 @@ class GradeController extends Controller {
     }
     
     /**
-     * 显示指定的年级记录详情
+     * 年级详情
      *
      * @param $id
      * @return bool|\Illuminate\Http\JsonResponse
@@ -75,7 +81,7 @@ class GradeController extends Controller {
     }
     
     /**
-     * 显示编辑年级记录的表单
+     * 编辑年级
      * @param $id
      * @return \Illuminate\Http\Response
      */
@@ -93,7 +99,7 @@ class GradeController extends Controller {
     }
     
     /**
-     * 更新指定的年级记录
+     * 更新年级
      *
      * @param GradeRequest $request
      * @param $id
@@ -110,7 +116,7 @@ class GradeController extends Controller {
     }
     
     /**
-     * 删除指定的年级记录
+     * 删除年级
      *
      * @param $id
      * @return \Illuminate\Http\JsonResponse
