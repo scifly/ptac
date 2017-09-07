@@ -8,15 +8,12 @@
                 {{ Form::hidden('id', $tab['id'], ['id' => 'id']) }}
             @endif
             <div class="form-group">
-                {!! Form::label('name', '卡片名称',[
-                    'class' => 'col-sm-3 control-label'
+                {!! Form::label('name', '卡片名称', [
+                    'class' => 'col-sm-3 control-label',
                 ]) !!}
                 <div class="col-sm-6">
                     {!! Form::text('name', null, [
-                        'class' => 'form-control',
-                        'placeholder' => '(请输入卡片名称)',
-                        'required' => 'true',
-                        'maxlength' => '80'
+                        'disabled' => true
                     ]) !!}
 
                 </div>

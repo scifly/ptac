@@ -11,6 +11,12 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Input;
 
+/**
+ * 投票问卷参与者
+ *
+ * Class PqParticipantController
+ * @package App\Http\Controllers
+ */
 class PqParticipantController extends Controller {
     
     protected $pollQuestionnaires;
@@ -28,6 +34,7 @@ class PqParticipantController extends Controller {
         PollQuestionnaireParticipant $pollQuestionnaireParticipant,
         User $user
     ) {
+        
         #投票问卷
         $this->pollQuestionnaires = $pollQuestionnaires;
         #投票问卷参与者
@@ -40,13 +47,14 @@ class PqParticipantController extends Controller {
         $this->pollQuestionnaireAnswer = $pollQuestionnaireAnswer;
         #用户
         $this->user = $user;
+        
     }
-    
     
     /**
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function index() {
+        
         #根据登录的角色ID筛选参与的调查问卷
         $result = $this->pollQuestionnaires
             ->join('poll_questionnaire_participants as A', 'poll_questionnaires.id', 'A.pq_id')
@@ -54,6 +62,7 @@ class PqParticipantController extends Controller {
             ->where('A.user_id', 1)
             ->get(['poll_questionnaires.id', 'poll_questionnaires.name']);
         return view('poll_questionnaire_particpation.index', ['js' => 'js/poll_questionnaire_particpation/index.js', 'form' => 0, 'pqs' => $result]);
+        
     }
     
     /**
@@ -61,6 +70,7 @@ class PqParticipantController extends Controller {
      * @return string
      */
     public function show($id) {
+        
         #先获取投票问卷列
         $this->pollQuestionnaireSubject
             ->where('pq_id', $id)
@@ -133,6 +143,7 @@ class PqParticipantController extends Controller {
     }
     
     public function update(Request $q) {
+        
         #先获取项和题转换数组操作
         $json = json_decode($this->show($q->get('pollQuestion')));
         
@@ -182,6 +193,6 @@ class PqParticipantController extends Controller {
         }
         return response()->json(['msg' => '提交成功', '' => self::HTTP_STATUSCODE_OK]);
         
-        
     }
+    
 }

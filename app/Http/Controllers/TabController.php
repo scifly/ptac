@@ -8,6 +8,12 @@ use App\Models\Menu;
 use App\Models\Tab;
 use Illuminate\Support\Facades\Request;
 
+/**
+ * 卡片
+ *
+ * Class TabController
+ * @package App\Http\Controllers
+ */
 class TabController extends Controller {
     
     protected $tab, $action, $menu;
@@ -21,7 +27,7 @@ class TabController extends Controller {
     }
     
     /**
-     * 显示卡片列表
+     * 卡片列表
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
@@ -30,27 +36,24 @@ class TabController extends Controller {
         if (Request::get('draw')) {
             return response()->json($this->tab->datatable());
         }
+        if (!$this->tab->scan()) { return parent::notFound(); }
         return parent::output(__METHOD__);
         
     }
     
     /**
-     * 显示创建卡片记录的表单
+     * 创建卡片
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function create() {
 
-        /*return view('tab.create', [
-            'breadcrumb' => 'test',
-            'menus' => $this->menu->leaves(1),
-        ]);*/
         return parent::output(__METHOD__, ['menus' => $this->menu->leaves(1)]);
         
     }
     
     /**
-     * 保存新创建的卡片记录
+     * 保存卡片
      *
      * @param TabRequest $request
      * @return \Illuminate\Http\JsonResponse
@@ -62,7 +65,7 @@ class TabController extends Controller {
     }
     
     /**
-     * 显示指定的卡片记录详情
+     * 卡片详情
      *
      * @param $id
      * @return bool|\Illuminate\Http\JsonResponse
@@ -76,7 +79,7 @@ class TabController extends Controller {
     }
     
     /**
-     * 显示编辑指定卡片记录的表单
+     * 编辑卡片
      *
      * @param $id
      * @return bool|\Illuminate\Http\JsonResponse
@@ -99,7 +102,7 @@ class TabController extends Controller {
     }
     
     /**
-     * 更新指定的卡片记录
+     * 更新卡片
      *
      * @param TabRequest $request
      * @param $id
@@ -114,7 +117,7 @@ class TabController extends Controller {
     }
     
     /**
-     * 删除指定的卡片记录
+     * 删除卡片
      *
      * @param $id
      * @return \Illuminate\Http\JsonResponse

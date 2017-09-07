@@ -74,7 +74,6 @@ class Subject extends Model {
     }
 
 
-
     /**
      * 保存新的科目记录
      * @param SubjectRequest $request
@@ -174,6 +173,16 @@ class Subject extends Model {
 
     }
 
+
+
+    public  function getId(array $subjects){
+        $result = [];
+        foreach ($subjects as $v){
+            $result[$v] = $this->whereName($v)->value('id');
+        }
+        return $result;
+    }
+    
 
     public function datatable() {
         

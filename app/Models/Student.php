@@ -193,6 +193,25 @@ class Student extends Model {
 
     }
 
+
+    /**
+     * 返回学生学号姓名列表
+     *
+     * @param $classIds
+     * @return array
+     */
+    public function studentsNum($classIds) {
+
+        $studentList = [];
+        $students = $this->whereIn('class_id', explode(',', $classIds))->get();
+        foreach ($students as $student) {
+            $studentList[] = [$student->student_number, $student->user->realname];
+        }
+        return $studentList;
+
+    }
+    
+
     /**
      * 更新指定的学生记录
      *

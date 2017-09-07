@@ -6,6 +6,12 @@ use App\Http\Requests\MessageTypeRequest;
 use App\Models\MessageType;
 use Illuminate\Support\Facades\Request;
 
+/**
+ * 消息类型
+ *
+ * Class MessageTypeController
+ * @package App\Http\Controllers
+ */
 class MessageTypeController extends Controller {
     
     protected $messageType;
@@ -13,7 +19,7 @@ class MessageTypeController extends Controller {
     function __construct(MessageType $messageType) { $this->messageType = $messageType; }
     
     /**
-     * 显示消息类型列表
+     * 消息类型
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
@@ -27,7 +33,7 @@ class MessageTypeController extends Controller {
     }
     
     /**
-     * 显示创建消息类型记录的表单
+     * 创建消息类型
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
@@ -38,7 +44,7 @@ class MessageTypeController extends Controller {
     }
     
     /**
-     * 保存新创建的消息类型记录
+     * 保存消息类型
      *
      * @param MessageTypeRequest $request
      * @return \Illuminate\Http\JsonResponse
@@ -50,7 +56,7 @@ class MessageTypeController extends Controller {
     }
     
     /**
-     * 显示指定的消息类型记录详情
+     * 消息类型详情
      *
      * @param $id
      * @return bool|\Illuminate\Http\JsonResponse
@@ -64,7 +70,7 @@ class MessageTypeController extends Controller {
     }
     
     /**
-     * 显示编辑指定消息类型记录的表单
+     * 编辑消息类型
      *
      * @param $id
      * @return bool|\Illuminate\Http\JsonResponse
@@ -78,7 +84,7 @@ class MessageTypeController extends Controller {
     }
     
     /**
-     * 更新指定的消息类型记录
+     * 更新消息类型
      *
      * @param MessageTypeRequest $request
      * @param $id
@@ -93,7 +99,7 @@ class MessageTypeController extends Controller {
     }
     
     /**
-     * 删除指定的消息类型记录
+     * 删除消息类型
      *
      * @param $id
      * @return \Illuminate\Http\JsonResponse

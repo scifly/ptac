@@ -7,6 +7,12 @@ use App\Models\Exam;
 use App\Models\Squad;
 use Illuminate\Support\Facades\Request;
 
+/**
+ * 考试
+ *
+ * Class ExamController
+ * @package App\Http\Controllers
+ */
 class ExamController extends Controller {
     
     protected $exam;
@@ -20,7 +26,7 @@ class ExamController extends Controller {
     }
     
     /**
-     * 显示考试列表
+     * 考试列表
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
@@ -34,7 +40,7 @@ class ExamController extends Controller {
     }
     
     /**
-     * 显示创建考试记录的表单
+     * 创建考试
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
@@ -45,7 +51,7 @@ class ExamController extends Controller {
     }
     
     /**
-     * 保存新创建的考试记录
+     * 保存考试
      *
      * @param ExamRequest $request
      * @return \Illuminate\Http\JsonResponse
@@ -57,7 +63,7 @@ class ExamController extends Controller {
     }
     
     /**
-     * 显示指定的考试记录详情
+     * 考试详情
      *
      * @param $id
      * @return bool|\Illuminate\Http\JsonResponse
@@ -69,14 +75,14 @@ class ExamController extends Controller {
         
         return $this->output(__METHOD__, [
             'exam' => $exam,
-            'classes' => $this->exam->classes(explode(',', $exam->class_ids)),
-            'subjects' => $this->exam->subjects(explode(',', $exam->subject_ids)),
+            'classes' => $this->exam->classes($exam->class_ids),
+            'subjects' => $this->exam->subjects(),
         ]);
         
     }
     
     /**
-     * 显示编辑指定考试记录的表单
+     * 编辑考试
      *
      * @param $id
      * @return bool|\Illuminate\Http\JsonResponse
@@ -92,7 +98,7 @@ class ExamController extends Controller {
     }
     
     /**
-     * 更新指定的考试记录
+     * 更新考试
      *
      * @param ExamRequest $request
      * @param $id
@@ -107,7 +113,7 @@ class ExamController extends Controller {
     }
     
     /**
-     * 删除指定的考试记录
+     * 删除考试
      *
      * @param $id
      * @return \Illuminate\Http\JsonResponse
