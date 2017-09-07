@@ -6,6 +6,7 @@ use App\Http\Requests\ScoreRequest;
 use App\Models\Exam;
 use App\Models\Score;
 use App\Models\Student;
+use App\Models\Subject;
 use Excel;
 use Illuminate\Support\Facades\Request;
 
@@ -14,11 +15,13 @@ class ScoreController extends Controller {
     protected $score;
     protected $exam;
     protected $student;
+    protected $subject;
 
-    function __construct(Score $score, Exam $exam, Student $student) {
+    function __construct(Score $score, Exam $exam, Student $student, Subject $subject) {
         $this->score = $score;
         $this->exam = $exam;
         $this->student = $student;
+        $this->subject = $subject;
     }
     
     /**
@@ -146,11 +149,12 @@ class ScoreController extends Controller {
         $cellData = $this->student->studentsNum($exam->class_ids);
         array_unshift($cellData,$heading);
 
-        Excel::create('score',function($excel) use ($cellData){
+        Excel::create('score',function($excel) use ($cellData,$examId){
             $excel->sheet('score', function($sheet) use ($cellData){
                 $sheet->rows($cellData);
             });
-        })->export('xls');
+            $excel->setTitle($examId);
+        })->store('xls')->export('xls');
     }
 
 
@@ -159,10 +163,41 @@ class ScoreController extends Controller {
      */
     public function import(){
         $filePath = 'storage/exports/score.xls';
-        $data = Excel::load($filePath)->get();
-        foreach ($data as $val){
-            var_dump($val->学号);
-        }
+        $insert = [];
+        Excel::load($filePath,function($reader) use (&$insert){
+            $exam_id = $reader->getTitle();
+            $subjects = $this->subject->getId(array_slice(array_keys($reader->toArray()[0]),2));
+            $reader->each(function($sheet) use ($exam_id, $subjects, &$insert) {
+                $studentNum = '';
+                foreach($sheet as $key=>$row) {
+                    switch ($key)
+                    {
+                        case '学号':
+                            $studentNum = $this->student->whereStudentNumber($row)->value('id');
+                            break;
+                        case '姓名':
+                            break;
+                        default:
+                            if (!is_null($row) && isset($subjects[$key])){
+                                $insert []= [
+                                    'student_id' => $studentNum,
+                                    'subject_id' => $subjects[$key],
+                                    'exam_id' => $exam_id,
+                                    'score' => $row,
+                                    'enabled' => 1,
+                                ];
+                            }
+                    }
+                }
+            });
+        });
+        return $this->score->insert($insert) ? $this->succeed() : $this->fail();
+    }
+
+    /**
+     * 在线编辑成绩
+     */
+    public function editor(){
 
     }
 }
