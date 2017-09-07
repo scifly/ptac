@@ -19,8 +19,10 @@ class WsmArticleController extends Controller {
     protected $media;
     
     public function __construct(WsmArticle $article, Media $media) {
+        
         $this->article = $article;
         $this->media = $media;
+        
     }
     
     /**
@@ -70,6 +72,7 @@ class WsmArticleController extends Controller {
         if (!$article) {
             return parent::notFound();
         }
+
         return parent::output(__METHOD__, [
             'article' => $article,
             'medias' => $this->media->medias($article->media_ids),
@@ -84,11 +87,9 @@ class WsmArticleController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function edit($id) {
+
         $article = $this->article->find($id);
-        if (!$article) {
-            return parent::notFound();
-        }
-        
+        if (!$article) { return parent::notFound(); }
         return parent::output(__METHOD__, [
             'article' => $article,
             'medias' => $this->media->medias($article->media_ids),
@@ -130,7 +131,6 @@ class WsmArticleController extends Controller {
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function detail($id) {
-        
         $article = $this->article->find($id);
         return view('frontend.wap_site.article', [
             'article' => $article,

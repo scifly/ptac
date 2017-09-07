@@ -126,6 +126,9 @@
                'items' => $students,
                'selectedItems' => isset($selectedStudents) ? $selectedStudents : NULL
            ])
+
+
+
                 <div class="form-group">
                     {{ Form::label('expiry', '服务到期时间', [
                     'class' => 'col-sm-3 control-label'
@@ -134,6 +137,17 @@
                         {!! Form::text('expiry', null, [
                             'class' => 'form-control expiry-date',
                         ]) !!}
+                    </div>
+                </div>
+                <div class="form-group addInput">
+                    <label for="" class="col-sm-3 control-label">学校编码</label>
+                    <div class="entry input-group col-sm-6">
+                        <input type="text" class="form-control">
+                        <span class="input-group-btn">
+                            <button class="btn btn-add btn-success" type="button">
+                                <span class="glyphicon glyphicon-plus"></span>
+                            </button>
+                        </span>
                     </div>
                 </div>
                 {{--<div class="form-group">--}}

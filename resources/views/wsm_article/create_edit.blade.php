@@ -62,15 +62,15 @@
                 </div>
             </div>
             <div class="form-group">
-                {!! Form::label('content', '文章内容', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
+                {!! Form::label('content', '文章内容', ['class' => 'control-label col-sm-3']) !!}
                 <div class="col-sm-6">
-                    <script id="container" name="content" type="text/plain">
-                        @if(isset($article->content))
-                            {!!($article->content)!!}
-                        @endif
-                    </script>
+                    <div class="preview">
+                        <script id="container" name="content" type="text/plain">
+                            @if(isset($article))
+                                {!! $article['content'] !!}
+                            @endif
+                        </script>
+                    </div>
                 </div>
             </div>
             @include('partials.enabled', [

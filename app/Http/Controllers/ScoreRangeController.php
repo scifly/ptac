@@ -64,6 +64,7 @@ class ScoreRangeController extends Controller {
         if ($this->scoreRange->existed($request)) {
             return $this->fail('已经有此记录');
         }
+        $score_range['subject_ids'] = implode(',',$score_range['subject_ids']);
         return $this->scoreRange->create($score_range) ? $this->succeed() : $this->fail();
         
     }
@@ -125,6 +126,8 @@ class ScoreRangeController extends Controller {
         if ($this->$scoreRange->existed($request, $id)) {
             return $this->fail('已经有此记录');
         }
+
+        if (!$scoreRange) { return $this->notFound(); }
         $score_range = $request->all();
         $score_range['subject_ids'] = implode(',', $score_range['subject_ids']);
         
