@@ -199,6 +199,7 @@ class ScoreController extends Controller {
      */
     public function editor(){
 
+        return $this->output(__METHOD__);
     }
 }
 
