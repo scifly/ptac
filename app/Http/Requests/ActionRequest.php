@@ -45,6 +45,7 @@ class ActionRequest extends FormRequest {
             $input['action_type_ids'] = implode(',', $input['action_type_ids']);
         }
         $this->replace($input);
+        
     }
     
     

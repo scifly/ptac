@@ -13,6 +13,12 @@ use App\Models\Student;
 use App\Models\CustodianStudent;
 use Illuminate\Support\Facades\Request;
 
+/**
+ * 监护人
+ *
+ * Class CustodianController
+ * @package App\Http\Controllers
+ */
 class CustodianController extends Controller {
     
     protected $custodian, $department, $group, $user,$mobile,$departmentUser,$student,$custodianStudent;

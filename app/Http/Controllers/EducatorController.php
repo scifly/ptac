@@ -9,7 +9,10 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
 
 /**
- * @property array message
+ * 教职员工
+ *
+ * Class EducatorController
+ * @package App\Http\Controllers
  */
 class EducatorController extends Controller {
     
@@ -24,7 +27,7 @@ class EducatorController extends Controller {
     }
     
     /**
-     * 显示教职员工列表
+     * 教职员工列表
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
@@ -38,7 +41,7 @@ class EducatorController extends Controller {
     }
     
     /**
-     * 显示创建教职员工记录的表单
+     * 创建教职员工
      *
      * @return \Illuminate\Http\Response
      */
@@ -47,7 +50,7 @@ class EducatorController extends Controller {
     }
 
     /**
-     * 保存新创建的教职员工记录
+     * 保存教职员工
      *
      * @param EducatorRequest $request
      * @return \Illuminate\Http\JsonResponse
@@ -59,7 +62,7 @@ class EducatorController extends Controller {
     }
 
     /**
-     * 显示指定的教职员工记录详情
+     * 教职员工详情
      *
      * @param $id
      * @return bool|\Illuminate\Http\JsonResponse
@@ -76,7 +79,7 @@ class EducatorController extends Controller {
     }
 
     /**
-     * 显示编辑指定教职员工记录的表单
+     * 编辑教职员工
      *
      * @param $id
      * @return bool|\Illuminate\Http\JsonResponse
@@ -94,7 +97,7 @@ class EducatorController extends Controller {
     }
 
     /**
-     * 更新指定的教职员工记录
+     * 更新教职员工
      *
      * @param EducatorRequest $request
      * @param $id
@@ -109,7 +112,7 @@ class EducatorController extends Controller {
     }
 
     /**
-     * 删除指定的教职员工记录
+     * 删除教职员工
      *
      * @param $id
      * @return \Illuminate\Http\JsonResponse

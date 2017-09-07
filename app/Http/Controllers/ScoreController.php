@@ -10,6 +10,12 @@ use App\Models\Subject;
 use Excel;
 use Illuminate\Support\Facades\Request;
 
+/**
+ * 成绩
+ *
+ * Class ScoreController
+ * @package App\Http\Controllers
+ */
 class ScoreController extends Controller {
     
     protected $score;
@@ -39,7 +45,7 @@ class ScoreController extends Controller {
     }
     
     /**
-     * 显示创建成绩记录的表单
+     * 录入成绩
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
@@ -50,7 +56,7 @@ class ScoreController extends Controller {
     }
     
     /**
-     * 保存新创建的成绩记录
+     * 保存成绩
      *
      * @param ScoreRequest $request
      * @return \Illuminate\Http\JsonResponse
@@ -62,7 +68,7 @@ class ScoreController extends Controller {
     }
     
     /**
-     * 显示指定的成绩记录详情
+     * 成绩详情
      *
      * @param $id
      * @return bool|\Illuminate\Http\JsonResponse
@@ -79,7 +85,7 @@ class ScoreController extends Controller {
     }
     
     /**
-     * 显示编辑指定成绩记录的表单
+     * 修改成绩
      *
      * @param $id
      * @return bool|\Illuminate\Http\JsonResponse
@@ -96,7 +102,7 @@ class ScoreController extends Controller {
     }
     
     /**
-     * 更新指定的成绩记录
+     * 更新成绩
      *
      * @param ScoreRequest $request
      * @param $id
@@ -111,7 +117,7 @@ class ScoreController extends Controller {
     }
     
     /**
-     * 删除指定的成绩记录
+     * 删除成绩
      *
      * @param $id
      * @return \Illuminate\Http\JsonResponse
@@ -131,7 +137,9 @@ class ScoreController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function statistics($examId) {
+        
         return $this->score->statistics($examId) ? $this->succeed() : $this->fail();
+        
     }
 
 
@@ -200,5 +208,6 @@ class ScoreController extends Controller {
     public function editor(){
 
     }
+    
 }
 

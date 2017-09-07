@@ -31,7 +31,11 @@
                     ]) !!}
                 </div>
             </div>
-            @include('partials.enabled', ['enabled' => $iconType['enabled']])
+            @include('partials.enabled', [
+                'label' => '是否启用',
+                'id' => 'enabled',
+                'value' => isset($iconType['enabled']) ? $iconType['enabled'] : NULL
+            ])
         </div>
     </div>
     @include('partials.form_buttons')

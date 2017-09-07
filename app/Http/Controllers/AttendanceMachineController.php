@@ -6,6 +6,12 @@ use App\Http\Requests\AttendanceMachineRequest;
 use App\Models\AttendanceMachine;
 use Illuminate\Support\Facades\Request;
 
+/**
+ * 考勤机
+ *
+ * Class AttendanceMachineController
+ * @package App\Http\Controllers
+ */
 class AttendanceMachineController extends Controller {
     
     protected $am;
@@ -13,7 +19,7 @@ class AttendanceMachineController extends Controller {
     function __construct(AttendanceMachine $am) { $this->am = $am; }
     
     /**
-     * 显示考勤机列表
+     * 考勤机列表
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
@@ -27,7 +33,7 @@ class AttendanceMachineController extends Controller {
     }
     
     /**
-     * 显示创建考勤机记录的表单
+     * 创建考勤机记录
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
@@ -38,7 +44,7 @@ class AttendanceMachineController extends Controller {
     }
     
     /**
-     * 保存新创建的考勤机记录
+     * 保存考勤机记录
      *
      * @param AttendanceMachineRequest $request
      * @return \Illuminate\Http\JsonResponse
@@ -50,7 +56,7 @@ class AttendanceMachineController extends Controller {
     }
     
     /**
-     * 显示指定的考勤机记录详情
+     * 考勤机详情
      *
      * @param $id
      * @return bool|\Illuminate\Http\JsonResponse
@@ -64,7 +70,7 @@ class AttendanceMachineController extends Controller {
     }
     
     /**
-     * 显示编辑指定考勤机记录的表单
+     * 编辑考勤机记录
      *
      * @param $id
      * @return bool|\Illuminate\Http\JsonResponse
@@ -78,7 +84,7 @@ class AttendanceMachineController extends Controller {
     }
     
     /**
-     * 更新指定的考勤机记录
+     * 更新考勤机记录
      *
      * @param AttendanceMachineRequest $request
      * @param $id
@@ -93,7 +99,7 @@ class AttendanceMachineController extends Controller {
     }
     
     /**
-     * 删除指定的考勤机记录
+     * 删除考勤机记录
      *
      * @param $id
      * @return \Illuminate\Http\JsonResponse

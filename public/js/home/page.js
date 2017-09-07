@@ -27,6 +27,10 @@ var page = {
             success: function(result) {
                 $tabPane.html(result.html);
                 $.getScript(page.siteRoot() + result.js);
+            },
+            error: function(e) {
+                var obj = JSON.parse(e.responseText);
+                page.inform('出现异常', obj['message'], page.failure);
             }
         });
     }

@@ -9,7 +9,10 @@ use App\Models\User;
 use Illuminate\Support\Facades\Request;
 
 /**
- * @property array message
+ * 班级
+ *
+ * Class SquadController
+ * @package App\Http\Controllers
  */
 class SquadController extends Controller {
     
@@ -23,7 +26,7 @@ class SquadController extends Controller {
     }
     
     /**
-     * 显示班级列表
+     * 班级列表
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
@@ -37,7 +40,7 @@ class SquadController extends Controller {
     }
     
     /**
-     * 显示创建班级记录的表单
+     * 创建班级
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
@@ -48,7 +51,7 @@ class SquadController extends Controller {
     }
     
     /**
-     * 保存新创建的班级记录
+     * 保存班级
      *
      * @param SquadRequest $request
      * @return \Illuminate\Http\JsonResponse
@@ -60,7 +63,7 @@ class SquadController extends Controller {
     }
     
     /**
-     * 显示指定的班级记录详情
+     * 班级详情
      *
      * @param $id
      * @return bool|\Illuminate\Http\JsonResponse
@@ -79,7 +82,7 @@ class SquadController extends Controller {
     }
     
     /**
-     * 显示编辑指定班级记录的表单
+     * 编辑班级
      *
      * @param $id
      * @return bool|\Illuminate\Http\JsonResponse
@@ -98,7 +101,7 @@ class SquadController extends Controller {
     }
     
     /**
-     * 更新指定的班级记录
+     * 更新班级
      *
      * @param SquadRequest $request
      * @param $id
@@ -113,7 +116,7 @@ class SquadController extends Controller {
     }
     
     /**
-     * 删除指定的班级记录
+     * 删除班级
      *
      * @param $id
      * @return \Illuminate\Http\JsonResponse

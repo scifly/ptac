@@ -7,11 +7,14 @@
             <thead>
             <tr>
                 <th>#</th>
-                <th>名称</th>
-                <th>图标</th>
-                <th>默认Action</th>
-                <th>创建时间</th>
-                <th>更新时间</th>
+                <th>姓名</th>
+                <th>用户名</th>
+                <th>角色</th>
+                <th>所属公司</th>
+                <th>微信帐号</th>
+                <th>手机号码</th>
+                <th>创建于</th>
+                <th>更新于</th>
                 <th>状态</th>
             </tr>
             </thead>

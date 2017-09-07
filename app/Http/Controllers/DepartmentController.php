@@ -6,6 +6,12 @@ use App\Http\Requests\DepartmentRequest;
 use App\Models\Department;
 use Illuminate\Support\Facades\Request;
 
+/**
+ * 部门
+ *
+ * Class DepartmentController
+ * @package App\Http\Controllers
+ */
 class DepartmentController extends Controller {
     
     protected $department;
