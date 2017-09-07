@@ -49,27 +49,15 @@
                     ]) }}
                 </div>
             </div>
-            {{--</div>--}}
-            {{--<div class="form-group">--}}
-                {{--<label for="user[gender]" class="col-sm-3 control-label">性别</label>--}}
-                {{--<div class="col-sm-6">--}}
-                    {{--<label for="user[gender]">--}}
-                        {{--男 <input id="user[gender]" type="radio" name="user[gender]" checked class="minimal">--}}
-                    {{--</label>--}}
-                    {{--<label for="user[gender]">--}}
-                        {{--女 <input id="user[gender]" type="radio" name="user[gender]" class="minimal">--}}
-                    {{--</label>--}}
-                {{--</div>--}}
-            {{--</div>--}}
-                <div class="form-group">
-                    <label for="user[gender]" class="col-sm-3 control-label">性别</label>
-                    <div class="col-sm-6">
-                        {!! Form::radio('user[gender]', '1', true) !!}
-                        {!! Form::label('user[gender]', '男') !!}
-                        {!! Form::radio('user[gender]', '0') !!}
-                        {!! Form::label('user[gender]', '女') !!}
-                    </div>
+            <div class="form-group">
+                <label for="user[gender]" class="col-sm-3 control-label">性别</label>
+                <div class="col-sm-6">
+                    {!! Form::radio('user[gender]', '1', true) !!}
+                    {!! Form::label('user[gender]', '男') !!}
+                    {!! Form::radio('user[gender]', '0') !!}
+                    {!! Form::label('user[gender]', '女') !!}
                 </div>
+            </div>
             <div class="form-group">
                 {{ Form::label('mobile[mobile]', '手机', [
                     'class' => 'col-sm-3 control-label'
@@ -126,43 +114,29 @@
                'items' => $students,
                'selectedItems' => isset($selectedStudents) ? $selectedStudents : NULL
            ])
-
-
-
-                <div class="form-group">
-                    {{ Form::label('expiry', '服务到期时间', [
-                    'class' => 'col-sm-3 control-label'
-                    ]) }}
-                    <div class="col-sm-6">
-                        {!! Form::text('expiry', null, [
-                            'class' => 'form-control expiry-date',
-                        ]) !!}
-                    </div>
+            <div class="form-group addInput">
+                <label for="" class="col-sm-3 control-label">和学生之间的关系</label>
+                <div class="entry input-group col-sm-6">
+                    <input type="text" class="form-control">
+                    <span class="input-group-btn">
+                        <button class="btn btn-add btn-success" type="button">
+                            <span class="glyphicon glyphicon-plus"></span>
+                        </button>
+                    </span>
                 </div>
-                <div class="form-group addInput">
-                    <label for="" class="col-sm-3 control-label">学校编码</label>
-                    <div class="entry input-group col-sm-6">
-                        <input type="text" class="form-control">
-                        <span class="input-group-btn">
-                            <button class="btn btn-add btn-success" type="button">
-                                <span class="glyphicon glyphicon-plus"></span>
-                            </button>
-                        </span>
-                    </div>
+            </div>
+
+            <div class="form-group">
+                {{ Form::label('expiry', '服务到期时间', [
+                'class' => 'col-sm-3 control-label'
+                ]) }}
+                <div class="col-sm-6">
+                    {!! Form::text('expiry', null, [
+                        'class' => 'form-control expiry-date',
+                    ]) !!}
                 </div>
-                {{--<div class="form-group">--}}
-                    {{--{{ Form::label('user[realname]', '姓名', [--}}
-                        {{--'class' => 'col-sm-3 control-label'--}}
-                    {{--]) }}--}}
-                    {{--<div class="col-sm-6">--}}
-                        {{--{{ Form::text('user[realname]', null, [--}}
-                            {{--'class' => 'form-control',--}}
-                            {{--'required' => 'true',--}}
-                            {{--'placeholder' => '(请填写真实姓名)',--}}
-                            {{--'data-parsley-length' => '[2, 255]'--}}
-                        {{--]) }}--}}
-                    {{--</div>--}}
-                {{--</div>--}}
+            </div>
+
             @include('partials.enabled', [
                 'label' => '是否启用',
                 'id' => 'user[enabled]',

@@ -50,11 +50,7 @@
                 'id' => 'inorout',
                 'value' => isset($educatorAttendanceSetting['inorout']) ? $educatorAttendanceSetting['inorout'] : NULL
             ])
-            @include('partials.enabled', [
-                'label' => '是否启用',
-                'id' => 'enabled',
-                'value' => isset($educatorAttendanceSetting['enabled']) ? $educatorAttendanceSetting['enabled'] : NULL
-            ])
+
         </div>
     </div>
     @include('partials.form_buttons')

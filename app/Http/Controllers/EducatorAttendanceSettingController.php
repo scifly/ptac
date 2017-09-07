@@ -46,9 +46,7 @@ class EducatorAttendanceSettingController extends Controller
      */
     public function store(EducatorAttendanceSettingRequest $request)
     {
-        if ($this->educatorAttendanceSetting->existed($request)) {
-            return $this->fail('已经有此记录');
-        }
+
         return $this->educatorAttendanceSetting->create($request->all()) ? $this->succeed() : $this->fail();
     }
 
@@ -70,11 +68,10 @@ class EducatorAttendanceSettingController extends Controller
     /**
      * 显示编辑指定教职员工考勤设置记录的表单.
 
-     * @param  \App\Models\EducatorAttendanceSetting $educatorAttendanceSetting
      * @param $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(EducatorAttendanceSetting $educatorAttendanceSetting,$id)
+    public function edit($id)
     {
         $educatorAttendanceSetting= $this->educatorAttendanceSetting->find($id);
         if (!$educatorAttendanceSetting) { return $this->notFound(); }
@@ -91,17 +88,17 @@ class EducatorAttendanceSettingController extends Controller
      */
     public function update(EducatorAttendanceSettingRequest $request,$id)
     {
+
         $educatorAttendanceSetting = $this->educatorAttendanceSetting->find($id);
         if (!$educatorAttendanceSetting) { return $this->notFound(); }
-        if ($this->$educatorAttendanceSetting->existed($request, $id)) {
-            return $this->fail('已经有此记录');
-        }
+
         return $educatorAttendanceSetting->update($request->all()) ? $this->succeed() : $this->fail();
     }
 
     /**
      * 删除指定的教职员工考勤设置记录.
      * @param $id
+     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id)
     {

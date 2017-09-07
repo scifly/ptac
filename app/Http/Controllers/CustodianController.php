@@ -49,10 +49,7 @@ class CustodianController extends Controller {
      */
     public function create() {
         
-        return parent::output(__METHOD__, [
-//            'group' => $this->group->group('custodian'),
-            'departments' => $this->department->departments([1])
-        ]);
+        return parent::output(__METHOD__);
         
     }
     
@@ -109,7 +106,7 @@ class CustodianController extends Controller {
         return $this->output(__METHOD__, [
             'custodian' => $custodian,
             'user' => $user,
-            'departments'=>$this->department->departments([1]),
+//            'departments'=>$this->department->departments([1]),
             'selectedDepartments' => $selectedDepartments,
             'selectedStudents' => $selectedStudents,
         ]);

@@ -71,9 +71,8 @@ class Major extends Model {
             ['db' => 'School.name as schoolname', 'dt' => 2],
             ['db' => 'Major.remark', 'dt' => 3],
             ['db' => 'Major.created_at', 'dt' => 4],
-            ['db' => 'Major.updated_at', 'dt' => 5],
             [
-                'db' => 'Major.id', 'dt' => 6,
+                'db' => 'Major.updated_at', 'dt' => 5,
                 'formatter' => function($d, $row) {
                     return DataTable::dtOps($this, $d, $row);
                 }

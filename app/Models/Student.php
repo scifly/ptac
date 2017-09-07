@@ -10,6 +10,7 @@ use App\Models\ScoreTotal;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 
 /**
@@ -115,30 +116,81 @@ class Student extends Model {
         return $studentList;
     
     }
-    
+
+
     /**
-     * 判断学生记录是否已经存在
+     * 保存新创建的监护人记录
      *
-     * @param StudentRequest $request
-     * @param null $id
-     * @return bool
+     * @param \App\Models\StudentRequest $request
+     * @return bool|mixed
      */
-    public function existed(StudentRequest $request, $id = NULL) {
-        
-        if (!$id) {
-            $student = $this->where('user_id', $request->input('user_id'))
-                ->where('class_id', $request->input('class_id'))
-                ->where('student_number', $request->input('student_number'))
-                ->first();
-        } else {
-            $student = $this->where('user_id', $request->input('user_id'))
-                ->where('id', '<>', $id)
-                ->where('class_id', $request->input('class_id'))
-                ->where('student_number', $request->input('student_number'))
-                ->first();
+    public function store(StudentRequest $request) {
+
+        try {
+            $exception = DB::transaction(function() use ($request) {
+                $user = $request->input('user');
+                $userData = [
+                    'username' => uniqid('custodian_'),
+                    'group_id' => $user['group_id'],
+                    'password' => 'custodian8888',
+                    'email' => $user['email'],
+                    'realname' => $user['realname'],
+                    'gender' => $user['gender'],
+                    'avatar_url' => '00001.jpg',
+                    'userid' => uniqid('custodian_'),
+                    'isleader' => 0,
+                    'english_name'=>$user['english_name'],
+                    'telephone' => $user['telephone'],
+                    'wechatid' => '',
+                    'enabled' =>$user['enabled']
+                ];
+                $user = new User();
+                $u = $user->create($userData);
+                unset($user);
+                $student = $request->input('student');
+                $studentData = [
+                    'user_id' => $u->id,
+                    'class_id' => $student['class_id'],
+                    'student_number' => $student['student_number'],
+                    'card_number' => $student['card_number'],
+                    'oncampus' => $student['oncampus'],
+                    'birthday' => $student['birthday'],
+                    'remark' => $student['remark'],
+                    'enabled' => 1
+                ];
+                $mobileData = [
+                    'user_id' => $u->id,
+                    'mobile' =>$request->input('mobile')['mobile'],
+                    'enabled' => 1,
+                    'isdefault' => 1,
+                ];
+                # 向student表添加数据
+                $Student = new Student();
+                $s = $Student->create($studentData);
+                unset($Student);
+
+                # 向mobile表添加用户的手机数据
+                $mobile = new Mobile();
+                $m = $mobile->create($mobileData);
+                unset($mobile);
+
+                # 向部门用户表添加数据
+                $departmentUser = new DepartmentUser();
+                $departmentIds = $request->input('department_ids');
+                $departmentUser ->storeByDepartmentId($u->id, $departmentIds);
+                unset($departmentUser);
+
+                # 向监护人学生表中添加数据
+                $custodianStudent = new CustodianStudent();
+                $custodianIds = $request->input('custodian_ids');
+                $custodianStudent->storeByStudentId($s->id, $custodianIds);
+                unset($custodianStudent);
+            });
+            return is_null($exception) ? true : $exception;
+        } catch (Exception $e) {
+            return false;
         }
-        return $student ? true : false;
-        
+
     }
 
     public function datatable() {
