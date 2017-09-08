@@ -418,3 +418,17 @@ $factory->define(App\Models\MajorSubject::class, function (Faker\Generator $fake
 
     ];
 });
+
+$factory->define(App\Models\Mobile::class, function (Faker\Generator $faker) {
+    $mobile = [
+        '13408393001','13408393002','13408393003', '13408393004','13408393005',
+        '13408393006','13408393007','13408393008','13408393009', '13408393010',
+    ];
+    return [
+        'user_id' =>rand(1,20),
+        'mobile' =>$mobile[rand(0,9)],
+        'enabled' => 1,
+        'isdefault' => 1
+
+    ];
+});

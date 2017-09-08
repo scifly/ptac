@@ -21,7 +21,7 @@
                             'class' => 'form-control',
                             'required' => 'true',
                             'placeholder' => '(请填写真实姓名)',
-                            'data-parsley-length' => '[2, 255]'
+                            'data-parsley-length' => '[2, 30]'
                         ]) }}
                     </div>
                 </div>
@@ -82,11 +82,14 @@
                             'placeholder' => '(请输入电子邮件地址)',
                             'required' => 'true',
                             'type' => 'email',
-                            'maxlength' => '255'
+                            'maxlength' => '255',
+                            'data-parsley-type'=>"email"
                         ]) }}
                     </div>
                 </div>
                 @include('partials.multiple_select', [
+                   'required'=>'true',
+
                     'label' => '所属部门',
                     'id' => 'department_ids',
                     'items' => $departments,
@@ -142,6 +145,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     {!! Form::text('student[birthday]', null, [
+                        'required' => 'true',
                         'class' => 'form-control',
                         'placeholder' => '生日格式为2000-08-12形式',
                     ]) !!}

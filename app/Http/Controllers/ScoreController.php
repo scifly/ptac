@@ -201,6 +201,5 @@ class ScoreController extends Controller {
         });
         return $this->score->insert($insert) ? $this->succeed() : $this->fail();
     }
-
 }
 
