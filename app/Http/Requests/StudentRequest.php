@@ -21,9 +21,13 @@ class StudentRequest extends FormRequest {
      */
     public function rules() {
         return [
-//            'student_number' => 'required|alphanum|max:32|min:2',
-//            'card_number' => 'required|alphanum|max:32|min:2',
-//            'remark' => 'required|string|max:32|min:2',
+            'name' => 'required|string|between:2,30|unique:users,name,' .
+                $this->input('user_id') . ',id,' .
+                'mobile,' . $this->input('mobile') ,
+            'remark' => 'required|string|max:255',
+            'student_number' => 'required|alphanum|between:2,32',
+            'card_number' => 'required|alphanum|between:2,32',
+            'remark' => 'required|string|max:32|min:2',
         ];
     }
     
@@ -64,7 +68,7 @@ class StudentRequest extends FormRequest {
         if (!isset($input['user']['enabled'])) {
             $input['user']['enabled'] = 0;
         }
-
+        dd($input);
         $this->replace($input);
     }
 }

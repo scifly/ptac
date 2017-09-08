@@ -91,13 +91,14 @@
                     {{ Form::text('user[email]', null, [
                         'class' => 'form-control',
                         'placeholder' => '(请输入电子邮件地址)',
-                        'required' => 'true',
                         'type' => 'email',
-                        'maxlength' => '255'
+                        'maxlength' => '255',
+                        'data-parsley-type'=>"email"
                     ]) }}
                 </div>
             </div>
             @include('partials.multiple_select', [
+
                 'label' => '所属部门',
                 'id' => 'department_ids',
                 'items' => $departments,

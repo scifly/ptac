@@ -98,6 +98,7 @@ class StudentController extends Controller {
         $student = $this->student->find($id);
         $student['student'] = $this->student->find($id);
         $user['user'] = $this->user->find($student->user_id);
+
         $student['mobile']= $this->mobile->where('user_id',$student->user_id)->first();
         $departmentIds = $this->departmentUser->where('user_id',$student->user_id)->get();
         foreach ($departmentIds as $key=>$value)
@@ -107,7 +108,6 @@ class StudentController extends Controller {
         }
         # 根据学生Id查询监护人学生表的数据
         $custodianStudent = $this->custodianStudent->where('student_id',$student->id)->get();
-
         foreach ($custodianStudent as $key=>$value)
         {
             # 被选中的监护人信息

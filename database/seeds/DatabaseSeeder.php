@@ -39,6 +39,7 @@ class DatabaseSeeder extends Seeder {
 //        $this->call(EaSettingSeeder::class);
 //        $this->call(GroupSeeder::class);
 //        $this->call(MajorSeeder::class);
-        $this->call(MajorSubjectSeeder::class);
+//        $this->call(MajorSubjectSeeder::class);
+        $this->call(MobileSeeder::class);
     }
 }
