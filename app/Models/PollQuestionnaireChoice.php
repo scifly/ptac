@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Facades\DatatableFacade as Datatable;
 
 /**
  * App\Models\PollQuestionnaireChoice
@@ -33,6 +34,37 @@ class PollQuestionnaireChoice extends Model {
             , 'pqs_id'
             , 'id');
     }
-    
-    
+
+    public function datatable() {
+
+        $columns = [
+            ['db' => 'PollQuestionnaireChoice.id', 'dt' => 0],
+            ['db' => 'PqSubject.subject', 'dt' => 1],
+            ['db' => 'PollQuestionnaireChoice.choice', 'dt' => 2],
+            ['db' => 'PollQuestionnaireChoice.seq_no', 'dt' => 3],
+            [
+                'db' => 'PollQuestionnaireChoice.id as choice_id', 'dt' => 4,
+                'formatter' => function ($d) {
+                    $showLink = sprintf(Datatable::DT_LINK_SHOW, 'show_' . $d);
+                    $editLink = sprintf(Datatable::DT_LINK_EDIT, 'edit_' . $d);
+                    $delLink = sprintf(Datatable::DT_LINK_DEL, $d);
+                    return $showLink . Datatable::DT_SPACE .
+                        $editLink .  Datatable::DT_SPACE . $delLink ;
+                }
+            ]
+        ];
+        $joins = [
+            [
+                'table' => 'poll_questionnaire_subjects',
+                'alias' => 'PqSubject',
+                'type' => 'INNER',
+                'conditions' => [
+                    'PqSubject.id = PollQuestionnaireChoice.pqs_id'
+                ]
+
+            ]
+        ];
+
+        return Datatable::simple($this, $columns, $joins);
+    }
 }

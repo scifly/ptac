@@ -24,7 +24,7 @@ class SchoolController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
-    
+
         if (Request::get('draw')) {
             return response()->json($this->school->datatable());
         }

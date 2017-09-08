@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
@@ -45,5 +46,57 @@ class PollQuestionnaireSubject extends Model {
     public function pollquestionnaire() {
         return $this->hasOne('App\Models\PollQuestionnaire'
             , 'pq_id', 'id');
+    }
+
+    public function getType($type){
+        switch ($type)
+        {
+            case 0:
+                return '单选';
+            case 1:
+                return '多选';
+            case 2:
+                return '填空';
+            default:
+                return '错误';
+        }
+    }
+
+    public function datatable() {
+
+        $columns = [
+            ['db' => 'PollQuestionnaireSubject.id', 'dt' => 0],
+            ['db' => 'PollQuestionnaireSubject.subject', 'dt' => 1],
+            ['db' => 'PollQuestionnaire.name as pqname', 'dt' => 2],
+            [
+                'db' => 'PollQuestionnaireSubject.subject_type', 'dt' => 3,
+                'formatter' => function ($d) {
+                    return $this->getType($d);
+                }
+            ],
+            [
+                'db' => 'PollQuestionnaireSubject.id as subject_id', 'dt' => 4,
+                'formatter' => function ($d) {
+                    $showLink = sprintf(Datatable::DT_LINK_SHOW, 'show_' . $d);
+                    $editLink = sprintf(Datatable::DT_LINK_EDIT, 'edit_' . $d);
+                    $delLink = sprintf(Datatable::DT_LINK_DEL, $d);
+                    return $showLink . Datatable::DT_SPACE .
+                        $editLink .  Datatable::DT_SPACE . $delLink ;
+                }
+            ]
+        ];
+        $joins = [
+            [
+                'table' => 'poll_questionnaires',
+                'alias' => 'PollQuestionnaire',
+                'type' => 'INNER',
+                'conditions' => [
+                    'PollQuestionnaire.id = PollQuestionnaireSubject.pq_id'
+                ]
+
+            ]
+        ];
+
+        return Datatable::simple($this, $columns, $joins);
     }
 }
