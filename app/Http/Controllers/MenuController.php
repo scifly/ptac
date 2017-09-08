@@ -170,7 +170,7 @@ class MenuController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function menuTabs($id) {
-        
+
         $menu = $this->menu->find($id);
         if (!$menu) { return $this->notFound(); }
         $tabRanks = MenuTab::whereMenuId($id)->get()->sortBy('tab_order')->toArray();
