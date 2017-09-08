@@ -12,7 +12,14 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Storage;
 
+/**
+ * 微网站
+ *
+ * Class WapSiteController
+ * @package App\Http\Controllers
+ */
 class WapSiteController extends Controller {
+    
     protected $wapSite;
     protected $media;
 
@@ -22,29 +29,32 @@ class WapSiteController extends Controller {
     }
 
     /**
-     * 显示微网站列表
+     * 微网站列表
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
+        
         if (Request::get('draw')) {
             return response()->json($this->wapSite->datatable());
         }
         return $this->output(__METHOD__);
+        
     }
 
     /**
-     * 显示创建微网站记录的表单
+     * 创建微网站
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function create() {
+        
         return $this->output(__METHOD__);
 
     }
 
     /**
-     * 保存新创建的微网站记录
+     * 保存微网站
      *
      * @param WapSiteRequest $request
      * @return \Illuminate\Http\JsonResponse
@@ -55,9 +65,8 @@ class WapSiteController extends Controller {
 
     }
 
-
     /**
-     * 显示指定的微网站记录详情
+     * 微网站详情
      *
      * @param $id
      * @return bool|\Illuminate\Http\JsonResponse
@@ -74,10 +83,11 @@ class WapSiteController extends Controller {
             'wapsite' => $wapsite,
             'medias' => $this->media->medias($mediaIds),
         ]);
+        
     }
 
     /**
-     * 显示编辑指定微网站记录的表单
+     * 编辑微网站
      *
      * @param $id
      * @return bool|\Illuminate\Http\JsonResponse
@@ -95,7 +105,7 @@ class WapSiteController extends Controller {
     }
 
     /**
-     * 更新指定的微网站记录
+     * 更新微网站
      *
      * @param WapSiteRequest $request
      * @param $id
@@ -107,18 +117,19 @@ class WapSiteController extends Controller {
     }
 
     /**
-     * 删除指定的微网站记录
+     * 删除微网站
      *
      * @param $id
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
+        
         $wapsite = $this->wapSite->find($id);
-
         if (!$wapsite) {
             return parent::notFound();
         }
         return $wapsite->delete() ? parent::succeed() : parent::fail();
+        
     }
 
     /**
@@ -148,7 +159,7 @@ class WapSiteController extends Controller {
     }
 
     /**
-     * 打开微网站首页
+     * 微网站首页
      *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
@@ -197,5 +208,6 @@ class WapSiteController extends Controller {
         }
 
     }
+    
 }
 

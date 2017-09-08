@@ -7,13 +7,20 @@ use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Request;
 
+/**
+ * 用户
+ *
+ * Class UserController
+ * @package App\Http\Controllers
+ */
 class UserController extends Controller {
+    
     protected $user;
     
     function __construct(User $user) { $this->user = $user; }
     
     /**
-     * 显示用户列表
+     * 用户列表
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
@@ -27,7 +34,7 @@ class UserController extends Controller {
     }
     
     /**
-     * 显示创建用户记录的表单
+     * 创建用户
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
@@ -38,7 +45,7 @@ class UserController extends Controller {
     }
     
     /**
-     * 保存新创建的用户记录
+     * 保存用户
      *
      * @param UserRequest $request
      * @return \Illuminate\Http\JsonResponse
@@ -53,7 +60,7 @@ class UserController extends Controller {
     }
     
     /**
-     * 显示指定的用户记录详情
+     * 用户详情
      *
      * @param $id
      * @return bool|\Illuminate\Http\JsonResponse
@@ -69,7 +76,7 @@ class UserController extends Controller {
     }
     
     /**
-     * 显示编辑指定用户记录的表单
+     * 编辑用户
      *
      * @param $id
      * @return bool|\Illuminate\Http\JsonResponse
@@ -85,7 +92,7 @@ class UserController extends Controller {
     }
     
     /**
-     * 更新指定的用户记录
+     * 更新用户
      *
      * @param UserRequest $request
      * @param $id
@@ -105,7 +112,7 @@ class UserController extends Controller {
     }
     
     /**
-     * 删除指定的用户记录
+     * 删除用户
      *
      * @param $id
      * @return \Illuminate\Http\JsonResponse

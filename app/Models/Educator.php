@@ -139,14 +139,13 @@ class Educator extends Model {
         
         $columns = [
             ['db' => 'Educator.id', 'dt' => 0],
-            ['db' => 'User.username', 'dt' => 1],
-            ['db' => 'Educator.team_ids', 'dt' => 2],
-            ['db' => 'Shool.name', 'dt' => 3],
-            ['db' => 'Educator.sms_quote', 'dt' => 4],
-            ['db' => 'Educator.created_at', 'dt' => 5],
-            ['db' => 'Educator.updated_at', 'dt' => 6],
+            ['db' => 'User.realname as username', 'dt' => 1],
+            ['db' => 'School.name', 'dt' => 2],
+            ['db' => 'Educator.sms_quote', 'dt' => 3],
+            ['db' => 'Educator.created_at', 'dt' => 4],
+            ['db' => 'Educator.updated_at', 'dt' => 5],
             [
-                'db' => 'Educator.enabled', 'dt' => 7,
+                'db' => 'Educator.enabled', 'dt' => 6,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
                 }
@@ -163,15 +162,15 @@ class Educator extends Model {
             ],
             [
                 'table' => 'schools',
-                'alias' => 'Shool',
+                'alias' => 'School',
                 'type' => 'INNER',
                 'conditions' => [
-                    'Shool.id = Educator.school_id'
+                    'School.id = Educator.school_id'
                 ]
             ]
         ];
         
-        return Datatable::simple($this, $columns, $joins);
+        return Datatable::simple($this, $columns,$joins);
         
     }
     

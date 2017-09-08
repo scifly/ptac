@@ -7,6 +7,12 @@ use App\Models\Major;
 use App\Models\Subject;
 use Illuminate\Support\Facades\Request;
 
+/**
+ * 专业
+ *
+ * Class MajorController
+ * @package App\Http\Controllers
+ */
 class MajorController extends Controller {
     
     protected $major, $subject;
@@ -19,7 +25,7 @@ class MajorController extends Controller {
     }
     
     /**
-     * 显示专业列表
+     * 专业列表
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
@@ -33,7 +39,7 @@ class MajorController extends Controller {
     }
     
     /**
-     * 显示创建专业记录的表单
+     * 创建专业
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
@@ -46,7 +52,7 @@ class MajorController extends Controller {
     }
     
     /**
-     * 保存新创建的专业记录
+     * 保存专业
      *
      * @param MajorRequest $request
      * @return \Illuminate\Http\JsonResponse
@@ -58,7 +64,7 @@ class MajorController extends Controller {
     }
     
     /**
-     * 显示指定的专业记录详情
+     * 专业详情
      *
      * @param $id
      * @return bool|\Illuminate\Http\JsonResponse
@@ -72,7 +78,7 @@ class MajorController extends Controller {
     }
     
     /**
-     * 显示编辑指定专业记录的表单
+     * 编辑专业
      *
      * @param $id
      * @return bool|\Illuminate\Http\JsonResponse
@@ -88,14 +94,14 @@ class MajorController extends Controller {
         }
         return $this->output(__METHOD__, [
             'major' => $major,
-            'subjects' => $this->subject->subjects(1),
+//            'subjects' => $this->subject->subjects(1),
             'selectedSubjects' => $selectedSubjects,
         ]);
 
     }
     
     /**
-     * 更新指定的专业记录
+     * 更新专业
      *
      * @param MajorRequest $request
      * @param $id
@@ -110,7 +116,7 @@ class MajorController extends Controller {
     }
     
     /**
-     * 删除指定的专业记录
+     * 删除专业
      *
      * @param $id
      * @return \Illuminate\Http\JsonResponse

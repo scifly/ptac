@@ -52,21 +52,6 @@ class EducatorClass extends Model {
         return $this->belongsTo('App\Models\Squad', 'class_id', 'id');
     }
 
-    public function existed(EducatorClassRequest $request, $id = NULL) {
-
-        if (!$id) {
-            $student = $this->where('class_id', $request->input('class_id'))
-                ->where('subject_id', $request->input('subject_id'))
-                ->first();
-        } else {
-            $student = $this->where('class_id', $request->input('class_id'))
-                ->where('id', '<>', $id)
-                ->where('subject_id', $request->input('subject_id'))
-                ->first();
-        }
-        return $student ? true : false;
-
-    }
     
     public function datatable() {
         $columns = [

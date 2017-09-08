@@ -37,19 +37,6 @@ class Group extends Model {
     
     public function users() { return $this->hasMany('App\Models\User'); }
 
-    public function existed(GroupRequest $request, $id = NULL) {
-
-        if (!$id) {
-            $group = $this->where('name', $request->input('name'))
-                ->first();
-        } else {
-            $group = $this->where('name', $request->input('name'))
-                ->where('id', '<>' , $id)
-                ->first();
-        }
-        return $group ? true : false;
-
-    }
     
     /**
      * 根据角色名称获取角色对象

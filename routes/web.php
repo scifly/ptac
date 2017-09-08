@@ -12,7 +12,6 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
-// Auth::route();
 Route::auth();
 Route::get('/', function() { return 'Dashboard'; });
 Route::get('/', 'HomeController@index');
@@ -196,6 +195,7 @@ Route::group(['prefix' => 'menus'], function() {
     Route::post('ranktabs/{id}', $ctlr . '@rankTabs');
 });
 // 管理员
+Route::group(['prefix' => 'operators'], routes('OperatorController'));
 
 /**
  * routes - Helper function

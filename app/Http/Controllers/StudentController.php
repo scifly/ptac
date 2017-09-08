@@ -4,17 +4,43 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StudentRequest;
 use App\Models\Student;
+use App\Models\Custodian;
+use App\Models\CustodianStudent;
+use App\Models\Department;
+use App\Models\DepartmentUser;
+use App\Models\Group;
+use App\Models\User;
+use App\Models\Mobile;
 use Illuminate\Support\Facades\Request;
 
+/**
+ * 学生
+ *
+ * Class StudentController
+ * @package App\Http\Controllers
+ */
 class StudentController extends Controller {
-    
-    protected $student;
-    
-    function __construct(Student $student) { $this->student = $student; }
+
+    protected $custodian, $department, $group, $user,$mobile,$departmentUser,$student,$custodianStudent;
+
+    function __construct(Custodian $custodian, Department $department, Group $group, User $user,Mobile $mobile,
+                         DepartmentUser $departmentUser,Student $student,CustodianStudent $custodianStudent) {
+
+        $this->custodian = $custodian;
+        $this->department = $department;
+        $this->group = $group;
+        $this->user = $user;
+        $this->mobile = $mobile;
+        $this->departmentUser = $departmentUser;
+        $this->student =$student;
+        $this->custodianStudent = $custodianStudent;
+
+    }
     
     /**
-     * 显示学生列表
+     * 学生记录列表
      *
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
         
@@ -26,7 +52,7 @@ class StudentController extends Controller {
     }
     
     /**
-     * 显示创建学生记录的表单
+     * 创建学生记录
      *
      * @return \Illuminate\Http\JsonResponse
      */
@@ -37,22 +63,19 @@ class StudentController extends Controller {
     }
     
     /**
-     * 保存新创建的学生记录
+     * 保存学生记录
      *
      * @param StudentRequest $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(StudentRequest $request) {
-        
-        if ($this->student->existed($request)) {
-            return $this->fail('已经有此记录');
-        }
-        return $this->student->create($request->all()) ? $this->succeed() : $this->fail();
+
+        return $this->student->store($request) ? $this->succeed() : $this->fail();
         
     }
 
     /**
-     * 显示指定的学生记录详情
+     * 学生记录详情
      *
      * @param $id
      * @return bool|\Illuminate\Http\JsonResponse
@@ -66,48 +89,68 @@ class StudentController extends Controller {
     }
     
     /**
-     * 显示编辑指定学生记录的表单
+     * 编辑学生记录
      *
      * @param $id
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function edit($id) {
-    
         $student = $this->student->find($id);
+        $student['student'] = $this->student->find($id);
+        $user['user'] = $this->user->find($student->user_id);
+        $student['mobile']= $this->mobile->where('user_id',$student->user_id)->first();
+        $departmentIds = $this->departmentUser->where('user_id',$student->user_id)->get();
+        foreach ($departmentIds as $key=>$value)
+        {
+            $department = Department::whereId($value['department_id'])->first();
+            $selectedDepartments[$department['id']] = $department['name'];
+        }
+        # 根据学生Id查询监护人学生表的数据
+        $custodianStudent = $this->custodianStudent->where('student_id',$student->id)->get();
+
+        foreach ($custodianStudent as $key=>$value)
+        {
+            # 被选中的监护人信息
+            $custodianId = $this->custodian->find($value['custodian_id']);
+            # 被选中的监护人
+            $selectedCustodians[$custodianId->id] = $custodianId->user->realname;
+        }
+
+        # 查询学生信息
         if (!$student) { return $this->notFound(); }
-        return $this->output(__METHOD__, ['student' => $student]);
+        //dd($user['mobile']->mobile);
+        return $this->output(__METHOD__, [
+            'user' => $user,
+            'student' => $student,
+            'selectedDepartments' => $selectedDepartments,
+            'selectedCustodians' => $selectedCustodians,
+        ]);
         
     }
     
     /**
-     * 更新指定的学生记录
+     * 更新学生记录
      *
      * @param StudentRequest $request
      * @param $id
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(StudentRequest $request, $id) {
-        
-        $student = $this->student->find($id);
-        if (!$student) { return $this->notFound(); }
-        if ($this->student->existed($request, $id)) {
-            return $this->fail('已经有此记录');
-        }
-        return $student->update($request->all()) ? $this->succeed() : $this->fail();
+
+        return $this->student->modify($request,$id) ? $this->succeed() : $this->fail();
         
     }
     
     /**
-     * 删除指定的学生记录
+     * 删除学生记录
      *
      * @param $id
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
 
-        $student = $this->student->find($id);
-        if (!$student) { return $this->notFound(); }
-        return $student->delete() ? $this->succeed() : $this->fail();
+        return $this->custodian->remove($id) ? $this->succeed() : $this->fail();
         
     }
+    
 }

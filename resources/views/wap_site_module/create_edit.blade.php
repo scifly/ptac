@@ -46,7 +46,7 @@
             @include('partials.enabled', [
                 'label' => '是否启用',
                 'id' => 'enabled', 
-                'enabled' => isset($wapSiteModule['enabled']) ? $wapSiteModule['enabled'] : NULL
+                'value' => isset($wapSiteModule['enabled']) ? $wapSiteModule['enabled'] : NULL
             ])
         </div>
     </div>

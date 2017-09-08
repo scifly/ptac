@@ -6,107 +6,139 @@ use App\Http\Requests\EducatorAttendanceSettingRequest;
 use App\Models\EducatorAttendanceSetting;
 use Illuminate\Support\Facades\Request;
 
-class EducatorAttendanceSettingController extends Controller
-{
+/**
+ * 教职员工考勤设置
+ *
+ * Class EducatorAttendanceSettingController
+ * @package App\Http\Controllers
+ */
+class EducatorAttendanceSettingController extends Controller {
+    
     protected $educatorAttendanceSetting;
-
+    
     function __construct(EducatorAttendanceSetting $educatorAttendanceSetting) {
-
+        
         $this->educatorAttendanceSetting = $educatorAttendanceSetting;
-
+        
     }
-
+    
     /**
-     * 显示教职员工考勤设置列表.
+     * 教职员工考勤设置列表
+     *
      * @return \Illuminate\Http\Response
      */
-    public function index()
-    {
-
+    public function index() {
+        
         if (Request::get('draw')) {
             return response()->json($this->educatorAttendanceSetting->datatable());
         }
         return parent::output(__METHOD__);
     }
-
+    
     /**
-     * 显示创建教职工考勤设置表单.
+     * 创建教职工考勤设置
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
-    {
+    public function create() {
+        
         return $this->output(__METHOD__);
+        
     }
-
+    
     /**
-     * 保存新创建的教职工考勤设置记录.
+     * 保存教职工考勤设置
+     *
      * @param EducatorAttendanceSettingRequest $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function store(EducatorAttendanceSettingRequest $request)
-    {
+
+
+
+    public function store(EducatorAttendanceSettingRequest $request) {
+        
         if ($this->educatorAttendanceSetting->existed($request)) {
             return $this->fail('已经有此记录');
         }
-        return $this->educatorAttendanceSetting->create($request->all()) ? $this->succeed() : $this->fail();
-    }
 
+        return $this->educatorAttendanceSetting->create($request->all()) ? $this->succeed() : $this->fail();
+        
+    }
+    
     /**
-     * Display the specified resource.
+     * 教职员工考勤详情
+     *
      * @param $id
      * @return \Illuminate\Http\Response
      * @internal param EducatorAttendanceSetting $educatorAttendanceSetting
      */
-    public function show($id)
-    {
+    public function show($id) {
+        
         $educatorAttendanceSetting = $this->educatorAttendanceSetting->find($id);
-        if (!$educatorAttendanceSetting) { return $this->notFound(); }
+        if (!$educatorAttendanceSetting) {
+            return $this->notFound();
+        }
         return $this->output(__METHOD__, [
             'educatorAttendanceSetting' => $educatorAttendanceSetting,
         ]);
+        
     }
 
-    /**
-     * 显示编辑指定教职员工考勤设置记录的表单.
 
-     * @param  \App\Models\EducatorAttendanceSetting $educatorAttendanceSetting
+    /**
+     * 编辑教职员工考勤设置
      * @param $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function edit(EducatorAttendanceSetting $educatorAttendanceSetting,$id)
-    {
-        $educatorAttendanceSetting= $this->educatorAttendanceSetting->find($id);
-        if (!$educatorAttendanceSetting) { return $this->notFound(); }
+    public function edit($id) {
+        
+        $educatorAttendanceSetting = $this->educatorAttendanceSetting->find($id);
+        if (!$educatorAttendanceSetting) {
+            return $this->notFound();
+        }
+
         return $this->output(__METHOD__, [
             'educatorAttendanceSetting' => $educatorAttendanceSetting,
         ]);
     }
-
+    
     /**
-     * 更新指定的考勤设置记录.
+     * 更新教职员工考勤设置
+     *
      * @param EducatorAttendanceSettingRequest $request
      * @param $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function update(EducatorAttendanceSettingRequest $request,$id)
-    {
+
+
+    public function update(EducatorAttendanceSettingRequest $request, $id) {
+        
         $educatorAttendanceSetting = $this->educatorAttendanceSetting->find($id);
-        if (!$educatorAttendanceSetting) { return $this->notFound(); }
+        if (!$educatorAttendanceSetting) {
+            return $this->notFound();
+        }
         if ($this->$educatorAttendanceSetting->existed($request, $id)) {
             return $this->fail('已经有此记录');
         }
-        return $educatorAttendanceSetting->update($request->all()) ? $this->succeed() : $this->fail();
-    }
 
-    /**
-     * 删除指定的教职员工考勤设置记录.
-     * @param $id
-     */
-    public function destroy($id)
-    {
-        $educatorAttendanceSetting = $this->educatorAttendanceSetting->find($id);
-        if (!$educatorAttendanceSetting) { return $this->notFound(); }
-        return $educatorAttendanceSetting->delete() ? $this->succeed() : $this->fail();
+        return $educatorAttendanceSetting->update($request->all()) ? $this->succeed() : $this->fail();
+        
     }
+    
+    /**
+     * 删除教职员工考勤设置
+     *
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function destroy($id) {
+        
+        $educatorAttendanceSetting = $this->educatorAttendanceSetting->find($id);
+        if (!$educatorAttendanceSetting) {
+            return $this->notFound();
+        }
+        return $educatorAttendanceSetting->delete() ? $this->succeed() : $this->fail();
+        
+    }
+    
 }

@@ -411,3 +411,10 @@ $factory->define(App\Models\Major::class, function (Faker\Generator $faker) {
     ];
 });
 
+$factory->define(App\Models\MajorSubject::class, function (Faker\Generator $faker) {
+    return [
+        'major_id' =>rand(1,20),
+        'subject_id' =>rand(1,20),
+
+    ];
+});

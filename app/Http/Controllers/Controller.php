@@ -16,6 +16,7 @@ class Controller extends BaseController {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
     
     protected $menu;
+    protected $menuId;
     
     const HTTP_STATUSCODE_OK = 200;
     const HTTP_STATUSCODE_BAD_REQUEST = 400;
@@ -64,7 +65,13 @@ class Controller extends BaseController {
         session(['tabUrl' => Request::path()]);
         session(['tabJs' => $action->js]);
         
-        $params['breadcrumb'] = $menu->name . ' / ' . $tab->name . ' / ' . $action->name;
+        if ($menu) {
+            $params['breadcrumb'] = $menu->name . ' / ' . $tab->name . ' / ' . $action->name;
+        } else {
+            $menuName = session('menuName');
+            $params['breadcrumb'] = "<span style=\"color: red\">菜单 - <strong>{$menuName}</strong> - 配置错误, 请检查后</span>" .
+                '<a href="' . session('pageUrl') . '">重试</a>';
+        }
         return response()->json([
             'html' => view($view, $params)->render(),
             'js' => $action->js,

@@ -6,6 +6,12 @@ use App\Http\Requests\IconRequest;
 use App\Models\Icon;
 use Illuminate\Support\Facades\Request as Request;
 
+/**
+ * 图标
+ *
+ * Class IconController
+ * @package App\Http\Controllers
+ */
 class IconController extends Controller {
     
     protected $icon;
@@ -13,7 +19,7 @@ class IconController extends Controller {
     function __construct(Icon $icon) { $this->icon = $icon; }
     
     /**
-     * 显示图标列表
+     * 图标列表
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
@@ -27,7 +33,7 @@ class IconController extends Controller {
     }
     
     /**
-     * 显示创建图标记录的表单
+     * 创建图标
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
@@ -38,7 +44,7 @@ class IconController extends Controller {
     }
     
     /**
-     * 保存新创建的图标记录
+     * 保存图标
      *
      * @param IconRequest $request
      * @return \Illuminate\Http\JsonResponse
@@ -50,7 +56,7 @@ class IconController extends Controller {
     }
     
     /**
-     * 显示指定图标记录的详情
+     * 图标详情
      *
      * @param $id
      * @return bool|\Illuminate\Http\JsonResponse
@@ -64,7 +70,7 @@ class IconController extends Controller {
     }
     
     /**
-     * 显示编辑指定图标记录的表单
+     * 编辑图标
      *
      * @param $id
      * @return bool|\Illuminate\Http\JsonResponse
@@ -78,7 +84,7 @@ class IconController extends Controller {
     }
     
     /**
-     * 更新指定的图标记录
+     * 更新图标
      *
      * @param IconRequest $request
      * @param $id
@@ -93,7 +99,7 @@ class IconController extends Controller {
     }
     
     /**
-     * 删除指定的图标记录
+     * 删除图标
      *
      * @param $id
      * @return \Illuminate\Http\JsonResponse
@@ -105,4 +111,5 @@ class IconController extends Controller {
         return $icon->delete() ? $this->succeed() : $this->fail();
         
     }
+    
 }

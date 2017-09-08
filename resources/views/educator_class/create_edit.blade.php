@@ -22,7 +22,11 @@
                 'id' => 'subject_id',
                 'items' => $subject
             ])
-            @include('partials.enabled', ['enabled' => $educatorClass['enabled']])
+            @include('partials.enabled', [
+                'label' => '是否启用',
+                'id' => 'enabled',
+                'value' => isset($educatorClass['enabled']) ? $educatorClass : NULL
+            ])
         </div>
     </div>
     @include('partials.form_buttons')
