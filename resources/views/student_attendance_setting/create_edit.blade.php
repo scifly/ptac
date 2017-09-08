@@ -80,11 +80,6 @@
               'id' => 'inorout',
               'value' => isset($studentAttendanceSetting['ispublic']) ? $studentAttendanceSetting['ispublic']: NULL
           ])
-            @include('partials.enabled', [
-                'label' => '是否启用',
-                'id' => 'enabled',
-                'value' => isset($studentAttendanceSetting['enabled']) ? $studentAttendanceSetting['enabled'] : NULL
-            ])
         </div>
     </div>
     @include('partials.form_buttons')

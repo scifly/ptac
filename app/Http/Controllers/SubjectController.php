@@ -6,6 +6,7 @@ use App\Http\Requests\SubjectRequest;
 use App\Models\Grade;
 use App\Models\Major;
 use App\Models\Subject;
+use App\Models\MajorSubject;
 use Illuminate\Support\Facades\Request;
 
 /**
@@ -16,13 +17,14 @@ use Illuminate\Support\Facades\Request;
  */
 class SubjectController extends Controller {
     
-    protected $subject, $major, $grade;
+    protected $subject, $major, $grade, $majorSubject;
     
-    function __construct(Subject $subject, Major $major, Grade $grade) {
+    function __construct(Subject $subject, Major $major, Grade $grade, MajorSubject $majorSubject) {
         
         $this->subject = $subject;
         $this->major = $major;
         $this->grade = $grade;
+        $this->majorSubject = $majorSubject;
     
     }
     
@@ -61,10 +63,8 @@ class SubjectController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(SubjectRequest $request) {
-        if ($this->subject->existed($request)) {
-            return $this->fail('已经有此记录');
-        }
-        return $this->subject->create($request->all()) ? $this->succeed() : $this->fail();
+        dd($this->subject->store($request));
+        return $this->subject->store($request) ? $this->succeed() : $this->fail();
         
     }
     
@@ -98,16 +98,18 @@ class SubjectController extends Controller {
             $grade = Grade::whereId($gradeId)->first();
             $selectedGrades[$gradeId] = $grade['name'];
         }
-        $subjectMajors = $this->subject->majors;
+
+        $subjectMajors = $subject->majors;
         $selectedMajors = [];
         foreach ($subjectMajors as $major) {
             $selectedMajors[$major->id] = $major->name;
         }
+
         return parent::output(__METHOD__, [
             'subject' => $subject,
-            'grades' => $this->grade->grades(1),
+//            'grades' => $this->grade->grades(1),
             'selectedGrades' => $selectedGrades,
-            'majors' => $this->major->majors(1),
+//            'majors' => $this->major->majors(1),
             'selectedMajors' => $selectedMajors
         ]);
         
@@ -121,13 +123,8 @@ class SubjectController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(SubjectRequest $request, $id) {
-        
-        $subject = $this->subject->find($id);
-        if (!$subject) { return $this->notFound(); }
-        if ($this->subject->existed($request, $id)) {
-            return $this->fail('已经有此记录');
-        }
-        return $subject->update($request->all()) ? $this->succeed() : $this->fail();
+
+        return $this->subject->modify($request,$id) ? $this->succeed() : $this->fail();
         
     }
     
@@ -138,10 +135,7 @@ class SubjectController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
-        
-        $subject = $this->subject->find($id);
-        if (!$subject) { return $this->notFound(); }
-        return $subject->delete() ? $this->succeed() : $this->fail();
+        return $this->subject->remove($id) ? $this->succeed() : $this->fail();
         
     }
     

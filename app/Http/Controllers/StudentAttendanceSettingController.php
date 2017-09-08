@@ -98,12 +98,14 @@ class StudentAttendanceSettingController extends Controller {
      * @param $id
      * @return \Illuminate\Http\JsonResponse
      */
+
+
     public function update(StudentAttendanceSettingRequest $request, $id) {
         
         $sas = $this->sas->find($id);
         if (!$sas) {return $this->notFound(); }
         return $sas->update($request->all()) ? $this->succeed() : $this->fail();
-        
+
     }
     
     /**
