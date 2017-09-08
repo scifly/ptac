@@ -183,7 +183,10 @@ class Student extends Model {
                 # 向监护人学生表中添加数据
                 $custodianStudent = new CustodianStudent();
                 $custodianIds = $request->input('custodian_ids');
-                $custodianStudent->storeByStudentId($s->id, $custodianIds);
+                if($custodianIds!=null)
+                {
+                    $custodianStudent->storeByStudentId($s->id, $custodianIds);
+                }
                 unset($custodianStudent);
             });
             return is_null($exception) ? true : $exception;
@@ -265,6 +268,7 @@ class Student extends Model {
                 unset($departmentUser);
                 $custodianStudent = new CustodianStudent();
                 $custodianIds = $request->input('custodian_ids');
+
                 $custodianStudent::where('student_id',$studentId)->delete();
                 $custodianStudent->storeByStudentId($studentId, $custodianIds);
                 unset($custodianStudent);
@@ -332,7 +336,7 @@ class Student extends Model {
                     return $student->oncampus == 1 ? '是' : '否';
                 }
             ],
-            ['db' => 'User.userid as mobile', 'dt' => 7],
+            ['db' => 'Mobile.mobile as mobile', 'dt' => 7],
             ['db' => 'Student.birthday', 'dt' => 8,
                 'formatter' => function ($d) {
                     return substr($d,0,-8);

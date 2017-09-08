@@ -101,19 +101,30 @@ class StudentController extends Controller {
 
         $student['mobile']= $this->mobile->where('user_id',$student->user_id)->first();
         $departmentIds = $this->departmentUser->where('user_id',$student->user_id)->get();
+
         foreach ($departmentIds as $key=>$value)
         {
             $department = Department::whereId($value['department_id'])->first();
             $selectedDepartments[$department['id']] = $department['name'];
         }
+
         # 根据学生Id查询监护人学生表的数据
-        $custodianStudent = $this->custodianStudent->where('student_id',$student->id)->get();
-        foreach ($custodianStudent as $key=>$value)
+        $custodianStudent = $this->custodianStudent->where('student_id',$student->id)->get()->toArray();
+
+        if($custodianStudent !=null)
         {
-            # 被选中的监护人信息
-            $custodianId = $this->custodian->find($value['custodian_id']);
-            # 被选中的监护人
-            $selectedCustodians[$custodianId->id] = $custodianId->user->realname;
+            foreach ($custodianStudent as $key=>$value)
+            {
+                # 被选中的监护人信息
+                $custodianId = $this->custodian->find($value['custodian_id']);
+
+                # 被选中的监护人
+                $selectedCustodians[$custodianId->id] = $custodianId->user->realname;
+                var_dump($selectedCustodians);
+            }
+        }else{
+
+            $selectedCustodians = [];
         }
 
         # 查询学生信息

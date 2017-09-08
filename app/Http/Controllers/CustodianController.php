@@ -98,13 +98,18 @@ class CustodianController extends Controller {
             $selectedDepartments[$department['id']] = $department['name'];
         }
 
-        $custodianStudent = $this->custodianStudent->where('custodian_id',$custodian->id)->get();
-
-        foreach ($custodianStudent as $key=>$value)
+        $custodianStudent = $this->custodianStudent->where('custodian_id',$custodian->id)->get()->toArray();
+        if($custodianStudent !=null)
         {
-            $studentId = $this->student->find($value['student_id']);
-            $selectedStudents[$studentId->id] = $studentId->user->realname;
+            foreach ($custodianStudent as $key=>$value)
+            {
+                $studentId = $this->student->find($value['student_id']);
+                $selectedStudents[$studentId->id] = $studentId->user->realname;
+            }
+        }else{
+            $selectedStudents = [];
         }
+
 
         if (!$user) {
             return $this->notFound();

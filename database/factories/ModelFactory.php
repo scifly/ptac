@@ -13,22 +13,22 @@
 */
 
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
-$factory->define(App\Models\User::class, function (Faker\Generator $faker) {
-    static $password;
-
-    return [
-        'group_id' => 1 ,
-        'username' => $faker->name,
-        'email' => $faker->unique()->safeEmail,
-        'password' => $password ?: $password = bcrypt('secret'),
-        'gender' => rand(0,1),
-        'realname' => $faker->name,
-        'avatar_url' => "/image/001.jpg",
-        'enabled' => 1,
-        'userid' => uniqid('wx_'),
-
-    ];
-});
+//$factory->define(App\Models\User::class, function (Faker\Generator $faker) {
+//    static $password;
+//
+//    return [
+//        'group_id' => 1 ,
+//        'username' => $faker->name,
+//        'email' => $faker->unique()->safeEmail,
+//        'password' => $password ?: $password = bcrypt('secret'),
+//        'gender' => rand(0,1),
+//        'realname' => $faker->name,
+//        'avatar_url' => "/image/001.jpg",
+//        'enabled' => 1,
+//        'userid' => uniqid('wx_'),
+//
+//    ];
+//});
 
 $factory->define(App\Models\SchoolType::class, function (Faker\Generator $faker) {
     
@@ -157,14 +157,13 @@ $factory->define(App\Models\User::class, function (Faker\Generator $faker) {
         'group_id' => 1,
         'username' => $faker->name,
         'password' => md5('123456'),
-        'gender' => 1,
+        'gender' => rand(0,1),
         'realname' => $faker->name,
         'avatar_url' => 'http://www.baidu.com',
         'remember_token' => '454564fdafdafadfsa',
         'email' => '18513094620@qq.com',
         'wechatid' => 'fdsfds45454',
-        'userid' => rand(1,5).",".rand(5,10),
-        'department_ids' =>rand(1,5).",".rand(5,10),
+        'userid' => uniqid('wx_'),
         'enabled' => 1,
     ];
 });
@@ -186,7 +185,7 @@ $factory->define(App\Models\Student::class, function (Faker\Generator $faker) {
         'card_number' => $faker->creditCardNumber,
         'oncampus' => 1,
         'birthday' => $faker->date(),
-        'remark' => $faker->sentence(10),
+        'remark' => '测试',
         'enabled' => 1
     ];
 });
