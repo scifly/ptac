@@ -11,7 +11,7 @@ class ClassesSeeder extends Seeder
      */
     public function run()
     {
-        factory(App\Models\Squad::class, 10)->create()->each(function ($user) {
+        factory(App\Models\Squad::class, 20)->create()->each(function ($user) {
             $user->save();
         });
     }

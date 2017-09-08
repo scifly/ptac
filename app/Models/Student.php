@@ -332,8 +332,12 @@ class Student extends Model {
                     return $student->oncampus == 1 ? '是' : '否';
                 }
             ],
-            ['db' => 'Mobile.mobile as mobile', 'dt' => 7],
-            ['db' => 'Student.birthday', 'dt' => 8],
+            ['db' => 'User.userid as mobile', 'dt' => 7],
+            ['db' => 'Student.birthday', 'dt' => 8,
+                'formatter' => function ($d) {
+                    return substr($d,0,-8);
+                }
+                ],
             ['db' => 'Student.remark', 'dt' => 9],
             ['db' => 'Student.created_at', 'dt' => 10],
             ['db' => 'Student.updated_at', 'dt' => 11],

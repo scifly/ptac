@@ -21,12 +21,11 @@ $factory->define(App\Models\User::class, function (Faker\Generator $faker) {
         'username' => $faker->name,
         'email' => $faker->unique()->safeEmail,
         'password' => $password ?: $password = bcrypt('secret'),
-        'gender' => 1,
+        'gender' => rand(0,1),
         'realname' => $faker->name,
-        'avatar_url' => "/image",
+        'avatar_url' => "/image/001.jpg",
         'enabled' => 1,
-        'userid' => 1,
-        'department_ids' => "1,2",
+        'userid' => uniqid('wx_'),
 
     ];
 });
@@ -294,11 +293,11 @@ $factory->define(App\Models\EducatorClass::class, function (Faker\Generator $fak
 
 
 $factory->define(App\Models\CustodianStudent::class, function (Faker\Generator $faker) {
-
+    $relationship = ['父子','父女','母子','母女'];
     return [
         'custodian_id' => rand(1, 10),
         'student_id' => rand(1, 10),
-        'relationship' => '父子',
+        'relationship' => $relationship[rand(0,3)],
         'enabled' =>1
 
     ];
@@ -429,6 +428,15 @@ $factory->define(App\Models\Mobile::class, function (Faker\Generator $faker) {
         'mobile' =>$mobile[rand(0,9)],
         'enabled' => 1,
         'isdefault' => 1
+
+    ];
+});
+
+$factory->define(App\Models\DepartmentUser::class, function (Faker\Generator $faker) {
+    return [
+        'department_id' =>rand(0,19),
+        'user_id' =>rand(0,19),
+        'enabled' => 1,
 
     ];
 });

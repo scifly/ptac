@@ -90,7 +90,7 @@ class User extends Authenticatable {
         'group_id', 'username', 'password',
         'email', 'realname', 'gender', 'avatar_url',
         'wechatid', 'userid', 'english_name',
-        'department_ids', 'isleader', 'position',
+         'isleader', 'position',
         'telephone', 'order', 'mobile',
         'avatar_mediaid', 'enabled',
     ];
