@@ -39,10 +39,12 @@
                     <div class="col-xs-12">
                         <dl class="dl-horizontal">
                             <dt>学生姓名：</dt>
+                            <dt>性别：</dt>
                             <dt>班级名称：</dt>
                             <dt>学号：</dt>
                             <dt>卡号：</dt>
                             <dt>是否住校：</dt>
+                            <dt>手机号码：</dt>
                             <dt>生日：</dt>
                             <dt>备注：</dt>
                             <dt>状态：</dt>

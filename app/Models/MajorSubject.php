@@ -26,7 +26,7 @@ class MajorSubject extends Model {
     
     protected $table = 'majors_subjects';
     
-    protected $fillable = ['id', 'major_id', 'subject_id', 'created_at', 'updated_id'];
+    protected $fillable = ['major_id', 'subject_id'];
     
     public function major() {
         return $this->belongsTo('App\Models\Major');
@@ -48,7 +48,7 @@ class MajorSubject extends Model {
     }
     
     public function storeBySubjectId($subjectId, $majorIds) {
-        
+
         foreach ($majorIds as $majorId) {
             $this->create([
                 'major_id' => $majorId,

@@ -13,16 +13,16 @@
                 'id' => 'user_id',
                 'items' => $users
             ])
-            @include('partials.multiple_select', [
-                'label' => '所属组',
-                'id' => 'team_ids',
-                'items' => $teams,
-                'selectedItems' => isset($selectedTeams) ? $selectedTeams:[]
-            ])
+
             @include('partials.single_select', [
                 'label' => '所属学校',
                 'id' => 'school_id',
                 'items' => $schools
+            ])
+                @include('partials.multiple_select', [
+                'label' => '所属班级',
+                'id' => 'class_id',
+                'items' => $squads
             ])
             <div class="form-group">
                 {!! Form::label('sms_quote', '可用短信条数', [

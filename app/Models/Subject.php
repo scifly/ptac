@@ -7,6 +7,7 @@ use App\Http\Requests\SubjectRequest;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 /**
  * App\Models\Subject
@@ -39,7 +40,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read Collection|Major[] $majors
  */
 class Subject extends Model {
-    
+
     protected $table = 'subjects';
     protected $fillable = [
         'school_id',
@@ -56,35 +57,123 @@ class Subject extends Model {
     public function school() { return $this->belongsTo('App\Models\School'); }
     
     public function majors() {
-        
+
         return $this->belongsToMany(
             'App\Models\Major',
             'majors_subjects',
             'subject_id',
             'major_id'
         );
-        
+
     }
-    
-    public function existed(SubjectRequest $request, $id = NULL) {
-        
-        if (!$id) {
-            $subject = $this->where('school_id', $request->input('school_id'))
-                ->where('name', $request->input('name'))->first();
-        } else {
-            $subject = $this->where('school_id', $request->input('school_id'))
-                ->where('id', '<>', $id)
-                ->where('name', $request->input('name'))->first();
-        }
-        return $subject ? true : false;
-        
-    }
-    
+
     public function subjects($schoolId) {
         
         return $this->where('school_id', $schoolId)->get()->pluck('id', 'name');
         
     }
+
+
+    /**
+     * 保存新的科目记录
+     * @param SubjectRequest $request
+     * @return bool
+     */
+    public function store(SubjectRequest $request) {
+
+        try {
+            $exception = DB::transaction(function() use ($request) {
+
+                $subjectData = [
+                    'name' => $request->input('name'),
+                    'school_id' => $request->input('school_id'),
+                    'max_score' => $request->input('max_score'),
+                    'pass_score' => $request->input('pass_score'),
+                    'grade_ids' => $request->input('grade_ids'),
+                    'isaux' =>$request->input('isaux'),
+                    'enabled' =>$request->input('enabled')
+                ];
+
+                $subject = new Subject();
+                $s = $subject->create($subjectData);
+                unset($subject);
+                $majorSubject = new MajorSubject();
+                $majorIds = $request->input('major_ids');
+                $majorSubject ->storeBySubjectId($s->id, $majorIds);
+                unset($majorSubject);
+            });
+            return is_null($exception) ? true : $exception;
+        } catch (Exception $e) {
+            return false;
+        }
+
+    }
+
+    /**
+     * 更新指定的科目记录
+     *
+     * @param SubjectRequest $request
+     * @param $subjectId
+     * @return bool|mixed
+     */
+    public function modify(SubjectRequest $request, $subjectId) {
+
+        $subject = $this->find($subjectId);
+        if (!isset($subject)) { return false; }
+        try {
+            $exception = DB::transaction(function() use($request, $subjectId, $subject) {
+                $subject->update([
+                    'name' => $request->input('name'),
+                    'school_id' => $request->input('school_id'),
+                    'max_score' => $request->input('max_score'),
+                    'pass_score' => $request->input('pass_score'),
+                    'grade_ids' => $request->input('grade_ids'),
+                    'isaux' =>$request->input('isaux'),
+                    'enabled' =>$request->input('enabled')
+                ]);
+                unset($subject);
+                $majorSubject = new MajorSubject();
+                $majorIds = $request->input('major_ids');
+                $majorSubject::where('subject_id',$subjectId)->delete();
+                $majorSubject ->storeBySubjectId($subjectId, $majorIds);
+                unset($majorSubject);
+            });
+
+            return is_null($exception) ? true : $exception;
+        } catch (Exception $e) {
+            return false;
+        }
+
+    }
+
+    /**
+     * 删除指定的科目记录
+     *
+     * @param $subjectId
+     * @return bool|mixed
+     */
+    public function remove($subjectId) {
+
+        $subject = $this->find($subjectId);
+
+        if (!isset($subject)) { return false; }
+        try {
+            $exception = DB::transaction(function() use ($subjectId, $subject) {
+                # 删除指定的科目记录
+                $subject->delete();
+                # 删除与科目绑定的专业记录
+                MajorSubject::where('subject_id',$subjectId)->delete();
+
+            });
+
+            return is_null($exception) ? true : $exception;
+        } catch (Exception $e) {
+            return false;
+        }
+
+    }
+
+
 
     public  function getId(array $subjects){
         $result = [];
@@ -94,6 +183,7 @@ class Subject extends Model {
         return $result;
     }
     
+
     public function datatable() {
         
         $columns = [

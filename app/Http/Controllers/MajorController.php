@@ -94,7 +94,7 @@ class MajorController extends Controller {
         }
         return $this->output(__METHOD__, [
             'major' => $major,
-            'subjects' => $this->subject->subjects(1),
+//            'subjects' => $this->subject->subjects(1),
             'selectedSubjects' => $selectedSubjects,
         ]);
 

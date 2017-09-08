@@ -29,7 +29,7 @@
                 'label' => '包含科目',
                 'id' => 'subject_ids',
                 'items' => $subjects,
-                'selectedItems' => isset($selectedSubjects) ? $selectedSubjects : []
+                'selectedItems' => isset($selectedSubjects) ? $selectedSubjects : NULL
             ])
             <div class="form-group">
                 {!! Form::label('remark', '备注', [

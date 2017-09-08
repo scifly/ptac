@@ -98,12 +98,11 @@ class SubjectModuleController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(SubjectModuleRequest $request, $id) {
-    
+
         $subjectModule = $this->subjectModule->find($id);
+
         if (!$subjectModule) { return $this->notFound(); }
-        if ($this->subjectModule->existed($request, $id)) {
-            return $this->fail('已经有此记录');
-        }
+
         return $subjectModule->update($request->all()) ? $this->succeed() : $this->fail();
         
     }

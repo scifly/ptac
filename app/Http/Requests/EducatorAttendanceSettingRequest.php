@@ -27,7 +27,6 @@ class EducatorAttendanceSettingRequest extends FormRequest {
     protected function prepareForValidation() {
         
         $input = $this->all();
-        
         if (isset($input['inorout']) && $input['inorout'] === 'on') {
             $input['inorout'] = 1;
         }
