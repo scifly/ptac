@@ -34,7 +34,8 @@ class CustodianComposer {
         }
 
         $view->with([
-            'departments' => $this->department->departments([1]),
+            'departments' => $this->department->pluck('name','id'),
+//            'departments' => $this->department->departments([1]),
             'groups' => $this->group->pluck('name', 'id'),
             'students' => $students
         ]);
