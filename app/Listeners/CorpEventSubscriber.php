@@ -19,7 +19,7 @@ class CorpEventSubscriber {
         $this->corp = $corp;
         $this->company = $company;
         $this->department = $department;
-        $this->departmentTypeId = DepartmentType::whereName('企业')->first()->id;
+        //$this->departmentTypeId = DepartmentType::whereName('企业')->first()->id;
     }
     
     public function onDepartmentCreated($event) {
