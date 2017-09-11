@@ -14,9 +14,9 @@
                 <div class="col-sm-6">
                     {!! Form::text('name', null, [
                         'class' => 'form-control',
-                        'placeholder' => '不能超过20个汉字',
+                        'placeholder' => '不能超过60个汉字',
                         'required' => 'true',
-                        'data-parsley-length' => '[2, 20]'
+                        'data-parsley-length' => '[2, 60]'
                     ]) !!}
                 </div>
             </div>

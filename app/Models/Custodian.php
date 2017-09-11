@@ -99,7 +99,10 @@ class Custodian extends Model {
                 unset($departmentUser);
                 $custodianStudent = new CustodianStudent();
                 $studentIds = $request->input('student_ids');
-                $custodianStudent->storeByCustodianId($c->id, $studentIds);
+                if($studentIds !=null)
+                {
+                    $custodianStudent->storeByCustodianId($c->id, $studentIds);
+                }
                 unset($custodianStudent);
             });
             return is_null($exception) ? true : $exception;

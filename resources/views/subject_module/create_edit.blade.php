@@ -34,7 +34,8 @@
                         'class' => 'form-control',
                         'placeholder' => '次分类权重是数字',
                         'required' => 'true',
-                        'type' => 'integer',
+                        'type' => 'number',
+                        'data-parsley-length' => '[1, 3]'
                     ]) !!}
                 </div>
             </div>

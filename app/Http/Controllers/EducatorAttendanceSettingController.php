@@ -56,10 +56,6 @@ class EducatorAttendanceSettingController extends Controller {
 
 
     public function store(EducatorAttendanceSettingRequest $request) {
-        
-        if ($this->educatorAttendanceSetting->existed($request)) {
-            return $this->fail('已经有此记录');
-        }
 
         return $this->educatorAttendanceSetting->create($request->all()) ? $this->succeed() : $this->fail();
         
@@ -116,9 +112,6 @@ class EducatorAttendanceSettingController extends Controller {
         $educatorAttendanceSetting = $this->educatorAttendanceSetting->find($id);
         if (!$educatorAttendanceSetting) {
             return $this->notFound();
-        }
-        if ($this->$educatorAttendanceSetting->existed($request, $id)) {
-            return $this->fail('已经有此记录');
         }
 
         return $educatorAttendanceSetting->update($request->all()) ? $this->succeed() : $this->fail();

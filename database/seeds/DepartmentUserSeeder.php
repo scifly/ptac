@@ -2,7 +2,7 @@
 
 use Illuminate\Database\Seeder;
 
-class DepartmentSeeder extends Seeder
+class DepartmentUserSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -11,7 +11,7 @@ class DepartmentSeeder extends Seeder
      */
     public function run()
     {
-        factory(App\Models\Department::class, 30)->create()->each(function ($department) {
+        factory(App\Models\DepartmentUser::class, 20)->create()->each(function ($department) {
             $department->save();
         });
     }

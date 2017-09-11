@@ -42,7 +42,6 @@ use Mockery\Exception;
  * @property-read Collection|Department[] $users
  * @property int $department_type_id 所属部门类型ID
  * @property-read Company $company
- * @property-read DepartmentType $departmentType
  * @property-read Grade $grade
  * @property-read Squad $squad
  * @method static Builder|Department whereDepartmentTypeId($value)

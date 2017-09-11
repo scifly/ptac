@@ -19,7 +19,7 @@ class GroupRequest extends FormRequest {
         return [
             'name' => 'required|string|between:2,255|unique:groups,name,' .
                 $this->input('id') . ',id',
-            'remark' => 'required|string|max:20|min:2',
+            'remark' => 'required|string|between:2,20',
         ];
         
     }
