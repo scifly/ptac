@@ -52,11 +52,15 @@ class EducatorAttendanceSettingController extends Controller {
      * @param EducatorAttendanceSettingRequest $request
      * @return \Illuminate\Http\JsonResponse
      */
+
+
+
     public function store(EducatorAttendanceSettingRequest $request) {
         
         if ($this->educatorAttendanceSetting->existed($request)) {
             return $this->fail('已经有此记录');
         }
+
         return $this->educatorAttendanceSetting->create($request->all()) ? $this->succeed() : $this->fail();
         
     }
@@ -79,20 +83,20 @@ class EducatorAttendanceSettingController extends Controller {
         ]);
         
     }
-    
+
+
     /**
      * 编辑教职员工考勤设置
-     *
-     * @param  \App\Models\EducatorAttendanceSetting $educatorAttendanceSetting
      * @param $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function edit(EducatorAttendanceSetting $educatorAttendanceSetting, $id) {
+    public function edit($id) {
         
         $educatorAttendanceSetting = $this->educatorAttendanceSetting->find($id);
         if (!$educatorAttendanceSetting) {
             return $this->notFound();
         }
+
         return $this->output(__METHOD__, [
             'educatorAttendanceSetting' => $educatorAttendanceSetting,
         ]);
@@ -105,6 +109,8 @@ class EducatorAttendanceSettingController extends Controller {
      * @param $id
      * @return \Illuminate\Http\JsonResponse
      */
+
+
     public function update(EducatorAttendanceSettingRequest $request, $id) {
         
         $educatorAttendanceSetting = $this->educatorAttendanceSetting->find($id);
@@ -114,6 +120,7 @@ class EducatorAttendanceSettingController extends Controller {
         if ($this->$educatorAttendanceSetting->existed($request, $id)) {
             return $this->fail('已经有此记录');
         }
+
         return $educatorAttendanceSetting->update($request->all()) ? $this->succeed() : $this->fail();
         
     }

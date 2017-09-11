@@ -18,9 +18,9 @@ Route::get('/', 'HomeController@index');
 Route::get('/home', 'HomeController@index')->name('home');
 
 /** 测试用路由 */
-Route::get('test/index', 'TestController@index');
-Route::get('test/create', 'TestController@create');
-Route::get('test', 'TestController@test');
+//Route::get('test/index', 'TestController@index');
+//Route::get('test/create', 'TestController@create');
+//Route::get('test', 'TestController@test');
 
 /** 菜单入口路由 */
 Route::get('pages/{id}', 'HomeController@menu');
@@ -28,10 +28,8 @@ Route::get('pages/{id}', 'HomeController@menu');
 /** 用户/通讯录 */
 // 教职员工
 Route::group(['prefix' => 'educators'], routes('EducatorController'));
-Route::group(['prefix' => 'educators_classes'], routes('EducatorClassController'));
 // 监护人
 Route::group(['prefix' => 'custodians'], routes('CustodianController'));
-Route::group(['prefix' => 'custodians_students'], routes('CustodianStudentController'));
 // 学生
 Route::group(['prefix' => 'students'], routes('StudentController'));
 // 用户
@@ -104,6 +102,9 @@ Route::get('wsm_articles/detail/{id}', 'WsmArticleController@detail');
 
 /** 投票问卷 */
 // 发起
+Route::group(['prefix' => 'poll_questionnaires'], routes('PollQuestionnaireController'));
+Route::group(['prefix' => 'pq_subjects'], routes('PqSubjectController'));
+Route::group(['prefix' => 'pq_choices'], routes('PqChoiceController'));
 // 参与
 // 查询/统计
 Route::group(['prefix' => 'pollQuestionnaireParticpation'], function() {

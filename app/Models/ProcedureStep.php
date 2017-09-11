@@ -77,13 +77,13 @@ class ProcedureStep extends Model {
             ['db' => 'Procedures.name as procedurename', 'dt' => 1],
             [
                 'db' => 'ProcedureStep.approver_user_ids', 'dt' => 2,
-                'formatter' => function ($d, $row) {
+                'formatter' => function ($d) {
                     return $this->user_names($d);
                 }
             ],
             [
                 'db' => 'ProcedureStep.related_user_ids', 'dt' => 3,
-                'formatter' => function ($d, $row) {
+                'formatter' => function ($d) {
                     return $this->user_names($d);
                 }
             ],

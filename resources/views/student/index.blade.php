@@ -8,10 +8,12 @@
             <tr>
                 <th>#</th>
                 <th>学生姓名</th>
+                <th>性别</th>
                 <th>班级名称</th>
                 <th>学号</th>
                 <th>卡号</th>
                 <th>是否住校</th>
+                <th>电话号码</th>
                 <th>生日</th>
                 <th>备注</th>
                 <th>创建时间</th>

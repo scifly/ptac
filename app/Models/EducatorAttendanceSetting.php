@@ -55,23 +55,6 @@ class EducatorAttendanceSetting extends Model {
         return $this->belongsTo('App\Models\School');
     }
 
-    public function existed(EducatorAttendanceSettingRequest $request, $id = NULL) {
-
-        if (!$id) {
-            $educatorAttendanceSetting = $this->where([
-                'name' => $request->input('name'),
-                'school_id' => $request->input('school_id')
-            ])->first();
-        } else {
-            $educatorAttendanceSetting = $this->where('name', $request->input('name'))
-                ->where('id', '<>', $id)
-                ->where('school_id', $request->input('school_id'))
-                ->first();
-        }
-        return $educatorAttendanceSetting ? true : false;
-
-    }
-
     public function datatable() {
 
         $columns = [

@@ -19,7 +19,7 @@
                                 'class' => 'form-control',
                                 'placeholder' => '(不超过40个汉字)',
                                 'required' => 'true',
-                                'data-parsley-length' => '[4, 40]'
+                                'data-parsley-length' => '[1, 40]'
                             ]) !!}
                         </div>
                     </div>
@@ -27,7 +27,6 @@
                         {!! Form::label('remark', '备注',[
                         'class' => 'col-sm-4 control-label',
                         'placeholder' => '(不超过40个汉字)',
-                        'data-parsley-minlength' => '4'
                         ]) !!}
                         <div class="col-sm-4">
                             {!! Form::text('remark', null, [
@@ -37,18 +36,21 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        {!! Form::label('location', '地点',[
-                        'class' => 'col-sm-4 control-label',
-                        'data-parsley-required' => 'true'
-                        ]) !!}
+                        {!! Form::label('location', '地点',['class' => 'col-sm-4 control-label']) !!}
                         <div class="col-sm-4">
-                            {!! Form::text('location', null, [ 'class' => 'form-control']) !!}
+                            {!! Form::text('location', null, [
+                            'class' => 'form-control',
+                            'required' => 'true'
+                            ]) !!}
                         </div>
                     </div>
                     <div class="form-group">
                         {!! Form::label('contact', '联系人',['class' => 'col-sm-4 control-label']) !!}
                         <div class="col-sm-4">
-                            {!! Form::text('contact', null, [ 'class' => 'form-control']) !!}
+                            {!! Form::text('contact', null, [
+                            'class' => 'form-control',
+                            'required' => 'true'
+                            ]) !!}
                         </div>
                     </div>
                     <div class="form-group">

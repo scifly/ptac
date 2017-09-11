@@ -55,10 +55,7 @@ class CustodianController extends Controller {
      */
     public function create() {
         
-        return parent::output(__METHOD__, [
-//            'group' => $this->group->group('custodian'),
-            'departments' => $this->department->departments([1])
-        ]);
+        return parent::output(__METHOD__);
         
     }
     
@@ -115,7 +112,7 @@ class CustodianController extends Controller {
         return $this->output(__METHOD__, [
             'custodian' => $custodian,
             'user' => $user,
-            'departments'=>$this->department->departments([1]),
+//            'departments'=>$this->department->departments([1]),
             'selectedDepartments' => $selectedDepartments,
             'selectedStudents' => $selectedStudents,
         ]);
@@ -133,8 +130,13 @@ class CustodianController extends Controller {
         
     }
 
+    /**
+     * 删除指定的监护人
+     *
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function destroy($id) {
-        dd($this->custodian->remove($id));
         return $this->custodian->remove($id) ? $this->succeed() : $this->fail();
     }
 }
