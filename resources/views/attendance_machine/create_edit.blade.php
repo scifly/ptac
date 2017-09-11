@@ -5,7 +5,7 @@
     <div class="box-body">
         <div class="form-horizontal">
             @if(!empty($am['id'])) {
-            {{ Form::hidden('id', $am['id'], ['id' => 'id']) }}
+                {{ Form::hidden('id', $am['id'], ['id' => 'id']) }}
             @endif
             <div class="form-group">
                 {!! Form::label('name', '名称', [
@@ -55,7 +55,7 @@
             @include('partials.enabled', [
                 'label' => '是否启用',
                 'id' => 'enabled',
-                'value' => $am['enabled']
+                'value' => isset($am['enabled']) ? $am['enabled'] : NULL
             ])
         </div>
     </div>

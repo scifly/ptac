@@ -13,21 +13,21 @@ class DepartmentController extends Controller {
     function __construct(Department $department) { $this->department = $department; }
     
     /**
-     * 显示部门列表
+     * 部门列表
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
     
         if (Request::method() === 'POST') {
-            return $this->department->tree([1]);
+            return $this->department->tree();
         }
         return parent::output(__METHOD__);
 
     }
     
     /**
-     * 显示创建部门记录的表单
+     * 创建部门
      *
      * @param $id
      * @return bool|\Illuminate\Http\JsonResponse
@@ -39,19 +39,20 @@ class DepartmentController extends Controller {
     }
     
     /**
-     * 保存新创建的部门记录
+     * 保存部门
      *
      * @param DepartmentRequest $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(DepartmentRequest $request) {
         
-        return $this->department->create($request->all()) ? $this->succeed() : $this->fail();
+        return $this->department->store($request->all(), true)
+            ? $this->succeed() : $this->fail();
         
     }
     
     /**
-     * 显示指定的部门记录详情
+     * 部门详情
      *
      * @param $id
      * @return bool|\Illuminate\Http\JsonResponse
@@ -67,7 +68,7 @@ class DepartmentController extends Controller {
     }
     
     /**
-     * 显示编辑指定部门记录的表单
+     * 编辑部门
      *
      * @param $id
      * @return bool|\Illuminate\Http\JsonResponse
@@ -75,9 +76,7 @@ class DepartmentController extends Controller {
     public function edit($id) {
         
         $department = $this->department->find($id);
-        if (!$department) {
-            return $this->notFound();
-        }
+        if (!$department) { return $this->notFound(); }
         return $this->output(__METHOD__, [
             'department' => $department,
         ]);
@@ -85,7 +84,7 @@ class DepartmentController extends Controller {
     }
     
     /**
-     * 更新指定的部门记录
+     * 更新部门
      *
      * @param DepartmentRequest $request
      * @param $id
@@ -93,25 +92,24 @@ class DepartmentController extends Controller {
      */
     public function update(DepartmentRequest $request, $id) {
         
-        $department = $this->department->find($id);
-        if (!$department) {
+        if (!$this->department->find($id)) {
             return $this->notFound();
         }
-        return $department->update($request->all()) ? $this->succeed() : $this->fail();
+        return $this->department->modify($request->all(), $id, true)
+            ? $this->succeed() : $this->fail();
         
     }
     
     /**
-     * 删除指定的部门记录
+     * 删除部门
      *
      * @param $id
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
         
-        $department = $this->department->find($id);
-        if (!$department) { return $this->notFound(); }
-        return $department->delete() ? $this->succeed() : $this->fail();
+        if (!$this->department->find($id)) { return $this->notFound(); }
+        return $this->department->remove($id) ? $this->succeed() : $this->fail();
         
     }
     

@@ -93,7 +93,6 @@ class GroupController extends Controller {
     public function update(GroupRequest $request, $id) {
         $group = $this->group->find($id);
         if (!$group) { return $this->notFound(); }
-
         return $group->update($request->all()) ? $this->succeed() : $this->fail();
     
     }

@@ -33,6 +33,9 @@ class ComposerServiceProvider extends ServiceProvider {
         View::composer('semester.create_edit', 'App\Http\ViewComposers\SemesterComposer');
         View::composer('procedure.create_edit', 'App\Http\ViewComposers\ProcedureComposer');
         View::composer('procedure_step.create_edit', 'App\Http\ViewComposers\ProcedureStepComposer');
+        View::composer('poll_questionnaire.create_edit', 'App\Http\ViewComposers\PollQuestionnaireComposer');
+        View::composer('pq_subject.create_edit', 'App\Http\ViewComposers\PqSubjectComposer');
+        View::composer('pq_choice.create_edit', 'App\Http\ViewComposers\PqChoiceComposer');
         View::composer('student.create_edit', 'App\Http\ViewComposers\StudentComposer');
         View::composer('score_range.create_edit', 'App\Http\ViewComposers\ScoreRangeComposer');
         View::composer('score_range.show_statistics', 'App\Http\ViewComposers\ScoreRangeShowStatisticsComposer');
@@ -53,6 +56,10 @@ class ComposerServiceProvider extends ServiceProvider {
         View::composer('message.create_edit', 'App\Http\ViewComposers\MessageComposer');
         View::composer('team.create_edit', 'App\Http\ViewComposers\TeamComposer');
         View::composer('operator.create', 'App\Http\ViewComposers\OperatorComposer');
+        View::composer('conference_room.create_edit', 'App\Http\ViewComposers\ConferenceRoomComposer');
+        View::composer('conference_queue.create_edit', 'App\Http\ViewComposers\ConferenceQueueComposer');
+        View::composer('conference_participant.create_edit', 'App\Http\ViewComposers\ConferenceParticipantComposer');
+        View::composer('combo_type.create_edit', 'App\Http\ViewComposers\ComboTypeComposer');
 
     }
 

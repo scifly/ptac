@@ -23,7 +23,7 @@ class CompanyController extends Controller {
     }
     
     /**
-     * 显示运营者公司列表
+     * 运营者公司列表
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
@@ -37,7 +37,7 @@ class CompanyController extends Controller {
     }
     
     /**
-     * 显示创建运营者公司记录的表单
+     * 创建运营者公司记录
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
@@ -48,19 +48,20 @@ class CompanyController extends Controller {
     }
     
     /**
-     * 保存新创建的运营者公司记录
+     * 保存运营者公司记录
      *
      * @param CompanyRequest $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(CompanyRequest $request) {
         
-        return $this->company->create($request->all()) ? $this->succeed() : $this->fail();
+        return $this->company->store($request->all(), true)
+            ? $this->succeed() : $this->fail();
         
     }
     
     /**
-     * 显示指定的运营者公司记录详情
+     * 运营者公司记录详情
      *
      * @param $id
      * @return bool|\Illuminate\Http\JsonResponse
@@ -74,7 +75,7 @@ class CompanyController extends Controller {
     }
     
     /**
-     * 显示编辑指定运营者公司记录的表单
+     * 编辑运营者公司记录
      *
      * @param $id
      * @return bool|\Illuminate\Http\JsonResponse
@@ -88,7 +89,7 @@ class CompanyController extends Controller {
     }
     
     /**
-     * 更新指定的运营者公司记录
+     * 更新运营者公司记录
      *
      * @param CompanyRequest $request
      * @param $id
@@ -96,23 +97,22 @@ class CompanyController extends Controller {
      */
     public function update(CompanyRequest $request, $id) {
         
-        $company = $this->company->find($id);
-        if (!$company) { return $this->notFound(); }
-        return $company->update($request->all()) ? $this->succeed() : $this->fail();
+        if (!$this->company->find($id)) { return $this->notFound(); }
+        return $this->company->modify($request->all(), $id, true)
+            ? $this->succeed() : $this->fail();
         
     }
     
     /**
-     * 删除指定的运营者公司记录
+     * 删除运营者公司记录
      *
      * @param $id
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
         
-        $company = $this->company->find($id);
-        if (!$company) { return $this->notFound(); }
-        return $company->delete() ? $this->succeed() : $this->fail();
+        if (!$this->company->find($id)) { return $this->notFound(); }
+        return $this->company->remove($id) ? $this->succeed() : $this->fail();
         
     }
     

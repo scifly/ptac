@@ -23,11 +23,10 @@ class DepartmentRequest extends FormRequest {
         return [
             'name' => 'required|string|between:2,255|unique:departments,name,' .
                 $this->input('id') . ',id,' .
-                'school_id,' . $this->input('school_id') . ',' .
                 'parent_id,' . $this->input('parent_id'),
             'remark' => 'nullable|string|between:2,255',
             'parent_id' => 'nullable|integer',
-            'school_id' => 'required|integer',
+            'department_type_id' => 'required|integer',
             'order' => 'nullable|integer',
             'enabled' => 'required|boolean'
         ];

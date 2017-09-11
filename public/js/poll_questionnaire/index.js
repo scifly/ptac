@@ -1,0 +1,1 @@
+$(crud.index('poll_questionnaires'));

@@ -47,6 +47,8 @@ use Illuminate\Database\Eloquent\Model;
  * @mixin \Eloquent
  * @property-read \App\Models\Educator $educator
  * @property-read \App\Models\Subject $subject
+ * @property string $title 事件名称
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Event whereTitle($value)
  */
 class Event extends Model {
     protected $table = 'events';

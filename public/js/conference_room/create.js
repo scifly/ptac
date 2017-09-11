@@ -1,0 +1,1 @@
+$(crud.create('formConferenceRoom', 'conference_rooms'));

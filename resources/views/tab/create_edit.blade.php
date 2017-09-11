@@ -13,7 +13,8 @@
                 ]) !!}
                 <div class="col-sm-6">
                     {!! Form::text('name', null, [
-                        'disabled' => true
+                        'disabled' => true,
+                        'class' => 'form-control'
                     ]) !!}
 
                 </div>

@@ -13,11 +13,10 @@ use Illuminate\Support\Facades\Request;
  * @package App\Http\Controllers
  */
 class CorpController extends Controller {
+    
     protected $corp;
 
-    function __construct(Corp $corp) {
-        $this->corp = $corp;
-    }
+    function __construct(Corp $corp) { $this->corp = $corp; }
     
     /**
      * 显示企业列表
@@ -52,7 +51,8 @@ class CorpController extends Controller {
      */
     public function store(CorpRequest $request) {
         
-        return $this->corp->create($request->all()) ? $this->succeed() : $this->fail();
+        return $this->corp->store($request->all(), true)
+            ? $this->succeed() : $this->fail();
         
     }
     
@@ -93,9 +93,9 @@ class CorpController extends Controller {
      */
     public function update(CorpRequest $request, $id) {
         
-        $corp = $this->corp->find($id);
-        if (!$corp) { return $this->notFound(); }
-        return $corp->update($request->all()) ? $this->succeed() : $this->fail();
+        if (!$this->corp->find($id)) { return $this->notFound(); }
+        return $this->corp->modify($request->all(), $id, true)
+            ? $this->succeed() : $this->fail();
         
     }
     
@@ -107,9 +107,8 @@ class CorpController extends Controller {
      */
     public function destroy($id) {
         
-        $corp = $this->corp->find($id);
-        if (!$corp) { return $this->notFound(); }
-        return $corp->delete() ? $this->succeed() : $this->fail();
+        if (!$this->corp->find($id)) { return $this->notFound(); }
+        return $this->corp->delete() ? $this->succeed() : $this->fail();
         
     }
     

@@ -31,6 +31,10 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read Collection|Subject[] $subject
  * @property-read Collection|Squad[] $classes
  * @property-read Collection|Student[] $students
+ * @property int $department_id 对应的部门ID
+ * @property-read \App\Models\Department $department
+ * @property-read \App\Models\StudentAttendanceSetting $studentAttendanceSetting
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Grade whereDepartmentId($value)
  */
 class Grade extends Model {
     
@@ -38,6 +42,13 @@ class Grade extends Model {
         'name', 'school_id',
         'educator_ids', 'enabled',
     ];
+    
+    /**
+     * 返回对应的部门对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function department() { return $this->belongsTo('App\Models\Department'); }
     
     /**
      * 返回指定年级所属的学校对象
@@ -52,11 +63,13 @@ class Grade extends Model {
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function classes() { return $this->hasMany('App\Models\Squad'); }
-
-    public function studentAttendanceSetting()
-    {
-        return $this->hasOne('App\Models\StudentAttendanceSetting');
-    }
+    
+    /**
+     * 获取指定年级包含的学生考勤设置对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function studentAttendanceSetting() { return $this->hasOne('App\Models\StudentAttendanceSetting'); }
     
     /**
      * 通过Squad中间对象获取指定年级包含的所有学生对象
@@ -101,27 +114,6 @@ class Grade extends Model {
         return $gradesList;
         
     }
-
-    /**
-     * 判断年级记录是否存在
-     *
-     * @param GradeRequest $request
-     * @param null $id
-     * @return bool
-     */
-    public function existed(GradeRequest $request, $id = NULL) {
-        
-        if (!$id) {
-            $grade = $this->where('school_id', $request->input('school_id'))
-                ->where('name', $request->input('name'))->first();
-        } else {
-            $grade = $this->where('school_id', $request->input('school_id'))
-                ->where('id', '<>', $id)
-                ->where('name', $request->input('name'))->first();
-        }
-        return $grade ? true : false;
-        
-    }
     
     public function datatable() {
         
@@ -154,5 +146,5 @@ class Grade extends Model {
         
         return Datatable::simple($this, $columns, $joins);
     }
-
+    
 }

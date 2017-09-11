@@ -31,6 +31,9 @@
                     ]) !!}
                 </div>
             </div>
+            @if (isset($company['department_id']))
+                {!! Form::hidden('department_id', $company['department_id']) !!}
+            @endif
             @include('partials.enabled', [
                 'label' => '是否启用',
                 'id' => 'enabled',

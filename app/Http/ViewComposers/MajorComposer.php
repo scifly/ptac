@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\ViewComposers;
 
-use App\Models\ActionType;
 use App\Models\School;
 use App\Models\Subject;
 use Illuminate\Contracts\View\View;

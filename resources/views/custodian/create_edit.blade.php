@@ -116,7 +116,7 @@
                'selectedItems' => isset($selectedStudents) ? $selectedStudents : NULL
            ])
             <div class="form-group addInput">
-                <label for="" class="col-sm-3 control-label">和学生之间的关系</label>
+                <label for="relationship" class="col-sm-3 control-label">和学生之间的关系</label>
                 <div class="entry input-group col-sm-6">
                     <input type="text" class="form-control" name="relationship[]">
                     <span class="input-group-btn">
