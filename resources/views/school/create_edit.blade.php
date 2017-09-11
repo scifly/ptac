@@ -41,6 +41,9 @@
                 'id' => 'corp_id',
                 'items' => $corps
             ])
+            @if (isset($school['department_id']))
+                {!! Form::hidden('department_id', $school['department_id']) !!}
+            @endif
             @include('partials.enabled', [
                 'label' => '是否启用',
                 'id' => 'enabled',

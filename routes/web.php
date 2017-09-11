@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
-Route::auth();
+// Route::auth();
 Route::get('/', function() { return 'Dashboard'; });
 Route::get('/', 'HomeController@index');
 Route::get('/home', 'HomeController@index')->name('home');
@@ -133,6 +133,14 @@ Route::group(['prefix' => 'procedure_logs'], function() {
     Route::get('delete_medias/{id}', $ctlr . '@deleteMedias');
 });
 // 会议助手
+Route::group(['prefix' => 'conference_rooms'], routes('ConferenceRoomController'));
+Route::group(['prefix' => 'conference_queues'], routes('ConferenceQueueController'));
+Route::group(['prefix' => 'conference_participants'], function() {
+    $ctlr = 'ConferenceParticipantController';
+    Route::get('index', $ctlr . '@index');
+    Route::post('store', $ctlr . '@store');
+    Route::get('show/{id}', $ctlr . '@show');
+});
 // 申诉
 
 /** 用户中心 */
@@ -146,8 +154,17 @@ Route::group(['prefix' => 'personal_infos'], function() {
     Route::get('index', $ctlr . '@index');
     Route::put('update/{id}', $ctlr . '@update');
     Route::post('upload_ava/{id}', $ctlr . '@uploadAvatar');
-
 });
+/** 订单管理 */
+Route::group(['prefix' => 'orders'], function() {
+    $ctlr = 'OrderController';
+    Route::get('index', $ctlr . '@index');
+    Route::post('store', $ctlr . '@store');
+    Route::get('show/{id}', $ctlr . '@show');
+    Route::put('update/{id}', $ctlr . '@update');
+    Route::delete('delete/{id}', $ctlr . '@destroy');
+});
+Route::group(['prefix' => 'combo_types'], routes('ComboTypeController'));
 
 /** 系统设置 */
 // 学校设置 - 学校管理.学期设置.教职员工组别设置.学校类型设置
@@ -172,7 +189,10 @@ Route::group(['prefix' => 'icons'], routes('IconController'));
 Route::group(['prefix' => 'icon_types'], routes('IconTypeController'));
 // 消息类型设置 - 消息类型管理
 Route::group(['prefix' => 'message_types'], routes('MessageTypeController'));
+// 通信方式设置 - 通信方式管理
+Route::group(['prefix' => 'comm_types'], routes('CommTypeController'));
 // 运营者设置 - 企业设置
+Route::group(['prefix' => 'department_types'], routes('DepartmentTypeController'));
 Route::group(['prefix' => 'departments'], routes('DepartmentController'));
 Route::group(['prefix' => 'departments'], function() {
     $ctlr = 'DepartmentController';

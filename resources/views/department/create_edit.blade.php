@@ -36,9 +36,9 @@
                 </div>
             </div>
             @include('partials.single_select', [
-                'label' => '所属学校',
-                'id' => 'school_id',
-                'items' => $schools
+                'label' => '部门类型',
+                'id' => 'department_type_id',
+                'items' => $departmentTypes
             ])
             @include('partials.enabled', [
                 'label' => '是否启用',

@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
-use App\Facades\DatatableFacade as Datatable;
+use App\Events\DepartmentCreated;
+use App\Events\DepartmentUpdated;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
-use App\Http\Requests\DepartmentRequest;
+use Illuminate\Support\Facades\DB;
+use Mockery\Exception;
 
 /**
  * App\Models\Department 部门
@@ -38,20 +40,61 @@ use App\Http\Requests\DepartmentRequest;
  * @property-read Collection|Menu[] $children
  * @property-read Department|null $parent
  * @property-read Collection|Department[] $users
+ * @property int $department_type_id 所属部门类型ID
+ * @property-read Company $company
+ * @property-read DepartmentType $departmentType
+ * @property-read Grade $grade
+ * @property-read Squad $squad
+ * @method static Builder|Department whereDepartmentTypeId($value)
  */
 class Department extends Model {
 
     protected $fillable = [
-        'parent_id', 'corp_id', 'school_id', 'name',
+        'parent_id', 'department_type_id', 'name',
         'remark', 'order', 'enabled'
     ];
     
     /**
-     * 返回所属学校对象
+     * 返回所属的部门类型对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function school() { return $this->belongsTo('App\Models\School'); }
+    public function departmentType() { return $this->belongsTo('App\Models\DepartmentType'); }
+    
+    /**
+     * 返回对应的运营者对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function company() { return $this->hasOne('App\Models\Company'); }
+    
+    /**
+     * 返回对应的班级对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function corp() { return $this->hasOne('App\Models\Corp'); }
+    
+    /**
+     * 返回对应的学校对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function school() { return $this->hasOne('App\Models\School'); }
+    
+    /**
+     * 返回对应的年级对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function grade() { return $this->hasOne('App\Models\Grade'); }
+    
+    /**
+     * 返回对应的班级对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function squad() { return $this->hasOne('App\Models\Squad'); }
     
     /**
      * 获取指定部门包含的所有用户对象
@@ -125,6 +168,75 @@ class Department extends Model {
     }
     
     /**
+     * 创建部门
+     *
+     * @param array $data
+     * @param bool $fireEvent
+     * @return bool
+     */
+    public function store(array $data, $fireEvent = false) {
+
+        $department = $this->create($data);
+        if ($department && $fireEvent) {
+            event(new DepartmentCreated($department));
+            return true;
+        }
+        return $department ? true : false;
+    
+    }
+    
+    /**
+     * 更新部门
+     *
+     * @param array $data
+     * @param $id
+     * @param bool $fireEvent
+     * @return bool
+     */
+    public function modify(array $data, $id, $fireEvent = false) {
+        
+        $department = $this->find($id);
+        $updated = $department->update($data);
+        if ($updated && $fireEvent) {
+            event(new DepartmentUpdated($department));
+            return true;
+        }
+        return $updated ? true : false;
+        
+    }
+    
+    /**
+     * 删除部门
+     *
+     * @param $id
+     * @return bool|null
+     */
+    public function remove($id) {
+        
+        $department = $this->find($id);
+        if (!isset($department)) { return false;}
+        try {
+            $exception = DB::transaction(function () use ($id, $department) {
+                # 删除指定的Department记录
+                $department->delete();
+                # 移除指定部门与用户的绑定记录
+                $departmentUser = new DepartmentUser();
+                $departmentUser::whereDepartmentId($id)->delete();
+                # 删除指定部门的所有子部门记录, 以及与用户的绑定记录
+                $subDepartments = $this->where('parent_id', $id)->get();
+                foreach ($subDepartments as $department) {
+                    $this->remove($department->id);
+                }
+                
+            });
+            return is_null($exception) ? true : $exception;
+        } catch (Exception $e) {
+            return false;
+        }
+        
+    }
+    
+    /**
      * 更改部门所处位置
      *
      * @param $id
@@ -147,9 +259,9 @@ class Department extends Model {
      * @param array $corpIds
      * @return \Illuminate\Http\JsonResponse
      */
-    public function tree(array $schoolIds = [], array $corpIds = []) {
+    public function tree() {
         
-        $departments = $this->nodes($schoolIds, $corpIds);
+        $departments = $this->nodes();
         $data = [];
         foreach ($departments as $department) {
             $parentId = isset($department['parent_id']) ? $department['parent_id'] : '#';

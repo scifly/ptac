@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Http\Requests\SquadRequest;
+use App\Models\Grade;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -26,10 +27,13 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|Squad whereName($value)
  * @method static Builder|Squad whereUpdatedAt($value)
  * @mixin \Eloquent
- * @property-read \App\Models\Grade $grade
+ * @property-read Grade $grade
  * @property-read Collection|Student[] $students
  * @property-read Collection|EducatorClass[] $educatorClass
  * @property-read Collection|Educator[] $educators
+ * @property int $department_id 对应的部门ID
+ * @property-read \App\Models\Department $department
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Squad whereDepartmentId($value)
  */
 class Squad extends Model {
     
@@ -39,6 +43,13 @@ class Squad extends Model {
         'id', 'grade_id', 'name',
         'educator_ids', 'enabled',
     ];
+    
+    /**
+     * 返回对应的部门对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function department() { return $this->belongsTo('App\Models\Department'); }
     
     /**
      * 返回指定班级所属的年级对象

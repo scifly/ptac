@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use App\Models\School;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use App\Facades\DatatableFacade as Datatable;
 
 /**
  * App\Models\ComboType
@@ -27,23 +29,59 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|ComboType whereSchoolId($value)
  * @method static Builder|ComboType whereUpdatedAt($value)
  * @mixin \Eloquent
- * @property-read \App\Models\School $schools
+ * @property-read School $schools
+ * @property-read \App\Models\School $school
  */
 class ComboType extends Model {
+    
     protected $table = 'combo_types';
+    
     protected $fillable = [
-        'name',
-        'amount',
-        'discount',
-        'school_id',
-        'months',
-        'enabled'
+        'name', 'amount', 'discount',
+        'school_id', 'months', 'enabled'
     ];
     
     /**
-     * 套餐与学校
+     * 返回套餐类型所属的学校对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function schools() {
+    public function school() {
+        
         return $this->belongsTo('App\Models\school');
+        
     }
+    
+    public function datatable() {
+        
+        $columns = [
+            ['db' => 'ComboType.id', 'dt' => 0],
+            ['db' => 'ComboType.name', 'dt' => 1],
+            ['db' => 'ComboType.amount', 'dt' => 2],
+            ['db' => 'ComboType.discount', 'dt' => 3],
+            ['db' => 'School.name as schoolname', 'dt' => 4],
+            ['db' => 'ComboType.months', 'dt' => 5],
+            ['db' => 'ComboType.created_at', 'dt' => 6],
+            ['db' => 'ComboType.updated_at', 'dt' => 7],
+            [
+                'db' => 'ComboType.updated_at', 'dt' => 8,
+                'formatter' => function ($d, $row) {
+                    return Datatable::dtOps($this, $d, $row);
+                }
+            ],
+        ];
+        $joins = [
+            [
+                'table' => 'schools',
+                'alias' => 'School',
+                'type' => 'INNER',
+                'conditions' => [
+                    'School.id = ComboType.school_id'
+                ]
+            ]
+        ];
+        return Datatable::simple($this, $columns, $joins);
+        
+    }
+    
 }

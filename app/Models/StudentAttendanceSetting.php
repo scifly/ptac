@@ -35,6 +35,8 @@ use App\Http\Requests\StudentAttendanceSettingRequest;
  * @method static Builder|StudentAttendanceSetting whereStart($value)
  * @method static Builder|StudentAttendanceSetting whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property-read \App\Models\Grade $grade
+ * @property-read \App\Models\Semester $semester
  */
 class StudentAttendanceSetting extends Model {
     //

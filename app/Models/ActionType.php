@@ -14,12 +14,12 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $name action类型名称
  * @property string|null $remark 备注
  * @property int $enabled
- * @method static Builder|ActionType whereCreatedAt($value)
- * @method static Builder|ActionType whereEnabled($value)
- * @method static Builder|ActionType whereId($value)
- * @method static Builder|ActionType whereName($value)
- * @method static Builder|ActionType whereRemark($value)
- * @method static Builder|ActionType whereUpdatedAt($value)
+ * @method static Builder|School whereCreatedAt($value)
+ * @method static Builder|School whereEnabled($value)
+ * @method static Builder|School whereId($value)
+ * @method static Builder|School whereName($value)
+ * @method static Builder|School whereRemark($value)
+ * @method static Builder|School whereUpdatedAt($value)
  * @mixin \Eloquent
  */
 class ActionType extends Model {

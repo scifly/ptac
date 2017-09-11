@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use App\Facades\DatatableFacade as Datatable;
 
 /**
  * App\Models\AlertType
@@ -24,10 +25,25 @@ use Illuminate\Database\Eloquent\Model;
  */
 class AlertType extends Model {
     
-    protected $table = 'alert_types';
-    protected $fillable = [
-        'name',
-        'english_name',
-        'enabled'
-    ];
+    protected $fillable = ['name', 'english_name', 'enabled'];
+
+    public function datatable() {
+        
+        $columns = [
+            ['db' => 'AlertType.id', 'dt' => 0],
+            ['db' => 'AlertType.name', 'dt' => 1],
+            ['db' => 'AlertType.english_name', 'dt' => 2],
+            ['db' => 'AlertType.created_at', 'dt' => 3],
+            ['db' => 'AlertType.updated_at', 'dt' => 4],
+            [
+                'db' => 'AlertType.enabled', 'dt' => 5,
+                'formatter' => function($d, $row) {
+                    return Datatable::simple($this, $d, $row);
+                }
+            ]
+        ];
+        return Datatable::simple($this, $columns);
+        
+    }
+    
 }

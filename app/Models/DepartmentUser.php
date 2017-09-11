@@ -3,6 +3,8 @@
 namespace App\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
+use Mockery\Exception;
 
 /**
  * App\Models\DepartmentUser
@@ -29,16 +31,42 @@ class DepartmentUser extends Model {
         'department_id', 'user_id', 'enabled'
     ];
 
-    public function storeByDepartmentId($userId, array $departmentIds) {
+    public function storeByUserId($userId, array $departmentIds) {
 
-        foreach ($departmentIds as $departmentId) {
-            $this->create([
-                'user_id' => $userId,
-                'department_id' => $departmentId,
-                'enabled' => 1,
-            ]);
+        try {
+            $exception = DB::transaction(function() use ($userId, $departmentIds) {
+                foreach ($departmentIds as $departmentId) {
+                    $this->create([
+                        'user_id' => $userId,
+                        'department_id' => $departmentId,
+                        'enabled' => 1,
+                    ]);
+                }
+            });
+            return is_null($exception) ? true : $exception;
+        } catch (Exception $e) {
+            return false;
         }
-
+        
+    }
+    
+    public function storeByDepartmentId($departmentId, array $userIds) {
+    
+        try {
+            $exception = DB::transaction(function() use ($departmentId, $userIds) {
+                foreach ($userIds as $userId) {
+                    $this->create([
+                        'user_id' => $userId,
+                        'department_id' => $departmentId,
+                        'enabled' => 1,
+                    ]);
+                }
+            });
+            return is_null($exception) ? true : $exception;
+        } catch (Exception $e) {
+            return false;
+        }
+        
     }
     
 }

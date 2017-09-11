@@ -26,6 +26,7 @@ class GradeRequest extends FormRequest {
             'name' => 'required|string|max:255|unique:grades,name,' .
                 $this->input('id') . ',id,' .
                 'school_id,' . $this->input('school_id'),
+            'department_id' => 'required|integer',
             'school_id' => 'required|integer',
             'educator_ids' => 'required|string',
             'enabled' => 'required|boolean'
@@ -71,6 +72,9 @@ class GradeRequest extends FormRequest {
         }
         if (isset($input['educator_ids'])) {
             $input['educator_ids'] = implode(',', $input['educator_ids']);
+        }
+        if (!isset($input['department_id'])) {
+            $input['department_id'] = 0;
         }
         $this->replace($input);
         

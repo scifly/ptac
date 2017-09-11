@@ -56,6 +56,7 @@ class SquadRequest extends FormRequest {
             'name' => 'required|string|between:2,255|unique:classes,name,' .
                 $this->input('id') . ',id,' .
                 'grade_id,' . $this->input('grade_id'),
+            'department_id' => 'required|integer',
             'grade_id' => 'required|integer',
             'educator_ids' => 'required|string',
             'enabled' => 'required|boolean'
@@ -76,6 +77,9 @@ class SquadRequest extends FormRequest {
         }
         if (isset($input['educator_ids'])) {
             $input['educator_ids'] = implode(',', $input['educator_ids']);
+        }
+        if (!isset($input['department_id'])) {
+            $input['department_id'] = 0;
         }
         $this->replace($input);
         

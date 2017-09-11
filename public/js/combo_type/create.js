@@ -1,0 +1,1 @@
+$(crud.create('formComboType', 'combo_types'));
