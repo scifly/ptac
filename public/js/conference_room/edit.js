@@ -1,0 +1,1 @@
+$(crud.edit('formConferenceRoom', 'conference_rooms'));

@@ -1,0 +1,1 @@
+$(crud.index('conference_queues'));

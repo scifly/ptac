@@ -1,0 +1,1 @@
+$(crud.edit('formConferenceQueue', 'conference_queues'));

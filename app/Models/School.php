@@ -2,7 +2,11 @@
 
 namespace App\Models;
 
+use App\Events\SchoolCreated;
+use App\Events\SchoolDeleted;
+use App\Events\SchoolUpdated;
 use App\Facades\DatatableFacade as Datatable;
+use App\Http\Requests\SchoolRequest;
 use App\Models\Department;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -57,6 +61,9 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read Collection|Subject[] $subjects
  * @property-read Collection|Team[] $teams
  * @property-read Collection|WapSiteModule[] $wapSiteModules
+ * @property int $department_id 对应的部门ID
+ * @property-read \App\Models\Department $department
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\School whereDepartmentId($value)
  */
 class School extends Model {
     
@@ -64,6 +71,13 @@ class School extends Model {
         'name', 'address', 'school_type_id',
         'corp_id', 'enabled'
     ];
+    
+    /**
+     * 返回对应的部门对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function department() { return $this->belongsTo('App\Models\Department'); }
     
     /**
      * 返回所属学校类型对象
@@ -205,6 +219,58 @@ class School extends Model {
     public function wapSiteModules() {
         
         return $this->hasManyThrough('App\Models\WapSiteModule', 'App\Models\WapSite');
+        
+    }
+    
+    /**
+     * 创建学校
+     *
+     * @param array $data
+     * @return bool
+     */
+    public function store(array $data) {
+        
+        $school = $this->create($data);
+        if ($school) {
+            event(new SchoolCreated($school));
+            return true;
+        }
+        return false;
+        
+    }
+    
+    /**
+     * 更新学校
+     *
+     * @param array $data
+     * @param $id
+     * @return bool
+     */
+    public function modify(array $data, $id) {
+        
+        
+        if ($this->find($id)->update($data)) {
+            event(new SchoolUpdated($this->find($id)));
+            return true;
+        }
+        return false;
+        
+    }
+    
+    /**
+     * 删除学校
+     *
+     * @param $id
+     * @return bool|null
+     */
+    public function remove($id) {
+        
+        $school = $this->find($id);
+        if ($school->delete()) {
+            event(new SchoolDeleted($school));
+            return true;
+        }
+        return false;
         
     }
     

@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
+use App\Events\CorpCreated;
+use App\Events\CorpDeleted;
+use App\Events\CorpUpdated;
 use App\Facades\DatatableFacade as Datatable;
-use App\Http\Requests\CompanyRequest;
-use App\Http\Requests\CorpRequest;
-use App\Models\Department;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -35,10 +35,23 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read Collection|Grade[] $grades
  * @property-read Collection|School[] $schools
  * @property-read Collection|Team[] $teams
+ * @property int $department_id 对应的部门ID
+ * @property-read \App\Models\Department $department
+ * @method static Builder|Corp whereDepartmentId($value)
  */
 class Corp extends Model {
     
-    protected $fillable = ['name', 'company_id', 'corpid', 'enabled'];
+    protected $fillable = [
+        'name', 'company_id', 'corpid',
+        'corpsecret', 'department_id', 'enabled'
+    ];
+    
+    /**
+     * 返回对应的部门对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function department() { return $this->belongsTo('App\Models\Department'); }
     
     /**
      * 获取所属运营者公司对象
@@ -84,6 +97,63 @@ class Corp extends Model {
     public function teams() {
         
         return $this->hasManyThrough('App\Models\Team', 'App\Models\School');
+        
+    }
+    
+    /**
+     * 保存企业
+     *
+     * @param array $data
+     * @param bool $fireEvent
+     * @return bool
+     */
+    public function store(array $data, $fireEvent = false) {
+        
+        $corp = $this->create($data);
+        if ($corp && $fireEvent) {
+            event(new CorpCreated($corp));
+            return true;
+        }
+        return $corp ? true : false;
+        
+    }
+    
+    /**
+     * 更新企业
+     *
+     * @param array $data
+     * @param $id
+     * @param bool $fireEvent
+     * @return bool
+     */
+    public function modify(array $data, $id, $fireEvent = false) {
+        
+        $corp = $this->find($id);
+        $updated = $corp->update($data);
+        if ($updated && $fireEvent) {
+            event(new CorpUpdated($corp));
+            return true;
+        }
+        return $updated ? true : false;
+        
+    }
+    
+    /**
+     * 删除企业
+     *
+     * @param $id
+     * @param bool $fireEvent
+     * @return bool
+     */
+    public function remove($id, $fireEvent = false) {
+        
+        $corp = $this->find($id);
+        $removed = $corp->delete();
+        if ($removed && $fireEvent) {
+            event(new CorpDeleted($corp));
+            return true;
+        }
+        return $removed ? true : false;
         
     }
     

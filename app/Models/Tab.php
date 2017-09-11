@@ -36,6 +36,8 @@ use ReflectionClass;
  * @property int $action_id 默认加载的Action ID
  * @property-read \App\Models\Action $action
  * @method static Builder|Tab whereActionId($value)
+ * @property string $controller 控制器名称
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Tab whereController($value)
  */
 class Tab extends Model {
     

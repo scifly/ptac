@@ -67,8 +67,8 @@ $(function () {
         drop: function (date) {
             var originalEventObject = $(this).data('eventObject');
             var copiedEventObject = $.extend({}, originalEventObject);
-            var $startPicker =  $( ".start-datepicker" );
-            var $endPicker =  $( ".end-datepicker" );
+            var $startPicker = $(".start-datepicker");
+            var $endPicker = $(".end-datepicker");
             //弹窗显示表单
             $('#modal-create-event').modal({backdrop: true});
             //初始化表单中的开始时间和结束时间
@@ -77,8 +77,8 @@ $(function () {
 
             copiedEventObject._token = $('#csrf_token').attr('content');
             //调用日期时间选择器，格式化时间
-            $startPicker.datepicker( "destroy" );
-            $endPicker.datepicker( "destroy" );
+            $startPicker.datepicker("destroy");
+            $endPicker.datepicker("destroy");
             $startPicker.datetimepicker({
                 dateFormat: 'yy-mm-dd'
             });
@@ -87,7 +87,7 @@ $(function () {
             });
             //点击保存后获取时间值 因页面未刷新需要结束上次on(click)事件
             $('#confirm-add-time').off('click').click(function () {
-                copiedEventObject.start =$startPicker.val();
+                copiedEventObject.start = $startPicker.val();
                 copiedEventObject.end = $endPicker.val();
                 $.ajax({
                     type: 'POST',
@@ -128,24 +128,30 @@ $(function () {
                         $(".end-datepicker").datetimepicker({
                             dateFormat: 'yy-mm-dd'
                         });
+
                         $('#confirm-update').on("click", function () {
-                            var data = $('#formEventEdit').serialize();
-                            data += "&" + "user_id" + "=" + id;
-                            $.ajax({
-                                type: 'PUT',
-                                dataType: 'json',
-                                url: '../events/update/' + event.id,
-                                data: data,
-                                success: function (result) {
-                                    if (result.statusCode === 200) {
-                                        //保存成功
+                            if ($('#formEventEdit').parsley().validate()) {
+                                var data = $('#formEventEdit').serialize();
+                                data += "&" + "user_id" + "=" + id;
+                                $.ajax({
+                                    type: 'PUT',
+                                    dataType: 'json',
+                                    url: '../events/update/' + event.id,
+                                    data: data,
+                                    success: function (result) {
+                                        if (result.statusCode === 200) {
+                                            //保存成功
+                                            $('#calendar').fullCalendar('refetchEvents');
+                                        }
+                                        page.inform(
+                                            '操作结果', result.message,
+                                            result.statusCode === 200 ? page.success : page.failure
+                                        );
                                     }
-                                    page.inform(
-                                        '操作结果', result.message,
-                                        result.statusCode === 200 ? page.success : page.failure
-                                    );
-                                }
-                            });
+                                });
+                            } else {
+                                return false;
+                            }
                         });
                         $('#confirm-delete-event').on("click", function () {
                             var ret = confirm("确定删除当前日程事件？");
@@ -303,23 +309,28 @@ $(function () {
         });
 
         $('#confirm-create').off('click').click(function () {
-            var data = $('#formEvent').serialize();
-            data += "&" + "user_id" + "=" + id;
-            $.ajax({
-                type: 'POST',
-                dataType: 'json',
-                url: '../events/store',
-                data: data,
-                success: function (result) {
-                    if (result.statusCode === 200) {
-                        var $obj = eval(result.message);
-                        event.append("<span id= '" + $obj.id + "'>" + $obj.title + "</span>");
-                        $('#external-events').prepend(event);
-                        init_events(event);
+            //前端进行表单验证,若通过
+            if ($('#formEvent').parsley().validate()) {
+                var data = $('#formEvent').serialize();
+                data += "&" + "user_id" + "=" + id;
+                $.ajax({
+                    type: 'POST',
+                    dataType: 'json',
+                    url: '../events/store',
+                    data: data,
+                    success: function (result) {
+                        if (result.statusCode === 200) {
+                            var $obj = eval(result.message);
+                            event.append("<span id= '" + $obj.id + "'>" + $obj.title + "</span>");
+                            $('#external-events').prepend(event);
+                            init_events(event);
+                        }
+                        $('#formEvent')[0].reset();
                     }
-                    $('#formEvent')[0].reset();
-                }
-            })
+                })
+            } else {
+                return false;
+            }
         })
     });
 

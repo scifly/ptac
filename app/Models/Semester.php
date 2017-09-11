@@ -30,6 +30,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $remark 备注
  * @property-read \App\Models\School $school
  * @method static Builder|Semester whereRemark($value)
+ * @property-read \App\Models\StudentAttendanceSetting $studentAttendanceSetting
  */
 class Semester extends Model {
 

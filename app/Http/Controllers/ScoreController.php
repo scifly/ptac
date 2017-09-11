@@ -201,14 +201,5 @@ class ScoreController extends Controller {
         });
         return $this->score->insert($insert) ? $this->succeed() : $this->fail();
     }
-
-    /**
-     * 在线编辑成绩
-     */
-    public function editor(){
-
-        return $this->output(__METHOD__);
-    }
-    
 }
 

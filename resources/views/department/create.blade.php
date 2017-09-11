@@ -1,5 +1,4 @@
 {!! Form::open([
-    'method' => 'post',
     'id' => 'formDepartment',
     'class' => 'form-horizontal form-borderd',
     'data-parsley-validate' => 'true'
