@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\EducatorRequest;
 use App\Models\Educator;
+use App\Models\EducatorClass;
 use App\Models\Team;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
@@ -18,12 +19,14 @@ class EducatorController extends Controller {
     
     protected $educator;
     protected $team;
+    protected $educatorClass;
 
-    public function __construct(Educator $educator, Team $team) {
+    public function __construct(Educator $educator, Team $team, EducatorClass $educatorClass) {
         
         $this->educator = $educator;
         $this->team = $team;
-        
+        $this->educatorClass = $educatorClass;
+
     }
     
     /**
@@ -57,7 +60,7 @@ class EducatorController extends Controller {
      */
     public function store(EducatorRequest $request) {
 
-        return $this->educator->create($request->all()) ? $this->succeed() : $this->fail();
+        return $this->educator->store($request) ? $this->succeed() : $this->fail();
         
     }
 
