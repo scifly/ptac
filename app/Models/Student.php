@@ -128,6 +128,17 @@ class Student extends Model {
 
         try {
             $exception = DB::transaction(function() use ($request) {
+                # 获取监护人的ID
+                $custodianIds = $request->input('custodian_ids');
+                # 获取与监护人的关系
+                $relationship = $request->input('relationship');
+                if(count($custodianIds) == count($relationship))
+                {
+                    # 合并数组，得到监护人Id和关系对应的数组
+                    $custodianId = array_combine($custodianIds,$relationship);
+                }else{
+                    return false;
+                }
                 $user = $request->input('user');
                 $userData = [
                     'username' => uniqid('custodian_'),
@@ -177,15 +188,15 @@ class Student extends Model {
                 # 向部门用户表添加数据
                 $departmentUser = new DepartmentUser();
                 $departmentIds = $request->input('department_ids');
-                $departmentUser ->storeByDepartmentId($u->id, $departmentIds);
+                $departmentUser ->storeByUserId($u->id, $departmentIds);
                 unset($departmentUser);
 
                 # 向监护人学生表中添加数据
                 $custodianStudent = new CustodianStudent();
-                $custodianIds = $request->input('custodian_ids');
-                if($custodianIds!=null)
+
+                if($custodianId!=null)
                 {
-                    $custodianStudent->storeByStudentId($s->id, $custodianIds);
+                    $custodianStudent->storeByStudentId($s->id, $custodianId);
                 }
                 unset($custodianStudent);
             });
@@ -228,6 +239,17 @@ class Student extends Model {
         if (!isset($student)) { return false; }
         try {
             $exception = DB::transaction(function() use($request, $studentId, $student) {
+                # 获取监护人的ID
+                $custodianIds = $request->input('custodian_ids');
+                # 获取与监护人的关系
+                $relationship = $request->input('relationship');
+                if(count($custodianIds) == count($relationship))
+                {
+                    # 合并数组，得到监护人Id和关系对应的数组
+                    $custodianId = array_combine($custodianIds,$relationship);
+                }else{
+                    return false;
+                }
                 $userId = $request->input('user_id');
                 $userData = $request->input('user');
                 $user = new User();
@@ -264,13 +286,12 @@ class Student extends Model {
                 $departmentIds = $request->input('department_ids');
                 $departmentUser = new DepartmentUser();
                 $departmentUser::where('user_id',$userId)->delete();
-                $departmentUser ->storeByDepartmentId($userId, $departmentIds);
+                $departmentUser ->storeByUserId($userId, $departmentIds);
                 unset($departmentUser);
-                $custodianStudent = new CustodianStudent();
-                $custodianIds = $request->input('custodian_ids');
 
+                $custodianStudent = new CustodianStudent();
                 $custodianStudent::where('student_id',$studentId)->delete();
-                $custodianStudent->storeByStudentId($studentId, $custodianIds);
+                $custodianStudent->storeByStudentId($studentId, $custodianId);
                 unset($custodianStudent);
             });
 

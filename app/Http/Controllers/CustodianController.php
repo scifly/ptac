@@ -110,7 +110,6 @@ class CustodianController extends Controller {
             $selectedStudents = [];
         }
 
-
         if (!$user) {
             return $this->notFound();
         }
@@ -131,6 +130,7 @@ class CustodianController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(CustodianRequest $request, $id) {
+
         return $this->custodian->modify($request,$id) ? $this->succeed() : $this->fail();
         
     }
