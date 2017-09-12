@@ -69,7 +69,7 @@ class StudentController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(StudentRequest $request) {
-
+        dd($this->student->store($request));
         return $this->student->store($request) ? $this->succeed() : $this->fail();
         
     }

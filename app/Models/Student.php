@@ -120,14 +120,14 @@ class Student extends Model {
 
     /**
      * 保存新创建的监护人记录
-     *
-     * @param \App\Models\StudentRequest $request
+     * @param StudentRequest $request
      * @return bool|mixed
      */
     public function store(StudentRequest $request) {
 
         try {
             $exception = DB::transaction(function() use ($request) {
+
                 # 获取监护人的ID
                 $custodianIds = $request->input('custodian_ids');
                 # 获取与监护人的关系

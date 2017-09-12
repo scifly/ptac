@@ -114,6 +114,7 @@ class CustodianController extends Controller {
             return $this->notFound();
         }
         return $this->output(__METHOD__, [
+            'custodianStudent' => $custodianStudent,
             'custodian' => $custodian,
             'user' => $user,
 //            'departments'=>$this->department->departments([1]),
