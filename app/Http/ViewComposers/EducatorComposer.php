@@ -5,8 +5,10 @@ namespace App\Http\ViewComposers;
 use App\Models\Corp;
 use App\Models\Educator;
 use App\Models\Grade;
+use App\Models\Group;
 use App\Models\School;
 use App\Models\SchoolType;
+use App\Models\Subject;
 use App\Models\Team;
 use App\Models\User;
 use App\Models\Squad;
@@ -15,25 +17,29 @@ use Illuminate\Support\Facades\DB;
 
 class EducatorComposer {
 
-    protected $users, $teams, $schools, $squads;
+    protected $user, $subject, $school, $squad, $group;
 
 
 
-    public function __construct(User $users, Team $teams, School $schools, Squad $squads) {
+    public function __construct(User $user, Subject $subject, School $school, Squad $squad, Group $group) {
 
-        $this->users = $users;
-        $this->teams = $teams;
-        $this->schools = $schools;
-        $this->squads = $squads;
+        $this->user = $user;
+        $this->subject = $subject;
+        $this->school = $school;
+        $this->squad = $squad;
+        $this->group = $group;
 
     }
 
     public function compose(View $view) {
 
         $view->with([
-            'users' => $this->users->pluck('username', 'id'),
-            'schools' => $this->schools->pluck('name', 'id'),
-            'squads' => $this->squads->pluck('name','id'),
+            'users' => $this->user->pluck('username', 'id'),
+            'schools' => $this->school->pluck('name', 'id'),
+            'squads' => $this->squad->pluck('name','id'),
+            'subjects' => $this->subject->pluck('name', 'id'),
+            'groups' => $this->group->pluck('name', 'id')
+
         ]);
     }
 

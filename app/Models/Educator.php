@@ -8,6 +8,8 @@ use App\Models\EducatorClass;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
+use Mockery\Exception;
 
 /**
  * App\Models\Educator
@@ -172,6 +174,80 @@ class Educator extends Model {
         
         return Datatable::simple($this, $columns,$joins);
         
+    }
+    /**
+     * 保存新创建的教职员工记录
+     *
+     * @param CustodianRequest $request
+     * @return bool|mixed
+     */
+    public function store(EducatorRequest $request) {
+
+        try {
+            $exception = DB::transaction(function() use ($request) {
+                dd($request->all());die;
+                $userInputData = $request->input('user');
+                $userData = [
+                    'username' => uniqid('educator_'),
+                    'group_id' => $userInputData['group_id'],
+                    'password' => $userInputData['password'],
+                    'email' => $userInputData['email'],
+                    'realname' => $userInputData['realname'],
+                    'gender' => $userInputData['gender'],
+                    'avatar_url' => '00001.jpg',
+                    'userid' => uniqid('custodian_'),
+                    'isleader' => 0,
+                    'english_name'=>$userInputData['english_name'],
+                    'telephone' => $userInputData['telephone'],
+                    'wechatid' => '',
+                    'enabled' =>$userInputData['enabled']
+                ];
+                $user = new User();
+                $u = $user->create($userData);
+                unset($user);
+
+                $educator = $request->input('educator');
+                $educatorData = [
+                    'user_id' => $u->id,
+                    'school_id' => $educator['school_id'],
+                    'sms_quote' => 0,
+                    'enabled' =>$userInputData['enabled']
+                ];
+                $educatorId = $this->create($educatorData);
+                $classIds = $educator['class_ids'];
+                if($classIds) {
+                    $educatorClass = new EducatorClass();
+                    foreach ($classIds as $classId) {
+                        $educatorClassData = [
+                            'educator_id' => $educatorId->id,
+                            'class_id' => $classId,
+                            'subject_id' => $educator['subject_id'],
+                            'enabled' => $userInputData['enabled']
+                        ];
+                        $educatorClass->create($educatorClassData);
+                    }
+                    unset($educatorClass);
+                }
+
+                $mobiles = $request->input('mobile');
+                $mobile = new Mobile();
+                for ($i=0; $i<count($mobiles['mobile']); $i++ ) {
+                    $mobileData = [
+                        'user_id' => $u->id,
+                        'mobile' =>$mobiles['mobile'][$i],
+                        'enabled' => isset($mobiles['enabled'][$i]) ? 1 : 0,
+                        'isdefault' => isset($mobiles['isdefault'][$i]) ? 1 : 0,
+                    ];
+                    $mobile = new Mobile();
+                    $m = $mobile->create($mobileData);
+                }
+                unset($mobile);
+            });
+            return is_null($exception) ? true : $exception;
+        } catch (Exception $e) {
+            return false;
+        }
+
     }
     
 }
