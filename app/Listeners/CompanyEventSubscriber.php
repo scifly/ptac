@@ -13,7 +13,9 @@ class CompanyEventSubscriber {
     
     function __construct(Company $company) {
         $this->company = $company;
+
       //  $this->departmentTypeId = DepartmentType::whereName('运营者')->first()->id;
+
     }
     
     public function onDepartmentCreated($event) {
