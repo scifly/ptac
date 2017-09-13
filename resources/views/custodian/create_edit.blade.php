@@ -91,7 +91,6 @@
                     {{ Form::text('user[email]', null, [
                         'class' => 'form-control',
                         'placeholder' => '(请输入电子邮件地址)',
-                        'type' => 'email',
                         'maxlength' => '255',
                         'data-parsley-type'=>"email"
                     ]) }}
@@ -100,6 +99,7 @@
             @include('partials.multiple_select', [
 
                 'label' => '所属部门',
+
                 'id' => 'department_ids',
                 'items' => $departments,
                 'selectedItems' => isset($selectedDepartments) ? $selectedDepartments : NULL
@@ -115,18 +115,37 @@
                'items' => $students,
                'selectedItems' => isset($selectedStudents) ? $selectedStudents : NULL
            ])
-            <div class="form-group addInput">
-                <label for="relationship" class="col-sm-3 control-label">和学生之间的关系</label>
-                <div class="entry input-group col-sm-6">
-                    <input type="text" class="form-control" name="relationship[]">
-                    <span class="input-group-btn">
-                        <button class="btn btn-add btn-success" type="button">
-                            <span class="glyphicon glyphicon-plus"></span>
-                        </button>
-                    </span>
-                </div>
-            </div>
+                <div class="form-group addInput">
+                    @if(isset($custodianStudent))
+                        @foreach($custodianStudent as $key=>$value)
+                            @if($key==0)
+                                <label for="relationship" class="col-sm-3 control-label">和学生之间的关系</label>
+                            @else
+                                <label for="relationship" class="col-sm-3 control-label">&nbsp;</label>
+                            @endif
 
+                            <div class="entry input-group col-sm-6">
+                                <input type="text" class="form-control" name="relationship[]"
+                                       value="{{$value['relationship']}}">
+                                <span class="input-group-btn">
+                                <button class="btn btn-add btn-success" type="button">
+                                    <span class="glyphicon glyphicon-plus"></span>
+                                </button>
+                            </span>
+                            </div>
+                        @endforeach
+                    @else
+                        <label for="relationship" class="col-sm-3 control-label">和学生之间的关系</label>
+                        <div class="entry input-group col-sm-6">
+                            <input type="text" class="form-control" name="relationship[]">
+                            <span class="input-group-btn">
+                            <button class="btn btn-add btn-success" type="button">
+                                <span class="glyphicon glyphicon-plus"></span>
+                            </button>
+                        </span>
+                        </div>
+                    @endif
+                </div>
             <div class="form-group">
                 {{ Form::label('expiry', '服务到期时间', [
                 'class' => 'col-sm-3 control-label'
