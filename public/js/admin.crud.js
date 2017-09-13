@@ -101,7 +101,7 @@ var crud = {
         // 编辑记录
         $(document).on('click', '.fa-edit', function() {
             var url = $(this).parents().eq(0).attr('id');
-            console.log(url);
+            // console.log(url);
             url = url.replace('_', '/');
             page.getTabContent($activeTabPane, page.siteRoot() + table + '/' + url);
             crud.unbindEvents();

@@ -51,7 +51,6 @@ class GroupController extends Controller {
      */
     public function store(GroupRequest $request)
     {
-
         return $this->group->create($request->all()) ? $this->succeed() : $this->fail();
         
     }

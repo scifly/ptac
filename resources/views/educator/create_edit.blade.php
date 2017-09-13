@@ -118,24 +118,24 @@
                     <table class="table-bordered table-responsive" style="width: 100%;">
                         <thead>
                         <tr>
-                            <td><label for="mobile[mobile][]">手机号码</label></td>
-                            <td style="text-align: center;"><label for="mobile[isdefault][]">默认</label></td>
-                            <td style="text-align: center;"><label for="mobile[enabled][]">启用</label></td>
+                            {{--<td><label for="mobile[mobile][]">手机号码</label></td>--}}
+                            <td>手机号码</td>
+                            {{--<td style="text-align: center;"><label for="mobile[isdefault][]">默认</label></td>--}}
+                            <td style="text-align: center;">默认</td>
+                            {{--<td style="text-align: center;"><label for="mobile[enabled][]">启用</label></td>--}}
+                            <td style="text-align: center;">启用</td>
                             <td></td>
                         </tr>
                         </thead>
                         <tbody>
                         <tr>
-                            <td><input class="form-control" name="mobile[mobile][]" type="text" placeholder="(请输入手机号码)"></td>
+                            <td><input class="form-control" name="mobile[mobile][e1]" type="text"
+                                       placeholder="（请输入手机号码）"></td>
                             <td style="text-align: center;">
-                                <label for="mobile[isdefault][]">
-                                    <input name="mobile[isdefault][]" type="radio" id="mobile[isdefault][]" class="minimal">
-                                </label>
+                                <input name="mobile[isdefault]" value="e1" type="radio" class="minimal">
                             </td>
                             <td style="text-align: center;">
-                                <label for="mobile[enabled][]">
-                                    <input name="mobile[enabled][]" type="checkbox" id="mobile[enabled][]" class="minimal">
-                                </label>
+                                <input name="mobile[enabled][e1]" type="checkbox" class="minimal">
                             </td>
                             <td style="text-align: center;">
                                 <span class="input-group-btn">
@@ -165,11 +165,11 @@
                 'id' => 'educator[class_ids]',
                 'items' => $squads
             ])
-             @include('partials.single_select', [
-                'label' => '科目',
-                'id' => 'educator[subject_id]',
-                'items' => $subjects
-            ])
+            @include('partials.single_select', [
+               'label' => '科目',
+               'id' => 'educator[subject_id]',
+               'items' => $subjects
+           ])
             @include('partials.enabled', [
                 'label' => '是否启用',
                 'id' => 'user[enabled]',
