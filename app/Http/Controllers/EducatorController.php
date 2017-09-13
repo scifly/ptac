@@ -128,6 +128,7 @@ class EducatorController extends Controller {
         
         $educator = $this->educator->find($id);
         if (!$educator) { return $this->notFound(); }
+        dd($request->all());die;
         return $educator->update($request->all()) ? $this->succeed() : $this->fail();
         
     }
