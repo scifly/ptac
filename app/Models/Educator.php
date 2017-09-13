@@ -239,18 +239,19 @@ class Educator extends Model {
                 }
 
                 $mobiles = $request->input('mobile');
-                $mobile = new Mobile();
-                for ($i=0; $i<count($mobiles['mobile']); $i++ ) {
-                    $mobileData = [
-                        'user_id' => $u->id,
-                        'mobile' =>$mobiles['mobile'][$i],
-                        'enabled' => isset($mobiles['enabled'][$i]) ? 1 : 0,
-                        'isdefault' => isset($mobiles['isdefault'][$i]) ? 1 : 0,
-                    ];
+                if($mobiles) {
                     $mobile = new Mobile();
-                    $m = $mobile->create($mobileData);
+                    foreach ($mobiles['mobile'] as $k => $row) {
+                        $mobileData = [
+                            'user_id' => $u->id,
+                            'mobile' => $row,
+                            'enabled' => isset($mobiles['enabled'][$k]) ? 1 : 0,
+                            'isdefault' => isset($mobiles['isdefault'][$k]) ? 1 : 0,
+                        ];
+                        $m = $mobile->create($mobileData);
+                    }
+                    unset($mobile);
                 }
-                unset($mobile);
             });
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {

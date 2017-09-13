@@ -1,1 +1,1 @@
-$(crud.edit('formEducator', 'educators'));
+$(crud.recharge('formEducator', 'educators'));

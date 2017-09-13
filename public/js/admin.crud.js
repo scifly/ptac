@@ -142,5 +142,9 @@ var crud = {
     edit: function (formId, table) {
         var id = $('#id').val();
         this.init(table + '/index', formId, table + '/update/' + id, 'PUT');
+    },
+    recharge: function (formId, table) {
+        var id = $('#id').val();
+        this.init(table + '/index', formId, table + '/rechargeStore/' + id, 'PUT');
     }
 };
