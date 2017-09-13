@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\EducatorRequest;
 use App\Models\Educator;
 use App\Models\EducatorClass;
+use App\Models\Mobile;
 use App\Models\Team;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
@@ -18,13 +19,13 @@ use Illuminate\Support\Facades\Request;
 class EducatorController extends Controller {
     
     protected $educator;
-    protected $team;
+    protected $mobile;
     protected $educatorClass;
 
-    public function __construct(Educator $educator, Team $team, EducatorClass $educatorClass) {
+    public function __construct(Educator $educator, Mobile $mobile, EducatorClass $educatorClass) {
         
         $this->educator = $educator;
-        $this->team = $team;
+        $this->mobile = $mobile;
         $this->educatorClass = $educatorClass;
 
     }
@@ -91,12 +92,29 @@ class EducatorController extends Controller {
         
         $educator = $this->educator->find($id);
         if (!$educator) { return $this->notFound(); }
-        $teamIds = explode(",", $educator->team_ids);
+        $mobiles = $this->mobile->where('user_id',$educator->user_id)->get();
+//        dd($mobiles);die;
         return $this->output(__METHOD__, [
             'educator' => $educator,
-            'selectedTeams' => $this->team->teams($teamIds)
+            'mobiles' => $mobiles
         ]);
         
+    }
+
+    /**
+     * 教职员工充值
+     *
+     * @param $id
+     * @return bool|\Illuminate\Http\JsonResponse
+     */
+    public function recharge($id) {
+
+        $educator = $this->educator->find($id);
+        if (!$educator) { return $this->notFound(); }
+        return $this->output(__METHOD__, [
+            'educator' => $educator,
+        ]);
+
     }
 
     /**
@@ -110,8 +128,26 @@ class EducatorController extends Controller {
         
         $educator = $this->educator->find($id);
         if (!$educator) { return $this->notFound(); }
+        dd($request->all());die;
         return $educator->update($request->all()) ? $this->succeed() : $this->fail();
         
+    }
+
+    /**
+     * 充值教职员工
+     *
+     * @param EducatorRequest $request
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function rechargeStore( $id) {
+
+        $educator = $this->educator->find($id);
+        if (!$educator) { return $this->notFound(); }
+        $recharge= Request::get('recharge');
+        $educator->sms_quote += $recharge;
+        return $educator->save() ? $this->succeed() : $this->fail();
+
     }
 
     /**

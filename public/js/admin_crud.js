@@ -127,6 +127,17 @@ var crud = {
                 }
             });
         });
+        $(document).on('click', '.fa-money', function() {
+            id = $(this).parents().eq(0).attr('id');
+            $.ajax({
+                type: 'GET',
+                dataType: 'json',
+                url: crud.siteroot() + 'recharge/' + id,
+                success: function(result) {
+
+                }
+            });
+        });
         $('#confirm-delete').on('click', function () {
             crud.ajaxRequest(
                 'DELETE', 'delete/' + id,
@@ -140,5 +151,11 @@ var crud = {
         var paths = path.split('/');
         var id = paths[paths.length - 1];
         this.init('../index', formId, '../update/' + id, 'PUT');
+    },
+    recharge: function (formId) {
+        var path = window.location.pathname;
+        var paths = path.split('/');
+        var id = paths[paths.length - 1];
+        this.init('../index', formId, '../rechargeStore/' + id, 'PUT');
     }
 };

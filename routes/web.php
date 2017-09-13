@@ -28,6 +28,11 @@ Route::get('pages/{id}', 'HomeController@menu');
 /** 用户/通讯录 */
 // 教职员工
 Route::group(['prefix' => 'educators'], routes('EducatorController'));
+Route::group(['prefix' => 'educators'], function() {
+    $ctlr = 'EducatorController';
+    Route::get('recharge/{id}', $ctlr . '@recharge');
+    Route::put('rechargeStore/{id}', $ctlr . '@rechargeStore');
+});
 // 监护人
 Route::group(['prefix' => 'custodians'], routes('CustodianController'));
 // 学生

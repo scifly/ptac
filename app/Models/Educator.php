@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Facades\DatatableFacade;
 use App\Http\Requests\EducatorRequest;
 use App\Models\EducatorClass;
 use Illuminate\Database\Eloquent\Builder;
@@ -149,7 +150,15 @@ class Educator extends Model {
             [
                 'db' => 'Educator.enabled', 'dt' => 6,
                 'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($this, $d, $row);
+                    $id = $row['id'];
+                    $status = $d ? sprintf(Datatable::DT_ON, '已启用') : sprintf(Datatable::DT_OFF, '未启用');
+                    $showLink = sprintf(Datatable::DT_LINK_SHOW, 'show_' . $id);
+                    $editLink = sprintf(Datatable::DT_LINK_EDIT, 'edit_' . $id);
+                    $delLink = sprintf(Datatable::DT_LINK_DEL, $id);
+                    $rechargeLink = sprintf(Datatable::DT_LINK_RECHARGE, 'recharge_' . $id);
+
+                    return $status . Datatable::DT_SPACE . $showLink . Datatable::DT_SPACE .
+                        $editLink .  Datatable::DT_SPACE . $delLink .  Datatable::DT_SPACE . $rechargeLink ;
                 }
             ]
         ];
@@ -230,18 +239,19 @@ class Educator extends Model {
                 }
 
                 $mobiles = $request->input('mobile');
-                $mobile = new Mobile();
-                for ($i=0; $i<count($mobiles['mobile']); $i++ ) {
-                    $mobileData = [
-                        'user_id' => $u->id,
-                        'mobile' =>$mobiles['mobile'][$i],
-                        'enabled' => isset($mobiles['enabled'][$i]) ? 1 : 0,
-                        'isdefault' => isset($mobiles['isdefault'][$i]) ? 1 : 0,
-                    ];
+                if($mobiles) {
                     $mobile = new Mobile();
-                    $m = $mobile->create($mobileData);
+                    foreach ($mobiles['mobile'] as $k => $row) {
+                        $mobileData = [
+                            'user_id' => $u->id,
+                            'mobile' => $row,
+                            'enabled' => isset($mobiles['enabled'][$k]) ? 1 : 0,
+                            'isdefault' => isset($mobiles['isdefault'][$k]) ? 1 : 0,
+                        ];
+                        $m = $mobile->create($mobileData);
+                    }
+                    unset($mobile);
                 }
-                unset($mobile);
             });
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {

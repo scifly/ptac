@@ -1,0 +1,1 @@
+$(crud.recharge('formEducator', 'educators'));

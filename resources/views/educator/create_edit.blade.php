@@ -13,6 +13,9 @@
             @if (!empty($educator['id']))
                 {{ Form::hidden('id', $educator['id'], ['id' => 'id']) }}
             @endif
+                @if (!empty($educator['user_id']))
+                {{ Form::hidden('user_id', $educator['user_id'], ['id' => 'user_id']) }}
+            @endif
             <div class="form-group">
                 {!! Form::label('user[realname]', '姓名', [
                     'class' => 'col-sm-3 control-label'
@@ -43,10 +46,10 @@
                 <label for="user[gender]" class="col-sm-3 control-label">性别</label>
                 <div class="col-sm-6">
                     <label id="user[gender]">
-                        <input id="User[gender]" type="radio" name="user[gender]" class="minimal" value="1">
+                        <input id="user[gender]" type="radio" name="user[gender]" class="minimal" value="1">
                     </label> 男
                     <label id="user[gender]">
-                        <input id="User[gender]" type="radio" name="user[gender]" class="minimal" value="0">
+                        <input id="user[gender]" type="radio" name="user[gender]" class="minimal" value="0">
                     </label> 女
                 </div>
             </div>
@@ -118,33 +121,56 @@
                     <table class="table-bordered table-responsive" style="width: 100%;">
                         <thead>
                         <tr>
-                            <td><label for="mobile[mobile][]">手机号码</label></td>
-                            <td style="text-align: center;"><label for="mobile[isdefault][]">默认</label></td>
-                            <td style="text-align: center;"><label for="mobile[enabled][]">启用</label></td>
+                            {{--<td><label for="mobile[mobile][]">手机号码</label></td>--}}
+                            <td>手机号码</td>
+                            {{--<td style="text-align: center;"><label for="mobile[isdefault][]">默认</label></td>--}}
+                            <td style="text-align: center;">默认</td>
+                            {{--<td style="text-align: center;"><label for="mobile[enabled][]">启用</label></td>--}}
+                            <td style="text-align: center;">启用</td>
                             <td></td>
                         </tr>
                         </thead>
                         <tbody>
-                        <tr>
-                            <td><input class="form-control" name="mobile[mobile][]" type="text" placeholder="(请输入手机号码)"></td>
-                            <td style="text-align: center;">
-                                <label for="mobile[isdefault][]">
-                                    <input name="mobile[isdefault][]" type="radio" id="mobile[isdefault][]" class="minimal">
-                                </label>
-                            </td>
-                            <td style="text-align: center;">
-                                <label for="mobile[enabled][]">
-                                    <input name="mobile[enabled][]" type="checkbox" id="mobile[enabled][]" class="minimal">
-                                </label>
-                            </td>
-                            <td style="text-align: center;">
-                                <span class="input-group-btn">
-                                    <button class="btn btn-box-tool btn-add" type="button">
-                                        <i class="fa fa-plus text-blue"></i>
-                                    </button>
-                                </span>
-                            </td>
-                        </tr>
+                        @if(isset($mobiles))
+                            @foreach($mobiles as $key => $mobile)
+                                <tr>
+                                    <td><input class="form-control" name="mobile[mobile][e{{$key}}]" type="text"
+                                               placeholder="（请输入手机号码）" value='{{$mobile->mobile}}'>
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <input name="mobile[isdefault]" value="e{{$key}}" type="radio" class="minimal" @if($mobile->isdefault == 1) checked @endif/>
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <input name="mobile[enabled][e{{$key}}]" type="checkbox" class="minimal" @if($mobile->enabled == 1) checked @endif />
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-box-tool btn-remove" type="button">
+                                                <i class="fa fa-minus text-blue"></i>
+                                            </button>
+                                        </span>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        @else
+                            <tr>
+                                <td><input class="form-control" name="mobile[mobile][e1]" type="text"
+                                           placeholder="（请输入手机号码）"></td>
+                                <td style="text-align: center;">
+                                    <input name="mobile[isdefault]" value="e1" type="radio" class="minimal">
+                                </td>
+                                <td style="text-align: center;">
+                                    <input name="mobile[enabled][e1]" type="checkbox" class="minimal">
+                                </td>
+                                <td style="text-align: center;">
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-box-tool btn-add" type="button">
+                                                <i class="fa fa-plus text-blue"></i>
+                                            </button>
+                                        </span>
+                                </td>
+                            </tr>
+                        @endif
                         </tbody>
                     </table>
                 </div>
@@ -165,15 +191,15 @@
                 'id' => 'educator[class_ids]',
                 'items' => $squads
             ])
-             @include('partials.single_select', [
-                'label' => '科目',
-                'id' => 'educator[subject_id]',
-                'items' => $subjects
-            ])
+            @include('partials.single_select', [
+               'label' => '科目',
+               'id' => 'educator[subject_id]',
+               'items' => $subjects
+           ])
             @include('partials.enabled', [
                 'label' => '是否启用',
                 'id' => 'user[enabled]',
-                'value' => NULL
+                'value' => isset($educator['enabled']) ? $educator['enabled'] : NULL
             ])
         </div>
     </div>

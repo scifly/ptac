@@ -35,12 +35,12 @@ class EducatorRequest extends FormRequest {
             'educator.class_ids' => 'required|array',
             'user.group_id' => 'required|integer',
             'user.username' => 'required|string|unique:users,username,' .
-                $this->input('User.id') . ',id',
+                $this->input('user_id') . ',id',
             'user.realname' => 'required|string',
             'user.gender' => 'required|boolean',
             'user.enabled' => 'required|boolean',
             'user.email' => 'nullable|email|unique:users,email,' .
-                $this->input('User.id') . ',id',
+                $this->input('user_id') . ',id',
             'user.password' => 'required|string|min:3',
 //            'mobile.mobile' => 'required|string|size:11|regex:/^0?(13|14|15|17|18)[0-9]{9}$/|' .
 //                'unique:mobiles,mobile,' . $this->input('mobile.id') . ',id',
