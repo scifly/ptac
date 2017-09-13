@@ -47,20 +47,43 @@
                     {!! Form::label('user[gender]', '女') !!}
                 </div>
             </div>
-            <div class="form-group">
-                {{ Form::label('mobile[mobile]', '手机', [
-                    'class' => 'col-sm-3 control-label'
-                ]) }}
-                <div class="col-sm-6">
-                    {{ Form::text('mobile[mobile]', null, [
-                        'class' => 'form-control',
-                        'placeholder' => '(请输入手机号码)',
-                        'required' => 'true',
-                        'type' => 'number',
-                        'data-parsley-length' => '[11, 11]'
-                    ]) }}
+                <div class="form-group">
+                    <label for="mobile[mobile][]" class="col-sm-3 control-label">手机号码</label>
+                    <div class="col-sm-6">
+                        <table class="table-bordered table-responsive" style="width: 100%;">
+                            <thead>
+                            <tr>
+                                <td><label for="mobile[mobile][]">手机号码</label></td>
+                                <td style="text-align: center;"><label for="mobile[isdefault][]">默认</label></td>
+                                <td style="text-align: center;"><label for="mobile[enabled][]">启用</label></td>
+                                <td></td>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td><input class="form-control" name="mobile[mobile][]" type="text" placeholder="(请输入手机号码)"></td>
+                                <td style="text-align: center;">
+                                    <label for="mobile[isdefault][]">
+                                        <input name="mobile[isdefault][]" type="radio" id="mobile[isdefault][]" class="minimal">
+                                    </label>
+                                </td>
+                                <td style="text-align: center;">
+                                    <label for="mobile[enabled][]">
+                                        <input name="mobile[enabled][]" type="checkbox" id="mobile[enabled][]" class="minimal">
+                                    </label>
+                                </td>
+                                <td style="text-align: center;">
+                                <span class="input-group-btn">
+                                    <button class="btn btn-box-tool btn-add" type="button">
+                                        <i class="fa fa-plus text-blue"></i>
+                                    </button>
+                                </span>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-            </div>
             <div class="form-group">
                 {{ Form::label('user[telephone]', '座机', [
                     'class' => 'col-sm-3 control-label'
@@ -114,12 +137,11 @@
                             @else
                             <label for="relationship" class="col-sm-3 control-label">&nbsp;</label>
                         @endif
-
                         <div class="entry input-group col-sm-6">
                             <input type="text" class="form-control" name="relationship[]"
                                    value="{{$value['relationship']}}">
                             <span class="input-group-btn">
-                                <button class="btn btn-add btn-success" type="button">
+                                <button class="btn btn-add2 btn-success" type="button">
                                     <span class="glyphicon glyphicon-plus"></span>
                                 </button>
                             </span>
@@ -130,7 +152,7 @@
                     <div class="entry input-group col-sm-6">
                         <input type="text" class="form-control" name="relationship[]">
                         <span class="input-group-btn">
-                            <button class="btn btn-add btn-success" type="button">
+                            <button class="btn btn-add2 btn-success" type="button">
                                 <span class="glyphicon glyphicon-plus"></span>
                             </button>
                         </span>
