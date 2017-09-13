@@ -34,7 +34,7 @@ class EducatorComposer {
     public function compose(View $view) {
 
         $view->with([
-            'users' => $this->user->pluck('username', 'id'),
+            'users' => $this->user->pluck('realname', 'id'),
             'schools' => $this->school->pluck('name', 'id'),
             'squads' => $this->squad->pluck('name','id'),
             'subjects' => $this->subject->pluck('name', 'id'),

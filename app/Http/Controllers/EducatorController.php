@@ -100,6 +100,22 @@ class EducatorController extends Controller {
     }
 
     /**
+     * 教职员工充值
+     *
+     * @param $id
+     * @return bool|\Illuminate\Http\JsonResponse
+     */
+    public function recharge($id) {
+
+        $educator = $this->educator->find($id);
+        if (!$educator) { return $this->notFound(); }
+        return $this->output(__METHOD__, [
+            'educator' => $educator,
+        ]);
+
+    }
+
+    /**
      * 更新教职员工
      *
      * @param EducatorRequest $request

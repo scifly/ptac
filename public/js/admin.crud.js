@@ -106,6 +106,14 @@ var crud = {
             page.getTabContent($activeTabPane, page.siteRoot() + table + '/' + url);
             crud.unbindEvents();
         });
+        // 充值
+        $(document).on('click', '.fa-money', function() {
+            var url = $(this).parents().eq(0).attr('id');
+            console.log(url);
+            url = url.replace('_', '/');
+            page.getTabContent($activeTabPane, page.siteRoot() + table + '/' + url);
+            crud.unbindEvents();
+        });
 
         // 查看记录详情
         $(document).on('click', '.fa-eye', function() {
