@@ -131,7 +131,7 @@
                         @if(isset($mobiles))
                             @foreach($mobiles as $key => $mobile)
                                 <tr>
-                                    <td><input class="form-control" name="mobile[mobile][e.{{$key}}]" type="text"
+                                    <td><input class="form-control" name="mobile[mobile][e{{$key}}]" type="text"
                                                placeholder="（请输入手机号码）" value='{{$mobile->mobile}}'>
                                     </td>
                                     <td style="text-align: center;">
