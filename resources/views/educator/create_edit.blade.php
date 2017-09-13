@@ -138,15 +138,15 @@
                                                placeholder="（请输入手机号码）" value='{{$mobile->mobile}}'>
                                     </td>
                                     <td style="text-align: center;">
-                                        <input name="mobile[isdefault]" value="e".{{$key}} type="radio" class="minimal" @if($mobile->isdefault == 1) checked @endif/>
+                                        <input name="mobile[isdefault]" value="e{{$key}}" type="radio" class="minimal" @if($mobile->isdefault == 1) checked @endif/>
                                     </td>
                                     <td style="text-align: center;">
                                         <input name="mobile[enabled][e{{$key}}]" type="checkbox" class="minimal" @if($mobile->enabled == 1) checked @endif />
                                     </td>
                                     <td style="text-align: center;">
                                         <span class="input-group-btn">
-                                            <button class="btn btn-box-tool btn-add" type="button">
-                                                <i class="fa fa-plus text-blue"></i>
+                                            <button class="btn btn-box-tool btn-remove" type="button">
+                                                <i class="fa fa-minus text-blue"></i>
                                             </button>
                                         </span>
                                     </td>
