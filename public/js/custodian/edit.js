@@ -9,7 +9,7 @@ $(function () {
         e.preventDefault();
         var controlForm = $('.addInput');
         var html = '<div class="entry input-group col-sm-6 col-sm-offset-3">' +
-            '<input type="text" class="form-control">' +
+            '<input type="text" class="form-control" name="relationship[]">' +
             '<span class="input-group-btn">' +
             '<button class="btn btn-add btn-success" type="button">' +
             '<span class="glyphicon glyphicon-plus"></span>' +

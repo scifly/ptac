@@ -60,6 +60,18 @@ class Custodian extends Model {
         try {
             $exception = DB::transaction(function() use ($request) {
                 $user = $request->input('user');
+                # 包含学生的Id
+                $studentIds = $request->input('student_ids');
+                # 与学生之间的关系
+                $relationships = $request->input('relationship');
+                if(count($studentIds == count($relationships)))
+                {
+                    # 两数组合并后 学生Id和关系对应的数组
+                    $studentId = array_combine($studentIds,$relationships);
+                }else{
+                    return false;
+                }
+
                 $userData = [
                     'username' => uniqid('custodian_'),
                     'group_id' => $user['group_id'],
@@ -98,10 +110,10 @@ class Custodian extends Model {
                 $departmentUser ->storeByDepartmentId($u->id, $departmentIds);
                 unset($departmentUser);
                 $custodianStudent = new CustodianStudent();
-                $studentIds = $request->input('student_ids');
-                if($studentIds !=null)
+
+                if($studentId !=null)
                 {
-                    $custodianStudent->storeByCustodianId($c->id, $studentIds);
+                    $custodianStudent->storeByCustodianId($c->id, $studentId);
                 }
                 unset($custodianStudent);
             });
@@ -127,6 +139,18 @@ class Custodian extends Model {
             $exception = DB::transaction(function() use($request, $custodianId, $custodian) {
                 $userId = $request->input('user_id');
                 $userData = $request->input('user');
+                # 包含学生的Id
+                $studentIds = $request->input('student_ids');
+                # 与学生之间的关系
+                $relationships = $request->input('relationship');
+                if(count($studentIds == count($relationships)))
+                {
+                    # 两数组合并后 学生Id和关系对应的数组
+                    $studentId = array_combine($studentIds,$relationships);
+                }else{
+                    return false;
+                }
+
                 $user = new User();
                 $user->where('id',$userId)
                     ->update([
@@ -154,12 +178,12 @@ class Custodian extends Model {
                 $departmentUser = new DepartmentUser();
                 $departmentUser::where('user_id',$userId)->delete();
                 $departmentUser ->storeByDepartmentId($userId, $departmentIds);
-                $studentIds = $request->input('student_ids');
+
                 unset($departmentUser);
                 $custodianStudent = new CustodianStudent();
 //                $custodianStudent::whereCustodianId($custodianId)->delete();
                 $custodianStudent::where('custodian_id',$custodianId)->delete();
-                $custodianStudent->storeByCustodianId($custodianId, $studentIds);
+                $custodianStudent->storeByCustodianId($custodianId, $studentId);
                 unset($custodianStudent);
             });
         

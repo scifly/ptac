@@ -40,12 +40,12 @@ class CustodianStudent extends Model {
 
     public function storeByCustodianId($custodianId, array $studentIds) {
         
-        foreach ($studentIds as $studentId) {
+        foreach ($studentIds as $studentId=>$relationship) {
             $this->create([
                'custodian_id' => $custodianId,
                'student_id' => $studentId,
                'enabled' => 1,
-               'relationship'=>'父子'
+               'relationship'=>$relationship
             ]);
         }
         
@@ -53,11 +53,11 @@ class CustodianStudent extends Model {
     
     public function storeByStudentId($studentId, array $custodianIds) {
         
-        foreach ($custodianIds as $custodianId) {
+        foreach ($custodianIds as $custodianId=>$relationship) {
             $this->create([
                 'student_id' => $studentId,
                 'custodian_id' => $custodianId,
-                'relationship'=>'父子',
+                'relationship'=>$relationship,
                 'enabled' => 1
             ]);
         }
