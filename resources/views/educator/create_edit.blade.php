@@ -197,33 +197,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                        {{--编辑--}}
-                        {{--<tr>--}}
-                        {{--<td>--}}
-                        {{--<select name="educator[class_ids][]" class="select2" style="width: 80%;">--}}
-                        {{--<option value="初一一班">初一一班</option>--}}
-                        {{--<option value="初一二班">初一二班</option>--}}
-                        {{--<option value="初一三班">初一三班</option>--}}
-                        {{--<option value="初一四班">初一四班</option>--}}
-                        {{--</select>--}}
-                        {{--</td>--}}
-                        {{--<td>--}}
-                        {{--<select name="educator[subject_ids][]" class="select2" style="width: 80%">--}}
-                        {{--<option value="语文">语文</option>--}}
-                        {{--<option value="数学">数学</option>--}}
-                        {{--<option value="英语">英语</option>--}}
-                        {{--<option value="物理">物理</option>--}}
-                        {{--</select>--}}
-                        {{--</td>--}}
-                        {{--<td style="text-align: center">--}}
-                        {{--<span class="input-group-btn">--}}
-                        {{--<button class="btn btn-box-tool btn-class-remove" type="button">--}}
-                        {{--<i class="fa fa-minus text-blue"></i>--}}
-                        {{--</button>--}}
-                        {{--</span>--}}
-                        {{--</td>--}}
-                        {{--</tr>--}}
-                        @if(isset($educator->educatorClasses))
+                        @if(isset($educator->educatorClasses) && !empty($educator->educatorClasses))
                             @foreach($educator->educatorClasses as $class)
                                 <tr>
                                     <td>
@@ -232,7 +206,7 @@
                                                 @if($key == $class->class_id)
                                                     <option value='{{$key}}' selected="selected">{{$squad}}</option>
                                                 @else
-                                                    <option value='{{$key}}' >{{$squad}}</option>
+                                                    <option value='{{$key}}'>{{$squad}}</option>
                                                 @endif
                                             @endforeach
                                         </select>
@@ -243,15 +217,15 @@
                                                 @if($key == $class->subject_id)
                                                     <option value='{{$key}}' selected="selected">{{$subject}}</option>
                                                 @else
-                                                    <option value='{{$key}}' >{{$subject}}</option>
+                                                    <option value='{{$key}}'>{{$subject}}</option>
                                                 @endif
                                             @endforeach
                                         </select>
                                     </td>
                                     <td style="text-align: center">
                                     <span class="input-group-btn">
-                                        <button class="btn btn-box-tool btn-class-add" type="button">
-                                            <i class="fa fa-plus text-blue"></i>
+                                        <button class="btn btn-box-tool btn-class-remove" type="button">
+                                            <i class="fa fa-minus text-blue"></i>
                                         </button>
                                     </span>
                                     </td>
@@ -282,24 +256,10 @@
                                 </td>
                             </tr>
                         @endif
-
                         </tbody>
                     </table>
                 </div>
             </div>
-
-            {{--@include('partials.single_select', [--}}
-            {{--'label' => '班级',--}}
-            {{--'id' => 'educator[class_ids]',--}}
-            {{--'items' => $squads--}}
-            {{--])--}}
-
-            {{--@include('partials.single_select', [--}}
-            {{--'label' => '科目',--}}
-            {{--'id' => 'educator[subject_id]',--}}
-            {{--'items' => $subjects--}}
-            {{--])--}}
-
             @include('partials.multiple_select', [
                'label' => '所属组',
                'id' => 'educator[team_id]',
