@@ -13,7 +13,7 @@
             @if (!empty($educator['id']))
                 {{ Form::hidden('id', $educator['id'], ['id' => 'id']) }}
             @endif
-                @if (!empty($educator['user_id']))
+            @if (!empty($educator['user_id']))
                 {{ Form::hidden('user_id', $educator['user_id'], ['id' => 'user_id']) }}
             @endif
             <div class="form-group">
@@ -118,14 +118,11 @@
             <div class="form-group">
                 <label for="mobile[mobile][]" class="col-sm-3 control-label">手机号码</label>
                 <div class="col-sm-6">
-                    <table class="table-bordered table-responsive" style="width: 100%;">
+                    <table id="mobileTable" class="table-bordered table-responsive" style="width: 100%;">
                         <thead>
                         <tr>
-                            {{--<td><label for="mobile[mobile][]">手机号码</label></td>--}}
                             <td>手机号码</td>
-                            {{--<td style="text-align: center;"><label for="mobile[isdefault][]">默认</label></td>--}}
                             <td style="text-align: center;">默认</td>
-                            {{--<td style="text-align: center;"><label for="mobile[enabled][]">启用</label></td>--}}
                             <td style="text-align: center;">启用</td>
                             <td></td>
                         </tr>
@@ -138,10 +135,12 @@
                                                placeholder="（请输入手机号码）" value='{{$mobile->mobile}}'>
                                     </td>
                                     <td style="text-align: center;">
-                                        <input name="mobile[isdefault]" value="e{{$key}}" type="radio" class="minimal" @if($mobile->isdefault == 1) checked @endif/>
+                                        <input name="mobile[isdefault]" value="e{{$key}}" type="radio" class="minimal"
+                                               @if($mobile->isdefault == 1) checked @endif/>
                                     </td>
                                     <td style="text-align: center;">
-                                        <input name="mobile[enabled][e{{$key}}]" type="checkbox" class="minimal" @if($mobile->enabled == 1) checked @endif />
+                                        <input name="mobile[enabled][e{{$key}}]" type="checkbox" class="minimal"
+                                               @if($mobile->enabled == 1) checked @endif />
                                     </td>
                                     <td style="text-align: center;">
                                         <span class="input-group-btn">
@@ -186,16 +185,103 @@
                 'id' => 'educator[school_id]',
                 'items' => $schools
             ])
-            @include('partials.multiple_select', [
-                'label' => '所属班级',
-                'id' => 'educator[class_ids]',
-                'items' => $squads
-            ])
-            @include('partials.single_select', [
-               'label' => '科目',
-               'id' => 'educator[subject_id]',
-               'items' => $subjects
-           ])
+            <div class="form-group">
+                <label for="" class="col-sm-3 control-label">空</label>
+                <div class="col-sm-6">
+                    <table id="classTable" class="table-bordered table-responsive" style="width: 100%;">
+                        <thead>
+                        <tr>
+                            <th>班级</th>
+                            <th>科目</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {{--编辑--}}
+                        {{--<tr>--}}
+                            {{--<td>--}}
+                                {{--<select name="educator[class_ids][]" class="select2" style="width: 80%;">--}}
+                                    {{--<option value="初一一班">初一一班</option>--}}
+                                    {{--<option value="初一二班">初一二班</option>--}}
+                                    {{--<option value="初一三班">初一三班</option>--}}
+                                    {{--<option value="初一四班">初一四班</option>--}}
+                                {{--</select>--}}
+                            {{--</td>--}}
+                            {{--<td>--}}
+                                {{--<select name="educator[subject_ids][]" class="select2" style="width: 80%">--}}
+                                    {{--<option value="语文">语文</option>--}}
+                                    {{--<option value="数学">数学</option>--}}
+                                    {{--<option value="英语">英语</option>--}}
+                                    {{--<option value="物理">物理</option>--}}
+                                {{--</select>--}}
+                            {{--</td>--}}
+                            {{--<td style="text-align: center">--}}
+                                {{--<span class="input-group-btn">--}}
+                                    {{--<button class="btn btn-box-tool btn-class-remove" type="button">--}}
+                                        {{--<i class="fa fa-minus text-blue"></i>--}}
+                                    {{--</button>--}}
+                                {{--</span>--}}
+                            {{--</td>--}}
+                        {{--</tr>--}}
+                        <tr>
+                            <td>
+                                <select name="educator[class_ids][]" class="select2" style="width: 80%;">
+                                    <option value="初一一班">初一一班</option>
+                                    <option value="初一二班">初一二班</option>
+                                    <option value="初一三班">初一三班</option>
+                                    <option value="初一四班">初一四班</option>
+                                </select>
+                            </td>
+                            <td>
+                                <select name="educator[subject_ids][]" class="select2" style="width: 80%">
+                                    <option value="语文">语文</option>
+                                    <option value="数学">数学</option>
+                                    <option value="英语">英语</option>
+                                    <option value="物理">物理</option>
+                                </select>
+                            </td>
+                            <td style="text-align: center">
+                                <span class="input-group-btn">
+                                    <button class="btn btn-box-tool btn-class-add" type="button">
+                                        <i class="fa fa-plus text-blue"></i>
+                                    </button>
+                                </span>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {{--@include('partials.single_select', [--}}
+            {{--'label' => '所属班级',--}}
+            {{--'id' => 'educator[class_ids]',--}}
+            {{--'items' => $squads--}}
+            {{--])--}}
+            {{--@include('partials.single_select', [--}}
+            {{--'label' => '科目',--}}
+            {{--'id' => 'educator[subject_id]',--}}
+            {{--'items' => $subjects--}}
+            {{--])--}}
+            {{--<div class="form-group">--}}
+            {{--{!! Form::label($id, $label, [--}}
+            {{--'class' => 'col-sm-3 control-label',--}}
+            {{--]) !!}--}}
+            {{--<div class="col-sm-6">--}}
+            {{--{!! Form::select($id, $items, null, [--}}
+            {{--'class' => 'form-control',--}}
+            {{--'style' => 'width: 100%;'--}}
+            {{--]) !!}--}}
+            {{--</div>--}}
+            {{--</div>--}}
+            {{--<div class="form-group">--}}
+            {{--<label for=""></label>--}}
+            {{--<div class="col-sm-6">--}}
+            {{--{!! Form::select($id, $items, null, [--}}
+            {{--'class' => 'form-control',--}}
+            {{--'style' => 'width: 100%;'--}}
+            {{--]) !!}--}}
+            {{--</div>--}}
+            {{--</div>--}}
             @include('partials.enabled', [
                 'label' => '是否启用',
                 'id' => 'user[enabled]',

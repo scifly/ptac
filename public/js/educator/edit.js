@@ -1,8 +1,17 @@
 $(crud.edit('formEducator', 'educators'));
+var $tbody = $("#mobileTable").find("tbody");
+var $tbody2 = $("#classTable").find("tbody");
 var n = 0;
+
+$(function () {
+    $tbody.find('tr:nth-last-child(1)').find('button').removeClass('btn-remove').addClass('btn-add');
+    $tbody.find('tr:nth-last-child(1)').find('i').removeClass('fa-minus').addClass('fa-plus');
+    $tbody2.find('tr:nth-last-child(1)').find('button').removeClass('btn-class-remove').addClass('btn-class-add');
+    $tbody2.find('tr:nth-last-child(1)').find('i').removeClass('fa-minus').addClass('fa-plus');
+});
+// 手机号
 $(document).on('click', '.btn-add', function (e) {
     e.preventDefault();
-    var $tbody = $('tbody');
     n++;
     // add html
     $tbody.append(
@@ -24,6 +33,25 @@ $(document).on('click', '.btn-add', function (e) {
         .removeClass('btn-add').addClass('btn-remove')
         .html('<i class="fa fa-minus text-blue"></i>');
 }).on('click', '.btn-remove', function (e) {
+    $(this).parents('tr:first').remove();
+    e.preventDefault();
+    return false;
+});
+// 班级、科目
+$(document).on('click', '.btn-class-add', function (e) {
+    e.preventDefault();
+    var html = $tbody2.find('tr').last().clone();
+    html.find('span.select2').remove();
+    // 删除插件初始化增加的html
+    $tbody2.append(html);
+    // select2 init
+    $('select').select2();
+    // 加减切换
+    $tbody2.find('tr:not(:last) .btn-class-add')
+        .removeClass('btn-class-add').addClass('btn-class-remove')
+        .html('<i class="fa fa-minus text-blue"></i>');
+}).on('click', '.btn-class-remove', function (e) {
+    // 删除元素
     $(this).parents('tr:first').remove();
     e.preventDefault();
     return false;
