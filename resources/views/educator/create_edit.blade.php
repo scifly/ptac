@@ -197,28 +197,21 @@
                         </tr>
                         </thead>
                         <tbody>
+
                         @if(isset($educator->educatorClasses) && !empty($educator->educatorClasses))
                             @foreach($educator->educatorClasses as $class)
                                 <tr>
                                     <td>
                                         <select name="educator[class_ids][]" class="select2" style="width: 80%;">
                                             @foreach($squads as $key => $squad )
-                                                @if($key == $class->class_id)
-                                                    <option value='{{$key}}' selected="selected">{{$squad}}</option>
-                                                @else
-                                                    <option value='{{$key}}'>{{$squad}}</option>
-                                                @endif
+                                                    <option value='{{$key}}' @if($key == $class->class_id) selected="selected" @endif>{{$squad}}</option>
                                             @endforeach
                                         </select>
                                     </td>
                                     <td>
                                         <select name="educator[subject_ids][]" class="select2" style="width: 80%">
                                             @foreach($subjects as $key => $subject )
-                                                @if($key == $class->subject_id)
-                                                    <option value='{{$key}}' selected="selected">{{$subject}}</option>
-                                                @else
-                                                    <option value='{{$key}}'>{{$subject}}</option>
-                                                @endif
+                                                <option value='{{$key}}' @if($key == $class->subject_id) selected="selected" @endif>{{$subject}}</option>
                                             @endforeach
                                         </select>
                                     </td>
