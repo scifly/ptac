@@ -128,8 +128,8 @@
                         </tr>
                         </thead>
                         <tbody>
-                        @if(isset($mobiles))
-                            @foreach($mobiles as $key => $mobile)
+                        @if(isset($educator->user->mobiles))
+                            @foreach($educator->user->mobiles as $key => $mobile)
                                 <tr>
                                     <td><input class="form-control" name="mobile[mobile][e{{$key}}]" type="text"
                                                placeholder="（请输入手机号码）" value='{{$mobile->mobile}}'>
@@ -186,7 +186,7 @@
                 'items' => $schools
             ])
             <div class="form-group">
-                <label for="" class="col-sm-3 control-label">空</label>
+                <label class="col-sm-3 control-label">空</label>
                 <div class="col-sm-6">
                     <table id="classTable" class="table-bordered table-responsive" style="width: 100%;">
                         <thead>
@@ -199,29 +199,29 @@
                         <tbody>
                         {{--编辑--}}
                         {{--<tr>--}}
-                            {{--<td>--}}
-                                {{--<select name="educator[class_ids][]" class="select2" style="width: 80%;">--}}
-                                    {{--<option value="初一一班">初一一班</option>--}}
-                                    {{--<option value="初一二班">初一二班</option>--}}
-                                    {{--<option value="初一三班">初一三班</option>--}}
-                                    {{--<option value="初一四班">初一四班</option>--}}
-                                {{--</select>--}}
-                            {{--</td>--}}
-                            {{--<td>--}}
-                                {{--<select name="educator[subject_ids][]" class="select2" style="width: 80%">--}}
-                                    {{--<option value="语文">语文</option>--}}
-                                    {{--<option value="数学">数学</option>--}}
-                                    {{--<option value="英语">英语</option>--}}
-                                    {{--<option value="物理">物理</option>--}}
-                                {{--</select>--}}
-                            {{--</td>--}}
-                            {{--<td style="text-align: center">--}}
-                                {{--<span class="input-group-btn">--}}
-                                    {{--<button class="btn btn-box-tool btn-class-remove" type="button">--}}
-                                        {{--<i class="fa fa-minus text-blue"></i>--}}
-                                    {{--</button>--}}
-                                {{--</span>--}}
-                            {{--</td>--}}
+                        {{--<td>--}}
+                        {{--<select name="educator[class_ids][]" class="select2" style="width: 80%;">--}}
+                        {{--<option value="初一一班">初一一班</option>--}}
+                        {{--<option value="初一二班">初一二班</option>--}}
+                        {{--<option value="初一三班">初一三班</option>--}}
+                        {{--<option value="初一四班">初一四班</option>--}}
+                        {{--</select>--}}
+                        {{--</td>--}}
+                        {{--<td>--}}
+                        {{--<select name="educator[subject_ids][]" class="select2" style="width: 80%">--}}
+                        {{--<option value="语文">语文</option>--}}
+                        {{--<option value="数学">数学</option>--}}
+                        {{--<option value="英语">英语</option>--}}
+                        {{--<option value="物理">物理</option>--}}
+                        {{--</select>--}}
+                        {{--</td>--}}
+                        {{--<td style="text-align: center">--}}
+                        {{--<span class="input-group-btn">--}}
+                        {{--<button class="btn btn-box-tool btn-class-remove" type="button">--}}
+                        {{--<i class="fa fa-minus text-blue"></i>--}}
+                        {{--</button>--}}
+                        {{--</span>--}}
+                        {{--</td>--}}
                         {{--</tr>--}}
                         <tr>
                             <td>
@@ -252,36 +252,26 @@
                     </table>
                 </div>
             </div>
+
             {{--@include('partials.single_select', [--}}
-            {{--'label' => '所属班级',--}}
+            {{--'label' => '班级',--}}
             {{--'id' => 'educator[class_ids]',--}}
             {{--'items' => $squads--}}
             {{--])--}}
+
             {{--@include('partials.single_select', [--}}
             {{--'label' => '科目',--}}
             {{--'id' => 'educator[subject_id]',--}}
             {{--'items' => $subjects--}}
             {{--])--}}
-            {{--<div class="form-group">--}}
-            {{--{!! Form::label($id, $label, [--}}
-            {{--'class' => 'col-sm-3 control-label',--}}
-            {{--]) !!}--}}
-            {{--<div class="col-sm-6">--}}
-            {{--{!! Form::select($id, $items, null, [--}}
-            {{--'class' => 'form-control',--}}
-            {{--'style' => 'width: 100%;'--}}
-            {{--]) !!}--}}
-            {{--</div>--}}
-            {{--</div>--}}
-            {{--<div class="form-group">--}}
-            {{--<label for=""></label>--}}
-            {{--<div class="col-sm-6">--}}
-            {{--{!! Form::select($id, $items, null, [--}}
-            {{--'class' => 'form-control',--}}
-            {{--'style' => 'width: 100%;'--}}
-            {{--]) !!}--}}
-            {{--</div>--}}
-            {{--</div>--}}
+
+            @include('partials.multiple_select', [
+               'label' => '所属组',
+               'id' => 'educator[team_id]',
+               'items' => $teams,
+               'selectedItems' => isset($selectedTeams) ? $selectedTeams : []
+
+           ])
             @include('partials.enabled', [
                 'label' => '是否启用',
                 'id' => 'user[enabled]',

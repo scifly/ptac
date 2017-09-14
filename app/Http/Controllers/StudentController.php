@@ -98,7 +98,7 @@ class StudentController extends Controller {
         $student = $this->student->find($id);
         $student['student'] = $this->student->find($id);
         $user['user'] = $this->user->find($student->user_id);
-        $student['mobile']= $this->mobile->where('user_id',$student->user_id)->first();
+        $mobiles = $this->mobile->where('user_id',$student->user_id)->get();
         $departmentIds = $this->departmentUser->where('user_id',$student->user_id)->get();
         foreach ($departmentIds as $key=>$value)
         {
@@ -130,6 +130,7 @@ class StudentController extends Controller {
         return $this->output(__METHOD__, [
             'user' => $user,
             'student' => $student,
+            'mobiles' => $mobiles,
             'custodianStudent'=> $custodianStudent,
             'selectedDepartments' => $selectedDepartments,
             'selectedCustodians' => $selectedCustodians,

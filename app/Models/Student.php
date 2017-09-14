@@ -132,13 +132,19 @@ class Student extends Model {
                 $custodianIds = $request->input('custodian_ids');
                 # 获取与监护人的关系
                 $relationship = $request->input('relationship');
-                if(count($custodianIds) == count($relationship))
+                if($custodianIds&&$relationship)
                 {
-                    # 合并数组，得到监护人Id和关系对应的数组
-                    $custodianId = array_combine($custodianIds,$relationship);
+                    if(count($custodianIds) == count($relationship))
+                    {
+                        # 合并数组，得到监护人Id和关系对应的数组
+                        $custodianId = array_combine($custodianIds,$relationship);
+                    }else{
+                        return false;
+                    }
                 }else{
-                    return false;
+                    $custodianId = [];
                 }
+
                 $user = $request->input('user');
                 $userData = [
                     'username' => uniqid('custodian_'),
@@ -169,21 +175,29 @@ class Student extends Model {
                     'remark' => $student['remark'],
                     'enabled' => 1
                 ];
-                $mobileData = [
-                    'user_id' => $u->id,
-                    'mobile' =>$request->input('mobile')['mobile'],
-                    'enabled' => 1,
-                    'isdefault' => 1,
-                ];
+                $mobiles = $request->input('mobile');
+                if($mobiles){
+                    $mobile = new Mobile();
+                    foreach ($mobiles['mobile'] as $key=>$v)
+                    {
+                          # 向mobile表添加用户的手机数据
+                        $mobileData = [
+                            'user_id' => $u->id,
+                            'mobile' =>$v,
+                            'enabled' => isset($mobiles['enabled'][$key]) ? 1 : 0,
+                            'isdefault' => isset($mobiles['isdefault'][$key]) ? 1 : 0,
+                        ];
+                        $m = $mobile->create($mobileData);
+                    }
+
+                    unset($mobile);
+                }
+
                 # 向student表添加数据
                 $Student = new Student();
                 $s = $Student->create($studentData);
                 unset($Student);
 
-                # 向mobile表添加用户的手机数据
-                $mobile = new Mobile();
-                $m = $mobile->create($mobileData);
-                unset($mobile);
 
                 # 向部门用户表添加数据
                 $departmentUser = new DepartmentUser();
@@ -243,12 +257,17 @@ class Student extends Model {
                 $custodianIds = $request->input('custodian_ids');
                 # 获取与监护人的关系
                 $relationship = $request->input('relationship');
-                if(count($custodianIds) == count($relationship))
+                if($custodianIds&&$relationship)
                 {
-                    # 合并数组，得到监护人Id和关系对应的数组
-                    $custodianId = array_combine($custodianIds,$relationship);
+                    if(count($custodianIds) == count($relationship))
+                    {
+                        # 合并数组，得到监护人Id和关系对应的数组
+                        $custodianId = array_combine($custodianIds,$relationship);
+                    }else{
+                        return false;
+                    }
                 }else{
-                    return false;
+                    $custodianId = [];
                 }
                 $userId = $request->input('user_id');
                 $userData = $request->input('user');
@@ -276,19 +295,33 @@ class Student extends Model {
                     'remark' => $studentData['remark'],
                     'enabled' => 1
                 ]);
-                $mobile = new Mobile();
-                $mobile->where('user_id',$userId)
-                    ->update([
-                        'user_id' => $userId,
-                        'mobile' => $request->input('mobile')['mobile'],
-                    ]);
-                unset($mobile);
+
+                $mobiles = $request->input('mobile');
+                if($mobiles){
+                    $mobile = new Mobile();
+                    $mobile::where('user_id',$userId)->delete();
+                    foreach ($mobiles['mobile'] as $key=>$v)
+                    {
+                        # 向mobile表添加用户的手机数据
+                        $mobileData = [
+                            'user_id' => $userId,
+                            'mobile' =>$v,
+                            'enabled' => isset($mobiles['enabled'][$key]) ? 1 : 0,
+                            'isdefault' => isset($mobiles['isdefault'][$key]) ? 1 : 0,
+                        ];
+                        $m = $mobile->create($mobileData);
+                    }
+
+                    unset($mobile);
+                }
+
+                # 向部门用户表添加数据
                 $departmentIds = $request->input('department_ids');
                 $departmentUser = new DepartmentUser();
                 $departmentUser::where('user_id',$userId)->delete();
                 $departmentUser ->storeByUserId($userId, $departmentIds);
                 unset($departmentUser);
-
+                # 向监护人学生表中添加数据
                 $custodianStudent = new CustodianStudent();
                 $custodianStudent::where('student_id',$studentId)->delete();
                 $custodianStudent->storeByStudentId($studentId, $custodianId);
@@ -357,7 +390,16 @@ class Student extends Model {
                     return $student->oncampus == 1 ? '是' : '否';
                 }
             ],
-            ['db' => 'Mobile.mobile as mobile', 'dt' => 7],
+            ['db' => 'Student.id as mobile', 'dt' => 7,
+                'formatter' => function($d) {
+                    $student = Student::whereId($d)->first();
+                    $mobiles = Mobile::where('user_id',$student->user_id)->get();
+                    foreach ($mobiles as $key=>$value){
+                        $mobile[] = $value->mobile;
+                    }
+                    return implode(',',$mobile);
+                }
+            ],
             ['db' => 'Student.birthday', 'dt' => 8,
                 'formatter' => function ($d) {
                     return substr($d,0,-8);
@@ -380,14 +422,6 @@ class Student extends Model {
                 'type' => 'INNER',
                 'conditions' => [
                     'User.id = Student.user_id'
-                ]
-            ],
-            [
-                'table' => 'mobiles',
-                'alias' => 'Mobile',
-                'type' => 'INNER',
-                'conditions' => [
-                    'Mobile.user_id = User.id'
                 ]
             ],
             [

@@ -58,20 +58,66 @@
                     {!! Form::label('user[gender]', '女') !!}
                 </div>
             </div>
-            <div class="form-group">
-                {{ Form::label('mobile[mobile]', '手机', [
-                    'class' => 'col-sm-3 control-label'
-                ]) }}
-                <div class="col-sm-6">
-                    {{ Form::text('mobile[mobile]', null, [
-                        'class' => 'form-control',
-                        'placeholder' => '(请输入手机号码)',
-                        'required' => 'true',
-                        'type' => 'number',
-                        'data-parsley-length' => '[11, 11]'
-                    ]) }}
+                <div class="form-group">
+                    <label for="mobile[mobile][]" class="col-sm-3 control-label">手机号码</label>
+                    <div class="col-sm-6">
+                        <table class="table-bordered table-responsive" style="width: 100%;">
+                            <thead>
+                            <tr>
+                                {{--<td><label for="mobile[mobile][]">手机号码</label></td>--}}
+                                <td>手机号码</td>
+                                {{--<td style="text-align: center;"><label for="mobile[isdefault][]">默认</label></td>--}}
+                                <td style="text-align: center;">默认</td>
+                                {{--<td style="text-align: center;"><label for="mobile[enabled][]">启用</label></td>--}}
+                                <td style="text-align: center;">启用</td>
+                                <td></td>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @if(isset($mobiles))
+                                @foreach($mobiles as $key => $mobile)
+                                    <tr>
+                                        <td><input class="form-control" name="mobile[mobile][e{{$key}}]" type="text"
+                                                   placeholder="（请输入手机号码）" value='{{$mobile->mobile}}'>
+                                        </td>
+                                        <td style="text-align: center;">
+                                            <input name="mobile[isdefault]" value="e{{$key}}" type="radio" class="minimal" @if($mobile->isdefault == 1) checked @endif/>
+                                        </td>
+                                        <td style="text-align: center;">
+                                            <input name="mobile[enabled][e{{$key}}]" type="checkbox" class="minimal" @if($mobile->enabled == 1) checked @endif />
+                                        </td>
+                                        <td style="text-align: center;">
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-box-tool btn-add" type="button">
+                                                <i class="fa fa-plus text-blue"></i>
+                                            </button>
+                                        </span>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            @else
+                                <tr>
+                                    <td><input class="form-control" name="mobile[mobile][e1]" type="text"
+                                               placeholder="（请输入手机号码）"></td>
+                                    <td style="text-align: center;">
+                                        <input name="mobile[isdefault]" value="e1" type="radio" class="minimal">
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <input name="mobile[enabled][e1]" type="checkbox" class="minimal">
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-box-tool btn-add" type="button">
+                                                <i class="fa fa-plus text-blue"></i>
+                                            </button>
+                                        </span>
+                                    </td>
+                                </tr>
+                            @endif
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-            </div>
             <div class="form-group">
                 {{ Form::label('user[telephone]', '座机', [
                     'class' => 'col-sm-3 control-label'
@@ -115,31 +161,28 @@
                'items' => $students,
                'selectedItems' => isset($selectedStudents) ? $selectedStudents : NULL
            ])
-                <div class="form-group addInput">
-                    @if(isset($custodianStudent))
+            <div class="form-group addInput">
+                    @if(isset($custodianStudent)&& !empty($custodianStudent))
                         @foreach($custodianStudent as $key=>$value)
                             @if($key==0)
                                 <label for="relationship" class="col-sm-3 control-label">和学生之间的关系</label>
-                            @else
-                                <label for="relationship" class="col-sm-3 control-label">&nbsp;</label>
                             @endif
-
-                            <div class="entry input-group col-sm-6">
+                            <div class="entry input-group col-sm-6 col-sm-offset-3">
                                 <input type="text" class="form-control" name="relationship[]"
                                        value="{{$value['relationship']}}">
                                 <span class="input-group-btn">
-                                <button class="btn btn-add btn-success" type="button">
+                                <button class="btn btn-add2 btn-success" type="button">
                                     <span class="glyphicon glyphicon-plus"></span>
                                 </button>
                             </span>
                             </div>
                         @endforeach
                     @else
-                        <label for="relationship" class="col-sm-3 control-label">和学生之间的关系</label>
+                        <label for="relationship" class="col-sm-3 control-label">和监护人之间的关系</label>
                         <div class="entry input-group col-sm-6">
                             <input type="text" class="form-control" name="relationship[]">
                             <span class="input-group-btn">
-                            <button class="btn btn-add btn-success" type="button">
+                            <button class="btn btn-add2 btn-success" type="button">
                                 <span class="glyphicon glyphicon-plus"></span>
                             </button>
                         </span>

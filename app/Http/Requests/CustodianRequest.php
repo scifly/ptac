@@ -28,8 +28,8 @@ class CustodianRequest extends FormRequest {
             'user.gender' => 'required|boolean',
             'user.email' => 'nullable|email|unique:users,email,' .
                 $this->input('user_id') . ',id',
-            'mobile.mobile' => 'required|string|unique:mobiles,mobile,'
-                . $this->input('user_id') . ',user_id',
+//            'mobile.mobile' => 'required|string|unique:mobiles,mobile,'
+//                . $this->input('user_id') . ',user_id',
         ];
         
     }
