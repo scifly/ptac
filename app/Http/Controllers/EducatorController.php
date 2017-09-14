@@ -21,12 +21,14 @@ class EducatorController extends Controller {
     protected $educator;
     protected $mobile;
     protected $educatorClass;
+    protected $team;
 
-    public function __construct(Educator $educator, Mobile $mobile, EducatorClass $educatorClass) {
+    public function __construct(Educator $educator, Mobile $mobile, EducatorClass $educatorClass, Team $team) {
         
         $this->educator = $educator;
         $this->mobile = $mobile;
         $this->educatorClass = $educatorClass;
+        $this->team = $team;
 
     }
     
@@ -92,11 +94,14 @@ class EducatorController extends Controller {
         
         $educator = $this->educator->find($id);
         if (!$educator) { return $this->notFound(); }
-        $mobiles = $this->mobile->where('user_id',$educator->user_id)->get();
+        $selectedTeams = [];
+        foreach ($educator->teams as $v) {
+            $selectedTeams[$v->id] = $v->name;
+        }
 //        dd($mobiles);die;
         return $this->output(__METHOD__, [
             'educator' => $educator,
-            'mobiles' => $mobiles
+            'selectedTeams' => $selectedTeams,
         ]);
         
     }
