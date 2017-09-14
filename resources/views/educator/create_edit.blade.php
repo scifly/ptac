@@ -131,8 +131,8 @@
                         </tr>
                         </thead>
                         <tbody>
-                        @if(isset($mobiles))
-                            @foreach($mobiles as $key => $mobile)
+                        @if(isset($educator->user->mobiles))
+                            @foreach($educator->user->mobiles as $key => $mobile)
                                 <tr>
                                     <td><input class="form-control" name="mobile[mobile][e{{$key}}]" type="text"
                                                placeholder="（请输入手机号码）" value='{{$mobile->mobile}}'>
@@ -186,15 +186,24 @@
                 'id' => 'educator[school_id]',
                 'items' => $schools
             ])
-            @include('partials.multiple_select', [
-                'label' => '所属班级',
+            @include('partials.single_select', [
+                'label' => '班级',
                 'id' => 'educator[class_ids]',
                 'items' => $squads
             ])
+
             @include('partials.single_select', [
                'label' => '科目',
                'id' => 'educator[subject_id]',
                'items' => $subjects
+           ])
+
+            @include('partials.multiple_select', [
+               'label' => '所属组',
+               'id' => 'educator[team_id]',
+               'items' => $teams,
+               'selectedItems' => isset($selectedTeams) ? $selectedTeams : []
+
            ])
             @include('partials.enabled', [
                 'label' => '是否启用',

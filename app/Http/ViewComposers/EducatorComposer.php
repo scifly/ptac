@@ -17,17 +17,18 @@ use Illuminate\Support\Facades\DB;
 
 class EducatorComposer {
 
-    protected $user, $subject, $school, $squad, $group;
+    protected $user, $subject, $school, $squad, $group, $team;
 
 
 
-    public function __construct(User $user, Subject $subject, School $school, Squad $squad, Group $group) {
+    public function __construct(User $user, Subject $subject, School $school, Squad $squad, Group $group, Team $team) {
 
         $this->user = $user;
         $this->subject = $subject;
         $this->school = $school;
         $this->squad = $squad;
         $this->group = $group;
+        $this->team = $team;
 
     }
 
@@ -38,7 +39,8 @@ class EducatorComposer {
             'schools' => $this->school->pluck('name', 'id'),
             'squads' => $this->squad->pluck('name','id'),
             'subjects' => $this->subject->pluck('name', 'id'),
-            'groups' => $this->group->pluck('name', 'id')
+            'groups' => $this->group->pluck('name', 'id'),
+            'teams' => $this->team->pluck('name', 'id')
 
         ]);
     }
