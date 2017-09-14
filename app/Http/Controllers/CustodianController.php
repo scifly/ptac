@@ -90,7 +90,7 @@ class CustodianController extends Controller {
         $custodian = $this->custodian->find($id);
         $user['user'] = $this->user->find($custodian->user_id);
         $user['expiry'] = $custodian->expiry;
-        $user['mobile'] = $this->mobile->where('user_id',$custodian->user_id)->first();
+        $mobiles = $this->mobile->where('user_id',$custodian->user_id)->get();
         $departmentIds = $this->departmentUser->where('user_id',$custodian->user_id)->get();
         foreach ($departmentIds as $key=>$value)
         {
@@ -117,6 +117,7 @@ class CustodianController extends Controller {
             'custodianStudent' => $custodianStudent,
             'custodian' => $custodian,
             'user' => $user,
+            'mobiles' => $mobiles,
 //            'departments'=>$this->department->departments([1]),
             'selectedDepartments' => $selectedDepartments,
             'selectedStudents' => $selectedStudents,
@@ -131,7 +132,6 @@ class CustodianController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(CustodianRequest $request, $id) {
-
         return $this->custodian->modify($request,$id) ? $this->succeed() : $this->fail();
         
     }

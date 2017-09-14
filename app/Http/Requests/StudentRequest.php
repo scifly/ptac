@@ -25,8 +25,8 @@ class StudentRequest extends FormRequest {
             'user.gender' => 'required|boolean',
             'user.email' => 'nullable|email|unique:users,email,' .
                 $this->input('user_id') . ',id',
-            'mobile.mobile' => 'required|string|unique:mobiles,mobile,'
-                . $this->input('user_id') . ',user_id',
+//            'mobile.mobile' => 'required|string|unique:mobiles,mobile,'
+//                . $this->input('user_id') . ',user_id',
             'student.student_number' => 'required|alphanum|between:2,32|unique:students,student_number,'
                 . $this->input('user_id') . ',user_id,' .
                 'card_number,' . $this->input('student.card_number'),
@@ -63,7 +63,6 @@ class StudentRequest extends FormRequest {
     protected function prepareForValidation() {
         
         $input = $this->all();
-        dd($input);
         if (isset($input['student']['oncampus']) && $input['student']['oncampus'] === 'on') {
             $input['student']['oncampus'] = 1;
         }
