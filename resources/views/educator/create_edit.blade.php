@@ -46,7 +46,7 @@
                 <label for="user[gender]" class="col-sm-3 control-label">性别</label>
                 <div class="col-sm-6">
                     <label id="user[gender]">
-                        <input id="user[gender]" type="radio" name="user[gender]" class="minimal" value="1">
+                        <input id="user[gender]" checked type="radio" name="user[gender]" class="minimal" value="1">
                     </label> 男
                     <label id="user[gender]">
                         <input id="user[gender]" type="radio" name="user[gender]" class="minimal" value="0">
