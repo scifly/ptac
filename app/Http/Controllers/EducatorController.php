@@ -98,7 +98,7 @@ class EducatorController extends Controller {
         foreach ($educator->teams as $v) {
             $selectedTeams[$v->id] = $v->name;
         }
-//        dd($mobiles);die;
+//        dd($educator->educatorClasses);die;
         return $this->output(__METHOD__, [
             'educator' => $educator,
             'selectedTeams' => $selectedTeams,

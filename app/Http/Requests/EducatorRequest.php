@@ -33,6 +33,7 @@ class EducatorRequest extends FormRequest {
 
             'educator.school_id' => 'required|integer',
             'educator.class_ids' => 'required|array',
+            'educator.subject_ids' => 'required|array',
             'user.group_id' => 'required|integer',
             'user.username' => 'required|string|unique:users,username,' .
                 $this->input('user_id') . ',id',

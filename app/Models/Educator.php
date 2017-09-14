@@ -71,8 +71,8 @@ class Educator extends Model {
         return $this->belongsToMany(
             'App\Models\Squad',
             'educators_classes',
-            'class_id',
-            'educator_id'
+            'educator_id',
+            'class_id'
         );
         
     }
@@ -90,7 +90,14 @@ class Educator extends Model {
         );
     
     }
-    
+
+    /**
+     *  获取指定教职员工的班级科目关系
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function educatorClasses() { return $this->hasMany('App\Models\EducatorClass'); }
+
     /**
      * 获取指定年级的年级主任教职员工对象
      *
@@ -98,10 +105,10 @@ class Educator extends Model {
      * @return Collection|static[]
      */
     public function gradeDeans($gradeId) {
-    
+
         $educatorIds = Grade::whereId($gradeId)->where('enabled', 1)->first()->educator_ids;
         return $this->whereIn('id', explode(',', $educatorIds))->whereEnabled(1)->get();
-    
+
     }
     
     /**
@@ -226,11 +233,11 @@ class Educator extends Model {
                 $classIds = $educator['class_ids'];
                 if($classIds) {
                     $educatorClass = new EducatorClass();
-                    foreach ($classIds as $classId) {
+                    foreach ($classIds as $key => $classId) {
                         $educatorClassData = [
                             'educator_id' => $educatorId->id,
                             'class_id' => $classId,
-                            'subject_id' => $educator['subject_id'],
+                            'subject_id' => $educator['subject_ids'][$key],
                             'enabled' => $userInputData['enabled']
                         ];
                         $educatorClass->create($educatorClassData);
@@ -246,7 +253,7 @@ class Educator extends Model {
                             'user_id' => $u->id,
                             'mobile' => $row,
                             'enabled' => isset($mobiles['enabled'][$k]) ? 1 : 0,
-                            'isdefault' => isset($mobiles['isdefault'][$k]) ? 1 : 0,
+                            'isdefault' => (isset($mobiles['isdefault']) && $mobiles['isdefault'] == $k) ? 1 : 0,
                         ];
                         $m = $mobile->create($mobileData);
                     }
