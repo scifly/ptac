@@ -197,13 +197,15 @@
                         </tr>
                         </thead>
                         <tbody>
-                        @if(isset($educator->educatorClasses))
+
+                        @if(isset($educator->educatorClasses) && !empty($educator->educatorClasses))
                             @foreach($educator->educatorClasses as $class)
                                 <tr>
                                     <td>
                                         <select name="educator[class_ids][]" class="select2" style="width: 80%;">
                                             @foreach($squads as $key => $squad )
                                                     <option value='{{$key}}' @if($key == $class->class_id) selected="selected" @endif>{{$squad}}</option>
+
                                             @endforeach
                                         </select>
                                     </td>
@@ -216,8 +218,8 @@
                                     </td>
                                     <td style="text-align: center">
                                     <span class="input-group-btn">
-                                        <button class="btn btn-box-tool btn-class-add" type="button">
-                                            <i class="fa fa-plus text-blue"></i>
+                                        <button class="btn btn-box-tool btn-class-remove" type="button">
+                                            <i class="fa fa-minus text-blue"></i>
                                         </button>
                                     </span>
                                     </td>
@@ -248,24 +250,10 @@
                                 </td>
                             </tr>
                         @endif
-
                         </tbody>
                     </table>
                 </div>
             </div>
-
-            {{--@include('partials.single_select', [--}}
-            {{--'label' => '班级',--}}
-            {{--'id' => 'educator[class_ids]',--}}
-            {{--'items' => $squads--}}
-            {{--])--}}
-
-            {{--@include('partials.single_select', [--}}
-            {{--'label' => '科目',--}}
-            {{--'id' => 'educator[subject_id]',--}}
-            {{--'items' => $subjects--}}
-            {{--])--}}
-
             @include('partials.multiple_select', [
                'label' => '所属组',
                'id' => 'educator[team_id]',
