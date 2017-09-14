@@ -205,7 +205,6 @@
                                         <select name="educator[class_ids][]" class="select2" style="width: 80%;">
                                             @foreach($squads as $key => $squad )
                                                     <option value='{{$key}}' @if($key == $class->class_id) selected="selected" @endif>{{$squad}}</option>
-
                                             @endforeach
                                         </select>
                                     </td>
