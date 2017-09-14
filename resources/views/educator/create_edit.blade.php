@@ -197,54 +197,20 @@
                         </tr>
                         </thead>
                         <tbody>
-                        {{--编辑--}}
-                        {{--<tr>--}}
-                        {{--<td>--}}
-                        {{--<select name="educator[class_ids][]" class="select2" style="width: 80%;">--}}
-                        {{--<option value="初一一班">初一一班</option>--}}
-                        {{--<option value="初一二班">初一二班</option>--}}
-                        {{--<option value="初一三班">初一三班</option>--}}
-                        {{--<option value="初一四班">初一四班</option>--}}
-                        {{--</select>--}}
-                        {{--</td>--}}
-                        {{--<td>--}}
-                        {{--<select name="educator[subject_ids][]" class="select2" style="width: 80%">--}}
-                        {{--<option value="语文">语文</option>--}}
-                        {{--<option value="数学">数学</option>--}}
-                        {{--<option value="英语">英语</option>--}}
-                        {{--<option value="物理">物理</option>--}}
-                        {{--</select>--}}
-                        {{--</td>--}}
-                        {{--<td style="text-align: center">--}}
-                        {{--<span class="input-group-btn">--}}
-                        {{--<button class="btn btn-box-tool btn-class-remove" type="button">--}}
-                        {{--<i class="fa fa-minus text-blue"></i>--}}
-                        {{--</button>--}}
-                        {{--</span>--}}
-                        {{--</td>--}}
-                        {{--</tr>--}}
                         @if(isset($educator->educatorClasses))
                             @foreach($educator->educatorClasses as $class)
                                 <tr>
                                     <td>
                                         <select name="educator[class_ids][]" class="select2" style="width: 80%;">
                                             @foreach($squads as $key => $squad )
-                                                @if($key == $class->class_id)
-                                                    <option value='{{$key}}' selected="selected">{{$squad}}</option>
-                                                @else
-                                                    <option value='{{$key}}' >{{$squad}}</option>
-                                                @endif
+                                                    <option value='{{$key}}' @if($key == $class->class_id) selected="selected" @endif>{{$squad}}</option>
                                             @endforeach
                                         </select>
                                     </td>
                                     <td>
                                         <select name="educator[subject_ids][]" class="select2" style="width: 80%">
                                             @foreach($subjects as $key => $subject )
-                                                @if($key == $class->subject_id)
-                                                    <option value='{{$key}}' selected="selected">{{$subject}}</option>
-                                                @else
-                                                    <option value='{{$key}}' >{{$subject}}</option>
-                                                @endif
+                                                <option value='{{$key}}' @if($key == $class->subject_id) selected="selected" @endif>{{$subject}}</option>
                                             @endforeach
                                         </select>
                                     </td>
