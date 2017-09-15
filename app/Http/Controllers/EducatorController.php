@@ -98,7 +98,7 @@ class EducatorController extends Controller {
         foreach ($educator->teams as $v) {
             $selectedTeams[$v->id] = $v->name;
         }
-//        dd($mobiles);die;
+//        dd($educator->educatorClasses);die;
         return $this->output(__METHOD__, [
             'educator' => $educator,
             'selectedTeams' => $selectedTeams,
@@ -133,8 +133,8 @@ class EducatorController extends Controller {
         
         $educator = $this->educator->find($id);
         if (!$educator) { return $this->notFound(); }
-        dd($request->all());die;
-        return $educator->update($request->all()) ? $this->succeed() : $this->fail();
+//        dd($request->all());die;
+        return $educator->modify($request) ? $this->succeed() : $this->fail();
         
     }
 

@@ -41,12 +41,13 @@
  * Created by Administrator on 2017-07-21 0021.
  */
 $(crud.create('formEducator', 'educators'));
+var $tbody = $("#mobileTable").find("tbody");
 var n = 0;
+// 手机号
 $(document).on('click', '.btn-add', function (e) {
     e.preventDefault();
-    var $tbody = $('tbody');
     n++;
-    // add html
+    // add mobile html
     $tbody.append(
         '<tr><td><input type="text" class="form-control" placeholder="（请输入手机号码）" name="mobile[mobile][k' + n + ']" value=""></td>' +
         '<td style="text-align: center"><input type="radio" class="minimal" name="mobile[isdefault]" value="k' + n + '"></td>' +
@@ -66,6 +67,26 @@ $(document).on('click', '.btn-add', function (e) {
         .removeClass('btn-add').addClass('btn-remove')
         .html('<i class="fa fa-minus text-blue"></i>');
 }).on('click', '.btn-remove', function (e) {
+    $(this).parents('tr:first').remove();
+    e.preventDefault();
+    return false;
+});
+// 班级、科目
+var $tbody2 = $("#classTable").find("tbody");
+$(document).on('click', '.btn-class-add', function (e) {
+    e.preventDefault();
+    var html = $tbody2.find('tr').last().clone();
+    html.find('span.select2').remove();
+    // 删除插件初始化增加的html
+    $tbody2.append(html);
+    // select2 init
+    $('select').select2();
+    // 加减切换
+    $tbody2.find('tr:not(:last) .btn-class-add')
+        .removeClass('btn-class-add').addClass('btn-class-remove')
+        .html('<i class="fa fa-minus text-blue"></i>');
+}).on('click', '.btn-class-remove', function (e) {
+    // 删除元素
     $(this).parents('tr:first').remove();
     e.preventDefault();
     return false;
