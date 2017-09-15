@@ -139,7 +139,7 @@ class EducatorController extends Controller {
     }
 
     /**
-     * 充值教职员工
+     * 更新教职员工充值
      *
      * @param EducatorRequest $request
      * @param $id

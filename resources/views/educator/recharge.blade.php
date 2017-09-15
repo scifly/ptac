@@ -14,6 +14,17 @@
                     'id' => 'user_id',
                     'items' => $users,
                 ])
+                    {{--<div class="form-group">--}}
+                        {{--{!! Form::label('sms_quote', '充值用户', [--}}
+                            {{--'class' => 'col-sm-3 control-label'--}}
+                        {{--]) !!}--}}
+                        {{--<div class="col-sm-6">--}}
+                            {{--{!! Form::text('sms_quote', $users[$educator['user_id']], [--}}
+                                {{--'class' => 'form-control',--}}
+                                {{--'disabled'=>'disabled'--}}
+                            {{--]) !!}--}}
+                        {{--</div>--}}
+                    {{--</div>--}}
                 <div class="form-group">
                     {!! Form::label('sms_quote', '余额', [
                         'class' => 'col-sm-3 control-label'
