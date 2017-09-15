@@ -201,7 +201,6 @@ class Educator extends Model {
 
         try {
             $exception = DB::transaction(function() use ($request) {
-                dd($request->all());die;
                 $userInputData = $request->input('user');
                 $userData = [
                     'username' => uniqid('educator_'),
@@ -256,6 +255,81 @@ class Educator extends Model {
                             'isdefault' => (isset($mobiles['isdefault']) && $mobiles['isdefault'] == $k) ? 1 : 0,
                         ];
                         $m = $mobile->create($mobileData);
+                    }
+                    unset($mobile);
+                }
+            });
+            return is_null($exception) ? true : $exception;
+        } catch (Exception $e) {
+            return false;
+        }
+
+    }
+    public function modify(EducatorRequest $request) {
+
+        try {
+            $exception = DB::transaction(function() use ($request) {
+//                dd($request->all());die;
+                $userInputData = $request->input('user');
+                $userData = [
+                    'username' => uniqid('educator_'),
+                    'group_id' => $userInputData['group_id'],
+                    'password' => $userInputData['password'],
+                    'email' => $userInputData['email'],
+                    'realname' => $userInputData['realname'],
+                    'gender' => $userInputData['gender'],
+                    'avatar_url' => '00001.jpg',
+                    'userid' => uniqid('custodian_'),
+                    'isleader' => 0,
+                    'english_name'=>$userInputData['english_name'],
+                    'telephone' => $userInputData['telephone'],
+                    'wechatid' => '',
+                    'enabled' =>$userInputData['enabled']
+                ];
+                $user = new User();
+                $u = $user->where('id', $request->input('user_id'))->update($userData);
+                unset($user);
+
+                $educator = $request->input('educator');
+                $educatorData = [
+                    'user_id' => $request->input('user_id'),
+                    'school_id' => $educator['school_id'],
+                    'sms_quote' => 0,
+                    'enabled' =>$userInputData['enabled']
+                ];
+                $educatorUpdate = $this->where('id', $request->input('id'))->update($educatorData);
+                $classIds = $educator['class_ids'];
+                if($classIds) {
+                    $educatorClass = new EducatorClass();
+                    $delEducatorClass = $educatorClass->where('educator_id', $request->input('id'))->delete();
+                    if($delEducatorClass) {
+                        foreach ($classIds as $key => $classId) {
+                            $educatorClassData = [
+                                'educator_id' => $request->input('id'),
+                                'class_id' => $classId,
+                                'subject_id' => $educator['subject_ids'][$key],
+                                'enabled' => $userInputData['enabled']
+                            ];
+                            $educatorClass->create($educatorClassData);
+                        }
+                    }
+                    unset($educatorClass);
+                }
+
+                $mobiles = $request->input('mobile');
+                if($mobiles) {
+                    $mobile = new Mobile();
+                    $delMobile = $mobile->where('user_id', $request->input('user_id'))->delete();
+                    if($delMobile) {
+                        foreach ($mobiles['mobile'] as $k => $row) {
+                            $mobileData = [
+                                'user_id' => $request->input('user_id'),
+                                'mobile' => $row,
+                                'enabled' => isset($mobiles['enabled'][$k]) ? 1 : 0,
+                                'isdefault' => (isset($mobiles['isdefault']) && $mobiles['isdefault'] == $k) ? 1 : 0,
+                            ];
+                            $mobile->create($mobileData);
+                        }
                     }
                     unset($mobile);
                 }

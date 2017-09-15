@@ -46,10 +46,10 @@
                 <label for="user[gender]" class="col-sm-3 control-label">性别</label>
                 <div class="col-sm-6">
                     <label id="user[gender]">
-                        <input id="user[gender]" checked type="radio" name="user[gender]" class="minimal" value="1">
+                        <input id="user[gender]" @if($educator->user->gender == 1) checked @endif type="radio" name="user[gender]" class="minimal" value="1">
                     </label> 男
                     <label id="user[gender]">
-                        <input id="user[gender]" type="radio" name="user[gender]" class="minimal" value="0">
+                        <input id="user[gender]" @if($educator->user->gender == 0) checked @endif type="radio" name="user[gender]" class="minimal" value="0">
                     </label> 女
                 </div>
             </div>
@@ -80,11 +80,11 @@
                 </div>
             </div>
             <div class="form-group">
-                {!! Form::label('user[password-confirm]', '确认密码', [
+                {!! Form::label('user[password_confirm]', '确认密码', [
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
-                    {!! Form::password('user[password-confirm]', [
+                    {!! Form::password('user[password_confirm]', [
                         'class' => 'form-control',
                         'placeholder' => '(请确认密码)',
                         'required' => 'true',
