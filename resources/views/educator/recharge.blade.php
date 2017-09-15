@@ -21,7 +21,7 @@
                     <div class="col-sm-6">
                         {!! Form::text('sms_quote', null, [
                             'class' => 'form-control',
-                            'disabled'=>'disabled'
+                            'disabled' => 'disabled'
                         ]) !!}
                     </div>
                 </div>
