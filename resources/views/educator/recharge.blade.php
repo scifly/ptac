@@ -12,7 +12,7 @@
                 @include('partials.single_select', [
                     'label' => '充值用户',
                     'id' => 'user_id',
-                    'items' => $users
+                    'items' => $users,
                 ])
                 <div class="form-group">
                     {!! Form::label('sms_quote', '余额', [
@@ -21,6 +21,7 @@
                     <div class="col-sm-6">
                         {!! Form::text('sms_quote', null, [
                             'class' => 'form-control',
+                            'disabled'=>'disabled'
                         ]) !!}
                     </div>
                 </div>
