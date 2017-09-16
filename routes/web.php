@@ -18,9 +18,9 @@ Route::get('/', 'HomeController@index');
 Route::get('/home', 'HomeController@index')->name('home');
 
 /** 测试用路由 */
-//Route::get('test/index', 'TestController@index');
-//Route::get('test/create', 'TestController@create');
-//Route::get('test', 'TestController@test');
+Route::get('test/index', 'TestController@index');
+Route::get('test/create', 'TestController@create');
+Route::get('test', 'TestController@test');
 
 /** 菜单入口路由 */
 Route::get('pages/{id}', 'HomeController@menu');
@@ -192,13 +192,15 @@ Route::group(['prefix' => 'icon_types'], routes('IconTypeController'));
 Route::group(['prefix' => 'message_types'], routes('MessageTypeController'));
 // 通信方式设置 - 通信方式管理
 Route::group(['prefix' => 'comm_types'], routes('CommTypeController'));
+// 警告类型设置 - 警告类型管理
+Route::group(['prefix' => 'alert_types'], routes('AlertTypeController'));
 // 运营者设置 - 企业设置
 Route::group(['prefix' => 'department_types'], routes('DepartmentTypeController'));
 Route::group(['prefix' => 'departments'], routes('DepartmentController'));
 Route::group(['prefix' => 'departments'], function() {
     $ctlr = 'DepartmentController';
     Route::post('index', $ctlr . '@index');
-    Route::post('move/{id}/{parentId}', $ctlr . '@move');
+    Route::post('move/{id}/{parentId?}', $ctlr . '@move');
     Route::post('sort', $ctlr . '@sort');
 });
 Route::group(['prefix' => 'companies'], routes('CompanyController'));
@@ -211,7 +213,7 @@ Route::group(['prefix' => 'menus'], function() {
     $ctlr = 'MenuController';
     Route::post('index', $ctlr . '@index');
     Route::post('sort', $ctlr . '@sort');
-    Route::post('move/{id}/{parentId}', $ctlr . '@move');
+    Route::post('move/{id}/{parentId?}', $ctlr . '@move');
     Route::get('menutabs/{id}', $ctlr . '@menuTabs');
     Route::post('ranktabs/{id}', $ctlr . '@rankTabs');
 });

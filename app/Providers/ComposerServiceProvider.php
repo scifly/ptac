@@ -51,8 +51,9 @@ class ComposerServiceProvider extends ServiceProvider {
         View::composer('event.index', 'App\Http\ViewComposers\EventComposer');
         View::composer('event.show', 'App\Http\ViewComposers\EventComposer');
         View::composer('exam.create_edit', 'App\Http\ViewComposers\ExamComposer');
+        View::composer('exam_type.create_edit', 'App\Http\ViewComposers\ExamTypeComposer');
         View::composer('major.create_edit', 'App\Http\ViewComposers\MajorComposer');
-        View::composer('department.create_edit', 'App\Http\ViewComposers\DepartmentComposer');
+        // View::composer('department.create_edit', 'App\Http\ViewComposers\DepartmentComposer');
         View::composer('message.create_edit', 'App\Http\ViewComposers\MessageComposer');
         View::composer('team.create_edit', 'App\Http\ViewComposers\TeamComposer');
         View::composer('operator.create', 'App\Http\ViewComposers\OperatorComposer');

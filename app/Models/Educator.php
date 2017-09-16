@@ -10,9 +10,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * App\Models\Educator
- * 
- * 教职员工
+ * App\Models\Educator 教职员工
  *
  * @property int $id
  * @property int $user_id 教职员工用户ID
@@ -21,7 +19,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $sms_quote 可用短信条数
  * @property \Carbon\Carbon|null $created_at
  * @property \Carbon\Carbon|null $updated_at
- * @property-read \App\Models\User $user
+ * @property int $enabled
  * @method static Builder|Educator whereCreatedAt($value)
  * @method static Builder|Educator whereId($value)
  * @method static Builder|Educator whereSchoolId($value)
@@ -29,13 +27,13 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|Educator whereTeamIds($value)
  * @method static Builder|Educator whereUpdatedAt($value)
  * @method static Builder|Educator whereUserId($value)
- * @mixin \Eloquent
- * @property-read \App\Models\School $school
- * @property int $enabled
- * @property-read Collection|\App\Models\Squad[] $classes
- * @property-read EducatorClass $educatorClass
  * @method static Builder|Educator whereEnabled($value)
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Team[] $teams
+ * @mixin \Eloquent
+ * @property-read User $user
+ * @property-read School $school
+ * @property-read Squad[] $classes
+ * @property-read EducatorClass $educatorClass
+ * @property-read Team[] $teams
  */
 class Educator extends Model {
     

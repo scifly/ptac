@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use App\Helpers\ModelTrait;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use App\Facades\DatatableFacade as Datatable;
 
 /**
- * App\Models\DepartmentType
+ * App\Models\DepartmentType 部门类型
  *
  * @property int $id
  * @property string $name 部门类型名称
@@ -26,6 +27,8 @@ use App\Facades\DatatableFacade as Datatable;
  * @mixin \Eloquent
  */
 class DepartmentType extends Model {
+    
+    use ModelTrait;
     
     protected $fillable = ['name', 'remark', 'enabled'];
     
@@ -69,7 +72,10 @@ class DepartmentType extends Model {
      */
     public function remove($id) {
         
-        return $this->find($id)->delete();
+        $departmentType = $this->find($id);
+        if (!$departmentType) { return false; }
+        $removed = $this->removable($this, $id) ? $departmentType->delete() : false;
+        return $removed ? true : false;
         
     }
     

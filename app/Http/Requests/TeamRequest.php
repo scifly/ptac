@@ -2,9 +2,7 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class TeamRequest extends FormRequest {
     
@@ -23,7 +21,7 @@ class TeamRequest extends FormRequest {
     public function rules() {
         
         return [
-/*            'name' => [
+            /*'name' => [
                 'required', 'string', 'max:255',
                 Rule::unique('teams')->ignore($this->input('id'))->where(function (Builder $query) {
                     $query->where('name', $this->input('name'));

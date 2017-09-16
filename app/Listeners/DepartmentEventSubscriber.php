@@ -6,149 +6,233 @@ use App\Models\Company;
 use App\Models\Corp;
 use App\Models\Department;
 use App\Models\DepartmentType;
-use App\Models\Grade;
+use App\Models\Menu;
 use App\Models\School;
-use App\Models\Squad;
 use Illuminate\Events\Dispatcher;
 
 class DepartmentEventSubscriber {
     
-    protected $department, $company, $corp, $school, $grade, $class, $departmentType;
+    protected $department, $departmentType;
     
-    function __construct(
-        Department $department,
-        Company $company,
-        Corp $corp,
-        School $school,
-        Grade $grade,
-        Squad $class,
-        DepartmentType $departmentType
-    ) { 
-        $this->department = $department;
-        $this->company = $company;
-        $this->corp = $corp;
-        $this->school = $school;
-        $this->grade = $grade;
-        $this->class = $class;
+    function __construct(Department $department, DepartmentType $departmentType) { 
+        
+        $this->department = $department; 
         $this->departmentType = $departmentType;
+        
     }
     
+    /**
+     * 创建运营者对应的部门
+     *
+     * @param $event
+     * @return bool
+     */
     public function onCompanyCreated($event) {
         
-        $departmentTypeId = $this->departmentType->where('name', '运营者')->first()->id;
-        $data = [
-            'parent_id' => NULL,
-            'name' => $event->company->name,
-            'remark' => $event->company->remark,
-            'department_type_id' => $departmentTypeId,
-            'enabled' => 1
-        ];
-        return $this->department->store($data, true);
+        return $this->createDepartment($event, '运营', 'company');
         
     }
     
+    /**
+     * 更新运营者对应的部门
+     *
+     * @param $event
+     * @return bool
+     */
     public function onCompanyUpdated($event) {
-    
-        $departmentTypeId = $this->departmentType->where('name', '运营者')->first()->id;
-        $data = [
-            'parent_id' => NULL,
-            'name' => $event->company->name,
-            'remark' => $event->company->remark,
-            'department_type_id' => $departmentTypeId,
-            'enabled' => $event->company->enabled
-        ];
-        $departmentId = $event->company->department_id;
-        return $this->department->modify($data, $departmentId);
+  
+        return $this->updateDepartment($event, '运营', 'company');
         
     }
     
+    /**
+     * 删除运营者对应的部门
+     *
+     * @param $event
+     * @return bool|null
+     */
     public function onCompanyDeleted($event) {
         
-        $departmentId = $event->company->department_id;
-        return $this->department->remove($departmentId);
+        return $this->deleteDepartment($event, 'company');
         
     }
     
+    /**
+     * 创建企业对应的部门
+     *
+     * @param $event
+     * @return bool
+     */
     public function onCorpCreated($event) {
-    
-        $departmentTypeId = $this->departmentType->where('name', '企业')->first()->id;
-        $data = [
-            'parent_id' => $event->corp->company->department_id,
-            'name' => $event->corp->name,
-            'remark' => $event->corp->remark,
-            'department_type_id' => $departmentTypeId,
-            'enabled' => 1
-        ];
-        return $this->department->store($data, true);
+
+        return $this->createDepartment($event, '企业', 'corp', 'company');
         
     }
     
+    /**
+     * 更新企业对应的部门
+     *
+     * @param $event
+     * @return bool
+     */
     public function onCorpUpdated($event) {
     
-        $departmentTypeId = $this->departmentType->where('name', '企业')->first()->id;
-        $data = [
-            'name' => $event->corp->name,
-            'remark' => $event->corp->remark,
-            'parent_id' => $event->corp->company->department_id,
-            'department_type_id' => $departmentTypeId,
-            'enabled' => $event->corp->enabled,
-        ];
-        $departmentId = $event->corp->department_id;
-        return $this->department->modify($data, $departmentId);
+        return $this->updateDepartment($event, '企业', 'corp');
         
     }
     
+    /**
+     * 删除企业对应的部门
+     *
+     * @param $event
+     * @return bool|null
+     */
     public function onCorpDeleted($event) {
         
-        $departmentId = $event->corp->department_id;
-        return $this->department->remove($departmentId);
+        return $this->deleteDepartment($event, 'corp');
         
     }
     
+    /**
+     * 创建学校对应的部门
+     *
+     * @param $event
+     * @return bool
+     */
     public function onSchoolCreated($event) {
 
-        $parentId = $event->school->corp->department_id;
-        $departmentTypeId = $this->departmentType->where('name', '学校')->first()->id;
-        $data = [
-            'parent_id' => $parentId,
-            'department_type_id' => $departmentTypeId,
-            'name' => $event->school->name,
-            'remark' => $event->school->remark,
-            'enabled' => 1
-        ];
-        return $this->department->store($data, true);
+        return $this->createDepartment($event, '学校', 'school', 'corp');
         
     }
     
+    /**
+     * 更新学校对应的部门
+     *
+     * @param $event
+     * @return bool
+     */
     public function onSchoolUpdated($event) {
 
-        $parentId = $event->school->corp->department_id;
-        $departmentTypeId = $this->departmentType->where('name', '学校')->first()->id;
-        $data = [
-            'parent_id' => $parentId,
-            'department_type_id' => $departmentTypeId,
-            'name' => $event->school->name,
-            'remark' => $event->school->remark,
-            'enabled' => $event->school->enabled
-        ];
-        $departmentId = $event->school->department_id;
-        return $this->department->modify($data, $departmentId);
+        return $this->updateDepartment($event, '学校', 'school');
         
     }
     
+    /**
+     * 删除学校对应的部门
+     *
+     * @param $event
+     * @return bool|null
+     */
     public function onSchoolDeleted($event) {
 
-        $departmentId = $event->school->department_id;
-        return $this->department->remove($departmentId);
+        return $this->deleteDepartment($event, 'school');
         
     }
     
-    public function onGradeCreated($event) {}
-    public function onGradeUpdated($event) {}
-    public function onGradeDeleted($event) {}
-    public function onClassCreated($event) {}
-    public function onClassUpdated($event) {}
-    public function onClassDeleted($event) {}
+    /**
+     * 创建年级对应的部门
+     *
+     * @param $event
+     * @return bool
+     */
+    public function onGradeCreated($event) {
+
+        return $this->createDepartment($event, '年级', 'grade', 'school');
+        
+    }
+    
+    /**
+     * 更新年级对应的部门
+     *
+     * @param $event
+     * @return bool
+     */
+    public function onGradeUpdated($event) {
+        
+        return $this->updateDepartment($event, '年级', 'grade');
+        
+    }
+    
+    /**
+     * 删除年级对应的部门
+     *
+     * @param $event
+     * @return bool|null
+     */
+    public function onGradeDeleted($event) {
+        
+        return $this->deleteDepartment($event, 'grade');
+        
+    }
+    
+    /**
+     * 创建班级对应的部门
+     *
+     * @param $event
+     * @return bool
+     */
+    public function onClassCreated($event) {
+        
+        return $this->createDepartment($event, '班级', 'class', 'grade');
+        
+    }
+    
+    /**
+     * 更新班级对应的部门
+     *
+     * @param $event
+     * @return bool
+     */
+    public function onClassUpdated($event) {
+
+        return $this->updateDepartment($event, '班级', 'class');
+        
+    }
+    
+    /**
+     * 删除班级对应的部门
+     *
+     * @param $event
+     * @return bool|null
+     */
+    public function onClassDeleted($event) {
+        
+        return $this->deleteDepartment($event, 'class');
+        
+    }
+    
+    public function onMenuMoved($event) {
+        
+        /** @var Menu $menu */
+        $menu = $event->menu;
+        $menuType = $menu->menuType->name;
+        if (in_array($menuType, ['企业', '学校'])) {
+            if ($menuType == '企业') {
+                /** @var Corp $corp */
+                $corp = $menu->corp;
+                /** @var Company $company */
+                $company = $menu->parent->company;
+                /** @var Department $department */
+                $department = Department::whereId($corp->department_id)->first();
+                /** @var Department $parentDepartment */
+                $parentDepartment = Department::whereId($company->department_id)->first();
+            } else {
+                /** @var School $school */
+                $school = $menu->school;
+                /** @var Corp $corp */
+                $corp = $menu->parent->corp;
+                /** @var Department $department */
+                $department = Department::whereId($school->department_id)->first();
+                /** @var Department $parentDepartment */
+                $parentDepartment = Department::whereId($corp->department_id)->first();
+            }
+            if ($department->parent_id != $parentDepartment->id) {
+                return $department->modify(['parent_id' => $parentDepartment->id], $department->id);
+            }
+        }
+        return true;
+        
+    }
     
     /**
      * Register the listeners for the subscriber
@@ -157,23 +241,105 @@ class DepartmentEventSubscriber {
      */
     public function subscribe(Dispatcher $events) {
         
-        $events->listen('App\Events\CompanyCreated', 'App\Listeners\DepartmentEventSubscriber@onCompanyCreated');
-        $events->listen('App\Events\CompanyUpdated', 'App\Listeners\DepartmentEventSubscriber@onCompanyUpdated');
-        $events->listen('App\Events\CompanyDeleted', 'App\Listeners\DepartmentEventSubscriber@onCompanyDeleted');
-        $events->listen('App\Events\CorpCreated', 'App\Listeners\DepartmentEventSubscriber@onCorpCreated');
-        $events->listen('App\Events\CorpUpdated', 'App\Listeners\DepartmentEventSubscriber@onCorpUpdated');
-        $events->listen('App\Events\CorpDeleted', 'App\Listeners\DepartmentEventSubscriber@onCorpDeleted');
-        $events->listen('App\Events\SchoolCreated', 'App\Listeners\DepartmentEventSubscriber@onSchoolCreated');
-        $events->listen('App\Events\SchoolUpdated', 'App\Listeners\DepartmentEventSubscriber@onSchoolUpdated');
-        $events->listen('App\Events\SchoolDeleted', 'App\Listeners\DepartmentEventSubscriber@onSchoolDeleted');
-        $events->listen('App\Events\GradeCreated', 'App\Listeners\DepartmentEventSubscriber@onGradeCreated');
-        $events->listen('App\Events\GradeUpdated', 'App\Listeners\DepartmentEventSubscriber@onGradeUpdated');
-        $events->listen('App\Events\GradeDeleted', 'App\Listeners\DepartmentEventSubscriber@onGradeDeleted');
-        $events->listen('App\Events\ClassCreated', 'App\Listeners\DepartmentEventSubscriber@onClassCreated');
-        $events->listen('App\Events\ClassUpdated', 'App\Listeners\DepartmentEventSubscriber@onClassUpdated');
-        $events->listen('App\Events\ClassDeleted', 'App\Listeners\DepartmentEventSubscriber@onClassDeleted');
-    
+        $e = 'App\\Events\\';
+        $l = 'App\\Listeners\\DepartmentEventSubscriber@';
+        $events->listen($e . 'CompanyCreated', $l . 'onCompanyCreated');
+        $events->listen($e . 'CompanyUpdated', $l . 'onCompanyUpdated');
+        $events->listen($e . 'CompanyDeleted', $l . 'onCompanyDeleted');
+        
+        $events->listen($e . 'CorpCreated', $l . 'onCorpCreated');
+        $events->listen($e . 'CorpUpdated', $l . 'onCorpUpdated');
+        $events->listen($e . 'CorpDeleted', $l . 'onCorpDeleted');
+        
+        $events->listen($e . 'SchoolCreated', $l . 'onSchoolCreated');
+        $events->listen($e . 'SchoolUpdated', $l . 'onSchoolUpdated');
+        $events->listen($e . 'SchoolDeleted', $l . 'onSchoolDeleted');
+        
+        $events->listen($e . 'GradeCreated', $l . 'onGradeCreated');
+        $events->listen($e . 'GradeUpdated', $l . 'onGradeUpdated');
+        $events->listen($e . 'GradeDeleted', $l . 'onGradeDeleted');
+        
+        $events->listen($e . 'ClassCreated', $l . 'onClassCreated');
+        $events->listen($e . 'ClassUpdated', $l . 'onClassUpdated');
+        $events->listen($e . 'ClassDeleted', $l . 'onClassDeleted');
+        
+        $events->listen($e . 'MenuMoved', $l . 'onMenuMoved');
+
     }
     
+    /**
+     * 根据部门类型名称获取部门类型ID
+     *
+     * @param $name
+     * @return int|mixed
+     */
+    private function typeId($name) {
+    
+        return $this->departmentType->where('name', $name)->first()->id;
+        
+    }
+    
+    /**
+     * 创建部门
+     *
+     * @param $event
+     * @param string $type 部门类型名称
+     * @param string $model 数据模型名称
+     * @param string|null $belongsTo 从属的模型名称
+     * @return bool
+     */
+    private function createDepartment($event, $type, $model, $belongsTo = NULL) {
+        
+        
+        $$model = $event->{$model};
+        $data = [
+            'parent_id' => isset($belongsTo) ?
+                $$model->{$belongsTo}->department_id :
+                $this->department->where('parent_id', NULL)->first()->id,
+            'name' => $$model->name,
+            'remark' => $$model->remark,
+            'department_type_id' => $this->typeId($type),
+            'order' => $this->department->all()->max('order') + 1,
+            'enabled' => $$model->enabled
+        ];
+        return $this->department->store($data, true);
+        
+    }
+    
+    /**
+     * 更新部门
+     *
+     * @param $event
+     * @param string $type 部门类型名称
+     * @param string $model 数据模型名称
+     * @return bool
+     */
+    private function updateDepartment($event, $type, $model) {
+        
+        $$model = $event->{$model};
+        $department = $event->{$model}->department;
+        $data = [
+            'parent_id' => $department->parent_id,
+            'name' => $$model->name,
+            'remark' => $$model->remark,
+            'department_type_id' => $this->typeId($type),
+            'enabled' => $$model->enabled
+        ];
+        return $this->department->modify($data, $$model->department_id);
+        
+    }
+    
+    /**
+     * 删除部门
+     *
+     * @param $event
+     * @param $model
+     * @return bool|null
+     */
+    private function deleteDepartment($event, $model) {
+
+        return $this->department->remove($event->{$model}->department_id);
+        
+    }
     
 }

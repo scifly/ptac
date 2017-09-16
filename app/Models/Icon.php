@@ -3,12 +3,13 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Helpers\ModelTrait;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * App\Models\Icon
+ * App\Models\Icon 图标
  *
  * @property int $id
  * @property string $name 图标的css类名
@@ -30,16 +31,30 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Icon extends Model {
     
+    use ModelTrait;
+    
     protected $fillable = ['name', 'remark', 'icon_type_id', 'enabled'];
     
+    /**
+     * 返回指定图标所属的图标类型对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function iconType() { return $this->belongsTo('App\Models\IconType'); }
     
     /**
-     * 返回Icon包含的菜单
+     * 返回Icon包含的菜单对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function menus() { return $this->hasMany('App\Models\Menu'); }
+    
+    /**
+     * 返回指定图标包含的所有卡片对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function tabs() { return $this->hasMany('App\Models\Tab'); }
     
     /**
      * 返回Icon列表
@@ -55,6 +70,48 @@ class Icon extends Model {
         }
         
         return $icons;
+        
+    }
+    
+    /**
+     * 保存图标
+     *
+     * @param array $data
+     * @return bool
+     */
+    public function store(array $data) {
+        
+        $icon = $this->create($data);
+        return $icon ? true : false;
+        
+    }
+    
+    /**
+     * 更新图标
+     *
+     * @param array $data
+     * @param $id
+     * @return bool
+     */
+    public function modify(array $data, $id) {
+        
+        $icon = $this->find($id);
+        if (!$icon) { return false; }
+        return $icon->update($data) ? true : false;
+        
+    }
+    
+    /**
+     * 删除图标
+     *
+     * @param $id
+     * @return bool|null
+     */
+    public function remove($id) {
+        
+        $icon = $this->find($id);
+        if (!$icon) { return false; }
+        return $icon->removable($this, $id) ? $icon->delete() : false;
         
     }
     

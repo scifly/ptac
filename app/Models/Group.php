@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Helpers\ModelTrait;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -29,23 +30,62 @@ use App\Http\Requests\GroupRequest;
  */
 class Group extends Model {
     
+    use ModelTrait;
+    
     protected $table = 'groups';
     
     protected $fillable = [
         'name', 'remark', 'enabled'
     ];
     
+    /**
+     * 获取指定角色下的所有用户对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function users() { return $this->hasMany('App\Models\User'); }
-
     
     /**
-     * 根据角色名称获取角色对象
-     * @param $groupName
-     * @return Model|null|static
+     * 保存角色
+     *
+     * @param array $data
+     * @return bool
      */
-    public function group($groupName) {
+    public function store(array $data) {
         
-        return $this->where('name', $groupName)->first();
+        $group = $this->create($data);
+        return $group ? true : false;
+        
+    }
+    
+    /**
+     * 更新角色
+     *
+     * @param array $data
+     * @param $id
+     * @return bool
+     */
+    public function modify(array $data, $id) {
+        
+        $group = $this->find($id);
+        if (!$group) {
+            return false;
+        }
+        return $group->update($data) ? true : false;
+        
+    }
+    
+    /**
+     * 删除角色
+     *
+     * @param $id
+     * @return bool
+     */
+    public function remove($id) {
+
+        $group = $this->find($id);
+        if (!$group) { return false; }
+        return $this->removable($this, $id) ? $group->delete() : false;
         
     }
     
@@ -65,7 +105,6 @@ class Group extends Model {
             ]
         
         ];
-        
         return Datatable::simple($this, $columns);
         
     }

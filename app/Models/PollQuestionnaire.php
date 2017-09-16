@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use App\Helpers\ModelTrait;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use App\Facades\DatatableFacade as Datatable;
 
 /**
- * App\Models\PollQuestionnaire
+ * App\Models\PollQuestionnaire 调查问卷
  *
  * @property int $id
  * @property int $school_id 所属学校ID
@@ -28,24 +29,32 @@ use App\Facades\DatatableFacade as Datatable;
  * @method static Builder|PollQuestionnaire whereUpdatedAt($value)
  * @method static Builder|PollQuestionnaire whereUserId($value)
  * @mixin \Eloquent
- * @property-read \App\Models\PollQuestionnaireAnswer $pollquestionnaireAnswer
- * @property-read \App\Models\PollQuestionnaireParticipant $pollquestionnairePartcipant
- * @property-read \App\Models\School $school
- * @property-read \App\Models\User $user
+ * @property-read PollQuestionnaireAnswer $pollquestionnaireAnswer
+ * @property-read PollQuestionnaireParticipant $pollquestionnairePartcipant
+ * @property-read School $school
+ * @property-read User $user
  */
 class PollQuestionnaire extends Model {
-    //
+
+    use ModelTrait;
+    
     protected $table = 'poll_questionnaires';
     
     protected $fillable = ['school_id', 'user_id', 'name', 'start', 'end',  'enabled'];
     
-    public function school() {
-        return $this->belongsTo('App\Models\School');
-    }
+    /**
+     * 返回指定调查问卷所属的学校对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function school() { return $this->belongsTo('App\Models\School'); }
     
-    public function user() {
-        return $this->belongsTo('App\Models\User');
-    }
+    /**
+     * 返回调查问卷发起者的用户对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function user() { return $this->belongsTo('App\Models\User'); }
     
     public function pollquestionnaireAnswer() {
         return $this->hasOne('App\Models\PollQuestionnaireAnswer');

@@ -53,7 +53,8 @@ class ProcedureStepController extends Controller {
      */
     public function store(ProcedureStepRequest $request) {
         
-        return $this->procedureStep->create($request->all()) ? $this->succeed() : $this->fail();
+        return $this->procedureStep->store($request->all())
+            ? $this->succeed() : $this->fail();
         
     }
     
@@ -96,7 +97,8 @@ class ProcedureStepController extends Controller {
     
         $procedureStep = $this->procedureStep->find($id);
         if (!$procedureStep) { return $this->notFound(); }
-        return $procedureStep->update($request->all()) ? $this->succeed() : $this->fail();
+        return $procedureStep->modify($request->all(), $id)
+            ? $this->succeed() : $this->fail();
         
     }
     
@@ -110,22 +112,9 @@ class ProcedureStepController extends Controller {
     
         $procedureStep = $this->procedureStep->find($id);
         if (!$procedureStep) { return $this->notFound(); }
-        return $procedureStep->delete() ? $this->succeed() : $this->fail();
+        return $procedureStep->remove($id)
+            ? $this->succeed() : $this->fail();
         
     }
 
-    private function getSchoolEducators($id) {
-        
-        $temp = Procedure::whereId($id)->first(['school_id']);
-        $data = Educator::with('user')->where('school_id', $temp->school_id)->get()->toArray();
-        $educators = [];
-        if (!empty($data)) {
-            foreach ($data as $v) {
-                $educators[$v['user_id']] = $v['user']['realname'];
-            }
-            return response()->json(['statusCode' => 200, 'educators' => $educators]);
-        }
-        return response()->json(['statusCode' => 500, 'message' => '查询失败!']);
-    }
-    
 }

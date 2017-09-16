@@ -6,10 +6,11 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * App\Models\Event
+ * App\Models\Event 日程
  *
  * @property int $id
  * @property string $name 事件名称
+ * @property string $title 事件名称
  * @property string $remark 事件备注
  * @property string $location 时间相关地点
  * @property string $contact 事件联系人
@@ -44,49 +45,53 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|Event whereUpdatedAt($value)
  * @method static Builder|Event whereUrl($value)
  * @method static Builder|Event whereUserId($value)
+ * @method static Builder|Event whereTitle($value)
  * @mixin \Eloquent
  * @property-read \App\Models\Educator $educator
  * @property-read \App\Models\Subject $subject
- * @property string $title 事件名称
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Event whereTitle($value)
  */
 class Event extends Model {
+    
     protected $table = 'events';
+    
     protected $fillable = [
-        'title',
-        'remark',
-        'location',
-        'contact',
-        'url',
-        'start',
-        'end',
-        'ispublic',
-        'iscourse',
-        'educator_id',
-        'subject_id',
-        'alertable',
-        'alert_mins',
-        'user_id',
-        'created_at',
-        'updated_at',
-        'enabled'
+        'title', 'remark', 'location',
+        'contact', 'url', 'start',
+        'end', 'ispublic', 'iscourse',
+        'educator_id', 'subject_id', 'alertable',
+        'alert_mins', 'user_id', 'enabled'
     ];
-
-    public function educator() {
-        return $this->belongsTo('App\Models\Educator');
-    }
-
-    public function subject() {
-        return $this->belongsTo('APP\Models\Subject');
-    }
-
-
+    
+    /**
+     * 返回事件创建者的用户对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function user() { return $this->belongsTo('App\Models\User'); }
+    
+    /**
+     * 返回课程表事件对应的教职员工对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function educator() { return $this->belongsTo('App\Models\Educator'); }
+    
+    /**
+     * 返回课程表事件对应的科目对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function subject() { return $this->belongsTo('APP\Models\Subject'); }
+    
     /**
      * 显示日历事件
+     *
+     * @param $userId
+     * @return \Illuminate\Http\JsonResponse
      */
     public function showCalendar($userId) {
         //通过userId找出educator_id
-        $educator = Educator::where('user_id', $userId)->first();
+        $educator = Educator::whereUserId($userId)->first();
         //先选出公开事件中 非课程的事件
         $pubNoCourseEvents = $this
             ->where('ispublic', 1)
@@ -113,21 +118,32 @@ class Event extends Model {
         //如果是用户
         return response()->json(array_merge($pubNoCourseEvents, $perEvents, $pubCourEvents));
     }
-
+    
     /**
      * 判断当前用户权限
+     *
+     * @param $userId
+     * @return bool
      */
     public function getRole($userId) {
-        $role = User::find($userId)->group;
+        
+        $role = User::whereUserid($userId)->group;
         return $role->name == '管理员' ? true : false;
+        
     }
-
+    
     /**
      * 验证用户添加事件是否有重复
+     *
+     * @param $userId
+     * @param $start
+     * @param $end
+     * @param null $id
+     * @return bool
      */
     public function isRepeatTimeUser($userId, $start, $end, $id = null) {
         //通过userId 找到educator_id
-        $educator = Educator::where('user_id', $userId)->first();
+        $educator = Educator::whereUserId($userId)->first();
         //验证是否和课表时间有冲突
         $event = $this
             ->where('id', '<>', $id)
@@ -180,9 +196,15 @@ class Event extends Model {
         }
         return !empty($event);
     }
-
+    
     /**
      * 验证管理员添加事件是否有重复
+     *
+     * @param $educatorId
+     * @param $start
+     * @param $end
+     * @param null $id
+     * @return bool
      */
     public function isRepeatTimeAdmin($educatorId, $start, $end, $id = null) {
         $event = $this
@@ -219,15 +241,21 @@ class Event extends Model {
         }
         return !empty($event);
     }
-
+    
     /**
      * 计算拖动后的时间差
+     * @param $day
+     * @param $hour
+     * @param $minute
+     * @return int
      */
     public function timeDiff($day, $hour, $minute) {
+        
         $days = $day * 24 * 60 * 60;
         $hours = $hour * 60 * 60;
         $minutes = $minute * 60;
         return $diffTime = $days + $hours + $minutes;
+        
     }
 
 }

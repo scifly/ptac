@@ -8,7 +8,7 @@ use App\Models\School;
 use Illuminate\Support\Facades\Request;
 
 /**
- * Action
+ * 功能
  *
  * Class ActionController
  * @package App\Http\Controllers
@@ -24,7 +24,7 @@ class ActionController extends Controller {
     }
     
     /**
-     * 显示Action列表
+     * 功能列表
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
@@ -39,7 +39,7 @@ class ActionController extends Controller {
     }
     
     /**
-     * 编辑action
+     * 编辑功能
      *
      * @param $id
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
@@ -70,7 +70,7 @@ class ActionController extends Controller {
     }
     
     /**
-     * 更新action
+     * 更新功能
      *
      * @param ActionRequest $request
      * @param $id

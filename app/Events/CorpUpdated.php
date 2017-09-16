@@ -2,7 +2,6 @@
 
 namespace App\Events;
 
-use App\Models\Company;
 use App\Models\Corp;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;

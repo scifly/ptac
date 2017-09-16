@@ -4,6 +4,9 @@
     </div>
     <div class="box-body">
         <div class="form-horizontal">
+            @if (!empty($icon['id']))
+                {{ Form::hidden('id', $icon['id'], ['id' => 'id']) }}
+            @endif
             <div class="form-group">
                 {!! Form::label('name', 'Icon名称',[
                     'class' => 'col-sm-3 control-label'

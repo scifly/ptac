@@ -4,6 +4,9 @@
     </div>
     <div class="box-body">
         <div class="form-horizontal">
+            @if (isset($schoolType['id']))
+                {!! Form::hidden('id', $schoolType['id'], ['id' => 'id']) !!}
+            @endif
             <div class="form-group">
                 {!! Form::label('name', '名称', [
                     'class' => 'col-sm-3 control-label'
@@ -13,7 +16,7 @@
                         'class' => 'form-control',
                         'placeholder' => '(不得超过20个汉字)',
                         'required' => 'true',
-                        'max' => '60'
+                        'maxlength' => '20'
                     ]) !!}
                 </div>
             </div>
@@ -25,7 +28,7 @@
                     {!! Form::text('remark', null, [
                         'class' => 'form-control',
                         'placeholder' => '(不得超过80个汉字)',
-                        'max' => '255'
+                        'maxlength' => '255'
                     ]) !!}
                 </div>
             </div>

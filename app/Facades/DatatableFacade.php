@@ -1,7 +1,6 @@
 <?php
 namespace App\Facades;
 
-use Carbon\Carbon;
 use Illuminate\Support\Facades\Facade;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;

@@ -31,7 +31,7 @@ class ScoreController extends Controller {
     }
     
     /**
-     * 显示成绩列表
+     * 成绩列表
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */

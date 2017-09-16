@@ -21,6 +21,7 @@ class GradeController extends Controller {
         
         $this->grade = $grade;
         $this->educator = $educator;
+        
     }
     
     /**
@@ -56,10 +57,8 @@ class GradeController extends Controller {
      */
     public function store(GradeRequest $request) {
         
-        if ($this->grade->existed($request)) {
-            return $this->fail('已经有此记录');
-        }
-        return $this->grade->create($request->all()) ? $this->succeed() : $this->fail();
+        return $this->grade->store($request->all(), true)
+            ? $this->succeed() : $this->fail();
         
     }
     
@@ -107,12 +106,9 @@ class GradeController extends Controller {
      */
     public function update(GradeRequest $request, $id) {
         
-        $grade = $this->grade->find($id);
-        if (!$grade) { return $this->notFound(); }
-        if ($this->grade->existed($request, $id)) {
-            return $this->fail('已经有此记录');
-        }
-        return $grade->update($request->all()) ? $this->succeed() : $this->fail();
+        if (!$this->grade->find($id)) { return $this->notFound(); }
+        return $this->grade->modify($request->all(), $id, true)
+            ? $this->succeed() : $this->fail();
     }
     
     /**
@@ -123,9 +119,9 @@ class GradeController extends Controller {
      */
     public function destroy($id) {
     
-        $grade = $this->grade->find($id);
-        if (!$grade) { return $this->notFound(); }
-        return $grade->delete() ? $this->succeed() : $this->fail();
+        if (!$this->grade->find($id)) { return $this->notFound(); }
+        return $this->grade->remove($id, true)
+            ? $this->succeed() : $this->fail();
         
     }
     

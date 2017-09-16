@@ -16,9 +16,9 @@ class DepartmentComposer {
     
     public function compose(View $view) {
         
-        $view->with([
+        /*$view->with([
             'departmentTypes' => $this->departmentType->pluck('name', 'id'),
-        ]);
+        ]);*/
         
     }
     

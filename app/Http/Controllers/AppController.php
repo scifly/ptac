@@ -19,7 +19,7 @@ class AppController extends Controller {
     function __construct(App $app) { $this->app = $app; }
     
     /**
-     * 显示微信应用列表
+     * 微信应用列表
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
@@ -33,7 +33,7 @@ class AppController extends Controller {
     }
     
     /**
-     * 显示创建微信应用记录的表单
+     * 创建微信应用
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
@@ -44,7 +44,7 @@ class AppController extends Controller {
     }
     
     /**
-     * 保存新创建的微信应用记录
+     * 保存微信应用
      *
      * @param AppRequest $request
      * @return \Illuminate\Http\JsonResponse
@@ -56,7 +56,7 @@ class AppController extends Controller {
     }
     
     /**
-     * 显示指定的微信应用记录详情
+     * 微信应用详情
      *
      * @param $id
      * @return bool|\Illuminate\Http\JsonResponse
@@ -70,7 +70,7 @@ class AppController extends Controller {
     }
     
     /**
-     * 显示编辑指定微信应用记录的表单
+     * 编辑微信应用
      *
      * @param $id
      * @return bool|\Illuminate\Http\JsonResponse

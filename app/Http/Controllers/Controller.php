@@ -42,14 +42,21 @@ class Controller extends BaseController {
         'statusCode' => self::HTTP_STATUSCODE_OK,
         'message' => self::MSG_OK
     ];
-
-    protected function output($m, array $params = []) {
     
-        $arr = explode('::', $m);
+    /**
+     * 根据__METHOD__输出对应的view
+     *
+     * @param string $method 带控制器名称的方法名称
+     * @param array $params 需要输出至view的变量数组
+     * @return bool|\Illuminate\Http\JsonResponse
+     */
+    protected function output($method, array $params = []) {
+    
+        $arr = explode('::', $method);
         $method = $arr[1];
-        $controller = explode('\\', $arr[0]);
-        $controller = $controller[sizeof($controller) - 1];
-        $action = Action::whereMethod($method)->where('controller', $controller)->first();
+        $c = explode('\\', $arr[0]);
+        $c = $c[sizeof($c) - 1];
+        $action = Action::whereMethod($method)->where('controller', $c)->first();
         if (!$action) { return false; }
         $view = $action->view;
         if (!$view) { return false; }
@@ -69,7 +76,8 @@ class Controller extends BaseController {
             $params['breadcrumb'] = $menu->name . ' / ' . $tab->name . ' / ' . $action->name;
         } else {
             $menuName = session('menuName');
-            $params['breadcrumb'] = "<span style=\"color: red\">菜单 - <strong>{$menuName}</strong> - 配置错误, 请检查后</span>" .
+            $params['breadcrumb'] =
+                "<span style=\"color: red\">菜单 - <strong>{$menuName}</strong> - 配置错误, 请检查后</span>" .
                 '<a href="' . session('pageUrl') . '">重试</a>';
         }
         return response()->json([

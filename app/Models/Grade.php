@@ -2,8 +2,11 @@
 
 namespace App\Models;
 
+use App\Events\GradeCreated;
+use App\Events\GradeDeleted;
+use App\Events\GradeUpdated;
 use App\Facades\DatatableFacade as Datatable;
-use App\Http\Requests\GradeRequest;
+use App\Helpers\ModelTrait;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -32,14 +35,16 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read Collection|Squad[] $classes
  * @property-read Collection|Student[] $students
  * @property int $department_id 对应的部门ID
- * @property-read \App\Models\Department $department
- * @property-read \App\Models\StudentAttendanceSetting $studentAttendanceSetting
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Grade whereDepartmentId($value)
+ * @property-read Department $department
+ * @property-read StudentAttendanceSetting $studentAttendanceSetting
+ * @method static Builder|Grade whereDepartmentId($value)
  */
 class Grade extends Model {
     
+    use ModelTrait;
+    
     protected $fillable = [
-        'name', 'school_id',
+        'name', 'school_id', 'department_id',
         'educator_ids', 'enabled',
     ];
     
@@ -115,6 +120,64 @@ class Grade extends Model {
         
     }
     
+    /**
+     * 保存年级
+     *
+     * @param array $data
+     * @param bool $fireEvent
+     * @return bool
+     */
+    public function store(array $data, $fireEvent = false) {
+        
+        $grade = $this->create($data);
+        if ($grade && $fireEvent) {
+            event(new GradeCreated($grade));
+            return true;
+        }
+        return $grade ? true : false;
+        
+    }
+    
+    /**
+     * 更新年级
+     *
+     * @param array $data
+     * @param $id
+     * @param bool $fireEvent
+     * @return bool
+     */
+    public function modify(array $data, $id, $fireEvent = false) {
+        
+        $grade = $this->find($id);
+        $updated = $grade->update($data);
+        if ($updated && $fireEvent) {
+            event(new GradeUpdated($grade));
+            return true;
+        }
+        return $updated ? true : false;
+        
+    }
+    
+    /**
+     * 删除年级
+     *
+     * @param $id
+     * @param bool $fireEvent
+     * @return bool
+     */
+    public function remove($id, $fireEvent = false) {
+        
+        $grade = $this->find($id);
+        if (!$grade) { return false; }
+        $removed = $this->removable($this, $id) ? $grade->delete() : false;
+        if ($removed && $fireEvent) {
+            event(new GradeDeleted($grade));
+            return true;
+        }
+        return $removed ? true : false;
+        
+    }
+    
     public function datatable() {
         
         $columns = [
@@ -145,6 +208,7 @@ class Grade extends Model {
         ];
         
         return Datatable::simple($this, $columns, $joins);
+        
     }
     
 }

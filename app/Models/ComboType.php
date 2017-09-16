@@ -2,13 +2,12 @@
 
 namespace App\Models;
 
-use App\Models\School;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use App\Facades\DatatableFacade as Datatable;
 
 /**
- * App\Models\ComboType
+ * App\Models\ComboType 套餐类型
  *
  * @property int $id
  * @property string $name 套餐名称
@@ -30,7 +29,7 @@ use App\Facades\DatatableFacade as Datatable;
  * @method static Builder|ComboType whereUpdatedAt($value)
  * @mixin \Eloquent
  * @property-read School $schools
- * @property-read \App\Models\School $school
+ * @property-read School $school
  */
 class ComboType extends Model {
     
@@ -46,11 +45,7 @@ class ComboType extends Model {
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function school() {
-        
-        return $this->belongsTo('App\Models\school');
-        
-    }
+    public function school() { return $this->belongsTo('App\Models\school'); }
     
     public function datatable() {
         

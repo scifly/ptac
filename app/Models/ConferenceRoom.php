@@ -2,16 +2,14 @@
 
 namespace App\Models;
 
-use App\Models\School;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Support\Facades\DB;
 use Mockery\Exception;
-use Symfony\Component\VarDumper\Cloner\Data;
 
 /**
- * App\Models\ConferenceRoom
+ * App\Models\ConferenceRoom 会议室
  *
  * @property int $id
  * @property string $name 会议室名称
@@ -31,8 +29,8 @@ use Symfony\Component\VarDumper\Cloner\Data;
  * @method static Builder|ConferenceRoom whereUpdatedAt($value)
  * @mixin \Eloquent
  * @property-read School $schools
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\ConferenceQueue[] $conferenceQueues
- * @property-read \App\Models\School $school
+ * @property-read ConferenceQueue[] $conferenceQueues
+ * @property-read School $school
  */
 class ConferenceRoom extends Model {
     
