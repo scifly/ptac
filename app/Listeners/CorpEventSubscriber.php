@@ -6,78 +6,107 @@ use App\Models\Company;
 use App\Models\Corp;
 use App\Models\Department;
 use App\Models\DepartmentType;
+use App\Models\Menu;
+use App\Models\MenuType;
 use Illuminate\Events\Dispatcher;
 
 class CorpEventSubscriber {
     
-    protected $corp;
-    protected $company;
-    protected $department;
-    protected $departmentTypeId;
+    protected $departmentTypeId, $menuTypeId;
     
-    function __construct(Corp $corp, Company $company, Department $department) {
-        $this->corp = $corp;
-        $this->company = $company;
-        $this->department = $department;
-
-        //$this->departmentTypeId = DepartmentType::whereName('企业')->first()->id;
-
+    function __construct() {
+        
+        $this->departmentTypeId = DepartmentType::whereName('企业')->first()->id;
+        $this->menuTypeId = MenuType::whereName('企业')->first()->id;
+        
     }
     
+    /**
+     * 当部门已创建时, 更新对应企业的department_id
+     *
+     * @param $event
+     * @return bool
+     */
     public function onDepartmentCreated($event) {
-
-        if ($event->department->department_id === $this->departmentTypeId) {
-            $parentDepartmentId = $event->department->parent_id;
-            $parentCompanyId = Company::whereDepartmentId($parentDepartmentId)->first()->id;
-            $data = [
-                'name' => $event->department->name,
-                'company_id' => $parentCompanyId,
-                'remark' => $event->department->remark,
-                'deparment_id' => $event->department->id,
-                'enabled' => $event->department->enabled,
-            ];
-            $corp = Corp::whereName($event->department->name)->first();
-            if ($corp) {
-                return $corp->modify($data, $corp->id);
-            } else {
-                $data['corpid'] = str_repeat('x', 18);
-                $data['corpsecret'] = str_repeat('x', 64);
-                return $this->corp->store($data);
-            }
+        
+        /** @var Department $department */
+        $department = $event->department;
+        # 判断已创建或更新的部门的类型是否为"企业"
+        if ($department->department_type_id == $this->departmentTypeId) {
+            $data = ['department_id' => $department->id];
+            # 更新对应企业的department_id (企业名称是唯一的)
+            $corp = Corp::whereName($department->name)->first();
+            return $corp->modify($data, $corp->id);
         }
         return true;
         
     }
     
-    public function onDepartmentUpdated($event) {
-    
-        if ($event->department->department_id === $this->departmentTypeId) {
-            $parentDepartmentId = $event->department->parent_id;
-            $parentCompanyId = Company::whereDepartmentId($parentDepartmentId)->first()->id;
-            $data = [
-                'name' => $event->department->name,
-                'company_id' => $parentCompanyId,
-                'remark' => $event->department->remark,
-                'deparment_id' => $event->department->id,
-                'enabled' => $event->department->enabled,
-            ];
-            $corp = Corp::whereName($event->department->name)->first();
-            if ($corp) {
-                return $corp->modify($data, $corp->id);
-            } else {
-                $data['corpid'] = str_repeat('x', 18);
-                $data['corpsecret'] = str_repeat('x', 64);
-                return $this->corp->store($data);
-            }
+    /**
+     * 当菜单已创建时, 更新对应企业的menu_id
+     *
+     * @param $event
+     * @return bool
+     */
+    public function onMenuCreated($event) {
+        
+        /** @var Menu $menu */
+        $menu = $event->menu;
+        # 判断已创建或更新的部门的类型是否为"企业"
+        if ($menu->menu_type_id == $this->menuTypeId) {
+            $data = ['menu_id' => $menu->id];
+            # 更新对应企业的menu_id (企业名称是唯一的)
+            $corp = Corp::whereName($menu->name)->first();
+            return $corp->modify($data, $corp->id);
         }
         return true;
         
     }
     
-    public function onDepartmentDeleted($event) {
+    /**
+     * 当部门所属公司发生变化时,更新对应企业的company_id
+     *
+     * @param $event
+     * @return bool
+     */
+    public function onDepartmentMoved($event) {
+        
+        /** @var Department $department */
+        $department = $event->department;
+        if ($department->department_type_id == $this->departmentTypeId) {
+            $corp = Corp::whereDepartmentId($department->id)->first();
+            $parentDepartment = $department->parent;
+            $companyId = Company::whereDepartmentId($parentDepartment->id)->first()->id;
+            if ($corp->company_id != $companyId) {
+                return $corp->modify(['company_id' => $companyId], $corp->id);
+            }
+            return true;
+        }
+        return true;
+        
+    }
     
-    
-    
+    /**
+     * 当部门所属公司发生变化时,更新对应企业的company_id
+     *
+     * @param $event
+     * @return bool
+     */
+    public function onMenuMoved($event) {
+        
+        /** @var Menu $menu */
+        $menu = $event->menu;
+        if ($menu->menu_type_id == $this->menuTypeId) {
+            $corp = Corp::whereMenuId($menu->id)->first();
+            $parentMenu = $menu->parent;
+            $companyId = Company::whereMenuId($parentMenu->id)->first()->id;
+            if ($corp->company_id != $companyId) {
+                return $corp->modify(['company_id' => $companyId], $corp->id);
+            }
+            return true;
+        }
+        return true;
+        
     }
     
     /**
@@ -87,20 +116,13 @@ class CorpEventSubscriber {
      */
     public function subscribe(Dispatcher $events) {
         
-        $events->listen(
-            'App\Events\DepartmentCreated',
-            'App\Listeners\CorpEventSubscriber@onDepartmentCreated'
-        );
-        $events->listen(
-            'App\Events\DepartmentUpdated',
-            'App\Listeners\CorpEventSubscriber@onDepartmentUpdated'
-        );
-        $events->listen(
-            'App\Events\DepartmentDeleted',
-            'App\Listeners\CorpEventSubscriber@onDepartmentDeleted'
-        );
+        $e = 'App\\Events\\';
+        $l = 'App\\Listeners\\CorpEventSubscriber@';
+        $events->listen($e . 'DepartmentCreated', $l . 'onDepartmentCreated');
+        $events->listen($e . 'MenuCreated', $l . 'onMenuCreated');
+        $events->listen($e . 'DepartmentMoved', $l . 'onDepartmentMoved');
+        $events->listen($e . 'MenuMoved', $l . 'onMenuMoved');
         
     }
-    
     
 }

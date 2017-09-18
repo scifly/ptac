@@ -63,6 +63,7 @@ class SubjectController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(SubjectRequest $request) {
+        
         return $this->subject->store($request) ? $this->succeed() : $this->fail();
         
     }

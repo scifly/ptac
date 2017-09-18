@@ -17,6 +17,9 @@ class EventServiceProvider extends ServiceProvider {
         'App\Listeners\CompanyEventSubscriber',
         'App\Listeners\CorpEventSubscriber',
         'App\Listeners\SchoolEventSubscriber',
+        'App\Listeners\GradeEventSubscriber',
+        'App\Listeners\ClassEventSubscriber',
+        'App\Listeners\MenuEventSubScriber'
     ];
     /**
      * Register any events for your application.

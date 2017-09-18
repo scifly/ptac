@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Helpers\ModelTrait;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -41,6 +42,8 @@ use Illuminate\Support\Facades\DB;
  */
 class Exam extends Model {
     
+    use ModelTrait;
+    
     protected $table = 'exams';
     
     protected $fillable = [
@@ -64,6 +67,7 @@ class Exam extends Model {
      * @return array
      */
     public function classes( $classIds) {
+        
         $classIds = explode(",", $classIds);
         $selectedClasses = [];
         foreach ($classIds as $classId) {
@@ -142,6 +146,48 @@ class Exam extends Model {
         }
 
         return $subjects;
+        
+    }
+    
+    /**
+     * 保存考试
+     *
+     * @param array $data
+     * @return bool
+     */
+    public function store(array $data) {
+        
+        $exam = $this->create($data);
+        return $exam ? true : false;
+        
+    }
+    
+    /**
+     * 更新考试
+     *
+     * @param array $data
+     * @param $id
+     * @return bool
+     */
+    public function modify(array $data, $id) {
+        
+        $exam = $this->find($id);
+        if (!$exam) { return false; }
+        return $exam->update($data) ? true : false;
+        
+    }
+    
+    /**
+     * 删除考试
+     *
+     * @param $id
+     * @return bool
+     */
+    public function remove($id) {
+    
+        $exam = $this->find($id);
+        if (!$exam) { return false; }
+        return $exam->removable($this, $id) ? true : false;
         
     }
     

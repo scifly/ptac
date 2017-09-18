@@ -20,6 +20,11 @@
                     ]) !!}
                 </div>
             </div>
+            @include('partials.single_select', [
+                'label' => '所属学校',
+                'id' => 'school_id',
+                'items' => $schools
+            ])
             <div class="form-group">
                 {!! Form::label('remark', '备注', [
                     'class' => 'col-sm-3 control-label'

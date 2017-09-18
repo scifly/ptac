@@ -16,9 +16,9 @@
                     {!! Form::text('name', null, [
                         'id' => 'name',
                         'class' => 'form-control',
-                        'placeholder' => '(不超过40个汉字)',
+                        'placeholder' => '(不得超过8个汉字)',
                         'required' => 'true',
-                        'data-parsley-length' => '[2, 40]'
+                        'data-parsley-length' => '[2, 8]'
                     ]) !!}
                 </div>
             </div>
@@ -34,11 +34,7 @@
                     ]) !!}
                 </div>
             </div>
-            @include('partials.single_select', [
-                'label' => '所属学校',
-                'id' => 'school_id',
-                'items' => $schools
-            ])
+            {{ Form::hidden('menu_type_id', isset($menuTypeId) ? $menuTypeId : null, ['id' => 'menu_type_id']) }}
             <div class="form-group">
                 {!! Form::label('icon_id', '图标', [
                     'class' => 'col-sm-3 control-label'
@@ -52,7 +48,7 @@
                                        value="{{ $key }}" class="minimal"
                                        @if(isset($menu) && $menu['icon_id'] == $key)
                                        checked
-                                        @endif
+                                       @endif
                                 >
                             </label>
                             <i class="{{ $value }}" style="margin-left: 10px;">&nbsp; {{ $value }}</i><br/>
@@ -75,4 +71,3 @@
     </div>
     @include('partials.form_buttons')
 </div>
-

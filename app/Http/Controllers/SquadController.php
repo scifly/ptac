@@ -58,7 +58,8 @@ class SquadController extends Controller {
      */
     public function store(SquadRequest $request) {
         
-        return $this->class->create($request->all()) ? $this->succeed() : $this->fail();
+        return $this->class->store($request->all(), true)
+            ? $this->succeed() : $this->fail();
         
     }
     
@@ -109,9 +110,9 @@ class SquadController extends Controller {
      */
     public function update(SquadRequest $request, $id) {
     
-        $class = $this->class->find($id);
-        if (!$class) { return $this->notFound(); }
-        return $class->update($request->all()) ? $this->succeed() : $this->fail();
+        if (!$this->class->find($id)) { return $this->notFound(); }
+        return $this->class->modify($request->all(), $id, true)
+            ? $this->succeed() : $this->fail();
         
     }
     
@@ -123,9 +124,9 @@ class SquadController extends Controller {
      */
     public function destroy($id) {
     
-        $class = $this->class->find($id);
-        if (!$class) { return $this->notFound(); }
-        return $class->delete() ? $this->succeed() : $this->fail();
+        if (!$this->class->find($id)) { return $this->notFound(); }
+        return $this->class->remove($id, true)
+            ? $this->succeed() : $this->fail();
     
     }
     

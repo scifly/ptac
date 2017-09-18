@@ -4,8 +4,8 @@
     </div>
     <div class="box-body">
         <div class="form-horizontal">
-            @if (!empty($educatorAttendanceSetting['id']))
-                {{ Form::hidden('id', $educatorAttendanceSetting['id'], ['id' => 'id']) }}
+            @if (!empty($eas['id']))
+                {{ Form::hidden('id', $eas['id'], ['id' => 'id']) }}
             @endif
             <div class="form-group">
                 {!! Form::label('name', '名称', [
@@ -48,9 +48,13 @@
             @include('partials.enabled', [
                 'label' => '进或出',
                 'id' => 'inorout',
-                'value' => isset($educatorAttendanceSetting['inorout']) ? $educatorAttendanceSetting['inorout'] : NULL
+                'value' => isset($eas['inorout']) ? $eas['inorout'] : NULL
             ])
-
+            @include('partials.enabled', [
+                'label' => '是否启用',
+                'id' => 'enabled',
+                'value' => isset($eas['enabled']) ? $eas['enabled'] : NULL
+            ])
         </div>
     </div>
     @include('partials.form_buttons')

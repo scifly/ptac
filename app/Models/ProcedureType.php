@@ -3,11 +3,13 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Helpers\ModelTrait;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * App\Models\ProcedureType
+ * App\Models\ProcedureType 审批流程类型
  *
  * @property int $id
  * @property string $name 流程种类名称
@@ -22,25 +24,22 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|ProcedureType whereRemark($value)
  * @method static Builder|ProcedureType whereUpdatedAt($value)
  * @mixin \Eloquent
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Procedure[] $procedures
+ * @property-read Collection|Procedure[] $procedures
  */
 class ProcedureType extends Model {
-    //
+    
+    use ModelTrait;
+    
     protected $table = 'procedure_types';
     
-    protected $fillable = [
-        'name',
-        'remark',
-        'created_at',
-        'updated_at',
-        'enabled'
-    ];
+    protected $fillable = ['name', 'remark', 'enabled'];
     
-    public function procedures() {
-        
-        return $this->hasMany('App\Models\Procedure');
-        
-    }
+    /**
+     * 返回指定审批流程类型包含的所有审批流程对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function procedures() { return $this->hasMany('App\Models\Procedure'); }
     
     public function datatable() {
         

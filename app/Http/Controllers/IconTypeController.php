@@ -51,7 +51,8 @@ class IconTypeController extends Controller {
      */
     public function store(IconTypeRequest $request) {
         
-        return $this->iconType->create($request->all()) ? $this->succeed() : $this->fail();
+        return $this->iconType->store($request->all())
+            ? $this->succeed() : $this->fail();
         
     }
     
@@ -94,7 +95,8 @@ class IconTypeController extends Controller {
     
         $iconType = $this->iconType->find($id);
         if (!$iconType) { return $this->notFound(); }
-        return $iconType->update($request->all()) ? $this->succeed() : $this->fail();
+        return $iconType->modify($request->all(), $id)
+            ? $this->succeed() : $this->fail();
         
     }
     
@@ -108,7 +110,7 @@ class IconTypeController extends Controller {
     
         $iconType = $this->iconType->find($id);
         if (!$iconType) { return $this->notFound(); }
-        return $iconType->delete() ? $this->succeed() : $this->fail();
+        return $iconType->remove($id) ? $this->succeed() : $this->fail();
     
     }
     

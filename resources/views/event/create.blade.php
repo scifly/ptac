@@ -12,14 +12,14 @@
             <div class="modal-body">
                 <div class="form-horizontal">
                     <div class="form-group">
-                        {!! Form::label('start', '开始时间',['class' => 'col-sm-4 control-label ']) !!}
-                        <div class="col-sm-4">
+                        {!! Form::label('start', '开始时间',['class' => 'col-sm-3 control-label ']) !!}
+                        <div class="col-sm-6">
                             {!! Form::text('start', null, [ 'class' => 'form-control start-datepicker']) !!}
                         </div>
                     </div>
                     <div class="form-group">
-                        {!! Form::label('end', '结束时间',['class' => 'col-sm-4 control-label']) !!}
-                        <div class="col-sm-4">
+                        {!! Form::label('end', '结束时间',['class' => 'col-sm-3 control-label']) !!}
+                        <div class="col-sm-6">
                             {!! Form::text('end', null, ['class' => 'form-control end-datepicker']) !!}
                         </div>
                     </div>

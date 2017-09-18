@@ -19,6 +19,5 @@
 
     <dl class="dl-horizontal">
         <dt>所属学校：</dt><dd>{{ $pollQuestionnaire->school->name }}</dd>
-        <br/>
     </dl>
 @endsection

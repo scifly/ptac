@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * App\Models\AttachmentType
+ * App\Models\AttachmentType 附件类型
  *
  * @property int $id
  * @property string $name 附件类型名称
@@ -21,18 +21,19 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|AttachmentType whereRemark($value)
  * @method static Builder|AttachmentType whereUpdatedAt($value)
  * @mixin \Eloquent
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Attachment[] $attachments
+ * @property-read Attachment[] $attachments
  */
 class AttachmentType extends Model {
-    protected $table = 'attachment_types';
-    protected $fillable = [
-        'name',
-        'remark',
-        'enabled'
-    ];
     
-    public function attachments() {
-        return $this->hasMany('App\Models\Attachment');
-    }
+    protected $table = 'attachment_types';
+    
+    protected $fillable = ['name', 'remark', 'enabled'];
+    
+    /**
+     * 获取包含的所有附件对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function attachments() { return $this->hasMany('App\Models\Attachment'); }
     
 }

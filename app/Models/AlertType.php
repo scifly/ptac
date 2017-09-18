@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Facades\DatatableFacade as Datatable;
 
 /**
- * App\Models\AlertType
+ * App\Models\AlertType 警告类型
  *
  * @property int $id
  * @property string $name 提前提醒的时间
