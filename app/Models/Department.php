@@ -125,7 +125,7 @@ class Department extends Model {
      */
     public function children() {
         
-        return $this->hasMany('App\Models\Menu', 'parent_id', 'id');
+        return $this->hasMany('App\Models\Department', 'parent_id', 'id');
         
     }
     
@@ -293,7 +293,36 @@ class Department extends Model {
         return response()->json($data);
         
     }
-    
+
+    public function tree1($id) {
+
+        $department = $this->find($id);
+        $departments = $department->children();
+        $data = [];
+        foreach ($departments as $department) {
+            $parentId = isset($department['parent_id']) ? $department['parent_id'] : '#';
+            $text = $department['name'];
+            $departmentType = DepartmentType::whereId($department['department_type_id'])->first()->name;
+            switch ($departmentType) {
+                case '根': $type = 'root'; break;
+                case '运营': $type = 'company'; break;
+                case '企业': $type = 'corp'; break;
+                case '学校': $type = 'school'; break;
+                case '年级': $type = 'grade'; break;
+                case '班级': $type = 'class'; break;
+                default: $type = 'other'; break;
+            }
+            $data[] = [
+                'id' => $department['id'],
+                'parent' => $parentId,
+                'text' => $text,
+                'type' => $type
+            ];
+        }
+        return response()->json($data);
+
+    }
+
     /**
      * 判断指定的节点能否移至指定的节点下
      *
