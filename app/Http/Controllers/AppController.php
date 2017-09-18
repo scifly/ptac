@@ -24,7 +24,8 @@ class AppController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
-        
+
+        $this->authorize('index');
         if (Request::get('draw')) {
             return response()->json($this->app->datatable());
         }

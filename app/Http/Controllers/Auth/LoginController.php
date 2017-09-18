@@ -65,6 +65,7 @@ class LoginController extends Controller {
         
         return redirect('/login')->withErrors([
             'error' => 'These credentials dont match our records',
+            'login' => 'what the hell?!'
         ]);
     }
     

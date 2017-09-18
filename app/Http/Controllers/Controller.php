@@ -52,14 +52,19 @@ class Controller extends BaseController {
      */
     protected function output($method, array $params = []) {
     
+        # 获取功能名称
         $arr = explode('::', $method);
-        $method = $arr[1];
+        $m = $arr[1];
+        # 获取控制器名称
         $c = explode('\\', $arr[0]);
         $c = $c[sizeof($c) - 1];
-        $action = Action::whereMethod($method)->where('controller', $c)->first();
-        if (!$action) { return false; }
+        # 获取功能对象
+        $action = Action::whereMethod($m)->where('controller', $c)->first();
+        if (!$action) { return $this->fail($method . '不存在'); }
+        # 获取功能对应的View
         $view = $action->view;
-        if (!$view) { return false; }
+        if (!$view) { return $this->fail($method . '配置错误'); }
+        
         $menu = Menu::whereId(session('menuId'))->first();
         $tab = Tab::whereId(Request::get('tabId'))->first();
         # 保存状态为active的卡片ID

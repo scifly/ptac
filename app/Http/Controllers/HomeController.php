@@ -68,8 +68,6 @@ class HomeController extends Controller {
 
     public function menu($id) {
 
-        /*$abc = 'abc';
-        var_dump($abc);*/
         if (!session('menuId') || session('menuId') !== $id) {
             session(['menuId' => $id]);
             session(['menuName' => Menu::whereId($id)->first()->name]);
@@ -113,8 +111,8 @@ class HomeController extends Controller {
         } else {
             $tabArray = [];
         }
-        # 如果菜单没有配置或配置有误, 则显示卡片
         
+        # 如果菜单没有配置或配置有误, 则显示菜单配置卡片
         if (!$isTabLegit) {
             session(['menuId' => 0]);
             $actionId = Action::whereEnabled(1)->where('controller', 'MenuController')->
