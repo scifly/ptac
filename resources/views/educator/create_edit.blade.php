@@ -190,7 +190,42 @@
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
-                    <span id="add-department" class="btn-primary">修改</span>
+                    <button type="button" class="btn btn-flat" style="margin-right: 5px;margin-bottom: 5px">
+                        <i class="fa fa-folder"></i>
+                        凌凯集团
+                        <i class="fa fa-close"></i>
+                    </button>
+                    <button type="button" class="btn btn-flat" style="margin-right: 5px;margin-bottom: 5px">
+                        <i class="fa fa-folder"></i>
+                        凌凯集团
+                        <i class="fa fa-close"></i>
+                    </button>
+                    <button type="button" class="btn btn-flat" style="margin-right: 5px;margin-bottom: 5px">
+                        <i class="fa fa-folder"></i>
+                        凌凯集团
+                        <i class="fa fa-close"></i>
+                    </button>
+                    <button type="button" class="btn btn-flat" style="margin-right: 5px;margin-bottom: 5px">
+                        <i class="fa fa-folder"></i>
+                        凌凯集团
+                        <i class="fa fa-close"></i>
+                    </button>
+                    <button type="button" class="btn btn-flat" style="margin-right: 5px;margin-bottom: 5px">
+                        <i class="fa fa-folder"></i>
+                        凌凯集团
+                        <i class="fa fa-close"></i>
+                    </button>
+                    <button type="button" class="btn btn-flat" style="margin-right: 5px;margin-bottom: 5px">
+                        <i class="fa fa-folder"></i>
+                        凌凯集团
+                        <i class="fa fa-close"></i>
+                    </button>
+                    <button type="button" class="btn btn-flat" style="margin-right: 5px;margin-bottom: 5px">
+                        <i class="fa fa-folder"></i>
+                        凌凯集团
+                        <i class="fa fa-close"></i>
+                    </button>
+                    <a id="add-department" class="btn btn-primary" style="margin-bottom: 5px">修改</a>
                 </div>
             </div>
             <div class="form-group">

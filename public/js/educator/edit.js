@@ -64,7 +64,9 @@ $('#add-department').on('click', function() {
     console.log('test');
     $btn.hide();
     $form.hide();
-    $tree.show();
+    // $tree.show();
+    $('.tree-box').show();
+    $('.tree-box .box-footer').show();
     $tree.jstree({
         core: {
             themes: {
