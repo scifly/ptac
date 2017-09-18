@@ -6,9 +6,10 @@ use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use App\Http\Requests\EducatorAttendanceSettingRequest;
+use Symfony\Component\VarDumper\Cloner\Data;
 
 /**
- * App\Models\EducatorAttendanceSetting
+ * App\Models\EducatorAttendanceSetting 教职员工考勤设置
  *
  * @property int $id
  * @property string $name 考勤设置名称
@@ -27,33 +28,31 @@ use App\Http\Requests\EducatorAttendanceSettingRequest;
  * @method static Builder|EducatorAttendanceSetting whereStart($value)
  * @method static Builder|EducatorAttendanceSetting whereUpdatedAt($value)
  * @mixin \Eloquent
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\EducatorAttendance[] $educatorAttendance
- * @property-read \App\Models\School $schools
+ * @property-read EducatorAttendance[] $educatorAttendance
+ * @property-read School $schools
  */
 class EducatorAttendanceSetting extends Model {
-    //
+
     protected $table = 'educator_attendance_settings';
+    
     protected $fillable = [
-        'name',
-        'school_id',
-        'start',
-        'end',
-        'inorout'
+        'name', 'school_id', 'start',
+        'end', 'inorout'
     ];
     
     /**
-     * 教职工考勤设置与教职工考勤
+     * 获取对应的所有教职员工考勤记录对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function educatorAttendance() {
-        return $this->hasMany('App\Models\EducatorAttendance', 'eas_id');
-    }
+    public function educatorAttendances() { return $this->hasMany('App\Models\EducatorAttendance', 'eas_id'); }
     
     /**
-     * 教职工考勤设置与学校
+     * 返回所属的学校对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function schools() {
-        return $this->belongsTo('App\Models\School');
-    }
+    public function school() { return $this->belongsTo('App\Models\School'); }
 
     public function datatable() {
 
@@ -65,19 +64,19 @@ class EducatorAttendanceSetting extends Model {
             ['db' => 'EducatorAttendanceSetting.end', 'dt' => 4],
             ['db' => 'EducatorAttendanceSetting.inorout', 'dt' => 5,
                 'formatter' => function ($d) {
-                    return $d == 1 ? '进' : '出';
+                    return $d ? '进' : '出';
                 }
             ],
             ['db' => 'EducatorAttendanceSetting.created_at', 'dt' => 6],
+            ['db' => 'EducatorAttendanceSetting.updated_at', 'dt' => 7],
+            ['db' => 'EducatorAttendanceSetting.updated_at', 'dt' => 7],
             [
-                'db' => 'EducatorAttendanceSetting.updated_at', 'dt' => 7,
-                'formatter' => function ($d, $row) {
+                'db' => 'EducatorAttendanceSetting.enabled', 'dt' => 7,
+                'formatter' => function($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
                 }
             ],
-
         ];
-
         $joins = [
             [
                 'table' => 'schools',
@@ -87,11 +86,9 @@ class EducatorAttendanceSetting extends Model {
                     'School.id = EducatorAttendanceSetting.school_id'
                 ]
             ],
-
-
         ];
-
         return Datatable::simple($this, $columns,$joins);
 
     }
+    
 }

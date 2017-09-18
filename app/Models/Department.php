@@ -3,7 +3,9 @@
 namespace App\Models;
 
 use App\Events\DepartmentCreated;
+use App\Events\DepartmentMoved;
 use App\Events\DepartmentUpdated;
+use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -45,9 +47,12 @@ use Mockery\Exception;
  * @property-read Grade $grade
  * @property-read Squad $squad
  * @method static Builder|Department whereDepartmentTypeId($value)
+ * @property-read DepartmentType $departmentType
  */
 class Department extends Model {
 
+    use ModelTrait;
+    
     protected $fillable = [
         'parent_id', 'department_type_id', 'name',
         'remark', 'order', 'enabled'
@@ -120,24 +125,22 @@ class Department extends Model {
      */
     public function children() {
         
-        return $this->hasMany('App\Models\Menu', 'parent_id', 'id');
+        return $this->hasMany('App\Models\Department', 'parent_id', 'id');
         
     }
     
     /**
      * 返回所有叶节点部门
      *
-     * @param array $schoolIds
-     * @param array $corpIds
      * @return array
      */
-    public function leaves($schoolIds = [], $corpIds = []) {
+    public function leaves() {
         
         $leaves = [];
         $leafPath = [];
-        $departments = $this->nodes($schoolIds, $corpIds);
+        $departments = $this->nodes();
+        /** @var Department $department */
         foreach ($departments as $department) {
-            /** @noinspection PhpUndefinedMethodInspection */
             if (empty($department->children()->count())) {
                 $path = $this->leafPath($department->id, $leafPath);
                 $leaves[$department->id] = $path;
@@ -151,13 +154,11 @@ class Department extends Model {
     /**
      * 返回Department列表
      *
-     * @param array $schoolIds
-     * @param array $corpIds
      * @return array
      */
-    public function departments(array $schoolIds = [], array $corpIds = []) {
+    public function departments() {
         
-        $departments = $this->nodes($schoolIds, $corpIds);
+        $departments = $this->nodes();
         $departmentList = [];
         foreach ($departments as $department) {
             $departmentList[$department->id] = $department->name;
@@ -213,7 +214,10 @@ class Department extends Model {
     public function remove($id) {
         
         $department = $this->find($id);
-        if (!isset($department)) { return false;}
+        if (!$department) { return false; }
+        if ($department->users) { return false; }
+        if ($department->children) { return false; }
+        if (!$this->removable($this, $id)) { return false; }
         try {
             $exception = DB::transaction(function () use ($id, $department) {
                 # 删除指定的Department记录
@@ -240,22 +244,26 @@ class Department extends Model {
      *
      * @param $id
      * @param $parentId
+     * @param bool $fireEvent
      * @return bool
      */
-    public function move($id, $parentId) {
+    public function move($id, $parentId, $fireEvent = false) {
         
         $deparment = $this->find($id);
         if (!isset($deparment)) { return false; }
         $deparment->parent_id = $parentId === '#' ? NULL : intval($parentId);
-        return $deparment->save();
+        $moved = $deparment->save();
+        if ($moved && $fireEvent) {
+            event(new DepartmentMoved($this->find($id)));
+            return true;
+        }
+        return $moved ? true : false;
         
     }
     
     /**
      * 获取用于显示jstree的部门数据
      *
-     * @param array $schoolIds
-     * @param array $corpIds
      * @return \Illuminate\Http\JsonResponse
      */
     public function tree() {
@@ -264,14 +272,119 @@ class Department extends Model {
         $data = [];
         foreach ($departments as $department) {
             $parentId = isset($department['parent_id']) ? $department['parent_id'] : '#';
+            $text = $department['name'];
+            $departmentType = DepartmentType::whereId($department['department_type_id'])->first()->name;
+            switch ($departmentType) {
+                case '根': $type = 'root'; break;
+                case '运营': $type = 'company'; break;
+                case '企业': $type = 'corp'; break;
+                case '学校': $type = 'school'; break;
+                case '年级': $type = 'grade'; break;
+                case '班级': $type = 'class'; break;
+                default: $type = 'other'; break;
+            }
             $data[] = [
                 'id' => $department['id'],
                 'parent' => $parentId,
-                'text' => $department['name']
+                'text' => $text,
+                'type' => $type
             ];
         }
         return response()->json($data);
         
+    }
+
+    public function tree1($id) {
+
+        $department = $this->find($id);
+        $departments = $department->children();
+        $data = [];
+        foreach ($departments as $department) {
+            $parentId = isset($department['parent_id']) ? $department['parent_id'] : '#';
+            $text = $department['name'];
+            $departmentType = DepartmentType::whereId($department['department_type_id'])->first()->name;
+            switch ($departmentType) {
+                case '根': $type = 'root'; break;
+                case '运营': $type = 'company'; break;
+                case '企业': $type = 'corp'; break;
+                case '学校': $type = 'school'; break;
+                case '年级': $type = 'grade'; break;
+                case '班级': $type = 'class'; break;
+                default: $type = 'other'; break;
+            }
+            $data[] = [
+                'id' => $department['id'],
+                'parent' => $parentId,
+                'text' => $text,
+                'type' => $type
+            ];
+        }
+        return response()->json($data);
+
+    }
+
+    /**
+     * 判断指定的节点能否移至指定的节点下
+     *
+     * @param $id
+     * @param $parentId
+     * @return bool
+     */
+    public function movable($id, $parentId) {
+
+        if (!isset($parentId)) { return false; }
+        $type = $this->find($id)->departmentType->name;
+        $parentType = $this->find($parentId)->departmentType->name;
+        switch ($type) {
+            case '运营': return $parentType == '根';
+            case '企业': return $parentType == '运营';
+            case '学校': return $parentType == '企业';
+            case '年级': return $parentType == '学校' or $parentType == '其他';
+            case '班级': return $parentType == '年级' or $parentType == '其他';
+            case '其他': return !($parentType == '企业' or $parentType == '运营');
+            default: return false;
+        }
+        
+    }
+    
+    /**
+     * 根据年级的部门ID获取所属学校的ID
+     *
+     * @param $id
+     * @return int|mixed
+     */
+    public function getSchoolId($id) {
+        
+        $parent = $this->find($id)->parent;
+        $schoolId = 0;
+        if ($parent->departmentType->name == '学校') {
+            $departmentId = $parent->id;
+            $schoolId = School::whereDepartmentId($departmentId)->first()->id;
+        } else {
+            $this->getSchoolId($parent->id);
+        }
+        return $schoolId;
+        
+    }
+    
+    /**
+     * 根据班级的部门ID获取所属年级的ID
+     *
+     * @param $id
+     * @return int|mixed
+     */
+    public function getGradeId($id) {
+        
+        $parent = $this->find($id)->parent;
+        $gradeId = 0;
+        if ($parent->departmentType->name == '年级') {
+            $departmentId = $parent->id;
+            $gradeId = Grade::whereDepartmentId($departmentId)->first()->id;
+        } else {
+            $this->getGradeId($parent->id);
+        }
+        return $gradeId;
+    
     }
     
     /**
@@ -299,22 +412,11 @@ class Department extends Model {
     /**
      * 根据schoolId和corpId返回节点
      *
-     * @param array $schoolIds
-     * @param array $corpIds
      * @return Collection|static[]
      */
-    private function nodes(array $schoolIds = [], array $corpIds = []) {
+    private function nodes() {
         
-        if (empty($schoolIds) && empty($corpIds)) {
-            $nodes = $this::all();
-        } elseif (!empty($schoolIds) && empty($corpIds)) {
-            $nodes = $this->whereIn('school_id', $schoolIds)->get();
-        } elseif (!empty($corpIds) && empty($schoolIds)) {
-            $nodes = $this->whereIn('corp_id', $corpIds)->get();
-        } else {
-            $nodes = $this->whereIn('school_id', $schoolIds)
-                ->whereIn('corp_id', $corpIds)->get();
-        }
+        $nodes = $this->all();
         return $nodes;
         
     }

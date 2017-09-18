@@ -31,6 +31,9 @@
                 'items' => $educators,
                 'selectedItems' => isset($selectedEducators) ? $selectedEducators : []
             ])
+            @if (isset($grade['department_id']))
+                {!! Form::hidden('department_id', $grade['department_id']) !!}
+            @endif
             @include('partials.enabled', [
                 'label' => '是否启用',
                 'id' => 'enabled',

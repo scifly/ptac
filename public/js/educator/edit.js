@@ -3,12 +3,10 @@ var $tbody = $("#mobileTable").find("tbody");
 var $tbody2 = $("#classTable").find("tbody");
 var n = 0;
 
-$(function () {
-    $tbody.find('tr:nth-last-child(1)').find('button').removeClass('btn-remove').addClass('btn-add');
-    $tbody.find('tr:nth-last-child(1)').find('i').removeClass('fa-minus').addClass('fa-plus');
-    $tbody2.find('tr:nth-last-child(1)').find('button').removeClass('btn-class-remove').addClass('btn-class-add');
-    $tbody2.find('tr:nth-last-child(1)').find('i').removeClass('fa-minus').addClass('fa-plus');
-});
+$tbody.find('tr:nth-last-child(1)').find('button').removeClass('btn-remove').addClass('btn-add');
+$tbody.find('tr:nth-last-child(1)').find('i').removeClass('fa-minus').addClass('fa-plus');
+$tbody2.find('tr:nth-last-child(1)').find('button').removeClass('btn-class-remove').addClass('btn-class-add');
+$tbody2.find('tr:nth-last-child(1)').find('i').removeClass('fa-minus').addClass('fa-plus');
 // 手机号
 $(document).on('click', '.btn-add', function (e) {
     e.preventDefault();
@@ -40,6 +38,7 @@ $(document).on('click', '.btn-add', function (e) {
 // 班级、科目
 $(document).on('click', '.btn-class-add', function (e) {
     e.preventDefault();
+
     var html = $tbody2.find('tr').last().clone();
     html.find('span.select2').remove();
     // 删除插件初始化增加的html
@@ -56,3 +55,52 @@ $(document).on('click', '.btn-class-add', function (e) {
     e.preventDefault();
     return false;
 });
+
+//部门
+var $tree = $('#department-tree');
+var $form = $('.form-horizontal');
+var $btn = $('.box-footer');
+$('#add-department').on('click', function() {
+    console.log('test');
+    $btn.hide();
+    $form.hide();
+    $tree.show();
+    $tree.jstree({
+        core: {
+            themes: {
+                variant: 'large',
+                dots: true,
+                icons: true,
+                stripes: true
+            },
+            multiple: true,
+            animation: 0,
+            data: {
+                url: 'http://sandbox.dev:8080/ptac/public/educators/edit/20',
+                type: 'POST',
+                dataType: 'json',
+                data: function (node) {
+                    return {id: node.id, _token: $('#csrf_token').attr('content')}
+                }
+            }
+        },
+        checkbox: {
+            keep_selected_style : false
+        },
+        plugins: ['types', 'search', 'checkbox', 'wholerow'],
+        types: {
+            '#': { "icon": 'glyphicon glyphicon-flash' },
+            'root': { "icon": 'fa fa-sitemap' },
+            'company': { "icon": 'fa fa-building' },
+            'corp': { "icon": 'fa fa-weixin' },
+            'school': { "icon": 'fa fa-university' },
+            'grade': { "icon": 'fa fa-users' },
+            'class': { "icon": 'fa fa-user' },
+            'other': { "icon": 'fa fa-list' }
+        },
+
+    })
+});
+
+
+

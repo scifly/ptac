@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Facades\DatatableFacade as Datatable;
 
 /**
- * App\Models\ConferenceQueue
+ * App\Models\ConferenceQueue 会议队列
  *
  * @property int $id
  * @property string $name 会议名称
@@ -55,22 +55,14 @@ class ConferenceQueue extends Model {
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function conferenceRoom() {
-        
-        return $this->belongsTo('App\Models\ConferenceRoom');
-        
-    }
+    public function conferenceRoom() { return $this->belongsTo('App\Models\ConferenceRoom'); }
     
     /**
      * 获取参与指定会议的所有教职员工对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function conferenceParticipants() {
-        
-        return $this->hasMany('App\Models\ConferenceParticipant');
-        
-    }
+    public function conferenceParticipants() { return $this->hasMany('App\Models\ConferenceParticipant'); }
     
     /**
      * 保存会议

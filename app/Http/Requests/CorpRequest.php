@@ -25,7 +25,8 @@ class CorpRequest extends FormRequest {
                 $this->input('id') . ',id,' .
                 'company_id,' . $this->input('company_id'),
             'department_id' => 'required|integer',
-            'corpid' => 'required|string|alpha_num|max:36'
+            'menu_id' => 'required|integer',
+            'corpid' => 'required|string|alpha_num|max:18'
         ];
         
     }
@@ -55,6 +56,9 @@ class CorpRequest extends FormRequest {
         }
         if (!isset($input['department_id'])) {
             $input['department_id'] = 0;
+        }
+        if (!isset($input['menu_id'])) {
+            $input['menu_id'] = 0;
         }
         $this->replace($input);
         

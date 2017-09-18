@@ -35,7 +35,7 @@ class CustodianController extends Controller {
         
     }
     /**
-     * 显示监护人列表
+     * 监护人列表
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
@@ -47,7 +47,7 @@ class CustodianController extends Controller {
     }
     
     /**
-     * 显示创建监护人记录的表单
+     * 创建监护人
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
@@ -58,7 +58,7 @@ class CustodianController extends Controller {
     }
     
     /**
-     * 保存新创建的监护人记录
+     * 保存监护人
      *
      * @param CustodianRequest $request
      * @return \Illuminate\Http\JsonResponse

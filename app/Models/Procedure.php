@@ -3,12 +3,12 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
-use App\Http\Requests\ProcedureRequest;
+use App\Helpers\ModelTrait;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * App\Models\Procedure
+ * App\Models\Procedure 审批流程
  *
  * @property int $id
  * @property int $procedure_type_id 流程类型ID
@@ -31,48 +31,83 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read \App\Models\School $school
  */
 class Procedure extends Model {
-    //
+    
+    use ModelTrait;
+    
     protected $table = 'procedures';
     
     protected $fillable = [
-        'procedure_type_id',
-        'school_id',
-        'name',
-        'remark',
-        'created_at',
-        'updated_at',
-        'enabled',
+        'procedure_type_id', 'school_id', 'name',
+        'remark', 'enabled',
     ];
     
     /**
-     * 流程与学校
+     * 返回指定流程所属的学校对象
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function school() {
-        return $this->belongsTo('App\Models\School');
+    public function school() { return $this->belongsTo('App\Models\School'); }
+    
+    /**
+     * 返回指定流程所属的流程类型对象
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function procedureType() { return $this->belongsTo('App\Models\ProcedureType'); }
+    
+    /**
+     * 获取指定审批流程包含的所有审批流程步骤对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function procedureSteps() { return $this->hasMany('App\Models\ProcedureStep'); }
+    
+    /**
+     * 获取指定审批流程包含的所有流程审批日志对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function procedureLogs() { return $this->hasMany('App\Models\ProcedureLog'); }
+    
+    /**
+     * 保存审批流程
+     *
+     * @param array $data
+     * @return bool
+     */
+    public function store(array $data) {
+        
+        $procedure = $this->create($data);
+        return $procedure ? true : false;
+        
     }
     
     /**
-     * 流程与流程类型
+     * 更新审批流程
+     *
+     * @param array $data
+     * @param $id
+     * @return bool
      */
-    public function procedureType() {
-        return $this->belongsTo('App\Models\ProcedureType');
+    public function modify(array $data, $id) {
+        
+        $procedure = $this->find($id);
+        if (!$procedure) { return false; }
+        return $procedure->update($data) ? true : false;
+        
     }
     
-    public function existed(ProcedureRequest $request, $id = NULL) {
+    /**
+     * 删除审批流程
+     *
+     * @param $id
+     * @return bool|null
+     */
+    public function remove($id) {
         
-        if (!$id) {
-            $procedure = $this->where('procedure_type_id', $request->input('procedure_type_id'))
-                ->where('school_id', $request->input('school_id'))
-                ->where('name', $$request->input('name'))
-                ->first();
-        } else {
-            $procedure = $this->where('procedure_type_id', $request->input('procedure_type_id'))
-                ->where('id', '<>', $id)
-                ->where('school_id', $request->input('school_id'))
-                ->where('name', $request->input('name'))
-                ->first();
-        }
-        return $procedure ? true : false;
+        $procedure = $this->find($id);
+        if (!$procedure) { return false; }
+        return $procedure->removable($this, $id) ? $procedure->delete() : false;
         
     }
     
@@ -115,5 +150,6 @@ class Procedure extends Model {
         
         return Datatable::simple($this, $columns, $joins);
     }
+    
 }
 

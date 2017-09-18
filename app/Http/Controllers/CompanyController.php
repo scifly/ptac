@@ -112,7 +112,8 @@ class CompanyController extends Controller {
     public function destroy($id) {
         
         if (!$this->company->find($id)) { return $this->notFound(); }
-        return $this->company->remove($id) ? $this->succeed() : $this->fail();
+        return $this->company->remove($id, true)
+            ? $this->succeed() : $this->fail();
         
     }
     

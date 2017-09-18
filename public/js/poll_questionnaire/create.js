@@ -1,4 +1,8 @@
-/**
- * Created by Administrator on 2017-07-21 0021.
- */
 $(crud.create('formPq', 'poll_questionnaires'));
+$(function () {
+    $(".datepicker").datetimepicker({
+        dateFormat: 'yy-mm-dd',
+        showSecond: true,
+        timeFormat: 'hh:mm:ss'
+    });
+});

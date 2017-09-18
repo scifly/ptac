@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * App\Models\Attachment
+ * App\Models\Attachment 附件
  *
  * @property int $id
  * @property int $attachment_type_id 附件类型id
@@ -25,14 +25,13 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Attachment extends Model {
     
-    protected $fillable = [
-        'accachment_type_id',
-        'url',
-        'enabled'
-    ];
+    protected $fillable = ['accachment_type_id', 'url', 'enabled'];
     
-    public function attachmentType() {
-        return $this->belongsTo('App\Models\AttachmentType');
-    }
+    /**
+     * 返回所属附件类型对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function attachmentType() { return $this->belongsTo('App\Models\AttachmentType'); }
     
 }

@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Facades\DatatableFacade as Datatable;
 
 /**
- * App\Models\CommType
+ * App\Models\CommType 通信方式
  *
  * @property int $id
  * @property string $name 通信方式名称

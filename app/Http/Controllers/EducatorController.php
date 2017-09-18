@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\EducatorRequest;
+use App\Models\Department;
 use App\Models\Educator;
 use App\Models\EducatorClass;
 use App\Models\Mobile;
@@ -22,13 +23,16 @@ class EducatorController extends Controller {
     protected $mobile;
     protected $educatorClass;
     protected $team;
+    protected $department;
 
-    public function __construct(Educator $educator, Mobile $mobile, EducatorClass $educatorClass, Team $team) {
+
+    public function __construct(Educator $educator, Mobile $mobile, EducatorClass $educatorClass, Team $team, Department $department) {
         
         $this->educator = $educator;
         $this->mobile = $mobile;
         $this->educatorClass = $educatorClass;
         $this->team = $team;
+        $this->department = $department;
 
     }
     
@@ -45,14 +49,19 @@ class EducatorController extends Controller {
         return $this->output(__METHOD__);
         
     }
-    
+
     /**
      * 创建教职员工
      *
-     * @return \Illuminate\Http\Response
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function create() {
+        if (Request::method() === 'POST') {
+            return $this->department->tree();
+        }
+
         return $this->output(__METHOD__);
+
     }
 
     /**
@@ -92,6 +101,10 @@ class EducatorController extends Controller {
      */
     public function edit($id) {
         
+
+        if (Request::method() === 'POST') {
+            return $this->department->tree();
+        }
         $educator = $this->educator->find($id);
         if (!$educator) { return $this->notFound(); }
         $selectedTeams = [];
@@ -133,13 +146,12 @@ class EducatorController extends Controller {
         
         $educator = $this->educator->find($id);
         if (!$educator) { return $this->notFound(); }
-//        dd($request->all());die;
         return $educator->modify($request) ? $this->succeed() : $this->fail();
         
     }
 
     /**
-     * 充值教职员工
+     * 更新教职员工充值
      *
      * @param EducatorRequest $request
      * @param $id

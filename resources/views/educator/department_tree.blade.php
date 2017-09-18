@@ -1,0 +1,1 @@
+<div id="department-tree" class="col-xs-12" style="display: none;"></div>

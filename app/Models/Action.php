@@ -17,7 +17,7 @@ use Doctrine\Common\Inflector\Inflector;
 use ReflectionMethod;
 
 /**
- * App\Models\Action
+ * App\Models\Action 功能
  *
  * @property int $id
  * @property string $name 功能名称
@@ -83,15 +83,9 @@ HTML;
 HTML;
     
     protected $fillable = [
-        'name',
-        'method',
-        'remark',
-        'controller',
-        'view',
-        'route',
-        'js',
-        'action_type_ids',
-        'enabled'
+        'name', 'method', 'remark',
+        'controller', 'view', 'route',
+        'js', 'action_type_ids', 'enabled'
     ];
     // protected $actionType;
     protected $actionTypes;
@@ -114,11 +108,7 @@ HTML;
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function tabs() {
-        
-        return $this->hasMany('App\Models\Tab');
-        
-    }
+    public function tabs() { return $this->hasMany('App\Models\Tab'); }
     
     /**
      * 返回HTTP请求方法中包含GET以及路由中不带参数的action列表
@@ -183,7 +173,6 @@ HTML;
                 # 更新指定的Action记录
                 $action->update($request->all());
             });
-            
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
             return false;
@@ -339,6 +328,7 @@ HTML;
                 if ($a) {
                     $a->name = $action['name'];
                     $a->route = $action['route'];
+                    $a->view = $action['view'];
                     $a->js = $action['js'];
                     $a->action_type_ids = $action['action_type_ids'];
                     $a->save();
@@ -359,7 +349,6 @@ HTML;
         }
         return true;
     }
-    
     
     /** Helper functions -------------------------------------------------------------------------------------------- */
     /**
@@ -382,6 +371,13 @@ HTML;
         
     }
     
+    /**
+     * 获取方法备注名称
+     *
+     * @param ReflectionClass $controllerObj
+     * @param ReflectionMethod $method
+     * @return mixed|string
+     */
     private function getMethodComment(ReflectionClass $controllerObj, ReflectionMethod $method) {
     
         $comment = $controllerObj->getMethod($method->getName())->getDocComment();
@@ -543,8 +539,12 @@ HTML;
                     $prefix = ($prefix === 'corps') ? 'corp' : $prefix;
                     $viewPath = $prefix . '.' . $action;
                     break;
+                case 'menuTabs':
+                    $viewPath = 'menu.menu_tabs';
+                    break;
                 default:
                     $viewPath = '';
+                    break;
             }
             return $viewPath;
         }
