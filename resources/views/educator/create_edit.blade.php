@@ -46,10 +46,10 @@
                 <label for="user[gender]" class="col-sm-3 control-label">性别</label>
                 <div class="col-sm-6">
                     <label id="user[gender]">
-                        <input id="user[gender]" @if($educator->user->gender == 1) checked @endif type="radio" name="user[gender]" class="minimal" value="1">
+                        <input id="user[gender]" @if(isset($educator)) @if($educator->user->gender == 1) checked @endif @endif type="radio" name="user[gender]" class="minimal" value="1">
                     </label> 男
                     <label id="user[gender]">
-                        <input id="user[gender]" @if($educator->user->gender == 0) checked @endif type="radio" name="user[gender]" class="minimal" value="0">
+                        <input id="user[gender]" @if(isset($educator)) @if($educator->user->gender == 0) checked @endif @endif type="radio" name="user[gender]" class="minimal" value="0">
                     </label> 女
                 </div>
             </div>
@@ -206,7 +206,7 @@
                         </thead>
                         <tbody>
 
-                        @if(isset($educator->educatorClasses) && !empty($educator->educatorClasses))
+                        @if(isset($educator->educatorClasses))
                             @foreach($educator->educatorClasses as $class)
                                 <tr>
                                     <td>
