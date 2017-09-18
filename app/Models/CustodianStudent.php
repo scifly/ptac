@@ -38,6 +38,15 @@ class CustodianStudent extends Model {
         'relationship', 'enabled'
     ];
 
+    public function custodian()
+    {
+        return $this->belongsTo('App\Models\Custodian');
+    }
+
+    public function student(){
+        return $this->belongsTo('App\Models\Student');
+    }
+
     public function storeByCustodianId($custodianId, array $studentIds) {
         
         foreach ($studentIds as $studentId=>$relationship) {

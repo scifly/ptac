@@ -63,8 +63,8 @@
                             </tr>
                             </thead>
                             <tbody>
-                            @if(isset($mobiles))
-                                @foreach($mobiles as $key => $mobile)
+                            @if(isset($student->user->mobiles))
+                                @foreach($student->user->mobiles as $key => $mobile)
                                     <tr>
                                         <td><input class="form-control" name="mobile[mobile][e{{$key}}]" type="text"
                                                    placeholder="（请输入手机号码）" value='{{$mobile->mobile}}'>
