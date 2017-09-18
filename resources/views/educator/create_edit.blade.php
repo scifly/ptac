@@ -192,6 +192,7 @@
                 <div class="col-sm-6">
                     <span id="add-department" class="btn-primary">修改</span>
                 </div>
+                {!! Form::hidden('selectedDepartmentIds', isset($selectedDepartmentIds) ? $selectedDepartmentIds : NULL, ['id' => 'selectedDepartmentIds']) !!}
             </div>
             <div class="form-group">
                 <label class="col-sm-3 control-label">空</label>

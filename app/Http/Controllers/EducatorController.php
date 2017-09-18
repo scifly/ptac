@@ -111,10 +111,15 @@ class EducatorController extends Controller {
         foreach ($educator->teams as $v) {
             $selectedTeams[$v->id] = $v->name;
         }
-//        dd($educator->educatorClasses);die;
+        $selectedDepartmentIds = [];
+        foreach ($educator->user->departments as $department) {
+            $selectedDepartmentIds[] = $department->id;
+        }
+
         return $this->output(__METHOD__, [
             'educator' => $educator,
             'selectedTeams' => $selectedTeams,
+            'selectedDepartmentIds' => implode(',', $selectedDepartmentIds),
         ]);
         
     }
