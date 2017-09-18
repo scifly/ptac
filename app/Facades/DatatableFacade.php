@@ -25,6 +25,11 @@ HTML;
             <i class="fa fa-eye"></i>
         </a>
 HTML;
+    const DT_LINK_RECHARGE = <<<HTML
+        <a id="%s" href="javascript:void(0)" class="btn btn-primary btn-icon btn-circle btn-xs"  >
+            <i class="fa fa-money"></i>
+        </a>
+HTML;
     const DT_SPACE = '&nbsp;';
     const DT_PRIMARY = '<span class="badge badge-info">%s</span>';
     const DT_LOCK = '<i class="fa fa-lock"></i>&nbsp;已占用';

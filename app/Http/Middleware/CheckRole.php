@@ -5,11 +5,8 @@ namespace App\Http\Middleware;
 use App\Models\Action;
 use App\Models\ActionGroup;
 use App\Models\Group;
-use App\Models\GroupMenu;
-use App\Models\GroupTab;
 use App\Models\User;
 use Closure;
-use Illuminate\Support\Facades\Auth;
 
 class CheckRole {
     
