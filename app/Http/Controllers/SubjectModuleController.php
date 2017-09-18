@@ -54,10 +54,7 @@ class SubjectModuleController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(SubjectModuleRequest $request) {
-        
-        if ($this->subjectModule->existed($request)) {
-            return $this->fail('已经有此记录');
-        }
+
         return $this->subjectModule->create($request->all()) ? $this->succeed() : $this->fail();
 
     }

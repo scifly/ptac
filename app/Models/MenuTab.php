@@ -29,12 +29,8 @@ use Mockery\Exception;
 class MenuTab extends Model {
     
     protected $table = 'menus_tabs';
-    protected $fillable = [
-        'menu_id',
-        'tab_id',
-        'tab_order',
-        'enabled'
-    ];
+    
+    protected $fillable = ['menu_id', 'tab_id', 'tab_order', 'enabled'];
     
     public function storeByMenuId($menuId, array $tabIds) {
         

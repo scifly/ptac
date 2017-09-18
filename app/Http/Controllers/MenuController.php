@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\MenuRequest;
 use App\Models\Menu;
 use App\Models\MenuTab;
+use App\Models\MenuType;
 use App\Models\Tab;
 use Illuminate\Support\Facades\Request;
 
@@ -16,12 +17,14 @@ use Illuminate\Support\Facades\Request;
  */
 class MenuController extends Controller {
     
-    protected $menu, $menuTab;
+    protected $menu, $menuType, $menuTab;
     
-    function __construct(Menu $menu, MenuTab $menuTab) {
+    function __construct(Menu $menu, MenuType $menuType, MenuTab $menuTab) {
         
         $this->menu = $menu;
+        $this->menuType = $menuType;
         $this->menuTab = $menuTab;
+        
     }
     
     /**
@@ -32,7 +35,7 @@ class MenuController extends Controller {
     public function index() {
         
         if (Request::method() === 'POST' ) {
-            return $this->menu->tree(1);
+            return $this->menu->tree();
         }
         return parent::output(__METHOD__);
         
@@ -46,7 +49,10 @@ class MenuController extends Controller {
      */
     public function create($id) {
         
-        return parent::output(__METHOD__, ['parentId' => $id]);
+        return parent::output(__METHOD__, [
+            'parentId' => $id,
+            'menuTypeId' => MenuType::whereName('其他')->first()->id
+        ]);
         
     }
     
@@ -122,14 +128,19 @@ class MenuController extends Controller {
      * @param $parentId
      * @return \Illuminate\Http\JsonResponse
      */
-    public function move($id, $parentId) {
+    public function move($id, $parentId = NULL) {
 
+        if (!$parentId) { return $this->fail('非法操作'); }
         $menu = $this->menu->find($id);
         $parentMenu = $this->menu->find($parentId);
         if (!$menu || !$parentMenu) {
             return parent::notFound();
         }
-        return $this->menu->move($id, $parentId) ? parent::succeed() : parent::fail();
+        if ($this->menu->movable($id, $parentId)) {
+            return $this->menu->move($id, $parentId, true)
+                ? parent::succeed() : parent::fail();
+        }
+        return $this->fail('非法操作');
         
     }
     

@@ -51,7 +51,8 @@ class ProcedureController extends Controller {
      */
     public function store(ProcedureRequest $request) {
 
-        return $this->procedure->create($request->all()) ? $this->succeed() : $this->fail();
+        return $this->procedure->store($request->all())
+            ? $this->succeed() : $this->fail();
         
     }
     
@@ -94,12 +95,13 @@ class ProcedureController extends Controller {
     
         $procedure = $this->procedure->find($id);
         if (!$procedure) { return $this->notFound(); }
-        return $procedure->update($request->all()) ? $this->succeed() : $this->fail();
+        return $procedure->modify($request->all(), $id)
+            ? $this->succeed() : $this->fail();
     }
     
     /**
      * 删除审批流程
-     *
+     *\
      * @param $id
      * @return \Illuminate\Http\JsonResponse
      */
@@ -107,7 +109,8 @@ class ProcedureController extends Controller {
 
         $procedure = $this->procedure->find($id);
         if (!$procedure) { return $this->notFound(); }
-        return $procedure->delete() ? $this->succeed() : $this->fail();
+        return $procedure->remove($id)
+            ? $this->succeed() : $this->fail();
         
     }
     

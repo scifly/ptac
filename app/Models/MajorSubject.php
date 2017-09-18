@@ -28,14 +28,6 @@ class MajorSubject extends Model {
     
     protected $fillable = ['major_id', 'subject_id'];
     
-    public function major() {
-        return $this->belongsTo('App\Models\Major');
-    }
-    
-    public function subject() {
-        return $this->belongsTo('App\Models\Subject');
-    }
-    
     public function storeByMajorId($majorId, array $subjectIds) {
         
         foreach ($subjectIds as $subjectId) {

@@ -69,7 +69,7 @@ class StudentController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(StudentRequest $request) {
-
+        dd($this->student->store($request));
         return $this->student->store($request) ? $this->succeed() : $this->fail();
         
     }
@@ -98,30 +98,40 @@ class StudentController extends Controller {
         $student = $this->student->find($id);
         $student['student'] = $this->student->find($id);
         $user['user'] = $this->user->find($student->user_id);
-
-        $student['mobile']= $this->mobile->where('user_id',$student->user_id)->first();
+        $mobiles = $this->mobile->where('user_id',$student->user_id)->get();
         $departmentIds = $this->departmentUser->where('user_id',$student->user_id)->get();
         foreach ($departmentIds as $key=>$value)
         {
             $department = Department::whereId($value['department_id'])->first();
             $selectedDepartments[$department['id']] = $department['name'];
         }
+
         # 根据学生Id查询监护人学生表的数据
-        $custodianStudent = $this->custodianStudent->where('student_id',$student->id)->get();
-        foreach ($custodianStudent as $key=>$value)
+        $custodianStudent = $this->custodianStudent->where('student_id',$student->id)->get()->toArray();
+
+        if($custodianStudent !=null)
         {
-            # 被选中的监护人信息
-            $custodianId = $this->custodian->find($value['custodian_id']);
-            # 被选中的监护人
-            $selectedCustodians[$custodianId->id] = $custodianId->user->realname;
+            foreach ($custodianStudent as $key=>$value)
+            {
+                # 被选中的监护人信息
+                $custodianId = $this->custodian->find($value['custodian_id']);
+                # 被选中的监护人
+                $selectedCustodians[$custodianId->id] = $custodianId->user->realname;
+
+            }
+        }else{
+
+            $selectedCustodians = [];
         }
 
         # 查询学生信息
         if (!$student) { return $this->notFound(); }
-        //dd($user['mobile']->mobile);
+
         return $this->output(__METHOD__, [
             'user' => $user,
             'student' => $student,
+            'mobiles' => $mobiles,
+            'custodianStudent'=> $custodianStudent,
             'selectedDepartments' => $selectedDepartments,
             'selectedCustodians' => $selectedCustodians,
         ]);
@@ -136,7 +146,7 @@ class StudentController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(StudentRequest $request, $id) {
-
+        dd($this->student->modify($request,$id));
         return $this->student->modify($request,$id) ? $this->succeed() : $this->fail();
         
     }

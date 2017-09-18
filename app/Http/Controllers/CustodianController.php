@@ -37,7 +37,7 @@ class CustodianController extends Controller {
         
     }
     /**
-     * 显示监护人列表
+     * 监护人列表
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
@@ -49,7 +49,7 @@ class CustodianController extends Controller {
     }
     
     /**
-     * 显示创建监护人记录的表单
+     * 创建监护人
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
@@ -60,7 +60,7 @@ class CustodianController extends Controller {
     }
     
     /**
-     * 保存新创建的监护人记录
+     * 保存监护人
      *
      * @param CustodianRequest $request
      * @return \Illuminate\Http\JsonResponse
@@ -90,7 +90,7 @@ class CustodianController extends Controller {
         $custodian = $this->custodian->find($id);
         $user['user'] = $this->user->find($custodian->user_id);
         $user['expiry'] = $custodian->expiry;
-        $user['mobile'] = $this->mobile->where('user_id',$custodian->user_id)->first();
+        $mobiles = $this->mobile->where('user_id',$custodian->user_id)->get();
         $departmentIds = $this->departmentUser->where('user_id',$custodian->user_id)->get();
         foreach ($departmentIds as $key=>$value)
         {
@@ -98,20 +98,26 @@ class CustodianController extends Controller {
             $selectedDepartments[$department['id']] = $department['name'];
         }
 
-        $custodianStudent = $this->custodianStudent->where('custodian_id',$custodian->id)->get();
-
-        foreach ($custodianStudent as $key=>$value)
+        $custodianStudent = $this->custodianStudent->where('custodian_id',$custodian->id)->get()->toArray();
+        if($custodianStudent !=null)
         {
-            $studentId = $this->student->find($value['student_id']);
-            $selectedStudents[$studentId->id] = $studentId->user->realname;
+            foreach ($custodianStudent as $key=>$value)
+            {
+                $studentId = $this->student->find($value['student_id']);
+                $selectedStudents[$studentId->id] = $studentId->user->realname;
+            }
+        }else{
+            $selectedStudents = [];
         }
 
         if (!$user) {
             return $this->notFound();
         }
         return $this->output(__METHOD__, [
+            'custodianStudent' => $custodianStudent,
             'custodian' => $custodian,
             'user' => $user,
+            'mobiles' => $mobiles,
 //            'departments'=>$this->department->departments([1]),
             'selectedDepartments' => $selectedDepartments,
             'selectedStudents' => $selectedStudents,

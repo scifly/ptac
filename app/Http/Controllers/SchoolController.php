@@ -51,7 +51,8 @@ class SchoolController extends Controller {
      */
     public function store(SchoolRequest $request) {
     
-        return $this->school->store($request->all()) ? parent::succeed() : parent::fail();
+        return $this->school->store($request->all(), true)
+            ? parent::succeed() : parent::fail();
     
     }
     
@@ -93,7 +94,8 @@ class SchoolController extends Controller {
     public function update(SchoolRequest $request, $id) {
         
         if (!$this->school->find($id)) { return parent::notFound(); }
-        return $this->school->modify($request->all(), $id) ? parent::succeed() : parent::fail();
+        return $this->school->modify($request->all(), $id, true)
+            ? parent::succeed() : parent::fail();
         
     }
     
@@ -106,7 +108,8 @@ class SchoolController extends Controller {
     public function destroy($id) {
         
         if (!$this->school->find($id)) { return parent::notFound(); }
-        return $this->school->remove($id) ? parent::succeed() : parent::fail();
+        return $this->school->remove($id, true)
+            ? parent::succeed() : parent::fail();
         
     }
     

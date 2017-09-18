@@ -25,7 +25,7 @@ class MenuRequest extends FormRequest {
         return [
             'name' => 'required|string|max:30',
             'remark' => 'string|max:255',
-            'school_id' => 'required|integer',
+            'menu_type_id' => 'required|integer',
             'media_id' => 'integer',
             'action_id' => 'integer',
             'icon_id' => 'integer',
@@ -43,6 +43,9 @@ class MenuRequest extends FormRequest {
         }
         if (!isset($input['enabled'])) {
             $input['enabled'] = 0;
+        }
+        if (!isset($input['position'])) {
+            $input['position'] = 0;
         }
         $this->replace($input);
         

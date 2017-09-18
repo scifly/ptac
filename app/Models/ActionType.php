@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * App\Models\ActionType
+ * App\Models\ActionType 功能HTTP请求类型
  *
  * @property int $id
  * @property \Carbon\Carbon|null $created_at

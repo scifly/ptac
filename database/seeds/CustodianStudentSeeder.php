@@ -11,7 +11,7 @@ class CustodianStudentSeeder extends Seeder
      */
     public function run()
     {
-        factory(App\Models\CustodianStudent::class, 5)->create()->each(function ($custodianStudent) {
+        factory(App\Models\CustodianStudent::class, 10)->create()->each(function ($custodianStudent) {
             $custodianStudent->save();
         });
     }

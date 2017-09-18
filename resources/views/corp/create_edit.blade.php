@@ -56,6 +56,9 @@
             @if (isset($corp['department_id']))
                 {!! Form::hidden('department_id', $corp['department_id']) !!}
             @endif
+            @if (isset($corp['menu_id']))
+                {!! Form::hidden('menu_id', $corp['menu_id']) !!}
+            @endif
             @include('partials.enabled', [
                 'label' => '是否启用',
                 'id' => 'enabled',

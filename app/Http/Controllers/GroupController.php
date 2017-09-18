@@ -49,12 +49,9 @@ class GroupController extends Controller {
      * @param GroupRequest $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function store(GroupRequest $request)
-    {
-        if ($this->group->existed($request)) {
-            return $this->fail('已经有此记录');
-        }
-        return $this->group->create($request->all()) ? $this->succeed() : $this->fail();
+    public function store(GroupRequest $request) {
+        
+        return $this->group->store($request->all()) ? $this->succeed() : $this->fail();
         
     }
     
@@ -94,13 +91,12 @@ class GroupController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(GroupRequest $request, $id) {
+        
         $group = $this->group->find($id);
         if (!$group) { return $this->notFound(); }
-        if ($this->group->existed($request, $id)) {
-            return $this->fail('已经有此记录');
-        }
-        return $group->update($request->all()) ? $this->succeed() : $this->fail();
-    
+        return $group->modify($request->all(), $id)
+            ? $this->succeed() : $this->fail();
+        
     }
     
     /**
@@ -110,11 +106,11 @@ class GroupController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
-    
+        
         $group = $this->group->find($id);
-        if (!$group) { return $this->notFound(); }
-        return $group->delete() ? $this->succeed() : $this->fail();
-    
+        if (!$group) { return $this->notFound();}
+        return $group->remove($id) ? $this->succeed() : $this->fail();
+        
     }
     
 }

@@ -8,6 +8,7 @@ class GradeRequest extends FormRequest {
 
     protected $strings_key = [
         'name' => '年级名称',
+        'department_id' => '对应部门',
         'school_id' => '所属学校',
         'educator_ids' => '年级主任',
         'enabled' => '是否启用'
@@ -72,6 +73,9 @@ class GradeRequest extends FormRequest {
         }
         if (isset($input['educator_ids'])) {
             $input['educator_ids'] = implode(',', $input['educator_ids']);
+        }
+        if (!isset($input['educator_ids'])) {
+            $input['educator_ids'] = '1';
         }
         if (!isset($input['department_id'])) {
             $input['department_id'] = 0;

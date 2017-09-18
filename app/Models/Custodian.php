@@ -60,6 +60,24 @@ class Custodian extends Model {
         try {
             $exception = DB::transaction(function() use ($request) {
                 $user = $request->input('user');
+                # 包含学生的Id
+                $studentIds = $request->input('student_ids');
+                # 与学生之间的关系
+                $relationships = $request->input('relationship');
+                if( $studentIds && $relationships)
+                {
+                    if(count($studentIds == count($relationships)))
+                    {
+                        # 两数组合并后 学生Id和关系对应的数组
+                        $studentId = array_combine($studentIds,$relationships);
+                    }else{
+                        return false;
+                    }
+                }else{
+                    $studentId = [];
+                }
+
+
                 $userData = [
                     'username' => uniqid('custodian_'),
                     'group_id' => $user['group_id'],
@@ -82,24 +100,40 @@ class Custodian extends Model {
                     'user_id' => $u->id,
                     'expiry' => $request->input('expiry')
                 ];
-                $mobileData = [
-                    'user_id' => $u->id,
-                    'mobile' =>$request->input('mobile')['mobile'],
-                    'enabled' => 1,
-                    'isdefault' => 1,
-                ];
 
-                $mobile = new Mobile();
-                $m = $mobile->create($mobileData);
-                unset($mobile);
+                # 向mobile表中添加工具
+                $mobiles = $request->input('mobile');
+                if($mobiles){
+                    $mobile = new Mobile();
+                    foreach ($mobiles['mobile'] as $key=>$v)
+                    {
+                        # 向mobile表添加用户的手机数据
+                        $mobileData = [
+                            'user_id' => $u->id,
+                            'mobile' =>$v,
+                            'enabled' => isset($mobiles['enabled'][$key]) ? 1 : 0,
+                            'isdefault' => isset($mobiles['isdefault'][$key]) ? 1 : 0,
+                        ];
+                        $m = $mobile->create($mobileData);
+                    }
+
+                    unset($mobile);
+                }
+
                 $c = $this->create($custodianData);
+                # 向部门用户表添加数据
                 $departmentUser = new DepartmentUser();
                 $departmentIds = $request->input('department_ids');
-                $departmentUser ->storeByDepartmentId($u->id, $departmentIds);
+                $departmentUser ->storeByUserId($u->id, $departmentIds);
                 unset($departmentUser);
+
+                # 向监护人学生表中添加数据
                 $custodianStudent = new CustodianStudent();
-                $studentIds = $request->input('student_ids');
-                $custodianStudent->storeByCustodianId($c->id, $studentIds);
+
+                if($studentId !=null)
+                {
+                    $custodianStudent->storeByCustodianId($c->id, $studentId);
+                }
                 unset($custodianStudent);
             });
             return is_null($exception) ? true : $exception;
@@ -124,6 +158,22 @@ class Custodian extends Model {
             $exception = DB::transaction(function() use($request, $custodianId, $custodian) {
                 $userId = $request->input('user_id');
                 $userData = $request->input('user');
+                # 包含学生的Id
+                $studentIds = $request->input('student_ids');
+                # 与学生之间的关系
+                $relationships = $request->input('relationship');
+                if($studentIds&&$relationships)
+                {
+                    if(count($studentIds) == count($relationships))
+                    {
+                        # 合并数组，得到学生Id和关系对应的数组
+                        $studentId = array_combine($studentIds,$relationships);
+                    }else{
+                        return false;
+                    }
+                }else{
+                    $studentId = [];
+                }
                 $user = new User();
                 $user->where('id',$userId)
                     ->update([
@@ -137,26 +187,42 @@ class Custodian extends Model {
                     'enabled' =>$userData['enabled']
                 ]);
                 unset($user);
+
                 $custodian->update([
                     'user_id' => $userId,
                     'expiry' => $request->input('expiry')
                 ]);
-                $mobile = new Mobile();
-                $mobile->where('user_id',$userId)
-                    ->update([
-                    'user_id' => $userId,
-                    'mobile' => $request->input('mobile')['mobile'],
-                ]);
+
+                $mobiles = $request->input('mobile');
+                if($mobiles){
+                    $mobile = new Mobile();
+                    $mobile::where('user_id',$userId)->delete();
+                    foreach ($mobiles['mobile'] as $key=>$v)
+                    {
+                        # 向mobile表添加用户的手机数据
+                        $mobileData = [
+                            'user_id' => $userId,
+                            'mobile' =>$v,
+                            'enabled' => isset($mobiles['enabled'][$key]) ? 1 : 0,
+                            'isdefault' => isset($mobiles['isdefault'][$key]) ? 1 : 0,
+                        ];
+                        $m = $mobile->create($mobileData);
+                    }
+
+                    unset($mobile);
+                }
+
+                # 向部门用户表添加数据
                 $departmentIds = $request->input('department_ids');
                 $departmentUser = new DepartmentUser();
                 $departmentUser::where('user_id',$userId)->delete();
                 $departmentUser ->storeByDepartmentId($userId, $departmentIds);
-                $studentIds = $request->input('student_ids');
                 unset($departmentUser);
+                # 向监护人学生表中添加数据
                 $custodianStudent = new CustodianStudent();
 //                $custodianStudent::whereCustodianId($custodianId)->delete();
                 $custodianStudent::where('custodian_id',$custodianId)->delete();
-                $custodianStudent->storeByCustodianId($custodianId, $studentIds);
+                $custodianStudent->storeByCustodianId($custodianId, $studentId);
                 unset($custodianStudent);
             });
         
@@ -214,8 +280,17 @@ class Custodian extends Model {
                 }
             ],
             ['db' => 'User.email', 'dt' => 3],
-            ['db' => 'Mobile.mobile', 'dt' => 4],
-            ['db' => 'Custodian.expiry', 'dt' => 5],
+            ['db' => 'Custodian.id as mobile', 'dt' => 4,
+                'formatter' => function($d) {
+                      $custodian = Custodian::whereId($d)->first();
+                      $mobiles = Mobile::where('user_id',$custodian->user_id)->get();
+                      foreach ($mobiles as $key=>$value){
+                          $mobile[] = $value->mobile;
+                      }
+                      return implode(',',$mobile);
+                }
+            ],
+            ['db' => 'Custodian.expiry', 'dt' => 5,],
             ['db' => 'Custodian.created_at', 'dt' => 6],
             ['db' => 'Custodian.updated_at', 'dt' => 7],
             [
@@ -234,15 +309,6 @@ class Custodian extends Model {
                     'User.id = Custodian.user_id'
                 ]
             ],
-            [
-                'table' => 'mobiles',
-                'alias' => 'Mobile',
-                'type' => 'INNER',
-                'conditions' => [
-                    'User.id = Mobile.user_id'
-                ]
-            ],
-
         ];
 
         return Datatable::simple($this, $columns, $joins);

@@ -4,13 +4,25 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\DepartmentRequest;
 use App\Models\Department;
+use App\Models\DepartmentType;
 use Illuminate\Support\Facades\Request;
 
+/**
+ * 部门
+ *
+ * Class DepartmentController
+ * @package App\Http\Controllers
+ */
 class DepartmentController extends Controller {
     
-    protected $department;
+    protected $department, $departmentType;
     
-    function __construct(Department $department) { $this->department = $department; }
+    function __construct(Department $department, DepartmentType $departmentType) {
+        
+        $this->department = $department;
+        $this->departmentType = $departmentType;
+        
+    }
     
     /**
      * 部门列表
@@ -33,8 +45,12 @@ class DepartmentController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function create($id) {
-        
-        return $this->output(__METHOD__, ['parentId' => $id]);
+
+        $departmentTypeId = DepartmentType::whereName('其他')->first()->id;
+        return $this->output(__METHOD__, [
+            'parentId' => $id,
+            'departmentTypeId' => $departmentTypeId
+        ]);
         
     }
     
@@ -120,14 +136,19 @@ class DepartmentController extends Controller {
      * @param $parentId
      * @return \Illuminate\Http\JsonResponse
      */
-    public function move($id, $parentId) {
+    public function move($id, $parentId = NULL) {
         
+        if (!$parentId) { return $this->fail('非法操作'); }
         $department = $this->department->find($id);
         $parentDepartment = $this->department->find($parentId);
         if (!$department || !$parentDepartment) {
             return parent::notFound();
         }
-        return $this->department->move($id, $parentId) ? parent::succeed() : parent::fail();
+        if ($this->department->movable($id, $parentId)) {
+            return $this->department->move($id, $parentId, true)
+                ? parent::succeed() : parent::fail();
+        }
+        return $this->fail('非法操作');
         
     }
     
@@ -146,7 +167,5 @@ class DepartmentController extends Controller {
         }
     
     }
-
-    
 
 }

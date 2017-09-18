@@ -36,7 +36,8 @@ class StudentComposer {
             'class' => $this->class->pluck('name', 'id'),
             'groups' => $this->group->pluck('name', 'id'),
             'custodian' => $custodian,
-            'departments' => $this->department->departments([1]),
+            'departments' => $this->department->pluck('name','id'),
+//            'departments' => $this->department->departments([1]),
 
         ]);
 

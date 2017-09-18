@@ -48,11 +48,7 @@ class Order extends Model {
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function user() {
-        
-        return $this->belongsTo('App\Models\User');
-        
-    }
+    public function user() { return $this->belongsTo('App\Models\User'); }
     
     /**
      * 返回指定订单所属的套餐类型对象

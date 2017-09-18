@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use App\Facades\DatatableFacade as Datatable;
 use App\Http\Requests\MessageRequest;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Mockery\Exception;
 
 /**
  * App\Models\Message
@@ -49,33 +50,33 @@ class Message extends Model {
     protected $table = 'messages';
     
     protected $fillable = [
-        'content',
-        'serviceid',
-        'message_id',
-        'url',
-        'media_ids',
-        'user_id',
-        'user_ids',
-        'message_type_id',
-        'read_count',
-        'received_count',
-        'recipient_count',
+        'content', 'serviceid', 'message_id',
+        'url', 'media_ids', 'user_id',
+        'user_ids', 'message_type_id', 'read_count',
+        'received_count', 'recipient_count',
     ];
     
-    public function messageType() {
-        return $this->belongsTo('App\Models\MessageType');
-    }
-    public function user() {
-        return $this->belongsTo('App\Models\User');
-    }
+    /**
+     * 返回指定消息所属的消息类型对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function messageType() { return $this->belongsTo('App\Models\MessageType'); }
+    
+    /**
+     * 返回指定消息所属的用户对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function user() { return $this->belongsTo('App\Models\User'); }
+    
     public function classes(array $classIds) {
-
+        
         return Squad::whereIn('id', $classIds)->get(['id', 'name']);
-
+        
     }
-
-    public function store(MessageRequest $request)
-    {
+    
+    public function store(MessageRequest $request) {
         try {
             $exception = DB::transaction(function () use ($request) {
                 //删除原有的图片
@@ -87,59 +88,43 @@ class Message extends Model {
             return false;
         }
     }
-
-    public function modify(MessageRequest $request, $id)
-    {
+    
+    public function modify(MessageRequest $request, $id) {
         $message = $this->find($id);
         if (!$message) {
             return false;
         }
         try {
-            $exception = DB::transaction(function () use ($request,$id) {
+            $exception = DB::transaction(function () use ($request, $id) {
                 $this->removeMedias($request);
-                return $this->where('id', $id)->update($request->except('_method','_token'));
+                return $this->where('id', $id)->update($request->except('_method', '_token'));
             });
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
             return false;
         }
     }
-
+    
     /**
      * @param $request
      */
-    private function removeMedias(MessageRequest $request)
-    {
+    private function removeMedias(MessageRequest $request) {
         //删除原有的图片
         $mediaIds = $request->input('del_ids');
         if ($mediaIds) {
             $medias = Media::whereIn('id', $mediaIds)->get(['id', 'path']);
-
+            
             foreach ($medias as $media) {
                 $paths = explode("/", $media->path);
                 Storage::disk('uploads')->delete($paths[5]);
-
+                
             }
             Media::whereIn('id', $mediaIds)->delete();
         }
     }
 
-//    public function medias(array $educatorIds) {
-//
-//        $educators = [];
-//        foreach ($educatorIds as $id) {
-//            $educator = $this->find($id);
-//            $user = $educator->user;
-//            $educators[$educator->id] = $user->username;
-//        }
-//        return $educators;
-//
-//    }
-    /**
-     * @return array
-     */
     public function datatable() {
-
+        
         $columns = [
             ['db' => 'Message.id', 'dt' => 0],
             ['db' => 'Message.content', 'dt' => 1],
@@ -150,7 +135,7 @@ class Message extends Model {
             ['db' => 'Message.received_count', 'dt' => 6],
             ['db' => 'Message.recipient_count', 'dt' => 7],
             ['db' => 'Message.created_at', 'dt' => 8],
-
+            
             [
                 'db' => 'Message.updated_at', 'dt' => 9,
                 'formatter' => function ($d, $row) {
@@ -162,7 +147,7 @@ class Message extends Model {
             [
                 'table' => 'message_types',
                 'alias' => 'MessageType',
-                'type'  => 'INNER',
+                'type' => 'INNER',
                 'conditions' => [
                     'MessageType.id = Message.message_type_id'
                 ]
@@ -170,13 +155,13 @@ class Message extends Model {
             [
                 'table' => 'users',
                 'alias' => 'User',
-                'type'  => 'INNER',
+                'type' => 'INNER',
                 'conditions' => [
                     'User.id = Message.user_id'
                 ]
             ]
         ];
-
-        return Datatable::simple($this,  $columns, $joins);
+        
+        return Datatable::simple($this, $columns, $joins);
     }
 }

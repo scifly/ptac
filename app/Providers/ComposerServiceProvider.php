@@ -19,6 +19,7 @@ class ComposerServiceProvider extends ServiceProvider {
         View::composer('grade.create_edit', 'App\Http\ViewComposers\GradeComposer');
         View::composer('class.create_edit', 'App\Http\ViewComposers\SquadComposer');
         View::composer('educator.create_edit', 'App\Http\ViewComposers\EducatorComposer');
+        View::composer('educator.recharge', 'App\Http\ViewComposers\EducatorComposer');
         View::composer('educator_class.create_edit', 'App\Http\ViewComposers\EducatorClassComposer');
         View::composer('educator_attendance_setting.create_edit', 'App\Http\ViewComposers\EducatorAttendanceSettingComposer');
         View::composer('student_attendance_setting.create_edit', 'App\Http\ViewComposers\StudentAttendanceSettingComposer');
@@ -51,8 +52,9 @@ class ComposerServiceProvider extends ServiceProvider {
         View::composer('event.index', 'App\Http\ViewComposers\EventComposer');
         View::composer('event.show', 'App\Http\ViewComposers\EventComposer');
         View::composer('exam.create_edit', 'App\Http\ViewComposers\ExamComposer');
+        View::composer('exam_type.create_edit', 'App\Http\ViewComposers\ExamTypeComposer');
         View::composer('major.create_edit', 'App\Http\ViewComposers\MajorComposer');
-        View::composer('department.create_edit', 'App\Http\ViewComposers\DepartmentComposer');
+        // View::composer('department.create_edit', 'App\Http\ViewComposers\DepartmentComposer');
         View::composer('message.create_edit', 'App\Http\ViewComposers\MessageComposer');
         View::composer('team.create_edit', 'App\Http\ViewComposers\TeamComposer');
         View::composer('operator.create', 'App\Http\ViewComposers\OperatorComposer');
