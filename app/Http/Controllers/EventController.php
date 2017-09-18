@@ -28,7 +28,7 @@ class EventController extends Controller {
      * @internal param $id = user_id
      */
     public function index() {
-        
+
         $userId = 2;
         $isAdmin = $this->event->getRole($userId) ? 1 : 0;
         $events = $this->event
@@ -40,7 +40,7 @@ class EventController extends Controller {
             'userId' => $userId,
             'isAdmin' => $isAdmin
         ]);
-        
+
     }
 
     /**
@@ -50,7 +50,7 @@ class EventController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function calendarEvents($userId) {
-        
+
         return $this->event->showCalendar($userId);
 
     }
@@ -103,14 +103,8 @@ class EventController extends Controller {
             return $this->fail('结束时间必须大于开始时间！');
         }
         //根据角色验证重复冲突
-        if (!$this->event->getRole($input['user_id'])) {
-            if ($this->event->isRepeatTimeUser($input['user_id'], $input['start'], $input['end'], $id)) {
-                return $this->fail('时间有冲突！');
-            }
-        } else {
-            if ($this->event->isRepeatTimeAdmin($input['educator_id'], $input['start'], $input['end'], $id)) {
-                return $this->fail('时间有冲突！');
-            }
+        if ($this->event->isValidateTime($input['user_id'], $input['educator_id'], $input['start'], $input['end'], $id)) {
+            return $this->fail('时间有冲突！');
         }
         $event = $this->event->find($id);
         if (!$event) {
@@ -147,14 +141,8 @@ class EventController extends Controller {
             return $this->fail('结束时间必须大于开始时间！');
         }
         //根据角色验证重复冲突
-        if (!$this->event->getRole($event['user_id'])) {
-            if ($this->event->isRepeatTimeUser($event['user_id'], $event['start'], $event['end'])) {
-                return $this->fail('时间有冲突！');
-            }
-        } else {
-            if ($this->event->isRepeatTimeAdmin($event['educator_id'], $event['start'], $event['end'])) {
-                return $this->fail('时间有冲突！');
-            }
+        if ($this->event->isValidateTime($event['user_id'], $event['educator_id'], $event['start'], $event['end'])) {
+            return $this->fail('时间有冲突！');
         }
         return $this->event->create($event) ? $this->succeed() : $this->fail();
     }
@@ -175,15 +163,10 @@ class EventController extends Controller {
         }
         $event->end = date("Y-m-d H:i:s", strtotime($event->end) + $diffTime);
         //根据角色验证重复冲突
-        if (!$this->event->getRole($event->user_id)) {
-            if ($this->event->isRepeatTimeUser($event->user_id, $event->start, $event->end, $event->id)) {
-                return $this->fail('时间有冲突！');
-            }
-        } else {
-            if ($this->event->isRepeatTimeAdmin($event->educator_id, $event->start, $event->end, $event->id)) {
-                return $this->fail('时间有冲突！');
-            }
+        if ($this->event->isValidateTime($event->user_id, $event->educator_id, $event->start, $event->end, $event->id)) {
+            return $this->fail('时间有冲突！');
         }
         return $event->save() ? $this->succeed() : $this->fail();
     }
+
 }
