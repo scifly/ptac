@@ -125,7 +125,7 @@ class WsmArticleController extends Controller {
     }
     
     /**
-     * 显示微网站文章详情
+     * 微网站文章详情
      *
      * @param $id
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View

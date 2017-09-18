@@ -6,6 +6,7 @@ use App\Events\CompanyCreated;
 use App\Events\CompanyDeleted;
 use App\Events\CompanyUpdated;
 use App\Facades\DatatableFacade as Datatable;
+use App\Helpers\ModelTrait;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -34,10 +35,18 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $department_id 对应的部门ID
  * @property-read \App\Models\Department $department
  * @method static Builder|Company whereDepartmentId($value)
+ * @property int $menu_id 对应的菜单ID
+ * @property-read Menu $menu
+ * @method static Builder|Company whereMenuId($value)
  */
 class Company extends Model {
     
-    protected $fillable = ['name', 'remark', 'department_id', 'enabled'];
+    use ModelTrait;
+    
+    protected $fillable = [
+        'name', 'remark', 'department_id',
+        'menu_id', 'enabled'
+    ];
     
     /**
      * 返回对应的部门对象
@@ -47,11 +56,18 @@ class Company extends Model {
     public function department() { return $this->belongsTo('App\Models\Department'); }
     
     /**
+     * 返回对应的菜单对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function menu() { return $this->belongsTo('App\Models\Menu'); }
+    
+    /**
      * 获取指定运营者公司下属的企业对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function corps() { return $this->hasMany('App\Models\Company'); }
+    public function corps() { return $this->hasMany('App\Models\Corp'); }
     
     /**
      * 通过Corp中间对象获取所有的学校对象
@@ -119,7 +135,8 @@ class Company extends Model {
     public function remove($id, $fireEvent = false) {
         
         $company = $this->find($id);
-        $removed = $company->delete();
+        if (!$company) { return false; }
+        $removed = $this->removable($this, $id) ? $company->delete() : false;
         if ($removed && $fireEvent) {
             event(new CompanyDeleted($company));
             return true;

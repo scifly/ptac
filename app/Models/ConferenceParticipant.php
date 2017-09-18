@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use App\Facades\DatatableFacade as Datatable;
 /**
- * App\Models\ConferenceParticipant
+ * App\Models\ConferenceParticipant 与会者
  *
  * @property int $id
  * @property int $educator_id 与会者教职员工ID
@@ -25,13 +25,11 @@ use App\Facades\DatatableFacade as Datatable;
  * @mixin \Eloquent
  * @property-read ConferenceQueue $conferenceQueues
  * @property-read Educator $educator
- * @property-read \App\Models\ConferenceQueue $conferenceQueue
+ * @property-read ConferenceQueue $conferenceQueue
  */
 class ConferenceParticipant extends Model {
     
-    protected $fillable = [
-        'educator_id', 'attendance_time', 'conference_queue_id', 'status'
-    ];
+    protected $fillable = ['educator_id', 'attendance_time', 'conference_queue_id', 'status'];
     
     /**
      * 返回与会者的教职员工对象

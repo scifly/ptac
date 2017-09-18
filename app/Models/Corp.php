@@ -6,6 +6,7 @@ use App\Events\CorpCreated;
 use App\Events\CorpDeleted;
 use App\Events\CorpUpdated;
 use App\Facades\DatatableFacade as Datatable;
+use App\Helpers\ModelTrait;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -38,11 +39,16 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $department_id 对应的部门ID
  * @property-read \App\Models\Department $department
  * @method static Builder|Corp whereDepartmentId($value)
+ * @property int $menu_id 对应的菜单ID
+ * @property-read \App\Models\Menu $menu
+ * @method static Builder|Corp whereMenuId($value)
  */
 class Corp extends Model {
     
+    use ModelTrait;
+    
     protected $fillable = [
-        'name', 'company_id', 'corpid',
+        'name', 'company_id', 'corpid', 'menu_id',
         'corpsecret', 'department_id', 'enabled'
     ];
     
@@ -52,6 +58,13 @@ class Corp extends Model {
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function department() { return $this->belongsTo('App\Models\Department'); }
+    
+    /**
+     * 返回对应的菜单对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function menu() { return $this->belongsTo('App\Models\Menu'); }
     
     /**
      * 获取所属运营者公司对象
@@ -148,7 +161,7 @@ class Corp extends Model {
     public function remove($id, $fireEvent = false) {
         
         $corp = $this->find($id);
-        $removed = $corp->delete();
+        $removed = $this->removable($this, $id) ? $corp->delete() : false;
         if ($removed && $fireEvent) {
             event(new CorpDeleted($corp));
             return true;

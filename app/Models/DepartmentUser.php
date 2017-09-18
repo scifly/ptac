@@ -27,9 +27,7 @@ class DepartmentUser extends Model {
     
     protected $table = 'departments_users';
     
-    protected $fillable = [
-        'department_id', 'user_id', 'enabled'
-    ];
+    protected $fillable = ['department_id', 'user_id', 'enabled'];
 
     public function storeByUserId($userId, array $departmentIds) {
 

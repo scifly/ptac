@@ -24,6 +24,7 @@ class CompanyRequest extends FormRequest {
             'name' => 'required|string|between:4,40|unique:companies,name,' .
                 $this->input('id') . ',id',
             'department_id' => 'required|integer',
+            'menu_id' => 'required|integer',
             'remark' => 'required',
         ];
         
@@ -53,6 +54,9 @@ class CompanyRequest extends FormRequest {
         }
         if (!isset($input['department_id'])) {
             $input['department_id'] = 0;
+        }
+        if (!isset($input['menu_id'])) {
+            $input['menu_id'] = 0;
         }
         $this->replace($input);
         

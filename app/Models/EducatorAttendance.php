@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * App\Models\EducatorAttendance
+ * App\Models\EducatorAttendance 教职员工考勤记录
  *
  * @property int $id
  * @property int $educator_id 教职员工ID
@@ -27,32 +27,34 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|EducatorAttendance wherePunchTime($value)
  * @method static Builder|EducatorAttendance whereUpdatedAt($value)
  * @mixin \Eloquent
- * @property-read \App\Models\EducatorAppeal $educatorAppeal
- * @property-read \App\Models\EducatorAttendanceSetting $educatorAttendanceSetting
+ * @property-read EducatorAppeal $educatorAppeal
+ * @property-read EducatorAttendanceSetting $educatorAttendanceSetting
  */
 class EducatorAttendance extends Model {
-    //
+
     protected $table = 'educator_attendances';
+    
     protected $fillable = [
-        'educator_id',
-        'punch_time',
-        'longitude',
-        'latitude',
-        'inorout',
-        'eas_id'
+        'educator_id', 'punch_time', 'longitude',
+        'latitude', 'inorout', 'eas_id'
     ];
     
     /**
-     * 教职工考勤与教职工申诉
+     * 获取对应的教职员工对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function educatorAppeal() {
-        return $this->hasOne('App\Models\EducatorAppeal', 'ea_ids');
-    }
+    public function educator() { return $this->belongsTo('App\Models\Educator'); }
     
     /**
-     * 教职工考勤与考勤设置
+     * 获取对应的教职员工考勤设置对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function educatorAttendanceSetting() {
+        
         return $this->belongsTo('App\Models\EducatorAttendanceSetting', 'eas_id');
+        
     }
+    
 }

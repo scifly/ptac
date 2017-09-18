@@ -19,7 +19,7 @@ class CorpController extends Controller {
     function __construct(Corp $corp) { $this->corp = $corp; }
     
     /**
-     * 显示企业列表
+     * 企业列表
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
@@ -33,7 +33,7 @@ class CorpController extends Controller {
     }
     
     /**
-     * 显示创建企业记录的表单
+     * 创建企业
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
@@ -44,7 +44,7 @@ class CorpController extends Controller {
     }
     
     /**
-     * 保存新创建的企业记录
+     * 保存企业
      *
      * @param CorpRequest $request
      * @return \Illuminate\Http\JsonResponse
@@ -57,7 +57,7 @@ class CorpController extends Controller {
     }
     
     /**
-     * 显示指定的企业记录详情
+     * 企业详情
      *
      * @param $id
      * @return bool|\Illuminate\Http\JsonResponse
@@ -71,7 +71,7 @@ class CorpController extends Controller {
     }
     
     /**
-     * 显示编辑指定企业记录的表单
+     * 编辑企业
      *
      * @param $id
      * @return bool|\Illuminate\Http\JsonResponse
@@ -108,7 +108,8 @@ class CorpController extends Controller {
     public function destroy($id) {
         
         if (!$this->corp->find($id)) { return $this->notFound(); }
-        return $this->corp->delete() ? $this->succeed() : $this->fail();
+        return $this->corp->remove($id, true)
+            ? $this->succeed() : $this->fail();
         
     }
     

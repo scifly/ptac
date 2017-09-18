@@ -175,7 +175,7 @@ class Event extends Model {
                 ->where('ispublic', 1)
                 ->where('iscourse', 0)
                 ->where('start', '>=', $start)
-                ->where('end', '<', $end)
+                ->where('start', '<', $end)
                 ->first();
         }
         return !empty($event);
@@ -183,20 +183,21 @@ class Event extends Model {
 
     /**
      * 验证管理员添加事件是否有重复
+     * 未判断管理员个人事件重复
      */
     public function isRepeatTimeAdmin($educatorId, $start, $end, $id = null) {
         $event = $this
             ->where('id', '<>', $id)
             ->where('educator_id', $educatorId)
             ->where('start', '<=', $start)
-            ->where('end', '>=', $start)
+            ->where('end', '>', $start)
             ->first();
         if (empty($event)) {
             $event = $this
                 ->where('id', '<>', $id)
                 ->where('educator_id', $educatorId)
                 ->where('start', '>=', $start)
-                ->where('start', '<=', $end)
+                ->where('start', '<', $end)
                 ->first();
         }
         if (empty($event)) {
@@ -205,7 +206,7 @@ class Event extends Model {
                 ->where('ispublic', 1)
                 ->where('iscourse', 0)
                 ->where('start', '<=', $start)
-                ->where('end', '>=', $start)
+                ->where('end', '>', $start)
                 ->first();
         }
         if (empty($event)) {
@@ -213,11 +214,32 @@ class Event extends Model {
                 ->where('id', '<>', $id)
                 ->where('ispublic', 1)
                 ->where('iscourse', 0)
-                ->where('start', '<=', $start)
-                ->where('end', '>=', $start)
+                ->where('start', '>=', $start)
+                ->where('start', '<', $start)
                 ->first();
         }
         return !empty($event);
+    }
+
+    /**
+     * 根据角色验证时间冲突
+     *
+     * @param $userId
+     * @param $educator_id
+     * @param $start
+     * @param $end
+     * @param $id
+     * @return bool
+     */
+    public function isValidateTime($userId, $educator_id, $start, $end, $id=null) {
+        if (!$this->getRole($userId)) {
+            return $this->isRepeatTimeUser($userId, $start, $end, $id);
+        } else {
+            if ($educator_id != 0) {
+                return $this->isRepeatTimeAdmin($educator_id, $start, $end, $id);
+            }
+        }
+        return false;
     }
 
     /**

@@ -3,66 +3,63 @@
 namespace App\Listeners;
 
 use App\Models\Company;
+use App\Models\Department;
 use App\Models\DepartmentType;
+use App\Models\Menu;
+use App\Models\MenuType;
 use Illuminate\Events\Dispatcher;
 
 class CompanyEventSubscriber {
     
-    protected $company;
-    protected $departmentTypeId;
+    protected $departmentTypeId, $menuTypeId;
     
-    function __construct(Company $company) {
-        $this->company = $company;
-
-      //  $this->departmentTypeId = DepartmentType::whereName('运营者')->first()->id;
-
-    }
-    
-    public function onDepartmentCreated($event) {
-
-        if ($event->department->department_type_id === $this->departmentTypeId) {
-            $data = [
-                'name' => $event->department->name,
-                'remark' => $event->department->remark,
-                'department_id' => $event->department->id,
-                'enabled' => $event->department->enabled
-            ];
-            $company = Company::whereName($event->department->name)->first();
-            if ($company) {
-                return $this->company->modify($data, $company->id);
-            } else {
-                return $this->company->store($data);
-            }
-        }
-        return true;
+    function __construct() {
+        
+        $this->departmentTypeId = DepartmentType::whereName('运营')->first()->id;
+        $this->menuTypeId = MenuType::whereName('运营')->first()->id;
         
     }
     
-    public function onDepartmentUpdated($event) {
+    /**
+     * 当部门已创建时, 更新对应运营者的department_id
+     *
+     * @param $event
+     * @return bool
+     */
+    public function onDepartmentCreated($event) {
     
-        if ($event->department->department_type_id === $this->departmentTypeId) {
-            $data = [
-                'name' => $event->department->name,
-                'enabled' => $event->department->enabled,
-            ];
-            $departmentId = $event->department->id;
-            return $this->company->modify($data, $departmentId);
+        /** @var Department $department */
+        $department = $event->department;
+        # 判断已创建或更新的部门的类型是否为"运营者"
+        if ($department->department_type_id == $this->departmentTypeId) {
+            $data = ['department_id' => $department->id];
+            # 更新部门对应"运营者"的department_id (公司名称是唯一的)
+            $company = Company::whereName($department->name)->first();
+            return $company->modify($data, $company->id);
         }
         return true;
     
     }
     
-    public function onDepartmentDeleted($event) {
-    
-        if ($event->department->department_type_id === $this->departmentTypeId) {
-            $departmentId = $event->department->id;
-            $company = Company::whereDepartmentId($departmentId)->first();
-            if ($company) {
-                return $this->company->remove($company->id);
-            }
+    /**
+     * 当菜单已创建时, 更新对应运营者的menu_id
+     *
+     * @param $event
+     * @return bool
+     */
+    public function onMenuCreated($event) {
+        
+        /** @var Menu $menu */
+        $menu = $event->menu;
+        # 判断已创建的菜单类型是否为"运营者"
+        if ($menu->menu_type_id == $this->menuTypeId) {
+            $data = ['menu_id' => $menu->id];
+            # 更新部门对应"运营者"的department_id (公司名称是唯一的)
+            $company = Company::whereName($menu->name)->first();
+            return $company->modify($data, $company->id);
         }
         return true;
-    
+        
     }
     
     /**
@@ -72,20 +69,11 @@ class CompanyEventSubscriber {
      */
     public function subscribe(Dispatcher $events) {
         
-        $events->listen(
-            'App\Events\DepartmentCreated',
-            'App\Listeners\CompanyEventSubscriber@onDepartmentCreated'
-        );
-        $events->listen(
-            'App\Events\DepartmentUpdated',
-            'App\Listeners\CompanyEventSubscriber@onDepartmentUpdated'
-        );
-        $events->listen(
-            'App\Events\DepartmentDeleted',
-            'App\Listeners\CompanyEventSubscriber@onDepartmentDeleted'
-        );
+        $e = 'App\\Events\\';
+        $l = 'App\\Listeners\\CompanyEventSubscriber@';
+        $events->listen($e . 'DepartmentCreated', $l . 'onDepartmentCreated');
+        $events->listen($e . 'MenuCreated', $l . 'onMenuCreated');
         
     }
-    
     
 }
