@@ -23,14 +23,13 @@ class StudentController extends Controller {
 
     protected $custodian, $department, $group, $user,$mobile,$departmentUser,$student,$custodianStudent;
 
-    function __construct(Custodian $custodian, Department $department, Group $group, User $user,Mobile $mobile,
+    function __construct(Custodian $custodian, Department $department, Group $group, User $user,
                          DepartmentUser $departmentUser,Student $student,CustodianStudent $custodianStudent) {
 
         $this->custodian = $custodian;
         $this->department = $department;
         $this->group = $group;
         $this->user = $user;
-        $this->mobile = $mobile;
         $this->departmentUser = $departmentUser;
         $this->student =$student;
         $this->custodianStudent = $custodianStudent;
@@ -97,8 +96,6 @@ class StudentController extends Controller {
     public function edit($id) {
         $student = $this->student->find($id);
         $student['student'] = $this->student->find($id);
-        $user['user'] = $this->user->find($student->user_id);
-        $mobiles = $this->mobile->where('user_id',$student->user_id)->get();
         $departmentIds = $this->departmentUser->where('user_id',$student->user_id)->get();
         foreach ($departmentIds as $key=>$value)
         {
@@ -107,31 +104,23 @@ class StudentController extends Controller {
         }
 
         # 根据学生Id查询监护人学生表的数据
-        $custodianStudent = $this->custodianStudent->where('student_id',$student->id)->get()->toArray();
+//        $custodianStudent = $this->custodianStudent->where('student_id',$student->id)->get()->toArray();
 
-        if($custodianStudent !=null)
-        {
-            foreach ($custodianStudent as $key=>$value)
+
+            foreach ($student->custodians as $key=>$value)
             {
                 # 被选中的监护人信息
-                $custodianId = $this->custodian->find($value['custodian_id']);
+                $custodianId = $this->custodian->find($value['id']);
                 # 被选中的监护人
-                $selectedCustodians[$custodianId->id] = $custodianId->user->realname;
+                $selectedCustodians[$value['id']] = $custodianId->user->realname;
 
             }
-        }else{
-
-            $selectedCustodians = [];
-        }
 
         # 查询学生信息
         if (!$student) { return $this->notFound(); }
 
         return $this->output(__METHOD__, [
-            'user' => $user,
             'student' => $student,
-            'mobiles' => $mobiles,
-            'custodianStudent'=> $custodianStudent,
             'selectedDepartments' => $selectedDepartments,
             'selectedCustodians' => $selectedCustodians,
         ]);
