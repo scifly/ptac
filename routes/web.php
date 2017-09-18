@@ -32,6 +32,7 @@ Route::group(['prefix' => 'educators'], function() {
     $ctlr = 'EducatorController';
     Route::get('recharge/{id}', $ctlr . '@recharge');
     Route::put('rechargeStore/{id}', $ctlr . '@rechargeStore');
+    Route::post('edit/{id}', $ctlr . '@edit');
 });
 // 监护人
 Route::group(['prefix' => 'custodians'], routes('CustodianController'));

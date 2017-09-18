@@ -10,10 +10,10 @@
     </div>
     <div class="box-body">
         <div class="form-horizontal">
-            @if (!empty($educator['id']))
+            @if (isset($educator['id']))
                 {{ Form::hidden('id', $educator['id'], ['id' => 'id']) }}
             @endif
-            @if (!empty($educator['user_id']))
+            @if (isset($educator['user_id']))
                 {{ Form::hidden('user_id', $educator['user_id'], ['id' => 'user_id']) }}
             @endif
             <div class="form-group">
@@ -185,6 +185,14 @@
                 'id' => 'educator[school_id]',
                 'items' => $schools
             ])
+            <div class="form-group">
+                {!! Form::label('departmentId', '所属部门', [
+                    'class' => 'col-sm-3 control-label'
+                ]) !!}
+                <div class="col-sm-6">
+                    <span id="add-department" class="btn-primary">修改</span>
+                </div>
+            </div>
             <div class="form-group">
                 <label class="col-sm-3 control-label">空</label>
                 <div class="col-sm-6">
