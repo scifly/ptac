@@ -57,19 +57,27 @@ $(document).on('click', '.btn-class-add', function (e) {
 });
 
 //部门
+//树形图 jstree 左边
 var $tree = $('#department-tree');
+//教职员工 编辑表单
 var $form = $('.form-horizontal');
+//教职员工 编辑表单 保存取消按钮
 var $btn = $('.box-footer');
-
+//整个 部门选择的页面
+var $treeBox = $('.tree-box');
+//部门选择-选择好的右边节点列表
+var $todoList = $('.todo-list');
+//教职员工 编辑表单 选择好的部门列表
+var $checkedTreeNodes = $('#department-nodes-checked');
+//点击 表单中的部门修改按钮
 $('#add-department').on('click', function() {
     var selectedNodes = $('#selectedDepartmentIds').val();
     var selectedDepartmentIds = selectedNodes.split(',');
 
-    // console.log(selectedDepartmentIds);
     $btn.hide();
     $form.hide();
-    // $tree.show();
-    $('.tree-box').show();
+    $treeBox.show();
+    //部门树形图中的保存取消按钮
     $('.tree-box .box-footer').show();
     $tree.jstree({
         selectedNodes: selectedNodes,
@@ -107,14 +115,25 @@ $('#add-department').on('click', function() {
             'other': { "icon": 'fa fa-list' }
         }
     }).on('select_node.jstree', function(node, selected) {
-        //选中事件
-        // console.log(selected);
-        //点击保存时获取所有选中的节点 返回数组
-        var selectNodes = $("#department-tree").jstree().get_selected();
-        console.log(selectNodes);
+        //选中事件 将选中的节点增加到右边列表
+        console.log(selected);
+        var node = '<li id="tree'+selected.node.id+'">' +
+            '<span class="handle ui-sortable-handle">' +
+            '<i class="'+selected.node.icon+'"></i>' +
+            '</span>' +
+            '<span class="text">'+selected.node.text+'</span>' +
+            '<div class="tools">' +
+            '<i class="fa fa-close"></i>' +
+            '<input type="hidden" value="'+selected.node.id+'"/>' +
+            '</div>' +
+            '</li>';
+        $todoList.append(node);
     }).on('deselect_node.jstree', function (node, selected, event) {
-        //取消选中事件
-        console.log('++' + node, selected);
+        //取消选中事件 将列表中的 节点 移除
+        // console.log('++' + node, selected);
+        var nodeId = '#tree'+selected.node.id;
+        var deselectNode = $(nodeId);
+        deselectNode.remove();
 
     }).on('loaded.jstree', function (selectedDepartmentIds) {
         //展开所有节点
@@ -123,6 +142,7 @@ $('#add-department').on('click', function() {
         $("#department-tree").jstree().select_node(selectedDepartmentIds);
     })
 });
+//节点搜索功能
 var to = false;
 $('#search_node').keyup(function () {
     if (to) {
@@ -130,8 +150,38 @@ $('#search_node').keyup(function () {
     }
     to = setTimeout(function () {
         var v = $('#search_node').val();
-        $('#department-tree').jstree(true).search(v);
+        $tree.jstree(true).search(v);
     }, 250);
+});
+//右侧选中节点中的 删除图标 点击后移除本身并且将左侧取消选中
+$(document).on('click','.fa-close',function () {
+    var nodeId=$(this).parents('li').find('input').val();
+    console.log(nodeId);
+    $(this).parents('li').remove();
+    $tree.jstree().deselect_node([nodeId]);
+});
+
+$(document).on('click','#save-nodes',function () {
+    //点击保存时获取所有选中的节点 返回数组
+    var selectedNodes = $tree.jstree().get_selected();
+    // $checkedTreeNodes.removeAll();
+    for(var i = 0;i < selectedNodes.length; i++) {
+        //通过id查找节点
+        var node=$tree.jstree("get_node", selectedNodes[i]);
+        console.log('save--'+node);
+        var checkedNode = '<button type="button" class=btn btn-flat" style="margin-right: 5px;margin-bottom: 5px">' +
+            '<i class="'+node.icon+'"></i>'+node.text+
+            '<i class="fa fa-close"></i>' +
+            '<input type="hidden" name="selectedDepartmentIds[]" value="'+node.id+'"/>' +
+            '</button>';
+        $checkedTreeNodes.append(checkedNode);
+    }
+
+    $btn.show();
+    $form.show();
+    $treeBox.hide();
+    //部门树形图中的保存取消按钮
+    $('.tree-box .box-footer').hide();
 });
 
 
