@@ -30,7 +30,7 @@
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
-                    {!! Form::text('end', null, ['class' => 'form-control datepicker']) !!}
+                    {!! Form::text('start', null, ['class' => 'form-control datepicker']) !!}
                 </div>
             </div>
             <div class="form-group">
