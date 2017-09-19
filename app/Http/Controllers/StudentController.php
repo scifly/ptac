@@ -104,10 +104,14 @@ class StudentController extends Controller {
         }
 
         # 根据学生Id查询监护人学生表的数据
-//        $custodianStudent = $this->custodianStudent->where('student_id',$student->id)->get()->toArray();
+        $custodianStudent = $this->custodianStudent->where('student_id',$student->id)->get();
 
+        foreach ($custodianStudent as $key=>$value)
+        {
+            $relationship[$value['custodian_id']] = $value['relationship'];
+        }
 
-            foreach ($student->custodians as $key=>$value)
+        foreach ($student->custodians as $key=>$value)
             {
                 # 被选中的监护人信息
                 $custodianId = $this->custodian->find($value['id']);
@@ -123,6 +127,7 @@ class StudentController extends Controller {
             'student' => $student,
             'selectedDepartments' => $selectedDepartments,
             'selectedCustodians' => $selectedCustodians,
+            'relationship' => $relationship
         ]);
         
     }

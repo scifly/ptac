@@ -62,6 +62,7 @@ $(document).on('click', '.btn-add', function (e) {
 
 // 学生、关系
 var $tbody2 = $("#classTable").find("tbody");
+$(document).off('click','.btn-class-add');
 $(document).on('click', '.btn-class-add', function (e) {
     e.preventDefault();
     var html = $tbody2.find('tr').last().clone();

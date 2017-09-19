@@ -50,7 +50,7 @@
                 <div class="form-group">
                     <label for="mobile[mobile][]" class="col-sm-3 control-label">手机号码</label>
                     <div class="col-sm-6">
-                        <table class="table-bordered table-responsive" style="width: 100%;">
+                        <table id="mobileTable" class="table-bordered table-responsive" style="width: 100%;">
                             <thead>
                             <tr>
                                 {{--<td><label for="mobile[mobile][]">手机号码</label></td>--}}
@@ -67,7 +67,7 @@
                                 @foreach($student->user->mobiles as $key => $mobile)
                                     <tr>
                                         <td><input class="form-control" name="mobile[mobile][e{{$key}}]" type="text"
-                                                   placeholder="（请输入手机号码）" value='{{$mobile->mobile}}'>
+                                         required="true" placeholder="（请输入手机号码）" value='{{$mobile->mobile}}'>
                                         </td>
                                         <td style="text-align: center;">
                                             <input name="mobile[isdefault]" value="e{{$key}}" type="radio" class="minimal" @if($mobile->isdefault == 1) checked @endif/>
@@ -146,40 +146,101 @@
                 'id' => 'user[group_id]',
                 'items' => $groups,
             ])
-            @include('partials.multiple_select', [
-            'label' => '监护人',
-            'id' => 'custodian_ids',
-            'items' => $custodian,
-            'selectedItems' => isset($selectedCustodians) ? $selectedCustodians : NULL
-         ])
-            <div class="form-group addInput">
-                @if(isset($custodianStudent)&& !empty($custodianStudent))
-                    @foreach($custodianStudent as $key=>$value)
-                        @if($key==0)
-                            <label for="relationship" class="col-sm-3 control-label">和监护人之间的关系</label>
-                        @endif
-                        <div class="entry input-group col-sm-6 col-sm-offset-3">
-                            <input type="text" class="form-control" name="relationship[]"
-                                   value="{{$value['relationship']}}">
-                            <span class="input-group-btn">
-                                <button class="btn btn-add2 btn-success" type="button">
-                                    <span class="glyphicon glyphicon-plus"></span>
-                                </button>
-                            </span>
-                        </div>
-                    @endforeach
-                @else
-                    <label for="relationship" class="col-sm-3 control-label">和监护人之间的关系</label>
-                    <div class="entry input-group col-sm-6">
-                        <input type="text" class="form-control" name="relationship[]">
-                        <span class="input-group-btn">
-                            <button class="btn btn-add2 btn-success" type="button">
-                                <span class="glyphicon glyphicon-plus"></span>
-                            </button>
-                        </span>
+            {{--@include('partials.multiple_select', [--}}
+            {{--'label' => '监护人',--}}
+            {{--'id' => 'custodian_ids',--}}
+            {{--'items' => $custodian,--}}
+            {{--'selectedItems' => isset($selectedCustodians) ? $selectedCustodians : NULL--}}
+         {{--])--}}
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">监护人和学生之间的关系</label>
+                    <div class="col-sm-6">
+                        <table id="classTable" class="table-bordered table-responsive" style="width: 100%;">
+                            <thead>
+                            <tr>
+                                <th>监护人</th>
+                                <th>关系</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+
+                            @if(isset($student->custodians) && !empty($student->custodians))
+                                @foreach($student->custodians as $custodian)
+                                    <tr>
+                                        <td>
+                                            <select name="student_ids[]" class="select2" style="width: 80%;">
+                                                @foreach($custodians as $key => $name )
+                                                    <option value='{{$key}}' @if($key == $custodian['pivot']['custodian_id']) selected="selected" @endif>{{$name}}</option>
+                                                @endforeach
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <input type="text" name="relationship[]" value="{{$relationship[$custodian['pivot']['custodian_id']]}}">
+                                        </td>
+                                        <td style="text-align: center">
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-box-tool btn-class-add" type="button">
+                                            <i class="fa fa-plus text-blue"></i>
+                                        </button>
+                                    </span>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            @else
+                                <tr>
+                                    <td>
+                                        <select name="student_ids[]" class="select2" style="width: 80%;">
+                                            @foreach($custodians as $key => $name )
+                                                <option value='{{$key}}'>{{$name}}</option>
+                                            @endforeach
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type="text" name="relationship[]" class = 'form-control' required="true"
+                                               placeholder ='请填写监护人和学生之间的关系' >
+                                    </td>
+                                    <td style="text-align: center">
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-box-tool btn-class-add" type="button">
+                                            <i class="fa fa-plus text-blue"></i>
+                                        </button>
+                                    </span>
+                                    </td>
+                                </tr>
+                            @endif
+                            </tbody>
+                        </table>
                     </div>
-                @endif
-            </div>
+                </div>
+            {{--<div class="form-group addInput">--}}
+                {{--@if(isset($custodianStudent)&& !empty($custodianStudent))--}}
+                    {{--@foreach($custodianStudent as $key=>$value)--}}
+                        {{--@if($key==0)--}}
+                            {{--<label for="relationship" class="col-sm-3 control-label">和监护人之间的关系</label>--}}
+                        {{--@endif--}}
+                        {{--<div class="entry input-group col-sm-6 col-sm-offset-3">--}}
+                            {{--<input type="text" class="form-control" name="relationship[]"--}}
+                                   {{--value="{{$value['relationship']}}">--}}
+                            {{--<span class="input-group-btn">--}}
+                                {{--<button class="btn btn-add2 btn-success" type="button">--}}
+                                    {{--<span class="glyphicon glyphicon-plus"></span>--}}
+                                {{--</button>--}}
+                            {{--</span>--}}
+                        {{--</div>--}}
+                    {{--@endforeach--}}
+                {{--@else--}}
+                    {{--<label for="relationship" class="col-sm-3 control-label">和监护人之间的关系</label>--}}
+                    {{--<div class="entry input-group col-sm-6">--}}
+                        {{--<input type="text" class="form-control" name="relationship[]">--}}
+                        {{--<span class="input-group-btn">--}}
+                            {{--<button class="btn btn-add2 btn-success" type="button">--}}
+                                {{--<span class="glyphicon glyphicon-plus"></span>--}}
+                            {{--</button>--}}
+                        {{--</span>--}}
+                    {{--</div>--}}
+                {{--@endif--}}
+            {{--</div>--}}
             @include('partials.single_select', [
                 'label' => '班级名称',
                 'id' => 'student[class_id]',

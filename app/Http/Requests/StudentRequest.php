@@ -21,9 +21,9 @@ class StudentRequest extends FormRequest {
      */
     public function rules() {
         return [
-            'name' => 'required|string|between:2,30|unique:users,name,' .
-                $this->input('user_id') . ',id,' .
-                'mobile,' . $this->input('mobile') ,
+//            'name' => 'required|string|between:2,30|unique:users,name,' .
+//                $this->input('user_id') . ',id,' .
+//                'mobile,' . $this->input('mobile') ,
             'student_number' => 'required|alphanum|between:2,32',
             'card_number' => 'required|alphanum|between:2,32',
             'remark' => 'required|string|between:2,32',
@@ -59,17 +59,17 @@ class StudentRequest extends FormRequest {
         ];
     }
     
-    
-    public function wantsJson() {
-        
-        return true;
-        
-    }
+//
+//    public function wantsJson() {
+//
+//        return true;
+//
+//    }
     
     protected function prepareForValidation() {
         
         $input = $this->all();
-        
+        dd($input);
         if (isset($input['student']['oncampus']) && $input['student']['oncampus'] === 'on') {
             $input['student']['oncampus'] = 1;
         }

@@ -61,7 +61,7 @@
                 <div class="form-group">
                     <label for="mobile[mobile][]" class="col-sm-3 control-label">手机号码</label>
                     <div class="col-sm-6">
-                        <table id="mobileTable" class="table-bordered table-responsive" style="width: 100%;">
+                        <table class="table-bordered table-responsive" style="width: 100%;">
                             <thead>
                             <tr>
                                 {{--<td><label for="mobile[mobile][]">手机号码</label></td>--}}
@@ -74,11 +74,11 @@
                             </tr>
                             </thead>
                             <tbody>
-                            @if(isset($custodian->user->mobiles))
-                                @foreach($custodian->user->mobiles as $key => $mobile)
+                            @if(isset($mobiles))
+                                @foreach($mobiles as $key => $mobile)
                                     <tr>
                                         <td><input class="form-control" name="mobile[mobile][e{{$key}}]" type="text"
-                                                   required="true" placeholder="（请输入手机号码）" value='{{$mobile->mobile}}'>
+                                                   required="true"         placeholder="（请输入手机号码）" value='{{$mobile->mobile}}'>
                                         </td>
                                         <td style="text-align: center;">
                                             <input name="mobile[isdefault]" value="e{{$key}}" type="radio" class="minimal" @if($mobile->isdefault == 1) checked @endif/>
@@ -97,7 +97,7 @@
                                 @endforeach
                             @else
                                 <tr>
-                                    <td><input class="form-control" name="mobile[mobile][e1]" type="text" required="true"
+                                    <td><input class="form-control" name="mobile[mobile][e1]" type="text"
                                                placeholder="（请输入手机号码）"></td>
                                     <td style="text-align: center;">
                                         <input name="mobile[isdefault]" value="e1" type="radio" class="minimal">
@@ -155,12 +155,6 @@
                 'id' => 'user[group_id]',
                 'items' => $groups,
             ])
-                {{--@include('partials.multiple_select', [--}}
-               {{--'label' => '包含学生',--}}
-               {{--'id' => 'student_ids',--}}
-               {{--'items' => $students,--}}
-               {{--'selectedItems' => isset($selectedStudents) ? $selectedStudents : NULL--}}
-           {{--])--}}
                 <div class="form-group">
                     <label class="col-sm-3 control-label">监护人和学生之间的关系</label>
                     <div class="col-sm-6">
@@ -206,8 +200,8 @@
                                         </select>
                                     </td>
                                     <td>
-                                        <input type="text" name="relationship[]" class = 'form-control' required="true"
-                                        placeholder ='请填写英文名(可选)' data-parsley-type = 'string' data-parsley-length = '[2, 255]'>
+                                        <input type="text" name="relationship[]" class = "form-control" required="true"
+                                               placeholder ="请填写监护人和学生关系" data-parsley-type = "string" data-parsley-length = "[2, 255]">
                                     </td>
                                     <td style="text-align: center">
                                     <span class="input-group-btn">
@@ -222,34 +216,6 @@
                         </table>
                     </div>
                 </div>
-            {{--<div class="form-group addInput">--}}
-                    {{--@if(isset($custodianStudent)&& !empty($custodianStudent))--}}
-                        {{--@foreach($custodianStudent as $key=>$value)--}}
-                            {{--@if($key==0)--}}
-                                {{--<label for="relationship" class="col-sm-3 control-label">和学生之间的关系</label>--}}
-                            {{--@endif--}}
-                            {{--<div class="entry input-group col-sm-6 col-sm-offset-3">--}}
-                                {{--<input type="text" class="form-control" name="relationship[]"--}}
-                                       {{--value="{{$value['relationship']}}">--}}
-                                {{--<span class="input-group-btn">--}}
-                                {{--<button class="btn btn-add2 btn-success" type="button">--}}
-                                    {{--<span class="glyphicon glyphicon-plus"></span>--}}
-                                {{--</button>--}}
-                            {{--</span>--}}
-                            {{--</div>--}}
-                        {{--@endforeach--}}
-                    {{--@else--}}
-                        {{--<label for="relationship" class="col-sm-3 control-label">和监护人之间的关系</label>--}}
-                        {{--<div class="entry input-group col-sm-6">--}}
-                            {{--<input type="text" class="form-control" name="relationship[]">--}}
-                            {{--<span class="input-group-btn">--}}
-                            {{--<button class="btn btn-add2 btn-success" type="button">--}}
-                                {{--<span class="glyphicon glyphicon-plus"></span>--}}
-                            {{--</button>--}}
-                        {{--</span>--}}
-                        {{--</div>--}}
-                    {{--@endif--}}
-                {{--</div>--}}
             <div class="form-group">
                 {{ Form::label('expiry', '服务到期时间', [
                 'class' => 'col-sm-3 control-label'
@@ -264,7 +230,7 @@
             @include('partials.enabled', [
                 'label' => '是否启用',
                 'id' => 'user[enabled]',
-                'value' => isset($custodian->user->enabled) ? $custodian->user->enabled : NULL
+                'value' => isset($user['user']['enabled']) ? $user['user']['enabled'] : NULL
             ])
         </div>
     </div>

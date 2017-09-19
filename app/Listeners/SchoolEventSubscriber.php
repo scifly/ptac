@@ -15,7 +15,7 @@ class SchoolEventSubscriber {
     protected $departmentTypeId, $menuTypeId;
     
     function __construct() {
-        
+
         $this->departmentTypeId = DepartmentType::whereName('学校')->first()->id;
         $this->menuTypeId = MenuType::whereName('学校')->first()->id;
         

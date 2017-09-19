@@ -35,7 +35,7 @@ class StudentComposer {
             'user' => $this->user->pluck('realname','id'),
             'class' => $this->class->pluck('name', 'id'),
             'groups' => $this->group->pluck('name', 'id'),
-            'custodian' => $custodian,
+            'custodians' => $custodian,
             'departments' => $this->department->pluck('name','id'),
 //            'departments' => $this->department->departments([1]),
 

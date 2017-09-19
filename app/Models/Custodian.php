@@ -72,9 +72,9 @@ class Custodian extends Model {
                 # 与学生之间的关系
                 $relationships = $request->input('relationship');
 
-                foreach ($studentIds as $key=>$sudentId)
+                foreach ($studentIds as $key=>$studentId)
                 {
-                    $studentRelationship[$sudentId] = $relationships[$key];
+                    $studentId_relationship[$studentId] = $relationships[$key];
                 }
 
                 $userData = [
@@ -129,9 +129,9 @@ class Custodian extends Model {
                 # 向监护人学生表中添加数据
                 $custodianStudent = new CustodianStudent();
 
-                if($studentRelationship !=null)
+                if($studentId_relationship !=null)
                 {
-                    $custodianStudent->storeByCustodianId($c->id, $studentRelationship);
+                    $custodianStudent->storeByCustodianId($c->id, $studentId_relationship);
                 }
                 unset($custodianStudent);
             });
@@ -161,17 +161,9 @@ class Custodian extends Model {
                 $studentIds = $request->input('student_ids');
                 # 与学生之间的关系
                 $relationships = $request->input('relationship');
-                if($studentIds&&$relationships)
+                foreach ($studentIds as $key=>$studentId)
                 {
-                    if(count($studentIds) == count($relationships))
-                    {
-                        # 合并数组，得到学生Id和关系对应的数组
-                        $studentId = array_combine($studentIds,$relationships);
-                    }else{
-                        return false;
-                    }
-                }else{
-                    $studentId = [];
+                    $studentId_Relationship[$studentId] = $relationships[$key];
                 }
                 $user = new User();
                 $user->where('id',$userId)
@@ -221,7 +213,7 @@ class Custodian extends Model {
                 $custodianStudent = new CustodianStudent();
 //                $custodianStudent::whereCustodianId($custodianId)->delete();
                 $custodianStudent::where('custodian_id',$custodianId)->delete();
-                $custodianStudent->storeByCustodianId($custodianId, $studentId);
+                $custodianStudent->storeByCustodianId($custodianId, $studentId_Relationship);
                 unset($custodianStudent);
             });
         
