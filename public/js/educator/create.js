@@ -231,6 +231,7 @@ $(document).on('click','#save-nodes',function () {
     //保存后清空右侧 选中的节点列表
     $todoList.empty();
     $tree.empty();
+    $tree.jstree('destroy');
     $btn.show();
     $form.show();
     $treeBox.hide();

@@ -87,6 +87,7 @@ $('#add-department').on('click', function() {
     $treeBox.show();
     //部门树形图中的保存取消按钮
     $('.tree-box .box-footer').show();
+
     $tree.data('jstree', false).empty();
     $tree.jstree({
         selectedNodes: selectedNodes,
@@ -198,6 +199,7 @@ $(document).on('click','#save-nodes',function () {
     //保存后清空右侧 选中的节点列表
     $todoList.empty();
     $tree.empty();
+    $tree.jstree('destroy');
     $btn.show();
     $form.show();
     $treeBox.hide();
