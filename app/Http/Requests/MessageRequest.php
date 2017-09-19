@@ -11,9 +11,6 @@ class MessageRequest extends FormRequest {
         'serviceid' => 'required|string|max:255',
         'message_id' => 'required|integer',
         'url' => 'required|string|max:255',
-        'media_ids' => 'required|string',
-        'user_id' => 'required|integer',
-        'user_ids' => 'required|string',
         'message_type_id' => 'required|integer',
     ];
     protected $strings_key = [
@@ -21,9 +18,6 @@ class MessageRequest extends FormRequest {
         'serviceid' => '业务id',
         'message_id' => '消息id',
         'url' => '网页地址',
-        'media_ids' => '轮播图',
-        'user_id' => '发送者用户',
-        'user_ids' => '接收用户',
         'message_type_id' => '消息类型',
     ];
     protected $strings_val = [
@@ -82,10 +76,13 @@ class MessageRequest extends FormRequest {
         if (isset($input['media_ids'])) {
             $input['media_ids'] = implode(',', $input['media_ids']);
         }
-        if (isset($input['user_ids'])) {
-            $input['user_ids'] = implode(',', $input['user_ids']);
-        }
-        
+        $input['app_id'] = 0;
+        $input['readed'] = 0;
+        $input['sent'] = 0;
+        $input['msl_id'] = 1;
+        $input['media_ids'] = 1;
+        $input['s_user_id'] = 1;
+        //dd($input);
         $this->replace($input);
     }
 }

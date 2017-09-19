@@ -7,12 +7,27 @@
             @if (!empty($message['id']))
                 {{ Form::hidden('id', $message['id'], ['id' => 'id']) }}
             @endif
+            @include('partials.single_select', [
+                    'label' => '通信方式',
+                    'id' => 'comm_type_id',
+                    'items' => $commtypes
+            ])
+            @include('partials.single_select', [
+                    'label' => '应用',
+                    'id' => 'app_id',
+                    'items' => $apps
+            ])
+            @include('partials.single_select', [
+                    'label' => '消息类型',
+                    'id' => 'message_type_id',
+                    'items' => $messageTypes
+            ])
             <div class="form-group">
                 {!! Form::label('content', '消息内容', [
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
-                    {!! Form::text('content', null, [
+                    {!! Form::textarea('content', null, [
                         'class' => 'form-control',
                         'placeholder' => '不能超过60个汉字',
                         'required' => 'true',
@@ -31,7 +46,7 @@
                 </div>
             </div>
             <div class="form-group">
-                {!! Form::label('message_id', '消息id', [
+                {!! Form::label('message_id', '关联消息id', [
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
@@ -51,10 +66,10 @@
                 </div>
             </div>
             <div class="form-group">
-                {!! Form::label('media_ids', '轮播图', [
+                {!! Form::label('media_ids', '多媒体', [
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
-                <div class="col-sm-10">
+                <div class="col-sm-6">
                     <div class="preview">
                         @if(isset($medias))
                             @foreach($medias as $key => $value)
@@ -74,21 +89,16 @@
                     <a class="btn btn-primary" data-toggle="modal" data-target="#modalPic">上传</a>
                 </div>
             </div>
-            @include('partials.single_select', [
-                'label' => '发送者用户',
-                'id' => 'user_id',
-                'items' => $users
-            ])
+            {{--@include('partials.single_select', [--}}
+                {{--'label' => '发送者用户',--}}
+                {{--'id' => 's_user_id',--}}
+                {{--'items' => $users--}}
+            {{--])--}}
             @include('partials.multiple_select', [
                 'label' => '接收者用户',
-                'id' => 'user_ids',
+                'id' => 'r_user_id',
                 'items' => $users,
                 'selectedItems' => isset($selectedUsers) ? $selectedUsers : []
-            ])
-            @include('partials.single_select', [
-                'label' => '消息类型',
-                'id' => 'message_type_id',
-                'items' => $messageTypes
             ])
         </div>
     </div>

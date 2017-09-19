@@ -446,6 +446,7 @@
 {{--日历--}}
 <script src="{{ URL::asset('js/plugins/fullcalendar/js/jquery-ui.min.js') }}"></script>
 <script src="{{ URL::asset('js/plugins/fullcalendar/js/jquery-ui-timepicker-addon.js') }}"></script>
+<script src="{{ URL::asset('js/plugins/fullcalendar/js/datepicker-zh-CN.js') }}"></script>
 <script src="{{ URL::asset('js/plugins/fullcalendar/js/moment.min.js') }}"></script>
 <script src="{{ URL::asset('js/plugins/fullcalendar/js/fullcalendar.min.js') }}"></script>
 <!-- AdminLTE for demo purposes -->

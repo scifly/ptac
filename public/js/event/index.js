@@ -62,11 +62,17 @@ $(function () {
             //调用日期时间选择器，格式化时间
             $startPicker.datepicker("destroy");
             $endPicker.datepicker("destroy");
+            $startPicker.datepicker( $.datepicker.regional[ "zh-CN" ] );
+            $endPicker.datepicker( $.datepicker.regional[ "zh-CN" ] );
             $startPicker.datetimepicker({
-                dateFormat: 'yy-mm-dd'
+                dateFormat: "yy-mm-dd",
+                showSecond: true,
+                timeFormat: 'hh:mm:ss'
             });
             $endPicker.datetimepicker({
-                dateFormat: 'yy-mm-dd'
+                dateFormat: "yy-mm-dd",
+                showSecond: true,
+                timeFormat: 'hh:mm:ss'
             });
             //点击保存后获取时间值 因页面未刷新需要结束上次on(click)事件
             $('#confirm-add-time').off('click').click(function () {
@@ -117,11 +123,18 @@ $(function () {
                 success: function (result) {
                     if (result.statusCode === 200) {
                         $('.show-form').html(result.message);
+                        $('.start-datepicker').datepicker( $.datepicker.regional[ "zh-CN" ] );
+                        $('.end-datepicker').datepicker( $.datepicker.regional[ "zh-CN" ] );
                         $(".start-datepicker").datetimepicker({
-                            dateFormat: 'yy-mm-dd'
+
+                            dateFormat: "yy-mm-dd",
+                            showSecond: true,
+                            timeFormat: 'hh:mm:ss'
                         });
                         $(".end-datepicker").datetimepicker({
-                            dateFormat: 'yy-mm-dd'
+                            dateFormat: "yy-mm-dd",
+                            showSecond: true,
+                            timeFormat: 'hh:mm:ss'
                         });
 
                         $('#confirm-update').on("click", function () {
