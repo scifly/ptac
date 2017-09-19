@@ -294,32 +294,32 @@ class Department extends Model {
         
     }
 
-    public function tree1($id) {
+    public function tree1($ids) {
 
-        $department = $this->find($id);
-        $departments = $department->children();
+        $departments = $this->whereIn('id',$ids)->get()->toArray();
         $data = [];
         foreach ($departments as $department) {
             $parentId = isset($department['parent_id']) ? $department['parent_id'] : '#';
             $text = $department['name'];
             $departmentType = DepartmentType::whereId($department['department_type_id'])->first()->name;
             switch ($departmentType) {
-                case '根': $type = 'root'; break;
-                case '运营': $type = 'company'; break;
-                case '企业': $type = 'corp'; break;
-                case '学校': $type = 'school'; break;
-                case '年级': $type = 'grade'; break;
-                case '班级': $type = 'class'; break;
-                default: $type = 'other'; break;
+                case '根': $type = 'root';  $icon = 'fa fa-sitemap'; break;
+                case '运营': $type = 'company';  $icon = 'fa fa-building'; break;
+                case '企业': $type = 'corp';  $icon = 'fa fa-weixin'; break;
+                case '学校': $type = 'school';  $icon = 'fa fa-university'; break;
+                case '年级': $type = 'grade';  $icon = 'fa fa-users'; break;
+                case '班级': $type = 'class';  $icon = 'fa fa-user'; break;
+                default: $type = 'other';  $icon = 'fa fa-list'; break;
             }
             $data[] = [
                 'id' => $department['id'],
                 'parent' => $parentId,
                 'text' => $text,
+                'icon' => $icon,
                 'type' => $type
             ];
         }
-        return response()->json($data);
+        return $data;
 
     }
 
