@@ -1,3 +1,6 @@
+{!! Form::text('search_node', null, ['id' => 'search_node']) !!}
+
+<div id="department-tree" class="col-xs-12" style="display: none;">
 <div class="tree-box box box-primary box-solid" style="display: none">
     <div class="box-header with-border">
         <h3 class="box-title">
@@ -74,7 +77,8 @@
     <div class="box-footer">
         <div class="form-group">
             <input class="btn btn-default pull-right margin" id="cancel" type="reset" value="取消">
-            <input class="btn btn-primary pull-right margin" id="save" type="submit" value="确认">
+            <input class="btn btn-primary pull-right margin" id="save"  value="确认">
         </div>
     </div>
+</div>
 </div>

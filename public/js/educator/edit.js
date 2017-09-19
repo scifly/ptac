@@ -60,14 +60,19 @@ $(document).on('click', '.btn-class-add', function (e) {
 var $tree = $('#department-tree');
 var $form = $('.form-horizontal');
 var $btn = $('.box-footer');
+
 $('#add-department').on('click', function() {
-    console.log('test');
+    var selectedNodes = $('#selectedDepartmentIds').val();
+    var selectedDepartmentIds = selectedNodes.split(',');
+
+    // console.log(selectedDepartmentIds);
     $btn.hide();
     $form.hide();
     // $tree.show();
     $('.tree-box').show();
     $('.tree-box .box-footer').show();
     $tree.jstree({
+        selectedNodes: selectedNodes,
         core: {
             themes: {
                 variant: 'large',
@@ -87,7 +92,8 @@ $('#add-department').on('click', function() {
             }
         },
         checkbox: {
-            keep_selected_style : false
+            keep_selected_style : false,
+            three_state: false,
         },
         plugins: ['types', 'search', 'checkbox', 'wholerow'],
         types: {
@@ -99,9 +105,33 @@ $('#add-department').on('click', function() {
             'grade': { "icon": 'fa fa-users' },
             'class': { "icon": 'fa fa-user' },
             'other': { "icon": 'fa fa-list' }
-        },
+        }
+    }).on('select_node.jstree', function(node, selected) {
+        //选中事件
+        // console.log(selected);
+        //点击保存时获取所有选中的节点 返回数组
+        var selectNodes = $("#department-tree").jstree().get_selected();
+        console.log(selectNodes);
+    }).on('deselect_node.jstree', function (node, selected, event) {
+        //取消选中事件
+        console.log('++' + node, selected);
 
+    }).on('loaded.jstree', function (selectedDepartmentIds) {
+        //展开所有节点
+        $tree.jstree('open_all');
+        //初始化 根据后台数据节点数组 选中
+        $("#department-tree").jstree().select_node(selectedDepartmentIds);
     })
+});
+var to = false;
+$('#search_node').keyup(function () {
+    if (to) {
+        clearTimeout(to);
+    }
+    to = setTimeout(function () {
+        var v = $('#search_node').val();
+        $('#department-tree').jstree(true).search(v);
+    }, 250);
 });
 
 

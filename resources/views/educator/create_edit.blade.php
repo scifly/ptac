@@ -227,6 +227,7 @@
                     </button>
                     <a id="add-department" class="btn btn-primary" style="margin-bottom: 5px">修改</a>
                 </div>
+                {!! Form::hidden('selectedDepartmentIds', isset($selectedDepartmentIds) ? $selectedDepartmentIds : NULL, ['id' => 'selectedDepartmentIds']) !!}
             </div>
             <div class="form-group">
                 <label class="col-sm-3 control-label">空</label>
