@@ -16,7 +16,7 @@ $(document).on('click', '.btn-add', function (e) {
     n++;
     // add html
     $tbody.append(
-        '<tr><td><input type="text" class="form-control" placeholder="（请输入手机号码）" name="mobile[mobile][k' + n + ']" value=""></td>' +
+        '<tr><td><input class="form-control" placeholder="（请输入手机号码）" name="mobile[mobile][k' + n + ']" value="" ></td>' +
         '<td style="text-align: center"><input type="radio" class="minimal" name="mobile[isdefault]" value="k' + n + '"></td>' +
         '<td style="text-align: center"><input type="checkbox" class="minimal" name="mobile[enabled][k' + n + ']"></td>' +
         '<td style="text-align: center"><button class="btn btn-box-tool btn-add" type="button"><i class="fa fa-plus text-blue"></i></button></td></tr>'
@@ -33,6 +33,11 @@ $(document).on('click', '.btn-add', function (e) {
     $tbody.find('tr:not(:last) .btn-add')
         .removeClass('btn-add').addClass('btn-remove')
         .html('<i class="fa fa-minus text-blue"></i>');
+    var $mobile = $tbody.find('tr:last input[class="form-control"]');
+    $('#formEducator').parsley().destroy();
+    $mobile.attr('pattern', '/^1[0-9]{10}$/');
+    // $mobile.attr('required', 'true');
+    $('#formEducator').parsley();
 }).on('click', '.btn-remove', function (e) {
     $(this).parents('tr:first').remove();
     e.preventDefault();
@@ -76,10 +81,11 @@ var $checkedTreeNodes = $('#department-nodes-checked');
 $tree.empty();
 $todoList.empty();
 $('#add-department').on('click', function() {
+    var $selectedDepartmentIds = $('#selectedDepartmentIds');
     // $tree.jstree("refresh");
     // $tree.jstree("destroy");
     //获取 后台传过来的 已选择的部门 input 数组
-    var selectedNodes = $('#selectedDepartmentIds').val();
+    var selectedNodes = $selectedDepartmentIds.val();
     var selectedDepartmentIds = selectedNodes.split(',');
 // console.log(selectedNodes,selectedDepartmentIds);
     $btn.hide();
@@ -87,6 +93,7 @@ $('#add-department').on('click', function() {
     $treeBox.show();
     //部门树形图中的保存取消按钮
     $('.tree-box .box-footer').show();
+
     $tree.data('jstree', false).empty();
     $tree.jstree({
         selectedNodes: selectedNodes,
@@ -128,7 +135,7 @@ $('#add-department').on('click', function() {
         // alert($(".jstree ").length);
         //选中事件 将选中的节点增|加到右边列表
         console.log(selected);
-        var node = '<li id="tree'+selected.node.id+'">' +
+        var nodeHtml = '<li id="tree'+selected.node.id+'">' +
             '<span class="handle ui-sortable-handle">' +
             '<i class="'+selected.node.icon+'"></i>' +
             '</span>' +
@@ -138,7 +145,7 @@ $('#add-department').on('click', function() {
             '<input type="hidden" value="'+selected.node.id+'"/>' +
             '</div>' +
             '</li>';
-        $todoList.append(node);
+        $todoList.append(nodeHtml);
     }).on('deselect_node.jstree', function (node, selected, event) {
         // alert(2);
         //取消选中事件 将列表中的 节点 移除
@@ -176,7 +183,8 @@ $(document).on('click','.close-node',function () {
 });
 //保存选中的节点
 $(document).on('click','#save-nodes',function () {
-    var nodeArray = new Array();
+    var nodeArray = [];
+    var $selectedDepartmentIds = $('#selectedDepartmentIds');
     //点击保存时获取所有选中的节点 返回数组
     var selectedNodes = $tree.jstree().get_selected();
     $checkedTreeNodes.empty();
@@ -184,7 +192,7 @@ $(document).on('click','#save-nodes',function () {
         //通过id查找节点
         var node=$tree.jstree("get_node", selectedNodes[i]);
         console.log('save--'+node);
-        var checkedNode = '<button type="button" class=btn btn-flat" style="margin-right: 5px;margin-bottom: 5px">' +
+        var checkedNode = '<button type="button" class="btn btn-flat" style="margin-right: 5px;margin-bottom: 5px">' +
             '<i class="'+node.icon+'"></i>'+node.text+
             '<i class="fa fa-close close-selected"></i>' +
             '<input type="hidden" name="selectedDepartments[]" value="'+node.id+'"/>' +
@@ -194,10 +202,11 @@ $(document).on('click','#save-nodes',function () {
         nodeArray[i] = node.id;
     }
     //更新隐藏域的 选中的id数组input 方便 弹出树形页面时默认选中
-    $('#selectedDepartmentIds').val(nodeArray.toString());
+    $selectedDepartmentIds.val(nodeArray.toString());
     //保存后清空右侧 选中的节点列表
     $todoList.empty();
     $tree.empty();
+    $tree.jstree('destroy');
     $btn.show();
     $form.show();
     $treeBox.hide();
@@ -207,29 +216,32 @@ $(document).on('click','#save-nodes',function () {
 });
 //点击 教职员工编辑表单中的 删除部门
 $(document).on('click','.close-selected',function () {
+    var $selectedDepartmentIds = $('#selectedDepartmentIds');
+
     //获取隐藏域的input
     var nodeId=$(this).parents('button').find('input').val();
     // 删除指定的部门
     $(this).parents('button').remove();
 
     //获取到后台的 当前用户的所有部门 字符串
-    var selectedNodes = $('#selectedDepartmentIds').val();
+    var selectedNodes = $selectedDepartmentIds.val();
     //转换成数组
     var selectedDepartmentIds = selectedNodes.split(',');
     //清除数组的 上面选中的部门id 返回还是数组
     for(var i=0; i<selectedDepartmentIds.length; i++) {
-        if(selectedDepartmentIds[i] == nodeId) {
+        if(selectedDepartmentIds[i] === nodeId) {
             selectedDepartmentIds.splice(i, 1);
             break;
         }
     }
     //将删除后的数组转换成字符串 并赋值回input 方便在上面初始化中 初始 已选择的部门
-    $('#selectedDepartmentIds').val(selectedDepartmentIds.toString());
+    $selectedDepartmentIds.val(selectedDepartmentIds.toString());
     //同时删除 右侧列表 选中的节点
     var treeNodeId = '#tree'+nodeId;
     var deselectNode = $(treeNodeId);
     deselectNode.remove();
     // $(this).parents('input').remove();
+    //让某一个节点取消选中
     // $tree.jstree().deselect_node([nodeId]);
 });
 //部门树页面 的取消按钮
@@ -238,6 +250,8 @@ $(document).on('click','#cancel-nodes',function () {
     $form.show();
     $treeBox.hide();
     $('.tree-box .box-footer').hide();
+    $tree.jstree('destroy');
+    $todoList.empty();
 });
 
 

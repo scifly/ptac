@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class EducatorRequest extends FormRequest {
     
@@ -28,12 +30,14 @@ class EducatorRequest extends FormRequest {
     public function authorize() { return true; }
     
     public function rules() {
+        $input = $this->all();
+//        dd($input['mobile']);
 
-        return [
+        $rules =  [
 
             'educator.school_id' => 'required|integer',
-            'educator.class_ids' => 'required|array',
-            'educator.subject_ids' => 'required|array',
+            'classSubject' => 'required|array',
+        //            'educator.subject_ids' => 'required|array',
             'user.group_id' => 'required|integer',
             'user.username' => 'required|string|unique:users,username,' .
                 $this->input('user_id') . ',id',
@@ -43,10 +47,22 @@ class EducatorRequest extends FormRequest {
             'user.email' => 'nullable|email|unique:users,email,' .
                 $this->input('user_id') . ',id',
             'user.password' => 'required|string|min:3',
-//            'mobile.mobile' => 'required|string|size:11|regex:/^0?(13|14|15|17|18)[0-9]{9}$/|' .
-//                'unique:mobiles,mobile,' . $this->input('mobile.id') . ',id',
-//            'mobile.isdefault' => 'required|boolean',
+        //            'mobile.*.number' => 'required|string|size:11|regex:/^0?(13|14|15|17|18)[0-9]{9}$/|' .
+        //                'unique:mobiles,mobile,' . $this->input('mobile.*.id') . ',id',
+        //            'mobile.*.isdefault' => 'required|boolean',
+        //            'mobile.*.enabled' => 'required|boolean',
+
         ];
+        $validateRules=[];
+        foreach ($input['mobile'] as $index => $mobile) {
+            $rule =['mobile.'.$index.'.mobile' => 'required|string|size:11|regex:/^1[34578][0-9]{9}$/|' .
+                        'unique:mobiles,mobile,' . $this->input('mobile.'.$index.'.id') . ',id',
+                'mobile.'.$index.'.isdefault' => 'required|boolean',
+                  'mobile.'.$index.'.enabled' => 'required|boolean'];
+            $validateRules =array_merge($rules,$rule,$validateRules);
+            unset($rule);
+        }
+        return $validateRules;
 
         
     }
@@ -89,6 +105,17 @@ class EducatorRequest extends FormRequest {
         if (!isset($input['user']['gender'])) {
             $input['user']['gender'] = 0;
         }
+        if (isset($input['mobile'])) {
+            foreach ($input['mobile'] as $index => $mobile) {
+                if (!isset($mobile['isdefault'])) {
+                    $input['mobile'][$index]['isdefault'] = 0;
+                }
+                if (!isset($mobile['enabled'])) {
+                    $input['mobile'][$index]['enabled'] = 0;
+                }
+            }
+        }
+//        dd($this->input('mobile.*.mobile'));
         $this->replace($input);
         
     }
