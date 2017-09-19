@@ -3,13 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\MessageRequest;
-use App\Models\Educator;
+use App\Models\Department;
 use App\Models\Media;
 use App\Models\Message;
 use App\Models\User;
 use Illuminate\Support\Facades\Request;
-use Illuminate\Support\Facades\Storage;
-use PhpParser\Node\Expr\Array_;
 
 /**
  * 消息
@@ -22,12 +20,14 @@ class MessageController extends Controller {
     protected $message;
     protected $user;
     protected $media;
+    protected $department;
 
-    public function __construct(Message $message, User $user, Media $media) {
+    public function __construct(Message $message, User $user, Media $media, Department $department) {
 
         $this->message = $message;
         $this->user = $user;
         $this->media = $media;
+        $this->department = $department;
 
     }
 
@@ -51,6 +51,9 @@ class MessageController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function create() {
+        if (Request::method() === 'POST') {
+            return $this->department->tree();
+        }
 
         return $this->output(__METHOD__);
 
