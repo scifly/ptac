@@ -18,57 +18,12 @@
         <div class="col-xs-6">
             <h4>已选择的部门</h4>
             <ul class="todo-list ui-sortable">
-                {{--<li>--}}
-                        {{--<span class="handle ui-sortable-handle">--}}
-                            {{--<i class="fa fa-plus"></i>--}}
-                        {{--</span>--}}
-                    {{--<span class="text">Design a nice theme</span>--}}
-                    {{--<div class="tools">--}}
-                        {{--<i class="fa fa-close"></i>--}}
-                    {{--</div>--}}
-                {{--</li>--}}
-                {{--<li>--}}
-                        {{--<span class="handle ui-sortable-handle">--}}
-                            {{--<i class="fa fa-plus"></i>--}}
-                        {{--</span>--}}
-                    {{--<span class="text">Design a nice theme</span>--}}
-                    {{--<div class="tools">--}}
-                        {{--<i class="fa fa-close"></i>--}}
-                    {{--</div>--}}
-                {{--</li>--}}
-                {{--<li>--}}
-                        {{--<span class="handle ui-sortable-handle">--}}
-                            {{--<i class="fa fa-plus"></i>--}}
-                        {{--</span>--}}
-                    {{--<span class="text">Design a nice theme</span>--}}
-                    {{--<div class="tools">--}}
-                        {{--<i class="fa fa-close"></i>--}}
-                    {{--</div>--}}
-                {{--</li>--}}
-                {{--<li>--}}
-                        {{--<span class="handle ui-sortable-handle">--}}
-                            {{--<i class="fa fa-plus"></i>--}}
-                        {{--</span>--}}
-                    {{--<span class="text">Design a nice theme</span>--}}
-                    {{--<div class="tools">--}}
-                        {{--<i class="fa fa-close"></i>--}}
-                    {{--</div>--}}
-                {{--</li>--}}
-                {{--<li>--}}
-                        {{--<span class="handle ui-sortable-handle">--}}
-                            {{--<i class="fa fa-plus"></i>--}}
-                        {{--</span>--}}
-                    {{--<span class="text">Design a nice theme</span>--}}
-                    {{--<div class="tools">--}}
-                        {{--<i class="fa fa-close"></i>--}}
-                    {{--</div>--}}
-                {{--</li>--}}
             </ul>
         </div>
     </div>
     <div class="box-footer">
         <div class="form-group">
-            <input class="btn btn-default pull-right margin" id="cancel" type="reset" value="取消">
+            <input class="btn btn-default pull-right margin" id="cancel-nodes" type="reset" value="取消">
             <input class="btn btn-primary pull-right margin" id="save-nodes"  value="确认">
         </div>
     </div>

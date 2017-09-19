@@ -189,46 +189,27 @@
                 {!! Form::label('departmentId', '所属部门', [
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
-                <div class="col-sm-6" >
-                    <li id="department-nodes-checked"></li>
-                    {{--<button type="button" class="btn btn-flat" style="margin-right: 5px;margin-bottom: 5px">--}}
-                        {{--<i class="fa fa-folder"></i>--}}
-                        {{--凌凯集团--}}
-                        {{--<i class="fa fa-close"></i>--}}
-                    {{--</button>--}}
-                    {{--<button type="button" class="btn btn-flat" style="margin-right: 5px;margin-bottom: 5px">--}}
-                        {{--<i class="fa fa-folder"></i>--}}
-                        {{--凌凯集团--}}
-                        {{--<i class="fa fa-close"></i>--}}
-                    {{--</button>--}}
-                    {{--<button type="button" class="btn btn-flat" style="margin-right: 5px;margin-bottom: 5px">--}}
-                        {{--<i class="fa fa-folder"></i>--}}
-                        {{--凌凯集团--}}
-                        {{--<i class="fa fa-close"></i>--}}
-                    {{--</button>--}}
-                    {{--<button type="button" class="btn btn-flat" style="margin-right: 5px;margin-bottom: 5px">--}}
-                        {{--<i class="fa fa-folder"></i>--}}
-                        {{--凌凯集团--}}
-                        {{--<i class="fa fa-close"></i>--}}
-                    {{--</button>--}}
-                    {{--<button type="button" class="btn btn-flat" style="margin-right: 5px;margin-bottom: 5px">--}}
-                        {{--<i class="fa fa-folder"></i>--}}
-                        {{--凌凯集团--}}
-                        {{--<i class="fa fa-close"></i>--}}
-                    {{--</button>--}}
-                    {{--<button type="button" class="btn btn-flat" style="margin-right: 5px;margin-bottom: 5px">--}}
-                        {{--<i class="fa fa-folder"></i>--}}
-                        {{--凌凯集团--}}
-                        {{--<i class="fa fa-close"></i>--}}
-                    {{--</button>--}}
-                    {{--<button type="button" class="btn btn-flat" style="margin-right: 5px;margin-bottom: 5px">--}}
-                        {{--<i class="fa fa-folder"></i>--}}
-                        {{--凌凯集团--}}
-                        {{--<i class="fa fa-close"></i>--}}
-                    {{--</button>--}}
+                <div class="col-sm-6">
+                    <div id="department-nodes-checked">
+                        @if(isset($selectedDepartments))
+                            @foreach($selectedDepartments as $key => $department)
+                                <button type="button" class="btn btn-flat" style="margin-right: 5px;margin-bottom: 5px">
+                                <i class="{{$department['icon']}}"></i>
+                                    {{$department['text']}}
+                                <i class="fa fa-close close-selected"></i>
+                                <input type="hidden" name="selectedDepartments[]" value="{{$department['id']}}"/>
+                                </button>
+                            @endforeach
+
+                        @endif
+                    </div>
+                    @if(isset($selectedDepartmentIds))
+                        <input type="hidden" id="selectedDepartmentIds"  value="{{$selectedDepartmentIds}}" />
+                    @else
+                        <input type="hidden" id="selectedDepartmentIds"  value="" />
+                    @endif
                     <a id="add-department" class="btn btn-primary" style="margin-bottom: 5px">修改</a>
                 </div>
-                {!! Form::hidden('selectedDepartmentIds', isset($selectedDepartmentIds) ? $selectedDepartmentIds : NULL, ['id' => 'selectedDepartmentIds']) !!}
             </div>
             <div class="form-group">
                 <label class="col-sm-3 control-label">空</label>

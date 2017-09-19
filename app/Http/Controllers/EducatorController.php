@@ -116,10 +116,13 @@ class EducatorController extends Controller {
             $selectedDepartmentIds[] = $department->id;
         }
 
+        $selectedDepartments = $this->department->tree1($selectedDepartmentIds);
+//        dd($selectedDepartments);die;
         return $this->output(__METHOD__, [
             'educator' => $educator,
             'selectedTeams' => $selectedTeams,
             'selectedDepartmentIds' => implode(',', $selectedDepartmentIds),
+            'selectedDepartments' => $selectedDepartments,
         ]);
         
     }
