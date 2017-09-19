@@ -5,20 +5,18 @@ namespace App\Http\ViewComposers;
 use App\Models\Group;
 use App\Models\User;
 use App\Models\Student;
-use App\Models\Department;
 use Illuminate\Contracts\View\View;
 
 class CustodianComposer {
 
-    protected $group,$user,$student, $department;
+    protected $group,$user,$student;
 
     
-    public function __construct(Group $group,User $user,Student $student, Department $department) {
+    public function __construct(Group $group,User $user,Student $student) {
         
         $this->group = $group;
         $this->user = $user;
         $this->student = $student;
-        $this->department = $department;
         
     }
     
@@ -34,8 +32,8 @@ class CustodianComposer {
         }
 
         $view->with([
+            'user' => $this->user->pluck('realname','id'),
 //            'departments' => $this->department->departments([1]),
-            'departments' => $this->department->pluck('name','id'),
             'groups' => $this->group->pluck('name', 'id'),
             'students' => $students
         ]);

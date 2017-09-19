@@ -117,6 +117,7 @@ class EducatorController extends Controller {
         }
 
         $selectedDepartments = $this->department->tree1($selectedDepartmentIds);
+
 //        dd($selectedDepartments);die;
         return $this->output(__METHOD__, [
             'educator' => $educator,

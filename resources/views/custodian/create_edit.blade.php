@@ -74,8 +74,8 @@
                             </tr>
                             </thead>
                             <tbody>
-                            @if(isset($mobiles))
-                                @foreach($mobiles as $key => $mobile)
+                            @if(isset($custodian->user->mobiles))
+                                @foreach($custodian->user->mobiles as $key => $mobile)
                                     <tr>
                                         <td><input class="form-control" name="mobile[mobile][e{{$key}}]" type="text"
                                                    required="true"         placeholder="（请输入手机号码）" value='{{$mobile->mobile}}'>
@@ -142,14 +142,32 @@
                     ]) }}
                 </div>
             </div>
-            @include('partials.multiple_select', [
+                <div class="form-group">
+                    {!! Form::label('departmentId', '所属部门', [
+                        'class' => 'col-sm-3 control-label'
+                    ]) !!}
+                    <div class="col-sm-6">
+                        <div id="department-nodes-checked">
+                            @if(isset($selectedDepartments))
+                                @foreach($selectedDepartments as $key => $department)
+                                    <button type="button" class="btn btn-flat" style="margin-right: 5px;margin-bottom: 5px">
+                                        <i class="{{$department['icon']}}"></i>
+                                        {{$department['text']}}
+                                        <i class="fa fa-close close-selected"></i>
+                                        <input type="hidden" name="selectedDepartments[]" value="{{$department['id']}}"/>
+                                    </button>
+                                @endforeach
 
-                'label' => '所属部门',
-
-                'id' => 'department_ids',
-                'items' => $departments,
-                'selectedItems' => isset($selectedDepartments) ? $selectedDepartments : NULL
-            ])
+                            @endif
+                        </div>
+                        @if(isset($selectedDepartmentIds))
+                            <input type="hidden" id="selectedDepartmentIds"  value="{{$selectedDepartmentIds}}" />
+                        @else
+                            <input type="hidden" id="selectedDepartmentIds"  value="" />
+                        @endif
+                        <a id="add-department" class="btn btn-primary" style="margin-bottom: 5px">修改</a>
+                    </div>
+                </div>
             @include('partials.single_select', [
                 'label' => '角色',
                 'id' => 'user[group_id]',
@@ -201,7 +219,7 @@
                                     </td>
                                     <td>
                                         <input type="text" name="relationship[]" class = "form-control" required="true"
-                                               placeholder ="请填写监护人和学生关系" data-parsley-type = "string" data-parsley-length = "[2, 255]">
+                                               placeholder ="" data-parsley-type = "string" data-parsley-length = "[2, 255]">
                                     </td>
                                     <td style="text-align: center">
                                     <span class="input-group-btn">
@@ -230,7 +248,7 @@
             @include('partials.enabled', [
                 'label' => '是否启用',
                 'id' => 'user[enabled]',
-                'value' => isset($user['user']['enabled']) ? $user['user']['enabled'] : NULL
+                'value' => isset($custodian->user->enabled) ? $custodian->user->enabled : NULL
             ])
         </div>
     </div>

@@ -10,7 +10,6 @@ use App\Models\Department;
 use App\Models\DepartmentUser;
 use App\Models\Group;
 use App\Models\User;
-use App\Models\Mobile;
 use Illuminate\Support\Facades\Request;
 
 /**
@@ -21,7 +20,7 @@ use Illuminate\Support\Facades\Request;
  */
 class StudentController extends Controller {
 
-    protected $custodian, $department, $group, $user,$mobile,$departmentUser,$student,$custodianStudent;
+    protected $custodian, $department, $group, $user,$departmentUser,$student,$custodianStudent;
 
     function __construct(Custodian $custodian, Department $department, Group $group, User $user,
                          DepartmentUser $departmentUser,Student $student,CustodianStudent $custodianStudent) {
@@ -56,7 +55,9 @@ class StudentController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function create() {
-        
+        if (Request::method() === 'POST') {
+            return $this->department->tree();
+        }
         return $this->output(__METHOD__);
         
     }
@@ -68,7 +69,7 @@ class StudentController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(StudentRequest $request) {
-        dd($this->student->store($request));
+
         return $this->student->store($request) ? $this->succeed() : $this->fail();
         
     }
@@ -94,14 +95,24 @@ class StudentController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function edit($id) {
+
+        if (Request::method() === 'POST') {
+            return $this->department->tree();
+        }
         $student = $this->student->find($id);
         $student['student'] = $this->student->find($id);
-        $departmentIds = $this->departmentUser->where('user_id',$student->user_id)->get();
-        foreach ($departmentIds as $key=>$value)
-        {
-            $department = Department::whereId($value['department_id'])->first();
-            $selectedDepartments[$department['id']] = $department['name'];
+//        $departmentIds = $this->departmentUser->where('user_id',$student->user_id)->get();
+//        foreach ($departmentIds as $key=>$value)
+//        {
+//            $department = Department::whereId($value['department_id'])->first();
+//            $selectedDepartments[$department['id']] = $department['name'];
+//        }
+        $selectedDepartmentIds = [];
+        foreach ($student->user->departments as $department) {
+            $selectedDepartmentIds[] = $department->id;
         }
+
+        $selectedDepartments = $this->department->tree1($selectedDepartmentIds);
 
         # 根据学生Id查询监护人学生表的数据
         $custodianStudent = $this->custodianStudent->where('student_id',$student->id)->get();
@@ -125,6 +136,7 @@ class StudentController extends Controller {
 
         return $this->output(__METHOD__, [
             'student' => $student,
+            'selectedDepartmentIds' => implode(',', $selectedDepartmentIds),
             'selectedDepartments' => $selectedDepartments,
             'selectedCustodians' => $selectedCustodians,
             'relationship' => $relationship

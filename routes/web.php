@@ -36,8 +36,16 @@ Route::group(['prefix' => 'educators'], function() {
 });
 // 监护人
 Route::group(['prefix' => 'custodians'], routes('CustodianController'));
+Route::group(['prefix' => 'custodians'], function() {
+    $ctlr = 'CustodianController';
+    Route::post('edit/{id}', $ctlr . '@edit');
+});
 // 学生
 Route::group(['prefix' => 'students'], routes('StudentController'));
+Route::group(['prefix' => 'students'], function() {
+    $ctlr = 'StudentController';
+    Route::post('edit/{id}', $ctlr . '@edit');
+});
 // 用户
 Route::group(['prefix' => 'users'], routes('UserController'));
 Route::post('users/upload_ava/{id}', 'UserController@uploadAvatar');

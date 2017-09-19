@@ -1,3 +1,9 @@
+{!! Form::open([
+    'method' => 'post',
+    'id' => 'formStudent',
+    'class' => 'form-horizontal form-bordered',
+    'data-parsley-validate' => 'true'
+]) !!}
 <div class="box box-widget">
     <div class="box-header with-border">
         @include('partials.form_header')
@@ -133,14 +139,33 @@
                     ]) }}
                 </div>
             </div>
-            @include('partials.multiple_select', [
-               'required'=>'true',
 
-                'label' => '所属部门',
-                'id' => 'department_ids',
-                'items' => $departments,
-                'selectedItems' => isset($selectedDepartments) ? $selectedDepartments : NULL
-            ])
+            <div class="form-group">
+                    {!! Form::label('departmentId', '所属部门', [
+                        'class' => 'col-sm-3 control-label'
+                    ]) !!}
+                    <div class="col-sm-6">
+                        <div id="department-nodes-checked">
+                            @if(isset($selectedDepartments))
+                                @foreach($selectedDepartments as $key => $department)
+                                    <button type="button" class="btn btn-flat" style="margin-right: 5px;margin-bottom: 5px">
+                                        <i class="{{$department['icon']}}"></i>
+                                        {{$department['text']}}
+                                        <i class="fa fa-close close-selected"></i>
+                                        <input type="hidden" name="selectedDepartments[]" value="{{$department['id']}}"/>
+                                    </button>
+                                @endforeach
+
+                            @endif
+                        </div>
+                        @if(isset($selectedDepartmentIds))
+                            <input type="hidden" id="selectedDepartmentIds"  value="{{$selectedDepartmentIds}}" />
+                        @else
+                            <input type="hidden" id="selectedDepartmentIds"  value="" />
+                        @endif
+                        <a id="add-department" class="btn btn-primary" style="margin-bottom: 5px">修改</a>
+                    </div>
+                </div>
             @include('partials.single_select', [
                 'label' => '角色',
                 'id' => 'user[group_id]',
