@@ -240,6 +240,8 @@ $(document).on('click','#cancel-nodes',function () {
     $form.show();
     $treeBox.hide();
     $('.tree-box .box-footer').hide();
+    $tree.jstree('destroy');
+    $todoList.empty();
 });
 
 
