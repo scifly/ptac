@@ -20,6 +20,7 @@ class PqRequest extends FormRequest {
         'integer' => '必须为整数',
         'boolean' => '为0或1',
         'unique' => '不唯一',
+        'date_format' => '格式不正确',
 
     ];
     public function rules() {
@@ -28,8 +29,8 @@ class PqRequest extends FormRequest {
                 $this->input('id') . ',id,' .
                 'school_id,' . $this->input('school_id'),
             'school_id' => 'required|integer',
-            'start' => 'required|date',
-            'end' => 'required|date',
+            'start' => 'required|date_format:Y-m-d H:i:s' ,
+            'end' => 'required|date_format:Y-m-d H:i:s',
             'enabled' => 'required|boolean'
         ];
     }

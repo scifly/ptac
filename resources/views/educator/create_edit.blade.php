@@ -10,10 +10,10 @@
     </div>
     <div class="box-body">
         <div class="form-horizontal">
-            @if (!empty($educator['id']))
+            @if (isset($educator['id']))
                 {{ Form::hidden('id', $educator['id'], ['id' => 'id']) }}
             @endif
-            @if (!empty($educator['user_id']))
+            @if (isset($educator['user_id']))
                 {{ Form::hidden('user_id', $educator['user_id'], ['id' => 'user_id']) }}
             @endif
             <div class="form-group">
@@ -46,10 +46,10 @@
                 <label for="user[gender]" class="col-sm-3 control-label">性别</label>
                 <div class="col-sm-6">
                     <label id="user[gender]">
-                        <input id="user[gender]" @if($educator->user->gender == 1) checked @endif type="radio" name="user[gender]" class="minimal" value="1">
+                        <input id="user[gender]" @if(isset($educator)) @if($educator->user->gender == 1) checked @endif @endif type="radio" name="user[gender]" class="minimal" value="1">
                     </label> 男
                     <label id="user[gender]">
-                        <input id="user[gender]" @if($educator->user->gender == 0) checked @endif type="radio" name="user[gender]" class="minimal" value="0">
+                        <input id="user[gender]" @if(isset($educator)) @if($educator->user->gender == 0) checked @endif @endif type="radio" name="user[gender]" class="minimal" value="0">
                     </label> 女
                 </div>
             </div>
@@ -186,6 +186,32 @@
                 'items' => $schools
             ])
             <div class="form-group">
+                {!! Form::label('departmentId', '所属部门', [
+                    'class' => 'col-sm-3 control-label'
+                ]) !!}
+                <div class="col-sm-6">
+                    <div id="department-nodes-checked">
+                        @if(isset($selectedDepartments))
+                            @foreach($selectedDepartments as $key => $department)
+                                <button type="button" class="btn btn-flat" style="margin-right: 5px;margin-bottom: 5px">
+                                <i class="{{$department['icon']}}"></i>
+                                    {{$department['text']}}
+                                <i class="fa fa-close close-selected"></i>
+                                <input type="hidden" name="selectedDepartments[]" value="{{$department['id']}}"/>
+                                </button>
+                            @endforeach
+
+                        @endif
+                    </div>
+                    @if(isset($selectedDepartmentIds))
+                        <input type="hidden" id="selectedDepartmentIds"  value="{{$selectedDepartmentIds}}" />
+                    @else
+                        <input type="hidden" id="selectedDepartmentIds"  value="" />
+                    @endif
+                    <a id="add-department" class="btn btn-primary" style="margin-bottom: 5px">修改</a>
+                </div>
+            </div>
+            <div class="form-group">
                 <label class="col-sm-3 control-label">空</label>
                 <div class="col-sm-6">
                     <table id="classTable" class="table-bordered table-responsive" style="width: 100%;">
@@ -198,7 +224,7 @@
                         </thead>
                         <tbody>
 
-                        @if(isset($educator->educatorClasses) && !empty($educator->educatorClasses))
+                        @if(isset($educator->educatorClasses))
                             @foreach($educator->educatorClasses as $class)
                                 <tr>
                                     <td>
