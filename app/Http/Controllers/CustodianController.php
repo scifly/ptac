@@ -67,7 +67,6 @@ class CustodianController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(CustodianRequest $request) {
-
         return $this->custodian->store($request) ? $this->succeed() : $this->fail();
         
     }

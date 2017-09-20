@@ -19,6 +19,7 @@ Route::get('/home', 'HomeController@index')->name('home');
 
 /** 测试用路由 */
 Route::get('test/index', 'TestController@index');
+Route::get('test/getuser', 'TestController@getUser');
 Route::get('test/create', 'TestController@create');
 Route::get('test', 'TestController@test');
 
