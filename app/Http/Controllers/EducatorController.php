@@ -116,8 +116,7 @@ class EducatorController extends Controller {
             $selectedDepartmentIds[] = $department->id;
         }
 
-        $selectedDepartments = $this->department->tree1($selectedDepartmentIds);
-//        dd($selectedDepartments);die;
+        $selectedDepartments = $this->department->selectedNodes($selectedDepartmentIds);
         return $this->output(__METHOD__, [
             'educator' => $educator,
             'selectedTeams' => $selectedTeams,
@@ -185,7 +184,9 @@ class EducatorController extends Controller {
         
         $educator = $this->educator->find($id);
         if (!$educator) { return $this->notFound(); }
-        return $educator->delete() ? $this->succeed() : $this->fail();
+
+        return $this->educator->remove($id, true)
+            ? parent::succeed() : parent::fail();
 
     }
     

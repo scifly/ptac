@@ -24,7 +24,7 @@
     <div class="box-footer">
         <div class="form-group">
             <input class="btn btn-default pull-right margin" id="cancel-nodes" type="reset" value="取消">
-            <input class="btn btn-primary pull-right margin" id="save-nodes"  value="确认">
+            <input type="button" class="btn btn-primary pull-right margin" id="save-nodes"  value="确认">
         </div>
     </div>
 </div>

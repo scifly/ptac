@@ -131,15 +131,17 @@
                         @if(isset($educator->user->mobiles))
                             @foreach($educator->user->mobiles as $key => $mobile)
                                 <tr>
-                                    <td><input class="form-control" name="mobile[mobile][e{{$key}}]" type="text"
-                                               placeholder="（请输入手机号码）" value='{{$mobile->mobile}}'>
+                                    <td><input class="form-control" name="mobile[{{$key}}][mobile]"
+                                               placeholder="（请输入手机号码）" value='{{$mobile->mobile}}' pattern="/^1[0-9]{10}$/">
+                                        <input class="form-control" name="mobile[{{$key}}][id]"
+                                               type="hidden" value='{{$mobile->id}}'>
                                     </td>
                                     <td style="text-align: center;">
-                                        <input name="mobile[isdefault]" value="e{{$key}}" type="radio" class="minimal"
+                                        <input name="mobile[isdefault]" value="{{$key}}" type="radio" class="minimal"
                                                @if($mobile->isdefault == 1) checked @endif/>
                                     </td>
                                     <td style="text-align: center;">
-                                        <input name="mobile[enabled][e{{$key}}]" type="checkbox" class="minimal"
+                                        <input name="mobile[{{$key}}][enabled]" type="checkbox" class="minimal" value="{{$mobile->enabled}}"
                                                @if($mobile->enabled == 1) checked @endif />
                                     </td>
                                     <td style="text-align: center;">
@@ -225,17 +227,17 @@
                         <tbody>
 
                         @if(isset($educator->educatorClasses))
-                            @foreach($educator->educatorClasses as $class)
+                            @foreach($educator->educatorClasses  as $index=> $class)
                                 <tr>
                                     <td>
-                                        <select name="educator[class_ids][]" class="select2" style="width: 80%;">
+                                        <select name="classSubject[{{$index}}][class_id]" class="select2" style="width: 80%;">
                                             @foreach($squads as $key => $squad )
                                                     <option value='{{$key}}' @if($key == $class->class_id) selected="selected" @endif>{{$squad}}</option>
                                             @endforeach
                                         </select>
                                     </td>
                                     <td>
-                                        <select name="educator[subject_ids][]" class="select2" style="width: 80%">
+                                        <select name="classSubject[{{$index}}][subject_id]" class="select2" style="width: 80%">
                                             @foreach($subjects as $key => $subject )
                                                 <option value='{{$key}}' @if($key == $class->subject_id) selected="selected" @endif>{{$subject}}</option>
                                             @endforeach
