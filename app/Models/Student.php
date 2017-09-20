@@ -195,7 +195,7 @@ class Student extends Model {
 
                 # 向部门用户表添加数据
                 $departmentUser = new DepartmentUser();
-                $departmentIds = $request->input('department_ids');
+                $departmentIds = $request->input('selectedDepartments');
                 $departmentUser ->storeByUserId($u->id, $departmentIds);
                 unset($departmentUser);
 
@@ -304,7 +304,7 @@ class Student extends Model {
                 }
 
                 # 向部门用户表添加数据
-                $departmentIds = $request->input('department_ids');
+                $departmentIds = $request->input('selectedDepartments');
                 $departmentUser = new DepartmentUser();
                 $departmentUser::where('user_id',$userId)->delete();
                 $departmentUser ->storeByUserId($userId, $departmentIds);
