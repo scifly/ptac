@@ -186,7 +186,9 @@ class EducatorController extends Controller {
         
         $educator = $this->educator->find($id);
         if (!$educator) { return $this->notFound(); }
-        return $educator->delete() ? $this->succeed() : $this->fail();
+
+        return $this->educator->remove($id, true)
+            ? parent::succeed() : parent::fail();
 
     }
     

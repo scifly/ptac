@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Facades\DatatableFacade;
+use App\Helpers\ModelTrait;
 use App\Http\Requests\EducatorRequest;
 use App\Models\EducatorClass;
 use Illuminate\Database\Eloquent\Builder;
@@ -39,7 +40,10 @@ use Mockery\Exception;
  * @property-read Team[] $teams
  */
 class Educator extends Model {
-    
+
+    use ModelTrait;
+
+
     protected $fillable = [
         'user_id', 'team_ids', 'school_id',
         'sms_quote', 'enabled',
@@ -219,6 +223,20 @@ class Educator extends Model {
                 $u = $user->create($userData);
                 unset($user);
 
+                $selectedDepartments = $request->input('selectedDepartments');
+                if(!empty($selectedDepartments)) {
+                    $departmentUserModel = new DepartmentUser();
+                        foreach ($selectedDepartments as $department) {
+                            $departmentData = [
+                                'user_id' => $u->id,
+                                'department_id' => $department,
+                                'enabled' => $userInputData['enabled']
+                            ];
+                            $departmentUserModel->create($departmentData);
+                        }
+                        unset($departmentUserModel);
+                }
+
                 $educator = $request->input('educator');
                 $educatorData = [
                     'user_id' => $u->id,
@@ -226,21 +244,25 @@ class Educator extends Model {
                     'sms_quote' => 0,
                     'enabled' =>$userInputData['enabled']
                 ];
+
                 $educatorId = $this->create($educatorData);
-                $classIds = $educator['class_ids'];
-                if($classIds) {
+                $classSubject = $request->input('classSubject');
+                if($classSubject) {
                     $educatorClass = new EducatorClass();
-                    foreach ($classIds as $key => $classId) {
-                        $educatorClassData = [
-                            'educator_id' => $educatorId->id,
-                            'class_id' => $classId,
-                            'subject_id' => $educator['subject_ids'][$key],
-                            'enabled' => $userInputData['enabled']
-                        ];
-                        $educatorClass->create($educatorClassData);
-                    }
+                        $classSubject = $this->array_unique_fb($classSubject);
+                        foreach ($classSubject as $key => $row) {
+
+                            $educatorClassData = [
+                                'educator_id' => $educatorId,
+                                'class_id' => $row['class_id'],
+                                'subject_id' => $row['subject_id'],
+                                'enabled' => $userInputData['enabled']
+                            ];
+                            $educatorClass->create($educatorClassData);
+                        }
                     unset($educatorClass);
                 }
+
 
                 $mobiles = $request->input('mobile');
                 if($mobiles) {
@@ -268,9 +290,9 @@ class Educator extends Model {
         try {
             $exception = DB::transaction(function() use ($request) {
 
-                $mobiles = $request->input('mobile');
+//                $mobiles = $request->input('mobile');
 //                dd($mobiles);
-//                dd($request->all());die;
+                dd($request->all());die;
 
                 $userInputData = $request->input('user');
                 $userData = [
@@ -292,6 +314,26 @@ class Educator extends Model {
                 $u = $user->where('id', $request->input('user_id'))->update($userData);
                 unset($user);
 
+                $selectedDepartments = $request->input('selectedDepartments');
+                if(!empty($selectedDepartments)) {
+                    $departmentUserModel = new DepartmentUser();
+
+                    $delDepartmentUser = $departmentUserModel->where('user_id', $request->input('user_id'))->delete();
+                    if($delDepartmentUser) {
+                        foreach ($selectedDepartments as $department) {
+                            $departmentData = [
+                                'user_id' => $request->input('user_id'),
+                                'department_id' => $department,
+                                'enabled' => $userInputData['enabled']
+
+                            ];
+                            $departmentUserModel->create($departmentData);
+                        }
+                        unset($departmentUserModel);
+                    }
+                }
+
+
                 $educator = $request->input('educator');
                 $educatorData = [
                     'user_id' => $request->input('user_id'),
@@ -299,6 +341,7 @@ class Educator extends Model {
                     'sms_quote' => 0,
                     'enabled' =>$userInputData['enabled']
                 ];
+
                 $educatorUpdate = $this->where('id', $request->input('id'))->update($educatorData);
                 $classSubject = $request->input('classSubject');
                 if($classSubject) {
@@ -326,7 +369,6 @@ class Educator extends Model {
                     $delMobile = $mobileModel->where('user_id', $request->input('user_id'))->delete();
                     if($delMobile) {
 //                        dd($mobiles);
-
                         foreach ($mobiles as $k => $mobile) {
                             $mobileData = [
                                 'user_id' => $request->input('user_id'),
@@ -361,6 +403,25 @@ class Educator extends Model {
             $csArray[$k]['subject_id']  =$tempArray[1];
         }
         return $csArray;
+    }
+
+    /**
+     * 删除教职员工
+     *
+     * @param $id
+     * @param bool $fireEvent
+     * @return bool
+     */
+    public function remove($id, $fireEvent = false) {
+
+        $school = $this->find($id);
+        $removed = $this->removable($this, $id) ? $school->delete() : false;
+        if ($removed && $fireEvent) {
+//            event(new SchoolDeleted($school));
+            return true;
+        }
+        return $removed ? true : false;
+
     }
 }
 
