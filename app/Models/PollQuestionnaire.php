@@ -55,21 +55,48 @@ class PollQuestionnaire extends Model {
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function user() { return $this->belongsTo('App\Models\User'); }
-    
-    public function pollquestionnaireAnswer() {
-        return $this->hasOne('App\Models\PollQuestionnaireAnswer');
-    }
-    
-    public function pollquestionnairePartcipant() {
-        return $this->hasOne('App\Models\PollQuestionnaireParticipant');
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function poll_questionnaire_answer() {
+        return $this->hasOne('App\Models\PollQuestionnaireAnswer','pq_id');
     }
 
-    public function datatable() {
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function poll_questionnaire_partcipant() {
+        return $this->hasOne('App\Models\PollQuestionnaireParticipant','pq_id');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function poll_questionnaire_subject() {
+        return $this->hasMany('App\Models\PollQuestionnaireSubject','pq_id');
+    }
+
+    /**
+     * 删除问卷
+     *
+     * @param $id
+     * @return bool|null
+     */
+    public function remove($id) {
+
+        $PollQuestionnaire = $this->find($id);
+        if (!$PollQuestionnaire) { return false; }
+        return $this->removable($this, $id) ? $PollQuestionnaire->delete() : false;
+
+    }
+
+    public function dataTable() {
 
         $columns = [
             ['db' => 'PollQuestionnaire.id', 'dt' => 0],
             ['db' => 'PollQuestionnaire.name', 'dt' => 1],
-            ['db' => 'School.name as schoolname', 'dt' => 2],
+            ['db' => 'School.name as school_name', 'dt' => 2],
             ['db' => 'User.realname', 'dt' => 3],
             ['db' => 'PollQuestionnaire.start', 'dt' => 4],
             ['db' => 'PollQuestionnaire.end', 'dt' => 5],

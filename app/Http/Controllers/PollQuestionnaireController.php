@@ -29,7 +29,7 @@ class PollQuestionnaireController extends Controller
     public function index() {
 
         if (Request::get('draw')) {
-            return response()->json($this->pollQuestionnaire->datatable());
+            return response()->json($this->pollQuestionnaire->dataTable());
         }
         return $this->output(__METHOD__);
 
@@ -78,16 +78,13 @@ class PollQuestionnaireController extends Controller
     /**
      * 编辑问卷
      * @param $id
-     * @return \Illuminate\Http\Response
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function edit($id) {
 
         $pollQuestionnaire = $this->pollQuestionnaire->find($id);
         if (!$pollQuestionnaire) { return $this->notFound(); }
-
-        return $this->output(__METHOD__, [
-            'pollQuestionnaire' => $pollQuestionnaire,
-        ]);
+        return $this->output(__METHOD__, ['pollQuestionnaire' => $pollQuestionnaire,]);
 
     }
 
@@ -115,7 +112,7 @@ class PollQuestionnaireController extends Controller
 
         $pollQuestionnaire = $this->pollQuestionnaire->find($id);
         if (!$pollQuestionnaire) { return $this->notFound(); }
-        return $pollQuestionnaire->delete() ? $this->succeed() : $this->fail();
+        return $pollQuestionnaire->remove($id) ? $this->succeed() : $this->fail('失败：该问卷存在有效关联数据，不能删除');
 
     }
 }
