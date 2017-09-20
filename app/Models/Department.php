@@ -105,7 +105,7 @@ class Department extends Model {
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function users() { return $this->belongsToMany('App\Models\Department', 'departments_users'); }
+    public function users() { return $this->belongsToMany('App\Models\User', 'departments_users'); }
     
     /**
      * 返回上级部门对象

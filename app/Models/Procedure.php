@@ -107,7 +107,7 @@ class Procedure extends Model {
         
         $procedure = $this->find($id);
         if (!$procedure) { return false; }
-        return $procedure->removable($this, $id) ? $procedure->delete() : false;
+        return $this->removable($this, $id) ? $procedure->delete() : false;
         
     }
     

@@ -22,6 +22,7 @@ trait ModelTrait {
                 }
             }
         }
+        dd($relations);
         foreach ($relations as $relation) {
             if ($instance->{$relation}) { return false; }
         }

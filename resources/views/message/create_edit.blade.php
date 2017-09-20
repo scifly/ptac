@@ -1,4 +1,4 @@
-<div class="box box-widget">
+    <div class="box box-widget">
     <div class="box-header with-border">
         @include('partials.form_header')
     </div>
@@ -95,7 +95,7 @@
             {{--'items' => $users--}}
             {{--])--}}
             <div class="form-group">
-                {!! Form::label('departmentId', '所属部门', [
+                {!! Form::label('departmentId', '接收者用户', [
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
@@ -120,13 +120,12 @@
                     <a id="add-department" class="btn btn-primary" style="margin-bottom: 5px">修改</a>
                 </div>
             </div>
-
-            @include('partials.multiple_select', [
-                'label' => '接收者用户',
-                'id' => 'r_user_id',
-                'items' => $users,
-                'selectedItems' => isset($selectedUsers) ? $selectedUsers : []
-            ])
+            {{--@include('partials.multiple_select', [--}}
+                {{--'label' => '接收者用户',--}}
+                {{--'id' => 'r_user_id',--}}
+                {{--'items' => $users,--}}
+                {{--'selectedItems' => isset($selectedUsers) ? $selectedUsers : []--}}
+            {{--])--}}
         </div>
     </div>
     @include('partials.form_buttons')

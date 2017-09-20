@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\MessageRequest;
 use App\Models\Department;
+use App\Models\DepartmentUser;
 use App\Models\Media;
 use App\Models\Message;
 use App\Models\User;
@@ -142,16 +143,46 @@ class MessageController extends Controller {
 
     }
 
-    public function userMessages() {
-        //判断用户是否为消息接收者
-        $userId = 1;
-        $messageTypes = ['成绩信息', '作业信息'];
-        $userReceiveMessages = Array();
-        foreach ($messageTypes as $messageType) {
-            $userReceiveMessages[$messageType] = $this->userReceiveMessages($userId, $messageType);
+    public function getDepartmentUsers() {
+        $departmentId = Request::all();
+        $departmentUsers = Array();
+        //找出此节点下的所有子节点的id
+        //$childIds = $this->departmentChildIds($departmentId['id']);
+        //dd($childIds);
+        $department = Department::find($departmentId['id']);
+        foreach ($department->users as $user) {
+            $departmentUsers[$user['id']] = $user['username'];
         }
-        dd($userReceiveMessages);
-        return view('message.wechat_messgae',[$userReceiveMessages]);
+
+        $dataView = view('message.wechat_message', ['departmentUsers' => $departmentUsers])->render();
+        return is_null($departmentUsers) ? $this->fail('该部门下暂时还没有人员') : $this->succeed($dataView);
+    }
+
+//    public function userMessages() {
+//        //判断用户是否为消息接收者
+//        $userId = 1;
+//        $messageTypes = ['成绩信息', '作业信息'];
+//        $userReceiveMessages = Array();
+//        foreach ($messageTypes as $messageType) {
+//            $userReceiveMessages[$messageType] = $this->userReceiveMessages($userId, $messageType);
+//        }
+//        dd($userReceiveMessages);
+//        return view('message.wechat_messgae', [$userReceiveMessages]);
+//    }
+
+    private function departmentChildIds($id) {
+        $childIds = Array();
+        $childIds[] = $id;
+
+        $firstIds = Department::where('parent_id', $id)->get(['id'])->toArray();
+        foreach ($firstIds as $firstId) {
+           $childIds[] = $firstId['id'];
+        }
+
+        dd($childIds);
+//        do{
+//        $firstIds = Department::where('parent_id', $id)->get('id');
+//        }while($firstIds['id']);
     }
 
     private function userReceiveMessages($userId, $messageType) {

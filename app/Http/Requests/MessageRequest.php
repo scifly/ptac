@@ -82,7 +82,7 @@ class MessageRequest extends FormRequest {
         $input['msl_id'] = 1;
         $input['media_ids'] = 1;
         $input['s_user_id'] = 1;
-        //dd($input);
+        dd($input);
         $this->replace($input);
     }
 }
