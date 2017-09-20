@@ -137,7 +137,7 @@
                                                type="hidden" value='{{$mobile->id}}'>
                                     </td>
                                     <td style="text-align: center;">
-                                        <input name="mobile[{{$key}}][isdefault]" value="{{$mobile->isdefault}}" type="radio" class="minimal"
+                                        <input name="mobile[isdefault]" value="{{$key}}" type="radio" class="minimal"
                                                @if($mobile->isdefault == 1) checked @endif/>
                                     </td>
                                     <td style="text-align: center;">
