@@ -53,99 +53,7 @@
                     {!! Form::label('user[gender]', '女') !!}
                 </div>
             </div>
-                <div class="form-group">
-                    <label for="mobile" class="col-sm-3 control-label">手机号码</label>
-                    <div class="col-sm-6">
-                        <table id="mobileTable" class="table-bordered table-responsive" style="width: 100%;">
-                            <thead>
-                            <tr>
-                                <td>手机号码</td>
-                                <td style="text-align: center;">默认</td>
-                                <td style="text-align: center;">启用</td>
-                                <td></td>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            @if(isset($student->user->mobiles))
-                                @foreach($student->user->mobiles as $key => $mobile)
-                                    <tr>
-                                        <td>
-                                            <input class="form-control"
-                                                   name="mobile[{{ $key }}][mobile]"
-                                                   placeholder="（请输入手机号码）"
-                                                   value='{{ $mobile->mobile }}'
-                                                   required
-                                                   pattern="/^1[0-9]{10}$/">
-                                            <input class="form-control"
-                                                   name="mobile[{{ $key }}][id]"
-                                                   type="hidden"
-                                                   value='{{ $mobile->id }}'>
-                                        </td>
-                                        <td style="text-align: center;">
-                                            <label for="mobile[isdefault]"></label>
-                                            <input name="mobile[isdefault]"
-                                                   value="{{ $key }}"
-                                                   id="mobile[isdefault]"
-                                                   type="radio"
-                                                   class="minimal"
-                                                   required
-                                                   @if($mobile->isdefault) checked @endif
-                                            />
-                                        </td>
-                                        <td style="text-align: center;">
-                                            <label for="mobile[{{ $key }}][enabled]"></label>
-                                            <input name="mobile[{{ $key }}][enabled]"
-                                                   value="{{ $mobile->enabled }}"
-                                                   id="mobile[{{ $key }}][enabled]"
-                                                   type="checkbox"
-                                                   class="minimal"
-                                                   @if($mobile->enabled) checked @endif
-                                            />
-                                        </td>
-                                        <td style="text-align: center;">
-                                            @if($key == sizeof($student->user->mobiles) - 1)
-                                                <span class="input-group-btn">
-                                                <button class="btn btn-box-tool btn-add btn-mobile-add" type="button">
-                                                    <i class="fa fa-plus text-blue"></i>
-                                                </button>
-                                            </span>
-                                            @else
-                                                <span class="input-group-btn">
-                                                <button class="btn btn-box-tool btn-remove btn-mobile-remove" type="button">
-                                                    <i class="fa fa-minus text-blue"></i>
-                                                </button>
-                                            </span>
-                                            @endif
-                                        </td>
-                                    </tr>
-                                @endforeach
-                                <input class="form-control"
-                                       type="hidden"
-                                       id="mobile-size"
-                                       value={{sizeof($student->user->mobiles)}}>
-                            @else
-                                <tr>
-                                    <td><input class="form-control" name="mobile[][mobile]" type="text"
-                                               placeholder="（请输入手机号码）"></td>
-                                    <td style="text-align: center;">
-                                        <input name="mobile[isdefault]" value="0" checked type="radio" class="minimal">
-                                    </td>
-                                    <td style="text-align: center;">
-                                        <input name="mobile[][enabled]"  checked type="checkbox" class="minimal">
-                                    </td>
-                                    <td style="text-align: center;">
-                                        <span class="input-group-btn">
-                                            <button class="btn btn-box-tool btn-add btn-mobile-add" type="button">
-                                                <i class="fa fa-plus text-blue"></i>
-                                            </button>
-                                        </span>
-                                    </td>
-                                </tr>
-                            @endif
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+            @include('student.mobile')
             <div class="form-group">
                 {{ Form::label('user[telephone]', '座机', [
                     'class' => 'col-sm-3 control-label'
@@ -174,31 +82,31 @@
             </div>
 
             <div class="form-group">
-                    {!! Form::label('departmentId', '所属部门', [
-                        'class' => 'col-sm-3 control-label'
-                    ]) !!}
-                    <div class="col-sm-6">
-                        <div id="department-nodes-checked">
-                            @if(isset($selectedDepartments))
-                                @foreach($selectedDepartments as $key => $department)
-                                    <button type="button" class="btn btn-flat" style="margin-right: 5px;margin-bottom: 5px">
-                                        <i class="{{$department['icon']}}"></i>
-                                        {{$department['text']}}
-                                        <i class="fa fa-close close-selected"></i>
-                                        <input type="hidden" name="selectedDepartments[]" value="{{$department['id']}}"/>
-                                    </button>
-                                @endforeach
+                {!! Form::label('departmentId', '所属部门', [
+                    'class' => 'col-sm-3 control-label'
+                ]) !!}
+                <div class="col-sm-6">
+                    <div id="department-nodes-checked">
+                        @if(isset($selectedDepartments))
+                            @foreach($selectedDepartments as $key => $department)
+                                <button type="button" class="btn btn-flat" style="margin-right: 5px;margin-bottom: 5px">
+                                    <i class="{{$department['icon']}}"></i>
+                                    {{$department['text']}}
+                                    <i class="fa fa-close close-selected"></i>
+                                    <input type="hidden" name="selectedDepartments[]" value="{{$department['id']}}"/>
+                                </button>
+                            @endforeach
 
-                            @endif
-                        </div>
-                        @if(isset($selectedDepartmentIds))
-                            <input type="hidden" id="selectedDepartmentIds"  value="{{$selectedDepartmentIds}}" />
-                        @else
-                            <input type="hidden" id="selectedDepartmentIds"  value="" />
                         @endif
-                        <a id="add-department" class="btn btn-primary" style="margin-bottom: 5px">修改</a>
                     </div>
+                    @if(isset($selectedDepartmentIds))
+                        <input type="hidden" id="selectedDepartmentIds" value="{{$selectedDepartmentIds}}"/>
+                    @else
+                        <input type="hidden" id="selectedDepartmentIds" value=""/>
+                    @endif
+                    <a id="add-department" class="btn btn-primary" style="margin-bottom: 5px">修改</a>
                 </div>
+            </div>
             @include('partials.single_select', [
                 'label' => '角色',
                 'id' => 'user[group_id]',
@@ -210,53 +118,33 @@
             'items' => $custodians,
             'selectedItems' => isset($selectedCustodians) ? $selectedCustodians : NULL
          ])
-                <div class="form-group">
-                    <label class="col-sm-3 control-label">监护人和学生之间的关系</label>
-                    <div class="col-sm-6">
-                        <table id="classTable" class="table-bordered table-responsive" style="width: 100%;">
-                            <thead>
-                            <tr>
-                                <th>监护人</th>
-                                <th>关系</th>
-                                <th></th>
-                            </tr>
-                            </thead>
-                            <tbody>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">监护人和学生之间的关系</label>
+                <div class="col-sm-6">
+                    <table id="classTable" class="table-bordered table-responsive" style="width: 100%;">
+                        <thead>
+                        <tr>
+                            <th>监护人</th>
+                            <th>关系</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
 
-                            @if(isset($student->custodians) && !empty($student->custodians))
-                                @foreach($student->custodians as $custodian)
-                                    <tr>
-                                        <td>
-                                            <select name="student_ids[]" class="select2" style="width: 80%;">
-                                                @foreach($custodians as $key => $name )
-                                                    <option value='{{$key}}' @if($key == $custodian['pivot']['custodian_id']) selected="selected" @endif>{{$name}}</option>
-                                                @endforeach
-                                            </select>
-                                        </td>
-                                        <td>
-                                            <input type="text" name="relationship[]" value="{{$relationship[$custodian['pivot']['custodian_id']]}}">
-                                        </td>
-                                        <td style="text-align: center">
-                                    <span class="input-group-btn">
-                                        <button class="btn btn-box-tool btn-class-add" type="button">
-                                            <i class="fa fa-plus text-blue"></i>
-                                        </button>
-                                    </span>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            @else
+                        @if(isset($student->custodians) && !empty($student->custodians))
+                            @foreach($student->custodians as $custodian)
                                 <tr>
                                     <td>
                                         <select name="student_ids[]" class="select2" style="width: 80%;">
                                             @foreach($custodians as $key => $name )
-                                                <option value='{{$key}}'>{{$name}}</option>
+                                                <option value='{{$key}}'
+                                                        @if($key == $custodian['pivot']['custodian_id']) selected="selected" @endif>{{$name}}</option>
                                             @endforeach
                                         </select>
                                     </td>
                                     <td>
-                                        <input type="text" name="relationship[]" class = 'form-control' required="true"
-                                               placeholder ='请填写监护人和学生之间的关系' >
+                                        <input type="text" name="relationship[]"
+                                               value="{{$relationship[$custodian['pivot']['custodian_id']]}}">
                                     </td>
                                     <td style="text-align: center">
                                     <span class="input-group-btn">
@@ -266,11 +154,33 @@
                                     </span>
                                     </td>
                                 </tr>
-                            @endif
-                            </tbody>
-                        </table>
-                    </div>
+                            @endforeach
+                        @else
+                            <tr>
+                                <td>
+                                    <select name="student_ids[]" class="select2" style="width: 80%;">
+                                        @foreach($custodians as $key => $name )
+                                            <option value='{{$key}}'>{{$name}}</option>
+                                        @endforeach
+                                    </select>
+                                </td>
+                                <td>
+                                    <input type="text" name="relationship[]" class='form-control' required="true"
+                                           placeholder='请填写监护人和学生之间的关系'>
+                                </td>
+                                <td style="text-align: center">
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-box-tool btn-class-add" type="button">
+                                            <i class="fa fa-plus text-blue"></i>
+                                        </button>
+                                    </span>
+                                </td>
+                            </tr>
+                        @endif
+                        </tbody>
+                    </table>
                 </div>
+            </div>
 
             @include('partials.single_select', [
                 'label' => '班级名称',

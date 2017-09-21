@@ -106,12 +106,13 @@ class CustodianController extends Controller {
         {
             $relationship[$value['student_id']] = $value['relationship'];
         }
-
+        $selectedStudents = [];
         foreach ($custodian->students as $key => $value)
         {
             $studentId = $this->student->find($value['id']);
             $selectedStudents[$studentId->id] = $studentId->user->realname;
         }
+
         if (!$custodian) {
             return $this->notFound();
         }

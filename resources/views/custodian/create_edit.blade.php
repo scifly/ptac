@@ -1,8 +1,8 @@
 {!! Form::open([
-    'method' => 'post',
-    'id' => 'formCustodian',
-    'class' => 'form-horizontal form-bordered',
-    'data-parsley-validate' => 'true'
+'method' => 'post',
+'id' => 'formCustodian',
+'class' => 'form-horizontal form-bordered',
+'data-parsley-validate' => 'true'
 ]) !!}
 <div class="box box-widget">
     <div class="box-header with-border">
@@ -31,27 +31,27 @@
             {{--</div>--}}
             <div class="form-group">
                 {{ Form::label('user[realname]', '姓名', [
-                    'class' => 'col-sm-3 control-label'
+                'class' => 'col-sm-3 control-label'
                 ]) }}
                 <div class="col-sm-6">
                     {{ Form::text('user[realname]', null, [
-                        'class' => 'form-control',
-                        'required' => 'true',
-                        'placeholder' => '(请填写真实姓名)',
-                        'data-parsley-length' => '[2, 255]'
+                    'class' => 'form-control',
+                    'required' => 'true',
+                    'placeholder' => '(请填写真实姓名)',
+                    'data-parsley-length' => '[2, 255]'
                     ]) }}
                 </div>
             </div>
             <div class="form-group">
                 {{ Form::label('user[english_name]', '英文名', [
-                    'class' => 'col-sm-3 control-label'
+                'class' => 'col-sm-3 control-label'
                 ]) }}
                 <div class="col-sm-6">
                     {{ Form::text('user[english_name]', null, [
-                        'class' => 'form-control',
-                        'placeholder' => '请填写英文名(可选)',
-                        'type' => 'string',
-                        'data-parsley-length' => '[2, 255]'
+                    'class' => 'form-control',
+                    'placeholder' => '请填写英文名(可选)',
+                    'type' => 'string',
+                    'data-parsley-length' => '[2, 255]'
                     ]) }}
                 </div>
             </div>
@@ -64,127 +64,35 @@
                     {!! Form::label('user[gender]', '女') !!}
                 </div>
             </div>
-            <div class="form-group">
-                <label for="mobile" class="col-sm-3 control-label">手机号码</label>
-                <div class="col-sm-6">
-                    <table id="mobileTable" class="table-bordered table-responsive" style="width: 100%;">
-                        <thead>
-                        <tr>
-                            <td>手机号码</td>
-                            <td style="text-align: center;">默认</td>
-                            <td style="text-align: center;">启用</td>
-                            <td></td>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        @if(isset($custodian->user->mobiles))
-                            @foreach($custodian->user->mobiles as $key => $mobile)
-                                <tr>
-                                    <td>
-                                        <input class="form-control"
-                                               name="mobile[{{ $key }}][mobile]"
-                                               placeholder="（请输入手机号码）"
-                                               value='{{ $mobile->mobile }}'
-                                               required
-                                               pattern="/^1[0-9]{10}$/">
-                                        <input class="form-control"
-                                               name="mobile[{{ $key }}][id]"
-                                               type="hidden"
-                                               value='{{ $mobile->id }}'>
-                                    </td>
-                                    <td style="text-align: center;">
-                                        <label for="mobile[isdefault]"></label>
-                                        <input name="mobile[isdefault]"
-                                               value="{{ $key }}"
-                                               id="mobile[isdefault]"
-                                               type="radio"
-                                               class="minimal"
-                                               required
-                                               @if($mobile->isdefault) checked @endif
-                                        />
-                                    </td>
-                                    <td style="text-align: center;">
-                                        <label for="mobile[{{ $key }}][enabled]"></label>
-                                        <input name="mobile[{{ $key }}][enabled]"
-                                               value="{{ $mobile->enabled }}"
-                                               id="mobile[{{ $key }}][enabled]"
-                                               type="checkbox"
-                                               class="minimal"
-                                               @if($mobile->enabled) checked @endif
-                                        />
-                                    </td>
-                                    <td style="text-align: center;">
-                                        @if($key == sizeof($custodian->user->mobiles) - 1)
-                                            <span class="input-group-btn">
-                                                <button class="btn btn-box-tool btn-add btn-mobile-add" type="button">
-                                                    <i class="fa fa-plus text-blue"></i>
-                                                </button>
-                                            </span>
-                                        @else
-                                            <span class="input-group-btn">
-                                                <button class="btn btn-box-tool btn-remove btn-mobile-remove"
-                                                        type="button">
-                                                    <i class="fa fa-minus text-blue"></i>
-                                                </button>
-                                            </span>
-                                        @endif
-                                    </td>
-                                </tr>
-                            @endforeach
-                            <input class="form-control"
-                                   type="hidden"
-                                   id="mobile-size"
-                                   value={{sizeof($custodian->user->mobiles)}}>
-                        @else
-                            <tr>
-                                <td><input class="form-control" name="mobile[][mobile]" type="text"
-                                           placeholder="（请输入手机号码）"></td>
-                                <td style="text-align: center;">
-                                    <input name="mobile[isdefault]" value="0" checked type="radio" class="minimal">
-                                </td>
-                                <td style="text-align: center;">
-                                    <input name="mobile[][enabled]" checked type="checkbox" class="minimal">
-                                </td>
-                                <td style="text-align: center;">
-                                        <span class="input-group-btn">
-                                            <button class="btn btn-box-tool btn-add btn-mobile-add" type="button">
-                                                <i class="fa fa-plus text-blue"></i>
-                                            </button>
-                                        </span>
-                                </td>
-                            </tr>
-                        @endif
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+
+            @include('custodian.mobile')
             <div class="form-group">
                 {{ Form::label('user[telephone]', '座机', [
-                    'class' => 'col-sm-3 control-label'
+                'class' => 'col-sm-3 control-label'
                 ]) }}
                 <div class="col-sm-6">
                     {{ Form::text('user[telephone]', null, [
-                        'class' => 'form-control',
-                        'placeholder' => '请输入座机号码(可选}',
+                    'class' => 'form-control',
+                    'placeholder' => '请输入座机号码(可选}',
                     ]) }}
                 </div>
             </div>
             <div class="form-group">
                 {{ Form::label('user[email]', '邮箱', [
-                    'class' => 'col-sm-3 control-label'
+                'class' => 'col-sm-3 control-label'
                 ]) }}
                 <div class="col-sm-6">
                     {{ Form::text('user[email]', null, [
-                        'class' => 'form-control',
-                        'placeholder' => '(请输入电子邮件地址)',
-                        'maxlength' => '255',
-                        'data-parsley-type'=>"email"
+                    'class' => 'form-control',
+                    'placeholder' => '(请输入电子邮件地址)',
+                    'maxlength' => '255',
+                    'data-parsley-type'=>"email"
                     ]) }}
                 </div>
             </div>
             <div class="form-group">
                 {!! Form::label('departmentId', '所属部门', [
-                    'class' => 'col-sm-3 control-label'
+                'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
                     <div id="department-nodes-checked">
@@ -209,9 +117,9 @@
                 </div>
             </div>
             @include('partials.single_select', [
-                'label' => '角色',
-                'id' => 'user[group_id]',
-                'items' => $groups,
+            'label' => '角色',
+            'id' => 'user[group_id]',
+            'items' => $groups,
             ])
             <div class="form-group">
                 <label class="col-sm-3 control-label">监护人和学生之间的关系</label>
@@ -242,11 +150,11 @@
                                                value="{{$relationship[$student['pivot']['student_id']]}}">
                                     </td>
                                     <td style="text-align: center">
-                                    <span class="input-group-btn">
-                                        <button class="btn btn-box-tool btn-class-add" type="button">
-                                            <i class="fa fa-plus text-blue"></i>
-                                        </button>
-                                    </span>
+<span class="input-group-btn">
+    <button class="btn btn-box-tool btn-class-add" type="button">
+        <i class="fa fa-plus text-blue"></i>
+    </button>
+</span>
                                     </td>
                                 </tr>
                             @endforeach
@@ -264,11 +172,11 @@
                                            placeholder="">
                                 </td>
                                 <td style="text-align: center">
-                                    <span class="input-group-btn">
-                                        <button class="btn btn-box-tool btn-class-add" type="button">
-                                            <i class="fa fa-plus text-blue"></i>
-                                        </button>
-                                    </span>
+<span class="input-group-btn">
+    <button class="btn btn-box-tool btn-class-add" type="button">
+        <i class="fa fa-plus text-blue"></i>
+    </button>
+</span>
                                 </td>
                             </tr>
                         @endif
@@ -282,15 +190,15 @@
                 ]) }}
                 <div class="col-sm-6">
                     {!! Form::text('expiry', null, [
-                        'class' => 'form-control expiry-date',
+                    'class' => 'form-control expiry-date',
                     ]) !!}
                 </div>
             </div>
 
             @include('partials.enabled', [
-                'label' => '是否启用',
-                'id' => 'user[enabled]',
-                'value' => isset($custodian->user->enabled) ? $custodian->user->enabled : NULL
+            'label' => '是否启用',
+            'id' => 'user[enabled]',
+            'value' => isset($custodian->user->enabled) ? $custodian->user->enabled : NULL
             ])
         </div>
     </div>
