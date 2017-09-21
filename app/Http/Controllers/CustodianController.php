@@ -67,7 +67,7 @@ class CustodianController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(CustodianRequest $request) {
-        dd($this->custodian->store($request));
+
         return $this->custodian->store($request) ? $this->succeed() : $this->fail();
         
     }
@@ -134,7 +134,7 @@ class CustodianController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(CustodianRequest $request, $id) {
-        dd($this->custodian->modify($request,$id));
+
         return $this->custodian->modify($request,$id) ? $this->succeed() : $this->fail();
         
     }

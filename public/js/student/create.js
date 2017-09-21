@@ -4,7 +4,7 @@ var n = 0;
 var $tbody = $("#mobileTable").find("tbody");
 var id = $('#id').val();
 var $formEducator = $('#formStudent');
-$(document).off('click', '.btn-add');
+$(document).off('click', '.btn-mobile-add');
 $(document).off('click', '.btn-remove');
 // 手机号
 $(document).on('click', '.btn-mobile-add', function (e) {

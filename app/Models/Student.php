@@ -132,7 +132,6 @@ class Student extends Model {
                 $custodianIds = $request->input('custodian_ids');
                 # 获取与监护人的关系
                 $relationships = $request->input('relationship');
-
                 foreach ($custodianIds as $key=>$studentId)
                 {
                     # 监护人ID和监护人关系对应的数组

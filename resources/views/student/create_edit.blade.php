@@ -112,12 +112,6 @@
                 'id' => 'user[group_id]',
                 'items' => $groups,
             ])
-            @include('partials.multiple_select', [
-            'label' => '监护人',
-            'id' => 'custodian_ids',
-            'items' => $custodians,
-            'selectedItems' => isset($selectedCustodians) ? $selectedCustodians : NULL
-         ])
             <div class="form-group">
                 <label class="col-sm-3 control-label">监护人和学生之间的关系</label>
                 <div class="col-sm-6">
@@ -158,7 +152,7 @@
                         @else
                             <tr>
                                 <td>
-                                    <select name="student_ids[]" class="select2" style="width: 80%;">
+                                    <select name="custodian_ids[]" class="select2" style="width: 80%;">
                                         @foreach($custodians as $key => $name )
                                             <option value='{{$key}}'>{{$name}}</option>
                                         @endforeach
