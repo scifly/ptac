@@ -65,7 +65,7 @@
                 </div>
             </div>
 
-            @include('custodian.mobile')
+            @include('educator.mobile')
             <div class="form-group">
                 {{ Form::label('user[telephone]', '座机', [
                 'class' => 'col-sm-3 control-label'

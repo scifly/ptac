@@ -129,6 +129,7 @@ class StudentController extends Controller {
         if (!$student) { return $this->notFound(); }
 
         return $this->output(__METHOD__, [
+            'mobiles' => $student->user->mobiles,
             'student' => $student,
             'selectedDepartmentIds' => implode(',', $selectedDepartmentIds),
             'selectedDepartments' => $selectedDepartments,

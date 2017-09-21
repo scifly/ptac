@@ -54,7 +54,7 @@ class CustodianRequest extends FormRequest {
     protected function prepareForValidation() {
 
         $input = $this->all();
-        dd($input);
+
         if (isset($input['user']['enabled']) && $input['user']['enabled'] === 'on') {
             $input['user']['enabled'] = 1;
         }

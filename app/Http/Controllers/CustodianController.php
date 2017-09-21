@@ -117,6 +117,7 @@ class CustodianController extends Controller {
             return $this->notFound();
         }
         return $this->output(__METHOD__, [
+            'mobiles' => $custodian->user->mobiles,
             'custodian' => $custodian,
             'selectedDepartmentIds' => implode(',', $selectedDepartmentIds),
             'selectedDepartments' => $selectedDepartments,
