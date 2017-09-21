@@ -47,6 +47,7 @@ use Illuminate\Database\Eloquent\Model;
  * @mixin \Eloquent
  * @property-read \App\Models\Educator $educator
  * @property-read \App\Models\Subject $subject
+ * @property-read \App\Models\User $user
  * @property string $title 事件名称
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Event whereTitle($value)
  */
@@ -71,6 +72,28 @@ class Event extends Model {
         'updated_at',
         'enabled'
     ];
+    
+    /**
+     * 返回事件创建者的用户对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function user() { return $this->belongsTo('App\Models\User'); }
+    
+    /**
+     * 返回课程表事件对应的教职员工对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function educator() { return $this->belongsTo('App\Models\Educator'); }
+    
+    /**
+     * 返回课程表事件对应的科目对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function subject() { return $this->belongsTo('App\Models\Subject'); }
+    
 
     public function educator() {
         return $this->belongsTo('App\Models\Educator');

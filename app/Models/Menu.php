@@ -53,9 +53,10 @@ use Mockery\Exception;
  * @property-read Action|null $action
  * @property-read School $school
  * @property int $menu_type_id 所属菜单类型ID
- * @property-read \App\Models\MenuType $menuType
- * @property-read \App\Models\Company $company
- * @property-read \App\Models\Corp $corp
+ * @property-read MenuType $menuType
+ * @property-read Company $company
+ * @property-read Corp $corp
+ * @property-read \App\Models\Media|null $media
  */
 class Menu extends Model {
     
@@ -173,11 +174,7 @@ class Menu extends Model {
      */
     public function children() {
         
-        return $this->hasMany(
-            'App\Models\Menu',
-            'parent_id',
-            'id'
-        );
+        return $this->hasMany('App\Models\Menu', 'parent_id', 'id');
         
     }
     
@@ -413,10 +410,10 @@ class Menu extends Model {
                     $text = sprintf($menuColor, 'darkblue', $name);
                     $type = 'company'; break;
                 case '企业': 
-                    $text = sprintf($menuColor, 'blue', $name); 
+                    $text = sprintf($menuColor, 'darkgreen', $name);
                     $type = 'corp'; break;
                 case '学校': 
-                    $text = sprintf($menuColor, 'darkgreen', $name); 
+                    $text = sprintf($menuColor, 'purple', $name);
                     $type = 'school'; break;
                 default: 
                     $text = $name; 

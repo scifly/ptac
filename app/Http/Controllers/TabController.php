@@ -48,7 +48,9 @@ class TabController extends Controller {
      */
     public function create() {
 
-        return parent::output(__METHOD__, ['menus' => $this->menu->leaves(1)]);
+        return parent::output(__METHOD__, [
+            'menus' => $this->menu->leaves(1)
+        ]);
         
     }
     
@@ -60,7 +62,8 @@ class TabController extends Controller {
      */
     public function store(TabRequest $request) {
     
-        return $this->tab->store($request) ? parent::succeed() : parent::fail();
+        return $this->tab->store($request->all())
+            ? parent::succeed() : parent::fail();
         
     }
     
@@ -112,7 +115,8 @@ class TabController extends Controller {
         
         $tab = $this->tab->find($id);
         if (!$tab) { return parent::notFound(); }
-        return $this->tab->modify($request, $id) ? parent::succeed() : parent::fail();
+        return $this->tab->modify($request->all(), $id)
+            ? parent::succeed() : parent::fail();
         
     }
     
@@ -126,7 +130,8 @@ class TabController extends Controller {
 
         $tab = $this->tab->find($id);
         if (!$tab) { return parent::notFound(); }
-        return $this->tab->remove($id) ? parent::succeed() : parent::fail();
+        return $this->tab->remove($id)
+            ? parent::succeed() : parent::fail();
         
     }
     

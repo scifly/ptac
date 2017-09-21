@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\ControllerTrait;
 use App\Http\Requests\ProcedureLogRequest;
 use App\Models\ProcedureLog;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Storage;
@@ -16,7 +18,7 @@ use App\Helpers\ControllerTrait;
  * @package App\Http\Controllers
  */
 class ProcedureLogController extends Controller {
-
+    
     use ControllerTrait;
 
     protected $procedureLog;
@@ -210,7 +212,7 @@ class ProcedureLogController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function uploadMedias() {
-        
+
         $files = Request::file('medias');
         if (empty($files)) {
             $result['statusCode'] = 500;

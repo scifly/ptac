@@ -25,18 +25,24 @@ class HomeController extends Controller {
     protected $action;
     protected $tab;
     
-    
-    public function __construct(Menu $menu, Action $action, Tab $tab, Department $department) {
+    public function __construct(
+        Menu $menu,
+        Action $action,
+        Tab $tab,
+        Department $department
+    ) {
+        
         $this->menu = $menu;
         $this->action = $action;
         $this->tab = $tab;
         $this->department = $department;
+        
     }
     
     public function index() {
     
-        $this->action->scan();
-        $this->tab->scan();
+        // $this->action->scan();
+        // $this->tab->scan();
         $rootMenu = $this->menu->find(1);
         $menu = NULL;
         if (!$rootMenu) {
@@ -96,11 +102,13 @@ class HomeController extends Controller {
                 break;
             }
         }
-        // dd($tabArray);
         if ($isTabLegit) {
             # 刷新页面时打开当前卡片, 不一定是第一个卡片
             if (session('tabId')) {
-                $key = array_search('tab_' . session('tabId'), array_column($tabArray, 'id'));
+                $key = array_search(
+                    'tab_' . session('tabId'),
+                    array_column($tabArray, 'id')
+                );
                 $tabArray[$key]['active'] = true;
                 if (!session('tabChanged') && !session('menuChanged')) {
                     $tabArray[$key]['url'] = session('tabUrl');

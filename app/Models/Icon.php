@@ -28,6 +28,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|Icon whereUpdatedAt($value)
  * @mixin \Eloquent
  * @property-read Collection|Menu[] $menus
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tab[] $tabs
  */
 class Icon extends Model {
     
