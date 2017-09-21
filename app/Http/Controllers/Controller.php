@@ -15,9 +15,6 @@ use Illuminate\Support\Facades\Session;
 class Controller extends BaseController {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
     
-    protected $menu;
-    protected $menuId;
-    
     const HTTP_STATUSCODE_OK = 200;
     const HTTP_STATUSCODE_BAD_REQUEST = 400;
     const HTTP_STATUSCODE_UNAUTHORIZED = 401;
@@ -75,12 +72,13 @@ class Controller extends BaseController {
             Session::forget('tabChanged');
         }
         session(['tabUrl' => Request::path()]);
-        session(['tabJs' => $action->js]);
         
         if ($menu) {
             $params['breadcrumb'] = $menu->name . ' / ' . $tab->name . ' / ' . $action->name;
         } else {
+            // Todo: redirect to login
             $menuName = session('menuName');
+            // $menuName = $this->menuName;
             $params['breadcrumb'] =
                 "<span style=\"color: red\">菜单 - <strong>{$menuName}</strong> - 配置错误, 请检查后</span>" .
                 '<a href="' . session('pageUrl') . '">重试</a>';

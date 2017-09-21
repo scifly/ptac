@@ -38,6 +38,7 @@ use Mockery\Exception;
  * @property-read Squad[] $classes
  * @property-read EducatorClass $educatorClass
  * @property-read Team[] $teams
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\EducatorClass[] $educatorClasses
  */
 class Educator extends Model {
 

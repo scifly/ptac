@@ -44,6 +44,20 @@ use Mockery\Exception;
  * @mixin \Eloquent
  * @property-read \App\Models\MessageType $messageType
  * @property-read \App\Models\User $user
+ * @property int $comm_type_id 通信方式id
+ * @property int $app_id 应用id
+ * @property int $msl_id 消息发送批次id
+ * @property int $s_user_id 发送者用户ID
+ * @property int $r_user_id 接收者用户IDs
+ * @property int $readed 是否已读
+ * @property int $sent 消息发送是否成功
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Message whereAppId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Message whereCommTypeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Message whereMslId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Message whereRUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Message whereReaded($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Message whereSUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Message whereSent($value)
  */
 class Message extends Model {
     //

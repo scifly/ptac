@@ -25,6 +25,7 @@ use Illuminate\Database\Eloquent\Model;
  * @mixin \Eloquent
  * @property-read Exam $Exam
  * @property-read Exam[] $exams
+ * @property-read \App\Models\School $school
  */
 class ExamType extends Model {
 

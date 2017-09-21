@@ -29,6 +29,7 @@ use Illuminate\Database\Eloquent\Model;
  * @mixin \Eloquent
  * @property-read EducatorAppeal $educatorAppeal
  * @property-read EducatorAttendanceSetting $educatorAttendanceSetting
+ * @property-read \App\Models\Educator $educator
  */
 class EducatorAttendance extends Model {
 

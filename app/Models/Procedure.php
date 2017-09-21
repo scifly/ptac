@@ -29,6 +29,8 @@ use Illuminate\Database\Eloquent\Model;
  * @mixin \Eloquent
  * @property-read \App\Models\ProcedureType $procedureType
  * @property-read \App\Models\School $school
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\ProcedureLog[] $procedureLogs
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\ProcedureStep[] $procedureSteps
  */
 class Procedure extends Model {
     

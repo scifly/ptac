@@ -24,6 +24,7 @@ use App\Facades\DatatableFacade as Datatable;
  * @method static Builder|MessageType whereUpdatedAt($value)
  * @mixin \Eloquent
  * @property-read Message[] $message
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Message[] $messages
  */
 class MessageType extends Model {
 

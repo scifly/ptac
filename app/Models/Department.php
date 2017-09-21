@@ -356,14 +356,12 @@ class Department extends Model {
     public function getSchoolId($id) {
         
         $parent = $this->find($id)->parent;
-        $schoolId = 0;
         if ($parent->departmentType->name == '学校') {
             $departmentId = $parent->id;
-            $schoolId = School::whereDepartmentId($departmentId)->first()->id;
+            return School::whereDepartmentId($departmentId)->first()->id;
         } else {
-            $this->getSchoolId($parent->id);
+            return $this->getSchoolId($parent->id);
         }
-        return $schoolId;
         
     }
     
@@ -376,14 +374,12 @@ class Department extends Model {
     public function getGradeId($id) {
         
         $parent = $this->find($id)->parent;
-        $gradeId = 0;
         if ($parent->departmentType->name == '年级') {
             $departmentId = $parent->id;
-            $gradeId = Grade::whereDepartmentId($departmentId)->first()->id;
+            return Grade::whereDepartmentId($departmentId)->first()->id;
         } else {
-            $this->getGradeId($parent->id);
+            return $this->getGradeId($parent->id);
         }
-        return $gradeId;
     
     }
     

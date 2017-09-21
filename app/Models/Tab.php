@@ -227,16 +227,16 @@ HTML;
     /**
      * 保存卡片
      *
-     * @param TabRequest $request
+     * @param array $data
      * @return bool|mixed
      */
-    public function store(TabRequest $request) {
+    public function store(array $data) {
         
         try {
-            $exception = DB::transaction(function() use ($request) {
-                $t = $this->create($request->all());
+            $exception = DB::transaction(function() use ($data) {
+                $t = $this->create($data);
                 $menuTab = new MenuTab();
-                $menuIds = $request->input('menu_ids', []);
+                $menuIds = $data['menu_ids'];
                 $menuTab->storeByTabId($t->id, $menuIds);
             });
             return is_null($exception) ? true : $exception;
@@ -249,21 +249,21 @@ HTML;
     /**
      * 更新指定的卡片
      *
-     * @param Request $request
-     * @param $tabId
+     * @param array $data
+     * @param $id
      * @return bool|mixed
      */
-    public function modify(Request $request, $tabId) {
+    public function modify(array $data, $id) {
         
-        $tab = $this->find($tabId);
+        $tab = $this->find($id);
         if (!isset($tab)) { return false; }
         try {
-            $exception = DB::transaction(function() use($request, $tabId, $tab) {
-                $tab->update($request->all());
-                $menuIds = $request->input('menu_ids', []);
+            $exception = DB::transaction(function() use($data, $id, $tab) {
+                $tab->update($data);
+                $menuIds = $data['menu_ids'];
                 $menuTab = new MenuTab();
-                $menuTab::whereTabId($tabId)->delete();
-                $menuTab->storeByTabId($tabId, $menuIds);
+                $menuTab::whereTabId($id)->delete();
+                $menuTab->storeByTabId($id, $menuIds);
             });
             
             return is_null($exception) ? true : $exception;
@@ -276,21 +276,20 @@ HTML;
     /**
      * 移除指定的卡片
      *
-     * @param $tabId
+     * @param $id
      * @return bool|mixed
      */
-    public function remove($tabId) {
+    public function remove($id) {
         
-        $tab = $this->find($tabId);
+        $tab = $this->find($id);
         if (!isset($tab)) { return false; }
         try {
-            $exception = DB::transaction(function() use ($tabId, $tab) {
+            $exception = DB::transaction(function() use ($id, $tab) {
                 # 删除指定的卡片记录
                 $tab->delete();
                 # 删除与指定卡片绑定的菜单记录
-                MenuTab::whereTabId($tabId)->delete();
+                MenuTab::whereTabId($id)->delete();
             });
-            
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
             return false;

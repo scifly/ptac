@@ -27,6 +27,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|Media whereUpdatedAt($value)
  * @property-read WapSiteModule $wapsitemoudle
  * @property-read WsmArticle $wasmarticle
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Menu[] $menus
  */
 class Media extends Model {
 
