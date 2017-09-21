@@ -143,20 +143,35 @@ class MessageController extends Controller {
 
     }
 
-    public function getDepartmentUsers() {
-        $departmentId = Request::all();
-        $departmentUsers = Array();
-        //找出此节点下的所有子节点的id
-        //$childIds = $this->departmentChildIds($departmentId['id']);
-        //dd($childIds);
-        $department = Department::find($departmentId['id']);
-        foreach ($department->users as $user) {
-            $departmentUsers[$user['id']] = $user['username'];
-        }
-
-        $dataView = view('message.wechat_message', ['departmentUsers' => $departmentUsers])->render();
-        return is_null($departmentUsers) ? $this->fail('该部门下暂时还没有人员') : $this->succeed($dataView);
+    public function getDepartmentUsers(){
+       dd($this->checkRole());
     }
+
+    private function checkRole($userId=1){
+        $user = User::find($userId);
+        $departments = Array();
+        foreach ($user->departments as $department){
+            $departments[$department['id']] = $department['parent_id'];
+        }
+        dd($departments);
+    }
+
+//    public function getDepartmentUsers() {
+//        $input = Request::all();
+//        $departmentUsers = Array();
+//        //找出此部门节点下的所有子节点的id
+//        $departmentIds = $this->departmentChildIds($input['id']);
+//        $departmentIds[] = $input['id'];
+//        foreach ($departmentIds as $departmentId) {
+//            $department = Department::find($departmentId);
+//            foreach ($department->users as $user) {
+//                $departmentUsers[$user['id']] = $user['username'];
+//            }
+//        }
+//        //dd($departmentUsers);
+//        $dataView = view('message.wechat_message', ['departmentUsers' => $departmentUsers])->render();
+//        return is_null($departmentUsers) ? $this->fail('该部门下暂时还没有人员') : $this->succeed($dataView);
+//    }
 
 //    public function userMessages() {
 //        //判断用户是否为消息接收者
@@ -170,19 +185,21 @@ class MessageController extends Controller {
 //        return view('message.wechat_messgae', [$userReceiveMessages]);
 //    }
 
+    /**
+     * 获取该部门下所有部门id
+     * @param $id
+     * @return array
+     */
     private function departmentChildIds($id) {
-        $childIds = Array();
-        $childIds[] = $id;
-
+        static $childIds = Array();
         $firstIds = Department::where('parent_id', $id)->get(['id'])->toArray();
-        foreach ($firstIds as $firstId) {
-           $childIds[] = $firstId['id'];
+        if ($firstIds) {
+            foreach ($firstIds as $firstId) {
+                $childIds[] = $firstId['id'];
+                $this->departmentChildIds($firstId['id']);
+            }
         }
-
-        dd($childIds);
-//        do{
-//        $firstIds = Department::where('parent_id', $id)->get('id');
-//        }while($firstIds['id']);
+        return $childIds;
     }
 
     private function userReceiveMessages($userId, $messageType) {
