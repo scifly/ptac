@@ -36,11 +36,11 @@ class EducatorRequest extends FormRequest {
         $rules =  [
 
             'educator.school_id' => 'required|integer',
-            'classSubject' => 'required|array',
+//            'classSubject' => 'required|array',
         //            'educator.subject_ids' => 'required|array',
             'user.group_id' => 'required|integer',
-            'user.username' => 'required|string|unique:users,username,' .
-                $this->input('user_id') . ',id',
+//            'user.username' => 'required|string|unique:users,username,' .
+//                $this->input('user_id') . ',id',
             'user.realname' => 'required|string',
             'user.gender' => 'required|boolean',
             'user.enabled' => 'required|boolean',
@@ -107,6 +107,7 @@ class EducatorRequest extends FormRequest {
         if (!isset($input['user']['gender'])) {
             $input['user']['gender'] = 0;
         }
+
         if (isset($input['mobile'])) {
             $defaultIndex = $input['mobile']['isdefault'];
             unset($input['mobile']['isdefault']);
@@ -123,6 +124,8 @@ class EducatorRequest extends FormRequest {
                 }
             }
         }
+
+
 //        dd($input['mobile']);
 
 //        dd($this->input('mobile.*.mobile'));
