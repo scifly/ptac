@@ -11,8 +11,8 @@
             </tr>
             </thead>
             <tbody>
-            @if(isset($educator->user->mobiles))
-                @foreach($educator->user->mobiles as $key => $mobile)
+            @if(isset($mobiles))
+                @foreach($mobiles as $key => $mobile)
                     <tr>
                         <td>
                             <input class="form-control"
