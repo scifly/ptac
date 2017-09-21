@@ -74,32 +74,34 @@
                     ]) !!}
                 </div>
             </div>
-            <div class="form-group">
-                {!! Form::label('user[password]', '密码', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
-                <div class="col-sm-6">
-                    {!! Form::password('user[password]', [
-                        'class' => 'form-control',
-                        'placeholder' => '(请输入密码)',
-                        'required' => 'true',
-                        'minlength' => '8'
+            @if ( !isset($educator['id']))
+                <div class="form-group">
+                    {!! Form::label('user[password]', '密码', [
+                        'class' => 'col-sm-3 control-label'
                     ]) !!}
+                    <div class="col-sm-6">
+                        {!! Form::password('user[password]', [
+                            'class' => 'form-control',
+                            'placeholder' => '(请输入密码)',
+                            'required' => 'true',
+                            'minlength' => '8'
+                        ]) !!}
+                    </div>
                 </div>
-            </div>
-            <div class="form-group">
-                {!! Form::label('user[password_confirm]', '确认密码', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
-                <div class="col-sm-6">
-                    {!! Form::password('user[password_confirm]', [
-                        'class' => 'form-control',
-                        'placeholder' => '(请确认密码)',
-                        'required' => 'true',
-                        'minlength' => '8'
+                <div class="form-group">
+                    {!! Form::label('user[password_confirm]', '确认密码', [
+                        'class' => 'col-sm-3 control-label'
                     ]) !!}
+                    <div class="col-sm-6">
+                        {!! Form::password('user[password_confirm]', [
+                            'class' => 'form-control',
+                            'placeholder' => '(请确认密码)',
+                            'required' => 'true',
+                            'minlength' => '8'
+                        ]) !!}
+                    </div>
                 </div>
-            </div>
+            @endif
             <div class="form-group">
                 {{ Form::label('user[telephone]', '座机', [
                     'class' => 'col-sm-3 control-label'
@@ -123,7 +125,7 @@
                     ]) !!}
                 </div>
             </div>
-            @include('educator.mobile')
+            @include('partials.mobile')
             @include('partials.single_select', [
                 'label' => '角色',
                 'id' => 'user[group_id]',

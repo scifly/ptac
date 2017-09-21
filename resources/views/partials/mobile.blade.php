@@ -48,18 +48,18 @@
                             />
                         </td>
                         <td style="text-align: center;">
-                            @if($key == sizeof($educator->user->mobiles) - 1)
+                            @if($key == sizeof($mobiles) - 1)
                                 <span class="input-group-btn">
-                                                <button class="btn btn-box-tool btn-add btn-mobile-add" type="button">
-                                                    <i class="fa fa-plus text-blue"></i>
-                                                </button>
-                                            </span>
+                                    <button class="btn btn-box-tool btn-add btn-mobile-add" type="button">
+                                        <i class="fa fa-plus text-blue"></i>
+                                    </button>
+                                </span>
                             @else
                                 <span class="input-group-btn">
-                                                <button class="btn btn-box-tool btn-remove btn-mobile-remove" type="button">
-                                                    <i class="fa fa-minus text-blue"></i>
-                                                </button>
-                                            </span>
+                                    <button class="btn btn-box-tool btn-remove btn-mobile-remove" type="button">
+                                        <i class="fa fa-minus text-blue"></i>
+                                    </button>
+                                </span>
                             @endif
                         </td>
                     </tr>
@@ -67,7 +67,7 @@
                 <input class="form-control"
                        type="hidden"
                        id="mobile-size"
-                       value={{sizeof($educator->user->mobiles)}}>
+                       value={{sizeof($mobiles)}}>
             @else
                 <tr>
                     <td>
