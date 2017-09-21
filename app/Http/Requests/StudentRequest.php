@@ -81,7 +81,7 @@ class StudentRequest extends FormRequest {
     protected function prepareForValidation() {
         
         $input = $this->all();
-
+        dd($input);
         if (isset($input['student']['oncampus']) && $input['student']['oncampus'] === 'on') {
             $input['student']['oncampus'] = 1;
         }

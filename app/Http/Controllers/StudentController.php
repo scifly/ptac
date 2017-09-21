@@ -146,7 +146,6 @@ class StudentController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(StudentRequest $request, $id) {
-        dd($this->student->modify($request,$id));
         return $this->student->modify($request,$id) ? $this->succeed() : $this->fail();
         
     }

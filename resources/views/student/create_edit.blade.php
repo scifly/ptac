@@ -39,7 +39,7 @@
                     {{ Form::text('user[english_name]', null, [
                         'class' => 'form-control',
                         'placeholder' => '请填写英文名(可选)',
-                        'data-parsley-type' => 'string',
+                        'type' => 'string',
                         'data-parsley-length' => '[2, 255]'
                     ]) }}
                 </div>
@@ -204,12 +204,12 @@
                 'id' => 'user[group_id]',
                 'items' => $groups,
             ])
-            {{--@include('partials.multiple_select', [--}}
-            {{--'label' => '监护人',--}}
-            {{--'id' => 'custodian_ids',--}}
-            {{--'items' => $custodian,--}}
-            {{--'selectedItems' => isset($selectedCustodians) ? $selectedCustodians : NULL--}}
-         {{--])--}}
+            @include('partials.multiple_select', [
+            'label' => '监护人',
+            'id' => 'custodian_ids',
+            'items' => $custodians,
+            'selectedItems' => isset($selectedCustodians) ? $selectedCustodians : NULL
+         ])
                 <div class="form-group">
                     <label class="col-sm-3 control-label">监护人和学生之间的关系</label>
                     <div class="col-sm-6">
@@ -271,34 +271,7 @@
                         </table>
                     </div>
                 </div>
-            {{--<div class="form-group addInput">--}}
-                {{--@if(isset($custodianStudent)&& !empty($custodianStudent))--}}
-                    {{--@foreach($custodianStudent as $key=>$value)--}}
-                        {{--@if($key==0)--}}
-                            {{--<label for="relationship" class="col-sm-3 control-label">和监护人之间的关系</label>--}}
-                        {{--@endif--}}
-                        {{--<div class="entry input-group col-sm-6 col-sm-offset-3">--}}
-                            {{--<input type="text" class="form-control" name="relationship[]"--}}
-                                   {{--value="{{$value['relationship']}}">--}}
-                            {{--<span class="input-group-btn">--}}
-                                {{--<button class="btn btn-add2 btn-success" type="button">--}}
-                                    {{--<span class="glyphicon glyphicon-plus"></span>--}}
-                                {{--</button>--}}
-                            {{--</span>--}}
-                        {{--</div>--}}
-                    {{--@endforeach--}}
-                {{--@else--}}
-                    {{--<label for="relationship" class="col-sm-3 control-label">和监护人之间的关系</label>--}}
-                    {{--<div class="entry input-group col-sm-6">--}}
-                        {{--<input type="text" class="form-control" name="relationship[]">--}}
-                        {{--<span class="input-group-btn">--}}
-                            {{--<button class="btn btn-add2 btn-success" type="button">--}}
-                                {{--<span class="glyphicon glyphicon-plus"></span>--}}
-                            {{--</button>--}}
-                        {{--</span>--}}
-                    {{--</div>--}}
-                {{--@endif--}}
-            {{--</div>--}}
+
             @include('partials.single_select', [
                 'label' => '班级名称',
                 'id' => 'student[class_id]',
@@ -360,7 +333,7 @@
             @include('partials.enabled', [
                 'label' => '是否住校',
                 'id' => 'student[oncampus]',
-                'value' => isset($student['oncampus']) ? $student['oncampus'] : NULL, 
+                'value' => isset($student['oncampus']) ? $student['oncampus'] : NULL,
             ])
             @include('partials.enabled', [
                 'label' => '是否启用',

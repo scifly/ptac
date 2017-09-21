@@ -50,7 +50,7 @@
                     {{ Form::text('user[english_name]', null, [
                         'class' => 'form-control',
                         'placeholder' => '请填写英文名(可选)',
-                        'data-parsley-type' => 'alphanum',
+                        'type' => 'string',
                         'data-parsley-length' => '[2, 255]'
                     ]) }}
                 </div>

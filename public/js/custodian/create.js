@@ -6,7 +6,6 @@ $(".expiry-date").datetimepicker({
 
 var n = 0;
 var $tbody = $("#mobileTable").find("tbody");
-var n = 0;
 var id = $('#id').val();
 var $formEducator = $('#formCustodian');
 $(document).off('click', '.btn-add');
