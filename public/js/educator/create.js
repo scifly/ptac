@@ -95,4 +95,4 @@ $(document).on('click', '.btn-class-add', function (e) {
 });
 
 //部门
-dept.init();
+dept.init('educators/create');

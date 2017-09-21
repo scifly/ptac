@@ -34,6 +34,7 @@ Route::group(['prefix' => 'educators'], function() {
     Route::get('recharge/{id}', $ctlr . '@recharge');
     Route::put('rechargeStore/{id}', $ctlr . '@rechargeStore');
     Route::post('edit/{id}', $ctlr . '@edit');
+    Route::post('create', $ctlr . '@create');
 });
 // 监护人
 Route::group(['prefix' => 'custodians'], routes('CustodianController'));

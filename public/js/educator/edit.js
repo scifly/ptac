@@ -5,6 +5,7 @@ $(crud.edit('formEducator', 'educators'));
 var $tbody = $("#mobileTable").find("tbody");
 var $tbody2 = $("#classTable").find("tbody");
 var n = 0;
+var id = $('#id').val();
 
 /*
 $tbody.find('tr:nth-last-child(1)').find('button').removeClass('btn-remove').addClass('btn-add');
@@ -69,7 +70,7 @@ $(document).on('click', '.btn-class-add', function (e) {
 });
 
 //部门
-dept.init();
+dept.init('educators/edit/' + id);
 
 
 
