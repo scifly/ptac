@@ -5,17 +5,22 @@ $(".expiry-date").datetimepicker({
 });
 
 var n = 0;
-$(document).off('click','.btn-add');
-$(document).on('click', '.btn-add', function (e) {
+var $tbody = $("#mobileTable").find("tbody");
+var n = 0;
+var id = $('#id').val();
+var $formEducator = $('#formCustodian');
+$(document).off('click', '.btn-add');
+$(document).off('click', '.btn-remove');
+// 手机号
+$(document).on('click', '.btn-mobile-add', function (e) {
     e.preventDefault();
-    var $tbody = $('#mobileTable').find('tbody');
     n++;
-    // add html
+    // add mobile html
     $tbody.append(
-        '<tr><td><input type="text" class="form-control" placeholder="（请输入手机号码）" name="mobile[mobile][k' + n + ']" value=""></td>' +
-        '<td style="text-align: center"><input type="radio" class="minimal" name="mobile[isdefault]" value="k' + n + '"></td>' +
-        '<td style="text-align: center"><input type="checkbox" class="minimal" name="mobile[enabled][k' + n + ']"></td>' +
-        '<td style="text-align: center"><button class="btn btn-box-tool btn-add" type="button"><i class="fa fa-plus text-blue"></i></button></td></tr>'
+        '<tr><td><input class="form-control" placeholder="（请输入手机号码）" name="mobile['+ n +'][mobile]" value="" ></td>' +
+        '<td style="text-align: center"><input type="radio" class="minimal" id="mobile[isdefault]" name="mobile[isdefault]" value="' + n + '"></td>' +
+        '<td style="text-align: center"><input type="checkbox" class="minimal" name="mobile['+ n +'][enabled]"></td>' +
+        '<td style="text-align: center"><button class="btn btn-box-tool btn-add btn-mobile-add" type="button"><i class="fa fa-plus text-blue"></i></button></td></tr>'
     );
     // icheck init
     $tbody.find('input[type="radio"]').iCheck({
@@ -26,12 +31,28 @@ $(document).on('click', '.btn-add', function (e) {
         checkboxClass: 'icheckbox_minimal-blue',
         radioClass: 'iradio_minimal-blue'
     });
-    $tbody.find('tr:not(:last) .btn-add')
-        .removeClass('btn-add').addClass('btn-remove')
+    $tbody.find('tr:not(:last) .btn-mobile-add')
+        .removeClass('btn-mobile-add').addClass('btn-mobile-remove')
         .html('<i class="fa fa-minus text-blue"></i>');
-}).on('click', '.btn-remove', function (e) {
+    var $mobile = $tbody.find('tr:last input[class="form-control"]');
+    $formEducator.parsley().destroy();
+    $mobile.attr('pattern', '/^1[0-9]{10}$/');
+    $mobile.attr('required', 'true');
+    $formEducator.parsley();
+}).on('click', '.btn-mobile-remove', function (e) {
     $(this).parents('tr:first').remove();
     e.preventDefault();
+    var $defaults = $('input[name="mobile[isdefault]"]');
+    var defaultChecked = false;
+    $.each($defaults, function () {
+        if (typeof $(this).attr('checked') !== 'undefined') {
+            defaultChecked = true;
+            return false;
+        }
+    });
+    if (!defaultChecked) {
+        $($defaults[0]).iCheck('check');
+    }
     return false;
 });
 
@@ -86,4 +107,4 @@ $(document).on('click', '.btn-class-add', function (e) {
 
 
 //部门
-dept.init();
+dept.init('custodians/create');

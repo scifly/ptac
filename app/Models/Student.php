@@ -171,20 +171,18 @@ class Student extends Model {
                 ];
                 $mobiles = $request->input('mobile');
                 if($mobiles){
-                    $mobile = new Mobile();
-                    foreach ($mobiles['mobile'] as $key=>$v)
-                    {
-                          # 向mobile表添加用户的手机数据
+                    $mobileModel = new Mobile();
+                    foreach ($mobiles as $k => $mobile) {
                         $mobileData = [
                             'user_id' => $u->id,
-                            'mobile' =>$v,
-                            'enabled' => isset($mobiles['enabled'][$key]) ? 1 : 0,
-                            'isdefault' => isset($mobiles['isdefault'][$key]) ? 1 : 0,
+                            'mobile' => $mobile['mobile'],
+                            'isdefault' => $mobile['isdefault'],
+                            'enabled' => $mobile['enabled'],
                         ];
-                        $m = $mobile->create($mobileData);
+                        $mobileModel->create($mobileData);
                     }
 
-                    unset($mobile);
+                    unset($mobileModel);
                 }
 
                 # 向student表添加数据
@@ -285,21 +283,21 @@ class Student extends Model {
                 ]);
 
                 $mobiles = $request->input('mobile');
-                if($mobiles){
-                    $mobile = new Mobile();
-                    $mobile::where('user_id',$userId)->delete();
-                    foreach ($mobiles['mobile'] as $key=>$v)
-                    {
-                        # 向mobile表添加用户的手机数据
-                        $mobileData = [
-                            'user_id' => $userId,
-                            'mobile' =>$v,
-                            'enabled' => isset($mobiles['enabled'][$key]) ? 1 : 0,
-                            'isdefault' => isset($mobiles['isdefault'][$key]) ? 1 : 0,
-                        ];
-                        $m = $mobile->create($mobileData);
+                if($mobiles) {
+                    $mobileModel = new Mobile();
+                    $delMobile = $mobileModel->where('user_id', $userId)->delete();
+                    if($delMobile) {
+//                        dd($mobiles);
+                        foreach ($mobiles as $k => $mobile) {
+                            $mobileData = [
+                                'user_id' => $request->input('user_id'),
+                                'mobile' => $mobile['mobile'],
+                                'isdefault' => $mobile['isdefault'],
+                                'enabled' => $mobile['enabled'],
+                            ];
+                            $mobileModel->create($mobileData);
+                        }
                     }
-
                     unset($mobile);
                 }
 

@@ -4,7 +4,6 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Models\CustodianStudent;
-use App\Models\Student;
 use App\Models\Mobile;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -66,6 +65,7 @@ class Custodian extends Model {
     
         try {
             $exception = DB::transaction(function() use ($request) {
+
                 $user = $request->input('user');
                 # 包含学生的Id
                 $studentIds = $request->input('student_ids');
@@ -103,20 +103,18 @@ class Custodian extends Model {
                 # 向mobile表中添加工具
                 $mobiles = $request->input('mobile');
                 if($mobiles){
-                    $mobile = new Mobile();
-                    foreach ($mobiles['mobile'] as $key=>$v)
-                    {
-                        # 向mobile表添加用户的手机数据
+                    $mobileModel = new Mobile();
+                    foreach ($mobiles as $k => $mobile) {
                         $mobileData = [
                             'user_id' => $u->id,
-                            'mobile' =>$v,
-                            'enabled' => isset($mobiles['enabled'][$key]) ? 1 : 0,
-                            'isdefault' => isset($mobiles['isdefault'][$key]) ? 1 : 0,
+                            'mobile' => $mobile['mobile'],
+                            'isdefault' => $mobile['isdefault'],
+                            'enabled' => $mobile['enabled'],
                         ];
-                        $m = $mobile->create($mobileData);
+                        $mobileModel->create($mobileData);
                     }
 
-                    unset($mobile);
+                    unset($mobileModel);
                 }
 
                 $c = $this->create($custodianData);
@@ -155,6 +153,7 @@ class Custodian extends Model {
         if (!isset($custodian)) { return false; }
         try {
             $exception = DB::transaction(function() use($request, $custodianId, $custodian) {
+
                 $userId = $request->input('user_id');
                 $userData = $request->input('user');
                 # 包含学生的Id
@@ -185,26 +184,26 @@ class Custodian extends Model {
                 ]);
 
                 $mobiles = $request->input('mobile');
-                if($mobiles){
-                    $mobile = new Mobile();
-                    $mobile::where('user_id',$userId)->delete();
-                    foreach ($mobiles['mobile'] as $key=>$v)
-                    {
-                        # 向mobile表添加用户的手机数据
-                        $mobileData = [
-                            'user_id' => $userId,
-                            'mobile' =>$v,
-                            'enabled' => isset($mobiles['enabled'][$key]) ? 1 : 0,
-                            'isdefault' => isset($mobiles['isdefault'][$key]) ? 1 : 0,
-                        ];
-                        $m = $mobile->create($mobileData);
+                if($mobiles) {
+                    $mobileModel = new Mobile();
+                    $delMobile = $mobileModel->where('user_id', $userId)->delete();
+                    if($delMobile) {
+//                        dd($mobiles);
+                        foreach ($mobiles as $k => $mobile) {
+                            $mobileData = [
+                                'user_id' => $request->input('user_id'),
+                                'mobile' => $mobile['mobile'],
+                                'isdefault' => $mobile['isdefault'],
+                                'enabled' => $mobile['enabled'],
+                            ];
+                            $mobileModel->create($mobileData);
+                        }
                     }
-
                     unset($mobile);
                 }
 
                 # 向部门用户表添加数据
-                $departmentIds = $request->input('department_ids');
+                $departmentIds = $request->input('selectedDepartments');
                 $departmentUser = new DepartmentUser();
                 $departmentUser::where('user_id',$userId)->delete();
                 $departmentUser ->storeByDepartmentId($userId, $departmentIds);

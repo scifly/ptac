@@ -41,12 +41,14 @@ Route::group(['prefix' => 'custodians'], routes('CustodianController'));
 Route::group(['prefix' => 'custodians'], function() {
     $ctlr = 'CustodianController';
     Route::post('edit/{id}', $ctlr . '@edit');
+    Route::post('create', $ctlr . '@create');
 });
 // 学生
 Route::group(['prefix' => 'students'], routes('StudentController'));
 Route::group(['prefix' => 'students'], function() {
     $ctlr = 'StudentController';
     Route::post('edit/{id}', $ctlr . '@edit');
+    Route::post('create', $ctlr . '@create');
 });
 // 用户
 Route::group(['prefix' => 'users'], routes('UserController'));

@@ -54,16 +54,13 @@
                 </div>
             </div>
                 <div class="form-group">
-                    <label for="mobile[mobile][]" class="col-sm-3 control-label">手机号码</label>
+                    <label for="mobile" class="col-sm-3 control-label">手机号码</label>
                     <div class="col-sm-6">
                         <table id="mobileTable" class="table-bordered table-responsive" style="width: 100%;">
                             <thead>
                             <tr>
-                                {{--<td><label for="mobile[mobile][]">手机号码</label></td>--}}
                                 <td>手机号码</td>
-                                {{--<td style="text-align: center;"><label for="mobile[isdefault][]">默认</label></td>--}}
                                 <td style="text-align: center;">默认</td>
-                                {{--<td style="text-align: center;"><label for="mobile[enabled][]">启用</label></td>--}}
                                 <td style="text-align: center;">启用</td>
                                 <td></td>
                             </tr>
@@ -72,37 +69,73 @@
                             @if(isset($student->user->mobiles))
                                 @foreach($student->user->mobiles as $key => $mobile)
                                     <tr>
-                                        <td><input class="form-control" name="mobile[mobile][e{{$key}}]" type="text"
-                                         required="true" placeholder="（请输入手机号码）" value='{{$mobile->mobile}}'>
+                                        <td>
+                                            <input class="form-control"
+                                                   name="mobile[{{ $key }}][mobile]"
+                                                   placeholder="（请输入手机号码）"
+                                                   value='{{ $mobile->mobile }}'
+                                                   required
+                                                   pattern="/^1[0-9]{10}$/">
+                                            <input class="form-control"
+                                                   name="mobile[{{ $key }}][id]"
+                                                   type="hidden"
+                                                   value='{{ $mobile->id }}'>
                                         </td>
                                         <td style="text-align: center;">
-                                            <input name="mobile[isdefault]" value="e{{$key}}" type="radio" class="minimal" @if($mobile->isdefault == 1) checked @endif/>
+                                            <label for="mobile[isdefault]"></label>
+                                            <input name="mobile[isdefault]"
+                                                   value="{{ $key }}"
+                                                   id="mobile[isdefault]"
+                                                   type="radio"
+                                                   class="minimal"
+                                                   required
+                                                   @if($mobile->isdefault) checked @endif
+                                            />
                                         </td>
                                         <td style="text-align: center;">
-                                            <input name="mobile[enabled][e{{$key}}]" type="checkbox" class="minimal" @if($mobile->enabled == 1) checked @endif />
+                                            <label for="mobile[{{ $key }}][enabled]"></label>
+                                            <input name="mobile[{{ $key }}][enabled]"
+                                                   value="{{ $mobile->enabled }}"
+                                                   id="mobile[{{ $key }}][enabled]"
+                                                   type="checkbox"
+                                                   class="minimal"
+                                                   @if($mobile->enabled) checked @endif
+                                            />
                                         </td>
                                         <td style="text-align: center;">
-                                        <span class="input-group-btn">
-                                            <button class="btn btn-box-tool btn-add" type="button">
-                                                <i class="fa fa-plus text-blue"></i>
-                                            </button>
-                                        </span>
+                                            @if($key == sizeof($student->user->mobiles) - 1)
+                                                <span class="input-group-btn">
+                                                <button class="btn btn-box-tool btn-add btn-mobile-add" type="button">
+                                                    <i class="fa fa-plus text-blue"></i>
+                                                </button>
+                                            </span>
+                                            @else
+                                                <span class="input-group-btn">
+                                                <button class="btn btn-box-tool btn-remove btn-mobile-remove" type="button">
+                                                    <i class="fa fa-minus text-blue"></i>
+                                                </button>
+                                            </span>
+                                            @endif
                                         </td>
                                     </tr>
                                 @endforeach
+                                <input class="form-control"
+                                       type="hidden"
+                                       id="mobile-size"
+                                       value={{sizeof($student->user->mobiles)}}>
                             @else
                                 <tr>
-                                    <td><input class="form-control" name="mobile[mobile][e1]" type="text"
+                                    <td><input class="form-control" name="mobile[][mobile]" type="text"
                                                placeholder="（请输入手机号码）"></td>
                                     <td style="text-align: center;">
-                                        <input name="mobile[isdefault]" value="e1" type="radio" class="minimal">
+                                        <input name="mobile[isdefault]" value="0" checked type="radio" class="minimal">
                                     </td>
                                     <td style="text-align: center;">
-                                        <input name="mobile[enabled][e1]" type="checkbox" class="minimal">
+                                        <input name="mobile[][enabled]"  checked type="checkbox" class="minimal">
                                     </td>
                                     <td style="text-align: center;">
                                         <span class="input-group-btn">
-                                            <button class="btn btn-box-tool btn-add" type="button">
+                                            <button class="btn btn-box-tool btn-add btn-mobile-add" type="button">
                                                 <i class="fa fa-plus text-blue"></i>
                                             </button>
                                         </span>

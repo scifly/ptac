@@ -1,3 +1,9 @@
+{!! Form::open([
+    'method' => 'post',
+    'id' => 'formCustodian',
+    'class' => 'form-horizontal form-bordered',
+    'data-parsley-validate' => 'true'
+]) !!}
 <div class="box box-widget">
     <div class="box-header with-border">
         @include('partials.form_header')
@@ -8,21 +14,21 @@
                 {{ Form::hidden('id', $custodian['id'], ['id' => 'id']) }}
             @endif
             @if (!empty($custodian['user_id']))
-                 {{ Form::hidden('user_id', $custodian['user_id'], ['id' => 'user_id']) }}
+                {{ Form::hidden('user_id', $custodian['user_id'], ['id' => 'user_id']) }}
             @endif
-                {{--<div class="form-group">--}}
-                    {{--{{ Form::label('user[username]', '用户名', [--}}
-                        {{--'class' => 'col-sm-3 control-label'--}}
-                    {{--]) }}--}}
-                    {{--<div class="col-sm-6">--}}
-                        {{--{{ Form::text('user[username]', null, [--}}
-                            {{--'class' => 'form-control',--}}
-                            {{--'required' => 'true',--}}
-                            {{--'placeholder' => '(请填写用户名)',--}}
-                            {{--'data-parsley-length' => '[2, 255]'--}}
-                        {{--]) }}--}}
-                    {{--</div>--}}
-                {{--</div>--}}
+            {{--<div class="form-group">--}}
+            {{--{{ Form::label('user[username]', '用户名', [--}}
+            {{--'class' => 'col-sm-3 control-label'--}}
+            {{--]) }}--}}
+            {{--<div class="col-sm-6">--}}
+            {{--{{ Form::text('user[username]', null, [--}}
+            {{--'class' => 'form-control',--}}
+            {{--'required' => 'true',--}}
+            {{--'placeholder' => '(请填写用户名)',--}}
+            {{--'data-parsley-length' => '[2, 255]'--}}
+            {{--]) }}--}}
+            {{--</div>--}}
+            {{--</div>--}}
             <div class="form-group">
                 {{ Form::label('user[realname]', '姓名', [
                     'class' => 'col-sm-3 control-label'
@@ -58,66 +64,100 @@
                     {!! Form::label('user[gender]', '女') !!}
                 </div>
             </div>
-                <div class="form-group">
-                    <label for="mobile[mobile][]" class="col-sm-3 control-label">手机号码</label>
-                    <div class="col-sm-6">
-                        <table id="mobileTable" class="table-bordered table-responsive" style="width: 100%;">
-                            <thead>
-                            <tr>
-                                {{--<td><label for="mobile[mobile][]">手机号码</label></td>--}}
-                                <td>手机号码</td>
-                                {{--<td style="text-align: center;"><label for="mobile[isdefault][]">默认</label></td>--}}
-                                <td style="text-align: center;">默认</td>
-                                {{--<td style="text-align: center;"><label for="mobile[enabled][]">启用</label></td>--}}
-                                <td style="text-align: center;">启用</td>
-                                <td></td>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            @if(isset($custodian->user->mobiles))
-                                @foreach($custodian->user->mobiles as $key => $mobile)
-                                    <tr>
-                                        <td><input class="form-control" name="mobile[mobile][e{{$key}}]" type="text"
-                                                   required="true"         placeholder="（请输入手机号码）" value='{{$mobile->mobile}}'>
-                                        </td>
-                                        <td style="text-align: center;">
-                                            <input name="mobile[isdefault]" value="e{{$key}}" type="radio" class="minimal" @if($mobile->isdefault == 1) checked @endif/>
-                                        </td>
-                                        <td style="text-align: center;">
-                                            <input name="mobile[enabled][e{{$key}}]" type="checkbox" class="minimal" @if($mobile->enabled == 1) checked @endif />
-                                        </td>
-                                        <td style="text-align: center;">
-                                        <span class="input-group-btn">
-                                            <button class="btn btn-box-tool btn-add" type="button">
-                                                <i class="fa fa-plus text-blue"></i>
-                                            </button>
-                                        </span>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            @else
+            <div class="form-group">
+                <label for="mobile" class="col-sm-3 control-label">手机号码</label>
+                <div class="col-sm-6">
+                    <table id="mobileTable" class="table-bordered table-responsive" style="width: 100%;">
+                        <thead>
+                        <tr>
+                            <td>手机号码</td>
+                            <td style="text-align: center;">默认</td>
+                            <td style="text-align: center;">启用</td>
+                            <td></td>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @if(isset($custodian->user->mobiles))
+                            @foreach($custodian->user->mobiles as $key => $mobile)
                                 <tr>
-                                    <td><input class="form-control" name="mobile[mobile][e1]" type="text"
-                                               placeholder="（请输入手机号码）"></td>
-                                    <td style="text-align: center;">
-                                        <input name="mobile[isdefault]" value="e1" type="radio" class="minimal">
+                                    <td>
+                                        <input class="form-control"
+                                               name="mobile[{{ $key }}][mobile]"
+                                               placeholder="（请输入手机号码）"
+                                               value='{{ $mobile->mobile }}'
+                                               required
+                                               pattern="/^1[0-9]{10}$/">
+                                        <input class="form-control"
+                                               name="mobile[{{ $key }}][id]"
+                                               type="hidden"
+                                               value='{{ $mobile->id }}'>
                                     </td>
                                     <td style="text-align: center;">
-                                        <input name="mobile[enabled][e1]" type="checkbox" class="minimal">
+                                        <label for="mobile[isdefault]"></label>
+                                        <input name="mobile[isdefault]"
+                                               value="{{ $key }}"
+                                               id="mobile[isdefault]"
+                                               type="radio"
+                                               class="minimal"
+                                               required
+                                               @if($mobile->isdefault) checked @endif
+                                        />
                                     </td>
                                     <td style="text-align: center;">
-                                        <span class="input-group-btn">
-                                            <button class="btn btn-box-tool btn-add" type="button">
-                                                <i class="fa fa-plus text-blue"></i>
-                                            </button>
-                                        </span>
+                                        <label for="mobile[{{ $key }}][enabled]"></label>
+                                        <input name="mobile[{{ $key }}][enabled]"
+                                               value="{{ $mobile->enabled }}"
+                                               id="mobile[{{ $key }}][enabled]"
+                                               type="checkbox"
+                                               class="minimal"
+                                               @if($mobile->enabled) checked @endif
+                                        />
+                                    </td>
+                                    <td style="text-align: center;">
+                                        @if($key == sizeof($custodian->user->mobiles) - 1)
+                                            <span class="input-group-btn">
+                                                <button class="btn btn-box-tool btn-add btn-mobile-add" type="button">
+                                                    <i class="fa fa-plus text-blue"></i>
+                                                </button>
+                                            </span>
+                                        @else
+                                            <span class="input-group-btn">
+                                                <button class="btn btn-box-tool btn-remove btn-mobile-remove"
+                                                        type="button">
+                                                    <i class="fa fa-minus text-blue"></i>
+                                                </button>
+                                            </span>
+                                        @endif
                                     </td>
                                 </tr>
-                            @endif
-                            </tbody>
-                        </table>
-                    </div>
+                            @endforeach
+                            <input class="form-control"
+                                   type="hidden"
+                                   id="mobile-size"
+                                   value={{sizeof($custodian->user->mobiles)}}>
+                        @else
+                            <tr>
+                                <td><input class="form-control" name="mobile[][mobile]" type="text"
+                                           placeholder="（请输入手机号码）"></td>
+                                <td style="text-align: center;">
+                                    <input name="mobile[isdefault]" value="0" checked type="radio" class="minimal">
+                                </td>
+                                <td style="text-align: center;">
+                                    <input name="mobile[][enabled]" checked type="checkbox" class="minimal">
+                                </td>
+                                <td style="text-align: center;">
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-box-tool btn-add btn-mobile-add" type="button">
+                                                <i class="fa fa-plus text-blue"></i>
+                                            </button>
+                                        </span>
+                                </td>
+                            </tr>
+                        @endif
+                        </tbody>
+                    </table>
                 </div>
+            </div>
             <div class="form-group">
                 {{ Form::label('user[telephone]', '座机', [
                     'class' => 'col-sm-3 control-label'
@@ -142,84 +182,64 @@
                     ]) }}
                 </div>
             </div>
-                <div class="form-group">
-                    {!! Form::label('departmentId', '所属部门', [
-                        'class' => 'col-sm-3 control-label'
-                    ]) !!}
-                    <div class="col-sm-6">
-                        <div id="department-nodes-checked">
-                            @if(isset($selectedDepartments))
-                                @foreach($selectedDepartments as $key => $department)
-                                    <button type="button" class="btn btn-flat" style="margin-right: 5px;margin-bottom: 5px">
-                                        <i class="{{$department['icon']}}"></i>
-                                        {{$department['text']}}
-                                        <i class="fa fa-close close-selected"></i>
-                                        <input type="hidden" name="selectedDepartments[]" value="{{$department['id']}}"/>
-                                    </button>
-                                @endforeach
+            <div class="form-group">
+                {!! Form::label('departmentId', '所属部门', [
+                    'class' => 'col-sm-3 control-label'
+                ]) !!}
+                <div class="col-sm-6">
+                    <div id="department-nodes-checked">
+                        @if(isset($selectedDepartments))
+                            @foreach($selectedDepartments as $key => $department)
+                                <button type="button" class="btn btn-flat" style="margin-right: 5px;margin-bottom: 5px">
+                                    <i class="{{$department['icon']}}"></i>
+                                    {{$department['text']}}
+                                    <i class="fa fa-close close-selected"></i>
+                                    <input type="hidden" name="selectedDepartments[]" value="{{$department['id']}}"/>
+                                </button>
+                            @endforeach
 
-                            @endif
-                        </div>
-                        @if(isset($selectedDepartmentIds))
-                            <input type="hidden" id="selectedDepartmentIds"  value="{{$selectedDepartmentIds}}" />
-                        @else
-                            <input type="hidden" id="selectedDepartmentIds"  value="" />
                         @endif
-                        <a id="add-department" class="btn btn-primary" style="margin-bottom: 5px">修改</a>
                     </div>
+                    @if(isset($selectedDepartmentIds))
+                        <input type="hidden" id="selectedDepartmentIds" value="{{$selectedDepartmentIds}}"/>
+                    @else
+                        <input type="hidden" id="selectedDepartmentIds" value=""/>
+                    @endif
+                    <a id="add-department" class="btn btn-primary" style="margin-bottom: 5px">修改</a>
                 </div>
+            </div>
             @include('partials.single_select', [
                 'label' => '角色',
                 'id' => 'user[group_id]',
                 'items' => $groups,
             ])
-                <div class="form-group">
-                    <label class="col-sm-3 control-label">监护人和学生之间的关系</label>
-                    <div class="col-sm-6">
-                        <table id="classTable" class="table-bordered table-responsive" style="width: 100%;">
-                            <thead>
-                            <tr>
-                                <th>包含学生</th>
-                                <th>关系</th>
-                                <th></th>
-                            </tr>
-                            </thead>
-                            <tbody>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">监护人和学生之间的关系</label>
+                <div class="col-sm-6">
+                    <table id="classTable" class="table-bordered table-responsive" style="width: 100%;">
+                        <thead>
+                        <tr>
+                            <th>包含学生</th>
+                            <th>关系</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
 
-                            @if(isset($custodian->students) && !empty($custodian->students))
-                                @foreach($custodian->students as $student)
-                                    <tr>
-                                        <td>
-                                            <select name="student_ids[]" class="select2" style="width: 80%;">
-                                                @foreach($students as $key => $name )
-                                                    <option value='{{$key}}' @if($key == $student['pivot']['student_id']) selected="selected" @endif>{{$name}}</option>
-                                                @endforeach
-                                            </select>
-                                        </td>
-                                        <td>
-                                            <input type="text" name="relationship[]" value="{{$relationship[$student['pivot']['student_id']]}}">
-                                        </td>
-                                        <td style="text-align: center">
-                                    <span class="input-group-btn">
-                                        <button class="btn btn-box-tool btn-class-add" type="button">
-                                            <i class="fa fa-plus text-blue"></i>
-                                        </button>
-                                    </span>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            @else
+                        @if(isset($custodian->students) && !empty($custodian->students))
+                            @foreach($custodian->students as $student)
                                 <tr>
                                     <td>
                                         <select name="student_ids[]" class="select2" style="width: 80%;">
                                             @foreach($students as $key => $name )
-                                                <option value='{{$key}}'>{{$name}}</option>
+                                                <option value='{{$key}}'
+                                                        @if($key == $student['pivot']['student_id']) selected="selected" @endif>{{$name}}</option>
                                             @endforeach
                                         </select>
                                     </td>
                                     <td>
-                                        <input type="text" name="relationship[]" class = "form-control" required="true"
-                                               placeholder ="">
+                                        <input type="text" name="relationship[]"
+                                               value="{{$relationship[$student['pivot']['student_id']]}}">
                                     </td>
                                     <td style="text-align: center">
                                     <span class="input-group-btn">
@@ -229,11 +249,33 @@
                                     </span>
                                     </td>
                                 </tr>
-                            @endif
-                            </tbody>
-                        </table>
-                    </div>
+                            @endforeach
+                        @else
+                            <tr>
+                                <td>
+                                    <select name="student_ids[]" class="select2" style="width: 80%;">
+                                        @foreach($students as $key => $name )
+                                            <option value='{{$key}}'>{{$name}}</option>
+                                        @endforeach
+                                    </select>
+                                </td>
+                                <td>
+                                    <input type="text" name="relationship[]" class="form-control" required="true"
+                                           placeholder="">
+                                </td>
+                                <td style="text-align: center">
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-box-tool btn-class-add" type="button">
+                                            <i class="fa fa-plus text-blue"></i>
+                                        </button>
+                                    </span>
+                                </td>
+                            </tr>
+                        @endif
+                        </tbody>
+                    </table>
                 </div>
+            </div>
             <div class="form-group">
                 {{ Form::label('expiry', '服务到期时间', [
                 'class' => 'col-sm-3 control-label'

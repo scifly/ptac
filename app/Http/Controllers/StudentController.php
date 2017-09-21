@@ -101,18 +101,12 @@ class StudentController extends Controller {
         }
         $student = $this->student->find($id);
         $student['student'] = $this->student->find($id);
-//        $departmentIds = $this->departmentUser->where('user_id',$student->user_id)->get();
-//        foreach ($departmentIds as $key=>$value)
-//        {
-//            $department = Department::whereId($value['department_id'])->first();
-//            $selectedDepartments[$department['id']] = $department['name'];
-//        }
         $selectedDepartmentIds = [];
         foreach ($student->user->departments as $department) {
             $selectedDepartmentIds[] = $department->id;
         }
 
-        $selectedDepartments = $this->department->tree1($selectedDepartmentIds);
+        $selectedDepartments = $this->department->selectedNodes($selectedDepartmentIds);
 
         # 根据学生Id查询监护人学生表的数据
         $custodianStudent = $this->custodianStudent->where('student_id',$student->id)->get();
