@@ -49,6 +49,7 @@ use Illuminate\Database\Eloquent\Model;
  * @mixin \Eloquent
  * @property-read \App\Models\Educator $educator
  * @property-read \App\Models\Subject $subject
+ * @property-read \App\Models\User $user
  */
 class Event extends Model {
     
@@ -81,7 +82,7 @@ class Event extends Model {
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function subject() { return $this->belongsTo('APP\Models\Subject'); }
+    public function subject() { return $this->belongsTo('App\Models\Subject'); }
     
     /**
      * 显示日历事件

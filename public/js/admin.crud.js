@@ -15,8 +15,16 @@ var crud = {
             autoWidth: true,
             scrollX: true,
             language: {url: '../files/ch.json'},
-            lengthMenu: [[15, 25, 50, -1], [15, 25, 50, 'All']]
+            lengthMenu: [[15, 25, 50, -1], [15, 25, 50, '所有']],
+            dom: '<"row"<"col-md-6"l><"col-sm-4"f><"col-sm-2"B>>rt<"row"<"col-sm-6"i><"col-sm-6"p>>',
+            buttons: ['pdf','csv']
+        }).on('init.dt', function() {
+            $('.dt-buttons').addClass('pull-right');
+            $('.buttons-pdf').addClass('btn-sm');
+            $('.buttons-csv').addClass('btn-sm');
+            // $('.paginate_button').each(function() { $(this).addClass('btn-sm'); })
         });
+        console.log($('.dt-buttons'));
     },
     ajaxRequest: function(requestType, ajaxUrl, data, obj) {
         $.ajax({
@@ -91,6 +99,9 @@ var crud = {
 
         // 显示记录列表
         crud.initDatatable(table);
+        // $('div.dataTables_length select').addClass('form-control');
+        // $('div.dataTables_filter label').addClass('control-label');
+
 
         // 新增记录
         $('#add-record').on('click', function() {

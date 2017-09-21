@@ -30,6 +30,8 @@ use Symfony\Component\VarDumper\Cloner\Data;
  * @mixin \Eloquent
  * @property-read EducatorAttendance[] $educatorAttendance
  * @property-read School $schools
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\EducatorAttendance[] $educatorAttendances
+ * @property-read \App\Models\School $school
  */
 class EducatorAttendanceSetting extends Model {
 

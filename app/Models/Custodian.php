@@ -30,6 +30,10 @@ use Mockery\Exception;
  * @mixin \Eloquent
  * @property-read Collection|Student[] $students
  * @property-read Collection|CustodianStudent[] $custodianStudent
+ * @property int $menu_id
+ * @property int $department_id
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Custodian whereDepartmentId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Custodian whereMenuId($value)
  */
 class Custodian extends Model {
     
