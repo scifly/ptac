@@ -246,35 +246,37 @@ class Educator extends Model {
                 ];
 
                 $educatorId = $this->create($educatorData);
+
                 $classSubject = $request->input('classSubject');
                 if($classSubject) {
                     $educatorClass = new EducatorClass();
                         $classSubject = $this->array_unique_fb($classSubject);
                         foreach ($classSubject as $key => $row) {
+                            if($row['class_id'] != "" && $row['class_id'] != ""){
+                                $educatorClassData = [
+                                    'educator_id' => $educatorId,
+                                    'class_id' => $row['class_id'],
+                                    'subject_id' => $row['subject_id'],
+                                    'enabled' => $userInputData['enabled']
+                                ];
+                                $educatorClass->create($educatorClassData);
+                            }
 
-                            $educatorClassData = [
-                                'educator_id' => $educatorId,
-                                'class_id' => $row['class_id'],
-                                'subject_id' => $row['subject_id'],
-                                'enabled' => $userInputData['enabled']
-                            ];
-                            $educatorClass->create($educatorClassData);
                         }
+
                     unset($educatorClass);
                 }
-
-
                 $mobiles = $request->input('mobile');
                 if($mobiles) {
-                    $mobile = new Mobile();
-                    foreach ($mobiles['mobile'] as $k => $row) {
+                    $mobileModel = new Mobile();
+                    foreach ($mobiles as $k => $mobile) {
                         $mobileData = [
                             'user_id' => $u->id,
-                            'mobile' => $row,
-                            'enabled' => isset($mobiles['enabled'][$k]) ? 1 : 0,
-                            'isdefault' => (isset($mobiles['isdefault']) && $mobiles['isdefault'] == $k) ? 1 : 0,
+                            'mobile' => $mobile['mobile'],
+                            'isdefault' => $mobile['isdefault'],
+                            'enabled' => $mobile['enabled'],
                         ];
-                        $m = $mobile->create($mobileData);
+                        $mobileModel->create($mobileData);
                     }
                     unset($mobile);
                 }
@@ -292,13 +294,13 @@ class Educator extends Model {
 
 //                $mobiles = $request->input('mobile');
 //                dd($mobiles);
-                dd($request->all());die;
+//                dd($request->all());die;
 
                 $userInputData = $request->input('user');
                 $userData = [
                     'username' => $userInputData['username'],
                     'group_id' => $userInputData['group_id'],
-                    'password' => $userInputData['password'],
+                    'password' => bcrypt($userInputData['password']),
                     'email' => $userInputData['email'],
                     'realname' => $userInputData['realname'],
                     'gender' => $userInputData['gender'],
@@ -350,14 +352,16 @@ class Educator extends Model {
                     if($delEducatorClass) {
                         $classSubject = $this->array_unique_fb($classSubject);
                         foreach ($classSubject as $key => $row) {
+                            if($row['class_id'] != "" && $row['class_id'] != ""){
+                                $educatorClassData = [
+                                    'educator_id' => $request->input('id'),
+                                    'class_id' => $row['class_id'],
+                                    'subject_id' => $row['subject_id'],
+                                    'enabled' => $userInputData['enabled']
+                                ];
+                                $educatorClass->create($educatorClassData);
+                            }
 
-                            $educatorClassData = [
-                                'educator_id' => $request->input('id'),
-                                'class_id' => $row['class_id'],
-                                'subject_id' => $row['subject_id'],
-                                'enabled' => $userInputData['enabled']
-                            ];
-                            $educatorClass->create($educatorClassData);
                         }
                     }
                     unset($educatorClass);

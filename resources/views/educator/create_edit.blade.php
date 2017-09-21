@@ -46,10 +46,18 @@
                 <label for="user[gender]" class="col-sm-3 control-label">性别</label>
                 <div class="col-sm-6">
                     <label id="user[gender]">
-                        <input id="user[gender]" @if(isset($educator)) @if($educator->user->gender == 1) checked @endif @endif type="radio" name="user[gender]" class="minimal" value="1">
+                        <input id="user[gender]"
+                               @if((isset($educator) && $educator->user->gender) || !isset($educator))
+                                   checked
+                               @endif
+                               type="radio" name="user[gender]" class="minimal" value="1">
                     </label> 男
                     <label id="user[gender]">
-                        <input id="user[gender]" @if(isset($educator)) @if($educator->user->gender == 0) checked @endif @endif type="radio" name="user[gender]" class="minimal" value="0">
+                        <input id="user[gender]"
+                               @if((isset($educator) && $educator->user->gender ==0 ))
+                                    checked
+                               @endif
+                               type="radio" name="user[gender]" class="minimal" value="0">
                     </label> 女
                 </div>
             </div>
@@ -116,7 +124,7 @@
                 </div>
             </div>
             <div class="form-group">
-                <label for="mobile[mobile][]" class="col-sm-3 control-label">手机号码</label>
+                <label for="mobile" class="col-sm-3 control-label">手机号码</label>
                 <div class="col-sm-6">
                     <table id="mobileTable" class="table-bordered table-responsive" style="width: 100%;">
                         <thead>
@@ -131,41 +139,73 @@
                         @if(isset($educator->user->mobiles))
                             @foreach($educator->user->mobiles as $key => $mobile)
                                 <tr>
-                                    <td><input class="form-control" name="mobile[{{$key}}][mobile]"
-                                               placeholder="（请输入手机号码）" value='{{$mobile->mobile}}' pattern="/^1[0-9]{10}$/">
-                                        <input class="form-control" name="mobile[{{$key}}][id]"
-                                               type="hidden" value='{{$mobile->id}}'>
+                                    <td>
+                                        <input class="form-control"
+                                               name="mobile[{{ $key }}][mobile]"
+                                               placeholder="（请输入手机号码）"
+                                               value='{{ $mobile->mobile }}'
+                                               required
+                                               pattern="/^1[0-9]{10}$/">
+                                        <input class="form-control"
+                                               name="mobile[{{ $key }}][id]"
+                                               type="hidden"
+                                               value='{{ $mobile->id }}'>
                                     </td>
                                     <td style="text-align: center;">
-                                        <input name="mobile[isdefault]" value="{{$key}}" type="radio" class="minimal"
-                                               @if($mobile->isdefault == 1) checked @endif/>
+                                        <label for="mobile[isdefault]"></label>
+                                        <input name="mobile[isdefault]"
+                                               value="{{ $key }}"
+                                               id="mobile[isdefault]"
+                                               type="radio"
+                                               class="minimal"
+                                               required
+                                               @if($mobile->isdefault) checked @endif
+                                        />
                                     </td>
                                     <td style="text-align: center;">
-                                        <input name="mobile[{{$key}}][enabled]" type="checkbox" class="minimal" value="{{$mobile->enabled}}"
-                                               @if($mobile->enabled == 1) checked @endif />
+                                        <label for="mobile[{{ $key }}][enabled]"></label>
+                                        <input name="mobile[{{ $key }}][enabled]"
+                                               value="{{ $mobile->enabled }}"
+                                               id="mobile[{{ $key }}][enabled]"
+                                               type="checkbox"
+                                               class="minimal"
+                                               @if($mobile->enabled) checked @endif
+                                        />
                                     </td>
                                     <td style="text-align: center;">
-                                        <span class="input-group-btn">
-                                            <button class="btn btn-box-tool btn-remove" type="button">
-                                                <i class="fa fa-minus text-blue"></i>
-                                            </button>
-                                        </span>
+                                        @if($key == sizeof($educator->user->mobiles) - 1)
+                                            <span class="input-group-btn">
+                                                <button class="btn btn-box-tool btn-add btn-mobile-add" type="button">
+                                                    <i class="fa fa-plus text-blue"></i>
+                                                </button>
+                                            </span>
+                                        @else
+                                            <span class="input-group-btn">
+                                                <button class="btn btn-box-tool btn-remove btn-mobile-remove" type="button">
+                                                    <i class="fa fa-minus text-blue"></i>
+                                                </button>
+                                            </span>
+                                        @endif
                                     </td>
                                 </tr>
                             @endforeach
+                            <input class="form-control"
+                                   type="hidden"
+                                   id="mobile-size"
+                                   value={{sizeof($educator->user->mobiles)}}>
                         @else
                             <tr>
-                                <td><input class="form-control" name="mobile[mobile][e1]" type="text"
+                                <td><input class="form-control" name="mobile[][mobile]" type="text"
                                            placeholder="（请输入手机号码）"></td>
                                 <td style="text-align: center;">
-                                    <input name="mobile[isdefault]" value="e1" type="radio" class="minimal">
+                                    <input name="mobile[isdefault]" value="0" checked type="radio" class="minimal">
                                 </td>
                                 <td style="text-align: center;">
-                                    <input name="mobile[enabled][e1]" type="checkbox" class="minimal">
+                                    <input name="mobile[][enabled]"  checked type="checkbox" class="minimal">
                                 </td>
                                 <td style="text-align: center;">
                                         <span class="input-group-btn">
-                                            <button class="btn btn-box-tool btn-add" type="button">
+                                            <button class="btn btn-box-tool btn-add btn-mobile-add" type="button">
                                                 <i class="fa fa-plus text-blue"></i>
                                             </button>
                                         </span>
@@ -230,39 +270,67 @@
                             @foreach($educator->educatorClasses  as $index=> $class)
                                 <tr>
                                     <td>
-                                        <select name="classSubject[{{$index}}][class_id]" class="select2" style="width: 80%;">
+                                        <label for="classSubject[{{$index}}][class_id]"></label>
+                                        <select name="classSubject[{{$index}}][class_id]"
+                                                id="classSubject[{{$index}}][class_id]"
+                                                class="select2"
+                                                style="width: 80%;"
+                                        >
                                             @foreach($squads as $key => $squad )
-                                                    <option value='{{$key}}' @if($key == $class->class_id) selected="selected" @endif>{{$squad}}</option>
+                                                <option value='{{$key}}' @if($key == $class->class_id) selected @endif>{{$squad}}</option>
                                             @endforeach
                                         </select>
                                     </td>
                                     <td>
-                                        <select name="classSubject[{{$index}}][subject_id]" class="select2" style="width: 80%">
+                                        <label for="classSubject[{{$index}}][subject_id]"></label>
+                                        <select name="classSubject[{{$index}}][subject_id]"
+                                                id="classSubject[{{$index}}][subject_id]"
+                                                class="select2"
+                                                style="width: 80%"
+                                        >
                                             @foreach($subjects as $key => $subject )
-                                                <option value='{{$key}}' @if($key == $class->subject_id) selected="selected" @endif>{{$subject}}</option>
+                                                <option value='{{$key}}' @if($key == $class->subject_id) selected @endif>{{$subject}}</option>
                                             @endforeach
                                         </select>
                                     </td>
                                     <td style="text-align: center">
-                                    <span class="input-group-btn">
-                                        <button class="btn btn-box-tool btn-class-remove" type="button">
-                                            <i class="fa fa-minus text-blue"></i>
-                                        </button>
-                                    </span>
+                                    @if($index == sizeof($educator->educatorClasses) - 1)
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-box-tool  btn-class-add btn-add" type="button">
+                                                <i class="fa fa-plus text-blue"></i>
+                                            </button>
+                                        </span>
+                                    @else
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-box-tool  btn-class-remove btn-remove" type="button">
+                                                <i class="fa fa-minus text-blue"></i>
+                                            </button>
+                                        </span>
+                                    @endif
                                     </td>
                                 </tr>
                             @endforeach
                         @else
                             <tr>
                                 <td>
-                                    <select name="educator[class_ids][]" class="select2" style="width: 80%;">
+                                    <label for="educator[][class_ids]"></label>
+                                    <select name="educator[][class_ids]"
+                                            id="educator[][class_ids]"
+                                            class="select2"
+                                            style="width: 80%;"
+                                    >
                                         @foreach($squads as $key => $squad )
                                             <option value='{{$key}}'>{{$squad}}</option>
                                         @endforeach
                                     </select>
                                 </td>
                                 <td>
-                                    <select name="educator[subject_ids][]" class="select2" style="width: 80%">
+                                    <label for="educator[][subject_ids]"></label>
+                                    <select name="educator[][subject_ids]"
+                                            id="educator[][subject_ids]"
+                                            class="select2"
+                                            style="width: 80%"
+                                    >
                                         @foreach($subjects as $key => $subject )
                                             <option value='{{$key}}'>{{$subject}}</option>
                                         @endforeach
