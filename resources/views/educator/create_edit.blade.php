@@ -116,106 +116,14 @@
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
-                    {!! Form::text('user[email]', null, [
+                    {!! Form::email('user[email]', null, [
                         'class' => 'form-control',
                         'placeholder' => '(请输入电子邮件地址)',
-                        'data-parsley-length' => '[3,255]'
+
                     ]) !!}
                 </div>
             </div>
-            <div class="form-group">
-                <label for="mobile" class="col-sm-3 control-label">手机号码</label>
-                <div class="col-sm-6">
-                    <table id="mobileTable" class="table-bordered table-responsive" style="width: 100%;">
-                        <thead>
-                        <tr>
-                            <td>手机号码</td>
-                            <td style="text-align: center;">默认</td>
-                            <td style="text-align: center;">启用</td>
-                            <td></td>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        @if(isset($educator->user->mobiles))
-                            @foreach($educator->user->mobiles as $key => $mobile)
-                                <tr>
-                                    <td>
-                                        <input class="form-control"
-                                               name="mobile[{{ $key }}][mobile]"
-                                               placeholder="（请输入手机号码）"
-                                               value='{{ $mobile->mobile }}'
-                                               required
-                                               pattern="/^1[0-9]{10}$/">
-                                        <input class="form-control"
-                                               name="mobile[{{ $key }}][id]"
-                                               type="hidden"
-                                               value='{{ $mobile->id }}'>
-                                    </td>
-                                    <td style="text-align: center;">
-                                        <label for="mobile[isdefault]"></label>
-                                        <input name="mobile[isdefault]"
-                                               value="{{ $key }}"
-                                               id="mobile[isdefault]"
-                                               type="radio"
-                                               class="minimal"
-                                               required
-                                               @if($mobile->isdefault) checked @endif
-                                        />
-                                    </td>
-                                    <td style="text-align: center;">
-                                        <label for="mobile[{{ $key }}][enabled]"></label>
-                                        <input name="mobile[{{ $key }}][enabled]"
-                                               value="{{ $mobile->enabled }}"
-                                               id="mobile[{{ $key }}][enabled]"
-                                               type="checkbox"
-                                               class="minimal"
-                                               @if($mobile->enabled) checked @endif
-                                        />
-                                    </td>
-                                    <td style="text-align: center;">
-                                        @if($key == sizeof($educator->user->mobiles) - 1)
-                                            <span class="input-group-btn">
-                                                <button class="btn btn-box-tool btn-add btn-mobile-add" type="button">
-                                                    <i class="fa fa-plus text-blue"></i>
-                                                </button>
-                                            </span>
-                                        @else
-                                            <span class="input-group-btn">
-                                                <button class="btn btn-box-tool btn-remove btn-mobile-remove" type="button">
-                                                    <i class="fa fa-minus text-blue"></i>
-                                                </button>
-                                            </span>
-                                        @endif
-                                    </td>
-                                </tr>
-                            @endforeach
-                            <input class="form-control"
-                                   type="hidden"
-                                   id="mobile-size"
-                                   value={{sizeof($educator->user->mobiles)}}>
-                        @else
-                            <tr>
-                                <td><input class="form-control" name="mobile[][mobile]" type="text"
-                                           placeholder="（请输入手机号码）"></td>
-                                <td style="text-align: center;">
-                                    <input name="mobile[isdefault]" value="0" checked type="radio" class="minimal">
-                                </td>
-                                <td style="text-align: center;">
-                                    <input name="mobile[][enabled]"  checked type="checkbox" class="minimal">
-                                </td>
-                                <td style="text-align: center;">
-                                        <span class="input-group-btn">
-                                            <button class="btn btn-box-tool btn-add btn-mobile-add" type="button">
-                                                <i class="fa fa-plus text-blue"></i>
-                                            </button>
-                                        </span>
-                                </td>
-                            </tr>
-                        @endif
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+            @include('educator.mobile')
             @include('partials.single_select', [
                 'label' => '角色',
                 'id' => 'user[group_id]',
@@ -253,102 +161,8 @@
                     <a id="add-department" class="btn btn-primary" style="margin-bottom: 5px">修改</a>
                 </div>
             </div>
-            <div class="form-group">
-                <label class="col-sm-3 control-label">空</label>
-                <div class="col-sm-6">
-                    <table id="classTable" class="table-bordered table-responsive" style="width: 100%;">
-                        <thead>
-                        <tr>
-                            <th>班级</th>
-                            <th>科目</th>
-                            <th></th>
-                        </tr>
-                        </thead>
-                        <tbody>
+            @include('educator.class_subject')
 
-                        @if(isset($educator->educatorClasses))
-                            @foreach($educator->educatorClasses  as $index=> $class)
-                                <tr>
-                                    <td>
-                                        <label for="classSubject[{{$index}}][class_id]"></label>
-                                        <select name="classSubject[{{$index}}][class_id]"
-                                                id="classSubject[{{$index}}][class_id]"
-                                                class="select2"
-                                                style="width: 80%;"
-                                        >
-                                            @foreach($squads as $key => $squad )
-                                                <option value='{{$key}}' @if($key == $class->class_id) selected @endif>{{$squad}}</option>
-                                            @endforeach
-                                        </select>
-                                    </td>
-                                    <td>
-                                        <label for="classSubject[{{$index}}][subject_id]"></label>
-                                        <select name="classSubject[{{$index}}][subject_id]"
-                                                id="classSubject[{{$index}}][subject_id]"
-                                                class="select2"
-                                                style="width: 80%"
-                                        >
-                                            @foreach($subjects as $key => $subject )
-                                                <option value='{{$key}}' @if($key == $class->subject_id) selected @endif>{{$subject}}</option>
-                                            @endforeach
-                                        </select>
-                                    </td>
-                                    <td style="text-align: center">
-                                    @if($index == sizeof($educator->educatorClasses) - 1)
-                                        <span class="input-group-btn">
-                                            <button class="btn btn-box-tool  btn-class-add btn-add" type="button">
-                                                <i class="fa fa-plus text-blue"></i>
-                                            </button>
-                                        </span>
-                                    @else
-                                        <span class="input-group-btn">
-                                            <button class="btn btn-box-tool  btn-class-remove btn-remove" type="button">
-                                                <i class="fa fa-minus text-blue"></i>
-                                            </button>
-                                        </span>
-                                    @endif
-                                    </td>
-                                </tr>
-                            @endforeach
-                        @else
-                            <tr>
-                                <td>
-                                    <label for="educator[][class_ids]"></label>
-                                    <select name="educator[][class_ids]"
-                                            id="educator[][class_ids]"
-                                            class="select2"
-                                            style="width: 80%;"
-                                    >
-                                        @foreach($squads as $key => $squad )
-                                            <option value='{{$key}}'>{{$squad}}</option>
-                                        @endforeach
-                                    </select>
-                                </td>
-                                <td>
-                                    <label for="educator[][subject_ids]"></label>
-                                    <select name="educator[][subject_ids]"
-                                            id="educator[][subject_ids]"
-                                            class="select2"
-                                            style="width: 80%"
-                                    >
-                                        @foreach($subjects as $key => $subject )
-                                            <option value='{{$key}}'>{{$subject}}</option>
-                                        @endforeach
-                                    </select>
-                                </td>
-                                <td style="text-align: center">
-                                    <span class="input-group-btn">
-                                        <button class="btn btn-box-tool btn-class-add" type="button">
-                                            <i class="fa fa-plus text-blue"></i>
-                                        </button>
-                                    </span>
-                                </td>
-                            </tr>
-                        @endif
-                        </tbody>
-                    </table>
-                </div>
-            </div>
             @include('partials.multiple_select', [
                'label' => '所属组',
                'id' => 'educator[team_id]',

@@ -33,6 +33,7 @@ $(document).on('click', '.btn-mobile-add', function (e) {
         .removeClass('btn-mobile-add').addClass('btn-mobile-remove')
         .html('<i class="fa fa-minus text-blue"></i>');
     var $mobile = $tbody.find('tr:last input[class="form-control"]');
+
     $formEducator.parsley().destroy();
     $mobile.attr('pattern', '/^1[0-9]{10}$/');
     $mobile.attr('required', 'true');
@@ -54,6 +55,9 @@ $(document).on('click', '.btn-mobile-add', function (e) {
     }
     return false;
 });
+
+
+
 // 班级、科目
 $(document).on('click', '.btn-class-add', function (e) {
     e.preventDefault();
