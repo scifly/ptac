@@ -10,7 +10,7 @@ $(function () {
                 title: $.trim($(this).find('span').text()), // use the element's text as the event title
                 id: $(this).find('span').attr('id'),
                 user_id: id
-            }
+            };
             // store the Event Object in the DOM element so we can get to it later
             $(this).data('eventObject', eventObject);
             // make the event draggable using jQuery UI 拖动
@@ -23,23 +23,6 @@ $(function () {
     }
 
     init_events($('#external-events li.external-event'));
-
-    // /**
-    //  * 分离出ajax请求
-    //  */
-    // function ajaxlist(requestType, ajaxUrl, data) {
-    //     $.ajax({
-    //         type: requestType,
-    //         dataType: 'json',
-    //         url: ajaxUrl,
-    //         data: data,
-    //         success: function (result) {
-    //             if (result.statusCode === 200) {
-    //                 }
-    //             }
-    //         }
-    //     })
-    // }
 
     /**
      * 初始化日历事件
@@ -108,6 +91,18 @@ $(function () {
             });
         },
 
+        // /**
+        //  *
+        //  * 日历事件ajax请求
+        //  */
+        // ajaxRequest: function(requestType,url,data){
+        //     $.ajax({
+        //         type: requestType,
+        //         dataType: 'json',
+        //         url: url,
+        //         data: data
+        //     });
+        // },
         /**
          * 日程事件单击事件
          * @returns {boolean}
@@ -280,7 +275,6 @@ $(function () {
         }
 
         $('.ispublic-form input[name="ispublic"]').change(function () {
-            //console.log($('input[name="iscourse"]:checked').val());
             if ($('.ispublic-form  input[name="ispublic"]:checked').val() == 1) {
                 $(".iscourse-form").show();
             } else {
@@ -289,7 +283,6 @@ $(function () {
         });
 
         $('.iscourse-form input[name="iscourse"]').change(function () {
-            //console.log($('input[name="iscourse"]:checked').val());
             if ($('.iscourse-form input[name="iscourse"]:checked').val() == 1) {
                 $(".educator_id-form").show();
                 $(".subject_id-form").show();
@@ -322,7 +315,8 @@ $(function () {
                         if (result.statusCode === 200) {
                             var $obj = eval(result.message);
                             event.append("<span id= '" + $obj.id + "'>" + $obj.title + "</span>");
-                            $('#external-events').prepend(event);
+                            event.append('<div class="tools"><i class="fa fa-trash-o trash-list"></i></div>');
+                            $('#external-events').append(event);
                             init_events(event);
                         }
                         $('#formEvent')[0].reset();
@@ -338,12 +332,11 @@ $(function () {
      * 删除列表
      */
     var listId, row;
-    $('.trash-list').off('click').click(function () {
+    $(document).on('click', '.trash-list', function () {
         listId = $(this).parent().prev('span').attr('id');
         row = $(this).parent().parent('li');
         $('#modal-dialog').modal({backdrop: true});
     });
-
     $('#confirm-delete').on('click', function () {
         $.ajax({
             type: 'DELETE',

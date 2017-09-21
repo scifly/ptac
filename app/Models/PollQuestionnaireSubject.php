@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Helpers\ModelTrait;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
@@ -27,25 +28,50 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\PollQuestionnaireChoice[] $pollquestionnairechoice
  */
 class PollQuestionnaireSubject extends Model {
+
+    use ModelTrait;
     //
     protected $table = 'poll_questionnaire_subjects';
     
     protected $fillable = ['subject', 'pq_id', 'subject_type', 'created_at', 'updated_at'];
-    
-    public function pollquestionnaireAnswer() {
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function poll_questionnaire_answer() {
         return $this->hasOne('App\Models\PollQuestionnaireAnswer'
             , 'pqs_id', 'id');
     }
-    
-    public function pollquestionnairechoice() {
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function poll_questionnaire_choice() {
         return $this
             ->hasMany("App\Models\PollQuestionnaireChoice"
                 , 'pqs_id', 'id');
     }
-    
-    public function pollquestionnaire() {
-        return $this->hasOne('App\Models\PollQuestionnaire'
-            , 'pq_id', 'id');
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function poll_questionnaire() {
+        return $this->belongsTo('App\Models\PollQuestionnaire'
+            , 'pq_id');
+    }
+
+    /**
+     * 删除问卷题目
+     *
+     * @param $id
+     * @return bool|null
+     */
+    public function remove($id) {
+
+        $pqSubject = $this->find($id);
+        if (!$pqSubject) { return false; }
+        return $this->removable($this, $id) ? $pqSubject->delete() : false;
+
     }
 
     public function getType($type){
@@ -62,12 +88,12 @@ class PollQuestionnaireSubject extends Model {
         }
     }
 
-    public function datatable() {
+    public function dataTable() {
 
         $columns = [
             ['db' => 'PollQuestionnaireSubject.id', 'dt' => 0],
             ['db' => 'PollQuestionnaireSubject.subject', 'dt' => 1],
-            ['db' => 'PollQuestionnaire.name as pqname', 'dt' => 2],
+            ['db' => 'PollQuestionnaire.name as pq_name', 'dt' => 2],
             [
                 'db' => 'PollQuestionnaireSubject.subject_type', 'dt' => 3,
                 'formatter' => function ($d) {
@@ -89,7 +115,7 @@ class PollQuestionnaireSubject extends Model {
             [
                 'table' => 'poll_questionnaires',
                 'alias' => 'PollQuestionnaire',
-                'type' => 'INNER',
+                'type' => 'left',
                 'conditions' => [
                     'PollQuestionnaire.id = PollQuestionnaireSubject.pq_id'
                 ]

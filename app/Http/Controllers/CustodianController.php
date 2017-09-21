@@ -21,16 +21,14 @@ use Illuminate\Support\Facades\Request;
  */
 class CustodianController extends Controller {
     
-    protected $custodian, $department, $group, $user,$mobile,$departmentUser,$student,$custodianStudent;
+    protected $custodian, $department, $group, $departmentUser,$student,$custodianStudent;
     
-    function __construct(Custodian $custodian, Department $department, Group $group, User $user,Mobile $mobile,
+    function __construct(Custodian $custodian, Department $department, Group $group,
     DepartmentUser $departmentUser,Student $student,CustodianStudent $custodianStudent) {
     
         $this->custodian = $custodian;
         $this->department = $department;
         $this->group = $group;
-        $this->user = $user;
-        $this->mobile = $mobile;
         $this->departmentUser = $departmentUser;
         $this->student =$student;
         $this->custodianStudent = $custodianStudent;
@@ -88,9 +86,7 @@ class CustodianController extends Controller {
      */
     public function edit($id) {
         $custodian = $this->custodian->find($id);
-        $user['user'] = $this->user->find($custodian->user_id);
-        $user['expiry'] = $custodian->expiry;
-        $mobiles = $this->mobile->where('user_id',$custodian->user_id)->get();
+
         $departmentIds = $this->departmentUser->where('user_id',$custodian->user_id)->get();
         foreach ($departmentIds as $key=>$value)
         {
@@ -98,29 +94,26 @@ class CustodianController extends Controller {
             $selectedDepartments[$department['id']] = $department['name'];
         }
 
-        $custodianStudent = $this->custodianStudent->where('custodian_id',$custodian->id)->get()->toArray();
-        if($custodianStudent !=null)
+        $custodianStudent = $this->custodianStudent->where('custodian_id',$custodian->id)->get();
+        foreach ($custodianStudent as $key=>$value)
         {
-            foreach ($custodianStudent as $key=>$value)
-            {
-                $studentId = $this->student->find($value['student_id']);
-                $selectedStudents[$studentId->id] = $studentId->user->realname;
-            }
-        }else{
-            $selectedStudents = [];
+            $relationship[$value['student_id']] = $value['relationship'];
         }
 
-        if (!$user) {
+        foreach ($custodian->students as $key => $value)
+        {
+            $studentId = $this->student->find($value['id']);
+            $selectedStudents[$studentId->id] = $studentId->user->realname;
+        }
+        if (!$custodian) {
             return $this->notFound();
         }
         return $this->output(__METHOD__, [
-            'custodianStudent' => $custodianStudent,
             'custodian' => $custodian,
-            'user' => $user,
-            'mobiles' => $mobiles,
 //            'departments'=>$this->department->departments([1]),
             'selectedDepartments' => $selectedDepartments,
             'selectedStudents' => $selectedStudents,
+            'relationship' => $relationship
         ]);
         
     }

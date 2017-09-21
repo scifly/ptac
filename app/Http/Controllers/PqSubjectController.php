@@ -29,7 +29,7 @@ class PqSubjectController extends Controller
     public function index() {
 
         if (Request::get('draw')) {
-            return response()->json($this->pqSubject->datatable());
+            return response()->json($this->pqSubject->dataTable());
         }
         return $this->output(__METHOD__);
 
@@ -77,16 +77,13 @@ class PqSubjectController extends Controller
     /**
      * 编辑题目
      * @param $id
-     * @return \Illuminate\Http\Response
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function edit($id) {
 
         $pqSubject = $this->pqSubject->find($id);
         if (!$pqSubject) { return $this->notFound(); }
-
-        return $this->output(__METHOD__, [
-            'pqSubject' => $pqSubject,
-        ]);
+        return $this->output(__METHOD__, ['pqSubject' => $pqSubject]);
 
     }
 
@@ -114,7 +111,7 @@ class PqSubjectController extends Controller
 
         $pqSubject = $this->pqSubject->find($id);
         if (!$pqSubject) { return $this->notFound(); }
-        return $pqSubject->delete() ? $this->succeed() : $this->fail();
+        return $pqSubject->remove($id) ? $this->succeed() : $this->fail('失败：该题目存在有效关联数据，不能删除');
 
     }
 }

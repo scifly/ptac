@@ -30,9 +30,7 @@
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
-                    {!! Form::datetimeLocal('start', null, [
-                        'class' => 'form-control',
-                    ]) !!}
+                    {!! Form::text('start', null, ['class' => 'form-control datepicker']) !!}
                 </div>
             </div>
             <div class="form-group">
@@ -40,9 +38,7 @@
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
-                    {!! Form::datetimeLocal('end', null, [
-                        'class' => 'form-control',
-                    ]) !!}
+                    {!! Form::text('end', null, ['class' => 'form-control datepicker']) !!}
                 </div>
             </div>
             @include('partials.enabled', [
