@@ -294,7 +294,7 @@ class Department extends Model {
         
     }
 
-    public function tree1($ids) {
+    public function selectedNodes($ids) {
 
         $departments = $this->whereIn('id',$ids)->get()->toArray();
         $data = [];

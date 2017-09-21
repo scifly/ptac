@@ -33,12 +33,15 @@ class EducatorComposer {
     }
 
     public function compose(View $view) {
-
+        $squads = $this->squad->pluck('name','id')->toArray();
+        array_unshift($squads, '(请选择)');
+        $subjects = $this->subject->pluck('name', 'id')->toArray();
+        array_unshift($subjects, '(请选择)');
         $view->with([
             'users' => $this->user->pluck('realname', 'id'),
             'schools' => $this->school->pluck('name', 'id'),
-            'squads' => $this->squad->pluck('name','id'),
-            'subjects' => $this->subject->pluck('name', 'id'),
+            'squads' => $squads,
+            'subjects' => $subjects,
             'groups' => $this->group->pluck('name', 'id'),
             'teams' => $this->team->pluck('name', 'id')
 

@@ -54,7 +54,7 @@ var dept = {
             // department.$tree.jstree().deselect_node([nodeId]);
         });
     },
-    tree: function() {
+    tree: function(uri) {
         var $selectedDepartmentIds = $('#selectedDepartmentIds');
         // 获取 后台传过来的 已选择的部门 input 数组
         var selectedNodes = $selectedDepartmentIds.val();
@@ -79,7 +79,7 @@ var dept = {
                 multiple: true,
                 animation: 0,
                 data: {
-                    url: 'http://sandbox.dev:8080/ptac/public/educators/edit/20',
+                    url: page.siteRoot() + uri,
                     type: 'POST',
                     dataType: 'json',
                     data: function (node) {
@@ -120,8 +120,8 @@ var dept = {
             dept.$tree().jstree().select_node(selectedDepartmentIds);
         })
     },
-    modify: function() {
-        $('#add-department').on('click', function() { dept.tree(); });
+    modify: function(uri) {
+        $('#add-department').on('click', function() { dept.tree(uri); });
     },
     search: function() {
         $('#search_node').keyup(function () {
@@ -175,13 +175,13 @@ var dept = {
             dept.$todoList.empty();
         });
     },
-    init: function() {
+    init: function(uri) {
         //部门
         //点击 表单中的部门修改按钮
         dept.$tree().empty();
         dept.$todoList().empty();
         // 初始化“修改按钮”
-        dept.modify();
+        dept.modify(uri);
         //节点搜索功能
         dept.search();
         //右侧选中节点中的 删除图标 点击后移除本身并且将左侧取消选中
