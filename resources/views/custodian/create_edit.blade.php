@@ -65,7 +65,7 @@
                 </div>
             </div>
 
-            @include('educator.mobile')
+            @include('partials.mobile')
             <div class="form-group">
                 {{ Form::label('user[telephone]', '座机', [
                 'class' => 'col-sm-3 control-label'
@@ -147,7 +147,7 @@
                                     </td>
                                     <td>
                                         <input type="text" name="relationship[]"
-                                               value="{{$relationship[$student['pivot']['student_id']]}}">
+                                               value="{{$relationships[$student['pivot']['student_id']]}}">
                                     </td>
                                     <td style="text-align: center">
 <span class="input-group-btn">

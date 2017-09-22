@@ -43,7 +43,7 @@ $(function() {
 
     $(document).on('click', '.tab', function() {
         // 获取被点击卡片的url
-        var url = $(this).attr('data-url');
+        var uri = $(this).attr('data-url');
         // 获取所有卡片
         var $tabPanes = $('.card');
         // 获取状态为active的卡片
@@ -53,7 +53,7 @@ $(function() {
             // 清空所有卡片的内容
             $.each($tabPanes, function() { $(this).html(''); });
             // 获取状态为active的卡片内容
-            page.getTabContent($activeTabPane, page.siteRoot() + url);
+            page.getTabContent($activeTabPane, uri);
         }
     });
     // 获取状态为active的卡片的url

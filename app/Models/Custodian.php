@@ -101,7 +101,7 @@ class Custodian extends Model {
                 unset($user);
                 $custodianData = [
                     'user_id' => $u->id,
-                    'expiry' => $request->input('expiry')
+                    'expiry' => '1970-01-01 00:00:00'
                 ];
 
                 # 向mobile表中添加工具

@@ -53,7 +53,7 @@
                     {!! Form::label('user[gender]', '女') !!}
                 </div>
             </div>
-            @include('educator.mobile')
+            @include('partials.mobile')
             <div class="form-group">
                 {{ Form::label('user[telephone]', '座机', [
                     'class' => 'col-sm-3 control-label'
