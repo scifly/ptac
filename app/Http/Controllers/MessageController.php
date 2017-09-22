@@ -143,17 +143,41 @@ class MessageController extends Controller {
 
     }
 
-    public function getDepartmentUsers(){
-       dd($this->checkRole());
+    public function getDepartmentUsers() {
+
+        return $this->department->showDepartments($this->checkRole());
     }
 
-    private function checkRole($userId=1){
+    private function checkRole($userId = 1) {
+
         $user = User::find($userId);
         $departments = Array();
-        foreach ($user->departments as $department){
-            $departments[$department['id']] = $department['parent_id'];
+        $childDepartmentId = Array();
+        foreach ($user->departments as $department) {
+            $departments[] = $department['id'];
         }
-        dd($departments);
+        foreach ($departments as $departmentId) {
+            $childDepartmentId = $this->departmentChildIds($departmentId);
+        }
+        $departmentIds = array_merge($departments,$childDepartmentId);
+        return array_unique($departmentIds);
+    }
+
+    /**
+     * 获取该部门下所有部门id
+     * @param $id
+     * @return array
+     */
+    private function departmentChildIds($id) {
+        static $childIds = Array();
+        $firstIds = Department::where('parent_id', $id)->get(['id'])->toArray();
+        if ($firstIds) {
+            foreach ($firstIds as $firstId) {
+                $childIds[] = $firstId['id'];
+                $this->departmentChildIds($firstId['id']);
+            }
+        }
+        return $childIds;
     }
 
 //    public function getDepartmentUsers() {
@@ -184,23 +208,6 @@ class MessageController extends Controller {
 //        dd($userReceiveMessages);
 //        return view('message.wechat_messgae', [$userReceiveMessages]);
 //    }
-
-    /**
-     * 获取该部门下所有部门id
-     * @param $id
-     * @return array
-     */
-    private function departmentChildIds($id) {
-        static $childIds = Array();
-        $firstIds = Department::where('parent_id', $id)->get(['id'])->toArray();
-        if ($firstIds) {
-            foreach ($firstIds as $firstId) {
-                $childIds[] = $firstId['id'];
-                $this->departmentChildIds($firstId['id']);
-            }
-        }
-        return $childIds;
-    }
 
     private function userReceiveMessages($userId, $messageType) {
         //显示当前用户能接受到的消息

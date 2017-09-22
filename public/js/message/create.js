@@ -50,5 +50,5 @@ $('body').on('click', '.delete', function () {
     $pre.append('<input type="hidden" name="del_ids[]" value="' + $(this).parent().siblings().attr('id') + '">');
 });
 
-dept.init();
+dept.init('messages/get_depart_users');
 
