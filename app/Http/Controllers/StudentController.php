@@ -107,16 +107,7 @@ class StudentController extends Controller {
         }
 
         $selectedDepartments = $this->department->selectedNodes($selectedDepartmentIds);
-
-        foreach ($student->custodians as $key=>$value)
-            {
-                # 被选中的监护人信息
-                $custodianId = $this->custodian->find($value['id']);
-                # 被选中的监护人
-                $selectedCustodians[$value['id']] = $custodianId->user->realname;
-
-            }
-
+        
         # 查询学生信息
         if (!$student) { return $this->notFound(); }
 
@@ -125,7 +116,7 @@ class StudentController extends Controller {
             'student' => $student,
             'selectedDepartmentIds' => implode(',', $selectedDepartmentIds),
             'selectedDepartments' => $selectedDepartments,
-            'selectedCustodians' => $selectedCustodians,
+
         ]);
 
     }

@@ -99,15 +99,7 @@ class CustodianController extends Controller {
         foreach ($departments as $department) {
             $selectedDepartmentIds[] = $department->id;
         }
-
         $selectedDepartments = $this->department->selectedNodes($selectedDepartmentIds);
-
-        $selectedStudents = [];
-        foreach ($custodian->students as $key => $value)
-        {
-            $studentId = $this->student->find($value['id']);
-            $selectedStudents[$studentId->id] = $studentId->user->realname;
-        }
 
         if (!$custodian) {
             return $this->notFound();
@@ -117,7 +109,7 @@ class CustodianController extends Controller {
             'custodian' => $custodian,
             'selectedDepartmentIds' => implode(',', $selectedDepartmentIds),
             'selectedDepartments' => $selectedDepartments,
-            'selectedStudents' => $selectedStudents,
+
 
         ]);
         
