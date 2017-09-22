@@ -331,7 +331,6 @@ class Educator extends Model {
                 $userData = [
                     'username' => $userInputData['username'],
                     'group_id' => $userInputData['group_id'],
-                    'password' => bcrypt($userInputData['password']),
                     'email' => $userInputData['email'],
                     'realname' => $userInputData['realname'],
                     'gender' => $userInputData['gender'],

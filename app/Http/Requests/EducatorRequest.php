@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\Mobiles;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -36,8 +37,6 @@ class EducatorRequest extends FormRequest {
         $rules =  [
 
             'educator.school_id' => 'required|integer',
-//            'classSubject' => 'required|array',
-        //            'educator.subject_ids' => 'required|array',
             'user.group_id' => 'required|integer',
 //            'user.username' => 'required|string|unique:users,username,' .
 //                $this->input('user_id') . ',id',
@@ -46,7 +45,10 @@ class EducatorRequest extends FormRequest {
             'user.enabled' => 'required|boolean',
             'user.email' => 'nullable|email|unique:users,email,' .
                 $this->input('user_id') . ',id',
-            'user.password' => 'required|string|min:3',
+            'user.password' => 'string|min:3',
+            'mobile.*' => [
+                'required',new Mobiles(),
+            ],
         //            'mobile.*.number' => 'required|string|size:11|regex:/^0?(13|14|15|17|18)[0-9]{9}$/|' .
         //                'unique:mobiles,mobile,' . $this->input('mobile.*.id') . ',id',
         //            'mobile.*.isdefault' => 'required|boolean',
