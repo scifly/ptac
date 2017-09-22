@@ -2,41 +2,42 @@
 
 namespace App\Http\ViewComposers;
 
-use App\Models\Department;
 use App\Models\Group;
-use App\Models\Student;
 use App\Models\User;
+use App\Models\Student;
 use Illuminate\Contracts\View\View;
 
 class CustodianComposer {
+
+    protected $group,$user,$student;
+
     
-    protected $group, $user, $student, $department;
-    
-    
-    public function __construct(Group $group, User $user, Student $student, Department $department) {
+    public function __construct(Group $group,User $user,Student $student) {
         
         $this->group = $group;
         $this->user = $user;
         $this->student = $student;
-        $this->department = $department;
         
     }
     
-    public function compose(View $view) {
+    public function compose(View $view)
+    {
         $Students = Student::with('user')->get()->toArray();
-        if (!empty($Students)) {
-            foreach ($Students as $k => $v) {
+        if(!empty($Students))
+        {
+            foreach ($Students as $k=>$v)
+            {
                 $students[$v['id']] = $v['user']['realname'];
             }
         }
-        
+
         $view->with([
+            'user' => $this->user->pluck('realname','id'),
 //            'departments' => $this->department->departments([1]),
-            'departments' => $this->department->pluck('name', 'id'),
             'groups' => $this->group->pluck('name', 'id'),
             'students' => $students
         ]);
-        
+
     }
     
 }

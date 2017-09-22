@@ -125,6 +125,7 @@ class EducatorController extends Controller {
         }
 
         $selectedDepartments = $this->department->selectedNodes($selectedDepartmentIds);
+
         return $this->output(__METHOD__, [
             'mobiles' => $educator->user->mobiles,
             'educator' => $educator,

@@ -105,7 +105,7 @@ class Department extends Model {
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function users() { return $this->belongsToMany('App\Models\Department', 'departments_users'); }
+    public function users() { return $this->belongsToMany('App\Models\User', 'departments_users'); }
     
     /**
      * 返回上级部门对象
@@ -401,7 +401,56 @@ class Department extends Model {
         return $data;
         
     }
-    
+
+    public function showDepartments($ids) {
+
+        $departments = $this->whereIn('id',$ids)->get()->toArray();
+        $departmentParentIds = Array();
+        $departmentUsers = Array();
+        foreach ($departments as $key => $department){
+            $departmentParentIds[] = $department['id'];
+        }
+        foreach ($departmentParentIds as $departmentId) {
+            $department = Department::find($departmentId);
+            foreach ($department->users as $user) {
+                $departmentUsers[] = [
+                    'id' => 'UserId_' . $user['id'],
+                    'parent' => $departmentId,
+                    'text' => $user['username'],
+                    'icon' => 'fa fa-user',
+                    'type' => 'user'
+                ];
+            }
+        }
+        $data = [];
+        foreach ($departments as $department) {
+            $parentId = isset($department['parent_id']) && in_array($department['parent_id'], $departmentParentIds)? $department['parent_id'] : '#';
+            $text = $department['name'];
+            $departmentType = DepartmentType::whereId($department['department_type_id'])->first()->name;
+            switch ($departmentType) {
+                case '根': $type = 'root';  $icon = 'fa fa-sitemap'; break;
+                case '运营': $type = 'company';  $icon = 'fa fa-building'; break;
+                case '企业': $type = 'corp';  $icon = 'fa fa-weixin'; break;
+                case '学校': $type = 'school';  $icon = 'fa fa-university'; break;
+                case '年级': $type = 'grade';  $icon = 'fa fa-users'; break;
+                case '班级': $type = 'class';  $icon = 'fa fa-user'; break;
+                default: $type = 'other';  $icon = 'fa fa-list'; break;
+            }
+            $data[] = [
+                'id' => $department['id'],
+                'parent' => $parentId,
+                'text' => $text,
+                'icon' => $icon,
+                'type' => $type
+            ];
+        }
+        foreach ($departmentUsers as $departmentUser){
+        $data[] = $departmentUser;
+        }
+        return $data;
+
+    }
+
     /**
      * 判断指定的节点能否移至指定的节点下
      *
