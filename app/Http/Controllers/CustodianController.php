@@ -94,18 +94,14 @@ class CustodianController extends Controller {
         }
         $custodian = $this->custodian->find($id);
 
+        $departments = $custodian->user->departments;
         $selectedDepartmentIds = [];
-        foreach ($custodian->user->departments as $department) {
+        foreach ($departments as $department) {
             $selectedDepartmentIds[] = $department->id;
         }
 
         $selectedDepartments = $this->department->selectedNodes($selectedDepartmentIds);
 
-        $custodianStudent = $this->custodianStudent->where('custodian_id',$custodian->id)->get();
-        foreach ($custodianStudent as $key=>$value)
-        {
-            $relationship[$value['student_id']] = $value['relationship'];
-        }
         $selectedStudents = [];
         foreach ($custodian->students as $key => $value)
         {
@@ -122,7 +118,7 @@ class CustodianController extends Controller {
             'selectedDepartmentIds' => implode(',', $selectedDepartmentIds),
             'selectedDepartments' => $selectedDepartments,
             'selectedStudents' => $selectedStudents,
-            'relationship' => $relationship
+
         ]);
         
     }

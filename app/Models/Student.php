@@ -74,7 +74,12 @@ class Student extends Model {
         return $this->belongsToMany('App\Models\Custodian', 'custodians_students');
         
     }
-    
+
+    public function custodianStudents()
+    {
+        return $this->hasMany('App\Models\CustodianStudent');
+    }
+
     /**
      * 获取指定学生对应的用户对象
      *

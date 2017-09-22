@@ -21,7 +21,7 @@
     <link rel="stylesheet" href="{{ URL::asset('js/plugins/datatables/datatables.min.css') }}">
     <link rel="stylesheet" href="{{ URL::asset('css/wapSite.css') }}">
     {{--日历--}}
-    <link rel="stylesheet" href="{{ URL::asset('js/plugins/fullcalendar/css/fullcalendar.min.css') }}">
+    <link rel="stylesheet" href="{{ URL::asset('Scripts') }}">
     <link rel="stylesheet" href="{{ URL::asset('js/plugins/fullcalendar/css/jquery-ui.min.css') }}">
     {{--审核详情--}}
     <link rel="stylesheet" href="{{ URL::asset('css/procedure_info.css') }}">
@@ -29,7 +29,7 @@
     <link rel="stylesheet" href="{{ URL::asset('css/imgInput.css') }}">
     <!-- fileinput-->
     <link rel="stylesheet" href="{{ URL::asset('js/plugins/fileinput/css/fileinput.min.css') }}">
-    <link rel="stylesheet" href="{{ URL::asset('js/plugins/fileinput/themes/explorer/theme.css') }}">
+    <link rel="stylesheet" href="{{ URL::asset('Scripts') }}">
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -438,7 +438,7 @@
 <script src="{{ URL::asset('js/plugins/switchery/switchery.min.js') }}"></script>
 <script src="{{ URL::asset('js/switcher.init.js') }}"></script>
 <script src="{{ URL::asset('js/plugins/datatables/datatables.min.js') }}"></script>
-<script src="{{ URL::asset('js/plugins/datatables/dataTables.checkboxes.min.js') }}"></script>
+<script src="{{ URL::asset('Scripts') }}"></script>
 <script src="{{ URL::asset('js/admin.crud.js') }}"></script>
 <script src="{{ URL::asset('js/tree.crud.js') }}"></script>
 <script src="{{ URL::asset('js/department.tree.js') }}"></script>
