@@ -14,9 +14,9 @@ class DepartmentEventSubscriber {
     
     protected $department, $departmentType;
     
-    function __construct(Department $department, DepartmentType $departmentType) { 
+    function __construct(Department $department, DepartmentType $departmentType) {
         
-        $this->department = $department; 
+        $this->department = $department;
         $this->departmentType = $departmentType;
         
     }
@@ -34,14 +34,76 @@ class DepartmentEventSubscriber {
     }
     
     /**
+     * 创建部门
+     *
+     * @param $event
+     * @param string $type 部门类型名称
+     * @param string $model 数据模型名称
+     * @param string|null $belongsTo 从属的模型名称
+     * @return bool
+     */
+    private function createDepartment($event, $type, $model, $belongsTo = NULL) {
+        
+        
+        $$model = $event->{$model};
+        $data = [
+            'parent_id' => isset($belongsTo) ?
+                $$model->{$belongsTo}->department_id :
+                $this->department->where('parent_id', NULL)->first()->id,
+            'name' => $$model->name,
+            'remark' => $$model->remark,
+            'department_type_id' => $this->typeId($type),
+            'order' => $this->department->all()->max('order') + 1,
+            'enabled' => $$model->enabled
+        ];
+        return $this->department->store($data, true);
+        
+    }
+    
+    /**
+     * 根据部门类型名称获取部门类型ID
+     *
+     * @param $name
+     * @return int|mixed
+     */
+    private function typeId($name) {
+        
+        return $this->departmentType->where('name', $name)->first()->id;
+        
+    }
+    
+    /**
      * 更新运营者对应的部门
      *
      * @param $event
      * @return bool
      */
     public function onCompanyUpdated($event) {
-  
+        
         return $this->updateDepartment($event, '运营', 'company');
+        
+    }
+    
+    /**
+     * 更新部门
+     *
+     * @param $event
+     * @param string $type 部门类型名称
+     * @param string $model 数据模型名称
+     * @return bool
+     */
+    private function updateDepartment($event, $type, $model) {
+        
+        $$model = $event->{$model};
+        $department = $event->{$model}->department;
+        $data = [
+            'parent_id' => $department->parent_id,
+            'name' => $$model->name,
+            'remark' => $$model->remark,
+            'department_type_id' => $this->typeId($type),
+            'enabled' => $$model->enabled
+        ];
+        return $this->department->modify($data, $$model->department_id);
         
     }
     
@@ -58,13 +120,26 @@ class DepartmentEventSubscriber {
     }
     
     /**
+     * 删除部门
+     *
+     * @param $event
+     * @param $model
+     * @return bool|null
+     */
+    private function deleteDepartment($event, $model) {
+        
+        return $this->department->remove($event->{$model}->department_id);
+        
+    }
+    
+    /**
      * 创建企业对应的部门
      *
      * @param $event
      * @return bool
      */
     public function onCorpCreated($event) {
-
+        
         return $this->createDepartment($event, '企业', 'corp', 'company');
         
     }
@@ -76,7 +151,7 @@ class DepartmentEventSubscriber {
      * @return bool
      */
     public function onCorpUpdated($event) {
-    
+        
         return $this->updateDepartment($event, '企业', 'corp');
         
     }
@@ -100,7 +175,7 @@ class DepartmentEventSubscriber {
      * @return bool
      */
     public function onSchoolCreated($event) {
-
+        
         return $this->createDepartment($event, '学校', 'school', 'corp');
         
     }
@@ -112,7 +187,7 @@ class DepartmentEventSubscriber {
      * @return bool
      */
     public function onSchoolUpdated($event) {
-
+        
         return $this->updateDepartment($event, '学校', 'school');
         
     }
@@ -124,7 +199,7 @@ class DepartmentEventSubscriber {
      * @return bool|null
      */
     public function onSchoolDeleted($event) {
-
+        
         return $this->deleteDepartment($event, 'school');
         
     }
@@ -136,7 +211,7 @@ class DepartmentEventSubscriber {
      * @return bool
      */
     public function onGradeCreated($event) {
-
+        
         return $this->createDepartment($event, '年级', 'grade', 'school');
         
     }
@@ -184,7 +259,7 @@ class DepartmentEventSubscriber {
      * @return bool
      */
     public function onClassUpdated($event) {
-
+        
         return $this->updateDepartment($event, '班级', 'class');
         
     }
@@ -264,81 +339,6 @@ class DepartmentEventSubscriber {
         $events->listen($e . 'ClassDeleted', $l . 'onClassDeleted');
         
         $events->listen($e . 'MenuMoved', $l . 'onMenuMoved');
-
-    }
-    
-    /**
-     * 根据部门类型名称获取部门类型ID
-     *
-     * @param $name
-     * @return int|mixed
-     */
-    private function typeId($name) {
-    
-        return $this->departmentType->where('name', $name)->first()->id;
-        
-    }
-    
-    /**
-     * 创建部门
-     *
-     * @param $event
-     * @param string $type 部门类型名称
-     * @param string $model 数据模型名称
-     * @param string|null $belongsTo 从属的模型名称
-     * @return bool
-     */
-    private function createDepartment($event, $type, $model, $belongsTo = NULL) {
-        
-        
-        $$model = $event->{$model};
-        $data = [
-            'parent_id' => isset($belongsTo) ?
-                $$model->{$belongsTo}->department_id :
-                $this->department->where('parent_id', NULL)->first()->id,
-            'name' => $$model->name,
-            'remark' => $$model->remark,
-            'department_type_id' => $this->typeId($type),
-            'order' => $this->department->all()->max('order') + 1,
-            'enabled' => $$model->enabled
-        ];
-        return $this->department->store($data, true);
-        
-    }
-    
-    /**
-     * 更新部门
-     *
-     * @param $event
-     * @param string $type 部门类型名称
-     * @param string $model 数据模型名称
-     * @return bool
-     */
-    private function updateDepartment($event, $type, $model) {
-        
-        $$model = $event->{$model};
-        $department = $event->{$model}->department;
-        $data = [
-            'parent_id' => $department->parent_id,
-            'name' => $$model->name,
-            'remark' => $$model->remark,
-            'department_type_id' => $this->typeId($type),
-            'enabled' => $$model->enabled
-        ];
-        return $this->department->modify($data, $$model->department_id);
-        
-    }
-    
-    /**
-     * 删除部门
-     *
-     * @param $event
-     * @param $model
-     * @return bool|null
-     */
-    private function deleteDepartment($event, $model) {
-
-        return $this->department->remove($event->{$model}->department_id);
         
     }
     

@@ -41,28 +41,29 @@
                             </div>
                         </div>
                         @if ($val->operator_user_id)
-                        <div class="row clearfix">
-                            <div class="col-sm-4 text-right">操作人员：</div>
-                            <div class="col-sm-8">{{ link_to('users/show/' . $val->operator_user_id, $val->operator_user->realname) }}</div>
-                        </div>
-                        <div class="row clearfix">
-                            <div class="col-sm-4 text-right">操作人留言：</div>
-                            <div class="col-sm-8">{{ $val->operator_msg }}</div>
-                        </div>
-                        <div class="row clearfix">
-                            <div class="col-sm-4 text-right">操作人媒体信息：</div>
-                            <div class="col-sm-8">
-                                $operator_medias 信息->尚未进行处理。
-                                {{--{{$procedureLog->operator_msg}}--}}
+                            <div class="row clearfix">
+                                <div class="col-sm-4 text-right">操作人员：</div>
+                                <div class="col-sm-8">{{ link_to('users/show/' . $val->operator_user_id, $val->operator_user->realname) }}</div>
                             </div>
-                        </div>
+                            <div class="row clearfix">
+                                <div class="col-sm-4 text-right">操作人留言：</div>
+                                <div class="col-sm-8">{{ $val->operator_msg }}</div>
+                            </div>
+                            <div class="row clearfix">
+                                <div class="col-sm-4 text-right">操作人媒体信息：</div>
+                                <div class="col-sm-8">
+                                    $operator_medias 信息->尚未进行处理。
+                                    {{--{{$procedureLog->operator_msg}}--}}
+                                </div>
+                            </div>
                         @endif
                         <div class="row clearfix">
                             <div class="col-sm-4 text-right">审核状态：</div>
-                            <div class="col-sm-8">@if ($val->step_status == 0)通过 @elseif ($val->step_status == 1)拒绝 @else 尚未处理 @endif</div>
+                            <div class="col-sm-8">@if ($val->step_status == 0)通过 @elseif ($val->step_status == 1)
+                                    拒绝 @else 尚未处理 @endif</div>
                         </div>
                         @if ($val->step_status == 2 && in_array($user_id,explode(',', $val->procedure_step->approver_user_ids)))
-                        {!! Form::open(['method' => 'post','id' => 'formProcedureLogDecision','data-parsley-validate' => 'true']) !!}
+                            {!! Form::open(['method' => 'post','id' => 'formProcedureLogDecision','data-parsley-validate' => 'true']) !!}
                             <input type="hidden" name="id" value="{{ $val->id }}">
                             <input type="hidden" name="procedure_id" value="{{ $val->procedure_id }}">
                             <input type="hidden" name="procedure_step_id" value="{{ $val->procedure_step_id }}">
@@ -98,7 +99,7 @@
                                     <input type="submit" value="拒绝" class="btn btn-default pull-right" id="cancel">
                                 </div>
                             </div>
-                        {!! Form::close() !!}
+                            {!! Form::close() !!}
                             <div class="modal fade" id="modalPic">
                                 <div class="modal-dialog">
                                     <div class="modal-content">
@@ -114,7 +115,8 @@
                                             <input type="file" name="medias[]" id="uploadFile" multiple>
                                         </div>
                                         <div class="modal-footer">
-                                            <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                                            <button type="button" class="btn btn-default" data-dismiss="modal">关闭
+                                            </button>
                                         </div>
                                     </div>
                                 </div>

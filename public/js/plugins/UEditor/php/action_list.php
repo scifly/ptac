@@ -65,6 +65,7 @@ return $result;
 /**
  * 遍历获取目录下的指定类型的文件
  * @param $path
+ * @param $allowFiles
  * @param array $files
  * @return array
  */

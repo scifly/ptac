@@ -97,7 +97,9 @@ class Icon extends Model {
     public function modify(array $data, $id) {
         
         $icon = $this->find($id);
-        if (!$icon) { return false; }
+        if (!$icon) {
+            return false;
+        }
         return $icon->update($data) ? true : false;
         
     }
@@ -111,7 +113,9 @@ class Icon extends Model {
     public function remove($id) {
         
         $icon = $this->find($id);
-        if (!$icon) { return false; }
+        if (!$icon) {
+            return false;
+        }
         return $icon->removable($this, $id) ? $icon->delete() : false;
         
     }

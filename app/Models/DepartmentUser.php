@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Models;
+
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -28,11 +29,11 @@ class DepartmentUser extends Model {
     protected $table = 'departments_users';
     
     protected $fillable = ['department_id', 'user_id', 'enabled'];
-
+    
     public function storeByUserId($userId, array $departmentIds) {
-
+        
         try {
-            $exception = DB::transaction(function() use ($userId, $departmentIds) {
+            $exception = DB::transaction(function () use ($userId, $departmentIds) {
                 foreach ($departmentIds as $departmentId) {
                     $this->create([
                         'user_id' => $userId,
@@ -49,9 +50,9 @@ class DepartmentUser extends Model {
     }
     
     public function storeByDepartmentId($departmentId, array $userIds) {
-    
+        
         try {
-            $exception = DB::transaction(function() use ($departmentId, $userIds) {
+            $exception = DB::transaction(function () use ($departmentId, $userIds) {
                 foreach ($userIds as $userId) {
                     $this->create([
                         'user_id' => $userId,

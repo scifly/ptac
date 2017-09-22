@@ -48,7 +48,7 @@ class ProcedureLog extends Model {
     const DT_PEND = '<span class="badge bg-orange">%s</span>';
     
     protected $table = 'procedure_logs';
-
+    
     protected $joins = [
         [
             'table' => 'procedures',
@@ -95,7 +95,7 @@ class ProcedureLog extends Model {
     public function operator_user() {
         return $this->belongsTo('App\Models\User')->select('id', 'realname');
     }
-
+    
     /**
      * 流程日志与流程
      */
@@ -109,7 +109,7 @@ class ProcedureLog extends Model {
     public function procedure_step() {
         return $this->belongsTo('App\Models\ProcedureStep');
     }
-
+    
     /**
      * 拆分initiator_media_ids、operator_media_ids,
      * @param $media_ids
@@ -129,7 +129,7 @@ class ProcedureLog extends Model {
     }
     
     public function datatable($where) {
-
+        
         $columns = [
             ['db' => 'ProcedureLog.first_log_id', 'dt' => 0],
             [
@@ -145,38 +145,38 @@ class ProcedureLog extends Model {
             [
                 'db' => 'ProcedureLog.step_status', 'dt' => 6,
                 'formatter' => function ($d, $row) {
-
+                    
                     switch ($d) {
-
+                        
                         case 0:
                             $status = sprintf(Datatable::DT_ON, '通过');
                             break;
-
+                        
                         case 1:
                             $status = sprintf(Datatable::DT_OFF, '拒绝');
                             break;
-
+                        
                         case 2:
                             $status = sprintf(self::DT_PEND, '待定');
                             break;
-
+                        
                         default:
                             $status = sprintf(Datatable::DT_OFF, '错误');
                             break;
                     }
-
+                    
                     $id = $row['first_log_id'];
-                    $showLink = '<a id = '. $id .' href="show/'.$id.'" class="btn btn-primary btn-icon btn-circle btn-xs" data-toggle="modal"><i class="fa fa-eye"></i></a>';
-
+                    $showLink = '<a id = ' . $id . ' href="show/' . $id . '" class="btn btn-primary btn-icon btn-circle btn-xs" data-toggle="modal"><i class="fa fa-eye"></i></a>';
+                    
                     return $status . Datatable::DT_SPACE . $showLink;
-
+                    
                 }
             ],
         ];
-
+        
         return Datatable::simple($this, $columns, $this->joins, $where);
     }
-
+    
     /**
      * 获取用户信息
      * @param $userId

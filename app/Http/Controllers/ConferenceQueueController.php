@@ -28,7 +28,7 @@ class ConferenceQueueController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function index() {
-    
+        
         if (Request::get('draw')) {
             return response()->json($this->conferenceQueue->datatable());
         }
@@ -68,7 +68,9 @@ class ConferenceQueueController extends Controller {
     public function show($id) {
         
         $conferenceQueue = $this->conferenceQueue->find($id);
-        if (!$conferenceQueue) { $this->notFound(); }
+        if (!$conferenceQueue) {
+            $this->notFound();
+        }
         return $this->output(__METHOD__, ['conferenceQueue' => $conferenceQueue]);
         
     }
@@ -82,7 +84,9 @@ class ConferenceQueueController extends Controller {
     public function edit($id) {
         
         $conferenceQueue = $this->conferenceQueue->find($id);
-        if (!$conferenceQueue) { $this->notFound(); }
+        if (!$conferenceQueue) {
+            $this->notFound();
+        }
         return $this->output(__METHOD__, ['conferenceQueue' => $conferenceQueue]);
     }
     
@@ -94,11 +98,13 @@ class ConferenceQueueController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(ConferenceQueueRequest $request, $id) {
-    
+        
         $conferenceQueue = $this->conferenceQueue->find($id);
-        if (!$conferenceQueue) { $this->notFound(); }
+        if (!$conferenceQueue) {
+            $this->notFound();
+        }
         return $this->conferenceQueue->modify($request, $id) ? $this->succeed() : $this->fail();
-    
+        
     }
     
     /**
@@ -108,11 +114,13 @@ class ConferenceQueueController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
-    
+        
         $conferenceQueue = $this->conferenceQueue->find($id);
-        if (!$conferenceQueue) { $this->notFound(); }
+        if (!$conferenceQueue) {
+            $this->notFound();
+        }
         return $this->conferenceQueue->remove($id) ? $this->succeed() : $this->fail();
-    
+        
     }
     
 }

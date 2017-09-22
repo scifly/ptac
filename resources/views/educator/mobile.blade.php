@@ -56,7 +56,8 @@
                                             </span>
                             @else
                                 <span class="input-group-btn">
-                                                <button class="btn btn-box-tool btn-remove btn-mobile-remove" type="button">
+                                                <button class="btn btn-box-tool btn-remove btn-mobile-remove"
+                                                        type="button">
                                                     <i class="fa fa-minus text-blue"></i>
                                                 </button>
                                             </span>
@@ -82,7 +83,7 @@
                         <input name="mobile[isdefault]" value="0" checked type="radio" class="minimal">
                     </td>
                     <td style="text-align: center;">
-                        <input name="mobile[0][enabled]"  checked type="checkbox" class="minimal">
+                        <input name="mobile[0][enabled]" checked type="checkbox" class="minimal">
                     </td>
                     <td style="text-align: center;">
                         <span class="input-group-btn">

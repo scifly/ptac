@@ -2,9 +2,10 @@
 
 namespace App\Models;
 
+use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use App\Facades\DatatableFacade as Datatable;
+
 /**
  * App\Models\ConferenceParticipant 与会者
  *
@@ -64,7 +65,7 @@ class ConferenceParticipant extends Model {
             ['db' => 'ConferenceParticipant.updated_at', 'dt' => 5],
             [
                 'db' => 'ConferenceParticipant.status', 'dt' => 6,
-                'formatter' => function($d) {
+                'formatter' => function ($d) {
                     return $d ? '<span class="badge bg-green">签到已到</span>' :
                         '<span class="badge bg-yellow">签到未到</span>';
                 }

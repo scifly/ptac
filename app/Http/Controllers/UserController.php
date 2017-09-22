@@ -168,6 +168,24 @@ class UserController extends Controller {
     }
     
     /**
+     * 验证文件是否上传成功
+     *
+     * @param $file
+     * @return array
+     */
+    private function checkFile(UploadedFile $file) {
+        
+        if (!$file->isValid()) {
+            return ['status' => false, 'msg' => '文件上传失败'];
+        }
+        if ($file->getClientSize() > $file->getMaxFilesize()) {
+            return ['status' => false, 'msg' => '图片过大'];
+        }
+        return ['status' => true];
+        
+    }
+    
+    /**
      * 将图片路径存入数据库
      *
      * @param $id
@@ -197,24 +215,6 @@ class UserController extends Controller {
             }
         }
         return response()->json($this->result);
-        
-    }
-    
-    /**
-     * 验证文件是否上传成功
-     *
-     * @param $file
-     * @return array
-     */
-    private function checkFile(UploadedFile $file) {
-        
-        if (!$file->isValid()) {
-            return ['status' => false, 'msg' => '文件上传失败'];
-        }
-        if ($file->getClientSize() > $file->getMaxFilesize()) {
-            return ['status' => false, 'msg' => '图片过大'];
-        }
-        return ['status' => true];
         
     }
     

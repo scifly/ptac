@@ -31,7 +31,7 @@
     </p>
     <p>
         发起人留言：
-       {{$procedureLog->initiator_msg}}
+        {{$procedureLog->initiator_msg}}
     </p>
     <p>
         发起人媒体信息：$initiator_medias 信息->尚未进行处理。
@@ -52,7 +52,7 @@
         {{--        {{$procedureLog->operator_msg}}--}}
     </p>
     <p>
-       审核状态：
+        审核状态：
         {{$procedureLog->status($procedureLog->step_status)}}
     </p>
 @endsection

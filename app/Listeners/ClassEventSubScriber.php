@@ -3,7 +3,6 @@
 namespace App\Listeners;
 
 use App\Models\Department;
-use App\Models\Grade;
 use App\Models\DepartmentType;
 use App\Models\Squad;
 use Illuminate\Events\Dispatcher;
@@ -29,7 +28,7 @@ class ClassEventSubscriber {
      * @return bool
      */
     public function onDepartmentCreated($event) {
-    
+        
         $department = $event->department;
         # 判断已创建或更新的部门的类型是否为"班级"
         if ($department->department_type_id == $this->departmentTypeId) {

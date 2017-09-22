@@ -64,7 +64,9 @@ class GroupController extends Controller {
     public function show($id) {
         
         $group = $this->group->find($id);
-        if (!$group) { return $this->notFound(); }
+        if (!$group) {
+            return $this->notFound();
+        }
         return $this->output(__METHOD__, ['group' => $group]);
         
     }
@@ -78,7 +80,9 @@ class GroupController extends Controller {
     public function edit($id) {
         
         $group = $this->group->find($id);
-        if (!$group) { return $this->notFound(); }
+        if (!$group) {
+            return $this->notFound();
+        }
         return $this->output(__METHOD__, ['group' => $group]);
         
     }
@@ -93,7 +97,9 @@ class GroupController extends Controller {
     public function update(GroupRequest $request, $id) {
         
         $group = $this->group->find($id);
-        if (!$group) { return $this->notFound(); }
+        if (!$group) {
+            return $this->notFound();
+        }
         return $group->modify($request->all(), $id)
             ? $this->succeed() : $this->fail();
         
@@ -108,7 +114,9 @@ class GroupController extends Controller {
     public function destroy($id) {
         
         $group = $this->group->find($id);
-        if (!$group) { return $this->notFound();}
+        if (!$group) {
+            return $this->notFound();
+        }
         return $group->remove($id) ? $this->succeed() : $this->fail();
         
     }

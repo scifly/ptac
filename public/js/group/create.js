@@ -1,1 +1,1 @@
-$(crud.create('formGroup','groups'))
+$(crud.create('formGroup','groups'));

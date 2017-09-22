@@ -72,7 +72,7 @@ class WsmArticleController extends Controller {
         if (!$article) {
             return parent::notFound();
         }
-
+        
         return parent::output(__METHOD__, [
             'article' => $article,
             'medias' => $this->media->medias($article->media_ids),
@@ -87,9 +87,11 @@ class WsmArticleController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function edit($id) {
-
+        
         $article = $this->article->find($id);
-        if (!$article) { return parent::notFound(); }
+        if (!$article) {
+            return parent::notFound();
+        }
         return parent::output(__METHOD__, [
             'article' => $article,
             'medias' => $this->media->medias($article->media_ids),

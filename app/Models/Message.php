@@ -51,13 +51,13 @@ use Mockery\Exception;
  * @property int $r_user_id 接收者用户IDs
  * @property int $readed 是否已读
  * @property int $sent 消息发送是否成功
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Message whereAppId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Message whereCommTypeId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Message whereMslId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Message whereRUserId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Message whereReaded($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Message whereSUserId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Message whereSent($value)
+ * @method static Builder|Message whereAppId($value)
+ * @method static Builder|Message whereCommTypeId($value)
+ * @method static Builder|Message whereMslId($value)
+ * @method static Builder|Message whereRUserId($value)
+ * @method static Builder|Message whereReaded($value)
+ * @method static Builder|Message whereSUserId($value)
+ * @method static Builder|Message whereSent($value)
  */
 class Message extends Model {
     //
@@ -103,22 +103,6 @@ class Message extends Model {
         }
     }
     
-    public function modify(MessageRequest $request, $id) {
-        $message = $this->find($id);
-        if (!$message) {
-            return false;
-        }
-        try {
-            $exception = DB::transaction(function () use ($request, $id) {
-                $this->removeMedias($request);
-                return $this->where('id', $id)->update($request->except('_method', '_token'));
-            });
-            return is_null($exception) ? true : $exception;
-        } catch (Exception $e) {
-            return false;
-        }
-    }
-    
     /**
      * @param $request
      */
@@ -136,7 +120,23 @@ class Message extends Model {
             Media::whereIn('id', $mediaIds)->delete();
         }
     }
-
+    
+    public function modify(MessageRequest $request, $id) {
+        $message = $this->find($id);
+        if (!$message) {
+            return false;
+        }
+        try {
+            $exception = DB::transaction(function () use ($request, $id) {
+                $this->removeMedias($request);
+                return $this->where('id', $id)->update($request->except('_method', '_token'));
+            });
+            return is_null($exception) ? true : $exception;
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+    
     public function datatable() {
         
         $columns = [

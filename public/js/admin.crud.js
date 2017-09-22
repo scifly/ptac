@@ -1,11 +1,11 @@
 var crud = {
-    unbindEvents: function() {
+    unbindEvents: function () {
         $('#add-record').unbind('click');
         $(document).off('click', '.fa-edit');
         $(document).off('click', '.fa-eye');
         $('#confirm-delete').unbind('click');
     },
-    initDatatable: function(table) {
+    initDatatable: function (table) {
         $('#data-table').dataTable({
             processing: true,
             serverSide: true,
@@ -17,8 +17,8 @@ var crud = {
             language: {url: '../files/ch.json'},
             lengthMenu: [[15, 25, 50, -1], [15, 25, 50, '所有']],
             dom: '<"row"<"col-md-6"l><"col-sm-4"f><"col-sm-2"B>>rt<"row"<"col-sm-6"i><"col-sm-6"p>>',
-            buttons: ['pdf','csv']
-        }).on('init.dt', function() {
+            buttons: ['pdf', 'csv']
+        }).on('init.dt', function () {
             $('.dt-buttons').addClass('pull-right');
             $('.buttons-pdf').addClass('btn-sm');
             $('.buttons-csv').addClass('btn-sm');
@@ -26,28 +26,30 @@ var crud = {
         });
         console.log($('.dt-buttons'));
     },
-    ajaxRequest: function(requestType, ajaxUrl, data, obj) {
+    ajaxRequest: function (requestType, ajaxUrl, data, obj) {
         $.ajax({
             type: requestType,
             dataType: 'json',
             url: ajaxUrl,
             data: data,
-            success: function(result) {
+            success: function (result) {
                 if (result.statusCode === 200) {
-                    switch(requestType) {
+                    switch (requestType) {
                         case 'POST':
                             obj.reset();
-                            $('input[data-render="switchery"]').each(function() {
+                            $('input[data-render="switchery"]').each(function () {
                                 // it seems dblClick() won't do the trick
                                 // so just click twice
-                                $(this).click(); $(this).click();
+                                $(this).click();
+                                $(this).click();
                             });
                             break;
                         case 'DELETE':
                             $('#data-table').dataTable().fnDestroy();
                             crud.initDatatable(obj);
                             break;
-                        default: break;
+                        default:
+                            break;
                     }
                 }
                 page.inform(
@@ -56,13 +58,13 @@ var crud = {
                 );
                 return false;
             },
-            error: function(e) {
+            error: function (e) {
                 var obj = JSON.parse(e.responseText);
                 page.inform('出现异常', obj['message'], page.failure);
             }
         });
     },
-    init: function(homeUrl, formId, ajaxUrl, requestType) {
+    init: function (homeUrl, formId, ajaxUrl, requestType) {
         // Select2
         $('select').select2();
 
@@ -76,7 +78,7 @@ var crud = {
         });
 
         // Cancel button
-        $('#cancel, #record-list').on('click', function() {
+        $('#cancel, #record-list').on('click', function () {
             var $activeTabPane = $('#tab_' + page.getActiveTabId());
             page.getTabContent($activeTabPane, page.siteRoot() + homeUrl);
             crud.unbindEvents();
@@ -88,7 +90,7 @@ var crud = {
             if ($('.parsley-error').length === 0) {
                 crud.ajaxRequest(requestType, page.siteRoot() + ajaxUrl, $form.serialize(), $form[0]);
             }
-        }).on('form:submit', function() {
+        }).on('form:submit', function () {
             return false;
         });
     },
@@ -104,13 +106,13 @@ var crud = {
 
 
         // 新增记录
-        $('#add-record').on('click', function() {
+        $('#add-record').on('click', function () {
             page.getTabContent($activeTabPane, page.siteRoot() + table + '/create');
             crud.unbindEvents();
         });
 
         // 编辑记录
-        $(document).on('click', '.fa-edit', function() {
+        $(document).on('click', '.fa-edit', function () {
             var url = $(this).parents().eq(0).attr('id');
             // console.log(url);
             url = url.replace('_', '/');
@@ -118,7 +120,7 @@ var crud = {
             crud.unbindEvents();
         });
         // 充值
-        $(document).on('click', '.fa-money', function() {
+        $(document).on('click', '.fa-money', function () {
             var url = $(this).parents().eq(0).attr('id');
             console.log(url);
             url = url.replace('_', '/');
@@ -127,7 +129,7 @@ var crud = {
         });
 
         // 查看记录详情
-        $(document).on('click', '.fa-eye', function() {
+        $(document).on('click', '.fa-eye', function () {
             var url = $(this).parents().eq(0).attr('id');
             url = url.replace('_', '/');
             crud.unbindEvents();
@@ -135,19 +137,19 @@ var crud = {
 
         // 删除记录
         var id/*, $row*/;
-        $(document).on('click', '.fa-trash', function() {
+        $(document).on('click', '.fa-trash', function () {
             id = $(this).parents().eq(0).attr('id');
             // $row = $(this).parents().eq(2);
             $('#modal-dialog').modal({backdrop: true});
         });
-        $('#confirm-delete').on('click', function() {
+        $('#confirm-delete').on('click', function () {
             crud.ajaxRequest(
                 'DELETE', page.siteRoot() + '/' + table + '/delete/' + id,
-                { _token: $('#csrf_token').attr('content') }, table
+                {_token: $('#csrf_token').attr('content')}, table
             );
         });
     },
-    create: function(formId, table) {
+    create: function (formId, table) {
         this.init(table + '/index', formId, table + '/store', 'POST');
     },
     edit: function (formId, table) {

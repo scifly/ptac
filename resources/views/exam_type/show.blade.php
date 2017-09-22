@@ -18,7 +18,8 @@
 
 
     <dl class="dl-horizontal">
-        <dt>备注：</dt><dd>{{ $examType->remark }}</dd>
+        <dt>备注：</dt>
+        <dd>{{ $examType->remark }}</dd>
 
     </dl>
 @endsection

@@ -3,7 +3,6 @@
 namespace App\Listeners;
 
 use App\Models\Department;
-use App\Models\School;
 use App\Models\DepartmentType;
 use App\Models\Grade;
 use Illuminate\Events\Dispatcher;

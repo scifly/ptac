@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 Route::auth();
-Route::get('/', function() { return 'Dashboard'; });
+// Route::get('/', function() { return 'Dashboard'; });
 Route::get('/', 'HomeController@index');
 Route::get('/home', 'HomeController@index')->name('home');
 

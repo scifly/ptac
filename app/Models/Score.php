@@ -63,7 +63,7 @@ class Score extends Model {
                 ->first();
         } else {
             $score = $this->where('student_id', $request->input('student_id'))
-                ->where('id', '<>' , $id)
+                ->where('id', '<>', $id)
                 ->where('subject_id', $request->input('subject_id'))
                 ->where('exam_id', $request->input('exam_id'))
                 ->first();
@@ -136,7 +136,7 @@ class Score extends Model {
         ];
         return Datatable::simple($this, $columns, $joins);
     }
-
+    
     public function statistics($exam_id) {
         $class_ids = DB::table('exams')->where('id', $exam_id)->value('class_ids');
         $class = DB::table('classes')
@@ -177,7 +177,7 @@ class Score extends Model {
                 foreach ($val as $grade_rank) {
                     $this->where('id', $grade_rank->id)->update(['grade_rank' => $grade_rank->grade_rank]);
                 }
-
+                
                 //通过班级分组
                 $classes = [];
                 foreach ($val as $item) {

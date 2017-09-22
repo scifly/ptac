@@ -33,10 +33,10 @@ use Illuminate\Support\Facades\DB;
  * @mixin \Eloquent
  * 总分数
  * @property int $enabled
- * @property-read \App\Models\Exam $exam
- * @property-read \App\Models\Student $student
- * @property-read \App\Models\Subject $subjects
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ScoreTotal whereEnabled($value)
+ * @property-read Exam $exam
+ * @property-read Student $student
+ * @property-read Subject $subjects
+ * @method static Builder|ScoreTotal whereEnabled($value)
  */
 class ScoreTotal extends Model {
     
@@ -115,43 +115,43 @@ class ScoreTotal extends Model {
         ];
         return Datatable::simple($this, $columns, $joins);
     }
-
-    public function statistics($exam_id){
+    
+    public function statistics($exam_id) {
         //删除之前这场考试的统计
         $this->where('exam_id', $exam_id)->delete();
         //查询参与这场考试的所有班级和科目
-        $exam = DB::table('exams')->where('id', $exam_id)->select('class_ids','subject_ids')->first();
-
+        $exam = DB::table('exams')->where('id', $exam_id)->select('class_ids', 'subject_ids')->first();
+        
         $class = DB::table('classes')
             ->whereIn('id', explode(',', $exam->class_ids))
             ->select('id', 'grade_id')
             ->get();
         //通过年级分组
         $grades = [];
-        foreach($class as $item){
+        foreach ($class as $item) {
             $grades[$item->grade_id][] = $item->id;
         }
         //循环每个年级
-        foreach ($grades as $class_ids_arr){
+        foreach ($grades as $class_ids_arr) {
             $data = [];
             //查找此年级参与考试班级的所有学生
             $students = DB::table('students')
-                ->whereIn('class_id',$class_ids_arr)
+                ->whereIn('class_id', $class_ids_arr)
                 ->pluck('class_id', 'id');
             //循环学生
-            foreach ($students as $student => $class_id){
+            foreach ($students as $student => $class_id) {
                 //计算总成绩
                 $scores = DB::table('scores')
                     ->where(['student_id' => $student, 'exam_id' => $exam_id])
-                    ->pluck('score','subject_id');
+                    ->pluck('score', 'subject_id');
                 $score = 0;
                 $subject_ids = '';
                 $na_subject_ids = '';
-                foreach ( explode(',', $exam->subject_ids) as $v){
-                    if(isset($scores[$v]) && $scores[$v] != 0){
+                foreach (explode(',', $exam->subject_ids) as $v) {
+                    if (isset($scores[$v]) && $scores[$v] != 0) {
                         $subject_ids .= ',' . $v;
                         $score += $scores[$v];
-                    }else{
+                    } else {
                         $na_subject_ids .= ',' . $v;
                     }
                 }
@@ -161,50 +161,49 @@ class ScoreTotal extends Model {
                     'class_id' => $class_id,
                     'exam_id' => intval($exam_id),
                     'score' => $score,
-                    'subject_ids' => empty($subject_ids) ? '' : substr($subject_ids,1),
-                    'na_subject_ids' => empty($na_subject_ids) ? '' : substr($na_subject_ids,1)
+                    'subject_ids' => empty($subject_ids) ? '' : substr($subject_ids, 1),
+                    'na_subject_ids' => empty($na_subject_ids) ? '' : substr($na_subject_ids, 1)
                 ];
-                $data []=$insert;
+                $data [] = $insert;
             }
-
+            
             //根据总成绩排序
             $score_sore = [];
-            foreach ($data as $key => $row)
-            {
-                $score_sore[$key]  = $row['score'];
+            foreach ($data as $key => $row) {
+                $score_sore[$key] = $row['score'];
             }
             array_multisort($score_sore, SORT_DESC, $data);
-
+            
             //计算年级排名
             $grade_ranks = [];
-            foreach ($data as $grade_k => $grade_v){
-                $grade_v['grade_rank'] = $grade_k+1;
-                if($grade_k > 0){
-                    if($grade_v['score'] == $data[$grade_k-1]['score']){
+            foreach ($data as $grade_k => $grade_v) {
+                $grade_v['grade_rank'] = $grade_k + 1;
+                if ($grade_k > 0) {
+                    if ($grade_v['score'] == $data[$grade_k - 1]['score']) {
                         $grade_v['grade_rank'] = $grade_ranks[0]['grade_rank'];
                     }
                 }
-                $grade_ranks []= $grade_v;
+                $grade_ranks [] = $grade_v;
             }
-
+            
             //通过班级分组
             $classes = [];
-            foreach($grade_ranks as $item){
+            foreach ($grade_ranks as $item) {
                 $classes[$item['class_id']][] = $item;
             }
             //循环每个班级
-            foreach ($classes as $v){
+            foreach ($classes as $v) {
                 //计算班级排名
                 $inserts = [];
-                foreach ($v as $class_k => $class_v){
-                    $class_v['class_rank'] = $class_k+1;
-                    if($class_k > 0){
-                        if($class_v['score'] == $v[$class_k-1]['score']){
-                            $class_v['class_rank'] = $inserts[$class_k-1]['class_rank'];
+                foreach ($v as $class_k => $class_v) {
+                    $class_v['class_rank'] = $class_k + 1;
+                    if ($class_k > 0) {
+                        if ($class_v['score'] == $v[$class_k - 1]['score']) {
+                            $class_v['class_rank'] = $inserts[$class_k - 1]['class_rank'];
                         }
                     }
                     unset($class_v['class_id']);
-                    $inserts []= $class_v;
+                    $inserts [] = $class_v;
                 }
                 $this->insert($inserts);
             }

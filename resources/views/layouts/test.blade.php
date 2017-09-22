@@ -25,13 +25,14 @@
                 <div class="col-lg-12">
                     <div class="nav-tabs-custom">
                         <ul class="nav nav-tabs">
-                        @foreach ($tabs as $tab)
-                            <li @if($tab['active']) class="active" @endif>
-                                <a href="#{{ $tab['id'] }}" data-toggle="tab" data-url="{{ $tab['url'] }}" class="tab">
-                                    {{ $tab['name'] }}
-                                </a>
-                            </li>
-                        @endforeach
+                            @foreach ($tabs as $tab)
+                                <li @if($tab['active']) class="active" @endif>
+                                    <a href="#{{ $tab['id'] }}" data-toggle="tab" data-url="{{ $tab['url'] }}"
+                                       class="tab">
+                                        {{ $tab['name'] }}
+                                    </a>
+                                </li>
+                            @endforeach
                         </ul>
                         <div class="tab-content">
                             @foreach ($tabs as $tab)

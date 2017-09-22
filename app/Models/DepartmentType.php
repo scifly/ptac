@@ -2,11 +2,11 @@
 
 namespace App\Models;
 
+use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
-use App\Facades\DatatableFacade as Datatable;
 
 /**
  * App\Models\DepartmentType 部门类型
@@ -73,7 +73,9 @@ class DepartmentType extends Model {
     public function remove($id) {
         
         $departmentType = $this->find($id);
-        if (!$departmentType) { return false; }
+        if (!$departmentType) {
+            return false;
+        }
         $removed = $this->removable($this, $id) ? $departmentType->delete() : false;
         return $removed ? true : false;
         
@@ -89,7 +91,7 @@ class DepartmentType extends Model {
             ['db' => 'DepartmentType.updated_at', 'dt' => 4],
             [
                 'db' => 'DepartmentType.enabled', 'dt' => 5,
-                'formatter' => function($d, $row) {
+                'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
                 }
             ],

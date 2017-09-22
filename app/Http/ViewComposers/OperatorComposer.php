@@ -8,9 +8,9 @@ use App\Models\School;
 use Illuminate\Contracts\View\View;
 
 class OperatorComposer {
-
+    
     protected $company, $school, $group;
-
+    
     public function __construct(Company $company, School $school, Group $group) {
         
         $this->company = $company;
@@ -18,9 +18,9 @@ class OperatorComposer {
         $this->group = $group;
         
     }
-
+    
     public function compose(View $view) {
-
+        
         $view->with([
             'companies' => $this->company->pluck('name', 'id'),
             'schools' => $this->school->pluck('name', 'id'),
@@ -28,5 +28,5 @@ class OperatorComposer {
         ]);
         
     }
-
+    
 }

@@ -3,12 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\MessageRequest;
-use App\Models\Educator;
 use App\Models\Media;
 use App\Models\Message;
 use App\Models\User;
 use Illuminate\Support\Facades\Request;
-use Illuminate\Support\Facades\Storage;
 
 /**
  * 消息
@@ -21,7 +19,7 @@ class MessageController extends Controller {
     protected $message;
     protected $user;
     protected $media;
-
+    
     public function __construct(Message $message, User $user, Media $media) {
         
         $this->message = $message;
@@ -54,7 +52,7 @@ class MessageController extends Controller {
         return $this->output(__METHOD__);
         
     }
-
+    
     /**
      * 保存消息
      *
@@ -62,11 +60,11 @@ class MessageController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(MessageRequest $request) {
-
+        
         return $this->message->store($request) ? $this->succeed() : $this->fail();
-
+        
     }
-
+    
     /**
      * 消息详情
      *
@@ -76,7 +74,9 @@ class MessageController extends Controller {
     public function show($id) {
         
         $message = $this->message->find($id);
-        if (!$message) { return $this->notFound(); }
+        if (!$message) {
+            return $this->notFound();
+        }
         return $this->output(__METHOD__, [
             'message' => $message,
             'users' => $this->user->users($message->user_ids),
@@ -84,7 +84,7 @@ class MessageController extends Controller {
         ]);
         
     }
-
+    
     /**
      * 编辑消息
      *
@@ -95,8 +95,10 @@ class MessageController extends Controller {
     public function edit($id) {
         
         $message = $this->message->find($id);
-        if (!$message) { return $this->notFound(); }
-
+        if (!$message) {
+            return $this->notFound();
+        }
+        
         return $this->output(__METHOD__, [
             'message' => $message,
             'selectedUsers' => $this->user->users($message->user_ids),
@@ -104,7 +106,7 @@ class MessageController extends Controller {
         ]);
         
     }
-
+    
     /**
      * 更新消息
      *
@@ -113,11 +115,11 @@ class MessageController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(MessageRequest $request, $id) {
-
+        
         return $this->message->modify($request, $id) ? $this->succeed() : $this->fail();
         
     }
-
+    
     /**
      * 删除消息
      *
@@ -127,7 +129,9 @@ class MessageController extends Controller {
     public function destroy($id) {
         
         $message = $this->message->find($id);
-        if (!$message) { return $this->notFound(); }
+        if (!$message) {
+            return $this->notFound();
+        }
         return $message->delete() ? $this->succeed() : $this->fail();
         
     }

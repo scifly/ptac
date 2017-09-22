@@ -6,7 +6,7 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class WapSiteRequest extends FormRequest {
     
-
+    
     protected $strings_key = [
         'school_id' => '所属学校',
         'site_title' => '首页抬头',
@@ -56,7 +56,7 @@ class WapSiteRequest extends FormRequest {
             'site_title' => 'required|string|max:255',
             'media_ids' => 'required|string',
             'enabled' => 'required|boolean'
-            ];
+        ];
     }
     
     public function wantsJson() { return true; }

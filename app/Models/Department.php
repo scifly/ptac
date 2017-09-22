@@ -50,7 +50,7 @@ use Mockery\Exception;
  * @property-read DepartmentType $departmentType
  */
 class Department extends Model {
-
+    
     use ModelTrait;
     
     protected $fillable = [
@@ -119,17 +119,6 @@ class Department extends Model {
     }
     
     /**
-     * 获取指定部门的子部门
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function children() {
-        
-        return $this->hasMany('App\Models\Department', 'parent_id', 'id');
-        
-    }
-    
-    /**
      * 返回所有叶节点部门
      *
      * @return array
@@ -148,6 +137,51 @@ class Department extends Model {
             }
         }
         return $leaves;
+        
+    }
+    
+    /**
+     * 根据schoolId和corpId返回节点
+     *
+     * @return Collection|static[]
+     */
+    private function nodes() {
+        
+        $nodes = $this->all();
+        return $nodes;
+        
+    }
+    
+    /**
+     * 获取指定部门的子部门
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function children() {
+        
+        return $this->hasMany('App\Models\Department', 'parent_id', 'id');
+        
+    }
+    
+    /**
+     * 获取指定部门的完整路径
+     *
+     * @param $id
+     * @param array $path
+     * @return string
+     */
+    private function leafPath($id, array &$path) {
+        
+        $department = $this->find($id);
+        if (!isset($department)) {
+            return '';
+        }
+        $path[] = $department->name;
+        if (isset($department->parent_id)) {
+            $this->leafPath($department->parent_id, $path);
+        }
+        krsort($path);
+        return implode(' . ', $path);
         
     }
     
@@ -175,14 +209,14 @@ class Department extends Model {
      * @return bool
      */
     public function store(array $data, $fireEvent = false) {
-
+        
         $department = $this->create($data);
         if ($department && $fireEvent) {
             event(new DepartmentCreated($department));
             return true;
         }
         return $department ? true : false;
-    
+        
     }
     
     /**
@@ -214,10 +248,18 @@ class Department extends Model {
     public function remove($id) {
         
         $department = $this->find($id);
-        if (!$department) { return false; }
-        if ($department->users) { return false; }
-        if ($department->children) { return false; }
-        if (!$this->removable($this, $id)) { return false; }
+        if (!$department) {
+            return false;
+        }
+        if ($department->users) {
+            return false;
+        }
+        if ($department->children) {
+            return false;
+        }
+        if (!$this->removable($this, $id)) {
+            return false;
+        }
         try {
             $exception = DB::transaction(function () use ($id, $department) {
                 # 删除指定的Department记录
@@ -250,7 +292,9 @@ class Department extends Model {
     public function move($id, $parentId, $fireEvent = false) {
         
         $deparment = $this->find($id);
-        if (!isset($deparment)) { return false; }
+        if (!isset($deparment)) {
+            return false;
+        }
         $deparment->parent_id = $parentId === '#' ? NULL : intval($parentId);
         $moved = $deparment->save();
         if ($moved && $fireEvent) {
@@ -275,13 +319,27 @@ class Department extends Model {
             $text = $department['name'];
             $departmentType = DepartmentType::whereId($department['department_type_id'])->first()->name;
             switch ($departmentType) {
-                case '根': $type = 'root'; break;
-                case '运营': $type = 'company'; break;
-                case '企业': $type = 'corp'; break;
-                case '学校': $type = 'school'; break;
-                case '年级': $type = 'grade'; break;
-                case '班级': $type = 'class'; break;
-                default: $type = 'other'; break;
+                case '根':
+                    $type = 'root';
+                    break;
+                case '运营':
+                    $type = 'company';
+                    break;
+                case '企业':
+                    $type = 'corp';
+                    break;
+                case '学校':
+                    $type = 'school';
+                    break;
+                case '年级':
+                    $type = 'grade';
+                    break;
+                case '班级':
+                    $type = 'class';
+                    break;
+                default:
+                    $type = 'other';
+                    break;
             }
             $data[] = [
                 'id' => $department['id'],
@@ -293,23 +351,44 @@ class Department extends Model {
         return response()->json($data);
         
     }
-
+    
     public function selectedNodes($ids) {
-
-        $departments = $this->whereIn('id',$ids)->get()->toArray();
+        
+        $departments = $this->whereIn('id', $ids)->get()->toArray();
         $data = [];
         foreach ($departments as $department) {
             $parentId = isset($department['parent_id']) ? $department['parent_id'] : '#';
             $text = $department['name'];
             $departmentType = DepartmentType::whereId($department['department_type_id'])->first()->name;
             switch ($departmentType) {
-                case '根': $type = 'root';  $icon = 'fa fa-sitemap'; break;
-                case '运营': $type = 'company';  $icon = 'fa fa-building'; break;
-                case '企业': $type = 'corp';  $icon = 'fa fa-weixin'; break;
-                case '学校': $type = 'school';  $icon = 'fa fa-university'; break;
-                case '年级': $type = 'grade';  $icon = 'fa fa-users'; break;
-                case '班级': $type = 'class';  $icon = 'fa fa-user'; break;
-                default: $type = 'other';  $icon = 'fa fa-list'; break;
+                case '根':
+                    $type = 'root';
+                    $icon = 'fa fa-sitemap';
+                    break;
+                case '运营':
+                    $type = 'company';
+                    $icon = 'fa fa-building';
+                    break;
+                case '企业':
+                    $type = 'corp';
+                    $icon = 'fa fa-weixin';
+                    break;
+                case '学校':
+                    $type = 'school';
+                    $icon = 'fa fa-university';
+                    break;
+                case '年级':
+                    $type = 'grade';
+                    $icon = 'fa fa-users';
+                    break;
+                case '班级':
+                    $type = 'class';
+                    $icon = 'fa fa-user';
+                    break;
+                default:
+                    $type = 'other';
+                    $icon = 'fa fa-list';
+                    break;
             }
             $data[] = [
                 'id' => $department['id'],
@@ -320,9 +399,9 @@ class Department extends Model {
             ];
         }
         return $data;
-
+        
     }
-
+    
     /**
      * 判断指定的节点能否移至指定的节点下
      *
@@ -331,18 +410,27 @@ class Department extends Model {
      * @return bool
      */
     public function movable($id, $parentId) {
-
-        if (!isset($parentId)) { return false; }
+        
+        if (!isset($parentId)) {
+            return false;
+        }
         $type = $this->find($id)->departmentType->name;
         $parentType = $this->find($parentId)->departmentType->name;
         switch ($type) {
-            case '运营': return $parentType == '根';
-            case '企业': return $parentType == '运营';
-            case '学校': return $parentType == '企业';
-            case '年级': return $parentType == '学校' or $parentType == '其他';
-            case '班级': return $parentType == '年级' or $parentType == '其他';
-            case '其他': return !($parentType == '企业' or $parentType == '运营');
-            default: return false;
+            case '运营':
+                return $parentType == '根';
+            case '企业':
+                return $parentType == '运营';
+            case '学校':
+                return $parentType == '企业';
+            case '年级':
+                return $parentType == '学校' or $parentType == '其他';
+            case '班级':
+                return $parentType == '年级' or $parentType == '其他';
+            case '其他':
+                return !($parentType == '企业' or $parentType == '运营');
+            default:
+                return false;
         }
         
     }
@@ -380,40 +468,6 @@ class Department extends Model {
         } else {
             return $this->getGradeId($parent->id);
         }
-    
-    }
-    
-    /**
-     * 获取指定部门的完整路径
-     *
-     * @param $id
-     * @param array $path
-     * @return string
-     */
-    private function leafPath($id, array &$path) {
-        
-        $department = $this->find($id);
-        if (!isset($department)) {
-            return '';
-        }
-        $path[] = $department->name;
-        if (isset($department->parent_id)) {
-            $this->leafPath($department->parent_id, $path);
-        }
-        krsort($path);
-        return implode(' . ', $path);
-        
-    }
-    
-    /**
-     * 根据schoolId和corpId返回节点
-     *
-     * @return Collection|static[]
-     */
-    private function nodes() {
-        
-        $nodes = $this->all();
-        return $nodes;
         
     }
     
