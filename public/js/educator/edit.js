@@ -5,7 +5,6 @@ var id = $('#id').val();
 
 $(crud.mobile('formEducator',size, 'PUT', 'educators/update/'+id));
 var $tbody2 = $("#classTable").find("tbody");
-var n = 0;
 var $formEducator = $('#formEducator');
 
 

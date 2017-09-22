@@ -46,8 +46,7 @@ var $tbody = $("#mobileTable").find("tbody");
 var n = 0;
 var id = $('#id').val();
 var $formEducator = $('#formEducator');
-$(document).off('click', '.btn-mobile-add');
-$(document).off('click', '.btn-mobile-remove');
+
 // 手机号
 
 // 班级、科目
