@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
+use App\Facades\DatatableFacade as Datatable;
 use App\Http\Requests\OperatorRequest;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use App\Facades\DatatableFacade as Datatable;
 
 /**
  * App\Models\Operator 管理/操作员
@@ -29,7 +29,7 @@ use App\Facades\DatatableFacade as Datatable;
  * @property-read User $user
  */
 class Operator extends Model {
-
+    
     protected $fillable = [
         'company_id', 'user_id', 'school_ids',
         'type', 'enabled'
@@ -40,7 +40,7 @@ class Operator extends Model {
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function company() {return $this->belongsTo('App\Models\Company'); }
+    public function company() { return $this->belongsTo('App\Models\Company'); }
     
     /**
      * 获取指定管理/操作员对应的用户对象
@@ -58,8 +58,8 @@ class Operator extends Model {
     public function schools($schoolIds) {
         
         return School::whereEnabled(1)->
-            whereIn('id', explode(',', $schoolIds))->
-            get();
+        whereIn('id', explode(',', $schoolIds))->
+        get();
         
     }
     
@@ -82,7 +82,7 @@ class Operator extends Model {
     }
     
     public function datatable() {
-    
+        
         $columns = [
             ['db' => 'Operator.id', 'dt' => 0],
             ['db' => 'User.realname', 'dt' => 1],
@@ -126,7 +126,7 @@ class Operator extends Model {
         ];
         
         return Datatable::simple($this, $columns, $joins);
-    
+        
     }
     
 }

@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
-use App\Http\Requests\SubjectModuleRequest;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
@@ -44,8 +43,8 @@ class SubjectModule extends Model {
     ];
     
     public function subject() { return $this->belongsTo('App\Models\Subject'); }
-
-
+    
+    
     public function datatable() {
         
         $columns = [

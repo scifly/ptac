@@ -2,11 +2,8 @@
 
 namespace App\Models;
 
-use App\Facades\DatatableFacade as Datatable;
-use App\Models\Student as Student;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use App\Http\Requests\CustodianStudentRequest;
 
 /**
  * App\Models\CustodianStudent
@@ -37,24 +34,23 @@ class CustodianStudent extends Model {
         'custodian_id', 'student_id',
         'relationship', 'enabled'
     ];
-
-    public function custodian()
-    {
+    
+    public function custodian() {
         return $this->belongsTo('App\Models\Custodian');
     }
-
-    public function student(){
+    
+    public function student() {
         return $this->belongsTo('App\Models\Student');
     }
-
+    
     public function storeByCustodianId($custodianId, array $studentIds) {
         
-        foreach ($studentIds as $studentId=>$relationship) {
+        foreach ($studentIds as $studentId => $relationship) {
             $this->create([
-               'custodian_id' => $custodianId,
-               'student_id' => $studentId,
-               'enabled' => 1,
-               'relationship'=>$relationship
+                'custodian_id' => $custodianId,
+                'student_id' => $studentId,
+                'enabled' => 1,
+                'relationship' => $relationship
             ]);
         }
         
@@ -62,16 +58,16 @@ class CustodianStudent extends Model {
     
     public function storeByStudentId($studentId, array $custodianIds) {
         
-        foreach ($custodianIds as $custodianId=>$relationship) {
+        foreach ($custodianIds as $custodianId => $relationship) {
             $this->create([
                 'student_id' => $studentId,
                 'custodian_id' => $custodianId,
-                'relationship'=>$relationship,
+                'relationship' => $relationship,
                 'enabled' => 1
             ]);
         }
         
     }
-
+    
     
 }

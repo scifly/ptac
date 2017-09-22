@@ -22,7 +22,8 @@
                                     style="width: 80%;"
                             >
                                 @foreach($squads as $key => $squad )
-                                    <option value='{{$key}}' @if($key == $class->class_id) selected @endif>{{$squad}}</option>
+                                    <option value='{{$key}}'
+                                            @if($key == $class->class_id) selected @endif>{{$squad}}</option>
                                 @endforeach
                             </select>
                         </td>
@@ -34,7 +35,8 @@
                                     style="width: 80%"
                             >
                                 @foreach($subjects as $key => $subject )
-                                    <option value='{{$key}}' @if($key == $class->subject_id) selected @endif>{{$subject}}</option>
+                                    <option value='{{$key}}'
+                                            @if($key == $class->subject_id) selected @endif>{{$subject}}</option>
                                 @endforeach
                             </select>
                         </td>

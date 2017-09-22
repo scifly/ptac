@@ -55,7 +55,7 @@
             @include('partials.multiple_select', [
                 'label' => '统计科目',
                 'id' => 'subject_ids',
-                'items' => [],
+                'items' => $subjects
             ])
             {!! Form::hidden('subject_select_ids', $scoreRange['subject_ids'] or '') !!}
             @include('partials.enabled', [

@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
+use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use App\Facades\DatatableFacade as Datatable;
 
 /**
  * App\Models\MessageType
@@ -27,7 +27,7 @@ use App\Facades\DatatableFacade as Datatable;
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Message[] $messages
  */
 class MessageType extends Model {
-
+    
     use ModelTrait;
     
     protected $table = 'message_types';
@@ -36,7 +36,7 @@ class MessageType extends Model {
     
     /**
      * 获取指定消息类型包含的所有消息对象
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function messages() { return $this->hasMany('App\Models\Message'); }
@@ -64,7 +64,9 @@ class MessageType extends Model {
     public function modify(array $data, $id) {
         
         $messageType = $this->find($id);
-        if (!$messageType) { return false; }
+        if (!$messageType) {
+            return false;
+        }
         return $messageType->update($data) ? true : false;
         
     }
@@ -78,20 +80,22 @@ class MessageType extends Model {
     public function remove($id) {
         
         $messageType = $this->find($id);
-        if (!$messageType) { return false; }
+        if (!$messageType) {
+            return false;
+        }
         return $messageType->removable($this, $id) ? $messageType->delete() : false;
         
     }
     
     public function datatable() {
-
+        
         $columns = [
             ['db' => 'MessageType.id', 'dt' => 0],
             ['db' => 'MessageType.name', 'dt' => 1],
             ['db' => 'MessageType.remark', 'dt' => 2],
             ['db' => 'MessageType.created_at', 'dt' => 3],
             ['db' => 'MessageType.updated_at', 'dt' => 4],
-
+            
             [
                 'db' => 'MessageType.enabled', 'dt' => 5,
                 'formatter' => function ($d, $row) {

@@ -30,12 +30,12 @@ class DepartmentController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
-    
+        
         if (Request::method() === 'POST') {
             return $this->department->tree();
         }
         return parent::output(__METHOD__);
-
+        
     }
     
     /**
@@ -45,7 +45,7 @@ class DepartmentController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function create($id) {
-
+        
         $departmentTypeId = DepartmentType::whereName('其他')->first()->id;
         return $this->output(__METHOD__, [
             'parentId' => $id,
@@ -76,7 +76,9 @@ class DepartmentController extends Controller {
     public function show($id) {
         
         $department = $this->department->find($id);
-        if (!$department) { return $this->notFound(); }
+        if (!$department) {
+            return $this->notFound();
+        }
         return $this->output(__METHOD__, [
             'department' => $department,
         ]);
@@ -92,7 +94,9 @@ class DepartmentController extends Controller {
     public function edit($id) {
         
         $department = $this->department->find($id);
-        if (!$department) { return $this->notFound(); }
+        if (!$department) {
+            return $this->notFound();
+        }
         return $this->output(__METHOD__, [
             'department' => $department,
         ]);
@@ -124,7 +128,9 @@ class DepartmentController extends Controller {
      */
     public function destroy($id) {
         
-        if (!$this->department->find($id)) { return $this->notFound(); }
+        if (!$this->department->find($id)) {
+            return $this->notFound();
+        }
         return $this->department->remove($id) ? $this->succeed() : $this->fail();
         
     }
@@ -138,7 +144,9 @@ class DepartmentController extends Controller {
      */
     public function move($id, $parentId = NULL) {
         
-        if (!$parentId) { return $this->fail('非法操作'); }
+        if (!$parentId) {
+            return $this->fail('非法操作');
+        }
         $department = $this->department->find($id);
         $parentDepartment = $this->department->find($parentId);
         if (!$department || !$parentDepartment) {
@@ -156,7 +164,7 @@ class DepartmentController extends Controller {
      * 保存部门的排列顺序
      */
     public function sort() {
-    
+        
         $orders = Request::get('data');
         foreach ($orders as $id => $order) {
             $department = $this->department->find($id);
@@ -165,7 +173,7 @@ class DepartmentController extends Controller {
                 $department->save();
             }
         }
-    
+        
     }
-
+    
 }

@@ -19,11 +19,14 @@
 
     <dl class="dl-horizontal">
         <br/>
-        <dt>名称：</dt><dd>{{ $article->name }}</dd>
+        <dt>名称：</dt>
+        <dd>{{ $article->name }}</dd>
         <br/>
-        <dt>所属网站模块：</dt><dd>{{ $article->wapsitemodule->name }}</dd>
+        <dt>所属网站模块：</dt>
+        <dd>{{ $article->wapsitemodule->name }}</dd>
         <br/>
-        <dt>文章摘要：</dt><dd>{{ $article->summary }}</dd>
+        <dt>文章摘要：</dt>
+        <dd>{{ $article->summary }}</dd>
         <br/>
         <dt>轮播图：</dt>
         @foreach($medias as $v)
@@ -32,7 +35,8 @@
             </dd>
         @endforeach
         <br/>
-        <dt>文章内容：</dt><dd>{!! $article->content !!} </dd>
+        <dt>文章内容：</dt>
+        <dd>{!! $article->content !!} </dd>
         <br/>
     </dl>
 @endsection

@@ -34,7 +34,7 @@ class EducatorController extends Controller {
         $this->educatorClass = $educatorClass;
         $this->team = $team;
         $this->department = $department;
-
+        
     }
     
     /**
@@ -73,7 +73,7 @@ class EducatorController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(EducatorRequest $request) {
-        Log::debug(Request::url());
+
         return $this->educator->store($request) ? $this->succeed() : $this->fail();
         
     }

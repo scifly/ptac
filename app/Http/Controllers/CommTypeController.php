@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Request;
  * @package App\Http\Controllers
  */
 class CommTypeController extends Controller {
-
+    
     protected $commType;
     
     function __construct(CommType $commType) {
@@ -42,7 +42,7 @@ class CommTypeController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function create() {
-    
+        
         return $this->output(__METHOD__);
         
     }
@@ -68,7 +68,9 @@ class CommTypeController extends Controller {
     public function edit($id) {
         
         $commType = $this->commType->find($id);
-        if (!$commType) { return $this->notFound(); }
+        if (!$commType) {
+            return $this->notFound();
+        }
         return $this->output(__METHOD__, ['commType' => $commType]);
         
     }
@@ -81,11 +83,13 @@ class CommTypeController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(CommTypeRequest $request, $id) {
-    
+        
         $commType = $this->commType->find($id);
-        if (!$commType) { return $this->notFound(); }
+        if (!$commType) {
+            return $this->notFound();
+        }
         return $commType->update($request->all()) ? $this->succeed() : $this->fail();
-    
+        
     }
     
     /**
@@ -95,10 +99,12 @@ class CommTypeController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
-    
+        
         $commType = $this->commType->find($id);
-        if (!$commType) { return $this->notFound(); }
+        if (!$commType) {
+            return $this->notFound();
+        }
         return $commType->delete() ? $this->succeed() : $this->fail();
-    
+        
     }
 }

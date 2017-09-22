@@ -99,15 +99,18 @@
                         </thead>
                         <tbody>
                         <tr>
-                            <td><input class="form-control" name="Mobile[mobile][]" type="text" placeholder="(请输入手机号码)"></td>
+                            <td><input class="form-control" name="Mobile[mobile][]" type="text" placeholder="(请输入手机号码)">
+                            </td>
                             <td style="text-align: center;">
                                 <label for="Mobile[isdefault][]">
-                                    <input name="Mobile[isdefault][]" type="radio" id="Mobile[isdefault][]" class="minimal">
+                                    <input name="Mobile[isdefault][]" type="radio" id="Mobile[isdefault][]"
+                                           class="minimal">
                                 </label>
                             </td>
                             <td style="text-align: center;">
                                 <label for="Mobile[enabled][]">
-                                    <input name="Mobile[enabled][]" type="checkbox" id="Mobile[enabled][]" class="minimal">
+                                    <input name="Mobile[enabled][]" type="checkbox" id="Mobile[enabled][]"
+                                           class="minimal">
                                 </label>
                             </td>
                             <td style="text-align: center;">

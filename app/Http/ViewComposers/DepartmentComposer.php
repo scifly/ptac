@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\ViewComposers;
 
 use App\Models\DepartmentType;
@@ -9,7 +10,7 @@ class DepartmentComposer {
     protected $departmentType;
     
     public function __construct(DepartmentType $departmentType) {
-
+        
         $this->departmentType = $departmentType;
         
     }

@@ -6,7 +6,6 @@ use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
 
 /**
  * App\Models\Exam 考试
@@ -59,14 +58,14 @@ class Exam extends Model {
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function examType() { return $this->belongsTo('App\models\ExamType'); }
-
+    
     /**
      * 获取参与指定考试的所有班级列表
      *
      * @param $classIds
      * @return array
      */
-    public function classes( $classIds) {
+    public function classes($classIds) {
         
         $classIds = explode(",", $classIds);
         $selectedClasses = [];
@@ -78,7 +77,7 @@ class Exam extends Model {
         return $selectedClasses;
         
     }
-
+    
     /**
      * 获取指定考试包含的所有科目列表
      *
@@ -91,9 +90,9 @@ class Exam extends Model {
         foreach ($subjectIds as $subjectId) {
             $selectedSubjects[$subjectId] = Subject::whereId($subjectId)->value('name');
         }
-
+        
         return $selectedSubjects;
-
+        
     }
     
     //获取当前考试班级
@@ -144,7 +143,7 @@ class Exam extends Model {
         foreach ($subject_ids as $subject_id) {
             $subjects[] = Subject::whereId($subject_id)->first(['id', 'name']);
         }
-
+        
         return $subjects;
         
     }
@@ -172,7 +171,9 @@ class Exam extends Model {
     public function modify(array $data, $id) {
         
         $exam = $this->find($id);
-        if (!$exam) { return false; }
+        if (!$exam) {
+            return false;
+        }
         return $exam->update($data) ? true : false;
         
     }
@@ -184,9 +185,11 @@ class Exam extends Model {
      * @return bool
      */
     public function remove($id) {
-    
+        
         $exam = $this->find($id);
-        if (!$exam) { return false; }
+        if (!$exam) {
+            return false;
+        }
         return $exam->removable($this, $id) ? true : false;
         
     }

@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use App\Facades\DatatableFacade as Datatable;
 
 /**
  * App\Models\AlertType 警告类型
@@ -26,7 +26,7 @@ use App\Facades\DatatableFacade as Datatable;
 class AlertType extends Model {
     
     protected $fillable = ['name', 'english_name', 'enabled'];
-
+    
     public function datatable() {
         
         $columns = [
@@ -37,7 +37,7 @@ class AlertType extends Model {
             ['db' => 'AlertType.updated_at', 'dt' => 4],
             [
                 'db' => 'AlertType.enabled', 'dt' => 5,
-                'formatter' => function($d, $row) {
+                'formatter' => function ($d, $row) {
                     return Datatable::simple($this, $d, $row);
                 }
             ]

@@ -32,7 +32,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read \App\Models\Educator $educator
  */
 class EducatorAttendance extends Model {
-
+    
     protected $table = 'educator_attendances';
     
     protected $fillable = [

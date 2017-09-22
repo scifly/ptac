@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\SubjectRequest;
 use App\Models\Grade;
 use App\Models\Major;
-use App\Models\Subject;
 use App\Models\MajorSubject;
+use App\Models\Subject;
 use Illuminate\Support\Facades\Request;
 
 /**
@@ -25,7 +25,7 @@ class SubjectController extends Controller {
         $this->major = $major;
         $this->grade = $grade;
         $this->majorSubject = $majorSubject;
-    
+        
     }
     
     /**
@@ -48,10 +48,10 @@ class SubjectController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function create() {
-
+        
         return parent::output(__METHOD__, [
             'majors' => $this->major->majors(1),
-//            'grades' => $this->grade->grades(1)
+            'grades' => $this->grade->grades([1])
         ]);
         
     }
@@ -64,7 +64,8 @@ class SubjectController extends Controller {
      */
     public function store(SubjectRequest $request) {
         
-        return $this->subject->store($request) ? $this->succeed() : $this->fail();
+        return $this->subject->store($request)
+            ? $this->succeed() : $this->fail();
         
     }
     
@@ -89,28 +90,27 @@ class SubjectController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function edit($id) {
-
+        
         $subject = $this->subject->find($id);
         if (!$subject) { return $this->notFound(); }
+        
         $gradeIds = explode(',', $subject['grade_ids']);
         $selectedGrades = [];
         foreach ($gradeIds as $gradeId) {
             $grade = Grade::whereId($gradeId)->first();
             $selectedGrades[$gradeId] = $grade['name'];
         }
-
-        $subjectMajors = $subject->majors;
         $selectedMajors = [];
-        foreach ($subjectMajors as $major) {
+        foreach ($subject->majors as $major) {
             $selectedMajors[$major->id] = $major->name;
         }
-
+        
         return parent::output(__METHOD__, [
             'subject' => $subject,
-//            'grades' => $this->grade->grades(1),
             'selectedGrades' => $selectedGrades,
-//            'majors' => $this->major->majors(1),
-            'selectedMajors' => $selectedMajors
+            'selectedMajors' => $selectedMajors,
+            'majors' => $this->major->majors(1),
+            'grades' => $this->grade->grades([1])
         ]);
         
     }
@@ -123,8 +123,8 @@ class SubjectController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(SubjectRequest $request, $id) {
-
-        return $this->subject->modify($request,$id) ? $this->succeed() : $this->fail();
+        
+        return $this->subject->modify($request, $id) ? $this->succeed() : $this->fail();
         
     }
     
