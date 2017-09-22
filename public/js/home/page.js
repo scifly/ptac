@@ -24,7 +24,7 @@ var page = {
         $.ajax({
             type: 'GET',
             dataType: 'json',
-            url: url,
+            url: page.siteRoot() + url,
             data: { tabId: tabId },
             success: function(result) {
                 $tabPane.html(result.html);
@@ -53,7 +53,7 @@ $(function() {
             // 清空所有卡片的内容
             $.each($tabPanes, function() { $(this).html(''); });
             // 获取状态为active的卡片内容
-            page.getTabContent($activeTabPane, page.siteRoot() + url);
+            page.getTabContent($activeTabPane, url);
         }
     });
     // 获取状态为active的卡片的url
