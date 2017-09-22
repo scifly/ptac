@@ -118,7 +118,7 @@ class EducatorRequest extends FormRequest {
         }
 
 
-//        dd($input['mobile']);
+        dd($input['mobile']);
 
 //        dd($this->input('mobile.*.mobile'));
         $this->replace($input);

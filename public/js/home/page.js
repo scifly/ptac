@@ -53,7 +53,7 @@ $(function() {
             // 清空所有卡片的内容
             $.each($tabPanes, function() { $(this).html(''); });
             // 获取状态为active的卡片内容
-            page.getTabContent($activeTabPane, page.siteRoot() + url);
+            page.getTabContent($activeTabPane, url);
         }
     });
     // 获取状态为active的卡片的url

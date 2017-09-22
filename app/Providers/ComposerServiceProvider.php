@@ -57,7 +57,7 @@ class ComposerServiceProvider extends ServiceProvider {
         // View::composer('department.create_edit', 'App\Http\ViewComposers\DepartmentComposer');
         View::composer('message.create_edit', 'App\Http\ViewComposers\MessageComposer');
         View::composer('team.create_edit', 'App\Http\ViewComposers\TeamComposer');
-        View::composer('operator.create', 'App\Http\ViewComposers\OperatorComposer');
+        View::composer('operator.create_edit', 'App\Http\ViewComposers\OperatorComposer');
         View::composer('conference_room.create_edit', 'App\Http\ViewComposers\ConferenceRoomComposer');
         View::composer('conference_queue.create_edit', 'App\Http\ViewComposers\ConferenceQueueComposer');
         View::composer('conference_participant.create_edit', 'App\Http\ViewComposers\ConferenceParticipantComposer');

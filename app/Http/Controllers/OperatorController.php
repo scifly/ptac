@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\OperatorRequest;
+use App\Models\Department;
 use App\Models\Operator;
+use App\Models\School;
+use App\Models\Team;
 use Illuminate\Support\Facades\Request;
 
 /**
@@ -15,11 +18,16 @@ use Illuminate\Support\Facades\Request;
 class OperatorController extends Controller {
     
     protected $operator;
-    
-    function __construct(Operator $operator) {
+    protected $department;
+    protected $school;
+
+    function __construct(Operator $operator, Department $department, School $school) {
         
         $this->operator = $operator;
-        
+        $this->department = $department;
+        $this->school = $school;
+
+
     }
     
     /**
@@ -87,7 +95,22 @@ class OperatorController extends Controller {
         if (!$operator) {
             return $this->notFound();
         }
-        return $this->output(__METHOD__, ['operator' => $operator]);
+
+        $selectedDepartmentIds = [];
+
+        foreach ($operator->user->departments as $department) {
+            $selectedDepartmentIds[] = $department->id;
+        }
+
+        $selectedDepartments = $this->department->selectedNodes($selectedDepartmentIds);
+//dd($this->operator->schools($operator->school_ids));
+        return $this->output(__METHOD__, [
+            'operator' => $operator,
+            'mobiles' => $operator->user->mobiles,
+            'selectedSchools' => $this->school->schools($operator->school_ids),
+            'selectedDepartmentIds' => implode(',', $selectedDepartmentIds),
+            'selectedDepartments' => $selectedDepartments,
+        ]);
         
     }
     
