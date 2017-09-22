@@ -31,7 +31,7 @@ class HomeController extends Controller {
         Tab $tab,
         Department $department
     ) {
-        
+        $this->middleware(['auth']);
         $this->menu = $menu;
         $this->action = $action;
         $this->tab = $tab;
