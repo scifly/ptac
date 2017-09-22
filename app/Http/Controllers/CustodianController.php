@@ -4,11 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CustodianRequest;
 use App\Models\Custodian;
-use App\Models\CustodianStudent;
 use App\Models\Department;
 use App\Models\DepartmentUser;
 use App\Models\Group;
+use App\Models\User;
+use App\Models\Mobile;
 use App\Models\Student;
+use App\Models\CustodianStudent;
 use Illuminate\Support\Facades\Request;
 
 /**
@@ -19,39 +21,29 @@ use Illuminate\Support\Facades\Request;
  */
 class CustodianController extends Controller {
     
-    protected $custodian, $department, $group;
-    protected $departmentUser, $student, $custodianStudent;
+    protected $custodian, $department, $group, $departmentUser,$student,$custodianStudent;
     
-    function __construct(
-        Custodian $custodian,
-        Department $department,
-        Group $group,
-        DepartmentUser $departmentUser,
-        Student $student,
-        CustodianStudent $custodianStudent
-    ) {
-        
+    function __construct(Custodian $custodian, Department $department, Group $group,
+    DepartmentUser $departmentUser,Student $student,CustodianStudent $custodianStudent) {
+    
         $this->custodian = $custodian;
         $this->department = $department;
         $this->group = $group;
         $this->departmentUser = $departmentUser;
-        $this->student = $student;
+        $this->student =$student;
         $this->custodianStudent = $custodianStudent;
         
     }
-    
     /**
      * 监护人列表
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
-        
         if (Request::get('draw')) {
             return response()->json($this->custodian->datatable());
         }
         return parent::output(__METHOD__);
-        
     }
     
     /**
@@ -60,7 +52,10 @@ class CustodianController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function create() {
-        
+
+        if (Request::method() === 'POST') {
+            return $this->department->tree();
+        }
         return parent::output(__METHOD__);
         
     }
@@ -72,49 +67,58 @@ class CustodianController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(CustodianRequest $request) {
-        
-        return $this->custodian->store($request)
-            ? $this->succeed() : $this->fail();
+
+        return $this->custodian->store($request) ? $this->succeed() : $this->fail();
         
     }
     
+    /**
+     * Display the specified resource.
+     * @param  \App\Models\Custodian $custodian
+     * @return \Illuminate\Http\Response
+     */
     public function show(Custodian $custodian) {
     
     }
     
     /**
-     *
-     *
+     * 编辑监护人.
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return \Illuminate\Http\Response
+     * @internal param Custodian $custodian
      */
     public function edit($id) {
-        
+
+        if (Request::method() === 'POST') {
+            return $this->department->tree();
+        }
         $custodian = $this->custodian->find($id);
-        $departmentIds = $this->departmentUser->where('user_id', $custodian->user_id)->get();
-        foreach ($departmentIds as $key => $value) {
-            $department = Department::whereId($value['department_id'])->first();
-            $selectedDepartments[$department['id']] = $department['name'];
+
+        $departments = $custodian->user->departments;
+        $selectedDepartmentIds = [];
+        foreach ($departments as $department) {
+            $selectedDepartmentIds[] = $department->id;
         }
-        
-        $custodianStudent = $this->custodianStudent->where('custodian_id', $custodian->id)->get();
-        foreach ($custodianStudent as $key => $value) {
-            $relationship[$value['student_id']] = $value['relationship'];
-        }
-        
-        foreach ($custodian->students as $key => $value) {
+
+        $selectedDepartments = $this->department->selectedNodes($selectedDepartmentIds);
+
+        $selectedStudents = [];
+        foreach ($custodian->students as $key => $value)
+        {
             $studentId = $this->student->find($value['id']);
             $selectedStudents[$studentId->id] = $studentId->user->realname;
         }
+
         if (!$custodian) {
             return $this->notFound();
         }
         return $this->output(__METHOD__, [
+            'mobiles' => $custodian->user->mobiles,
             'custodian' => $custodian,
-//            'departments'=>$this->department->departments([1]),
+            'selectedDepartmentIds' => implode(',', $selectedDepartmentIds),
             'selectedDepartments' => $selectedDepartments,
             'selectedStudents' => $selectedStudents,
-            'relationship' => $relationship
+
         ]);
         
     }
@@ -126,10 +130,11 @@ class CustodianController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(CustodianRequest $request, $id) {
-        return $this->custodian->modify($request, $id) ? $this->succeed() : $this->fail();
+
+        return $this->custodian->modify($request,$id) ? $this->succeed() : $this->fail();
         
     }
-    
+
     /**
      * 删除指定的监护人
      *

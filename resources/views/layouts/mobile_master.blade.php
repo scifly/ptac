@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="{{ URL::asset('css/weui.min.css') }}">
     <link rel="stylesheet" href="{{ URL::asset('css/jquery-weui.min.css') }}">
     <!-- swiper -->
-    <link rel="stylesheet" href="{{ URL::asset('js/plugins/swiper/css/swiper.min.css') }}">
+    <link rel="stylesheet" href="{{ URL::asset('Scripts') }}">
     <!-- 自定义样式 -->
     <link rel="stylesheet" href="{{ URL::asset('css/mobile_main.css') }}">
 </head>

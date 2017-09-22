@@ -11,16 +11,16 @@ var tree = {
         'other': { "icon": 'fa fa-list' }
     },
     csrfToken: function() { return $('#csrf_token').attr('content'); },
-    urlIndex: function(table) { return page.siteRoot() + table +'/index'; },
+    urlIndex: function(table) { return table +'/index'; },
+    urlCreate: function(table) { return table + '/create'; },
+    urlEdit: function(table) { return table + '/edit/'; },
+    urlMenuTabs: function(table) { return table + '/menutabs/'; },
     urlSort: function(table) { return page.siteRoot() + table + '/sort'; },
-    urlCreate: function(table) { return page.siteRoot() + table + '/create'; },
     urlStore: function(table) { return page.siteRoot() + table + '/store'; },
-    urlEdit: function(table) { return page.siteRoot() + table + '/edit/'; },
     urlUpdate: function(table) { return page.siteRoot() + table + '/update/'; },
     urlMove: function(table) { return page.siteRoot() + table + '/move/'; },
     urlDelete: function(table) { return page.siteRoot() + table + '/delete/'; },
     urlRankTabs: function(table) { return page.siteRoot() + table + '/ranktabs/'; },
-    urlMenuTabs: function(table) { return page.siteRoot() + table + '/menutabs/'; },
     ajaxRequest: function(requestType, ajaxUrl, data, obj) {
         $.ajax({
             type: requestType,

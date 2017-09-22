@@ -19,6 +19,7 @@ Route::get('/home', 'HomeController@index')->name('home');
 
 /** 测试用路由 */
 Route::get('test/index', 'TestController@index');
+Route::get('test/getuser', 'TestController@getUser');
 Route::get('test/create', 'TestController@create');
 Route::get('test', 'TestController@test');
 
@@ -37,8 +38,18 @@ Route::group(['prefix' => 'educators'], function() {
 });
 // 监护人
 Route::group(['prefix' => 'custodians'], routes('CustodianController'));
+Route::group(['prefix' => 'custodians'], function() {
+    $ctlr = 'CustodianController';
+    Route::post('edit/{id}', $ctlr . '@edit');
+    Route::post('create', $ctlr . '@create');
+});
 // 学生
 Route::group(['prefix' => 'students'], routes('StudentController'));
+Route::group(['prefix' => 'students'], function() {
+    $ctlr = 'StudentController';
+    Route::post('edit/{id}', $ctlr . '@edit');
+    Route::post('create', $ctlr . '@create');
+});
 // 用户
 Route::group(['prefix' => 'users'], routes('UserController'));
 Route::post('users/upload_ava/{id}', 'UserController@uploadAvatar');

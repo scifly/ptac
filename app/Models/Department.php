@@ -351,7 +351,13 @@ class Department extends Model {
         return response()->json($data);
         
     }
-    
+
+    /**
+     * 选中的部门节点
+     *
+     * @param $ids
+     * @return array
+     */
     public function selectedNodes($ids) {
         
         $departments = $this->whereIn('id', $ids)->get()->toArray();
