@@ -40,7 +40,7 @@ class MajorSubject extends Model {
     }
     
     public function storeBySubjectId($subjectId, $majorIds) {
-
+        
         foreach ($majorIds as $majorId) {
             $this->create([
                 'major_id' => $majorId,

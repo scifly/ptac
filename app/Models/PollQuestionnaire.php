@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
+use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use App\Facades\DatatableFacade as Datatable;
 
 /**
  * App\Models\PollQuestionnaire 调查问卷
@@ -35,12 +35,12 @@ use App\Facades\DatatableFacade as Datatable;
  * @property-read User $user
  */
 class PollQuestionnaire extends Model {
-
+    
     use ModelTrait;
     
     protected $table = 'poll_questionnaires';
     
-    protected $fillable = ['school_id', 'user_id', 'name', 'start', 'end',  'enabled'];
+    protected $fillable = ['school_id', 'user_id', 'name', 'start', 'end', 'enabled'];
     
     /**
      * 返回指定调查问卷所属的学校对象
@@ -55,28 +55,28 @@ class PollQuestionnaire extends Model {
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function user() { return $this->belongsTo('App\Models\User'); }
-
+    
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
     public function poll_questionnaire_answer() {
-        return $this->hasOne('App\Models\PollQuestionnaireAnswer','pq_id');
+        return $this->hasOne('App\Models\PollQuestionnaireAnswer', 'pq_id');
     }
-
+    
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
     public function poll_questionnaire_partcipant() {
-        return $this->hasOne('App\Models\PollQuestionnaireParticipant','pq_id');
+        return $this->hasOne('App\Models\PollQuestionnaireParticipant', 'pq_id');
     }
-
+    
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function poll_questionnaire_subject() {
-        return $this->hasMany('App\Models\PollQuestionnaireSubject','pq_id');
+        return $this->hasMany('App\Models\PollQuestionnaireSubject', 'pq_id');
     }
-
+    
     /**
      * 删除问卷
      *
@@ -84,15 +84,17 @@ class PollQuestionnaire extends Model {
      * @return bool|null
      */
     public function remove($id) {
-
+        
         $PollQuestionnaire = $this->find($id);
-        if (!$PollQuestionnaire) { return false; }
+        if (!$PollQuestionnaire) {
+            return false;
+        }
         return $this->removable($this, $id) ? $PollQuestionnaire->delete() : false;
-
+        
     }
-
+    
     public function dataTable() {
-
+        
         $columns = [
             ['db' => 'PollQuestionnaire.id', 'dt' => 0],
             ['db' => 'PollQuestionnaire.name', 'dt' => 1],
@@ -102,7 +104,7 @@ class PollQuestionnaire extends Model {
             ['db' => 'PollQuestionnaire.end', 'dt' => 5],
             ['db' => 'PollQuestionnaire.created_at', 'dt' => 6],
             ['db' => 'PollQuestionnaire.updated_at', 'dt' => 7],
-
+            
             [
                 'db' => 'PollQuestionnaire.enabled', 'dt' => 8,
                 'formatter' => function ($d, $row) {
@@ -118,7 +120,7 @@ class PollQuestionnaire extends Model {
                 'conditions' => [
                     'School.id = PollQuestionnaire.school_id'
                 ]
-
+            
             ],
             [
                 'table' => 'users',
@@ -127,10 +129,10 @@ class PollQuestionnaire extends Model {
                 'conditions' => [
                     'User.id = PollQuestionnaire.user_id'
                 ]
-
+            
             ]
         ];
-
+        
         return Datatable::simple($this, $columns, $joins);
     }
 }

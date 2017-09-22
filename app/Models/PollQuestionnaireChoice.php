@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use App\Facades\DatatableFacade as Datatable;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 
 /**
  * App\Models\PollQuestionnaireChoice
@@ -16,12 +17,12 @@ use App\Facades\DatatableFacade as Datatable;
  * @property \Carbon\Carbon|null $created_at
  * @property \Carbon\Carbon|null $updated_at
  * @property-read \App\Models\PollQuestionnaireSubject $pollquestionnaireSubject
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\PollQuestionnaireChoice whereChoice($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\PollQuestionnaireChoice whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\PollQuestionnaireChoice whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\PollQuestionnaireChoice wherePqsId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\PollQuestionnaireChoice whereSeqNo($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\PollQuestionnaireChoice whereUpdatedAt($value)
+ * @method static Builder|PollQuestionnaireChoice whereChoice($value)
+ * @method static Builder|PollQuestionnaireChoice whereCreatedAt($value)
+ * @method static Builder|PollQuestionnaireChoice whereId($value)
+ * @method static Builder|PollQuestionnaireChoice wherePqsId($value)
+ * @method static Builder|PollQuestionnaireChoice whereSeqNo($value)
+ * @method static Builder|PollQuestionnaireChoice whereUpdatedAt($value)
  */
 class PollQuestionnaireChoice extends Model {
     //
@@ -34,9 +35,9 @@ class PollQuestionnaireChoice extends Model {
             , 'pqs_id'
             , 'id');
     }
-
+    
     public function datatable() {
-
+        
         $columns = [
             ['db' => 'PollQuestionnaireChoice.id', 'dt' => 0],
             ['db' => 'PqSubject.subject', 'dt' => 1],
@@ -49,7 +50,7 @@ class PollQuestionnaireChoice extends Model {
                     $editLink = sprintf(Datatable::DT_LINK_EDIT, 'edit_' . $d);
                     $delLink = sprintf(Datatable::DT_LINK_DEL, $d);
                     return $showLink . Datatable::DT_SPACE .
-                        $editLink .  Datatable::DT_SPACE . $delLink ;
+                        $editLink . Datatable::DT_SPACE . $delLink;
                 }
             ]
         ];
@@ -61,10 +62,10 @@ class PollQuestionnaireChoice extends Model {
                 'conditions' => [
                     'PqSubject.id = PollQuestionnaireChoice.pqs_id'
                 ]
-
+            
             ]
         ];
-
+        
         return Datatable::simple($this, $columns, $joins);
     }
 }

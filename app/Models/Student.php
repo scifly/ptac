@@ -131,18 +131,11 @@ class Student extends Model {
                 # 获取监护人的ID
                 $custodianIds = $request->input('custodian_ids');
                 # 获取与监护人的关系
-                $relationship = $request->input('relationship');
-                if($custodianIds&&$relationship)
+                $relationships = $request->input('relationship');
+                foreach ($custodianIds as $key=>$studentId)
                 {
-                    if(count($custodianIds) == count($relationship))
-                    {
-                        # 合并数组，得到监护人Id和关系对应的数组
-                        $custodianId = array_combine($custodianIds,$relationship);
-                    }else{
-                        return false;
-                    }
-                }else{
-                    $custodianId = [];
+                    # 监护人ID和监护人关系对应的数组
+                    $custodianId_relationship[$studentId] = $relationships[$key];
                 }
 
                 $user = $request->input('user');
@@ -177,20 +170,18 @@ class Student extends Model {
                 ];
                 $mobiles = $request->input('mobile');
                 if($mobiles){
-                    $mobile = new Mobile();
-                    foreach ($mobiles['mobile'] as $key=>$v)
-                    {
-                          # 向mobile表添加用户的手机数据
+                    $mobileModel = new Mobile();
+                    foreach ($mobiles as $k => $mobile) {
                         $mobileData = [
                             'user_id' => $u->id,
-                            'mobile' =>$v,
-                            'enabled' => isset($mobiles['enabled'][$key]) ? 1 : 0,
-                            'isdefault' => isset($mobiles['isdefault'][$key]) ? 1 : 0,
+                            'mobile' => $mobile['mobile'],
+                            'isdefault' => $mobile['isdefault'],
+                            'enabled' => $mobile['enabled'],
                         ];
-                        $m = $mobile->create($mobileData);
+                        $mobileModel->create($mobileData);
                     }
 
-                    unset($mobile);
+                    unset($mobileModel);
                 }
 
                 # 向student表添加数据
@@ -201,16 +192,16 @@ class Student extends Model {
 
                 # 向部门用户表添加数据
                 $departmentUser = new DepartmentUser();
-                $departmentIds = $request->input('department_ids');
+                $departmentIds = $request->input('selectedDepartments');
                 $departmentUser ->storeByUserId($u->id, $departmentIds);
                 unset($departmentUser);
 
                 # 向监护人学生表中添加数据
                 $custodianStudent = new CustodianStudent();
 
-                if($custodianId!=null)
+                if($custodianId_relationship!=null)
                 {
-                    $custodianStudent->storeByStudentId($s->id, $custodianId);
+                    $custodianStudent->storeByStudentId($s->id, $custodianId_relationship);
                 }
                 unset($custodianStudent);
             });
@@ -253,80 +244,73 @@ class Student extends Model {
         if (!isset($student)) { return false; }
         try {
             $exception = DB::transaction(function() use($request, $studentId, $student) {
-                dd($request->all());
-//                # 获取监护人的ID
-//                $custodianIds = $request->input('custodian_ids');
-//                # 获取与监护人的关系
-//                $relationship = $request->input('relationship');
-//                if($custodianIds&&$relationship)
-//                {
-//                    if(count($custodianIds) == count($relationship))
-//                    {
-//                        # 合并数组，得到监护人Id和关系对应的数组
-//                        $custodianId = array_combine($custodianIds,$relationship);
-//                    }else{
-//                        return false;
-//                    }
-//                }else{
-//                    $custodianId = [];
-//                }
-//                $userId = $request->input('user_id');
-//                $userData = $request->input('user');
-//                $user = new User();
-//                $user->where('id',$userId)
-//                    ->update([
-//                        'group_id' => $userData['group_id'],
-//                        'email' => $userData['email'],
-//                        'realname' => $userData['realname'],
-//                        'gender' => $userData['gender'],
-//                        'isleader' => 0,
-//                        'english_name'=>$userData['english_name'],
-//                        'telephone' => $userData['telephone'],
-//                        'enabled' =>$userData['enabled']
-//                    ]);
-//                unset($user);
-//                $studentData = $request->input('student');
-//                $student->update([
-//                    'user_id' => $userId,
-//                    'class_id' => $studentData['class_id'],
-//                    'student_number' => $studentData['student_number'],
-//                    'card_number' => $studentData['card_number'],
-//                    'oncampus' => $studentData['oncampus'],
-//                    'birthday' => $studentData['birthday'],
-//                    'remark' => $studentData['remark'],
-//                    'enabled' => 1
-//                ]);
-//
-//                $mobiles = $request->input('mobile');
-//                if($mobiles){
-//                    $mobile = new Mobile();
-//                    $mobile::where('user_id',$userId)->delete();
-//                    foreach ($mobiles['mobile'] as $key=>$v)
-//                    {
-//                        # 向mobile表添加用户的手机数据
-//                        $mobileData = [
-//                            'user_id' => $userId,
-//                            'mobile' =>$v,
-//                            'enabled' => isset($mobiles['enabled'][$key]) ? 1 : 0,
-//                            'isdefault' => isset($mobiles['isdefault'][$key]) ? 1 : 0,
-//                        ];
-//                        $m = $mobile->create($mobileData);
-//                    }
-//
-//                    unset($mobile);
-//                }
-//
-//                # 向部门用户表添加数据
-//                $departmentIds = $request->input('department_ids');
-//                $departmentUser = new DepartmentUser();
-//                $departmentUser::where('user_id',$userId)->delete();
-//                $departmentUser ->storeByUserId($userId, $departmentIds);
-//                unset($departmentUser);
-//                # 向监护人学生表中添加数据
-//                $custodianStudent = new CustodianStudent();
-//                $custodianStudent::where('student_id',$studentId)->delete();
-//                $custodianStudent->storeByStudentId($studentId, $custodianId);
-//                unset($custodianStudent);
+                # 获取监护人的ID
+                $custodianIds = $request->input('custodian_ids');
+                # 获取与监护人的关系
+                $relationships = $request->input('relationship');
+
+                foreach ($custodianIds as $key=>$studentId)
+                {
+                    # 监护人ID和监护人关系对应的数组
+                    $custodianId_relationship[$studentId] = $relationships[$key];
+                }
+                $userId = $request->input('user_id');
+                $userData = $request->input('user');
+                $user = new User();
+                $user->where('id',$userId)
+                    ->update([
+                        'group_id' => $userData['group_id'],
+                        'email' => $userData['email'],
+                        'realname' => $userData['realname'],
+                        'gender' => $userData['gender'],
+                        'isleader' => 0,
+                        'english_name'=>$userData['english_name'],
+                        'telephone' => $userData['telephone'],
+                        'enabled' =>$userData['enabled']
+                    ]);
+                unset($user);
+                $studentData = $request->input('student');
+                $student->update([
+                    'user_id' => $userId,
+                    'class_id' => $studentData['class_id'],
+                    'student_number' => $studentData['student_number'],
+                    'card_number' => $studentData['card_number'],
+                    'oncampus' => $studentData['oncampus'],
+                    'birthday' => $studentData['birthday'],
+                    'remark' => $studentData['remark'],
+                    'enabled' => 1
+                ]);
+
+                $mobiles = $request->input('mobile');
+                if($mobiles) {
+                    $mobileModel = new Mobile();
+                    $delMobile = $mobileModel->where('user_id', $userId)->delete();
+                    if($delMobile) {
+//                        dd($mobiles);
+                        foreach ($mobiles as $k => $mobile) {
+                            $mobileData = [
+                                'user_id' => $request->input('user_id'),
+                                'mobile' => $mobile['mobile'],
+                                'isdefault' => $mobile['isdefault'],
+                                'enabled' => $mobile['enabled'],
+                            ];
+                            $mobileModel->create($mobileData);
+                        }
+                    }
+                    unset($mobile);
+                }
+
+                # 向部门用户表添加数据
+                $departmentIds = $request->input('selectedDepartments');
+                $departmentUser = new DepartmentUser();
+                $departmentUser::where('user_id',$userId)->delete();
+                $departmentUser ->storeByUserId($userId, $departmentIds);
+                unset($departmentUser);
+                # 向监护人学生表中添加数据
+                $custodianStudent = new CustodianStudent();
+                $custodianStudent::where('student_id',$studentId)->delete();
+                $custodianStudent->storeByStudentId($studentId, $custodianId_relationship);
+                unset($custodianStudent);
             });
 
             return is_null($exception) ? true : $exception;

@@ -15,7 +15,7 @@ class SchoolEventSubscriber {
     protected $departmentTypeId, $menuTypeId;
     
     function __construct() {
-        
+
         $this->departmentTypeId = DepartmentType::whereName('学校')->first()->id;
         $this->menuTypeId = MenuType::whereName('学校')->first()->id;
         
@@ -28,7 +28,7 @@ class SchoolEventSubscriber {
      * @return bool
      */
     public function onDepartmentCreated($event) {
-    
+        
         /** @var Department $department */
         $department = $event->department;
         # 判断已创建或更新的部门的类型是否为"学校"
@@ -49,7 +49,7 @@ class SchoolEventSubscriber {
      * @return bool
      */
     public function onMenuCreated($event) {
-    
+        
         /** @var Menu $menu */
         $menu = $event->menu;
         # 判断已创建或更新的部门的类型是否为"学校"
@@ -85,7 +85,7 @@ class SchoolEventSubscriber {
         return true;
         
     }
-
+    
     /**
      * 当部门所属企业发生变化时,更新对应学校的corp_id
      *

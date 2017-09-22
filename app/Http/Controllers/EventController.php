@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\EventRequest;
 use App\Models\Event;
 use Illuminate\Support\Facades\Request;
-use Illuminate\Support\Facades\Session;
 
 /**
  * 日历
@@ -15,20 +14,18 @@ use Illuminate\Support\Facades\Session;
  */
 class EventController extends Controller {
     protected $event;
-
+    
     function __construct(Event $event) {
         $this->event = $event;
     }
-
+    
     /**
      * 事件列表
      *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
-     * @internal param $userId
-     * @internal param $id = user_id
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
-
+        
         $userId = 2;
         $isAdmin = $this->event->getRole($userId) ? 1 : 0;
         $events = $this->event
@@ -40,9 +37,9 @@ class EventController extends Controller {
             'userId' => $userId,
             'isAdmin' => $isAdmin
         ]);
-
+        
     }
-
+    
     /**
      * 显示日历事件
      *
@@ -50,11 +47,11 @@ class EventController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function calendarEvents($userId) {
-
+        
         return $this->event->showCalendar($userId);
-
+        
     }
-
+    
     /**
      * 新增一个列表事件
      *
@@ -67,7 +64,7 @@ class EventController extends Controller {
         $listDate = $this->event->create($inputEvent);
         return $listDate ? $this->succeed($listDate) : $this->fail();
     }
-
+    
     /**
      * 编辑日程事件的表单
      *
@@ -86,7 +83,7 @@ class EventController extends Controller {
         $data = view('event.show', ['events' => $this->event->find($id)])->render();
         return !empty($data) ? $this->succeed($data) : $this->fail();
     }
-
+    
     /**
      * 更新指定日历事件
      *
@@ -112,7 +109,7 @@ class EventController extends Controller {
         }
         return $event->update($input) ? $this->succeed() : $this->fail();
     }
-
+    
     /**
      *删除事件包括日历事件和列表事件
      *
@@ -127,7 +124,7 @@ class EventController extends Controller {
         }
         return $event->delete() ? $this->succeed() : $this->fail();
     }
-
+    
     /**
      * 拖动列表添加日历事件
      */
@@ -146,7 +143,7 @@ class EventController extends Controller {
         }
         return $this->event->create($event) ? $this->succeed() : $this->fail();
     }
-
+    
     /**
      * 拖动实时保存日历事件
      *
@@ -168,5 +165,5 @@ class EventController extends Controller {
         }
         return $event->save() ? $this->succeed() : $this->fail();
     }
-
+    
 }

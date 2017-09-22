@@ -6,8 +6,8 @@ use App\Models\Action;
 use App\Models\Department;
 use App\Models\DepartmentType;
 use App\Models\Menu;
-use App\Models\MenuType;
 use App\Models\MenuTab;
+use App\Models\MenuType;
 use App\Models\Tab;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
@@ -25,18 +25,24 @@ class HomeController extends Controller {
     protected $action;
     protected $tab;
     
-    
-    public function __construct(Menu $menu, Action $action, Tab $tab, Department $department) {
+    public function __construct(
+        Menu $menu,
+        Action $action,
+        Tab $tab,
+        Department $department
+    ) {
+        
         $this->menu = $menu;
         $this->action = $action;
         $this->tab = $tab;
         $this->department = $department;
+        
     }
     
     public function index() {
-    
-        $this->action->scan();
-        $this->tab->scan();
+        
+        // $this->action->scan();
+        // $this->tab->scan();
         $rootMenu = $this->menu->find(1);
         $menu = NULL;
         if (!$rootMenu) {
@@ -62,12 +68,12 @@ class HomeController extends Controller {
                 'enabled' => 1
             ]);
         }
-        return redirect('http://sandbox.dev:8080/ptac/public/pages/' . $menu->id);
-    
+        return redirect('pages/' . $menu->id);
+        
     }
-
+    
     public function menu($id) {
-
+        
         if (!session('menuId') || session('menuId') !== $id) {
             session(['menuId' => $id]);
             session(['menuName' => Menu::whereId($id)->first()->name]);
@@ -81,7 +87,9 @@ class HomeController extends Controller {
         $tabArray = [];
         $isTabLegit = true;
         $tabRanks = MenuTab::whereMenuId($id)->get()->sortBy('tab_order')->toArray();
-        if (empty($tabRanks)) { $isTabLegit = false; };
+        if (empty($tabRanks)) {
+            $isTabLegit = false;
+        };
         foreach ($tabRanks as $rank) {
             $tab = Tab::whereId($rank['tab_id'])->first();
             if (!empty($tab->action->route)) {
@@ -96,11 +104,13 @@ class HomeController extends Controller {
                 break;
             }
         }
-        // dd($tabArray);
         if ($isTabLegit) {
             # 刷新页面时打开当前卡片, 不一定是第一个卡片
             if (session('tabId')) {
-                $key = array_search('tab_' . session('tabId'), array_column($tabArray, 'id'));
+                $key = array_search(
+                    'tab_' . session('tabId'),
+                    array_column($tabArray, 'id')
+                );
                 $tabArray[$key]['active'] = true;
                 if (!session('tabChanged') && !session('menuChanged')) {
                     $tabArray[$key]['url'] = session('tabUrl');
@@ -116,9 +126,9 @@ class HomeController extends Controller {
         if (!$isTabLegit) {
             session(['menuId' => 0]);
             $actionId = Action::whereEnabled(1)->where('controller', 'MenuController')->
-                where('method', 'index')->first()->id;
+            where('method', 'index')->first()->id;
             $tab = Tab::whereEnabled('1')->where('controller', 'MenuController')->
-                where('action_id', $actionId)->first();
+            where('action_id', $actionId)->first();
             $tabArray[] = [
                 'id' => 'tab_' . $tab->id,
                 'name' => $tab->name,

@@ -25,7 +25,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read Media[] $medias
  */
 class MediaType extends Model {
-
+    
     use ModelTrait;
     
     protected $table = 'media_types';
@@ -34,7 +34,7 @@ class MediaType extends Model {
     
     /**
      * 获取指定媒体类型所包含的所有媒体对象
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function medias() {
@@ -66,7 +66,9 @@ class MediaType extends Model {
     public function modify(array $data, $id) {
         
         $mediaType = $this->find($id);
-        if (!$mediaType) { return false; }
+        if (!$mediaType) {
+            return false;
+        }
         return $mediaType->update($data) ? true : false;
         
     }
@@ -80,7 +82,9 @@ class MediaType extends Model {
     public function remove($id) {
         
         $mediaType = $this->find($id);
-        if (!$mediaType) { return false; }
+        if (!$mediaType) {
+            return false;
+        }
         return $mediaType->removable($this, $id)
             ? $mediaType->delete() : false;
         

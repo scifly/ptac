@@ -29,6 +29,8 @@ use Illuminate\Database\Eloquent\Model;
  * @mixin \Eloquent
  * @property-read \App\Models\ProcedureType $procedureType
  * @property-read \App\Models\School $school
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\ProcedureLog[] $procedureLogs
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\ProcedureStep[] $procedureSteps
  */
 class Procedure extends Model {
     
@@ -107,7 +109,7 @@ class Procedure extends Model {
         
         $procedure = $this->find($id);
         if (!$procedure) { return false; }
-        return $procedure->removable($this, $id) ? $procedure->delete() : false;
+        return $this->removable($this, $id) ? $procedure->delete() : false;
         
     }
     

@@ -35,7 +35,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read ProcedureLog $procedureLog
  */
 class EducatorAppeal extends Model {
-
+    
     protected $table = 'educator_appeals';
     
     protected $fillable = [

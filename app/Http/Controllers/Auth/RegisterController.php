@@ -7,7 +7,6 @@ use App\Http\Requests\RegisterUser;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Auth\RegistersUsers;
-use Illuminate\Http\Request;
 
 class RegisterController extends Controller {
     /*
@@ -58,7 +57,7 @@ class RegisterController extends Controller {
      * @return User
      */
     protected function create(array $data) {
-       
+        
         return $this->user->create([
             'realname' => $data['realname'],
             'username' => $data['username'],

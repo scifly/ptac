@@ -21,18 +21,18 @@ class SubjectRequest extends FormRequest {
         return [
             'name' => 'required|string|between:2,20|unique:subjects,name,' .
                 $this->input('id') . ',id,' .
-                'school_id,' . $this->input('school_id') .',' .
-                'max_score,' . $this->input('max_score') .',' .
-                'pass_score,' . $this->input('pass_score') .',' .
+                'school_id,' . $this->input('school_id') . ',' .
+                'max_score,' . $this->input('max_score') . ',' .
+                'pass_score,' . $this->input('pass_score') . ',' .
                 'isaux,' . $this->input('isaux'),
             'max_score' => 'required|numeric',
             'pass_score' => 'required|numeric',
             'grade_ids' => 'required',
         ];
     }
-
+    
     public function messages() {
-
+        
         return [
             'name.required' => '科目名称不能为空',
             'name.between' => '科目名称应该在2~20个字符之间',
@@ -44,13 +44,13 @@ class SubjectRequest extends FormRequest {
             'pass_score.max' => '及格分数不能超过5位数',
             'grade_ids.required' => '年级不能为空',
         ];
-
+        
     }
     
     protected function prepareForValidation() {
         
         $input = $this->all();
-
+        
         if (isset($input['grade_ids'])) {
             $input['grade_ids'] = implode(',', $input['grade_ids']);
         }
@@ -66,7 +66,6 @@ class SubjectRequest extends FormRequest {
         if (!isset($input['enabled'])) {
             $input['enabled'] = 0;
         }
-
         $this->replace($input);
         
     }

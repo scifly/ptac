@@ -48,7 +48,7 @@
                                        value="{{ $key }}" class="minimal"
                                        @if(isset($menu) && $menu['icon_id'] == $key)
                                        checked
-                                       @endif
+                                        @endif
                                 >
                             </label>
                             <i class="{{ $value }}" style="margin-left: 10px;">&nbsp; {{ $value }}</i><br/>

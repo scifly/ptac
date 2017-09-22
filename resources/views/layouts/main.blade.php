@@ -15,26 +15,26 @@
     <link rel="stylesheet" href="{{ URL::asset('css/AdminLTE.min.css') }}">
     <link rel="stylesheet" href="{{ URL::asset('css/skins/_all-skins.min.css') }}">
 
-    @isset($map)
-        <!-- jvectormap -->
-        <link rel="stylesheet" href="{{ URL::asset('Css') }}">
-    @endisset
-    @isset($form)
-        <!-- select2 style -->
+@isset($map)
+    <!-- jvectormap -->
+        <link rel="stylesheet" href="{{ URL::asset('css/jquery-jvectormap.css') }}">
+@endisset
+@isset($form)
+    <!-- select2 style -->
         <link rel="stylesheet" href="{{ URL::asset('js/plugins/select2/css/select2.min.css') }}">
         <!-- Parsley style -->
         <link rel="stylesheet" href="{{ URL::asset('js/plugins/parsley/parsley.css') }}">
         <!-- switchery style -->
         <link rel="stylesheet" href="{{ URL::asset('js/plugins/switchery/switchery.min.css') }}">
-    @endisset
-    @isset($datatable)
-        <!-- DataTable style -->
+@endisset
+@isset($datatable)
+    <!-- DataTable style -->
         <link rel="stylesheet" href="{{ URL::asset('js/plugins/datatables/datatables.min.css') }}">
-    @endisset
-    <!-- 微网站 -->
+@endisset
+<!-- 微网站 -->
     @isset($ws)
         <link rel="stylesheet" href="{{ URL::asset('css/wapSite.css') }}">
-    @endisset
+@endisset
 
 <!-- 菜单测试 -->
     <link rel="stylesheet" href="{{ URL::asset('js/plugins/jstree/dist/themes/default/style.min.css') }}">
@@ -45,8 +45,8 @@
     <!-- switchery style -->
     <link rel="stylesheet" href="{{ URL::asset('js/plugins/switchery/switchery.min.css') }}">
 
-    <!-- HTML5 Shim and RespScriptsd.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: RespScriptsd.js doesn't work if you view the page via file:// -->
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
     <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
     <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -366,9 +366,9 @@
             @isset($dialog)
                 @include('partials.modal_dialog')
             @endif
-                @isset($show)
-                    @include('partials.modal_show')
-                @endif
+            @isset($show)
+                @include('partials.modal_show')
+            @endif
             @yield('content')
         </section>
     </div>
@@ -551,15 +551,15 @@
 <script src="{{ URL::asset('js/jquery.min.js') }}"></script>
 <script src="{{ URL::asset('js/bootstrap.min.js') }}"></script>
 <script src="{{ URL::asset('js/adminlte.min.js') }}"></script>
-<script src="{{ URL::asset('Scripts') }}"></script>
+<script src="{{ URL::asset('js/plugins/gritter/js/jquery.gritter.js') }}"></script>
 
 <!-- FastClick -->
-{{-- <script src="{{ URL::asset('js/fastclick.js') }}"></script> Scripts}}
-<!-- SpaScriptsline -->
-{{--<script src="{{ URL::asset('js/jquery.sparkline.min.js') }}"Scripts/script>--}}
-<!-- SlimScriptsroll -->
-{{--<script src="{{ URL::asset('js/jquery.slimscroll.min.js') }}Scripts</script>--}}
-@isset($mScripts)
+{{-- <script src="{{ URL::asset('js/fastclick.js') }}"></script> --}}
+<!-- Sparkline -->
+{{--<script src="{{ URL::asset('js/jquery.sparkline.min.js') }}"></script>--}}
+<!-- SlimScroll -->
+{{--<script src="{{ URL::asset('js/jquery.slimscroll.min.js') }}"></script>--}}
+@isset($map)
     <script src="{{ URL::asset('js/jquery-jvectormap-1.2.2.min.js') }}"></script>
     <script src="{{ URL::asset('js/jquery-jvectormap-world-mill-en.js') }}"></script>
 @endisset
@@ -592,7 +592,7 @@
 <script src="{{ URL::asset('js/plugins/parsley/i18n/zh_cn.extra.js') }}"></script>
 <script src="{{ URL::asset('js/plugins/select2/js/select2.min.js') }}"></script>
 <script src="{{ URL::asset('js/plugins/switchery/switchery.min.js') }}"></script>
-<script src="{{ URL::asset('Scripts') }}"></script>
+<script src="{{ URL::asset('js/switcher.init.js') }}"></script>
 
 
 <!-- AdminLTE for demo purposes -->

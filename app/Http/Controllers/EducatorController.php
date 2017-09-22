@@ -9,6 +9,7 @@ use App\Models\EducatorClass;
 use App\Models\Mobile;
 use App\Models\Team;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 
 /**
@@ -26,14 +27,20 @@ class EducatorController extends Controller {
     protected $department;
 
 
-    public function __construct(Educator $educator, Mobile $mobile, EducatorClass $educatorClass, Team $team, Department $department) {
+    public function __construct(
+        Educator $educator,
+        Mobile $mobile,
+        EducatorClass $educatorClass,
+        Team $team,
+        Department $department
+    ) {
         
         $this->educator = $educator;
         $this->mobile = $mobile;
         $this->educatorClass = $educatorClass;
         $this->team = $team;
         $this->department = $department;
-
+        
     }
     
     /**
@@ -56,6 +63,7 @@ class EducatorController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function create() {
+
         if (Request::method() === 'POST') {
             return $this->department->tree();
         }
@@ -117,7 +125,9 @@ class EducatorController extends Controller {
         }
 
         $selectedDepartments = $this->department->selectedNodes($selectedDepartmentIds);
+
         return $this->output(__METHOD__, [
+            'mobiles' => $educator->user->mobiles,
             'educator' => $educator,
             'selectedTeams' => $selectedTeams,
             'selectedDepartmentIds' => implode(',', $selectedDepartmentIds),
@@ -156,11 +166,10 @@ class EducatorController extends Controller {
         return $educator->modify($request) ? $this->succeed() : $this->fail();
         
     }
-
+    
     /**
      * 更新教职员工充值
      *
-     * @param EducatorRequest $request
      * @param $id
      * @return \Illuminate\Http\JsonResponse
      */

@@ -135,7 +135,9 @@ class Company extends Model {
     public function remove($id, $fireEvent = false) {
         
         $company = $this->find($id);
-        if (!$company) { return false; }
+        if (!$company) {
+            return false;
+        }
         $removed = $this->removable($this, $id) ? $company->delete() : false;
         if ($removed && $fireEvent) {
             event(new CompanyDeleted($company));

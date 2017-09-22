@@ -53,9 +53,10 @@ use Mockery\Exception;
  * @property-read Action|null $action
  * @property-read School $school
  * @property int $menu_type_id 所属菜单类型ID
- * @property-read \App\Models\MenuType $menuType
- * @property-read \App\Models\Company $company
- * @property-read \App\Models\Corp $corp
+ * @property-read MenuType $menuType
+ * @property-read Company $company
+ * @property-read Corp $corp
+ * @property-read \App\Models\Media|null $media
  */
 class Menu extends Model {
     
@@ -173,11 +174,7 @@ class Menu extends Model {
      */
     public function children() {
         
-        return $this->hasMany(
-            'App\Models\Menu',
-            'parent_id',
-            'id'
-        );
+        return $this->hasMany('App\Models\Menu', 'parent_id', 'id');
         
     }
     
@@ -191,7 +188,8 @@ class Menu extends Model {
     private function leafPath($id, array &$path) {
         
         $menu = $this->find($id);
-        if (!isset($menu)) { return '';
+        if (!isset($menu)) {
+            return '';
         }
         $path[] = $menu->name;
         if (isset($menu->parent_id)) {
@@ -263,7 +261,7 @@ class Menu extends Model {
             return $updated ? true : false;
         }
         return false;
-
+        
     }
     
     /**
@@ -285,6 +283,38 @@ class Menu extends Model {
             return $deleted ? true : false;
         }
         return false;
+        
+    }
+    
+    /**
+     * 删除Menu记录
+     *
+     * @param $menuId
+     * @return bool|mixed
+     */
+    public function remove($menuId) {
+        
+        $menu = $this->find($menuId);
+        if (!isset($menu)) {
+            return false;
+        }
+        try {
+            $exception = DB::transaction(function () use ($menuId, $menu) {
+                # 删除指定的Menu记录
+                $menu->delete();
+                # 移除指定菜单与卡片的绑定记录
+                MenuTab::whereMenuId($menuId)->delete();
+                # 删除指定菜单的子所有菜单记录, 以及与卡片的绑定记录
+                $subMenus = $this->where('parent_id', $menuId)->get();
+                foreach ($subMenus as $subMenu) {
+                    $this->remove($subMenu->id);
+                }
+                
+            });
+            return is_null($exception) ? true : $exception;
+        } catch (Exception $e) {
+            return false;
+        }
         
     }
     
@@ -326,38 +356,6 @@ class Menu extends Model {
     }
     
     /**
-     * 删除Menu记录
-     *
-     * @param $menuId
-     * @return bool|mixed
-     */
-    public function remove($menuId) {
-        
-        $menu = $this->find($menuId);
-        if (!isset($menu)) {
-            return false;
-        }
-        try {
-            $exception = DB::transaction(function () use ($menuId, $menu) {
-                # 删除指定的Menu记录
-                $menu->delete();
-                # 移除指定菜单与卡片的绑定记录
-                MenuTab::whereMenuId($menuId)->delete();
-                # 删除指定菜单的子所有菜单记录, 以及与卡片的绑定记录
-                $subMenus = $this->where('parent_id', $menuId)->get();
-                foreach ($subMenus as $subMenu) {
-                    $this->remove($subMenu->id);
-                }
-                
-            });
-            return is_null($exception) ? true : $exception;
-        } catch (Exception $e) {
-            return false;
-        }
-        
-    }
-    
-    /**
      * 更改菜单所处位置
      *
      * @param $id
@@ -368,7 +366,9 @@ class Menu extends Model {
     public function move($id, $parentId, $fireEvent = false) {
         
         $menu = $this->find($id);
-        if (!isset($menu)) { return false; }
+        if (!isset($menu)) {
+            return false;
+        }
         $menu->parent_id = $parentId === '#' ? NULL : intval($parentId);
         $moved = $menu->save();
         if ($moved && $fireEvent) {
@@ -408,19 +408,24 @@ class Menu extends Model {
             switch (MenuType::whereId($menu['menu_type_id'])->first()->name) {
                 case '根':
                     $text = sprintf($menuColor, 'darkgray', $name);
-                    $type = 'root'; break;
+                    $type = 'root';
+                    break;
                 case '运营':
                     $text = sprintf($menuColor, 'darkblue', $name);
-                    $type = 'company'; break;
-                case '企业': 
-                    $text = sprintf($menuColor, 'blue', $name); 
-                    $type = 'corp'; break;
-                case '学校': 
-                    $text = sprintf($menuColor, 'darkgreen', $name); 
-                    $type = 'school'; break;
-                default: 
-                    $text = $name; 
-                    $type = 'other'; break;
+                    $type = 'company';
+                    break;
+                case '企业':
+                    $text = sprintf($menuColor, 'darkgreen', $name);
+                    $type = 'corp';
+                    break;
+                case '学校':
+                    $text = sprintf($menuColor, 'purple', $name);
+                    $type = 'school';
+                    break;
+                default:
+                    $text = $name;
+                    $type = 'other';
+                    break;
             }
             $parentId = isset($menu['parent_id']) ? $menu['parent_id'] : '#';
             $data[] = [
@@ -436,15 +441,22 @@ class Menu extends Model {
     
     public function movable($id, $parentId) {
         
-        if (!isset($parentId)) { return false; }
+        if (!isset($parentId)) {
+            return false;
+        }
         $type = $this->find($id)->menuType->name;
         $parentType = $this->find($parentId)->menuType->name;
         switch ($type) {
-            case '运营': return $parentType == '根';
-            case '企业': return $parentType == '运营';
-            case '学校': return $parentType == '企业';
-            case '其他': return true;
-            default: return false;
+            case '运营':
+                return $parentType == '根';
+            case '企业':
+                return $parentType == '运营';
+            case '学校':
+                return $parentType == '企业';
+            case '其他':
+                return true;
+            default:
+                return false;
         }
         
     }
@@ -561,6 +573,38 @@ HTML;
     }
     
     /**
+     * 获取指定菜单所有上级菜单ID
+     *
+     * @param $menuId
+     * @param array $parents
+     */
+    private function getParent($menuId, array &$parents) {
+        
+        $menu = $this->find($menuId);
+        if ($menu->parent) {
+            $id = $menu->parent->id;
+            $parents[] = $id;
+            $this->getParent($id, $parents);
+        }
+        
+    }
+    
+    /**
+     * 计算指定菜单所处的level
+     *
+     * @param Menu $m
+     * @param $lvl
+     */
+    private function getMenuLevel(Menu $m, &$lvl) {
+        
+        if ($m->parent) {
+            $lvl += 1;
+            $this->getMenuLevel($m->parent, $lvl);
+        }
+        
+    }
+    
+    /**
      * 获取后台菜单数组
      *
      * @param mixed $records 所有菜单对象
@@ -586,38 +630,6 @@ HTML;
                 $this->getMenus($children->sortBy('position'), $menus[$i]['children']);
                 $i++;
             }
-        }
-        
-    }
-    
-    /**
-     * 计算指定菜单所处的level
-     *
-     * @param Menu $m
-     * @param $lvl
-     */
-    private function getMenuLevel(Menu $m, &$lvl) {
-        
-        if ($m->parent) {
-            $lvl += 1;
-            $this->getMenuLevel($m->parent, $lvl);
-        }
-        
-    }
-    
-    /**
-     * 获取指定菜单所有上级菜单ID
-     *
-     * @param $menuId
-     * @param array $parents
-     */
-    private function getParent($menuId, array &$parents) {
-        
-        $menu = $this->find($menuId);
-        if ($menu->parent) {
-            $id = $menu->parent->id;
-            $parents[] = $id;
-            $this->getParent($id, $parents);
         }
         
     }

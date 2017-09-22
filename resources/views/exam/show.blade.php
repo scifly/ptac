@@ -18,27 +18,33 @@
 
 
     <dl class="dl-horizontal">
-        <dt>备注：</dt><dd>{{ $exam->remark }}</dd>
+        <dt>备注：</dt>
+        <dd>{{ $exam->remark }}</dd>
         <br/>
-        <dt>考试类型：</dt><dd>{{ $exam->examType->name }}</dd>
+        <dt>考试类型：</dt>
+        <dd>{{ $exam->examType->name }}</dd>
         <br/>
         <dt>考试班级：</dt>
         @foreach($classes as $v)
             <dd>{{ $v->name }}</dd>
-            @endforeach
+        @endforeach
         <br/>
         <dt>考试科目：</dt>
         @foreach($subjects as $v)
             <dd>{{ $v->name }}</dd>
-            @endforeach
+        @endforeach
         <br/>
-        <dt>科目满分：</dt><dd>{{ $exam->max_scores }}</dd>
+        <dt>科目满分：</dt>
+        <dd>{{ $exam->max_scores }}</dd>
         <br/>
-        <dt>科目及格分数：</dt><dd>{{ $exam->pass_scores }}</dd>
+        <dt>科目及格分数：</dt>
+        <dd>{{ $exam->pass_scores }}</dd>
         <br/>
-        <dt>考试开始日期：</dt><dd>{{ $exam->start_date }}</dd>
+        <dt>考试开始日期：</dt>
+        <dd>{{ $exam->start_date }}</dd>
         <br/>
-        <dt>考试结束日期：</dt><dd>{{ $exam->end_date }}</dd>
+        <dt>考试结束日期：</dt>
+        <dd>{{ $exam->end_date }}</dd>
         <br/>
     </dl>
 @endsection

@@ -52,7 +52,10 @@ class CustodianController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function create() {
-        
+
+        if (Request::method() === 'POST') {
+            return $this->department->tree();
+        }
         return parent::output(__METHOD__);
         
     }
@@ -85,32 +88,38 @@ class CustodianController extends Controller {
      * @internal param Custodian $custodian
      */
     public function edit($id) {
+
+        if (Request::method() === 'POST') {
+            return $this->department->tree();
+        }
         $custodian = $this->custodian->find($id);
 
-        $departmentIds = $this->departmentUser->where('user_id',$custodian->user_id)->get();
-        foreach ($departmentIds as $key=>$value)
-        {
-            $department = Department::whereId($value['department_id'])->first();
-            $selectedDepartments[$department['id']] = $department['name'];
+        $selectedDepartmentIds = [];
+        foreach ($custodian->user->departments as $department) {
+            $selectedDepartmentIds[] = $department->id;
         }
+
+        $selectedDepartments = $this->department->selectedNodes($selectedDepartmentIds);
 
         $custodianStudent = $this->custodianStudent->where('custodian_id',$custodian->id)->get();
         foreach ($custodianStudent as $key=>$value)
         {
             $relationship[$value['student_id']] = $value['relationship'];
         }
-
+        $selectedStudents = [];
         foreach ($custodian->students as $key => $value)
         {
             $studentId = $this->student->find($value['id']);
             $selectedStudents[$studentId->id] = $studentId->user->realname;
         }
+
         if (!$custodian) {
             return $this->notFound();
         }
         return $this->output(__METHOD__, [
+            'mobiles' => $custodian->user->mobiles,
             'custodian' => $custodian,
-//            'departments'=>$this->department->departments([1]),
+            'selectedDepartmentIds' => implode(',', $selectedDepartmentIds),
             'selectedDepartments' => $selectedDepartments,
             'selectedStudents' => $selectedStudents,
             'relationship' => $relationship
@@ -125,6 +134,7 @@ class CustodianController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(CustodianRequest $request, $id) {
+
         return $this->custodian->modify($request,$id) ? $this->succeed() : $this->fail();
         
     }

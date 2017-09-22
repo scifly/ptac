@@ -3,10 +3,8 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
-use App\Facades\DatatableFacade;
 use App\Helpers\ModelTrait;
 use App\Http\Requests\EducatorRequest;
-use App\Models\EducatorClass;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -38,12 +36,13 @@ use Mockery\Exception;
  * @property-read Squad[] $classes
  * @property-read EducatorClass $educatorClass
  * @property-read Team[] $teams
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\EducatorClass[] $educatorClasses
  */
 class Educator extends Model {
-
+    
     use ModelTrait;
-
-
+    
+    
     protected $fillable = [
         'user_id', 'team_ids', 'school_id',
         'sms_quote', 'enabled',
@@ -90,16 +89,16 @@ class Educator extends Model {
             'App\Models\Team',
             'educators_teams'
         );
-    
+        
     }
-
+    
     /**
      *  获取指定教职员工的班级科目关系
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function educatorClasses() { return $this->hasMany('App\Models\EducatorClass'); }
-
+    
     /**
      * 获取指定年级的年级主任教职员工对象
      *
@@ -107,10 +106,10 @@ class Educator extends Model {
      * @return Collection|static[]
      */
     public function gradeDeans($gradeId) {
-
+        
         $educatorIds = Grade::whereId($gradeId)->where('enabled', 1)->first()->educator_ids;
         return $this->whereIn('id', explode(',', $educatorIds))->whereEnabled(1)->get();
-
+        
     }
     
     /**
@@ -165,9 +164,9 @@ class Educator extends Model {
                     $editLink = sprintf(Datatable::DT_LINK_EDIT, 'edit_' . $id);
                     $delLink = sprintf(Datatable::DT_LINK_DEL, $id);
                     $rechargeLink = sprintf(Datatable::DT_LINK_RECHARGE, 'recharge_' . $id);
-
+                    
                     return $status . Datatable::DT_SPACE . $showLink . Datatable::DT_SPACE .
-                        $editLink .  Datatable::DT_SPACE . $delLink .  Datatable::DT_SPACE . $rechargeLink ;
+                        $editLink . Datatable::DT_SPACE . $delLink . Datatable::DT_SPACE . $rechargeLink;
                 }
             ]
         ];
@@ -190,19 +189,21 @@ class Educator extends Model {
             ]
         ];
         
-        return Datatable::simple($this, $columns,$joins);
+        return Datatable::simple($this, $columns, $joins);
         
     }
+    
     /**
      * 保存新创建的教职员工记录
      *
-     * @param CustodianRequest $request
+     * @param EducatorRequest|CustodianRequest $request
      * @return bool|mixed
      */
     public function store(EducatorRequest $request) {
-
+        
         try {
-            $exception = DB::transaction(function() use ($request) {
+            $exception = DB::transaction(function () use ($request) {
+//                dd($request->all());
                 $userInputData = $request->input('user');
                 $userData = [
                     'username' => $userInputData['username'],
@@ -214,182 +215,108 @@ class Educator extends Model {
                     'avatar_url' => '00001.jpg',
                     'userid' => "11111",
                     'isleader' => 0,
-                    'english_name'=>$userInputData['english_name'],
+                    'english_name' => $userInputData['english_name'],
                     'telephone' => $userInputData['telephone'],
                     'wechatid' => '',
-                    'enabled' =>$userInputData['enabled']
+                    'enabled' => $userInputData['enabled']
                 ];
                 $user = new User();
                 $u = $user->create($userData);
                 unset($user);
-
+                
                 $selectedDepartments = $request->input('selectedDepartments');
-                if(!empty($selectedDepartments)) {
+                if (!empty($selectedDepartments)) {
                     $departmentUserModel = new DepartmentUser();
-                        foreach ($selectedDepartments as $department) {
-                            $departmentData = [
-                                'user_id' => $u->id,
-                                'department_id' => $department,
-                                'enabled' => $userInputData['enabled']
-                            ];
-                            $departmentUserModel->create($departmentData);
-                        }
-                        unset($departmentUserModel);
+                    foreach ($selectedDepartments as $department) {
+                        $departmentData = [
+                            'user_id' => $u->id,
+                            'department_id' => $department,
+                            'enabled' => $userInputData['enabled']
+                        ];
+                        $departmentUserModel->create($departmentData);
+                    }
+                    unset($departmentUserModel);
                 }
-
+                
                 $educator = $request->input('educator');
                 $educatorData = [
                     'user_id' => $u->id,
                     'school_id' => $educator['school_id'],
                     'sms_quote' => 0,
-                    'enabled' =>$userInputData['enabled']
+                    'enabled' => $userInputData['enabled']
                 ];
-
+                
                 $educatorId = $this->create($educatorData);
-                $classSubject = $request->input('classSubject');
-                if($classSubject) {
+                
+                $teamIds = $educator['team_id'];
+                if ($teamIds) {
+                    $edTeam = new EducatorTeam();
+                    foreach ($teamIds as $key => $row) {
+                        $edData = [
+                            'educator_id' => $educatorId->id,
+                            'team_id' => $row,
+                            'enabled' => $userInputData['enabled']
+                        ];
+                        $edTeam->create($edData);
+                    }
+                    unset($edTeam);
+                }
+                
+                $classSubjectData = $request->input('classSubject');
+                if ($classSubjectData) {
                     $educatorClass = new EducatorClass();
-                        $classSubject = $this->array_unique_fb($classSubject);
-                        foreach ($classSubject as $key => $row) {
-
+                    $uniqueArray = [];
+                    
+                    foreach ($classSubjectData['class_ids'] as $index => $class) {
+                        $uniqueArray[] = [
+                            'class_id' => $class,
+                            'subject_id' => $classSubjectData['subject_ids'][$index],
+                        ];
+                    }
+                    $classSubjects = $this->array_unique_fb($uniqueArray);
+                    
+                    foreach ($classSubjects as $key => $row) {
+                        if ($row['class_id'] != 0 && $row['class_id'] != 0) {
                             $educatorClassData = [
-                                'educator_id' => $educatorId,
+                                'educator_id' => $educatorId->id,
                                 'class_id' => $row['class_id'],
                                 'subject_id' => $row['subject_id'],
                                 'enabled' => $userInputData['enabled']
                             ];
+                            
                             $educatorClass->create($educatorClassData);
+                            
                         }
+                        
+                    }
+                    
                     unset($educatorClass);
                 }
-
-
+                
                 $mobiles = $request->input('mobile');
-                if($mobiles) {
-                    $mobile = new Mobile();
-                    foreach ($mobiles['mobile'] as $k => $row) {
+                if ($mobiles) {
+                    $mobileModel = new Mobile();
+                    foreach ($mobiles as $k => $mobile) {
                         $mobileData = [
                             'user_id' => $u->id,
-                            'mobile' => $row,
-                            'enabled' => isset($mobiles['enabled'][$k]) ? 1 : 0,
-                            'isdefault' => (isset($mobiles['isdefault']) && $mobiles['isdefault'] == $k) ? 1 : 0,
+                            'mobile' => $mobile['mobile'],
+                            'isdefault' => $mobile['isdefault'],
+                            'enabled' => $mobile['enabled'],
                         ];
-                        $m = $mobile->create($mobileData);
+                        $mobileModel->create($mobileData);
                     }
                     unset($mobile);
                 }
+                $teams = $request->input('mobile');
+                
             });
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
             return false;
         }
-
+        
     }
-    public function modify(EducatorRequest $request) {
-
-        try {
-            $exception = DB::transaction(function() use ($request) {
-
-//                $mobiles = $request->input('mobile');
-//                dd($mobiles);
-                dd($request->all());die;
-
-                $userInputData = $request->input('user');
-                $userData = [
-                    'username' => $userInputData['username'],
-                    'group_id' => $userInputData['group_id'],
-                    'password' => $userInputData['password'],
-                    'email' => $userInputData['email'],
-                    'realname' => $userInputData['realname'],
-                    'gender' => $userInputData['gender'],
-                    'avatar_url' => '00001.jpg',
-                    'userid' => uniqid('custodian_'),
-                    'isleader' => 0,
-                    'english_name'=>$userInputData['english_name'],
-                    'telephone' => $userInputData['telephone'],
-                    'wechatid' => '',
-                    'enabled' =>$userInputData['enabled']
-                ];
-                $user = new User();
-                $u = $user->where('id', $request->input('user_id'))->update($userData);
-                unset($user);
-
-                $selectedDepartments = $request->input('selectedDepartments');
-                if(!empty($selectedDepartments)) {
-                    $departmentUserModel = new DepartmentUser();
-
-                    $delDepartmentUser = $departmentUserModel->where('user_id', $request->input('user_id'))->delete();
-                    if($delDepartmentUser) {
-                        foreach ($selectedDepartments as $department) {
-                            $departmentData = [
-                                'user_id' => $request->input('user_id'),
-                                'department_id' => $department,
-                                'enabled' => $userInputData['enabled']
-
-                            ];
-                            $departmentUserModel->create($departmentData);
-                        }
-                        unset($departmentUserModel);
-                    }
-                }
-
-
-                $educator = $request->input('educator');
-                $educatorData = [
-                    'user_id' => $request->input('user_id'),
-                    'school_id' => $educator['school_id'],
-                    'sms_quote' => 0,
-                    'enabled' =>$userInputData['enabled']
-                ];
-
-                $educatorUpdate = $this->where('id', $request->input('id'))->update($educatorData);
-                $classSubject = $request->input('classSubject');
-                if($classSubject) {
-                    $educatorClass = new EducatorClass();
-                    $delEducatorClass = $educatorClass->where('educator_id', $request->input('id'))->delete();
-                    if($delEducatorClass) {
-                        $classSubject = $this->array_unique_fb($classSubject);
-                        foreach ($classSubject as $key => $row) {
-
-                            $educatorClassData = [
-                                'educator_id' => $request->input('id'),
-                                'class_id' => $row['class_id'],
-                                'subject_id' => $row['subject_id'],
-                                'enabled' => $userInputData['enabled']
-                            ];
-                            $educatorClass->create($educatorClassData);
-                        }
-                    }
-                    unset($educatorClass);
-                }
-
-                $mobiles = $request->input('mobile');
-                if($mobiles) {
-                    $mobileModel = new Mobile();
-                    $delMobile = $mobileModel->where('user_id', $request->input('user_id'))->delete();
-                    if($delMobile) {
-//                        dd($mobiles);
-                        foreach ($mobiles as $k => $mobile) {
-                            $mobileData = [
-                                'user_id' => $request->input('user_id'),
-                                'mobile' => $mobile['mobile'],
-                                'isdefault' => $mobile['isdefault'],
-                                'enabled' => $mobile['enabled'],
-                            ];
-                            $mobileModel->create($mobileData);
-                        }
-                    }
-                    unset($mobile);
-                }
-            });
-            return is_null($exception) ? true : $exception;
-        } catch (Exception $e) {
-            return false;
-        }
-
-    }
-
-    //二维数组去掉重复值
+    
     function array_unique_fb($array2D) {
         foreach ($array2D as $v) {
             $v = join(',', $v); //降维,也可以用implode,将一维数组转换为用逗号连接的字符串
@@ -399,12 +326,130 @@ class Educator extends Model {
         $csArray = [];
         foreach ($tempUnique as $k => $v) {
             $tempArray = explode(',', $v); //再将拆开的数组重新组装
-            $csArray[$k]['class_id']  =$tempArray[0];
-            $csArray[$k]['subject_id']  =$tempArray[1];
+            $csArray[$k]['class_id'] = $tempArray[0];
+            $csArray[$k]['subject_id'] = $tempArray[1];
         }
         return $csArray;
     }
+    
+    //二维数组去掉重复值
 
+    public function modify(EducatorRequest $request) {
+        
+        try {
+            $exception = DB::transaction(function () use ($request) {
+
+//                $mobiles = $request->input('mobile');
+//                dd($mobiles);
+//                dd($request->all());die;
+                
+                $userInputData = $request->input('user');
+                $userData = [
+                    'username' => $userInputData['username'],
+                    'group_id' => $userInputData['group_id'],
+                    'email' => $userInputData['email'],
+                    'realname' => $userInputData['realname'],
+                    'gender' => $userInputData['gender'],
+                    'avatar_url' => '00001.jpg',
+                    'userid' => uniqid('custodian_'),
+                    'isleader' => 0,
+                    'english_name' => $userInputData['english_name'],
+                    'telephone' => $userInputData['telephone'],
+                    'wechatid' => '',
+                    'enabled' => $userInputData['enabled']
+                ];
+                $user = new User();
+                $u = $user->where('id', $request->input('user_id'))->update($userData);
+                unset($user);
+                
+                $selectedDepartments = $request->input('selectedDepartments');
+                if (!empty($selectedDepartments)) {
+                    $departmentUserModel = new DepartmentUser();
+                    $departmentUserModel->where('user_id', $request->input('user_id'))->delete();
+                    foreach ($selectedDepartments as $department) {
+                        $departmentData = [
+                            'user_id' => $request->input('user_id'),
+                            'department_id' => $department,
+                            'enabled' => $userInputData['enabled']
+                        
+                        ];
+                        $departmentUserModel->create($departmentData);
+                    }
+                    unset($departmentUserModel);
+                }
+                
+                
+                $educator = $request->input('educator');
+                $educatorData = [
+                    'user_id' => $request->input('user_id'),
+                    'school_id' => $educator['school_id'],
+                    'sms_quote' => 0,
+                    'enabled' => $userInputData['enabled']
+                ];
+                $educatorUpdate = $this->where('id', $request->input('id'))->update($educatorData);
+                
+                $teamIds = $educator['team_id'];
+                if ($teamIds) {
+                    $edTeam = new EducatorTeam();
+                    $edTeam->where('educator_id', $request->input('id'))->delete();
+                    foreach ($teamIds as $key => $row) {
+                        $edData = [
+                            'educator_id' => $request->input('id'),
+                            'team_id' => $row,
+                            'enabled' => $userInputData['enabled']
+                        ];
+                        $edTeam->create($edData);
+                    }
+                    unset($edTeam);
+                }
+                
+                
+                $classSubject = $request->input('classSubject');
+                if ($classSubject) {
+                    $educatorClass = new EducatorClass();
+                    $educatorClass->where('educator_id', $request->input('id'))->delete();
+                    $classSubject = $this->array_unique_fb($classSubject);
+                    foreach ($classSubject as $key => $row) {
+                        if ($row['class_id'] != "" && $row['class_id'] != "") {
+                            $educatorClassData = [
+                                'educator_id' => $request->input('id'),
+                                'class_id' => $row['class_id'],
+                                'subject_id' => $row['subject_id'],
+                                'enabled' => $userInputData['enabled']
+                            ];
+                            $educatorClass->create($educatorClassData);
+                        }
+                        
+                    }
+                    
+                    unset($educatorClass);
+                }
+                
+                $mobiles = $request->input('mobile');
+                if ($mobiles) {
+                    $mobileModel = new Mobile();
+                    $mobileModel->where('user_id', $request->input('user_id'))->delete();
+                    foreach ($mobiles as $k => $mobile) {
+                        $mobileData = [
+                            'user_id' => $request->input('user_id'),
+                            'mobile' => $mobile['mobile'],
+                            'isdefault' => $mobile['isdefault'],
+                            'enabled' => $mobile['enabled'],
+                        ];
+                        $mobileModel->create($mobileData);
+                    }
+                    
+                    unset($mobile);
+                }
+                
+            });
+            return is_null($exception) ? true : $exception;
+        } catch (Exception $e) {
+            return false;
+        }
+        
+    }
+    
     /**
      * 删除教职员工
      *
@@ -413,7 +458,7 @@ class Educator extends Model {
      * @return bool
      */
     public function remove($id, $fireEvent = false) {
-
+        
         $school = $this->find($id);
         $removed = $this->removable($this, $id) ? $school->delete() : false;
         if ($removed && $fireEvent) {
@@ -421,7 +466,7 @@ class Educator extends Model {
             return true;
         }
         return $removed ? true : false;
-
+        
     }
 }
 

@@ -65,7 +65,8 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|School whereDepartmentId($value)
  * @property int $menu_id 对应的菜单ID
  * @property-read \App\Models\Menu $menu
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\School whereMenuId($value)
+ * @method static Builder|School whereMenuId($value)
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\ExamType[] $examTypes
  */
 class School extends Model {
     
@@ -220,10 +221,10 @@ class School extends Model {
      * @return Collection|static[]
      */
     public function operatorSchools($operatorId) {
-    
+        
         $schoolIds = Operator::whereId($operatorId)->where('enabled', 1)->first()->school_ids;
         return $this->whereIn('id', explode(',', $schoolIds))->whereEnabled(1)->get();
-    
+        
     }
     
     /**

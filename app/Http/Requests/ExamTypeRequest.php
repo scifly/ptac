@@ -44,15 +44,15 @@ class ExamTypeRequest extends FormRequest {
         
     }
     
-    public function rules() { 
-    
+    public function rules() {
+        
         return [
-            'name' => 'required|string|max:255|unique:exam_types,name,' . 
-                $this->input('id') . ',id,' . 
+            'name' => 'required|string|max:255|unique:exam_types,name,' .
+                $this->input('id') . ',id,' .
                 'school_id,' . $this->input('school_id'),
             'school_id' => 'required|integer',
-            'remark' => 'required|string|max:255',        
-        ]; 
+            'remark' => 'required|string|max:255',
+        ];
         
     }
     

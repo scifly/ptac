@@ -64,7 +64,7 @@ class Score_SendController extends Controller {
     public function index() {
         //先通过角色判断管理员、政教、年级主任等 多角色获取
         //如果是普通老师获取关联的考次，班主任获取管理班级所考次，科任老师获取任教科目考次
-        return view("score_send.index", ['js' => 'js/score_send/index.js', 'schools' => $this->school->all(['name', 'id']), 'form' => 0,'datatable'=>1]);
+        return view("score_send.index", ['js' => 'js/score_send/index.js', 'schools' => $this->school->all(['name', 'id']), 'form' => 0, 'datatable' => 1]);
     }
     
     
@@ -129,34 +129,34 @@ class Score_SendController extends Controller {
         #获取年级的考试信息
         $grade_scores =
             $this->student
-                ->join('classes','students.class_id','classes.id')
-                ->where('grade_id',$grade_id)
-                ->join('scores','students.id','scores.student_id')
-                ->join('exams','exams.id','scores.exam_id')
+                ->join('classes', 'students.class_id', 'classes.id')
+                ->where('grade_id', $grade_id)
+                ->join('scores', 'students.id', 'scores.student_id')
+                ->join('exams', 'exams.id', 'scores.exam_id')
                 #获取当前考试
-                ->where('exams.id',$examId)
-                ->join('subjects','scores.subject_id','subjects.id')
-                ->join('users','students.user_id','users.id')
+                ->where('exams.id', $examId)
+                ->join('subjects', 'scores.subject_id', 'subjects.id')
+                ->join('users', 'students.user_id', 'users.id')
                 ->get(['scores.score'
                     , 'scores.subject_id', 'subjects.max_score', 'subjects.pass_score'
                     , 'scores.class_rank', 'scores.grade_rank', 'students.id']);
-
+        
         #获取班级的考试信息
-
-        $class_scores=
-            $this->student->where('class_id',$classId)
-                ->join('classes','students.class_id','classes.id')
-                ->join('scores','students.id','scores.student_id')
-                ->join('exams','exams.id','scores.exam_id')
+        
+        $class_scores =
+            $this->student->where('class_id', $classId)
+                ->join('classes', 'students.class_id', 'classes.id')
+                ->join('scores', 'students.id', 'scores.student_id')
+                ->join('exams', 'exams.id', 'scores.exam_id')
                 #获取当前考试
-                ->where('exams.id',$examId)
-                ->join('subjects','scores.subject_id','subjects.id')
-                ->join('users','students.user_id','users.id')
-                ->get(['users.realname','scores.score','exams.name as examname','subjects.name'
-                    ,'scores.subject_id','subjects.max_score','subjects.pass_score'
-                    ,'scores.class_rank','scores.grade_rank','students.id']);
-
-
+                ->where('exams.id', $examId)
+                ->join('subjects', 'scores.subject_id', 'subjects.id')
+                ->join('users', 'students.user_id', 'users.id')
+                ->get(['users.realname', 'scores.score', 'exams.name as examname', 'subjects.name'
+                    , 'scores.subject_id', 'subjects.max_score', 'subjects.pass_score'
+                    , 'scores.class_rank', 'scores.grade_rank', 'students.id']);
+        
+        
         #年级总分信息
         $grade_total_scores =
             $this->student->join('classes', 'students.class_id', 'classes.id')

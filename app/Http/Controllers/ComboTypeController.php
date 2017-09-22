@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Request;
  * @package App\Http\Controllers
  */
 class ComboTypeController extends Controller {
-
+    
     protected $comboType;
     
     function __construct(ComboType $comboType) {
@@ -68,7 +68,9 @@ class ComboTypeController extends Controller {
     public function edit($id) {
         
         $comboType = $this->comboType->find($id);
-        if (!$comboType) { return $this->notFound(); }
+        if (!$comboType) {
+            return $this->notFound();
+        }
         return $this->output(__METHOD__, ['comboType' => $comboType]);
         
     }
@@ -81,11 +83,13 @@ class ComboTypeController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(CommTypeRequest $request, $id) {
-    
+        
         $comboType = $this->comboType->find($id);
-        if (!$comboType) { return $this->notFound(); }
+        if (!$comboType) {
+            return $this->notFound();
+        }
         return $comboType->update($request->all()) ? $this->succeed() : $this->fail();
-    
+        
     }
     
     /**
@@ -95,11 +99,13 @@ class ComboTypeController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
-    
+        
         $comboType = $this->comboType->find($id);
-        if (!$comboType) { return $this->notFound(); }
+        if (!$comboType) {
+            return $this->notFound();
+        }
         return $comboType->delete() ? $this->succeed() : $this->fail();
-    
+        
     }
     
 }

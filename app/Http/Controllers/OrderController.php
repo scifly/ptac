@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Http\Requests\OrderRequest;
 use App\Models\Order;
 use Illuminate\Support\Facades\Request;
@@ -12,7 +13,7 @@ use Illuminate\Support\Facades\Request;
  * @package App\Http\Controllers
  */
 class OrderController extends Controller {
-
+    
     protected $order;
     
     function __construct(Order $order) {
@@ -27,12 +28,12 @@ class OrderController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function index() {
-    
+        
         if (Request::get('draw')) {
             return response()->json($this->order->datatable());
         }
         return $this->output(__METHOD__);
-    
+        
     }
     
     /**
@@ -42,9 +43,9 @@ class OrderController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(OrderRequest $request) {
-    
+        
         return $this->order->create($request->all()) ? $this->succeed() : $this->fail();
-    
+        
     }
     
     /**
@@ -56,7 +57,9 @@ class OrderController extends Controller {
     public function show($id) {
         
         $order = $this->order->find($id);
-        if (!$order) { return $this->notFound(); }
+        if (!$order) {
+            return $this->notFound();
+        }
         return $this->output(__METHOD__, ['order' => $order]);
         
     }
@@ -69,11 +72,13 @@ class OrderController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function update(OrderRequest $request, $id) {
-    
+        
         $order = $this->order->find($id);
-        if (!$order) { return $this->notFound(); }
+        if (!$order) {
+            return $this->notFound();
+        }
         return $order->update($request->all());
-    
+        
     }
     
     /**
@@ -83,11 +88,13 @@ class OrderController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
-    
+        
         $order = $this->order->find($id);
-        if (!$order) { return $this->notFound(); }
+        if (!$order) {
+            return $this->notFound();
+        }
         return $order->delete() ? $this->succeed() : $this->fail();
-    
+        
     }
     
 }
