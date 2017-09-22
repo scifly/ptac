@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\User;
+use App\Models\Mobile;
 
 class LoginController extends Controller {
     /*
@@ -18,6 +20,7 @@ class LoginController extends Controller {
     | to conveniently provide its functionality to your applications.
     |
     */
+
     
     use AuthenticatesUsers;
     
@@ -48,20 +51,36 @@ class LoginController extends Controller {
     }*/
     
     public function login(Request $request) {
-        
+        $input = $request->input('input');
+        $password = $request->input('password');
+        $field = '';
+        if (!(User::whereUsername($input)->first()) && !(User::whereEmail($input)->first())) {
+            $mobile = Mobile::whereMobile($input)->where('is_default', 1)->first();
+            if (!$mobile->user_id) {
+                return response()->json([
+                    'statusCode' => 500,
+                    'url' => ''
+                ]);
+            }
+            $userId = $mobile->userId;
+            if (Auth::loginUsingId($userId, $request->input('remember'))) {
+
+            }
+        } else {
+            if (Auth::attempt([$input, $password])) {
+                return response()->json([
+                    'statusCode' => 200,
+                    'url' => '/'
+                ]);
+            }
+        }
         $field = 'username';
-        
-        if (is_numeric($request->input('login'))) {
-            $field = 'mobile';
-        } elseif (filter_var($request->input('login'), FILTER_VALIDATE_EMAIL)) {
-            $field = 'email';
-        }
-        
-        $request->merge([$field => $request->input('login')]);
-        
-        if (Auth::attempt($request->only([$field, 'password']))) {
-            return redirect('/');
-        }
+
+
+//
+//        if (Auth::attempt([$field, $password])) {
+//            return redirect('/');
+//        }
         
         return redirect('/login')->withErrors([
             'error' => 'These credentials dont match our records',

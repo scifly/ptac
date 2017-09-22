@@ -107,7 +107,7 @@ class StudentController extends Controller {
         }
 
         $selectedDepartments = $this->department->selectedNodes($selectedDepartmentIds);
-        
+
         # 查询学生信息
         if (!$student) { return $this->notFound(); }
 
