@@ -322,5 +322,19 @@ class School extends Model {
         return Datatable::simple($this, $columns, $joins);
         
     }
-    
+
+    public function schools($schoolIds) {
+
+        $schoolList = [];
+        if (!empty($schoolIds)) {
+            $schools = $this->whereIn('id', explode(',',$schoolIds))->get()->toArray();
+            foreach ($schools as $school) {
+                $schoolList[$school['id']] = $school['name'];
+            }
+        }
+
+        return $schoolList;
+
+    }
+
 }

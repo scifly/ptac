@@ -172,7 +172,7 @@ var dept = {
             dept.$treeBox().hide();
             $('.tree-box .box-footer').hide();
             dept.$tree().jstree('destroy');
-            dept.$todoList.empty();
+            dept.$todoList().empty();
         });
     },
     init: function(uri) {
