@@ -1,5 +1,23 @@
 var crud = {
-    unbindEvents: function () {
+    crSelector: 'input[type="checkbox"].minimal, input[type="radio"].minimal',
+    initICheck: function (object) {
+        if(typeof object === 'undefined') {
+            $(crud.crSelector).iCheck({
+                checkboxClass: 'icheckbox_minimal-blue',
+                radioClass: 'iradio_minimal-blue'
+            });
+        }else {
+            object.find(crud.crSelector).iCheck({
+                checkboxClass: 'icheckbox_minimal-blue',
+                radioClass: 'iradio_minimal-blue'
+            });
+        }
+    },
+    $tbody: function () {
+        return $("#mobileTable").find("tbody");
+    },
+    // mobileSize: function () { $('#mobile-size').val(); },
+    unbindEvents: function() {
         $('#add-record').unbind('click');
         $(document).off('click', '.fa-edit');
         $(document).off('click', '.fa-eye');
@@ -72,10 +90,7 @@ var crud = {
         Switcher.init();
 
         // iCheck
-        $('input[type="checkbox"].minimal, input[type="radio"].minimal').iCheck({
-            checkboxClass: 'icheckbox_minimal-blue',
-            radioClass: 'iradio_minimal-blue'
-        });
+        crud.initICheck();
 
         // Cancel button
         $('#cancel, #record-list').on('click', function () {
@@ -86,13 +101,7 @@ var crud = {
 
         // Parsley
         var $form = $('#' + formId);
-        $form.parsley().on("form:validated", function () {
-            if ($('.parsley-error').length === 0) {
-                crud.ajaxRequest(requestType, page.siteRoot() + ajaxUrl, $form.serialize(), $form[0]);
-            }
-        }).on('form:submit', function () {
-            return false;
-        });
+        crud.formParsley($form, requestType, ajaxUrl);
     },
     index: function (table) {
         crud.unbindEvents();
@@ -159,5 +168,59 @@ var crud = {
     recharge: function (formId, table) {
         var id = $('#id').val();
         this.init(table + '/index', formId, table + '/rechargeStore/' + id, 'PUT');
+    },
+    mobiles: function (formId, requestType, ajaxUrl) {
+        // icheck init
+        crud.initICheck(crud.$tbody());
+
+        crud.$tbody().find('tr:not(:last) .btn-mobile-add')
+            .removeClass('btn-mobile-add').addClass('btn-mobile-remove')
+            .html('<i class="fa fa-minus text-blue"></i>');
+        var $mobile = crud.$tbody().find('tr:last input[class="form-control"]');
+        var $form = $('#' + formId);
+        $form.parsley().destroy();
+        $mobile.attr('pattern', '/^1[0-9]{10}$/');
+        $mobile.attr('required', 'true');
+        crud.formParsley($form, requestType, ajaxUrl);
+    },
+    mobile: function(formId,size,requestType,ajaxUrl) {
+        $(document).off('click', '.btn-mobile-add');
+        $(document).off('click', '.btn-mobile-remove');
+        $(document).on('click', '.btn-mobile-add', function (e) {
+            e.preventDefault();
+            // add html
+            size++;
+            crud.$tbody().append(
+                '<tr><td><input class="form-control" placeholder="（请输入手机号码）" name="mobile['+ size +'][mobile]" value="" ></td>' +
+                '<td style="text-align: center"><input type="radio" class="minimal" id="mobile[isdefault]" name="mobile[isdefault]" value="' + size + '"></td>' +
+                '<td style="text-align: center"><input type="checkbox" class="minimal" name="mobile['+ size +'][enabled]"></td>' +
+                '<td style="text-align: center"><button class="btn btn-box-tool btn-add btn-mobile-add" type="button"><i class="fa fa-plus text-blue"></i></button></td></tr>'
+            );
+            crud.mobiles(formId,requestType,ajaxUrl);
+
+        }).on('click', '.btn-mobile-remove', function (e) {
+
+            $(this).parents('tr:first').remove();
+            e.preventDefault();
+            var $defaults = $('input[name="mobile[isdefault]"]');
+            var defaultChecked = false;
+            $.each($defaults, function () {
+                if (typeof $(this).attr('checked') !== 'undefined') {
+                    defaultChecked = true;
+                    return false;
+                }
+            });
+            if (!defaultChecked) {
+                $($defaults[0]).iCheck('check');
+            }
+            return false;
+        });
+    },
+    formParsley: function ($form,requestType,ajaxUrl) {
+        $form.parsley().on('form:validated', function () {
+            if ($('.parsley-error').length === 0) {
+                crud.ajaxRequest(requestType, page.siteRoot() + ajaxUrl, $form.serialize(), $form[0]);
+            }
+        }).on('form:submit', function() {return false; });
     }
 };
