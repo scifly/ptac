@@ -60,6 +60,13 @@ class Custodian extends Model {
     }
 
     /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function custodianStudents()
+    {
+        return $this->hasMany('App\Models\CustodianStudent');
+    }
+    /**
      * 保存新创建的监护人记录
      *
      * @param CustodianRequest $request

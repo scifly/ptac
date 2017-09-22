@@ -52,7 +52,7 @@
                                             <button class="btn btn-box-tool  btn-class-remove btn-remove" type="button">
                                                 <i class="fa fa-minus text-blue"></i>
                                             </button>
-                                        </span>
+                                </span>
                             @endif
                         </td>
                     </tr>

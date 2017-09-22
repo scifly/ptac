@@ -125,20 +125,20 @@
                         </thead>
                         <tbody>
 
-                        @if(isset($student->custodians) && !empty($student->custodians))
-                            @foreach($student->custodians as $custodian)
+                        @if(isset($student->custodianStudents))
+                            @foreach($student->custodianStudents as $custodian)
                                 <tr>
                                     <td>
                                         <select name="student_ids[]" class="select2" style="width: 80%;">
                                             @foreach($custodians as $key => $name )
                                                 <option value='{{$key}}'
-                                                        @if($key == $custodian['pivot']['custodian_id']) selected="selected" @endif>{{$name}}</option>
+                                                        @if($key == $custodian->custodian_id) selected="selected" @endif>{{$name}}</option>
                                             @endforeach
                                         </select>
                                     </td>
                                     <td>
                                         <input type="text" name="relationship[]"
-                                               value="{{$relationship[$custodian['pivot']['custodian_id']]}}">
+                                               value="{{$custodian->relationship}}">
                                     </td>
                                     <td style="text-align: center">
                                     <span class="input-group-btn">

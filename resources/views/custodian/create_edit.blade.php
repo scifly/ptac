@@ -121,79 +121,78 @@
             'id' => 'user[group_id]',
             'items' => $groups,
             ])
-            <div class="form-group">
-                <label class="col-sm-3 control-label">监护人和学生之间的关系</label>
-                <div class="col-sm-6">
-                    <table id="classTable" class="table-bordered table-responsive" style="width: 100%;">
-                        <thead>
-                        <tr>
-                            <th>包含学生</th>
-                            <th>关系</th>
-                            <th></th>
-                        </tr>
-                        </thead>
-                        <tbody>
-
-                        @if(isset($custodian->students) && !empty($custodian->students))
-                            @foreach($custodian->students as $student)
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">监护人和学生之间的关系</label>
+                    <div class="col-sm-6">
+                        <table id="classTable" class="table-bordered table-responsive" style="width: 100%;">
+                            <thead>
+                            <tr>
+                                <th>包含学生</th>
+                                <th>关系</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @if(isset($custodian->custodianStudents))
+                                @foreach($custodian->custodianStudents as $index=>$student)
+                                    <tr>
+                                        <td>
+                                            <select name="student_ids[]" class="select2" style="width: 80%;">
+                                                @foreach($students as $key => $name )
+                                                    <option value='{{$key}}'
+                                                            @if($key == $student->student_id) selected="selected" @endif>{{$name}}</option>
+                                                @endforeach
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <input type="text" name="relationship[]"
+                                                   value="{{$student->relationship}}">
+                                        </td>
+                                        <td style="text-align: center">
+                                            <span class="input-group-btn">
+                                              <button class="btn btn-box-tool btn-class-add" type="button">
+                                              <i class="fa fa-plus text-blue"></i>
+                                              </button>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            @else
                                 <tr>
                                     <td>
                                         <select name="student_ids[]" class="select2" style="width: 80%;">
                                             @foreach($students as $key => $name )
-                                                <option value='{{$key}}'
-                                                        @if($key == $student['pivot']['student_id']) selected="selected" @endif>{{$name}}</option>
+                                                <option value='{{$key}}'>{{$name}}</option>
                                             @endforeach
                                         </select>
                                     </td>
                                     <td>
-                                        <input type="text" name="relationship[]"
-                                               value="{{$relationships[$student['pivot']['student_id']]}}">
+                                        <input type="text" name="relationship[]" class="form-control" required="true"
+                                               placeholder="">
                                     </td>
                                     <td style="text-align: center">
-<span class="input-group-btn">
-    <button class="btn btn-box-tool btn-class-add" type="button">
-        <i class="fa fa-plus text-blue"></i>
-    </button>
-</span>
+                                        <span class="input-group-btn">
+                                        <button class="btn btn-box-tool btn-class-add" type="button">
+                                        <i class="fa fa-plus text-blue"></i>
+                                        </button>
+                                        </span>
                                     </td>
                                 </tr>
-                            @endforeach
-                        @else
-                            <tr>
-                                <td>
-                                    <select name="student_ids[]" class="select2" style="width: 80%;">
-                                        @foreach($students as $key => $name )
-                                            <option value='{{$key}}'>{{$name}}</option>
-                                        @endforeach
-                                    </select>
-                                </td>
-                                <td>
-                                    <input type="text" name="relationship[]" class="form-control" required="true"
-                                           placeholder="">
-                                </td>
-                                <td style="text-align: center">
-<span class="input-group-btn">
-    <button class="btn btn-box-tool btn-class-add" type="button">
-        <i class="fa fa-plus text-blue"></i>
-    </button>
-</span>
-                                </td>
-                            </tr>
-                        @endif
-                        </tbody>
-                    </table>
+                            @endif
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-            </div>
-            <div class="form-group">
-                {{ Form::label('expiry', '服务到期时间', [
-                'class' => 'col-sm-3 control-label'
-                ]) }}
-                <div class="col-sm-6">
-                    {!! Form::text('expiry', null, [
-                    'class' => 'form-control expiry-date',
-                    ]) !!}
-                </div>
-            </div>
+            {{--<div class="form-group">--}}
+                {{--{{ Form::label('expiry', '服务到期时间', [--}}
+                {{--'class' => 'col-sm-3 control-label'--}}
+                {{--]) }}--}}
+                {{--<div class="col-sm-6">--}}
+                    {{--{!! Form::text('expiry', null, [--}}
+                    {{--'class' => 'form-control expiry-date',--}}
+                    {{--]) !!}--}}
+                {{--</div>--}}
+            {{--</div>--}}
 
             @include('partials.enabled', [
             'label' => '是否启用',
