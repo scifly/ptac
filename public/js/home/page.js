@@ -19,7 +19,7 @@ var page = {
     },
     getTabContent: function($tabPane, url) {
         var tabId = page.getActiveTabId();
-        $('a[href="#tab_' + tabId +'"]').attr('data-url', url);
+        $('a[href="#tab_' + tabId +'"]').attr('data-uri', url);
         $tabPane.html(page.ajaxLoader);
         $.ajax({
             type: 'GET',
@@ -43,7 +43,7 @@ $(function() {
 
     $(document).on('click', '.tab', function() {
         // 获取被点击卡片的url
-        var url = $(this).attr('data-url');
+        var url = $(this).attr('data-uri');
         // 获取所有卡片
         var $tabPanes = $('.card');
         // 获取状态为active的卡片
@@ -57,7 +57,7 @@ $(function() {
         }
     });
     // 获取状态为active的卡片的url
-    url = page.siteRoot() + $('.nav-tabs .active a').attr('data-url');
+    url = $('.nav-tabs .active a').attr('data-uri');
     // 获取状态为active的卡片内容
     page.getTabContent($activeTabPane, url);
 });

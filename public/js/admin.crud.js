@@ -93,7 +93,7 @@ var crud = {
         // Cancel button
         $('#cancel, #record-list').on('click', function () {
             var $activeTabPane = $('#tab_' + page.getActiveTabId());
-            page.getTabContent($activeTabPane, page.siteRoot() + homeUrl);
+            page.getTabContent($activeTabPane, homeUrl);
             crud.unbindEvents();
         });
 
@@ -114,7 +114,7 @@ var crud = {
 
         // 新增记录
         $('#add-record').on('click', function () {
-            page.getTabContent($activeTabPane, page.siteRoot() + table + '/create');
+            page.getTabContent($activeTabPane, table + '/create');
             crud.unbindEvents();
         });
 
@@ -123,7 +123,7 @@ var crud = {
             var url = $(this).parents().eq(0).attr('id');
             // console.log(url);
             url = url.replace('_', '/');
-            page.getTabContent($activeTabPane, page.siteRoot() + table + '/' + url);
+            page.getTabContent($activeTabPane, table + '/' + url);
             crud.unbindEvents();
         });
         // 充值
@@ -131,7 +131,7 @@ var crud = {
             var url = $(this).parents().eq(0).attr('id');
             console.log(url);
             url = url.replace('_', '/');
-            page.getTabContent($activeTabPane, page.siteRoot() + table + '/' + url);
+            page.getTabContent($activeTabPane, table + '/' + url);
             crud.unbindEvents();
         });
 
