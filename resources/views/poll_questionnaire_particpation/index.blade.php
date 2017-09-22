@@ -28,6 +28,6 @@
             提交
         </button>
     </div>
-    {!! Form::close(); !!}
+    {!! Form::close() !!}
 @endsection
 
