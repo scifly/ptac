@@ -55,18 +55,8 @@ class EducatorRequest extends FormRequest {
         //            'mobile.*.enabled' => 'required|boolean',
 
         ];
-        $validateRules=[];
-        foreach ($input['mobile'] as $index => $mobile) {
-            $rule =[
-                'mobile.'.$index.'.mobile' => 'required|string|size:11|regex:/^1[34578][0-9]{9}$/|' .
-                    'unique:mobiles,mobile,' . $this->input('mobile.' . $index . '.id') . ',id',
-                'mobile.'.$index.'.isdefault' => 'required|boolean',
-                'mobile.'.$index.'.enabled' => 'required|boolean'
-            ];
-            $validateRules =array_merge($rules,$rule,$validateRules);
-            unset($rule);
-        }
-        return $validateRules;
+
+        return $rules;
 
         
     }
