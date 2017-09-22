@@ -27,7 +27,7 @@ use Illuminate\Database\Eloquent\Model;
  * @mixin \Eloquent
  */
 class Mobile extends Model {
-
+    
     use ModelTrait;
     
     protected $fillable = ['mobile', 'user_id', 'isdefault', 'enabled'];
@@ -62,7 +62,9 @@ class Mobile extends Model {
     public function modify(array $data, $id) {
         
         $mobile = $this->find($id);
-        if (!$mobile) { return false; }
+        if (!$mobile) {
+            return false;
+        }
         return $mobile->update($data) ? true : false;
         
     }
@@ -76,7 +78,9 @@ class Mobile extends Model {
     public function remove($id) {
         
         $mobile = $this->find($id);
-        if (!$mobile) { return false; }
+        if (!$mobile) {
+            return false;
+        }
         return $mobile->removable($this, $id) ? $mobile->delete() : false;
         
     }

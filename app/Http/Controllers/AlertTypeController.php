@@ -68,7 +68,9 @@ class AlertTypeController extends Controller {
     public function show($id) {
         
         $alertType = $this->alertType->find($id);
-        if (!$alertType) { return $this->notFound(); }
+        if (!$alertType) {
+            return $this->notFound();
+        }
         return $this->output(__METHOD__, ['alertType' => $alertType]);
         
     }
@@ -80,11 +82,13 @@ class AlertTypeController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function edit($id) {
-    
+        
         $alertType = $this->alertType->find($id);
-        if (!$alertType) { return $this->notFound(); }
+        if (!$alertType) {
+            return $this->notFound();
+        }
         return $this->output(__METHOD__, ['alertType' => $alertType]);
-    
+        
     }
     
     /**
@@ -95,11 +99,13 @@ class AlertTypeController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function update(AlertTypeRequest $request, $id) {
-    
+        
         $alertType = $this->alertType->find($id);
-        if (!$alertType) { return $this->notFound(); }
+        if (!$alertType) {
+            return $this->notFound();
+        }
         return $alertType->update($request->all());
-    
+        
     }
     
     /**
@@ -109,11 +115,13 @@ class AlertTypeController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
-    
+        
         $alertType = $this->alertType->find($id);
-        if (!$alertType) { return $this->notFound(); }
+        if (!$alertType) {
+            return $this->notFound();
+        }
         return $alertType->delete() ? $this->succeed() : $this->fail();
-    
+        
     }
     
 }

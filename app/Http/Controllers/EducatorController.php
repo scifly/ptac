@@ -9,6 +9,7 @@ use App\Models\EducatorClass;
 use App\Models\Mobile;
 use App\Models\Team;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 
 /**
@@ -33,7 +34,7 @@ class EducatorController extends Controller {
         $this->educatorClass = $educatorClass;
         $this->team = $team;
         $this->department = $department;
-
+        
     }
     
     /**
@@ -56,6 +57,7 @@ class EducatorController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function create() {
+
         if (Request::method() === 'POST') {
             return $this->department->tree();
         }

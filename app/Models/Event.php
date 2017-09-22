@@ -49,7 +49,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read \App\Models\Subject $subject
  * @property-read \App\Models\User $user
  * @property string $title 事件名称
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Event whereTitle($value)
+ * @method static Builder|Event whereTitle($value)
  */
 class Event extends Model {
     protected $table = 'events';
@@ -94,18 +94,11 @@ class Event extends Model {
      */
     public function subject() { return $this->belongsTo('App\Models\Subject'); }
     
-
-    public function educator() {
-        return $this->belongsTo('App\Models\Educator');
-    }
-
-    public function subject() {
-        return $this->belongsTo('APP\Models\Subject');
-    }
-
-
+    
     /**
      * 显示日历事件
+     * @param $userId
+     * @return \Illuminate\Http\JsonResponse
      */
     public function showCalendar($userId) {
         //通过userId找出educator_id
@@ -136,17 +129,45 @@ class Event extends Model {
         //如果是用户
         return response()->json(array_merge($pubNoCourseEvents, $perEvents, $pubCourEvents));
     }
-
+    
     /**
      * 判断当前用户权限
+     * @param $userId
+     * @return bool
      */
     public function getRole($userId) {
         $role = User::find($userId)->group;
         return $role->name == '管理员' ? true : false;
     }
-
+    
+    /**
+     * 根据角色验证时间冲突
+     *
+     * @param $userId
+     * @param $educator_id
+     * @param $start
+     * @param $end
+     * @param $id
+     * @return bool
+     */
+    public function isValidateTime($userId, $educator_id, $start, $end, $id = null) {
+        if (!$this->getRole($userId)) {
+            return $this->isRepeatTimeUser($userId, $start, $end, $id);
+        } else {
+            if ($educator_id != 0) {
+                return $this->isRepeatTimeAdmin($educator_id, $start, $end, $id);
+            }
+        }
+        return false;
+    }
+    
     /**
      * 验证用户添加事件是否有重复
+     * @param $userId
+     * @param $start
+     * @param $end
+     * @param null $id
+     * @return bool
      */
     public function isRepeatTimeUser($userId, $start, $end, $id = null) {
         //通过userId 找到educator_id
@@ -203,10 +224,15 @@ class Event extends Model {
         }
         return !empty($event);
     }
-
+    
     /**
      * 验证管理员添加事件是否有重复
      * 未判断管理员个人事件重复
+     * @param $educatorId
+     * @param $start
+     * @param $end
+     * @param null $id
+     * @return bool
      */
     public function isRepeatTimeAdmin($educatorId, $start, $end, $id = null) {
         $event = $this
@@ -243,30 +269,13 @@ class Event extends Model {
         }
         return !empty($event);
     }
-
-    /**
-     * 根据角色验证时间冲突
-     *
-     * @param $userId
-     * @param $educator_id
-     * @param $start
-     * @param $end
-     * @param $id
-     * @return bool
-     */
-    public function isValidateTime($userId, $educator_id, $start, $end, $id=null) {
-        if (!$this->getRole($userId)) {
-            return $this->isRepeatTimeUser($userId, $start, $end, $id);
-        } else {
-            if ($educator_id != 0) {
-                return $this->isRepeatTimeAdmin($educator_id, $start, $end, $id);
-            }
-        }
-        return false;
-    }
-
+    
     /**
      * 计算拖动后的时间差
+     * @param $day
+     * @param $hour
+     * @param $minute
+     * @return int
      */
     public function timeDiff($day, $hour, $minute) {
         $days = $day * 24 * 60 * 60;
@@ -274,5 +283,5 @@ class Event extends Model {
         $minutes = $minute * 60;
         return $diffTime = $days + $hours + $minutes;
     }
-
+    
 }

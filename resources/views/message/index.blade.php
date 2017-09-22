@@ -3,17 +3,18 @@
         @include('partials.list_header')
     </div>
     <div class="box-body">
-        <table id="data-table" style="width: 100%" class="display nowrap table table-striped table-bordered table-hover table-condensed">
+        <table id="data-table" style="width: 100%"
+               class="display nowrap table table-striped table-bordered table-hover table-condensed">
             <thead>
             <tr>
                 <th>#</th>
-                <th>消息内容</th>
-                <th>url</th>
+                <th>通信方式</th>
+                <th>应用发送</th>
+                <th>所属消息批次</th>
                 <th>发送者用户</th>
                 <th>消息类型</th>
-                <th>已读数量</th>
-                <th>消息发送成功数</th>
-                <th>接收者数量</th>
+                <th>是否已读</th>
+                <th>是否发送</th>
                 <th>创建时间</th>
                 <th>更新时间</th>
             </tr>

@@ -28,7 +28,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read \App\Models\School $school
  */
 class ExamType extends Model {
-
+    
     use ModelTrait;
     
     protected $fillable = ['name', 'remark', 'school_id', 'enabled'];
@@ -70,7 +70,9 @@ class ExamType extends Model {
     public function modify(array $data, $id) {
         
         $examType = $this->find($id);
-        if (!$examType) { return false; }
+        if (!$examType) {
+            return false;
+        }
         return $examType->update($data) ? true : false;
         
     }
@@ -84,7 +86,9 @@ class ExamType extends Model {
     public function remove($id) {
         
         $examType = $this->find($id);
-        if (!$examType) { return false; }
+        if (!$examType) {
+            return false;
+        }
         return $this->removable($this, $id) ? $examType->delete() : false;
         
     }

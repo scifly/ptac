@@ -9,9 +9,9 @@
             @endif
             <div class="form-group">
                 {!! Form::label('name', '名称', [
-                    'class' => 'col-sm-4 control-label'
+                    'class' => 'col-sm-3 control-label'
                 ]) !!}
-                <div class="col-sm-2">
+                <div class="col-sm-6">
                     {!! Form::text('name', null, [
                         'class' => 'form-control',
                         'placeholder' => '(不超过40个汉字)',
@@ -22,9 +22,9 @@
             </div>
             <div class="form-group">
                 {!! Form::label('remark', '备注', [
-                    'class' => 'col-sm-4 control-label'
+                    'class' => 'col-sm-3 control-label'
                 ]) !!}
-                <div class="col-sm-3">
+                <div class="col-sm-6">
                     {!! Form::text('remark', null, [
                         'class' => 'form-control',
                         'placeholder' => '不能超过20个汉字',

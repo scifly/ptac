@@ -7,7 +7,7 @@
                 <h4 class="modal-title">对话框</h4>
             </div>
             <div class="modal-body">
-删除后无法恢复。点击‘确定’继续，‘取消’返回。
+                删除后无法恢复。点击‘确定’继续，‘取消’返回。
             </div>
             <div class="modal-footer">
                 <a href="#" class="btn btn-sm btn-white" data-dismiss="modal">取消</a>

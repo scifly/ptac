@@ -52,10 +52,10 @@
                                        value="{{ $key }}" class="minimal"
                                        @if(isset($tab) && $tab['icon_id'] == $key)
                                        checked
-                                       @endif
+                                        @endif
                                 >
                             </label>
-                            <i class="{{ $value }}" style="margin-left: 10px;">&nbsp; {{ $value }}</i><br />
+                            <i class="{{ $value }}" style="margin-left: 10px;">&nbsp; {{ $value }}</i><br/>
                         @endforeach
                     @endforeach
 

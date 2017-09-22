@@ -4,7 +4,6 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Http\Requests\WapSiteModuleRequest;
-use App\Http\Requests\WapSiteRequest;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -56,9 +55,8 @@ class WapSiteModule extends Model {
         return $this->belongsTo('App\Models\WapSite');
         
     }
-
-    public function store(WapSiteModuleRequest $request)
-    {
+    
+    public function store(WapSiteModuleRequest $request) {
         try {
             $exception = DB::transaction(function () use ($request) {
                 //删除原有的图片
@@ -70,42 +68,41 @@ class WapSiteModule extends Model {
             return false;
         }
     }
-
-    public function modify(WapSiteModuleRequest $request, $id)
-    {
+    
+    /**
+     * @param $request
+     */
+    private function removeMedias(WapSiteModuleRequest $request) {
+        //删除原有的图片
+        $mediaIds = $request->input('del_ids');
+        if ($mediaIds) {
+            $medias = Media::whereIn('id', $mediaIds)->get(['id', 'path']);
+            
+            foreach ($medias as $media) {
+                $paths = explode("/", $media->path);
+                Storage::disk('uploads')->delete($paths[5]);
+                
+            }
+            Media::whereIn('id', $mediaIds)->delete();
+        }
+    }
+    
+    public function modify(WapSiteModuleRequest $request, $id) {
         $wapSite = $this->find($id);
         if (!$wapSite) {
             return false;
         }
         try {
-            $exception = DB::transaction(function () use ($request,$id) {
+            $exception = DB::transaction(function () use ($request, $id) {
                 $this->removeMedias($request);
-                return $this->where('id', $id)->update($request->except('_method','_token'));
+                return $this->where('id', $id)->update($request->except('_method', '_token'));
             });
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
             return false;
         }
     }
-
-    /**
-     * @param $request
-     */
-    private function removeMedias(WapSiteModuleRequest $request)
-    {
-        //删除原有的图片
-        $mediaIds = $request->input('del_ids');
-        if ($mediaIds) {
-            $medias = Media::whereIn('id', $mediaIds)->get(['id', 'path']);
-
-            foreach ($medias as $media) {
-                $paths = explode("/", $media->path);
-                Storage::disk('uploads')->delete($paths[5]);
-
-            }
-            Media::whereIn('id', $mediaIds)->delete();
-        }
-    }
+    
     /**
      * @return array
      */

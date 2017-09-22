@@ -3,12 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\WapSiteRequest;
-use App\Models\Educator;
-use App\Models\Grade;
 use App\Models\Media;
 use App\Models\WapSite;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -22,12 +19,12 @@ class WapSiteController extends Controller {
     
     protected $wapSite;
     protected $media;
-
+    
     public function __construct(WapSite $wapSite, Media $media) {
         $this->wapSite = $wapSite;
         $this->media = $media;
     }
-
+    
     /**
      * 微网站列表
      *
@@ -41,7 +38,7 @@ class WapSiteController extends Controller {
         return $this->output(__METHOD__);
         
     }
-
+    
     /**
      * 创建微网站
      *
@@ -50,9 +47,9 @@ class WapSiteController extends Controller {
     public function create() {
         
         return $this->output(__METHOD__);
-
+        
     }
-
+    
     /**
      * 保存微网站
      *
@@ -60,11 +57,11 @@ class WapSiteController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(WapSiteRequest $request) {
-
+        
         return $this->wapSite->store($request) ? $this->succeed() : $this->fail();
-
+        
     }
-
+    
     /**
      * 微网站详情
      *
@@ -72,20 +69,20 @@ class WapSiteController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function show($id) {
-
+        
         $wapsite = $this->wapSite->find($id);
         if (!$wapsite) {
             return parent::notFound();
         }
         $mediaIds = explode(",", $wapsite->media_ids);
-
+        
         return parent::output(__METHOD__, [
             'wapsite' => $wapsite,
             'medias' => $this->media->medias($mediaIds),
         ]);
         
     }
-
+    
     /**
      * 编辑微网站
      *
@@ -101,9 +98,9 @@ class WapSiteController extends Controller {
             'wapSite' => $wapSite,
             'medias' => $this->media->medias($wapSite->media_ids),
         ]);
-
+        
     }
-
+    
     /**
      * 更新微网站
      *
@@ -113,9 +110,9 @@ class WapSiteController extends Controller {
      */
     public function update(WapSiteRequest $request, $id) {
         return $this->wapSite->modify($request, $id) ? $this->succeed() : $this->fail();
-
+        
     }
-
+    
     /**
      * 删除微网站
      *
@@ -131,14 +128,14 @@ class WapSiteController extends Controller {
         return $wapsite->delete() ? parent::succeed() : parent::fail();
         
     }
-
+    
     /**
      * 上传图片
      *
      * @return \Illuminate\Http\JsonResponse
      */
     public function uploadImages() {
-
+        
         $files = Request::file('img');
         if (empty($files)) {
             $result['statusCode'] = 0;
@@ -155,30 +152,11 @@ class WapSiteController extends Controller {
             $result['data'] = $mes;
         }
         return response()->json($result);
-
+        
     }
-
-    /**
-     * 微网站首页
-     *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
-     */
-    public function wapHome() {
-
-        $wapSite = $this->wapSite
-            ->where('school_id', Request::get('school_id'))
-            ->first();
-
-        return view('frontend.wap_site.index', [
-            'wapsite' => $wapSite,
-            'medias' => $this->media->medias($wapSite->media_ids),
-            'ws' => true
-        ]);
-
-    }
-
+    
     private function validateFile(UploadedFile $file, array &$filePaths) {
-
+        
         if ($file->isValid()) {
             // 获取文件相关信息
             # 文件原名
@@ -206,7 +184,26 @@ class WapSiteController extends Controller {
                 ];
             }
         }
-
+        
+    }
+    
+    /**
+     * 微网站首页
+     *
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function wapHome() {
+        
+        $wapSite = $this->wapSite
+            ->where('school_id', Request::get('school_id'))
+            ->first();
+        
+        return view('frontend.wap_site.index', [
+            'wapsite' => $wapSite,
+            'medias' => $this->media->medias($wapSite->media_ids),
+            'ws' => true
+        ]);
+        
     }
     
 }

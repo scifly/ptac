@@ -30,7 +30,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Menu[] $menus
  */
 class Media extends Model {
-
+    
     use ModelTrait;
     
     protected $table = 'medias';
@@ -41,21 +41,21 @@ class Media extends Model {
     
     /**
      * 返回指定媒体所属的媒体类型对象
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function mediaType() { return $this->belongsTo('App\Models\MediaType'); }
     
     /**
      * 获取指定媒体所包含的所有菜单对象
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function menus() { return $this->hasMany('App\Models\Menu'); }
     
     /**
      * 根据媒体ID返回媒体对象
-     * 
+     *
      * @param string $ids
      * @return array
      */
@@ -93,7 +93,9 @@ class Media extends Model {
     public function modify(array $data, $id) {
         
         $media = $this->find($id);
-        if (!$media) { return false; }
+        if (!$media) {
+            return false;
+        }
         return $media->update($data) ? true : false;
         
     }
@@ -107,9 +109,11 @@ class Media extends Model {
     public function remove($id) {
         
         $media = $this->find($id);
-        if (!$media) { return false; }
+        if (!$media) {
+            return false;
+        }
         return $media->removable($this, $id) ? $media->delete() : false;
         
     }
-
+    
 }

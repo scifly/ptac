@@ -19,9 +19,11 @@
 
     <dl class="dl-horizontal">
         <br/>
-        <dt>名称：</dt><dd>{{ $module->name }}</dd>
+        <dt>名称：</dt>
+        <dd>{{ $module->name }}</dd>
         <br/>
-        <dt>所属网站：</dt><dd>{{ $module->wapsite->site_title }}</dd>
+        <dt>所属网站：</dt>
+        <dd>{{ $module->wapsite->site_title }}</dd>
         <br/>
         <dt>模块图：</dt>
         <dd>

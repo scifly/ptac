@@ -2,11 +2,11 @@
 
 namespace App\Models;
 
+use App\Facades\DatatableFacade as Datatable;
 use App\Http\Requests\ConferenceQueueRequest;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
-use App\Facades\DatatableFacade as Datatable;
 
 /**
  * App\Models\ConferenceQueue 会议队列
@@ -113,7 +113,7 @@ class ConferenceQueue extends Model {
             ['db' => 'ConferenceRoom.name as conferenceroomname', 'dt' => 6],
             [
                 'db' => 'ConferenceQueue.end', 'dt' => 7,
-                'formatter' => function($d, $row) {
+                'formatter' => function ($d, $row) {
                     // 进行中, 已结束, 已取消; 查看, 编辑, 删除
                 }
             ],

@@ -14,6 +14,7 @@ class SchoolDeleted {
     use Dispatchable, InteractsWithSockets, SerializesModels;
     
     public $school;
+    
     /**
      * Create a new event instance.
      *

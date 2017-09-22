@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 Route::auth();
-Route::get('/', function() { return 'Dashboard'; });
+// Route::get('/', function() { return 'Dashboard'; });
 Route::get('/', 'HomeController@index');
 Route::get('/home', 'HomeController@index')->name('home');
 
@@ -166,6 +166,10 @@ Route::group(['prefix' => 'conference_participants'], function() {
 // 个人通讯录
 // 消息中心
 Route::group(['prefix' => 'messages'], routes('MessageController'));
+Route::group(['prefix' => 'messages'], function() {
+    $ctlr = 'MessageController';
+    Route::post('get_depart_users', $ctlr . '@getDepartmentUsers');
+});
 // 日历
 // 个人信息
 Route::group(['prefix' => 'personal_infos'], function() {

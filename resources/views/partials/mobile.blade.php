@@ -50,16 +50,16 @@
                         <td style="text-align: center;">
                             @if($key == sizeof($mobiles) - 1)
                                 <span class="input-group-btn">
-                                                <button class="btn btn-box-tool btn-add btn-mobile-add" type="button">
-                                                    <i class="fa fa-plus text-blue"></i>
-                                                </button>
-                                            </span>
+                                    <button class="btn btn-box-tool btn-add btn-mobile-add" type="button">
+                                        <i class="fa fa-plus text-blue"></i>
+                                    </button>
+                                </span>
                             @else
                                 <span class="input-group-btn">
-                                                <button class="btn btn-box-tool btn-remove btn-mobile-remove" type="button">
-                                                    <i class="fa fa-minus text-blue"></i>
-                                                </button>
-                                            </span>
+                                    <button class="btn btn-box-tool btn-remove btn-mobile-remove" type="button">
+                                        <i class="fa fa-minus text-blue"></i>
+                                    </button>
+                                </span>
                             @endif
                         </td>
                     </tr>

@@ -28,12 +28,12 @@ class OperatorController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
-    
+        
         if (Request::get('draw')) {
             return response()->json($this->operator->datatable());
         }
         return $this->output(__METHOD__);
-    
+        
     }
     
     /**
@@ -68,7 +68,9 @@ class OperatorController extends Controller {
     public function show($id) {
         
         $operator = $this->operator->find($id);
-        if (!$operator) { return $this->notFound(); }
+        if (!$operator) {
+            return $this->notFound();
+        }
         return $this->output(__METHOD__, ['operator' => $operator]);
         
     }
@@ -82,7 +84,9 @@ class OperatorController extends Controller {
     public function edit($id) {
         
         $operator = $this->operator->find($id);
-        if (!$operator) { return $this->notFound(); }
+        if (!$operator) {
+            return $this->notFound();
+        }
         return $this->output(__METHOD__, ['operator' => $operator]);
         
     }
@@ -97,7 +101,9 @@ class OperatorController extends Controller {
     public function update(OperatorRequest $request, $id) {
         
         $operator = $this->operator->find($id);
-        if (!$operator) { return $this->notFound(); }
+        if (!$operator) {
+            return $this->notFound();
+        }
         return $this->operator->modify($request, $id) ? $this->succeed() : $this->fail();
         
     }
@@ -111,7 +117,9 @@ class OperatorController extends Controller {
     public function destroy($id) {
         
         $operator = $this->operator->find($id);
-        if (!$operator) { return $this->notFound(); }
+        if (!$operator) {
+            return $this->notFound();
+        }
         return $this->operator->remove($id) ? $this->succeed() : $this->fail();
         
     }

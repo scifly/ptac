@@ -23,34 +23,34 @@
 @endsection
 
 {{--<div class="modal fade" id="modal-show-subject">--}}
-    {{--<div class="modal-dialog">--}}
-        {{--<div class="modal-content">--}}
-            {{--<div class="modal-header">--}}
-                {{--<button type="button" class="close" data-dismiss="modal" aria-hidden="true">--}}
-                    {{--&times;--}}
-                {{--</button>--}}
-                {{--<h4 class="modal-title" id="myModalLabel">--}}
-                    {{--科目详情--}}
-                {{--</h4>--}}
-            {{--</div>--}}
-            {{--<div class="modal-body">--}}
-                {{--<div class="row">--}}
-                    {{--<div class="col-xs-12">--}}
-                        {{--<dl class="dl-horizontal">--}}
-                            {{--<dt>科目名称：</dt>--}}
-                            {{--<dt>所属学校：</dt>--}}
-                            {{--<dt>是否为副科：</dt>--}}
-                            {{--<dt>满分：</dt>--}}
-                            {{--<dt>及格分：</dt>--}}
-                            {{--<dt>状态：</dt>--}}
-                        {{--</dl>--}}
-                    {{--</div>--}}
-                {{--</div>--}}
-            {{--</div>--}}
-            {{--<div class="modal-footer">--}}
-                {{--<button type="button" class="btn btn-default" data-dismiss="modal">关闭--}}
-                {{--</button>--}}
-            {{--</div>--}}
-        {{--</div><!-- /.modal-content -->--}}
-    {{--</div><!-- /.modal -->--}}
+{{--<div class="modal-dialog">--}}
+{{--<div class="modal-content">--}}
+{{--<div class="modal-header">--}}
+{{--<button type="button" class="close" data-dismiss="modal" aria-hidden="true">--}}
+{{--&times;--}}
+{{--</button>--}}
+{{--<h4 class="modal-title" id="myModalLabel">--}}
+{{--科目详情--}}
+{{--</h4>--}}
+{{--</div>--}}
+{{--<div class="modal-body">--}}
+{{--<div class="row">--}}
+{{--<div class="col-xs-12">--}}
+{{--<dl class="dl-horizontal">--}}
+{{--<dt>科目名称：</dt>--}}
+{{--<dt>所属学校：</dt>--}}
+{{--<dt>是否为副科：</dt>--}}
+{{--<dt>满分：</dt>--}}
+{{--<dt>及格分：</dt>--}}
+{{--<dt>状态：</dt>--}}
+{{--</dl>--}}
+{{--</div>--}}
+{{--</div>--}}
+{{--</div>--}}
+{{--<div class="modal-footer">--}}
+{{--<button type="button" class="btn btn-default" data-dismiss="modal">关闭--}}
+{{--</button>--}}
+{{--</div>--}}
+{{--</div><!-- /.modal-content -->--}}
+{{--</div><!-- /.modal -->--}}
 {{--</div>--}}

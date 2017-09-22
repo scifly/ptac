@@ -24,7 +24,7 @@ class EducatorAttendanceSettingController extends Controller {
     
     /**
      * 教职员工考勤设置列表
-     * 
+     *
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
@@ -37,7 +37,7 @@ class EducatorAttendanceSettingController extends Controller {
     
     /**
      * 创建教职工考勤设置
-     * 
+     *
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function create() {
@@ -53,27 +53,29 @@ class EducatorAttendanceSettingController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(EducatorAttendanceSettingRequest $request) {
-
-        return $this->eas->create($request->all()) 
+        
+        return $this->eas->create($request->all())
             ? $this->succeed() : $this->fail();
         
     }
     
     /**
      * 教职员工考勤详情
-     * 
+     *
      * @param $id
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function show($id) {
         
         $eas = $this->eas->find($id);
-        if (!$eas) { return $this->notFound(); }
+        if (!$eas) {
+            return $this->notFound();
+        }
         return $this->output(__METHOD__, ['eas' => $eas]);
         
     }
-
-
+    
+    
     /**
      * 编辑教职员工考勤设置
      * @param $id
@@ -82,8 +84,10 @@ class EducatorAttendanceSettingController extends Controller {
     public function edit($id) {
         
         $eas = $this->eas->find($id);
-        if (!$eas) { return $this->notFound(); }
-
+        if (!$eas) {
+            return $this->notFound();
+        }
+        
         return $this->output(__METHOD__, ['eas' => $eas]);
     }
     
@@ -97,7 +101,9 @@ class EducatorAttendanceSettingController extends Controller {
     public function update(EducatorAttendanceSettingRequest $request, $id) {
         
         $eas = $this->eas->find($id);
-        if (!$eas) { return $this->notFound(); }
+        if (!$eas) {
+            return $this->notFound();
+        }
         return $eas->update($request->all())
             ? $this->succeed() : $this->fail();
         
@@ -112,7 +118,9 @@ class EducatorAttendanceSettingController extends Controller {
     public function destroy($id) {
         
         $eas = $this->eas->find($id);
-        if (!$eas) { return $this->notFound(); }
+        if (!$eas) {
+            return $this->notFound();
+        }
         return $eas->delete()
             ? $this->succeed() : $this->fail();
         

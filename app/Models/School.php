@@ -221,10 +221,10 @@ class School extends Model {
      * @return Collection|static[]
      */
     public function operatorSchools($operatorId) {
-    
+        
         $schoolIds = Operator::whereId($operatorId)->where('enabled', 1)->first()->school_ids;
         return $this->whereIn('id', explode(',', $schoolIds))->whereEnabled(1)->get();
-    
+        
     }
     
     /**

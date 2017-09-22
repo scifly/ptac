@@ -24,12 +24,12 @@ class SchoolController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
-
+        
         if (Request::get('draw')) {
             return response()->json($this->school->datatable());
         }
         return parent::output(__METHOD__);
-    
+        
     }
     
     /**
@@ -50,10 +50,10 @@ class SchoolController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function store(SchoolRequest $request) {
-    
+        
         return $this->school->store($request->all(), true)
             ? parent::succeed() : parent::fail();
-    
+        
     }
     
     /**
@@ -63,11 +63,13 @@ class SchoolController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function show($id) {
-    
+        
         $school = $this->school->find($id);
-        if (!$school) { return parent::notFound(); }
+        if (!$school) {
+            return parent::notFound();
+        }
         return parent::output(__METHOD__, ['school' => $school]);
-    
+        
     }
     
     /**
@@ -79,7 +81,9 @@ class SchoolController extends Controller {
     public function edit($id) {
         
         $school = $this->school->find($id);
-        if (!$school) { return parent::notFound(); }
+        if (!$school) {
+            return parent::notFound();
+        }
         return parent::output(__METHOD__, ['school' => $school]);
         
     }
@@ -93,7 +97,9 @@ class SchoolController extends Controller {
      */
     public function update(SchoolRequest $request, $id) {
         
-        if (!$this->school->find($id)) { return parent::notFound(); }
+        if (!$this->school->find($id)) {
+            return parent::notFound();
+        }
         return $this->school->modify($request->all(), $id, true)
             ? parent::succeed() : parent::fail();
         
@@ -107,7 +113,9 @@ class SchoolController extends Controller {
      */
     public function destroy($id) {
         
-        if (!$this->school->find($id)) { return parent::notFound(); }
+        if (!$this->school->find($id)) {
+            return parent::notFound();
+        }
         return $this->school->remove($id, true)
             ? parent::succeed() : parent::fail();
         

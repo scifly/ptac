@@ -24,9 +24,11 @@
             <dd>{{ $v->name }}</dd>
         @endforeach
         <br/>
-        <dt>所属学校：</dt><dd>{{ $educator->school->name }}</dd>
+        <dt>所属学校：</dt>
+        <dd>{{ $educator->school->name }}</dd>
         <br/>
-        <dt>短息条数：</dt><dd>{{ $educator->sms_quote }}</dd>
+        <dt>短息条数：</dt>
+        <dd>{{ $educator->sms_quote }}</dd>
         <br/>
     </dl>
 @endsection

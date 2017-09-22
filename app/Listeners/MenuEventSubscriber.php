@@ -40,6 +40,39 @@ class MenuEventSubscriber {
     }
     
     /**
+     * 创建菜单
+     *
+     * @param $event
+     * @param $type
+     * @param $model
+     * @param null $belongsTo
+     * @return bool|mixed
+     */
+    private function createMenu($event, $type, $model, $belongsTo = NULL) {
+        
+        $$model = $event->{$model};
+        $data = [
+            'parent_id' => isset($belongsTo) ?
+                $$model->{$belongsTo}->menu_id :
+                $this->menu->where('parent_id', NULL)->first()->id,
+            'name' => $$model->name,
+            'remark' => $$model->remark,
+            'menu_type_id' => $this->typeId($type),
+            'icon_id' => $this->icons[$model],
+            'position' => $this->menu->all()->max('position') + 1,
+            'enabled' => $$model->enabled
+        ];
+        return $this->menu->preserve($data, true);
+        
+    }
+    
+    private function typeId($name) {
+        
+        return MenuType::whereName($name)->first()->id;
+        
+    }
+    
+    /**
      * 更新运营者对应的菜单
      *
      * @param $event
@@ -52,14 +85,52 @@ class MenuEventSubscriber {
     }
     
     /**
+     * 更新菜单
+     *
+     * @param $event
+     * @param $type
+     * @param $model
+     * @return bool
+     */
+    private function updateMenu($event, $type, $model) {
+        
+        $$model = $event->{$model};
+        /** @var Menu $menu */
+        $menu = $event->{$model}->menu;
+        $data = [
+            'parent_id' => $menu->parent_id,
+            'name' => $$model->name,
+            'remark' => $$model->remark,
+            'menu_type_id' => $this->typeId($type),
+            'icon_id' => $this->icons[$model],
+            'enabled' => $$model->enabled
+        ];
+        return $this->menu->alter($data, $$model->menu_id);
+        
+    }
+    
+    /**
      * 删除运营者对应的菜单
      *
      * @param $event
      * @return bool
      */
     public function onCompanyDeleted($event) {
-
+        
         return $this->deleteMenu($event, 'company');
+        
+    }
+    
+    /**
+     * 删除菜单
+     *
+     * @param $event
+     * @param $model
+     * @return bool
+     */
+    private function deleteMenu($event, $model) {
+        
+        return $this->menu->purge($event->{$model}->menu_id);
         
     }
     
@@ -72,7 +143,7 @@ class MenuEventSubscriber {
     public function onCorpCreated($event) {
         
         return $this->createMenu($event, '企业', 'corp', 'company');
-    
+        
     }
     
     /**
@@ -84,7 +155,7 @@ class MenuEventSubscriber {
     public function onCorpUpdated($event) {
         
         return $this->UpdateMenu($event, '企业', 'corp');
-    
+        
     }
     
     /**
@@ -94,7 +165,7 @@ class MenuEventSubscriber {
      * @return bool
      */
     public function onCorpDeleted($event) {
-
+        
         return $this->deleteMenu($event, 'corp');
         
     }
@@ -120,7 +191,7 @@ class MenuEventSubscriber {
     public function onSchoolUpdated($event) {
         
         return $this->updateMenu($event, '学校', 'school');
-    
+        
     }
     
     /**
@@ -143,7 +214,7 @@ class MenuEventSubscriber {
      */
     public function onDepartmentMoved($event) {
         
-        /** @var Department $department  */
+        /** @var Department $department */
         $department = $event->department;
         $departmentType = $department->departmentType->name;
         if (in_array($departmentType, ['企业', '学校'])) {
@@ -157,7 +228,7 @@ class MenuEventSubscriber {
                 /** @var Menu $parentMenu */
                 $parentMenu = Menu::whereId($company->menu_id)->first();
             } else {
-                /** @var School $school  */
+                /** @var School $school */
                 $school = $department->school;
                 /** @var Corp $corp */
                 $corp = $department->parent->corp;
@@ -191,77 +262,6 @@ class MenuEventSubscriber {
         $events->listen($e . 'SchoolDeleted', $l . 'onSchoolDeleted');
         
         $events->listen($e . 'DepartmentMoved', $l . 'onDepartmentMoved');
-        
-    }
-    
-    /**
-     * 创建菜单
-     *
-     * @param $event
-     * @param $type
-     * @param $model
-     * @param null $belongsTo
-     * @return bool|mixed
-     */
-    private function createMenu($event, $type, $model, $belongsTo = NULL) {
-    
-        $$model = $event->{$model};
-        $data = [
-            'parent_id' => isset($belongsTo) ?
-                $$model->{$belongsTo}->menu_id :
-                $this->menu->where('parent_id', NULL)->first()->id,
-            'name' => $$model->name,
-            'remark' => $$model->remark,
-            'menu_type_id' => $this->typeId($type),
-            'icon_id' => $this->icons[$model],
-            'position' => $this->menu->all()->max('position') + 1,
-            'enabled' => $$model->enabled
-        ];
-        return $this->menu->preserve($data, true);
-        
-    }
-    
-    /**
-     * 更新菜单
-     *
-     * @param $event
-     * @param $type
-     * @param $model
-     * @return bool
-     */
-    private function updateMenu($event, $type, $model) {
-    
-        $$model = $event->{$model};
-        /** @var Menu $menu */
-        $menu = $event->{$model}->menu;
-        $data = [
-            'parent_id' => $menu->parent_id,
-            'name' => $$model->name,
-            'remark' => $$model->remark,
-            'menu_type_id' => $this->typeId($type),
-            'icon_id' => $this->icons[$model],
-            'enabled' => $$model->enabled
-        ];
-        return $this->menu->alter($data, $$model->menu_id);
-        
-    }
-    
-    /**
-     * 删除菜单
-     *
-     * @param $event
-     * @param $model
-     * @return bool
-     */
-    private function deleteMenu($event, $model) {
-        
-        return $this->menu->purge($event->{$model}->menu_id);
-        
-    }
-    
-    private function typeId($name) {
-    
-        return MenuType::whereName($name)->first()->id;
         
     }
     

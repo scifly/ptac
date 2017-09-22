@@ -15,26 +15,26 @@
     <link rel="stylesheet" href="{{ URL::asset('css/AdminLTE.min.css') }}">
     <link rel="stylesheet" href="{{ URL::asset('css/skins/_all-skins.min.css') }}">
 
-    @isset($map)
-        <!-- jvectormap -->
+@isset($map)
+    <!-- jvectormap -->
         <link rel="stylesheet" href="{{ URL::asset('css/jquery-jvectormap.css') }}">
-    @endisset
-    @isset($form)
-        <!-- select2 style -->
+@endisset
+@isset($form)
+    <!-- select2 style -->
         <link rel="stylesheet" href="{{ URL::asset('js/plugins/select2/css/select2.min.css') }}">
         <!-- Parsley style -->
         <link rel="stylesheet" href="{{ URL::asset('js/plugins/parsley/parsley.css') }}">
         <!-- switchery style -->
         <link rel="stylesheet" href="{{ URL::asset('js/plugins/switchery/switchery.min.css') }}">
-    @endisset
-    @isset($datatable)
-        <!-- DataTable style -->
+@endisset
+@isset($datatable)
+    <!-- DataTable style -->
         <link rel="stylesheet" href="{{ URL::asset('js/plugins/datatables/datatables.min.css') }}">
-    @endisset
-    <!-- 微网站 -->
+@endisset
+<!-- 微网站 -->
     @isset($ws)
         <link rel="stylesheet" href="{{ URL::asset('css/wapSite.css') }}">
-    @endisset
+@endisset
 
 <!-- 菜单测试 -->
     <link rel="stylesheet" href="{{ URL::asset('js/plugins/jstree/dist/themes/default/style.min.css') }}">
@@ -366,9 +366,9 @@
             @isset($dialog)
                 @include('partials.modal_dialog')
             @endif
-                @isset($show)
-                    @include('partials.modal_show')
-                @endif
+            @isset($show)
+                @include('partials.modal_show')
+            @endif
             @yield('content')
         </section>
     </div>

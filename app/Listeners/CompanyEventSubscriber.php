@@ -27,7 +27,7 @@ class CompanyEventSubscriber {
      * @return bool
      */
     public function onDepartmentCreated($event) {
-    
+        
         /** @var Department $department */
         $department = $event->department;
         # 判断已创建或更新的部门的类型是否为"运营者"
@@ -38,7 +38,7 @@ class CompanyEventSubscriber {
             return $company->modify($data, $company->id);
         }
         return true;
-    
+        
     }
     
     /**

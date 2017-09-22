@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 
 class PqRequest extends FormRequest {
-
+    
     protected $strings_key = [
         'name' => '问卷名称',
         'school_id' => '所属学校',
@@ -21,28 +21,18 @@ class PqRequest extends FormRequest {
         'boolean' => '为0或1',
         'unique' => '不唯一',
         'date_format' => '格式不正确',
-
+    
     ];
-    public function rules() {
-        return [
-            'name' => 'required|string|max:255|unique:poll_questionnaires,name,' .
-                $this->input('id') . ',id,' .
-                'school_id,' . $this->input('school_id'),
-            'school_id' => 'required|integer',
-            'start' => 'required|date_format:Y-m-d H:i:s' ,
-            'end' => 'required|date_format:Y-m-d H:i:s',
-            'enabled' => 'required|boolean'
-        ];
-    }
+    
     /**
      * Determine if the user is authorized to make this request.
      *
      * @return bool
      */
     public function authorize() { return true; }
-
+    
     public function messages() {
-
+        
         $rules = $this->rules();
         $k_array = $this->strings_key;
         $v_array = $this->strings_val;
@@ -58,11 +48,23 @@ class PqRequest extends FormRequest {
             }
         }
         return $array;
-
+        
     }
-
+    
+    public function rules() {
+        return [
+            'name' => 'required|string|max:255|unique:poll_questionnaires,name,' .
+                $this->input('id') . ',id,' .
+                'school_id,' . $this->input('school_id'),
+            'school_id' => 'required|integer',
+            'start' => 'required|date_format:Y-m-d H:i:s',
+            'end' => 'required|date_format:Y-m-d H:i:s',
+            'enabled' => 'required|boolean'
+        ];
+    }
+    
     public function wantsJson() { return true; }
-
+    
     protected function prepareForValidation() {
         
         $input = $this->all();
