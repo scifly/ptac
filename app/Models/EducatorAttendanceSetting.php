@@ -5,8 +5,6 @@ namespace App\Models;
 use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use App\Http\Requests\EducatorAttendanceSettingRequest;
-use Symfony\Component\VarDumper\Cloner\Data;
 
 /**
  * App\Models\EducatorAttendanceSetting 教职员工考勤设置
@@ -30,9 +28,11 @@ use Symfony\Component\VarDumper\Cloner\Data;
  * @mixin \Eloquent
  * @property-read EducatorAttendance[] $educatorAttendance
  * @property-read School $schools
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\EducatorAttendance[] $educatorAttendances
+ * @property-read \App\Models\School $school
  */
 class EducatorAttendanceSetting extends Model {
-
+    
     protected $table = 'educator_attendance_settings';
     
     protected $fillable = [
@@ -53,9 +53,9 @@ class EducatorAttendanceSetting extends Model {
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function school() { return $this->belongsTo('App\Models\School'); }
-
+    
     public function datatable() {
-
+        
         $columns = [
             ['db' => 'EducatorAttendanceSetting.id', 'dt' => 0],
             ['db' => 'EducatorAttendanceSetting.name', 'dt' => 1],
@@ -72,7 +72,7 @@ class EducatorAttendanceSetting extends Model {
             ['db' => 'EducatorAttendanceSetting.updated_at', 'dt' => 7],
             [
                 'db' => 'EducatorAttendanceSetting.enabled', 'dt' => 7,
-                'formatter' => function($d, $row) {
+                'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
                 }
             ],
@@ -87,8 +87,8 @@ class EducatorAttendanceSetting extends Model {
                 ]
             ],
         ];
-        return Datatable::simple($this, $columns,$joins);
-
+        return Datatable::simple($this, $columns, $joins);
+        
     }
     
 }

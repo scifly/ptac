@@ -38,7 +38,7 @@ class SemesterController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function create() {
-
+        
         return $this->output(__METHOD__);
         
     }
@@ -63,7 +63,9 @@ class SemesterController extends Controller {
      */
     public function show($id) {
         $semester = $this->semester->find($id);
-        if (!$semester) { return $this->notFound(); }
+        if (!$semester) {
+            return $this->notFound();
+        }
         return $this->output(__METHOD__, ['semester' => $semester]);
     }
     
@@ -74,11 +76,13 @@ class SemesterController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function edit($id) {
-
+        
         $semester = $this->semester->find($id);
-        if (!$semester) { return $this->notFound(); }
+        if (!$semester) {
+            return $this->notFound();
+        }
         return $this->output(__METHOD__, ['semester' => $semester]);
-
+        
     }
     
     /**
@@ -89,9 +93,11 @@ class SemesterController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(SemesterRequest $request, $id) {
-
+        
         $semester = $this->semester->find($id);
-        if (!$semester) { return $this->notFound(); }
+        if (!$semester) {
+            return $this->notFound();
+        }
         return $semester->update($request->all()) ? $this->succeed() : $this->fail();
         
     }
@@ -103,9 +109,11 @@ class SemesterController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
-    
+        
         $semester = $this->semester->find($id);
-        if (!$semester) { return $this->notFound(); }
+        if (!$semester) {
+            return $this->notFound();
+        }
         return $semester->delete() ? $this->succeed() : $this->fail();
         
     }

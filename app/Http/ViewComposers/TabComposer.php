@@ -1,11 +1,9 @@
 <?php
+
 namespace App\Http\ViewComposers;
 
 use App\Models\Action;
 use App\Models\Icon;
-use App\Models\Menu;
-use App\Models\School;
-use App\Models\Tab;
 use Illuminate\Contracts\View\View;
 
 class TabComposer {

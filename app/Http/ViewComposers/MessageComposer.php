@@ -7,14 +7,11 @@ use App\Models\CommType;
 use App\Models\Corp;
 use App\Models\Educator;
 use App\Models\MessageType;
-use App\Models\School;
-use App\Models\SchoolType;
 use App\Models\User;
 use Illuminate\Contracts\View\View;
-use Illuminate\Support\Facades\DB;
 
 class MessageComposer {
-
+    
     protected $users;
     protected $messageTypes;
     protected $commtypes;
@@ -26,12 +23,11 @@ class MessageComposer {
         $this->messageTypes = $messageTypes;
         $this->commtypes = $commTypes;
         $this->apps = $apps;
-
     }
-
+    
     public function compose(View $view) {
-
-
+        
+        
         $view->with([
             'users' => $this->users->pluck('realname', 'id'),
             'messageTypes' => $this->messageTypes->pluck('name', 'id'),
@@ -39,5 +35,5 @@ class MessageComposer {
             'apps' => $this->apps->pluck('name', 'id'),
         ]);
     }
-
+    
 }

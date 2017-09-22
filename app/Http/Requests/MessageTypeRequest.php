@@ -15,7 +15,7 @@ class MessageTypeRequest extends FormRequest {
         'string' => '为字符串',
         'max' => '最大为:max',
         'unique' => '不唯一',
-
+    
     ];
     
     /**

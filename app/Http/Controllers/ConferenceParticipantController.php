@@ -57,7 +57,9 @@ class ConferenceParticipantController extends Controller {
     public function show($id) {
         
         $conferenceParticipant = $this->conferenceParticipant->find($id);
-        if (!$conferenceParticipant) { return $this->notFound(); }
+        if (!$conferenceParticipant) {
+            return $this->notFound();
+        }
         return $this->output(__METHOD__, ['conferenceParticipant' => $conferenceParticipant]);
         
     }

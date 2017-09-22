@@ -23,7 +23,7 @@ class StudentRequest extends FormRequest {
         return [
             'name' => 'required|string|between:2,30|unique:users,name,' .
                 $this->input('user_id') . ',id,' .
-                'mobile,' . $this->input('mobile') ,
+                'mobile,' . $this->input('mobile'),
             'student_number' => 'required|alphanum|between:2,32',
             'card_number' => 'required|alphanum|between:2,32',
             'remark' => 'required|string|between:2,32',
@@ -38,8 +38,8 @@ class StudentRequest extends FormRequest {
                 'card_number,' . $this->input('student.card_number'),
             'student.birthday' => 'required',
             'student.remark' => 'required|string|max:255',
-
-
+        
+        
         ];
     }
     

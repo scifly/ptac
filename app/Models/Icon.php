@@ -28,6 +28,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|Icon whereUpdatedAt($value)
  * @mixin \Eloquent
  * @property-read Collection|Menu[] $menus
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tab[] $tabs
  */
 class Icon extends Model {
     
@@ -96,7 +97,9 @@ class Icon extends Model {
     public function modify(array $data, $id) {
         
         $icon = $this->find($id);
-        if (!$icon) { return false; }
+        if (!$icon) {
+            return false;
+        }
         return $icon->update($data) ? true : false;
         
     }
@@ -110,7 +113,9 @@ class Icon extends Model {
     public function remove($id) {
         
         $icon = $this->find($id);
-        if (!$icon) { return false; }
+        if (!$icon) {
+            return false;
+        }
         return $icon->removable($this, $id) ? $icon->delete() : false;
         
     }

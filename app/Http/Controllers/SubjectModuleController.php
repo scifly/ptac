@@ -54,9 +54,9 @@ class SubjectModuleController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(SubjectModuleRequest $request) {
-
+        
         return $this->subjectModule->create($request->all()) ? $this->succeed() : $this->fail();
-
+        
     }
     
     /**
@@ -68,7 +68,9 @@ class SubjectModuleController extends Controller {
     public function show($id) {
         
         $subjectModule = $this->subjectModule->find($id);
-        if (!$subjectModule) { return $this->notFound(); }
+        if (!$subjectModule) {
+            return $this->notFound();
+        }
         return $this->output(__METHOD__, ['subjectModule' => $subjectModule]);
         
     }
@@ -82,7 +84,9 @@ class SubjectModuleController extends Controller {
     public function edit($id) {
         
         $subjectModule = $this->subjectModule->find($id);
-        if (!$subjectModule) { return $this->notFound(); }
+        if (!$subjectModule) {
+            return $this->notFound();
+        }
         return $this->output(__METHOD__, ['subjectModules' => $subjectModule]);
         
     }
@@ -95,11 +99,13 @@ class SubjectModuleController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(SubjectModuleRequest $request, $id) {
-
+        
         $subjectModule = $this->subjectModule->find($id);
-
-        if (!$subjectModule) { return $this->notFound(); }
-
+        
+        if (!$subjectModule) {
+            return $this->notFound();
+        }
+        
         return $subjectModule->update($request->all()) ? $this->succeed() : $this->fail();
         
     }
@@ -111,9 +117,11 @@ class SubjectModuleController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
-    
+        
         $subjectModule = $this->subjectModule->find($id);
-        if (!$subjectModule) { return $this->notFound(); }
+        if (!$subjectModule) {
+            return $this->notFound();
+        }
         return $subjectModule->delete() ? $this->succeed() : $this->fail();
         
     }

@@ -12,19 +12,19 @@ class ProcedureTypeRequest extends FormRequest {
      */
     public function authorize() { return true; }
     
-
+    
     /**
      * Get the validation rules that apply to the request.
      *
      * @return array
      */
     public function rules() {
-    return [
-        'name' => 'required|string|max:60|unique:procedure_types,name,' .
-            $this->input('id') . ',id',
-        'remark' => 'required|string|max:255',
-        'enabled' => 'required|boolean'
-    ];
+        return [
+            'name' => 'required|string|max:60|unique:procedure_types,name,' .
+                $this->input('id') . ',id',
+            'remark' => 'required|string|max:255',
+            'enabled' => 'required|boolean'
+        ];
     }
     
     public function wantsJson() { return true; }

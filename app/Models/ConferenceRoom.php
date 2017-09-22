@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Support\Facades\DB;
 use Mockery\Exception;
 
@@ -64,9 +64,11 @@ class ConferenceRoom extends Model {
     public function remove($conferenceRoomId) {
         
         $conferenceRoom = $this->find($conferenceRoomId);
-        if (!$conferenceRoom) { return false; }
+        if (!$conferenceRoom) {
+            return false;
+        }
         try {
-            $exception = DB::transaction(function() use($conferenceRoom, $conferenceRoomId) {
+            $exception = DB::transaction(function () use ($conferenceRoom, $conferenceRoomId) {
                 $conferenceRoom->delete();
                 $conferenceQueues = ConferenceQueue::whereConferenceRoomId($conferenceRoomId)->get();
                 foreach ($conferenceQueues as $queue) {
@@ -92,7 +94,7 @@ class ConferenceRoom extends Model {
             ['db' => 'ConferenceRoom.updated_at', 'dt' => 6],
             [
                 'db' => 'ConferenceRoom.created_at', 'dt' => 7,
-                'formatter' => function($d, $row) {
+                'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
                 }
             ],

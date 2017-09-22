@@ -24,12 +24,10 @@ class MessageController extends Controller {
     protected $department;
 
     public function __construct(Message $message, User $user, Media $media, Department $department) {
-
         $this->message = $message;
         $this->user = $user;
         $this->media = $media;
         $this->department = $department;
-
     }
 
     /**
@@ -59,7 +57,7 @@ class MessageController extends Controller {
         return $this->output(__METHOD__);
 
     }
-
+    
     /**
      * 保存消息
      *
@@ -67,11 +65,11 @@ class MessageController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(MessageRequest $request) {
-
+        
         return $this->message->store($request) ? $this->succeed() : $this->fail();
-
+        
     }
-
+    
     /**
      * 消息详情
      *
@@ -91,7 +89,7 @@ class MessageController extends Controller {
         ]);
 
     }
-
+    
     /**
      * 编辑消息
      *
@@ -105,7 +103,6 @@ class MessageController extends Controller {
         if (!$message) {
             return $this->notFound();
         }
-
         return $this->output(__METHOD__, [
             'message' => $message,
             'selectedUsers' => $this->user->users($message->user_ids),
@@ -113,7 +110,7 @@ class MessageController extends Controller {
         ]);
 
     }
-
+    
     /**
      * 更新消息
      *
@@ -122,11 +119,11 @@ class MessageController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(MessageRequest $request, $id) {
-
+        
         return $this->message->modify($request, $id) ? $this->succeed() : $this->fail();
 
     }
-
+    
     /**
      * 删除消息
      *

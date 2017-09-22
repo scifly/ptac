@@ -90,7 +90,7 @@ class User extends Authenticatable {
         'group_id', 'username', 'password',
         'email', 'realname', 'gender', 'avatar_url',
         'wechatid', 'userid', 'english_name',
-         'isleader', 'position',
+        'isleader', 'position',
         'telephone', 'order', 'mobile',
         'avatar_mediaid', 'enabled',
     ];
@@ -193,14 +193,14 @@ class User extends Authenticatable {
      * @return array
      */
     public function users(array $userIds) {
-
+        
         $users = [];
         foreach ($userIds as $id) {
             $user = $this->find($id);
             $users[$user->id] = $user->realname;
         }
         return $users;
-
+        
     }
     
     /**

@@ -28,26 +28,6 @@ class AttendanceMachineRequest extends FormRequest {
      */
     public function authorize() { return true; }
     
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array
-     */
-    public function rules() {
-        
-        return [
-            'name' => 'required|string|between:2,60|unique:attendance_machines,name,' .
-                $this->input('id') . ',id,' .
-                'school_id,' . $this->input('school_id') . ',' .
-                'machineid,' . $this->input('machineid'),
-            'location' => 'required|string|between:2,255',
-            'school_id' => 'required|integer',
-            'machineid' => 'required|string|betweeen:2,20',
-            'enabled' => 'required|boolean'
-        ];
-        
-    }
-    
     public function messages() {
         
         $rules = $this->rules();
@@ -67,6 +47,26 @@ class AttendanceMachineRequest extends FormRequest {
         }
         
         return $array;
+    }
+    
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array
+     */
+    public function rules() {
+        
+        return [
+            'name' => 'required|string|between:2,60|unique:attendance_machines,name,' .
+                $this->input('id') . ',id,' .
+                'school_id,' . $this->input('school_id') . ',' .
+                'machineid,' . $this->input('machineid'),
+            'location' => 'required|string|between:2,255',
+            'school_id' => 'required|integer',
+            'machineid' => 'required|string|betweeen:2,20',
+            'enabled' => 'required|boolean'
+        ];
+        
     }
     
     public function wantsJson() { return true; }

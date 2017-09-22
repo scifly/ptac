@@ -13,7 +13,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     {!! Form::text('name', null, [
-                        'disabled' => true,
+                        'readonly' => true,
                         'class' => 'form-control'
                     ]) !!}
 
@@ -52,10 +52,10 @@
                                        value="{{ $key }}" class="minimal"
                                        @if(isset($tab) && $tab['icon_id'] == $key)
                                        checked
-                                       @endif
+                                        @endif
                                 >
                             </label>
-                            <i class="{{ $value }}" style="margin-left: 10px;">&nbsp; {{ $value }}</i><br />
+                            <i class="{{ $value }}" style="margin-left: 10px;">&nbsp; {{ $value }}</i><br/>
                         @endforeach
                     @endforeach
 

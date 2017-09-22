@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use App\Facades\DatatableFacade as Datatable;
 
 /**
  * App\Models\Order
@@ -34,7 +34,7 @@ use App\Facades\DatatableFacade as Datatable;
  * @property-read User $user
  */
 class Order extends Model {
-
+    
     protected $table = 'orders';
     
     protected $fillable = [
@@ -74,7 +74,7 @@ class Order extends Model {
             ['db' => 'Orders.updated_at', 'dt' => 7],
             [
                 'db' => 'Orders.status', 'dt' => 8,
-                'formatter' => function($d, $row) {
+                'formatter' => function ($d, $row) {
                     // 已支付, 待支付
                 }
             ],
@@ -98,7 +98,7 @@ class Order extends Model {
             ]
         ];
         return Datatable::simple($this, $columns, $joins);
-
+        
     }
     
 }

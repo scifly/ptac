@@ -17,12 +17,12 @@ class ExamController extends Controller {
     
     protected $exam;
     protected $squad;
-
+    
     function __construct(Exam $exam, Squad $squad) {
-
+        
         $this->exam = $exam;
         $this->squad = $squad;
-
+        
     }
     
     /**
@@ -71,7 +71,9 @@ class ExamController extends Controller {
     public function show($id) {
         
         $exam = $this->exam->find($id);
-        if (!$exam) { return $this->notFound(); }
+        if (!$exam) {
+            return $this->notFound();
+        }
         
         return $this->output(__METHOD__, [
             'exam' => $exam,
@@ -89,7 +91,9 @@ class ExamController extends Controller {
      */
     public function edit($id) {
         $exam = $this->exam->find($id);
-        if (!$exam) { return $this->notFound(); }
+        if (!$exam) {
+            return $this->notFound();
+        }
         return $this->output(__METHOD__, [
             'exam' => $exam,
             'selectedClasses' => $this->exam->classes($exam->class_ids),
@@ -107,7 +111,9 @@ class ExamController extends Controller {
     public function update(ExamRequest $request, $id) {
         
         $exam = $this->exam->find($id);
-        if (!$exam) { return $this->notFound(); }
+        if (!$exam) {
+            return $this->notFound();
+        }
         return $exam->update($request->all()) ? $this->succeed() : $this->fail();
         
     }
@@ -119,9 +125,11 @@ class ExamController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
-    
+        
         $exam = $this->exam->find($id);
-        if (!$exam) { return $this->notFound(); }
+        if (!$exam) {
+            return $this->notFound();
+        }
         return $exam->delete() ? $this->succeed() : $this->fail();
         
     }

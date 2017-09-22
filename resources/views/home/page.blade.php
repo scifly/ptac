@@ -225,7 +225,8 @@
                         <ul class="nav nav-tabs">
                             @foreach ($tabs as $tab)
                                 <li @if($tab['active']) class="active" @endif>
-                                    <a href="#{{ $tab['id'] }}" data-toggle="tab" data-url="{{ $tab['url'] }}" class="tab">
+                                    <a href="#{{ $tab['id'] }}" data-toggle="tab" data-url="{{ $tab['url'] }}"
+                                       class="tab">
                                         {{ $tab['name'] }}
                                     </a>
                                 </li>
@@ -233,7 +234,8 @@
                         </ul>
                         <div class="tab-content">
                             @foreach ($tabs as $tab)
-                                <div class="@if($tab['active']) active @endif tab-pane card" id="{{ $tab['id'] }}"></div>
+                                <div class="@if($tab['active']) active @endif tab-pane card"
+                                     id="{{ $tab['id'] }}"></div>
                             @endforeach
                         </div>
                     </div>

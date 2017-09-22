@@ -24,7 +24,7 @@ class AppController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
-
+        
         $this->authorize('index');
         if (Request::get('draw')) {
             return response()->json($this->app->datatable());
@@ -53,7 +53,7 @@ class AppController extends Controller {
     public function store(AppRequest $request) {
         
         return $this->app->create($request->all()) ? $this->succeed() : $this->fail();
-
+        
     }
     
     /**
@@ -63,9 +63,11 @@ class AppController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function show($id) {
-
+        
         $app = $this->app->find($id);
-        if (!$app) { return $this->notFound(); }
+        if (!$app) {
+            return $this->notFound();
+        }
         return $this->output(__METHOD__, ['app' => $app]);
         
     }
@@ -79,7 +81,9 @@ class AppController extends Controller {
     public function edit($id) {
         
         $app = $this->app->find($id);
-        if (!$app) { return $this->notFound(); }
+        if (!$app) {
+            return $this->notFound();
+        }
         return $this->output(__METHOD__, ['app' => $app]);
         
     }
@@ -94,7 +98,9 @@ class AppController extends Controller {
     public function update(AppRequest $request, $id) {
         
         $app = $this->app->find($id);
-        if (!$app) { return $this->notFound(); }
+        if (!$app) {
+            return $this->notFound();
+        }
         return $app->update($request->all()) ? $this->succeed() : $this->fail();
         
     }
@@ -106,9 +112,11 @@ class AppController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
-
+        
         $app = $this->app->find($id);
-        if (!$app) { return $this->notFound(); }
+        if (!$app) {
+            return $this->notFound();
+        }
         return $app->delete() ? $this->succeed() : $this->fail();
         
     }

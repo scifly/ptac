@@ -2,11 +2,11 @@
 
 namespace App\Models;
 
+use App\Facades\DatatableFacade as Datatable;
 use App\Http\Requests\MajorRequest;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
-use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Support\Facades\DB;
 use Mockery\Exception;
 
@@ -33,7 +33,7 @@ use Mockery\Exception;
  * @property-read Collection|Subject[] $subjects
  */
 class Major extends Model {
-
+    
     protected $table = 'majors';
     
     protected $fillable = [
@@ -42,30 +42,30 @@ class Major extends Model {
     
     /**
      * 返回专业所属的学校对象
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function school() { return $this->belongsTo('App\Models\School'); }
     
     /**
      * 获取指定专业所包含的科目对象
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function subjects() {
-
+        
         return $this->belongsToMany(
             'App\Models\Subject',
             'majors_subjects',
             'major_id',
             'subject_id'
         );
-
+        
     }
     
     /**
      * 返回专业列表
-     * 
+     *
      * @param null $schoolId
      * @return \Illuminate\Support\Collection
      */
@@ -80,14 +80,14 @@ class Major extends Model {
     
     /**
      * 保存专业
-     * 
+     *
      * @param MajorRequest $request
      * @return bool|mixed
      */
     public function store(MajorRequest $request) {
         
         try {
-            $exception = DB::transaction(function() use ($request) {
+            $exception = DB::transaction(function () use ($request) {
                 $m = $this->create($request->all());
                 $majorSubject = new MajorSubject();
                 $subjectIds = $request->input('subject_ids', []);
@@ -110,9 +110,11 @@ class Major extends Model {
     public function modify(MajorRequest $request, $id) {
         
         $major = $this->find($id);
-        if (!isset($major)) { return false; }
+        if (!isset($major)) {
+            return false;
+        }
         try {
-            $exception = DB::transaction(function() use($request, $id, $major) {
+            $exception = DB::transaction(function () use ($request, $id, $major) {
                 $major->update($request->all());
                 $subjectIds = $request->input('subject_ids', []);
                 $majorSubject = new MajorSubject();
@@ -129,16 +131,18 @@ class Major extends Model {
     
     /**
      * 删除专业
-     * 
+     *
      * @param $id
      * @return bool|mixed
      */
     public function remove($id) {
         
         $major = $this->find($id);
-        if (!isset($major)) { return false; }
+        if (!isset($major)) {
+            return false;
+        }
         try {
-            $exception = DB::transaction(function() use ($id, $major) {
+            $exception = DB::transaction(function () use ($id, $major) {
                 # 删除指定的专业记录
                 $major->delete();
                 # 删除与指定专业绑定的科目记录
@@ -161,7 +165,7 @@ class Major extends Model {
             ['db' => 'Major.created_at', 'dt' => 4],
             [
                 'db' => 'Major.updated_at', 'dt' => 5,
-                'formatter' => function($d, $row) {
+                'formatter' => function ($d, $row) {
                     return DataTable::dtOps($this, $d, $row);
                 }
             ],

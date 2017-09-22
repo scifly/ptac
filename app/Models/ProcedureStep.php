@@ -32,7 +32,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read Procedure $procedure
  */
 class ProcedureStep extends Model {
-
+    
     use ModelTrait;
     
     protected $table = 'procedure_steps';
@@ -44,7 +44,7 @@ class ProcedureStep extends Model {
     
     /**
      * 返回指定审批流程步骤所属的审批流程对象
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function procedure() { return $this->belongsTo('App\Models\Procedure'); }
@@ -72,7 +72,9 @@ class ProcedureStep extends Model {
     public function modify(array $data, $id) {
         
         $procedureStep = $this->find($id);
-        if (!$procedureStep) { return false; }
+        if (!$procedureStep) {
+            return false;
+        }
         return $procedureStep->update($data) ? true : false;
         
     }
@@ -86,7 +88,9 @@ class ProcedureStep extends Model {
     public function remove($id) {
         
         $procedureStep = $this->find($id);
-        if (!$procedureStep) { return false; }
+        if (!$procedureStep) {
+            return false;
+        }
         return $procedureStep->removable($this, $id) ? $procedureStep->delete() : false;
         
     }

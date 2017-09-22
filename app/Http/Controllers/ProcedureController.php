@@ -50,7 +50,7 @@ class ProcedureController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(ProcedureRequest $request) {
-
+        
         return $this->procedure->store($request->all())
             ? $this->succeed() : $this->fail();
         
@@ -63,9 +63,11 @@ class ProcedureController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function show($id) {
-
+        
         $procedure = $this->procedure->find($id);
-        if (!$procedure) { return $this->notFound(); }
+        if (!$procedure) {
+            return $this->notFound();
+        }
         return $this->output(__METHOD__, ['procedure' => $procedure]);
         
     }
@@ -79,7 +81,9 @@ class ProcedureController extends Controller {
     public function edit($id) {
         
         $procedure = $this->procedure->find($id);
-        if (!$procedure) { return $this->notFound(); }
+        if (!$procedure) {
+            return $this->notFound();
+        }
         return $this->output(__METHOD__, ['procedure' => $procedure]);
         
     }
@@ -92,9 +96,11 @@ class ProcedureController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(ProcedureRequest $request, $id) {
-    
+        
         $procedure = $this->procedure->find($id);
-        if (!$procedure) { return $this->notFound(); }
+        if (!$procedure) {
+            return $this->notFound();
+        }
         return $procedure->modify($request->all(), $id)
             ? $this->succeed() : $this->fail();
     }
@@ -106,9 +112,11 @@ class ProcedureController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
-
+        
         $procedure = $this->procedure->find($id);
-        if (!$procedure) { return $this->notFound(); }
+        if (!$procedure) {
+            return $this->notFound();
+        }
         return $procedure->remove($id)
             ? $this->succeed() : $this->fail();
         

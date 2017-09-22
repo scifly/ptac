@@ -19,7 +19,8 @@
 
     <dl class="dl-horizontal">
         <br/>
-        <dt>所属学校：</dt><dd>{{ $wapsite->school->name }}</dd>
+        <dt>所属学校：</dt>
+        <dd>{{ $wapsite->school->name }}</dd>
         <br/>
         <dt>轮播图：</dt>
         @foreach($medias as $v)
