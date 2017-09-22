@@ -43,6 +43,8 @@
 $(crud.create('formEducator', 'educators'));
 var $tbody = $("#mobileTable").find("tbody");
 var n = 0;
+$(document).off('click', '.btn-add');
+$(document).off('click', '.btn-remove');
 // 手机号
 $(document).on('click', '.btn-add', function (e) {
     e.preventDefault();
@@ -91,3 +93,6 @@ $(document).on('click', '.btn-class-add', function (e) {
     e.preventDefault();
     return false;
 });
+
+//部门
+dept.init('educators/create');

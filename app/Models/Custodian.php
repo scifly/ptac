@@ -47,7 +47,14 @@ class Custodian extends Model {
      * 
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function students() { return $this->belongsToMany('App\Models\Student'); }
+    public function students() {
+        return $this->belongsToMany(
+            'App\Models\Student',
+            'custodians_students',
+                'custodian_id',
+                'student_id'
+        );
+    }
 
     /**
      * 保存新创建的监护人记录
@@ -64,19 +71,11 @@ class Custodian extends Model {
                 $studentIds = $request->input('student_ids');
                 # 与学生之间的关系
                 $relationships = $request->input('relationship');
-                if( $studentIds && $relationships)
-                {
-                    if(count($studentIds == count($relationships)))
-                    {
-                        # 两数组合并后 学生Id和关系对应的数组
-                        $studentId = array_combine($studentIds,$relationships);
-                    }else{
-                        return false;
-                    }
-                }else{
-                    $studentId = [];
-                }
 
+                foreach ($studentIds as $key=>$sudentId)
+                {
+                    $studentRelationship[$sudentId] = $relationships[$key];
+                }
 
                 $userData = [
                     'username' => uniqid('custodian_'),
@@ -130,9 +129,9 @@ class Custodian extends Model {
                 # 向监护人学生表中添加数据
                 $custodianStudent = new CustodianStudent();
 
-                if($studentId !=null)
+                if($studentRelationship !=null)
                 {
-                    $custodianStudent->storeByCustodianId($c->id, $studentId);
+                    $custodianStudent->storeByCustodianId($c->id, $studentRelationship);
                 }
                 unset($custodianStudent);
             });

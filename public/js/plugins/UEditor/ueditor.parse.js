@@ -388,7 +388,7 @@ UE.parse.register('table', function (utils) {
                 selector + ' table.noBorderTable th,' +
                 selector + ' table.noBorderTable caption{border:1px dashed #ddd !important}' +
                 selector + ' table.sortEnabled tr.firstRow th,' + selector + ' table.sortEnabled tr.firstRow td{padding-right:20px; background-repeat: no-repeat;' +
-                    'background-position: center right; background-image:url(' + this.rootPath + 'themes/default/images/sortable.png);}' +
+                    'background-position: center right; background-image:url(' + this.rootPath + 'themes/default/Images/sortable.png);}' +
                 selector + ' table.sortEnabled tr.firstRow th:hover,' + selector + ' table.sortEnabled tr.firstRow td:hover{background-color: #EEE;}' +
                 selector + ' table{margin-bottom:10px;border-collapse:collapse;display:table;}' +
                 selector + ' td,' + selector + ' th{ background:white; padding: 5px 10px;border: 1px solid #DDD;}' +
@@ -991,9 +991,9 @@ UE.parse.register('vedio',function(utils){
     document.createElement('video');document.createElement('audio');
     if(video.length || audio.length){
         var sourcePath = utils.removeLastbs(this.rootPath),
-            jsurl = sourcePath + '/third-party/video-js/video.js',
-            cssurl = sourcePath + '/third-party/video-js/video-js.min.css',
-            swfUrl = sourcePath + '/third-party/video-js/video-js.swf';
+            jsurl = sourcePath + '/third-party/video-Scripts/video.js',
+            cssurl = sourcePath + '/third-party/video-Scripts/video-Scripts.min.css',
+            swfUrl = sourcePath + '/third-party/video-Scripts/video-Scripts.swf';
 
         if(window.videojs) {
             videojs.autoSetup();

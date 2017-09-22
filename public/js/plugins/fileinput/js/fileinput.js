@@ -3739,7 +3739,7 @@
         showUploadedThumbs: true,
         browseOnZoneClick: false,
         autoReplace: false,
-        autoOrientImage: true, // for JPEG images based on EXIF orientation tag
+        autoOrientImage: true, // for JPEG Images based on EXIF orientation tag
         required: false,
         rtl: false,
         hideThumbnailContent: false,

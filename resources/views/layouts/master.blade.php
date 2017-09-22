@@ -29,7 +29,7 @@
         <link rel="stylesheet" href="{{ URL::asset('js/plugins/datatables/datatables.min.css') }}">
     @endisset
     @isset($ws)
-        {{--<link rel="stylesheet" href="{{ URL::asset('css/wapSite.css') }}">--}}
+        {{--<link rel="stylesheet" href="{{ URL::asset('Css/wapSite.Css') }}">--}}
     @endisset
     @isset($fullcalendar)
     <link rel="stylesheet" href="{{ URL::asset('js/plugins/fullcalendar/css/fullcalendar.min.css') }}">
@@ -434,7 +434,7 @@
 @endisset
 @isset($map)
     <script src="{{ URL::asset('js/jquery-jvectormap-1.2.2.min.js') }}"></script>
-    <script src="{{ URL::asset('js/jquery-jvectormap-world-mill-en.js') }}"></script>
+    <script src="{{ URL::asset('Scripts') }}"></script>
 @endisset
 @isset($chart)
     <script src="{{ URL::asset('js/Chart.min.js') }}"></script>
