@@ -213,9 +213,9 @@ class Department extends Model {
         $department = $this->create($data);
         if ($department && $fireEvent) {
             event(new DepartmentCreated($department));
-            return true;
+            return $department;
         }
-        return $department ? true : false;
+        return $department ? $department : false;
         
     }
     
@@ -233,9 +233,9 @@ class Department extends Model {
         $updated = $department->update($data);
         if ($updated && $fireEvent) {
             event(new DepartmentUpdated($department));
-            return true;
+            return $department;
         }
-        return $updated ? true : false;
+        return $updated ? $department : false;
         
     }
     

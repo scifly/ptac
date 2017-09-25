@@ -1,5 +1,60 @@
-$(crud.create('formGroup','groups'));
+//$(crud.create('formGroup','groups'));
+// Select2
+// $('select').select2();
+var data;
 var $menuTree = $('#menu_tree');
+// Switchery
+Switcher.init();
+
+// iCheck
+crud.initICheck();
+
+// Cancel button
+$('#cancel, #record-list').on('click', function () {
+    var $activeTabPane = $('#tab_' + page.getActiveTabId());
+    page.getTabContent($activeTabPane, 'groups/index');
+    crud.unbindEvents();
+});
+
+// Parsley
+var $form = $('#formGroup');
+// crud.formParsley($form, requestType, ajaxUrl);
+$form.parsley().on('form:validated', function () {
+    var data = $form.serialize();
+
+
+    if ($('.parsley-error').length === 0) {
+        var url =  page.siteRoot() + 'groups/store';
+        menuIds = $menuTree.jstree().get_selected();
+
+        $menuTree.find(".jstree-undetermined").each(function (i, element) {
+            menuIds.push($(element).parents().eq(1).attr('id'));
+        });
+
+        $('#menu_ids').val(menuIds.join());
+
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            url: url,
+            data: $form.serialize(),
+            success: function(result) {
+                if (result.statusCode === 200){
+                    page.inform('操作结果',result.message, page.success)
+                }else{
+                    page.inform('操作结果',result.message, page.failure)
+                }
+            },
+            error:function () {
+                var obj = JSON.parse(e.responseText);
+                page.inform('出现异常', obj['message'], page.failure);
+            }
+        });
+        // crud.ajaxRequest(requestType, page.siteRoot() + 'groups/store', data, $form[0]);
+    }
+}).on('form:submit', function() {return false; });
+
+
 $menuTree.jstree({
     core: {
         themes: {

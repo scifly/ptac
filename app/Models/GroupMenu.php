@@ -25,8 +25,8 @@ class GroupMenu extends Model {
                 foreach ($ids as $id) {
                     $this->create([
                         'group_id' => $groupId,
-                        'menu_id' => $id['id'],
-                        'enabled' => $id['enabled']
+                        'menu_id' => $id,
+                        'enabled' => 1
                     ]);
                 }
             });

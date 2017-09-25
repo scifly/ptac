@@ -52,20 +52,7 @@ class GroupController extends Controller {
         if (Request::method() === 'POST') {
             return $this->menu->tree();
         }
-        $tabActions = [];
-        $tabs = $this->tab->all();
-        foreach ($tabs as $tab) {
-            $actions = $this->action->where('controller', $tab->controller)->get(['id', 'name']);
-            $actionList = [];
-            foreach ($actions as $action) {
-                $actionList[] = ['id' => $action->id, 'name' => $action->name];
-            }
-            $tabActions[] = [
-                'tab' => ['id' => $tab->id, 'name' => $tab->name],
-                'actions' => $actionList
-            ];
-        }
-        return $this->output(__METHOD__, ['tabActions' => $tabActions]);
+        return $this->output(__METHOD__);
         
     }
     
@@ -76,7 +63,6 @@ class GroupController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(GroupRequest $request) {
-        
         return $this->group->store($request->all())
             ? $this->succeed() : $this->fail();
         
@@ -103,12 +89,35 @@ class GroupController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function edit($id) {
-        
+
         $group = $this->group->find($id);
-        if (!$group) {
-            return $this->notFound();
+        if (!$group) { return $this->notFound(); }
+        if (Request::method() === 'POST') {
+            return $this->menu->tree();
         }
-        return $this->output(__METHOD__, ['group' => $group]);
+        $menus = $group->menus;
+        $selectedMenuIds = [];
+        foreach ($menus as $menu){
+            $selectedMenuIds[] = $menu->id;
+        }
+        $tabs = $group->tabs;
+        $selectedTabs = [];
+        foreach ($tabs as $tab){
+            $selectedTabs[] = $tab->id;
+        }
+        
+        $actions = $group->actions;
+        $selectedActions = [];
+        foreach ($actions as $action){
+            $selectedActions[] = $action->id;
+        }
+
+        return $this->output(__METHOD__, [
+            'group' => $group,
+            'selectedMenuIds' => implode(',',$selectedMenuIds),
+            'selectedTabs' => $selectedTabs,
+            'selectedActions' => $selectedActions
+        ]);
         
     }
     

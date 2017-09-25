@@ -16,6 +16,10 @@
                         @if (!empty($group['id']))
                             {{ Form::hidden('id', $group['id'], ['id' => 'id']) }}
                         @endif
+                        {{ Form::hidden('menu_ids', isset($selectedMenuIds) ? $selectedMenuIds : null, [
+                            'id' => 'menu_ids'
+                        ]) }}
+
                         <div class="form-group">
                             {!! Form::label('name', '角色名称', [
                                 'class' => 'col-sm-3 control-label'
@@ -61,6 +65,10 @@
                                     <label for="tabs[{{ $tabAction['tab']['id'] }}]['enabled']" class="tabsgroup">
                                         <input name="tabs[{{ $tabAction['tab']['id'] }}]['enabled']"
                                                id="tabs[]" type="checkbox" class="minimal tabs"
+
+                                               @if(isset($selectedTabs) &&in_array($tabAction['tab']['id'],$selectedTabs))
+                                                   checked
+                                               @endif
                                         >
                                         &nbsp; {{ $tabAction['tab']['name'] }}
                                     </label>
@@ -79,6 +87,9 @@
                                                     <input name="actions[{{ $action['id'] }}]['enabled']"
                                                            id="actions[{{ $action['id'] }}]['enabled']"
                                                            type="checkbox" class="minimal actions"
+                                                           @if(isset($selectedActions)&&in_array($action['id'],$selectedActions))
+                                                               checked
+                                                           @endif
                                                     >
                                                     &nbsp;<span>{{ $action['name'] }}</span>
                                                 </p>
@@ -89,6 +100,7 @@
                             </div>
                         </div>
                     @endforeach
+
                     </div>
                 </div>
             </div>

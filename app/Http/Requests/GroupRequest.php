@@ -46,6 +46,24 @@ class GroupRequest extends FormRequest {
         if (!isset($input['enabled'])) {
             $input['enabled'] = 0;
         }
+        $tabIds = [];
+        if (isset($input['tabs'])) {
+            foreach ($input['tabs'] as $k=>$v)
+            {
+                $tabIds[] = $k;
+            }
+            $input['tabId'] = $tabIds;
+        }
+
+        $actionIds = [];
+
+        if(isset($input['actions'])){
+            foreach ($input['actions'] as $k=>$v)
+            {
+                $actionIds[] = $k;
+            }
+            $input['acitonId'] = $actionIds;
+        }
         $this->replace($input);
         
     }
