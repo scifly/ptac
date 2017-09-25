@@ -124,7 +124,8 @@ class Squad extends Model {
     public function remove($id, $fireEvent = false) {
         
         $class = $this->find($id);
-        $removed = $this->removable($this, $id) ? $class->delete() : false;
+        if (!$class) { return false; }
+        $removed = $this->removable($class) ? $class->delete() : false;
         if ($removed && $fireEvent) {
             event(new ClassDeleted($class));
             return true;

@@ -187,10 +187,8 @@ class Exam extends Model {
     public function remove($id) {
         
         $exam = $this->find($id);
-        if (!$exam) {
-            return false;
-        }
-        return $exam->removable($this, $id) ? true : false;
+        if (!$exam) { return false; }
+        return $exam->removable($exam) ? true : false;
         
     }
     

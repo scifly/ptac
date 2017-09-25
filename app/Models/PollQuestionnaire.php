@@ -85,11 +85,9 @@ class PollQuestionnaire extends Model {
      */
     public function remove($id) {
         
-        $PollQuestionnaire = $this->find($id);
-        if (!$PollQuestionnaire) {
-            return false;
-        }
-        return $this->removable($this, $id) ? $PollQuestionnaire->delete() : false;
+        $pollQuestionnaire = $this->find($id);
+        if (!$pollQuestionnaire) { return false; }
+        return $this->removable($pollQuestionnaire) ? $pollQuestionnaire->delete() : false;
         
     }
     

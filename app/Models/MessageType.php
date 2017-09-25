@@ -80,10 +80,8 @@ class MessageType extends Model {
     public function remove($id) {
         
         $messageType = $this->find($id);
-        if (!$messageType) {
-            return false;
-        }
-        return $messageType->removable($this, $id) ? $messageType->delete() : false;
+        if (!$messageType) { return false; }
+        return $messageType->removable($messageType) ? $messageType->delete() : false;
         
     }
     

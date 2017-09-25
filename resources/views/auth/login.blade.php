@@ -36,12 +36,13 @@
         <p class="login-box-msg">请登录</p>
 
         <form  method="post">
+            {!! csrf_field() !!}
             <div class="form-group has-feedback">
-                <input  class="form-control" placeholder="(用户名/邮箱/手机号码)" name="input">
+                <input  class="form-control" placeholder="(用户名/邮箱/手机号码)" name="input" id="input">
                 <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
             </div>
             <div class="form-group has-feedback">
-                <input type="password" class="form-control" placeholder="密码" name="password">
+                <input type="password" class="form-control" placeholder="密码" name="password" id="password">
                 <span class="glyphicon glyphicon-lock form-control-feedback"></span>
             </div>
             <div class="row">
@@ -54,7 +55,7 @@
                 </div>
                 <!-- /.col -->
                 <div class="col-xs-4">
-                    <button  class="btn btn-primary btn-block btn-flat" id="signin">登录</button>
+                    <button  onclick="javascript:void(0)" class="btn btn-primary btn-block btn-flat" id="signin">登录</button>
                 </div>
                 <!-- /.col -->
             </div>
@@ -62,7 +63,7 @@
 
         <!-- /.social-auth-links -->
 
-        <a href="#">忘记密码</a><br>
+        <a href="{{Url('password/reset')}}">忘记密码</a><br>
 
     </div>
     <!-- /.login-box-body -->
@@ -73,6 +74,8 @@
 <script src="{{ URL::asset('js/jquery.min.js') }}"></script>
 <!-- Bootstrap 3.3.6 -->
 <script  src="{{ asset('js/bootstrap.min.js')  }}"></script>
+
+<script  src="{{ asset('js/auth/login.js')  }}"></script>
 <!-- iCheck -->
 <script src="{{ URL::asset('js/plugins/icheck/icheck.min.js') }}"></script>
 

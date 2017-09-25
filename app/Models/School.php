@@ -106,6 +106,13 @@ class School extends Model {
     public function corp() { return $this->belongsTo('App\Models\Corp'); }
     
     /**
+     * 获取隶属指定学校的所有角色对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function groups() { return $this->hasMany('App\Models\Group'); }
+    
+    /**
      * 获取指定学校所有的考勤机对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
@@ -275,7 +282,8 @@ class School extends Model {
     public function remove($id, $fireEvent = false) {
         
         $school = $this->find($id);
-        $removed = $this->removable($this, $id) ? $school->delete() : false;
+        if (!$school) { return false; }
+        $removed = $this->removable($school) ? $school->delete() : false;
         if ($removed && $fireEvent) {
             event(new SchoolDeleted($school));
             return true;

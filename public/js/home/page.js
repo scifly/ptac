@@ -10,7 +10,7 @@ var page = {
         return '/' + paths[1] + '/' + paths[2] + '/';
     },
     ajaxLoader: function() {
-        return "<img alt='' src='" + page.siteRoot() + "/img/throbber.gif' " +
+        return "<img id='ajaxLoader' alt='' src='" + page.siteRoot() + "/img/throbber.gif' " +
         "style='vertical-align: middle;'/>"
     },
     getActiveTabId: function() {
@@ -27,8 +27,11 @@ var page = {
             url: page.siteRoot() + url,
             data: { tabId: tabId },
             success: function(result) {
-                $tabPane.html(result.html);
-                $.getScript(page.siteRoot() + result.js);
+                // $tabPane.html(result.html);
+                $('#ajaxLoader').after(result.html);
+                $.getScript(page.siteRoot() + result.js, function() {
+                    $('#ajaxLoader').remove();
+                });
             },
             error: function(e) {
                 var obj = JSON.parse(e.responseText);

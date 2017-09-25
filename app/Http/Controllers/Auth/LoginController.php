@@ -20,8 +20,6 @@ class LoginController extends Controller {
     | to conveniently provide its functionality to your applications.
     |
     */
-
-    
     use AuthenticatesUsers;
     
     /**
@@ -41,51 +39,43 @@ class LoginController extends Controller {
         
     }
     
-    /*public function rules() {
-        
-        return [
-            'login' => 'required',
-            'password' => 'required',
-        ];
-        
-    }*/
-    
     public function login(Request $request) {
+
         $input = $request->input('input');
         $password = $request->input('password');
-        $field = '';
-        if (!(User::whereUsername($input)->first()) && !(User::whereEmail($input)->first())) {
-            $mobile = Mobile::whereMobile($input)->where('is_default', 1)->first();
-            if (!$mobile->user_id) {
-                return response()->json([
-                    'statusCode' => 500,
-                    'url' => ''
-                ]);
-            }
-            $userId = $mobile->userId;
-            if (Auth::loginUsingId($userId, $request->input('remember'))) {
-
-            }
+        if (User::whereUsername($input)->first()) {
+            $field = 'username';
+        } elseif (User::whereEmail($input)->first()) {
+            $field = 'email';
         } else {
-            if (Auth::attempt([$input, $password])) {
+            $mobile = Mobile::where('mobile',$input)
+                ->where('isdefault', 1)->first();
+            if (!$mobile->user_id) {
+                return response()->json(['statusCode' => 500]);
+            }
+            $username = User::whereId($mobile->user_id)->first()->username;
+            if (
+                Auth::attempt(
+                    ['username' => $username, 'password' =>$password ],
+                    $request->input('remember')
+                )
+            ) {
                 return response()->json([
                     'statusCode' => 200,
-                    'url' => '/'
+                    'url' => '../public'
                 ]);
+            } else {
+                return response()->json(['statusCode' => 500]);
             }
         }
-        $field = 'username';
-
-
-//
-//        if (Auth::attempt([$field, $password])) {
-//            return redirect('/');
-//        }
+        if (Auth::attempt([$field => $input, 'password' =>$password])) {
+            return response()->json([
+                'statusCode' => 200,
+                'url' => '../public'
+            ]);
+        }
+        return response()->json(['statusCode' => 500]);
         
-        return redirect('/login')->withErrors([
-            'error' => 'These credentials dont match our records',
-            'login' => 'what the hell?!'
-        ]);
     }
     
 }

@@ -95,7 +95,7 @@ var tree = {
                 multiple: false,
                 animation: 0,
                 data: {
-                    url: tree.urlIndex(table),
+                    url: page.siteRoot() + tree.urlIndex(table),
                     type: 'POST',
                     dataType: 'json',
                     data: function(node) {

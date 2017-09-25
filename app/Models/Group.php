@@ -33,7 +33,7 @@ class Group extends Model {
     protected $table = 'groups';
     
     protected $fillable = [
-        'name', 'remark', 'enabled'
+        'name', 'school_id', 'remark', 'enabled'
     ];
     
     /**
@@ -42,6 +42,13 @@ class Group extends Model {
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function users() { return $this->hasMany('App\Models\User'); }
+    
+    /**
+     * 返回指定角色所属的学校对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function school() { return $this->belongsTo('App\Models\School'); }
     
     /**
      * 保存角色
@@ -82,10 +89,8 @@ class Group extends Model {
     public function remove($id) {
         
         $group = $this->find($id);
-        if (!$group) {
-            return false;
-        }
-        return $this->removable($this, $id) ? $group->delete() : false;
+        if (!$group) { return false; }
+        return $this->removable($group) ? $group->delete() : false;
         
     }
     
