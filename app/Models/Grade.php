@@ -168,10 +168,8 @@ class Grade extends Model {
     public function remove($id, $fireEvent = false) {
         
         $grade = $this->find($id);
-        if (!$grade) {
-            return false;
-        }
-        $removed = $this->removable($this, $id) ? $grade->delete() : false;
+        if (!$grade) { return false; }
+        $removed = $this->removable($grade) ? $grade->delete() : false;
         if ($removed && $fireEvent) {
             event(new GradeDeleted($grade));
             return true;

@@ -77,10 +77,8 @@ class IconType extends Model {
     public function remove($id) {
         
         $iconType = $this->find($id);
-        if (!$iconType) {
-            return false;
-        }
-        return $iconType->removable($this, $id)
+        if (!$iconType) { return false; }
+        return $iconType->removable($iconType)
             ? $iconType->delete() : false;
         
     }

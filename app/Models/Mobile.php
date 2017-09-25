@@ -78,10 +78,8 @@ class Mobile extends Model {
     public function remove($id) {
         
         $mobile = $this->find($id);
-        if (!$mobile) {
-            return false;
-        }
-        return $mobile->removable($this, $id) ? $mobile->delete() : false;
+        if (!$mobile) { return false; }
+        return $mobile->removable($mobile) ? $mobile->delete() : false;
         
     }
     

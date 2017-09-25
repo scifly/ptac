@@ -454,7 +454,7 @@ class Educator extends Model {
     public function remove($id, $fireEvent = false) {
         
         $school = $this->find($id);
-        $removed = $this->removable($this, $id) ? $school->delete() : false;
+        $removed = $this->removable($school) ? $school->delete() : false;
         if ($removed && $fireEvent) {
 //            event(new SchoolDeleted($school));
             return true;

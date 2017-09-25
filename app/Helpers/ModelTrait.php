@@ -6,12 +6,10 @@ use ReflectionClass;
 
 trait ModelTrait {
     
-    public function removable(Model $model, $id) {
+    public function removable(Model $model) {
         
         $relations = [];
         $class = get_class($model);
-        $instance = $model->find($id);
-        if (!$instance) { return false; }
         $reflectionClass = new ReflectionClass($class);
         
         foreach ($reflectionClass->getMethods() as $method) {
@@ -22,9 +20,8 @@ trait ModelTrait {
                 }
             }
         }
-        dd($relations);
         foreach ($relations as $relation) {
-            if ($instance->{$relation}) { return false; }
+            if ($model->{$relation}) { return false; }
         }
         return true;
         

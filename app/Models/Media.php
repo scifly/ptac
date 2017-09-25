@@ -109,10 +109,8 @@ class Media extends Model {
     public function remove($id) {
         
         $media = $this->find($id);
-        if (!$media) {
-            return false;
-        }
-        return $media->removable($this, $id) ? $media->delete() : false;
+        if (!$media) { return false; }
+        return $media->removable($media) ? $media->delete() : false;
         
     }
     
