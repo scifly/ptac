@@ -142,9 +142,9 @@ Route::get('procedure_steps/getSchoolEducators/{id}', 'ProcedureStepController@g
 // 审批发起/处理
 Route::group(['prefix' => 'procedure_logs'], function() {
     $ctlr = 'ProcedureLogController';
-    Route::get('index', $ctlr . '@myProcedure');
+    Route::get('index', $ctlr . '@index');
     Route::get('pending', $ctlr . '@pending');
-    Route::get('show/{firstLogId}    ', $ctlr . '@procedureInfo');
+    Route::get('show/{firstLogId}    ', $ctlr . '@show');
     Route::get('create', $ctlr . '@create');
     Route::post('store', $ctlr . '@store');
     Route::post('decision', $ctlr . '@decision');

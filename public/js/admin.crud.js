@@ -40,7 +40,6 @@ var crud = {
             $('.buttons-csv').addClass('btn-sm');
             // $('.paginate_button').each(function() { $(this).addClass('btn-sm'); })
         });
-        console.log($('.dt-buttons'));
     },
     ajaxRequest: function (requestType, ajaxUrl, data, obj) {
         $.ajax({

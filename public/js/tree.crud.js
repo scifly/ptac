@@ -13,13 +13,13 @@ var tree = {
     csrfToken: function() { return $('#csrf_token').attr('content'); },
     urlIndex: function(table) { return page.siteRoot() + table +'/index'; },
     urlSort: function(table) { return page.siteRoot() + table + '/sort'; },
-    urlCreate: function(table) { return page.siteRoot() + table + '/create'; },
+    urlCreate: function(table) { return table + '/create'; },
     urlStore: function(table) { return page.siteRoot() + table + '/store'; },
-    urlEdit: function(table) { return page.siteRoot() + table + '/edit/'; },
+    urlEdit: function(table) { return table + '/edit/'; },
     urlUpdate: function(table) { return page.siteRoot() + table + '/update/'; },
     urlMove: function(table) { return page.siteRoot() + table + '/move/'; },
     urlDelete: function(table) { return page.siteRoot() + table + '/delete/'; },
-    urlRankTabs: function(table) { return page.siteRoot() + table + '/ranktabs/'; },
+    urlRankTabs: function(table) { return table + '/ranktabs/'; },
     urlMenuTabs: function(table) { return page.siteRoot() + table + '/menutabs/'; },
     ajaxRequest: function(requestType, ajaxUrl, data, obj) {
         $.ajax({
