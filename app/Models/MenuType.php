@@ -104,10 +104,8 @@ class MenuType extends Model {
     public function remove($id) {
         
         $menuType = $this->find($id);
-        if (!$menuType) {
-            return false;
-        }
-        return $menuType->removable($this, $id)
+        if (!$menuType) { return false; }
+        return $menuType->removable($menuType)
             ? $menuType->delete() : false;
         
     }

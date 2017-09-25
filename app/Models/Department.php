@@ -248,18 +248,8 @@ class Department extends Model {
     public function remove($id) {
         
         $department = $this->find($id);
-        if (!$department) {
-            return false;
-        }
-        if ($department->users) {
-            return false;
-        }
-        if ($department->children) {
-            return false;
-        }
-        if (!$this->removable($this, $id)) {
-            return false;
-        }
+        if (!$department) { return false; }
+        if (!$this->removable($department)) { return false; }
         try {
             $exception = DB::transaction(function () use ($id, $department) {
                 # 删除指定的Department记录

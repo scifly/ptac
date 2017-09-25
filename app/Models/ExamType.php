@@ -86,10 +86,8 @@ class ExamType extends Model {
     public function remove($id) {
         
         $examType = $this->find($id);
-        if (!$examType) {
-            return false;
-        }
-        return $this->removable($this, $id) ? $examType->delete() : false;
+        if (!$examType) { return false; }
+        return $this->removable($examType) ? $examType->delete() : false;
         
     }
     

@@ -7,6 +7,9 @@
             @if (!empty($menu['id']))
                 {{ Form::hidden('id', $menu['id'], ['id' => 'id']) }}
             @endif
+            @if (!empty($menu['position']))
+                {{ Form::hidden('position', $menu['position'], ['id' => 'position']) }}
+            @endif
             {{ Form::hidden('parent_id', isset($parentId) ? $parentId : null, ['id' => 'parent_id']) }}
             <div class="form-group">
                 {!! Form::label('name', '名称',[

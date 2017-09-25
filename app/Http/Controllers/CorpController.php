@@ -65,9 +65,7 @@ class CorpController extends Controller {
     public function show($id) {
         
         $corp = $this->corp->find($id);
-        if (!$corp) {
-            return $this->notFound();
-        }
+        if (!$corp) { return $this->notFound(); }
         return $this->output(__METHOD__, ['corp' => $corp]);
         
     }
@@ -89,7 +87,7 @@ class CorpController extends Controller {
     }
     
     /**
-     * 更新指定的企业记录
+     * 更新企业
      *
      * @param CorpRequest $request
      * @param $id
@@ -97,25 +95,21 @@ class CorpController extends Controller {
      */
     public function update(CorpRequest $request, $id) {
         
-        if (!$this->corp->find($id)) {
-            return $this->notFound();
-        }
+        if (!$this->corp->find($id)) { return $this->notFound(); }
         return $this->corp->modify($request->all(), $id, true)
             ? $this->succeed() : $this->fail();
         
     }
     
     /**
-     * 删除指定的企业记录
+     * 删除企业
      *
      * @param $id
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
         
-        if (!$this->corp->find($id)) {
-            return $this->notFound();
-        }
+        if (!$this->corp->find($id)) { return $this->notFound(); }
         return $this->corp->remove($id, true)
             ? $this->succeed() : $this->fail();
         

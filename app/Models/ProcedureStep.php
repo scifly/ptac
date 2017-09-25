@@ -88,10 +88,8 @@ class ProcedureStep extends Model {
     public function remove($id) {
         
         $procedureStep = $this->find($id);
-        if (!$procedureStep) {
-            return false;
-        }
-        return $procedureStep->removable($this, $id) ? $procedureStep->delete() : false;
+        if (!$procedureStep) { return false; }
+        return $procedureStep->removable($procedureStep) ? $procedureStep->delete() : false;
         
     }
     

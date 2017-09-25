@@ -202,6 +202,10 @@ Route::group(['prefix' => 'subject_modules'], routes('SubjectModuleController'))
 Route::group(['prefix' => 'majors'], routes('MajorController'));
 // 角色/权限 - 角色管理.权限管理
 Route::group(['prefix' => 'groups'], routes('GroupController'));
+Route::group(['prefix' => 'groups'], function() {
+    Route::post('create', 'GroupController@create');
+    Route::post('edit/{id}', 'GroupController@edit');
+});
 // 年级/班级设置 - 年级管理.班级管理
 Route::group(['prefix' => 'grades'], routes('GradeController'));
 Route::group(['prefix' => 'classes'], routes('SquadController'));
