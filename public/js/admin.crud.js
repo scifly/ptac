@@ -3,7 +3,7 @@ var crud = {
     initICheck: function (object) {
         if(typeof object === 'undefined') {
             $(crud.crSelector).iCheck({
-                checkboxClass: 'icheckbox_minimal-blue',
+                checkboxClass: 'icheckbox_square-blue',
                 radioClass: 'iradio_minimal-blue'
             });
         }else {

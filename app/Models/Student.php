@@ -4,13 +4,11 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Http\Requests\StudentRequest;
-use App\Models\CustodianStudent;
-use App\Models\Score;
-use App\Models\ScoreTotal;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Mockery\Exception;
 
 
 /**
@@ -75,6 +73,10 @@ class Student extends Model {
         
     }
     
+    public function custodianStudents() {
+        return $this->hasMany('App\Models\CustodianStudent');
+    }
+    
     /**
      * 获取指定学生对应的用户对象
      *
@@ -103,7 +105,7 @@ class Student extends Model {
      * @return array
      */
     public function students(array $classIds = []) {
-
+        
         $studentList = [];
         if (empty($classIds)) {
             $students = $this->all();
@@ -114,30 +116,29 @@ class Student extends Model {
             $studentList[$student->id] = $student->user->realname;
         }
         return $studentList;
-    
+        
     }
-
-
+    
+    
     /**
      * 保存新创建的监护人记录
      * @param StudentRequest $request
      * @return bool|mixed
      */
     public function store(StudentRequest $request) {
-
+        
         try {
-            $exception = DB::transaction(function() use ($request) {
-
+            $exception = DB::transaction(function () use ($request) {
+                
                 # 获取监护人的ID
                 $custodianIds = $request->input('custodian_ids');
                 # 获取与监护人的关系
                 $relationships = $request->input('relationship');
-                foreach ($custodianIds as $key=>$studentId)
-                {
+                foreach ($custodianIds as $key => $studentId) {
                     # 监护人ID和监护人关系对应的数组
                     $custodianId_relationship[$studentId] = $relationships[$key];
                 }
-
+                
                 $user = $request->input('user');
                 $userData = [
                     'username' => uniqid('custodian_'),
@@ -149,10 +150,10 @@ class Student extends Model {
                     'avatar_url' => '00001.jpg',
                     'userid' => uniqid('custodian_'),
                     'isleader' => 0,
-                    'english_name'=>$user['english_name'],
+                    'english_name' => $user['english_name'],
                     'telephone' => $user['telephone'],
                     'wechatid' => '',
-                    'enabled' =>$user['enabled']
+                    'enabled' => $user['enabled']
                 ];
                 $user = new User();
                 $u = $user->create($userData);
@@ -169,7 +170,7 @@ class Student extends Model {
                     'enabled' => 1
                 ];
                 $mobiles = $request->input('mobile');
-                if($mobiles){
+                if ($mobiles) {
                     $mobileModel = new Mobile();
                     foreach ($mobiles as $k => $mobile) {
                         $mobileData = [
@@ -180,27 +181,26 @@ class Student extends Model {
                         ];
                         $mobileModel->create($mobileData);
                     }
-
+                    
                     unset($mobileModel);
                 }
-
+                
                 # 向student表添加数据
                 $Student = new Student();
                 $s = $Student->create($studentData);
                 unset($Student);
-
-
+                
+                
                 # 向部门用户表添加数据
                 $departmentUser = new DepartmentUser();
                 $departmentIds = $request->input('selectedDepartments');
-                $departmentUser ->storeByUserId($u->id, $departmentIds);
+                $departmentUser->storeByUserId($u->id, $departmentIds);
                 unset($departmentUser);
-
+                
                 # 向监护人学生表中添加数据
                 $custodianStudent = new CustodianStudent();
-
-                if($custodianId_relationship!=null)
-                {
+                
+                if ($custodianId_relationship != null) {
                     $custodianStudent->storeByStudentId($s->id, $custodianId_relationship);
                 }
                 unset($custodianStudent);
@@ -209,10 +209,10 @@ class Student extends Model {
         } catch (Exception $e) {
             return false;
         }
-
+        
     }
-
-
+    
+    
     /**
      * 返回学生学号姓名列表
      *
@@ -220,17 +220,17 @@ class Student extends Model {
      * @return array
      */
     public function studentsNum($classIds) {
-
+        
         $studentList = [];
         $students = $this->whereIn('class_id', explode(',', $classIds))->get();
         foreach ($students as $student) {
             $studentList[] = [$student->student_number, $student->user->realname];
         }
         return $studentList;
-
+        
     }
     
-
+    
     /**
      * 更新指定的学生记录
      *
@@ -239,34 +239,35 @@ class Student extends Model {
      * @return bool|mixed
      */
     public function modify(StudentRequest $request, $studentId) {
-
+        
         $student = $this->find($studentId);
-        if (!isset($student)) { return false; }
+        if (!isset($student)) {
+            return false;
+        }
         try {
-            $exception = DB::transaction(function() use($request, $studentId, $student) {
+            $exception = DB::transaction(function () use ($request, $studentId, $student) {
                 # 获取监护人的ID
                 $custodianIds = $request->input('custodian_ids');
                 # 获取与监护人的关系
                 $relationships = $request->input('relationship');
-
-                foreach ($custodianIds as $key=>$studentId)
-                {
+                
+                foreach ($custodianIds as $key => $studentId) {
                     # 监护人ID和监护人关系对应的数组
                     $custodianId_relationship[$studentId] = $relationships[$key];
                 }
                 $userId = $request->input('user_id');
                 $userData = $request->input('user');
                 $user = new User();
-                $user->where('id',$userId)
+                $user->where('id', $userId)
                     ->update([
                         'group_id' => $userData['group_id'],
                         'email' => $userData['email'],
                         'realname' => $userData['realname'],
                         'gender' => $userData['gender'],
                         'isleader' => 0,
-                        'english_name'=>$userData['english_name'],
+                        'english_name' => $userData['english_name'],
                         'telephone' => $userData['telephone'],
-                        'enabled' =>$userData['enabled']
+                        'enabled' => $userData['enabled']
                     ]);
                 unset($user);
                 $studentData = $request->input('student');
@@ -280,12 +281,12 @@ class Student extends Model {
                     'remark' => $studentData['remark'],
                     'enabled' => 1
                 ]);
-
+                
                 $mobiles = $request->input('mobile');
-                if($mobiles) {
+                if ($mobiles) {
                     $mobileModel = new Mobile();
                     $delMobile = $mobileModel->where('user_id', $userId)->delete();
-                    if($delMobile) {
+                    if ($delMobile) {
 //                        dd($mobiles);
                         foreach ($mobiles as $k => $mobile) {
                             $mobileData = [
@@ -299,38 +300,37 @@ class Student extends Model {
                     }
                     unset($mobile);
                 }
-
+                
                 # 向部门用户表添加数据
                 $departmentIds = $request->input('selectedDepartments');
                 $departmentUser = new DepartmentUser();
-                $departmentUser::where('user_id',$userId)->delete();
-                $departmentUser ->storeByUserId($userId, $departmentIds);
+                $departmentUser::where('user_id', $userId)->delete();
+                $departmentUser->storeByUserId($userId, $departmentIds);
                 unset($departmentUser);
                 # 向监护人学生表中添加数据
                 $custodianStudent = new CustodianStudent();
-                $custodianStudent::where('student_id',$studentId)->delete();
+                $custodianStudent::where('student_id', $studentId)->delete();
                 $custodianStudent->storeByStudentId($studentId, $custodianId_relationship);
                 unset($custodianStudent);
             });
-
+            
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
             return false;
         }
-
+        
     }
-
+    
     /**
      * 删除指定的学生记录
      *
      * @param $studentId
      * @return bool|mixed
      */
-    public function remove($studentId)
-    {
-
+    public function remove($studentId) {
+        
         $student = $this->find($studentId);
-
+        
         if (!isset($custodian)) {
             return false;
         }
@@ -344,27 +344,27 @@ class Student extends Model {
                 DepartmentUser::where('user_id', $student['user_id'])->delete();
                 # 删除与指定学生绑定的手机记录
                 Mobile::where('user_id', $student['user_id'])->delete();
-
+                
             });
-
+            
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
             return false;
         }
     }
-
-
-        public function datatable() {
+    
+    
+    public function datatable() {
         
         $columns = [
             ['db' => 'Student.id', 'dt' => 0],
-            ['db' => 'User.realname as username', 'dt' => 1],
+            ['db' => 'User.realname as realname', 'dt' => 1],
             [
                 'db' => 'User.gender as gender', 'dt' => 2,
                 'formatter' => function ($d) {
                     return $d == 1 ? '男' : '女';
                 }
-                ],
+            ],
             ['db' => 'Squad.name as classname', 'dt' => 3],
             ['db' => 'Student.student_number', 'dt' => 4],
             ['db' => 'Student.card_number', 'dt' => 5],
@@ -376,20 +376,21 @@ class Student extends Model {
                 }
             ],
             ['db' => 'Student.id as mobile', 'dt' => 7,
-                'formatter' => function($d) {
-                    $student = Student::whereId($d)->first();
-                    $mobiles = Mobile::where('user_id',$student->user_id)->get();
-                    foreach ($mobiles as $key=>$value){
+                'formatter' => function ($d) {
+                    $student = $this->find($d);
+                    $mobiles = $student->user->mobiles;
+                    $mobile = [];
+                    foreach ($mobiles as $key => $value) {
                         $mobile[] = $value->mobile;
                     }
-                    return implode(',',$mobile);
+                    return implode(',', $mobile);
                 }
             ],
             ['db' => 'Student.birthday', 'dt' => 8,
                 'formatter' => function ($d) {
-                    return substr($d,0,-8);
+                    return substr($d, 0, -8);
                 }
-                ],
+            ],
             ['db' => 'Student.remark', 'dt' => 9],
             ['db' => 'Student.created_at', 'dt' => 10],
             ['db' => 'Student.updated_at', 'dt' => 11],

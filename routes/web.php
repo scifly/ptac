@@ -13,13 +13,13 @@ use Illuminate\Support\Facades\Route;
 |
 */
 Route::auth();
+Route::get('logout','Auth\LoginController@logout');
 // Route::get('/', function() { return 'Dashboard'; });
 Route::get('/', 'HomeController@index');
 Route::get('/home', 'HomeController@index')->name('home');
 
 /** 测试用路由 */
 Route::get('test/index', 'TestController@index');
-Route::get('test/getuser', 'TestController@getUser');
 Route::get('test/create', 'TestController@create');
 Route::get('test', 'TestController@test');
 
@@ -202,6 +202,10 @@ Route::group(['prefix' => 'subject_modules'], routes('SubjectModuleController'))
 Route::group(['prefix' => 'majors'], routes('MajorController'));
 // 角色/权限 - 角色管理.权限管理
 Route::group(['prefix' => 'groups'], routes('GroupController'));
+Route::group(['prefix' => 'groups'], function() {
+    Route::post('create', 'GroupController@create');
+    Route::post('edit/{id}', 'GroupController@edit');
+});
 // 年级/班级设置 - 年级管理.班级管理
 Route::group(['prefix' => 'grades'], routes('GradeController'));
 Route::group(['prefix' => 'classes'], routes('SquadController'));

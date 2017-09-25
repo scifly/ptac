@@ -108,23 +108,6 @@ class StudentController extends Controller {
 
         $selectedDepartments = $this->department->selectedNodes($selectedDepartmentIds);
 
-        # 根据学生Id查询监护人学生表的数据
-        $custodianStudent = $this->custodianStudent->where('student_id',$student->id)->get();
-
-        foreach ($custodianStudent as $key=>$value)
-        {
-            $relationship[$value['custodian_id']] = $value['relationship'];
-        }
-
-        foreach ($student->custodians as $key=>$value)
-            {
-                # 被选中的监护人信息
-                $custodianId = $this->custodian->find($value['id']);
-                # 被选中的监护人
-                $selectedCustodians[$value['id']] = $custodianId->user->realname;
-
-            }
-
         # 查询学生信息
         if (!$student) { return $this->notFound(); }
 
@@ -133,10 +116,9 @@ class StudentController extends Controller {
             'student' => $student,
             'selectedDepartmentIds' => implode(',', $selectedDepartmentIds),
             'selectedDepartments' => $selectedDepartments,
-            'selectedCustodians' => $selectedCustodians,
-            'relationship' => $relationship
+
         ]);
-        
+
     }
     
     /**

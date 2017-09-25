@@ -12,8 +12,9 @@ class Mobiles implements Rule {
     {
         $this->value = $value;
         $mobileModel = new Mobile();
-        $mobile = $mobileModel->where('mobile',$value['mobile'])
-                            ->where('id','!=',$value['id'])
+        if(!isset($value['id'])) { $value['id'] =0; }
+        $mobile = $mobileModel->where('mobile', $value['mobile'])
+                            ->where('id','!=', $value['id'])
                             ->get()->toArray();
         if($mobile || !preg_match(self::PHONEREG, $value['mobile'])) {
             return false;

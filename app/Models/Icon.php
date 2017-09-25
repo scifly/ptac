@@ -113,10 +113,8 @@ class Icon extends Model {
     public function remove($id) {
         
         $icon = $this->find($id);
-        if (!$icon) {
-            return false;
-        }
-        return $icon->removable($this, $id) ? $icon->delete() : false;
+        if (!$icon) { return false; }
+        return $icon->removable($icon) ? $icon->delete() : false;
         
     }
     
