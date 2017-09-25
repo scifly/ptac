@@ -55,7 +55,7 @@ class ScoreTotalController extends Controller {
             'score_total' => $scoreTotal,
             'studentname' => $scoreTotal->student->user->realname,
             'subjects' => $this->subject->subjects($scoreTotal->subject_ids),
-            'na_subjects' => $this->subject->naSubjects($scoreTotal->na_subject_ids),
+            'na_subjects' => $this->subject->subjects($scoreTotal->na_subject_ids),
         ]);
         
     }
