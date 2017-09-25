@@ -24,7 +24,9 @@ class SchoolRequest extends FormRequest {
             'name' => 'required|string|between:6,255|unique:schools,name,' .
                 $this->input('id') . ',id',
             'address' => 'required|string|between:6,255',
+            'department_id' => 'required|integer',
             'corp_id' => 'required|integer',
+            'menu_id' => 'required|integer',
             'school_type_id' => 'required|integer',
             'enabled' => 'required|boolean'
         ];
@@ -39,6 +41,12 @@ class SchoolRequest extends FormRequest {
         }
         if (!isset($input['enabled'])) {
             $input['enabled'] = 0;
+        }
+        if (!isset($input['department_id'])) {
+            $input['department_id'] = 0;
+        }
+        if (!isset($input['menu_id'])) {
+            $input['menu_id'] = 0;
         }
         $this->replace($input);
         

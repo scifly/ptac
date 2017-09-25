@@ -32,6 +32,8 @@ class CustodianComposer {
         }
 
         $view->with([
+            'user' => $this->user->pluck('realname','id'),
+//            'departments' => $this->department->departments([1]),
             'groups' => $this->group->pluck('name', 'id'),
             'students' => $students
         ]);

@@ -3,12 +3,11 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
-use App\Http\Requests\AppRequest;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * App\Models\App
+ * App\Models\App 微信企业应用
  *
  * @property int $id
  * @property string $name 应用名称
@@ -51,42 +50,13 @@ use Illuminate\Database\Eloquent\Model;
 class App extends Model {
     
     protected $fillable = [
-        'name',
-        'description',
-        'agentid',
-        'url',
-        'token',
-        'encodingaeskey',
-        'report_location_flag',
-        'logo_mediaid',
-        'redirect_domain',
-        'isreportuser',
-        'isreportenter',
-        'home_url',
-        'chat_extension_url',
-        'menu',
-        'enabled'
+        'name', 'description', 'agentid',
+        'url', 'token', 'encodingaeskey',
+        'report_location_flag', 'logo_mediaid',
+        'redirect_domain', 'isreportuser',
+        'isreportenter', 'home_url',
+        'chat_extension_url', 'menu', 'enabled'
     ];
-    
-    public function existed(AppRequest $request, $id = NULL) {
-        
-        if (!$id) {
-            $app = $this->where('agentid', $request->input('agentid'))
-                ->orWhere('url', $request->input('url'))
-                ->orWhere('token', $request->input('token'))
-                ->orWhere('encodingaeskey', $request->input('encodingaeskey'))
-                ->first();
-        } else {
-            $app = $this->where('agentid', $request->input('agentid'))
-                ->where('id', '<>', $id)
-                ->orWhere('url', $request->input('url'))
-                ->orWhere('token', $request->input('token'))
-                ->orWhere('encodingaeskey', $request->input('encodingaeskey'))
-                ->first();
-        }
-        return $app ? true : false;
-        
-    }
     
     public function datatable() {
         

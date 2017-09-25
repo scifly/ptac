@@ -14,23 +14,23 @@ use Illuminate\Support\Facades\Request;
  */
 class EducatorAttendanceSettingController extends Controller {
     
-    protected $educatorAttendanceSetting;
+    protected $eas;
     
-    function __construct(EducatorAttendanceSetting $educatorAttendanceSetting) {
+    function __construct(EducatorAttendanceSetting $eas) {
         
-        $this->educatorAttendanceSetting = $educatorAttendanceSetting;
+        $this->eas = $eas;
         
     }
     
     /**
      * 教职员工考勤设置列表
      *
-     * @return \Illuminate\Http\Response
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
         
         if (Request::get('draw')) {
-            return response()->json($this->educatorAttendanceSetting->datatable());
+            return response()->json($this->eas->datatable());
         }
         return parent::output(__METHOD__);
     }
@@ -38,7 +38,7 @@ class EducatorAttendanceSettingController extends Controller {
     /**
      * 创建教职工考勤设置
      *
-     * @return \Illuminate\Http\Response
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function create() {
         
@@ -54,10 +54,8 @@ class EducatorAttendanceSettingController extends Controller {
      */
     public function store(EducatorAttendanceSettingRequest $request) {
         
-        if ($this->educatorAttendanceSetting->existed($request)) {
-            return $this->fail('已经有此记录');
-        }
-        return $this->educatorAttendanceSetting->create($request->all()) ? $this->succeed() : $this->fail();
+        return $this->eas->create($request->all())
+            ? $this->succeed() : $this->fail();
         
     }
     
@@ -65,37 +63,32 @@ class EducatorAttendanceSettingController extends Controller {
      * 教职员工考勤详情
      *
      * @param $id
-     * @return \Illuminate\Http\Response
-     * @internal param EducatorAttendanceSetting $educatorAttendanceSetting
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function show($id) {
         
-        $educatorAttendanceSetting = $this->educatorAttendanceSetting->find($id);
-        if (!$educatorAttendanceSetting) {
+        $eas = $this->eas->find($id);
+        if (!$eas) {
             return $this->notFound();
         }
-        return $this->output(__METHOD__, [
-            'educatorAttendanceSetting' => $educatorAttendanceSetting,
-        ]);
+        return $this->output(__METHOD__, ['eas' => $eas]);
         
     }
     
+    
     /**
      * 编辑教职员工考勤设置
-     *
-     * @param  \App\Models\EducatorAttendanceSetting $educatorAttendanceSetting
      * @param $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function edit(EducatorAttendanceSetting $educatorAttendanceSetting, $id) {
+    public function edit($id) {
         
-        $educatorAttendanceSetting = $this->educatorAttendanceSetting->find($id);
-        if (!$educatorAttendanceSetting) {
+        $eas = $this->eas->find($id);
+        if (!$eas) {
             return $this->notFound();
         }
-        return $this->output(__METHOD__, [
-            'educatorAttendanceSetting' => $educatorAttendanceSetting,
-        ]);
+        
+        return $this->output(__METHOD__, ['eas' => $eas]);
     }
     
     /**
@@ -107,14 +100,12 @@ class EducatorAttendanceSettingController extends Controller {
      */
     public function update(EducatorAttendanceSettingRequest $request, $id) {
         
-        $educatorAttendanceSetting = $this->educatorAttendanceSetting->find($id);
-        if (!$educatorAttendanceSetting) {
+        $eas = $this->eas->find($id);
+        if (!$eas) {
             return $this->notFound();
         }
-        if ($this->$educatorAttendanceSetting->existed($request, $id)) {
-            return $this->fail('已经有此记录');
-        }
-        return $educatorAttendanceSetting->update($request->all()) ? $this->succeed() : $this->fail();
+        return $eas->update($request->all())
+            ? $this->succeed() : $this->fail();
         
     }
     
@@ -126,11 +117,12 @@ class EducatorAttendanceSettingController extends Controller {
      */
     public function destroy($id) {
         
-        $educatorAttendanceSetting = $this->educatorAttendanceSetting->find($id);
-        if (!$educatorAttendanceSetting) {
+        $eas = $this->eas->find($id);
+        if (!$eas) {
             return $this->notFound();
         }
-        return $educatorAttendanceSetting->delete() ? $this->succeed() : $this->fail();
+        return $eas->delete()
+            ? $this->succeed() : $this->fail();
         
     }
     

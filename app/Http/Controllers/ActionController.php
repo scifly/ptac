@@ -4,11 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ActionRequest;
 use App\Models\Action;
-use App\Models\ActionType;
+use App\Models\School;
 use Illuminate\Support\Facades\Request;
 
 /**
- * Action
+ * 功能
  *
  * Class ActionController
  * @package App\Http\Controllers
@@ -19,72 +19,40 @@ class ActionController extends Controller {
     
     function __construct(Action $action) {
         
+        // $this->middleware(['auth', 'CheckRole']);
         $this->action = $action;
         
     }
     
     /**
-     * 显示Action列表
+     * 功能列表
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
-
+        
         if (Request::get('draw')) {
             return response()->json($this->action->datatable());
         }
-        if (!$this->action->scan()) { return parent::notFound(); }
+        if (!$this->action->scan()) {
+            return parent::notFound();
+        }
         return parent::output(__METHOD__);
         
     }
     
     /**
-     * 显示创建Action记录的表单
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function create() {
-
-        return parent::output(__METHOD__);
-        
-    }
-    
-    /**
-     * 保存新创建的action记录
-     *
-     * @param ActionRequest $request
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function store(ActionRequest $request) {
-        
-        return $this->action->store($request) ? parent::succeed() : parent::fail();
-        
-    }
-    
-    /**
-     * 显示指定的action记录详情
+     * 编辑功能
      *
      * @param $id
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
-     */
-    public function show($id) {
-        
-        $action = $this->action->find($id);
-        if (!$action) { return parent::notFound(); }
-        return parent::output(__METHOD__, ['action' => $action]);
-        
-    }
-    
-    /**
-     * 显示编辑指定action记录的表单
-     *
-     * @param $id
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function edit($id) {
         
         $action = $this->action->find($id);
-        if (!$action) { return parent::notFound(); }
+        if (!$action) {
+            return parent::notFound();
+        }
         $ids = $action->where('id', $id)
             ->get(['action_type_ids'])
             ->toArray()[0]['action_type_ids'];
@@ -94,7 +62,7 @@ class ActionController extends Controller {
             $selectedActionTypes = NULL;
         } else {
             foreach ($actionTypeIds as $actionTypeId) {
-                $actionType = ActionType::whereId($actionTypeId)->first()->toArray();
+                $actionType = School::whereId($actionTypeId)->first()->toArray();
                 $selectedActionTypes[$actionTypeId] = $actionType['name'];
             }
         }
@@ -107,7 +75,7 @@ class ActionController extends Controller {
     }
     
     /**
-     * 更新指定的action记录
+     * 更新功能
      *
      * @param ActionRequest $request
      * @param $id
@@ -116,22 +84,10 @@ class ActionController extends Controller {
     public function update(ActionRequest $request, $id) {
         
         $action = $this->action->find($id);
-        if (!$action) { return parent::notFound(); }
+        if (!$action) {
+            return parent::notFound();
+        }
         return $action->update($request->all()) ? parent::succeed() : parent::fail();
-        
-    }
-    
-    /**
-     * 删除指定的action记录
-     *
-     * @param $id
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function destroy($id) {
-
-        $action = $this->action->find($id);
-        if (!$action) { return parent::notFound(); }
-        return $action->delete() ? parent::succeed() : parent::fail();
         
     }
     

@@ -19,19 +19,26 @@ class SubjectModuleRequest extends FormRequest {
      */
     public function rules() {
         return [
-            'name' => 'required|string|max:20|min:2',
-            'weight' => 'required|integer',
+            'name' => 'required|string|between:2,20|unique:subject_modules,name,' .
+                $this->input('id') . ',id,' .
+                'subject_id,' . $this->input('subject_id') . ',' .
+                'weight,' . $this->input('weight'),
+            'weight' => 'required|numeric',
+        
         ];
     }
     
     public function messages() {
+        
         return [
-            'name.required' => '名称不能为空!',
-            'name.max' => '名称长度最大为32位!',
-            'name.min' => '名称不能少于2个字符!',
-            'weight.required' => '权重不能为空!',
-            'weight.integer' => '权重只能为数字!',
+            'name.required' => '科目名称不能为空',
+            'name.between' => '科目名称应该在2~20个字符之间',
+            'name.unique' => '已有该记录',
+            'weight.required' => '次分类权重不能为空',
+            'weight.numeric' => '次分类权重必须为数字'
+        
         ];
+        
     }
     
     protected function prepareForValidation() {

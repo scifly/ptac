@@ -6,10 +6,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class ExamTypeRequest extends FormRequest {
     
-    protected $rules = [
-        'name' => 'required|string|max:255|unique:exam_types',
-        'remark' => 'required|string|max:255',
-    ];
     protected $strings_key = [
         'name' => '考试类型',
         'remark' => '备注',
@@ -21,7 +17,6 @@ class ExamTypeRequest extends FormRequest {
         'unique' => '不唯一',
     ];
     
-    
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -30,6 +25,7 @@ class ExamTypeRequest extends FormRequest {
     public function authorize() { return true; }
     
     public function messages() {
+        
         $rules = $this->rules();
         $k_array = $this->strings_key;
         $v_array = $this->strings_val;
@@ -44,11 +40,21 @@ class ExamTypeRequest extends FormRequest {
                 $array[$key . '.' . $v] = $k_array[$key] . $v_array[$v];
             }
         }
-        
         return $array;
+        
     }
     
-    public function rules() { return $this->rules; }
+    public function rules() {
+        
+        return [
+            'name' => 'required|string|max:255|unique:exam_types,name,' .
+                $this->input('id') . ',id,' .
+                'school_id,' . $this->input('school_id'),
+            'school_id' => 'required|integer',
+            'remark' => 'required|string|max:255',
+        ];
+        
+    }
     
     public function wantsJson() { return true; }
     
@@ -62,5 +68,6 @@ class ExamTypeRequest extends FormRequest {
             $input['enabled'] = 0;
         }
         $this->replace($input);
+        
     }
 }

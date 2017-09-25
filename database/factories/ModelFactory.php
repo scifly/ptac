@@ -13,23 +13,22 @@
 */
 
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
-$factory->define(App\Models\User::class, function (Faker\Generator $faker) {
-    static $password;
-
-    return [
-        'group_id' => 1 ,
-        'username' => $faker->name,
-        'email' => $faker->unique()->safeEmail,
-        'password' => $password ?: $password = bcrypt('secret'),
-        'gender' => 1,
-        'realname' => $faker->name,
-        'avatar_url' => "/image",
-        'enabled' => 1,
-        'userid' => 1,
-        'department_ids' => "1,2",
-
-    ];
-});
+//$factory->define(App\Models\User::class, function (Faker\Generator $faker) {
+//    static $password;
+//
+//    return [
+//        'group_id' => 1 ,
+//        'username' => $faker->name,
+//        'email' => $faker->unique()->safeEmail,
+//        'password' => $password ?: $password = bcrypt('secret'),
+//        'gender' => rand(0,1),
+//        'realname' => $faker->name,
+//        'avatar_url' => "/image/001.jpg",
+//        'enabled' => 1,
+//        'userid' => uniqid('wx_'),
+//
+//    ];
+//});
 
 $factory->define(App\Models\SchoolType::class, function (Faker\Generator $faker) {
     
@@ -158,14 +157,13 @@ $factory->define(App\Models\User::class, function (Faker\Generator $faker) {
         'group_id' => 1,
         'username' => $faker->name,
         'password' => md5('123456'),
-        'gender' => 1,
+        'gender' => rand(0,1),
         'realname' => $faker->name,
         'avatar_url' => 'http://www.baidu.com',
         'remember_token' => '454564fdafdafadfsa',
         'email' => '18513094620@qq.com',
         'wechatid' => 'fdsfds45454',
-        'userid' => rand(1,5).",".rand(5,10),
-        'department_ids' =>rand(1,5).",".rand(5,10),
+        'userid' => uniqid('wx_'),
         'enabled' => 1,
     ];
 });
@@ -187,7 +185,7 @@ $factory->define(App\Models\Student::class, function (Faker\Generator $faker) {
         'card_number' => $faker->creditCardNumber,
         'oncampus' => 1,
         'birthday' => $faker->date(),
-        'remark' => $faker->sentence(10),
+        'remark' => '测试',
         'enabled' => 1
     ];
 });
@@ -294,11 +292,11 @@ $factory->define(App\Models\EducatorClass::class, function (Faker\Generator $fak
 
 
 $factory->define(App\Models\CustodianStudent::class, function (Faker\Generator $faker) {
-
+    $relationship = ['父子','父女','母子','母女'];
     return [
         'custodian_id' => rand(1, 10),
         'student_id' => rand(1, 10),
-        'relationship' => '父子',
+        'relationship' => $relationship[rand(0,3)],
         'enabled' =>1
 
     ];
@@ -411,3 +409,33 @@ $factory->define(App\Models\Major::class, function (Faker\Generator $faker) {
     ];
 });
 
+$factory->define(App\Models\MajorSubject::class, function (Faker\Generator $faker) {
+    return [
+        'major_id' =>rand(1,20),
+        'subject_id' =>rand(1,20),
+
+    ];
+});
+
+$factory->define(App\Models\Mobile::class, function (Faker\Generator $faker) {
+    $mobile = [
+        '13408393001','13408393002','13408393003', '13408393004','13408393005',
+        '13408393006','13408393007','13408393008','13408393009', '13408393010',
+    ];
+    return [
+        'user_id' =>rand(1,20),
+        'mobile' =>$mobile[rand(0,9)],
+        'enabled' => 1,
+        'isdefault' => 1
+
+    ];
+});
+
+$factory->define(App\Models\DepartmentUser::class, function (Faker\Generator $faker) {
+    return [
+        'department_id' =>rand(0,19),
+        'user_id' =>rand(0,19),
+        'enabled' => 1,
+
+    ];
+});

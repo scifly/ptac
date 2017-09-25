@@ -32,11 +32,13 @@ class TabController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
-
+        
         if (Request::get('draw')) {
             return response()->json($this->tab->datatable());
         }
-        if (!$this->tab->scan()) { return parent::notFound(); }
+        if (!$this->tab->scan()) {
+            return parent::notFound();
+        }
         return parent::output(__METHOD__);
         
     }
@@ -47,8 +49,10 @@ class TabController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function create() {
-
-        return parent::output(__METHOD__, ['menus' => $this->menu->leaves(1)]);
+        
+        return parent::output(__METHOD__, [
+            'menus' => $this->menu->leaves(1)
+        ]);
         
     }
     
@@ -59,8 +63,9 @@ class TabController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(TabRequest $request) {
-    
-        return $this->tab->store($request) ? parent::succeed() : parent::fail();
+        
+        return $this->tab->store($request->all())
+            ? parent::succeed() : parent::fail();
         
     }
     
@@ -71,9 +76,11 @@ class TabController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function show($id) {
-
+        
         $tab = $this->tab->find($id);
-        if (!$tab) { return parent::notFound(); };
+        if (!$tab) {
+            return parent::notFound();
+        };
         return parent::output(__METHOD__, ['tab' => $tab]);
         
     }
@@ -87,7 +94,9 @@ class TabController extends Controller {
     public function edit($id) {
         
         $tab = $this->tab->find($id);
-        if (!$tab) { return parent::notFound(); }
+        if (!$tab) {
+            return parent::notFound();
+        }
         $tabMenus = $tab->menus;
         $selectedMenus = [];
         foreach ($tabMenus as $menu) {
@@ -111,8 +120,11 @@ class TabController extends Controller {
     public function update(TabRequest $request, $id) {
         
         $tab = $this->tab->find($id);
-        if (!$tab) { return parent::notFound(); }
-        return $this->tab->modify($request, $id) ? parent::succeed() : parent::fail();
+        if (!$tab) {
+            return parent::notFound();
+        }
+        return $this->tab->modify($request->all(), $id)
+            ? parent::succeed() : parent::fail();
         
     }
     
@@ -123,10 +135,13 @@ class TabController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
-
+        
         $tab = $this->tab->find($id);
-        if (!$tab) { return parent::notFound(); }
-        return $this->tab->remove($id) ? parent::succeed() : parent::fail();
+        if (!$tab) {
+            return parent::notFound();
+        }
+        return $this->tab->remove($id)
+            ? parent::succeed() : parent::fail();
         
     }
     

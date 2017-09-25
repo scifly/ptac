@@ -3,11 +3,10 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
-use App\Models\User;
+use App\Helpers\ModelTrait;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
-use App\Http\Requests\GroupRequest;
 
 /**
  * App\Models\Group
@@ -29,36 +28,69 @@ use App\Http\Requests\GroupRequest;
  */
 class Group extends Model {
     
+    use ModelTrait;
+    
     protected $table = 'groups';
     
     protected $fillable = [
-        'name', 'remark', 'enabled'
+        'name', 'school_id', 'remark', 'enabled'
     ];
     
+    /**
+     * 获取指定角色下的所有用户对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function users() { return $this->hasMany('App\Models\User'); }
-
-    public function existed(GroupRequest $request, $id = NULL) {
-
-        if (!$id) {
-            $group = $this->where('name', $request->input('name'))
-                ->first();
-        } else {
-            $group = $this->where('name', $request->input('name'))
-                ->where('id', '<>' , $id)
-                ->first();
-        }
+    
+    /**
+     * 返回指定角色所属的学校对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function school() { return $this->belongsTo('App\Models\School'); }
+    
+    /**
+     * 保存角色
+     *
+     * @param array $data
+     * @return bool
+     */
+    public function store(array $data) {
+        
+        $group = $this->create($data);
         return $group ? true : false;
-
+        
     }
     
     /**
-     * 根据角色名称获取角色对象
-     * @param $groupName
-     * @return Model|null|static
+     * 更新角色
+     *
+     * @param array $data
+     * @param $id
+     * @return bool
      */
-    public function group($groupName) {
+    public function modify(array $data, $id) {
         
-        return $this->where('name', $groupName)->first();
+        $group = $this->find($id);
+        if (!$group) {
+            return false;
+        }
+        return $group->update($data) ? true : false;
+        
+    }
+    
+    /**
+     * 删除角色
+     *
+     * @param $id
+     * @return bool
+     */
+    public function remove($id) {
+        
+        $group = $this->find($id);
+        if (!$group) { return false; }
+        return $this->removable($group) ? $group->delete() : false;
         
     }
     
@@ -78,7 +110,6 @@ class Group extends Model {
             ]
         
         ];
-        
         return Datatable::simple($this, $columns);
         
     }

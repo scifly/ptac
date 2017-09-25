@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>test</title>
-    <link rel="stylesheet" href="{{ URL::asset('css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ URL::asset('Css') }}">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="{{ URL::asset('css/font-awesome.min.css') }}">
     <!-- Ionicons -->
@@ -25,13 +25,14 @@
                 <div class="col-lg-12">
                     <div class="nav-tabs-custom">
                         <ul class="nav nav-tabs">
-                        @foreach ($tabs as $tab)
-                            <li @if($tab['active']) class="active" @endif>
-                                <a href="#{{ $tab['id'] }}" data-toggle="tab" data-url="{{ $tab['url'] }}" class="tab">
-                                    {{ $tab['name'] }}
-                                </a>
-                            </li>
-                        @endforeach
+                            @foreach ($tabs as $tab)
+                                <li @if($tab['active']) class="active" @endif>
+                                    <a href="#{{ $tab['id'] }}" data-toggle="tab" data-url="{{ $tab['url'] }}"
+                                       class="tab">
+                                        {{ $tab['name'] }}
+                                    </a>
+                                </li>
+                            @endforeach
                         </ul>
                         <div class="tab-content">
                             @foreach ($tabs as $tab)

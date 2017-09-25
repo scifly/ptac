@@ -5,7 +5,6 @@ namespace App\Models;
 use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use App\Http\Requests\StudentAttendanceSettingRequest;
 
 /**
  * App\Models\StudentAttendanceSetting
@@ -35,6 +34,8 @@ use App\Http\Requests\StudentAttendanceSettingRequest;
  * @method static Builder|StudentAttendanceSetting whereStart($value)
  * @method static Builder|StudentAttendanceSetting whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property-read \App\Models\Grade $grade
+ * @property-read \App\Models\Semester $semester
  */
 class StudentAttendanceSetting extends Model {
     //
@@ -50,20 +51,18 @@ class StudentAttendanceSetting extends Model {
         'inorout',
         'msg_template',
     ];
-
-    public function grade()
-    {
+    
+    public function grade() {
         return $this->belongsTo('App\Models\Grade');
     }
-
-    public function semester()
-    {
-        return $this->belongsTo('App\Models\Semester','semester_id','id');
+    
+    public function semester() {
+        return $this->belongsTo('App\Models\Semester', 'semester_id', 'id');
     }
-
-
+    
+    
     public function datatable() {
-
+        
         $columns = [
             ['db' => 'StudentAttendanceSetting.id', 'dt' => 0],
             ['db' => 'StudentAttendanceSetting.name', 'dt' => 1],
@@ -72,7 +71,7 @@ class StudentAttendanceSetting extends Model {
             [
                 'db' => 'StudentAttendanceSetting.ispublic', 'dt' => 4,
                 'formatter' => function ($d) {
-                     return $d == 1 ? '是' : '否';
+                    return $d == 1 ? '是' : '否';
                 }
             ],
             ['db' => 'StudentAttendanceSetting.start', 'dt' => 5],
@@ -100,7 +99,7 @@ class StudentAttendanceSetting extends Model {
                     'Grade.id = StudentAttendanceSetting.grade_id'
                 ]
             ],
-
+            
             [
                 'table' => 'semesters',
                 'alias' => 'Semester',
@@ -110,8 +109,8 @@ class StudentAttendanceSetting extends Model {
                 ]
             ],
         ];
-
+        
         return Datatable::simple($this, $columns, $joins);
-
+        
     }
 }

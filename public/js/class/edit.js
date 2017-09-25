@@ -1,1 +1,1 @@
-$(crud.edit('fromSquad', 'classes'))
+$(crud.edit('fromSquad', 'classes'));

@@ -21,7 +21,7 @@ class MajorController extends Controller {
         
         $this->major = $major;
         $this->subject = $subject;
-    
+        
     }
     
     /**
@@ -60,7 +60,7 @@ class MajorController extends Controller {
     public function store(MajorRequest $request) {
         
         return $this->major->store($request) ? $this->succeed() : $this->fail();
-
+        
     }
     
     /**
@@ -72,7 +72,9 @@ class MajorController extends Controller {
     public function show($id) {
         
         $major = $this->major->find($id);
-        if (!$major) { return $this->notFound(); }
+        if (!$major) {
+            return $this->notFound();
+        }
         return $this->output(__METHOD__, ['major' => $major]);
         
     }
@@ -84,20 +86,20 @@ class MajorController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function edit($id) {
-    
+        
         $major = $this->major->find($id);
         if (!$major) { return $this->notFound(); }
         $majorSubjects = $major->subjects;
         $selectedSubjects = [];
-        foreach($majorSubjects as $subject) {
+        foreach ($majorSubjects as $subject) {
             $selectedSubjects[$subject->id] = $subject->name;
         }
         return $this->output(__METHOD__, [
             'major' => $major,
-            'subjects' => $this->subject->subjects(1),
+//            'subjects' => $this->subject->subjects(1),
             'selectedSubjects' => $selectedSubjects,
         ]);
-
+        
     }
     
     /**
@@ -108,11 +110,13 @@ class MajorController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(MajorRequest $request, $id) {
-    
+        
         $major = $this->major->find($id);
-        if (!$major) { return $this->notFound(); }
+        if (!$major) {
+            return $this->notFound();
+        }
         return $major->modify($request, $id) ? $this->succeed() : $this->fail();
-    
+        
     }
     
     /**
@@ -122,11 +126,13 @@ class MajorController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
-    
+        
         $major = $this->major->find($id);
-        if (!$major) { return $this->notFound(); }
+        if (!$major) {
+            return $this->notFound();
+        }
         return $major->remove($id) ? $this->succeed() : $this->fail();
-    
+        
     }
     
 }

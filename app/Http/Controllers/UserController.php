@@ -68,9 +68,7 @@ class UserController extends Controller {
     public function show($id) {
         
         $user = $this->user->find($id);
-        if (!$user) {
-            return $this->notFound();
-        }
+        if (!$user) { return $this->notFound(); }
         return $this->output(__METHOD__, ['user' => $user]);
         
     }
@@ -84,9 +82,7 @@ class UserController extends Controller {
     public function edit($id) {
         
         $user = $this->user->find($id);
-        if (!$user) {
-            return $this->notFound();
-        }
+        if (!$user) { return $this->notFound(); }
         return $this->output(__METHOD__, ['user' => $user]);
         
     }
@@ -101,9 +97,7 @@ class UserController extends Controller {
     public function update(UserRequest $request, $id) {
         
         $user = $this->user->find($id);
-        if (!$user) {
-            return $this->notFound();
-        }
+        if (!$user) { return $this->notFound(); }
         if ($this->user->existed($request, $id)) {
             return $this->fail('已经有此记录');
         }
@@ -168,6 +162,24 @@ class UserController extends Controller {
     }
     
     /**
+     * 验证文件是否上传成功
+     *
+     * @param $file
+     * @return array
+     */
+    private function checkFile(UploadedFile $file) {
+        
+        if (!$file->isValid()) {
+            return ['status' => false, 'msg' => '文件上传失败'];
+        }
+        if ($file->getClientSize() > $file->getMaxFilesize()) {
+            return ['status' => false, 'msg' => '图片过大'];
+        }
+        return ['status' => true];
+        
+    }
+    
+    /**
      * 将图片路径存入数据库
      *
      * @param $id
@@ -197,24 +209,6 @@ class UserController extends Controller {
             }
         }
         return response()->json($this->result);
-        
-    }
-    
-    /**
-     * 验证文件是否上传成功
-     *
-     * @param $file
-     * @return array
-     */
-    private function checkFile(UploadedFile $file) {
-        
-        if (!$file->isValid()) {
-            return ['status' => false, 'msg' => '文件上传失败'];
-        }
-        if ($file->getClientSize() > $file->getMaxFilesize()) {
-            return ['status' => false, 'msg' => '图片过大'];
-        }
-        return ['status' => true];
         
     }
     

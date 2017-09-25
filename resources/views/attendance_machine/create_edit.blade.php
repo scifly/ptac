@@ -55,7 +55,7 @@
             @include('partials.enabled', [
                 'label' => '是否启用',
                 'id' => 'enabled',
-                'value' => $am['enabled']
+                'value' => isset($am['enabled']) ? $am['enabled'] : NULL
             ])
         </div>
     </div>

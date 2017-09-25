@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\OperatorRequest;
+use App\Models\Department;
 use App\Models\Operator;
+use App\Models\School;
+use App\Models\Team;
 use Illuminate\Support\Facades\Request;
 
 /**
@@ -15,11 +18,16 @@ use Illuminate\Support\Facades\Request;
 class OperatorController extends Controller {
     
     protected $operator;
-    
-    function __construct(Operator $operator) {
+    protected $department;
+    protected $school;
+
+    function __construct(Operator $operator, Department $department, School $school) {
         
         $this->operator = $operator;
-        
+        $this->department = $department;
+        $this->school = $school;
+
+
     }
     
     /**
@@ -28,12 +36,12 @@ class OperatorController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
-    
+        
         if (Request::get('draw')) {
             return response()->json($this->operator->datatable());
         }
         return $this->output(__METHOD__);
-    
+        
     }
     
     /**
@@ -68,7 +76,9 @@ class OperatorController extends Controller {
     public function show($id) {
         
         $operator = $this->operator->find($id);
-        if (!$operator) { return $this->notFound(); }
+        if (!$operator) {
+            return $this->notFound();
+        }
         return $this->output(__METHOD__, ['operator' => $operator]);
         
     }
@@ -82,8 +92,25 @@ class OperatorController extends Controller {
     public function edit($id) {
         
         $operator = $this->operator->find($id);
-        if (!$operator) { return $this->notFound(); }
-        return $this->output(__METHOD__, ['operator' => $operator]);
+        if (!$operator) {
+            return $this->notFound();
+        }
+
+        $selectedDepartmentIds = [];
+
+        foreach ($operator->user->departments as $department) {
+            $selectedDepartmentIds[] = $department->id;
+        }
+
+        $selectedDepartments = $this->department->selectedNodes($selectedDepartmentIds);
+//dd($this->operator->schools($operator->school_ids));
+        return $this->output(__METHOD__, [
+            'operator' => $operator,
+            'mobiles' => $operator->user->mobiles,
+            'selectedSchools' => $this->school->schools($operator->school_ids),
+            'selectedDepartmentIds' => implode(',', $selectedDepartmentIds),
+            'selectedDepartments' => $selectedDepartments,
+        ]);
         
     }
     
@@ -97,7 +124,9 @@ class OperatorController extends Controller {
     public function update(OperatorRequest $request, $id) {
         
         $operator = $this->operator->find($id);
-        if (!$operator) { return $this->notFound(); }
+        if (!$operator) {
+            return $this->notFound();
+        }
         return $this->operator->modify($request, $id) ? $this->succeed() : $this->fail();
         
     }
@@ -111,7 +140,9 @@ class OperatorController extends Controller {
     public function destroy($id) {
         
         $operator = $this->operator->find($id);
-        if (!$operator) { return $this->notFound(); }
+        if (!$operator) {
+            return $this->notFound();
+        }
         return $this->operator->remove($id) ? $this->succeed() : $this->fail();
         
     }

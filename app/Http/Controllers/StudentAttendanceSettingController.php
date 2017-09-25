@@ -68,7 +68,9 @@ class StudentAttendanceSettingController extends Controller {
     public function show($id) {
         
         $sas = $this->sas->find($id);
-        if (!$sas) { return $this->notFound(); }
+        if (!$sas) {
+            return $this->notFound();
+        }
         return $this->output(__METHOD__, [
             'studentAttendanceSetting' => $sas,
         ]);
@@ -84,7 +86,9 @@ class StudentAttendanceSettingController extends Controller {
     public function edit($id) {
         
         $sas = $this->sas->find($id);
-        if (!$sas) { return $this->notFound(); }
+        if (!$sas) {
+            return $this->notFound();
+        }
         return $this->output(__METHOD__, [
             'studentAttendanceSetting' => $sas,
         ]);
@@ -98,10 +102,14 @@ class StudentAttendanceSettingController extends Controller {
      * @param $id
      * @return \Illuminate\Http\JsonResponse
      */
+    
+    
     public function update(StudentAttendanceSettingRequest $request, $id) {
         
         $sas = $this->sas->find($id);
-        if (!$sas) {return $this->notFound(); }
+        if (!$sas) {
+            return $this->notFound();
+        }
         return $sas->update($request->all()) ? $this->succeed() : $this->fail();
         
     }
@@ -115,7 +123,9 @@ class StudentAttendanceSettingController extends Controller {
     public function destroy($id) {
         
         $sas = $this->sas->find($id);
-        if (!$sas) { return $this->notFound(); }
+        if (!$sas) {
+            return $this->notFound();
+        }
         return $sas->delete() ? $this->succeed() : $this->fail();
         
     }

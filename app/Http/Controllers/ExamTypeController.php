@@ -50,7 +50,8 @@ class ExamTypeController extends Controller {
      */
     public function store(ExamTypeRequest $request) {
         
-        return $this->examType->create($request->all()) ? $this->succeed() : $this->fail();
+        return $this->examType->store($request->all())
+            ? $this->succeed() : $this->fail();
         
     }
     
@@ -63,8 +64,12 @@ class ExamTypeController extends Controller {
     public function show($id) {
         
         $examType = $this->examType->find($id);
-        if (!$examType) { return $this->notFound(); }
-        return $this->output(__METHOD__, ['examType' => $examType]);
+        if (!$examType) {
+            return $this->notFound();
+        }
+        return $this->output(__METHOD__, [
+            'examType' => $examType
+        ]);
         
     }
     
@@ -77,9 +82,11 @@ class ExamTypeController extends Controller {
     public function edit($id) {
         
         $examType = $this->examType->find($id);
-        if (!$examType) { return $this->notFound(); }
+        if (!$examType) {
+            return $this->notFound();
+        }
         return $this->output(__METHOD__, ['examType' => $examType]);
-    
+        
     }
     
     /**
@@ -90,10 +97,13 @@ class ExamTypeController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(ExamTypeRequest $request, $id) {
-    
+        
         $examType = $this->examType->find($id);
-        if (!$examType) { return $this->notFound(); }
-        return $examType->update($request->all()) ? $this->succeed() : $this->fail();
+        if (!$examType) {
+            return $this->notFound();
+        }
+        return $examType->modify($request->all(), $id)
+            ? $this->succeed() : $this->fail();
         
     }
     
@@ -106,8 +116,11 @@ class ExamTypeController extends Controller {
     public function destroy($id) {
         
         $examType = $this->examType->find($id);
-        if (!$examType) { return $this->notFound(); }
-        return $examType->delete() ? $this->succeed() : $this->fail();
+        if (!$examType) {
+            return $this->notFound();
+        }
+        return $examType->remove($id)
+            ? $this->succeed() : $this->fail();
         
     }
     

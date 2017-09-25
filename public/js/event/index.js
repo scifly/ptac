@@ -10,7 +10,7 @@ $(function () {
                 title: $.trim($(this).find('span').text()), // use the element's text as the event title
                 id: $(this).find('span').attr('id'),
                 user_id: id
-            }
+            };
             // store the Event Object in the DOM element so we can get to it later
             $(this).data('eventObject', eventObject);
             // make the event draggable using jQuery UI 拖动
@@ -23,23 +23,6 @@ $(function () {
     }
 
     init_events($('#external-events li.external-event'));
-
-    // /**
-    //  * 分离出ajax请求
-    //  */
-    // function ajaxlist(requestType, ajaxUrl, data) {
-    //     $.ajax({
-    //         type: requestType,
-    //         dataType: 'json',
-    //         url: ajaxUrl,
-    //         data: data,
-    //         success: function (result) {
-    //             if (result.statusCode === 200) {
-    //                 }
-    //             }
-    //         }
-    //     })
-    // }
 
     /**
      * 初始化日历事件
@@ -67,8 +50,8 @@ $(function () {
         drop: function (date) {
             var originalEventObject = $(this).data('eventObject');
             var copiedEventObject = $.extend({}, originalEventObject);
-            var $startPicker =  $( ".start-datepicker" );
-            var $endPicker =  $( ".end-datepicker" );
+            var $startPicker = $(".start-datepicker");
+            var $endPicker = $(".end-datepicker");
             //弹窗显示表单
             $('#modal-create-event').modal({backdrop: true});
             //初始化表单中的开始时间和结束时间
@@ -77,17 +60,23 @@ $(function () {
 
             copiedEventObject._token = $('#csrf_token').attr('content');
             //调用日期时间选择器，格式化时间
-            $startPicker.datepicker( "destroy" );
-            $endPicker.datepicker( "destroy" );
+            $startPicker.datepicker("destroy");
+            $endPicker.datepicker("destroy");
+            $startPicker.datepicker( $.datepicker.regional[ "zh-CN" ] );
+            $endPicker.datepicker( $.datepicker.regional[ "zh-CN" ] );
             $startPicker.datetimepicker({
-                dateFormat: 'yy-mm-dd'
+                dateFormat: "yy-mm-dd",
+                showSecond: true,
+                timeFormat: 'hh:mm:ss'
             });
             $endPicker.datetimepicker({
-                dateFormat: 'yy-mm-dd'
+                dateFormat: "yy-mm-dd",
+                showSecond: true,
+                timeFormat: 'hh:mm:ss'
             });
             //点击保存后获取时间值 因页面未刷新需要结束上次on(click)事件
             $('#confirm-add-time').off('click').click(function () {
-                copiedEventObject.start =$startPicker.val();
+                copiedEventObject.start = $startPicker.val();
                 copiedEventObject.end = $endPicker.val();
                 $.ajax({
                     type: 'POST',
@@ -108,6 +97,18 @@ $(function () {
             });
         },
 
+        // /**
+        //  *
+        //  * 日历事件ajax请求
+        //  */
+        // ajaxRequest: function(requestType,url,data){
+        //     $.ajax({
+        //         type: requestType,
+        //         dataType: 'json',
+        //         url: url,
+        //         data: data
+        //     });
+        // },
         /**
          * 日程事件单击事件
          * @returns {boolean}
@@ -122,30 +123,43 @@ $(function () {
                 success: function (result) {
                     if (result.statusCode === 200) {
                         $('.show-form').html(result.message);
+                        $('.start-datepicker').datepicker( $.datepicker.regional[ "zh-CN" ] );
+                        $('.end-datepicker').datepicker( $.datepicker.regional[ "zh-CN" ] );
                         $(".start-datepicker").datetimepicker({
-                            dateFormat: 'yy-mm-dd'
+
+                            dateFormat: "yy-mm-dd",
+                            showSecond: true,
+                            timeFormat: 'hh:mm:ss'
                         });
                         $(".end-datepicker").datetimepicker({
-                            dateFormat: 'yy-mm-dd'
+                            dateFormat: "yy-mm-dd",
+                            showSecond: true,
+                            timeFormat: 'hh:mm:ss'
                         });
+
                         $('#confirm-update').on("click", function () {
-                            var data = $('#formEventEdit').serialize();
-                            data += "&" + "user_id" + "=" + id;
-                            $.ajax({
-                                type: 'PUT',
-                                dataType: 'json',
-                                url: '../events/update/' + event.id,
-                                data: data,
-                                success: function (result) {
-                                    if (result.statusCode === 200) {
-                                        //保存成功
+                            if ($('#formEventEdit').parsley().validate()) {
+                                var data = $('#formEventEdit').serialize();
+                                data += "&" + "user_id" + "=" + id;
+                                $.ajax({
+                                    type: 'PUT',
+                                    dataType: 'json',
+                                    url: '../events/update/' + event.id,
+                                    data: data,
+                                    success: function (result) {
+                                        if (result.statusCode === 200) {
+                                            //保存成功
+                                            $('#calendar').fullCalendar('refetchEvents');
+                                        }
+                                        page.inform(
+                                            '操作结果', result.message,
+                                            result.statusCode === 200 ? page.success : page.failure
+                                        );
                                     }
-                                    page.inform(
-                                        '操作结果', result.message,
-                                        result.statusCode === 200 ? page.success : page.failure
-                                    );
-                                }
-                            });
+                                });
+                            } else {
+                                return false;
+                            }
                         });
                         $('#confirm-delete-event').on("click", function () {
                             var ret = confirm("确定删除当前日程事件？");
@@ -274,7 +288,6 @@ $(function () {
         }
 
         $('.ispublic-form input[name="ispublic"]').change(function () {
-            //console.log($('input[name="iscourse"]:checked').val());
             if ($('.ispublic-form  input[name="ispublic"]:checked').val() == 1) {
                 $(".iscourse-form").show();
             } else {
@@ -283,7 +296,6 @@ $(function () {
         });
 
         $('.iscourse-form input[name="iscourse"]').change(function () {
-            //console.log($('input[name="iscourse"]:checked').val());
             if ($('.iscourse-form input[name="iscourse"]:checked').val() == 1) {
                 $(".educator_id-form").show();
                 $(".subject_id-form").show();
@@ -303,23 +315,29 @@ $(function () {
         });
 
         $('#confirm-create').off('click').click(function () {
-            var data = $('#formEvent').serialize();
-            data += "&" + "user_id" + "=" + id;
-            $.ajax({
-                type: 'POST',
-                dataType: 'json',
-                url: '../events/store',
-                data: data,
-                success: function (result) {
-                    if (result.statusCode === 200) {
-                        var $obj = eval(result.message);
-                        event.append("<span id= '" + $obj.id + "'>" + $obj.title + "</span>");
-                        $('#external-events').prepend(event);
-                        init_events(event);
+            //前端进行表单验证,若通过
+            if ($('#formEvent').parsley().validate()) {
+                var data = $('#formEvent').serialize();
+                data += "&" + "user_id" + "=" + id;
+                $.ajax({
+                    type: 'POST',
+                    dataType: 'json',
+                    url: '../events/store',
+                    data: data,
+                    success: function (result) {
+                        if (result.statusCode === 200) {
+                            var $obj = eval(result.message);
+                            event.append("<span id= '" + $obj.id + "'>" + $obj.title + "</span>");
+                            event.append('<div class="tools"><i class="fa fa-trash-o trash-list"></i></div>');
+                            $('#external-events').append(event);
+                            init_events(event);
+                        }
+                        $('#formEvent')[0].reset();
                     }
-                    $('#formEvent')[0].reset();
-                }
-            })
+                })
+            } else {
+                return false;
+            }
         })
     });
 
@@ -327,12 +345,11 @@ $(function () {
      * 删除列表
      */
     var listId, row;
-    $('.trash-list').off('click').click(function () {
+    $(document).on('click', '.trash-list', function () {
         listId = $(this).parent().prev('span').attr('id');
         row = $(this).parent().parent('li');
         $('#modal-dialog').modal({backdrop: true});
     });
-
     $('#confirm-delete').on('click', function () {
         $.ajax({
             type: 'DELETE',

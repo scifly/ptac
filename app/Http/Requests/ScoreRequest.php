@@ -23,8 +23,8 @@ class ScoreRequest extends FormRequest {
         return [
             'student_id' => 'required|integer|unique:scores,student_id,' .
                 $this->input('id') . ',id,' .
-            'subject_id,' . $this->input('subject_id'). ',' .
-            'exam_id,' . $this->input('exam_id'),
+                'subject_id,' . $this->input('subject_id') . ',' .
+                'exam_id,' . $this->input('exam_id'),
             'score' => 'required|numeric'
         ];
     }

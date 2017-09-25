@@ -30,9 +30,10 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $remark 备注
  * @property-read \App\Models\School $school
  * @method static Builder|Semester whereRemark($value)
+ * @property-read \App\Models\StudentAttendanceSetting $studentAttendanceSetting
  */
 class Semester extends Model {
-
+    
     protected $fillable = [
         'school_id',
         'name',
@@ -41,21 +42,20 @@ class Semester extends Model {
         'end_date',
         'enabled'
     ];
-
+    
     public function school() {
-
+        
         return $this->belongsTo('App\Models\School');
-
+        
     }
-
-
-    public function studentAttendanceSetting()
-    {
-        return $this->hasOne('App\Models\StudentAttendanceSetting','semester_id','id');
+    
+    
+    public function studentAttendanceSetting() {
+        return $this->hasOne('App\Models\StudentAttendanceSetting', 'semester_id', 'id');
     }
-
+    
     public function datatable() {
-
+        
         $columns = [
             ['db' => 'Semester.id', 'dt' => 0],
             ['db' => 'Semester.name as semestername', 'dt' => 1],
@@ -82,7 +82,7 @@ class Semester extends Model {
             ]
         ];
         return Datatable::simple($this, $columns, $joins);
-
+        
     }
-
+    
 }

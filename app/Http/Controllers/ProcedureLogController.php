@@ -3,11 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProcedureLogRequest;
-use App\Models\Media;
 use App\Models\ProcedureLog;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Storage;
+use App\Helpers\ControllerTrait;
 
 /**
  * 申请/审批
@@ -16,17 +16,21 @@ use Illuminate\Support\Facades\Storage;
  * @package App\Http\Controllers
  */
 class ProcedureLogController extends Controller {
-    
+
+    use ControllerTrait;
+
     protected $procedureLog;
     
     function __construct(ProcedureLog $procedureLog) {
         $this->procedureLog = $procedureLog;
     }
-    
+
     /**
      * 我发起的流程审批列表
+     *
+     * @return bool|\Illuminate\Http\JsonResponse
      */
-    public function myProcedure() {
+    public function index() {
         if (Request::get('draw')) {
             $userId = 6;
             //查询我发布的流程最后一条log记录
@@ -42,9 +46,11 @@ class ProcedureLogController extends Controller {
         return $this->output(__METHOD__);
         
     }
-    
+
     /**
      * 待审核的流程审批列表
+     *
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function pending() {
         if (Request::get('draw')) {
@@ -60,13 +66,13 @@ class ProcedureLogController extends Controller {
             return response()->json($this->procedureLog->datatable($where));
             
         }
-        return $this->output(__METHOD__);
-        
     }
-    
-    
+
+
     /**
      * 相关流程列表
+     *
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function related() {
         
@@ -79,14 +85,14 @@ class ProcedureLogController extends Controller {
         return $this->output(__METHOD__);
         
     }
-    
+
     /**
      * 流程审批详情
      *
      * @param $firstLogId
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return bool|\Illuminate\Http\JsonResponse
      */
-    public function procedureInfo($firstLogId) {
+    public function show($firstLogId) {
         
         $userId = 7;
         //根据IDs查询数据
@@ -95,18 +101,18 @@ class ProcedureLogController extends Controller {
             ->where('first_log_id', $firstLogId)
             ->orderBy('id', 'asc')
             ->get();
-        return view('procedure_log.procedure_info', [
-            'js' => 'js/procedure_log/procedure_info.js',
+        return $this->output(__METHOD__, [
+            'js' => 'js/procedure_log/show.js',
             'data' => $data,
             'user_id' => $userId
         ]);
-        
+
     }
     
     /**
      * 发起申请
      *
-     * @return \Illuminate\Http\Response
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function create() {
         
@@ -149,9 +155,11 @@ class ProcedureLogController extends Controller {
         return $this->fail();
         
     }
-    
+
     /**
      * 审批申请
+     *
+     * @return \Illuminate\Http\JsonResponse
      */
     public function decision() {
         $userId = 3;
@@ -208,33 +216,8 @@ class ProcedureLogController extends Controller {
         } else {
             $result['data'] = array();
             $mes = [];
-            foreach ($files as $key => $v) {
-                if ($v->isValid()) {
-                    // 获取文件相关信息
-                    $originalName = $v->getClientOriginalName(); // 文件原名
-                    $ext = $v->getClientOriginalExtension();     // 扩展名
-                    $realPath = $v->getRealPath();   // 临时文件的绝对路径
-                    $type = $v->getClientMimeType();     // 文件类型
-                    // 上传图片
-                    $filename = uniqid() . '.' . $ext;
-                    // 使用我们新建的uploads本地存储空间（目录）
-                    $bool = Storage::disk('uploads')->put($filename, file_get_contents($realPath));
-                    
-                    $filePath = '/storage/app/uploads/' . date('Y-m-d') . '/' . $filename;
-                    $data = [
-                        'path' => $filePath,
-                        'remark' => '流程相关附件',
-                        'media_type_id' => 1,
-                        'enabled' => '1',
-                    ];
-                    $mediaId = Media::insertGetId($data);
-                    $mes [] = [
-                        'id' => $mediaId,
-                        'path' => $filePath,
-                        'type' => $ext,
-                        'filename' => $originalName,
-                    ];
-                }
+            foreach ($files as $file) {
+                $mes []= $this->uploadedMedias($file,'上传审批流程相关文件');
             }
             $result['statusCode'] = 200;
             $result['message'] = '上传成功！';

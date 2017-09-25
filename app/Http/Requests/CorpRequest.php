@@ -24,7 +24,9 @@ class CorpRequest extends FormRequest {
             'name' => 'required|string|between:3,120|unique:corps,name,' .
                 $this->input('id') . ',id,' .
                 'company_id,' . $this->input('company_id'),
-            'corpid' => 'required|string|alpha_num|max:36'
+            'department_id' => 'required|integer',
+            'menu_id' => 'required|integer',
+            'corpid' => 'required|string|alpha_num|max:18'
         ];
         
     }
@@ -51,6 +53,12 @@ class CorpRequest extends FormRequest {
         }
         if (!isset($input['enabled'])) {
             $input['enabled'] = 0;
+        }
+        if (!isset($input['department_id'])) {
+            $input['department_id'] = 0;
+        }
+        if (!isset($input['menu_id'])) {
+            $input['menu_id'] = 0;
         }
         $this->replace($input);
         

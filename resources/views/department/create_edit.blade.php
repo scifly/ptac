@@ -35,11 +35,11 @@
                     ]) !!}
                 </div>
             </div>
-            @include('partials.single_select', [
-                'label' => '所属学校',
-                'id' => 'school_id',
-                'items' => $schools
-            ])
+            {!! Form::hidden(
+                'department_type_id',
+                isset($departmentTypeId) ? $departmentTypeId : null,
+                ['id' => 'department_type_id']
+            ) !!}
             @include('partials.enabled', [
                 'label' => '是否启用',
                 'id' => 'enabled',

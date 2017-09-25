@@ -1,0 +1,1 @@
+$(crud.edit('formAlertType', 'alert_types'));

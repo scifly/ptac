@@ -3,8 +3,6 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
-use App\Http\Requests\TeamRequest;
-use App\Models\School;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -56,14 +54,14 @@ class Team extends Model {
      * @return array
      */
     public function teams(array $teamIds) {
-
+        
         $teams = [];
         foreach ($teamIds as $id) {
             $team = $this->find($id);
             $teams[$team['id']] = $team['name'];
         }
         return $teams;
-
+        
     }
     
     public function datatable() {

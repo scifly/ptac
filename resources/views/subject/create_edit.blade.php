@@ -27,10 +27,10 @@
                 <div class="col-sm-6">
                     {!! Form::text('max_score', null, [
                         'class' => 'form-control',
-                        'placeholder' => '最高分必须是数字',
+                        'placeholder' => '(不超过6个数字含小数点)',
                         'required' => 'true',
-                        'type' => 'integer',
-                        'data-parsley-length' => '[3, 3]'
+                        'type' => 'number',
+                        'data-parsley-length' => '[3, 6]'
                     ]) !!}
                 </div>
             </div>
@@ -41,10 +41,10 @@
                 <div class="col-sm-6">
                     {!! Form::text('pass_score', null, [
                         'class' => 'form-control',
-                        'placeholder' => '及格分必须是数字',
+                        'placeholder' => '(不超过5个数字含小数点)',
                         'required' => 'true',
-                        'type' => 'integer',
-                        'data-parsley-length' => '[2, 2]'
+                        'type' => 'number',
+                        'data-parsley-length' => '[2, 5]'
                     ]) !!}
                 </div>
             </div>

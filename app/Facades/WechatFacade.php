@@ -127,8 +127,6 @@ class Wechat extends Facade {
     # 接收短信回复
     const URL_GET_RESPONSE_SMS = "http://sdk2.028lk.com:9880/sdk2/Get.aspx?CorpID=%s&Pwd=%s";
     
-    protected static function getFacadeAccessor() { return 'Wechat'; }
-    
     /**
      * 获取access_token
      *
@@ -163,6 +161,22 @@ class Wechat extends Facade {
         }
         
         return $accessToken;
+        
+    }
+    
+    static function curlGet($url) {
+        
+        $ch = curl_init();
+        
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        
+        $result = curl_exec($ch);
+        curl_close($ch);
+        
+        return $result;
         
     }
     
@@ -216,6 +230,26 @@ class Wechat extends Facade {
             sprintf(self::URL_GET_USERDETAIL, $accessToken),
             json_encode(['user_ticket' => 'USER_TICKET'])
         );
+        
+    }
+    
+    static function curlPost($url, $post = '') {
+        
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
+        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (compatible; MSIE 5.01; Windows NT 5.0)');
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+        curl_setopt($ch, CURLOPT_AUTOREFERER, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        
+        $result = curl_exec($ch);
+        curl_close($ch);
+        
+        return $result;
         
     }
     
@@ -842,19 +876,6 @@ class Wechat extends Facade {
     }
     
     /**
-     * 自定义菜单 - 删除菜单
-     *
-     * @param $accessToken
-     * @param $agentId
-     * @return mixed json格式 {"errcode":0, "errmsg":"ok"}
-     */
-    function delMenu($accessToken, $agentId) {
-        
-        return self::curlGet(sprintf(self::URL_DEL_MENU, $accessToken, $agentId));
-        
-    }
-    
-    /**
      * 账号激活
      *
      * @param string $corpId 账号名称
@@ -949,39 +970,18 @@ class Wechat extends Facade {
         return self::curlGet(sprintf(self::URL_GET_RESPONSE_SMS, $corpId, $pwd));
     }
     
-    static function curlGet($url) {
-        
-        $ch = curl_init();
-
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-
-        $result = curl_exec($ch);
-        curl_close($ch);
-        
-        return $result;
-        
-    }
+    protected static function getFacadeAccessor() { return 'Wechat'; }
     
-    static function curlPost($url, $post = '') {
+    /**
+     * 自定义菜单 - 删除菜单
+     *
+     * @param $accessToken
+     * @param $agentId
+     * @return mixed json格式 {"errcode":0, "errmsg":"ok"}
+     */
+    function delMenu($accessToken, $agentId) {
         
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
-        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (compatible; MSIE 5.01; Windows NT 5.0)');
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
-        curl_setopt($ch, CURLOPT_AUTOREFERER, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        
-        $result = curl_exec($ch);
-        curl_close($ch);
-        
-        return $result;
+        return self::curlGet(sprintf(self::URL_DEL_MENU, $accessToken, $agentId));
         
     }
     

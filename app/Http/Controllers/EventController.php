@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\EventRequest;
 use App\Models\Event;
 use Illuminate\Support\Facades\Request;
-use Illuminate\Support\Facades\Session;
 
 /**
  * 日历
@@ -15,17 +14,15 @@ use Illuminate\Support\Facades\Session;
  */
 class EventController extends Controller {
     protected $event;
-
+    
     function __construct(Event $event) {
         $this->event = $event;
     }
-
+    
     /**
      * 事件列表
      *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
-     * @internal param $userId
-     * @internal param $id = user_id
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
         
@@ -42,9 +39,9 @@ class EventController extends Controller {
         ]);
         
     }
-
+    
     /**
-     *显示日历事件
+     * 显示日历事件
      *
      * @param $userId
      * @return \Illuminate\Http\Response
@@ -52,9 +49,9 @@ class EventController extends Controller {
     public function calendarEvents($userId) {
         
         return $this->event->showCalendar($userId);
-
+        
     }
-
+    
     /**
      * 新增一个列表事件
      *
@@ -67,7 +64,7 @@ class EventController extends Controller {
         $listDate = $this->event->create($inputEvent);
         return $listDate ? $this->succeed($listDate) : $this->fail();
     }
-
+    
     /**
      * 编辑日程事件的表单
      *
@@ -86,7 +83,7 @@ class EventController extends Controller {
         $data = view('event.show', ['events' => $this->event->find($id)])->render();
         return !empty($data) ? $this->succeed($data) : $this->fail();
     }
-
+    
     /**
      * 更新指定日历事件
      *
@@ -103,14 +100,8 @@ class EventController extends Controller {
             return $this->fail('结束时间必须大于开始时间！');
         }
         //根据角色验证重复冲突
-        if (!$this->event->getRole($input['user_id'])) {
-            if ($this->event->isRepeatTimeUser($input['user_id'], $input['start'], $input['end'], $id)) {
-                return $this->fail('时间有冲突！');
-            }
-        } else {
-            if ($this->event->isRepeatTimeAdmin($input['educator_id'], $input['start'], $input['end'], $id)) {
-                return $this->fail('时间有冲突！');
-            }
+        if ($this->event->isValidateTime($input['user_id'], $input['educator_id'], $input['start'], $input['end'], $id)) {
+            return $this->fail('时间有冲突！');
         }
         $event = $this->event->find($id);
         if (!$event) {
@@ -118,7 +109,7 @@ class EventController extends Controller {
         }
         return $event->update($input) ? $this->succeed() : $this->fail();
     }
-
+    
     /**
      *删除事件包括日历事件和列表事件
      *
@@ -133,7 +124,7 @@ class EventController extends Controller {
         }
         return $event->delete() ? $this->succeed() : $this->fail();
     }
-
+    
     /**
      * 拖动列表添加日历事件
      */
@@ -147,18 +138,12 @@ class EventController extends Controller {
             return $this->fail('结束时间必须大于开始时间！');
         }
         //根据角色验证重复冲突
-        if (!$this->event->getRole($event['user_id'])) {
-            if ($this->event->isRepeatTimeUser($event['user_id'], $event['start'], $event['end'])) {
-                return $this->fail('时间有冲突！');
-            }
-        } else {
-            if ($this->event->isRepeatTimeAdmin($event['educator_id'], $event['start'], $event['end'])) {
-                return $this->fail('时间有冲突！');
-            }
+        if ($this->event->isValidateTime($event['user_id'], $event['educator_id'], $event['start'], $event['end'])) {
+            return $this->fail('时间有冲突！');
         }
         return $this->event->create($event) ? $this->succeed() : $this->fail();
     }
-
+    
     /**
      * 拖动实时保存日历事件
      *
@@ -175,15 +160,10 @@ class EventController extends Controller {
         }
         $event->end = date("Y-m-d H:i:s", strtotime($event->end) + $diffTime);
         //根据角色验证重复冲突
-        if (!$this->event->getRole($event->user_id)) {
-            if ($this->event->isRepeatTimeUser($event->user_id, $event->start, $event->end, $event->id)) {
-                return $this->fail('时间有冲突！');
-            }
-        } else {
-            if ($this->event->isRepeatTimeAdmin($event->educator_id, $event->start, $event->end, $event->id)) {
-                return $this->fail('时间有冲突！');
-            }
+        if ($this->event->isValidateTime($event->user_id, $event->educator_id, $event->start, $event->end, $event->id)) {
+            return $this->fail('时间有冲突！');
         }
         return $event->save() ? $this->succeed() : $this->fail();
     }
+    
 }

@@ -38,9 +38,9 @@ use Illuminate\Notifications\Notifiable;
  * @property int|null $order 部门内的排序值，默认为0。数量必须和department一致，数值越大排序越前面
  * @property string|null $mobile 手机号码
  * @property string|null $avatar_mediaid 成员头像的mediaid，通过多媒体接口上传图片获得的mediaid
- * @property-read \App\Models\Custodian $custodian
- * @property-read \App\Models\Educator $educator
- * @property-read \App\Models\Student $student
+ * @property-read Custodian $custodian
+ * @property-read Educator $educator
+ * @property-read Student $student
  * @method static Builder|User whereAvatarUrl($value)
  * @method static Builder|User whereCreatedAt($value)
  * @method static Builder|User whereEmail($value)
@@ -72,9 +72,9 @@ use Illuminate\Notifications\Notifiable;
  * @property-read Collection|PollQuestionnaireAnswer[] $pollQuestionnaireAnswers
  * @property-read Collection|PollQuestionnaireParticipant[] $pollQuestionnairePartcipants
  * @property-read Collection|PollQuestionnaire[] $pollQuestionnaires
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Department[] $departments
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Mobile[] $mobiles
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Order[] $orders
+ * @property-read Collection|Department[] $departments
+ * @property-read Collection|Mobile[] $mobiles
+ * @property-read Collection|Order[] $orders
  */
 class User extends Authenticatable {
     
@@ -90,7 +90,7 @@ class User extends Authenticatable {
         'group_id', 'username', 'password',
         'email', 'realname', 'gender', 'avatar_url',
         'wechatid', 'userid', 'english_name',
-        'department_ids', 'isleader', 'position',
+        'isleader', 'position',
         'telephone', 'order', 'mobile',
         'avatar_mediaid', 'enabled',
     ];
@@ -193,14 +193,14 @@ class User extends Authenticatable {
      * @return array
      */
     public function users(array $userIds) {
-
+        
         $users = [];
         foreach ($userIds as $id) {
             $user = $this->find($id);
             $users[$user->id] = $user->realname;
         }
         return $users;
-
+        
     }
     
     /**

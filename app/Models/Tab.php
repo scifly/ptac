@@ -3,11 +3,9 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
-use App\Http\Requests\TabRequest;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Mockery\Exception;
 use ReflectionClass;
@@ -32,10 +30,12 @@ use ReflectionClass;
  * @property-read Collection|Menu[] $menus
  * @property int|null $icon_id 图标ID
  * @method static Builder|Tab whereIconId($value)
- * @property-read \App\Models\Icon|null $icon
+ * @property-read Icon|null $icon
  * @property int $action_id 默认加载的Action ID
- * @property-read \App\Models\Action $action
+ * @property-read Action $action
  * @method static Builder|Tab whereActionId($value)
+ * @property string $controller 控制器名称
+ * @method static Builder|Tab whereController($value)
  */
 class Tab extends Model {
     
@@ -111,7 +111,9 @@ HTML;
         foreach ($ctlrDiff as $ctlr) {
             $tab = $this->where('controller', $ctlr)->first();
             if ($tab) {
-                if (!$this->remove($tab->id)) { return false; };
+                if (!$this->remove($tab->id)) {
+                    return false;
+                };
             }
         }
         // create new Tabs or update the existing Tabs
@@ -144,20 +146,35 @@ HTML;
         return true;
         
     }
-
-    private function getIndexActionId($ctlrName) {
+    
+    /**
+     * 移除指定的卡片
+     *
+     * @param $id
+     * @return bool|mixed
+     */
+    public function remove($id) {
         
-        $action = new Action();
-        $a = $actionId = $action::whereEnabled(1)->
-            where('controller', $ctlrName)->
-            where('method', 'index')->first();
-        if (!$a) { return 0; }
-        return $a->id;
+        $tab = $this->find($id);
+        if (!isset($tab)) {
+            return false;
+        }
+        try {
+            $exception = DB::transaction(function () use ($id, $tab) {
+                # 删除指定的卡片记录
+                $tab->delete();
+                # 删除与指定卡片绑定的菜单记录
+                MenuTab::whereTabId($id)->delete();
+            });
+            return is_null($exception) ? true : $exception;
+        } catch (Exception $e) {
+            return false;
+        }
         
     }
     
     private function getControllerComment(ReflectionClass $controller) {
-    
+        
         $comment = $controller->getDocComment();
         $name = 'n/a';
         preg_match_all("#\/\*\*\n\s{1}\*[^\*]*\*#", $comment, $matches);
@@ -170,6 +187,19 @@ HTML;
             }
         }
         return $name;
+        
+    }
+    
+    private function getIndexActionId($ctlrName) {
+        
+        $action = new Action();
+        $a = $actionId = $action::whereEnabled(1)->
+        where('controller', $ctlrName)->
+        where('method', 'index')->first();
+        if (!$a) {
+            return 0;
+        }
+        return $a->id;
         
     }
     
@@ -194,7 +224,7 @@ HTML;
                     $status = $d ? sprintf(self::DT_ON, '已启用') : sprintf(self::DT_OFF, '已禁用');
                     $showLink = sprintf(self::DT_LINK_SHOW, 'show_' . $id);
                     $editLink = sprintf(self::DT_LINK_EDIT, 'edit_' . $id);
-            
+                    
                     return $status . '&nbsp;' . $showLink . '&nbsp;' . $editLink;
                 }
             ]
@@ -225,16 +255,16 @@ HTML;
     /**
      * 保存卡片
      *
-     * @param TabRequest $request
+     * @param array $data
      * @return bool|mixed
      */
-    public function store(TabRequest $request) {
+    public function store(array $data) {
         
         try {
-            $exception = DB::transaction(function() use ($request) {
-                $t = $this->create($request->all());
+            $exception = DB::transaction(function () use ($data) {
+                $t = $this->create($data);
                 $menuTab = new MenuTab();
-                $menuIds = $request->input('menu_ids', []);
+                $menuIds = $data['menu_ids'];
                 $menuTab->storeByTabId($t->id, $menuIds);
             });
             return is_null($exception) ? true : $exception;
@@ -247,46 +277,23 @@ HTML;
     /**
      * 更新指定的卡片
      *
-     * @param Request $request
-     * @param $tabId
+     * @param array $data
+     * @param $id
      * @return bool|mixed
      */
-    public function modify(Request $request, $tabId) {
+    public function modify(array $data, $id) {
         
-        $tab = $this->find($tabId);
-        if (!isset($tab)) { return false; }
-        try {
-            $exception = DB::transaction(function() use($request, $tabId, $tab) {
-                $tab->update($request->all());
-                $menuIds = $request->input('menu_ids', []);
-                $menuTab = new MenuTab();
-                $menuTab::whereTabId($tabId)->delete();
-                $menuTab->storeByTabId($tabId, $menuIds);
-            });
-            
-            return is_null($exception) ? true : $exception;
-        } catch (Exception $e) {
+        $tab = $this->find($id);
+        if (!isset($tab)) {
             return false;
         }
-        
-    }
-    
-    /**
-     * 移除指定的卡片
-     *
-     * @param $tabId
-     * @return bool|mixed
-     */
-    public function remove($tabId) {
-        
-        $tab = $this->find($tabId);
-        if (!isset($tab)) { return false; }
         try {
-            $exception = DB::transaction(function() use ($tabId, $tab) {
-                # 删除指定的卡片记录
-                $tab->delete();
-                # 删除与指定卡片绑定的菜单记录
-                MenuTab::whereTabId($tabId)->delete();
+            $exception = DB::transaction(function () use ($data, $id, $tab) {
+                $tab->update($data);
+                $menuIds = $data['menu_ids'];
+                $menuTab = new MenuTab();
+                $menuTab::whereTabId($id)->delete();
+                $menuTab->storeByTabId($id, $menuIds);
             });
             
             return is_null($exception) ? true : $exception;

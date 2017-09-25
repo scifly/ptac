@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
+use Mockery\Exception;
 
 /**
  * App\Models\MenuTab
@@ -27,45 +29,60 @@ use Illuminate\Database\Eloquent\Model;
 class MenuTab extends Model {
     
     protected $table = 'menus_tabs';
-    protected $fillable = [
-        'menu_id',
-        'tab_id',
-        'tab_order',
-        'enabled'
-    ];
+    
+    protected $fillable = ['menu_id', 'tab_id', 'tab_order', 'enabled'];
     
     public function storeByMenuId($menuId, array $tabIds) {
         
-        foreach ($tabIds as $tabId) {
-            $this->create([
-                'menu_id' => $menuId,
-                'tab_id' => $tabId,
-                'enabled' => 1
-            ]);
+        try {
+            $exception = DB::transaction(function () use ($menuId, $tabIds) {
+                foreach ($tabIds as $tabId) {
+                    $this->create([
+                        'menu_id' => $menuId,
+                        'tab_id' => $tabId,
+                        'enabled' => 1
+                    ]);
+                }
+            });
+            return is_null($exception) ? true : $exception;
+        } catch (Exception $exception) {
+            return false;
         }
         
     }
     
     public function storeByTabId($tabId, array $menuIds) {
         
-        foreach ($menuIds as $menuId) {
-            $this->create([
-                'tab_id' => $tabId,
-                'menu_id' => $menuId,
-                'enabled' => 1
-            ]);
+        try {
+            $exception = DB::transaction(function () use ($tabId, $menuIds) {
+                foreach ($menuIds as $menuId) {
+                    $this->create([
+                        'menu_id' => $menuId,
+                        'tab_id' => $tabId,
+                        'enabled' => 1
+                    ]);
+                }
+            });
+            return is_null($exception) ? true : $exception;
+        } catch (Exception $exception) {
+            return false;
         }
         
     }
     
     public function storeTabRanks($menuId, array $ranks) {
         
-        $result = true;
-        foreach ($ranks as $id => $rank) {
-            $result = $this::whereMenuId($menuId)->where('tab_id', $id)
-                ->update(['tab_order' => $rank + 1]);
+        try {
+            $exception = DB::transaction(function () use ($menuId, $ranks) {
+                foreach ($ranks as $id => $rank) {
+                    $this::whereMenuId($menuId)->where('tab_id', $id)
+                        ->update(['tab_order' => $rank + 1]);
+                }
+            });
+            return is_null($exception) ? true : $exception;
+        } catch (Exception $e) {
+            return false;
         }
-        return $result;
         
     }
     

@@ -4,8 +4,8 @@
     </div>
     <div class="box-body">
         <div class="form-horizontal">
-            @if (!empty($subjectModule['id']))
-                {!! Form::hidden('id', $subjectModule['id'], ['id' => 'id']) !!}
+            @if (!empty($subjectModules['id']))
+                {!! Form::hidden('id', $subjectModules['id'], ['id' => 'id']) !!}
             @endif
             <div class="form-group">
                 {!! Form::label('name', '名称', [
@@ -34,7 +34,8 @@
                         'class' => 'form-control',
                         'placeholder' => '次分类权重是数字',
                         'required' => 'true',
-                        'type' => 'integer',
+                        'type' => 'number',
+                        'data-parsley-length' => '[1, 3]'
                     ]) !!}
                 </div>
             </div>

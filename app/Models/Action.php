@@ -5,7 +5,7 @@ namespace App\Models;
 use App\Facades\DatatableFacade as Datatable;
 use App\Http\Requests\ActionRequest;
 use App\Models\ActionType as ActionType;
-use App\Models\Tab;
+use Doctrine\Common\Inflector\Inflector;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -13,11 +13,10 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Mockery\Exception;
 use ReflectionClass;
-use Doctrine\Common\Inflector\Inflector;
 use ReflectionMethod;
 
 /**
- * App\Models\Action
+ * App\Models\Action 功能
  *
  * @property int $id
  * @property string $name 功能名称
@@ -83,15 +82,9 @@ HTML;
 HTML;
     
     protected $fillable = [
-        'name',
-        'method',
-        'remark',
-        'controller',
-        'view',
-        'route',
-        'js',
-        'action_type_ids',
-        'enabled'
+        'name', 'method', 'remark',
+        'controller', 'view', 'route',
+        'js', 'action_type_ids', 'enabled'
     ];
     // protected $actionType;
     protected $actionTypes;
@@ -114,11 +107,7 @@ HTML;
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function tabs() {
-        
-        return $this->hasMany('App\Models\Tab');
-        
-    }
+    public function tabs() { return $this->hasMany('App\Models\Tab'); }
     
     /**
      * 返回HTTP请求方法中包含GET以及路由中不带参数的action列表
@@ -156,7 +145,7 @@ HTML;
         
         # 创建新的Action记录及卡片绑定记录
         try {
-            $exception = DB::transaction(function() use ($request) {
+            $exception = DB::transaction(function () use ($request) {
                 $this->create($request->all());
             });
             
@@ -177,36 +166,14 @@ HTML;
     public function modify(ActionRequest $request, $actionId) {
         
         $action = $this->find($actionId);
-        if (!isset($action)) { return false; }
+        if (!isset($action)) {
+            return false;
+        }
         try {
-            $exception = DB::transaction(function() use ($request, $actionId, $action) {
+            $exception = DB::transaction(function () use ($request, $actionId, $action) {
                 # 更新指定的Action记录
                 $action->update($request->all());
             });
-            
-            return is_null($exception) ? true : $exception;
-        } catch (Exception $e) {
-            return false;
-        }
-        
-    }
-    
-    /**
-     * 移除指定的Action记录
-     *
-     * @param $actionId
-     * @return bool|mixed
-     */
-    public function remove($actionId) {
-        
-        $action = $this->find($actionId);
-        if (!isset($action)) { return false; }
-        try {
-            $exception = DB::transaction(function() use ($actionId, $action) {
-                # 删除指定的Action记录
-                $action->delete();
-            });
-            
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
             return false;
@@ -226,31 +193,31 @@ HTML;
             ],
             [
                 'db' => 'Action.method', 'dt' => 2,
-                'formatter' => function($d) {
+                'formatter' => function ($d) {
                     return !empty($d) ? sprintf(self::BADGE_GREEN, $d) : self::BADGE_GRAY;
                 }
             ],
             [
                 'db' => 'Action.route', 'dt' => 3,
-                'formatter' => function($d) {
+                'formatter' => function ($d) {
                     return !empty($d) ? sprintf(self::BADGE_YELLOW, $d) : self::BADGE_GRAY;
                 }
             ],
             [
                 'db' => 'Action.controller', 'dt' => 4,
-                'formatter' => function($d) {
+                'formatter' => function ($d) {
                     return !empty($d) ? sprintf(self::BADGE_RED, $d) : self::BADGE_GRAY;
                 }
             ],
             [
                 'db' => 'Action.view', 'dt' => 5,
-                'formatter' => function($d) {
+                'formatter' => function ($d) {
                     return !empty($d) ? sprintf(self::BADGE_LIGHT_BLUE, $d) : self::BADGE_GRAY;
                 }
             ],
             [
                 'db' => 'Action.js', 'dt' => 6,
-                'formatter' => function($d) {
+                'formatter' => function ($d) {
                     return !empty($d) ? sprintf(self::BADGE_MAROON, $d) : self::BADGE_GRAY;
                 }
             ],
@@ -277,6 +244,26 @@ HTML;
         
     }
     
+    /**
+     * 根据ActionType IDs返回Http action名称
+     *
+     * @param $action_type_ids
+     * @return string
+     */
+    private function actionTypes($action_type_ids) {
+        
+        $actionTypes = [];
+        $actionTypeIds = explode(',', $action_type_ids);
+        foreach ($actionTypeIds as $actionTypeId) {
+            $actionType = ActionType::whereId($actionTypeId)->where('enabled', 1)->first();
+            if ($actionType) {
+                $actionTypes[] = $actionType->name;
+            }
+        }
+        return implode(', ', $actionTypes);
+        
+    }
+    
     public function scan() {
         
         $actionType = new ActionType();
@@ -296,7 +283,9 @@ HTML;
         foreach ($ctlrDiff as $ctlr) {
             $actions = $this->where('controller', $ctlr)->get();
             foreach ($actions as $a) {
-                if (!$this->remove($a->id)) { return false; };
+                if (!$this->remove($a->id)) {
+                    return false;
+                };
             }
             # $this->where('controller', $ctlr)->delete();
         }
@@ -339,11 +328,12 @@ HTML;
                 if ($a) {
                     $a->name = $action['name'];
                     $a->route = $action['route'];
+                    $a->view = $action['view'];
                     $a->js = $action['js'];
                     $a->action_type_ids = $action['action_type_ids'];
                     $a->save();
                 } else {
-                    $this->create( [
+                    $this->create([
                         'name' => $action['name'],
                         'method' => $action['method'],
                         'remark' => $action['remark'],
@@ -360,45 +350,8 @@ HTML;
         return true;
     }
     
-    
     /** Helper functions -------------------------------------------------------------------------------------------- */
-    /**
-     * 根据ActionType IDs返回Http action名称
-     *
-     * @param $action_type_ids
-     * @return string
-     */
-    private function actionTypes($action_type_ids) {
-        
-        $actionTypes = [];
-        $actionTypeIds = explode(',', $action_type_ids);
-        foreach ($actionTypeIds as $actionTypeId) {
-            $actionType = ActionType::whereId($actionTypeId)->where('enabled', 1)->first();
-            if ($actionType) {
-                $actionTypes[] = $actionType->name;
-            }
-        }
-        return implode(', ', $actionTypes);
-        
-    }
-    
-    private function getMethodComment(ReflectionClass $controllerObj, ReflectionMethod $method) {
-    
-        $comment = $controllerObj->getMethod($method->getName())->getDocComment();
-        $name = 'n/a';
-        preg_match_all("#\/\*\*\n\s{5}\*[^\*]*\*#", $comment, $matches);
-        if (isset($matches[0][0])) {
-            $name = str_replace(str_split("\n/* "), '', $matches[0][0]);
-        } else {
-            preg_match_all("#\/\*\*\r\n\s{5}\*[^\*]*\*#", $comment, $matches);
-            if (isset($matches[0][0])) {
-                $name = str_replace(str_split("\n/* "), '', $matches[0][0]);
-            }
-        }
-        return $name;
-        
-    }
-    
+
     /**
      * 返回所有控制器的完整路径
      *
@@ -465,6 +418,31 @@ HTML;
     }
     
     /**
+     * 移除指定的Action记录
+     *
+     * @param $actionId
+     * @return bool|mixed
+     */
+    public function remove($actionId) {
+        
+        $action = $this->find($actionId);
+        if (!isset($action)) {
+            return false;
+        }
+        try {
+            $exception = DB::transaction(function () use ($actionId, $action) {
+                # 删除指定的Action记录
+                $action->delete();
+            });
+            
+            return is_null($exception) ? true : $exception;
+        } catch (Exception $e) {
+            return false;
+        }
+        
+    }
+    
+    /**
      * 删除指定控制器中不存在的方法
      *
      * @param $methods
@@ -487,7 +465,9 @@ HTML;
                 ['controller', $controllerName],
                 ['method', $method]
             ])->first();
-            if (!$this->remove($a->id)) { return false; };
+            if (!$this->remove($a->id)) {
+                return false;
+            };
         }
         
         return true;
@@ -525,6 +505,30 @@ HTML;
     }
     
     /**
+     * 获取方法备注名称
+     *
+     * @param ReflectionClass $controllerObj
+     * @param ReflectionMethod $method
+     * @return mixed|string
+     */
+    private function getMethodComment(ReflectionClass $controllerObj, ReflectionMethod $method) {
+        
+        $comment = $controllerObj->getMethod($method->getName())->getDocComment();
+        $name = 'n/a';
+        preg_match_all("#\/\*\*\n\s{5}\*[^\*]*\*#", $comment, $matches);
+        if (isset($matches[0][0])) {
+            $name = str_replace(str_split("\n/* "), '', $matches[0][0]);
+        } else {
+            preg_match_all("#\/\*\*\r\n\s{5}\*[^\*]*\*#", $comment, $matches);
+            if (isset($matches[0][0])) {
+                $name = str_replace(str_split("\n/* "), '', $matches[0][0]);
+            }
+        }
+        return $name;
+        
+    }
+    
+    /**
      * 获取控制器action对应的View路径
      *
      * @param $controller
@@ -543,8 +547,12 @@ HTML;
                     $prefix = ($prefix === 'corps') ? 'corp' : $prefix;
                     $viewPath = $prefix . '.' . $action;
                     break;
+                case 'menuTabs':
+                    $viewPath = 'menu.menu_tabs';
+                    break;
                 default:
                     $viewPath = '';
+                    break;
             }
             return $viewPath;
         }
@@ -630,7 +638,7 @@ HTML;
         if (!in_array($ctlr, $this->excludedControllers)) {
             $prefix = str_singular($this->getTableName($ctlr));
             $prefix = ($prefix === 'corps') ? 'corp' : $prefix;
-            return 'js/' .  $prefix . '/' . $action . '.js';
+            return 'js/' . $prefix . '/' . $action . '.js';
             /*switch ($action) {
                 case 'index':
                 case 'create':

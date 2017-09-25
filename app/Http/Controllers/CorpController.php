@@ -13,19 +13,18 @@ use Illuminate\Support\Facades\Request;
  * @package App\Http\Controllers
  */
 class CorpController extends Controller {
+    
     protected $corp;
-
-    function __construct(Corp $corp) {
-        $this->corp = $corp;
-    }
+    
+    function __construct(Corp $corp) { $this->corp = $corp; }
     
     /**
-     * 显示企业列表
+     * 企业列表
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
-
+        
         if (Request::get('draw')) {
             return response()->json($this->corp->datatable());
         }
@@ -34,7 +33,7 @@ class CorpController extends Controller {
     }
     
     /**
-     * 显示创建企业记录的表单
+     * 创建企业
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
@@ -45,19 +44,20 @@ class CorpController extends Controller {
     }
     
     /**
-     * 保存新创建的企业记录
+     * 保存企业
      *
      * @param CorpRequest $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(CorpRequest $request) {
         
-        return $this->corp->create($request->all()) ? $this->succeed() : $this->fail();
+        return $this->corp->store($request->all(), true)
+            ? $this->succeed() : $this->fail();
         
     }
     
     /**
-     * 显示指定的企业记录详情
+     * 企业详情
      *
      * @param $id
      * @return bool|\Illuminate\Http\JsonResponse
@@ -71,21 +71,23 @@ class CorpController extends Controller {
     }
     
     /**
-     * 显示编辑指定企业记录的表单
+     * 编辑企业
      *
      * @param $id
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function edit($id) {
-    
+        
         $corp = $this->corp->find($id);
-        if (!$corp) { return $this->notFound(); }
+        if (!$corp) {
+            return $this->notFound();
+        }
         return $this->output(__METHOD__, ['corp' => $corp]);
         
     }
     
     /**
-     * 更新指定的企业记录
+     * 更新企业
      *
      * @param CorpRequest $request
      * @param $id
@@ -93,23 +95,23 @@ class CorpController extends Controller {
      */
     public function update(CorpRequest $request, $id) {
         
-        $corp = $this->corp->find($id);
-        if (!$corp) { return $this->notFound(); }
-        return $corp->update($request->all()) ? $this->succeed() : $this->fail();
+        if (!$this->corp->find($id)) { return $this->notFound(); }
+        return $this->corp->modify($request->all(), $id, true)
+            ? $this->succeed() : $this->fail();
         
     }
     
     /**
-     * 删除指定的企业记录
+     * 删除企业
      *
      * @param $id
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
         
-        $corp = $this->corp->find($id);
-        if (!$corp) { return $this->notFound(); }
-        return $corp->delete() ? $this->succeed() : $this->fail();
+        if (!$this->corp->find($id)) { return $this->notFound(); }
+        return $this->corp->remove($id, true)
+            ? $this->succeed() : $this->fail();
         
     }
     

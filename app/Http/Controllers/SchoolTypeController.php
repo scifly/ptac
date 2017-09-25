@@ -17,14 +17,16 @@ class SchoolTypeController extends Controller {
     protected $schoolType;
     
     function __construct(SchoolType $schoolType) {
+        
+        // $this->middleware(['auth', 'checkRole']);
         $this->schoolType = $schoolType;
+        
     }
     
     /**
      * 学校类型列表
      *
-     * @return \Illuminate\Http\Response
-     * @internal param SchoolType $schoolType
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
         
@@ -38,7 +40,7 @@ class SchoolTypeController extends Controller {
     /**
      * 创建学校类型
      *
-     * @return \Illuminate\Http\Response
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function create() {
         
@@ -54,7 +56,8 @@ class SchoolTypeController extends Controller {
      */
     public function store(SchoolTypeRequest $request) {
         
-        return $this->schoolType->create($request->all()) ? parent::succeed() : parent::fail();
+        return $this->schoolType->create($request->all())
+            ? parent::succeed() : parent::fail();
         
     }
     
@@ -68,7 +71,9 @@ class SchoolTypeController extends Controller {
     public function show($id) {
         
         $schoolType = $this->schoolType->find($id);
-        if (!$schoolType) { return parent::notFound(); }
+        if (!$schoolType) {
+            return parent::notFound();
+        }
         return parent::output(__METHOD__, ['schoolType' => $schoolType]);
         
     }
@@ -77,13 +82,14 @@ class SchoolTypeController extends Controller {
      * 编辑学校类型
      *
      * @param $id
-     * @internal param $ \Ap p\Models\SchoolType $schoolType
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function edit($id) {
         
         $schoolType = $this->schoolType->find($id);
-        if (!$schoolType) { return parent::notFound(); }
+        if (!$schoolType) {
+            return parent::notFound();
+        }
         return parent::output(__METHOD__, ['schoolType' => $schoolType]);
         
     }
@@ -93,14 +99,14 @@ class SchoolTypeController extends Controller {
      *
      * @param SchoolTypeRequest $request
      * @param $id
-     * @internal param \Illuminate\Http\Request $request
-     * @internal param SchoolType $schoolType
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(SchoolTypeRequest $request, $id) {
-    
+        
         $schoolType = $this->schoolType->find($id);
-        if (!$schoolType) { return parent::notFound(); }
+        if (!$schoolType) {
+            return parent::notFound();
+        }
         return $schoolType->update($request->all()) ? parent::succeed() : parent::fail();
         
     }
@@ -112,9 +118,11 @@ class SchoolTypeController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
-
+        
         $schoolType = $this->schoolType->find($id);
-        if (!$schoolType) { return parent::notFound(); }
+        if (!$schoolType) {
+            return parent::notFound();
+        }
         return $schoolType->delete() ? parent::succeed() : parent::fail();
         
     }

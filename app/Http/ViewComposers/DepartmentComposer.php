@@ -1,28 +1,25 @@
 <?php
+
 namespace App\Http\ViewComposers;
 
-use App\Models\ActionType;
-use App\Models\Corp;
-use App\Models\School;
+use App\Models\DepartmentType;
 use Illuminate\Contracts\View\View;
 
 class DepartmentComposer {
     
-    protected $corp, $school;
+    protected $departmentType;
     
-    public function __construct(Corp $corp, School $school) {
+    public function __construct(DepartmentType $departmentType) {
         
-        $this->corp = $corp;
-        $this->school = $school;
+        $this->departmentType = $departmentType;
         
     }
     
     public function compose(View $view) {
         
-        $view->with([
-            'corps' => $this->corp->pluck('name', 'id'),
-            'schools' => $this->school->pluck('name', 'id')
-        ]);
+        /*$view->with([
+            'departmentTypes' => $this->departmentType->pluck('name', 'id'),
+        ]);*/
         
     }
     

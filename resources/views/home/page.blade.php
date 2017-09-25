@@ -27,7 +27,7 @@
     <link rel="stylesheet" href="{{ URL::asset('css/procedure_info.css') }}">
     {{--上传--}}
     <link rel="stylesheet" href="{{ URL::asset('css/imgInput.css') }}">
-    <!-- fileinput-->
+    <!-- fileinput-->   
     <link rel="stylesheet" href="{{ URL::asset('js/plugins/fileinput/css/fileinput.min.css') }}">
     <link rel="stylesheet" href="{{ URL::asset('js/plugins/fileinput/themes/explorer/theme.css') }}">
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -161,7 +161,7 @@
                                     <a href="#" class="btn btn-default btn-flat">Profile</a>
                                 </div>
                                 <div class="pull-right">
-                                    <a href="#" class="btn btn-default btn-flat">退出登录</a>
+                                    <a href="{{URL::route('logout')}}" class="btn btn-default btn-flat">退出登录</a>
                                 </div>
                             </li>
                         </ul>
@@ -225,7 +225,8 @@
                         <ul class="nav nav-tabs">
                             @foreach ($tabs as $tab)
                                 <li @if($tab['active']) class="active" @endif>
-                                    <a href="#{{ $tab['id'] }}" data-toggle="tab" data-url="{{ $tab['url'] }}" class="tab">
+                                    <a href="#{{ $tab['id'] }}" data-toggle="tab" data-uri="{{ $tab['url'] }}"
+                                       class="tab">
                                         {{ $tab['name'] }}
                                     </a>
                                 </li>
@@ -233,7 +234,8 @@
                         </ul>
                         <div class="tab-content">
                             @foreach ($tabs as $tab)
-                                <div class="@if($tab['active']) active @endif tab-pane card" id="{{ $tab['id'] }}"></div>
+                                <div class="@if($tab['active']) active @endif tab-pane card"
+                                     id="{{ $tab['id'] }}"></div>
                             @endforeach
                         </div>
                     </div>
@@ -439,6 +441,7 @@
 <script src="{{ URL::asset('js/plugins/datatables/dataTables.checkboxes.min.js') }}"></script>
 <script src="{{ URL::asset('js/admin.crud.js') }}"></script>
 <script src="{{ URL::asset('js/tree.crud.js') }}"></script>
+<script src="{{ URL::asset('js/department.tree.js') }}"></script>
 <!-- fileinput-->
 <script src="{{ URL::asset('js/plugins/fileinput/js/fileinput.min.js') }}"></script>
 <script src="{{ URL::asset('js/plugins/fileinput/js/locales/zh.js') }}"></script>
@@ -446,6 +449,7 @@
 {{--日历--}}
 <script src="{{ URL::asset('js/plugins/fullcalendar/js/jquery-ui.min.js') }}"></script>
 <script src="{{ URL::asset('js/plugins/fullcalendar/js/jquery-ui-timepicker-addon.js') }}"></script>
+<script src="{{ URL::asset('js/plugins/fullcalendar/js/datepicker-zh-CN.js') }}"></script>
 <script src="{{ URL::asset('js/plugins/fullcalendar/js/moment.min.js') }}"></script>
 <script src="{{ URL::asset('js/plugins/fullcalendar/js/fullcalendar.min.js') }}"></script>
 <!-- AdminLTE for demo purposes -->
