@@ -214,6 +214,7 @@ class Educator extends Model {
                     'gender' => $userInputData['gender'],
                     'avatar_url' => '00001.jpg',
                     'userid' => "11111",
+                    'wechatid' => $userInputData['wechatid'],
                     'isleader' => 0,
                     'english_name' => $userInputData['english_name'],
                     'telephone' => $userInputData['telephone'],
@@ -345,11 +346,11 @@ class Educator extends Model {
                     'realname' => $userInputData['realname'],
                     'gender' => $userInputData['gender'],
                     'avatar_url' => '00001.jpg',
-                    'userid' => uniqid('custodian_'),
+                    'userid' => '111111',
+                    'wechatid' => $userInputData['wechatid'],
                     'isleader' => 0,
                     'english_name' => $userInputData['english_name'],
                     'telephone' => $userInputData['telephone'],
-                    'wechatid' => '',
                     'enabled' => $userInputData['enabled']
                 ];
                 $user = new User();
