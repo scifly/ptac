@@ -25,8 +25,8 @@ class ActionGroup extends Model {
                 foreach ($ids as $id) {
                     $this->create([
                         'group_id' => $groupId,
-                        'action_id' => $id['id'],
-                        'enabled' => $id['enabled']
+                        'action_id' => $id,
+                        'enabled' => 1
                     ]);
                 }
             });

@@ -25,8 +25,8 @@ class GroupTab extends Model {
                 foreach ($ids as $id) {
                     $this->create([
                         'group_id' => $groupId,
-                        'tab_id' => $id['id'],
-                        'enabled' => $id['enabled']
+                        'tab_id' => $id,
+                        'enabled' => 1
                     ]);
                 }
             });

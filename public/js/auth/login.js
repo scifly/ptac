@@ -14,9 +14,9 @@ $('#signin').on('click',function (e) {
             if(result.statusCode === 200 )
             {
 
-                 window.location = result['url'];
+                window.location = result['url'];
             }else{
-                alert('用户名或者密码错误!')
+                alert('用户名或者密码错误!');
             }
         }
     })

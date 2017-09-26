@@ -4,9 +4,11 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
+use App\Http\Requests\GroupRequest;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 /**
  * App\Models\Group
@@ -49,18 +51,50 @@ class Group extends Model {
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function school() { return $this->belongsTo('App\Models\School'); }
-    
+
+    public function menus() { return $this->belongsToMany('App\Models\Menu','groups_menus'); }
+
+    public function actions() { return $this->belongsToMany('App\Models\Action','actions_groups'); }
+
+    public function tabs() { return $this->belongsToMany('App\Models\Tab','groups_tabs'); }
+
     /**
      * 保存角色
      *
-     * @param array $data
+     * @param GroupRequest $request
      * @return bool
+     * @internal param array $data
      */
     public function store(array $data) {
-        
-        $group = $this->create($data);
-        return $group ? true : false;
-        
+
+        try {
+            $exception = DB::transaction(function() use ($data) {
+
+                $groupData = [
+                    'name' => $data['name'],
+                    'remark' => $data['remark'],
+                    'enabled' => $data['enabled'],
+                ];
+                $g = $this->create($groupData);
+                # 功能与角色的对应关系
+                $actionIds = $data['acitonId'];
+                $actionGroup = new ActionGroup();
+                $actionGroup->storeByGroupId($g->id,$actionIds);
+                # 功能与菜单的对应关系
+                $menuIds = explode(',',$data['menu_ids']);
+                $groupMenu = new GroupMenu();
+                $groupMenu->storeByGroupId($g->id, $menuIds);
+                # 功能与卡片的对应关系
+                $tabIds = $data['tabId'];
+                $groupTab = new GroupTab();
+                $groupTab->storeByGroupId($g->id, $tabIds);
+
+            });
+            return is_null($exception) ? true : $exception;
+        } catch (Exception $e) {
+            return false;
+        }
+
     }
     
     /**
@@ -71,13 +105,37 @@ class Group extends Model {
      * @return bool
      */
     public function modify(array $data, $id) {
-        
+
         $group = $this->find($id);
-        if (!$group) {
+        if (!$group) { return false; }
+        try {
+            $exception = DB::transaction(function() use ($data, $group ,$id) {
+
+                $groupData = [
+                    'name' => $data['name'],
+                    'remark' => $data['remark'],
+                    'enabled' => $data['enabled'],
+                ];
+                $group->update($groupData);
+                # 功能与角色的对应关系
+                $actionIds = $data['acitonId'];
+                $actionGroup = new ActionGroup();
+                $actionGroup->storeByGroupId($id,$actionIds);
+                # 功能与菜单的对应关系
+                $menuIds = explode(',',$data['menu_ids']);
+                $groupMenu = new GroupMenu();
+                $groupMenu->storeByGroupId($id, $menuIds);
+                # 功能与卡片的对应关系
+                $tabIds = $data['tabId'];
+                $groupTab = new GroupTab();
+                $groupTab->storeByGroupId($id, $tabIds);
+
+            });
+            return is_null($exception) ? true : $exception;
+        } catch (Exception $e) {
             return false;
         }
-        return $group->update($data) ? true : false;
-        
+
     }
     
     /**

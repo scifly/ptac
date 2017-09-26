@@ -81,33 +81,44 @@ class ProcedureLog extends Model {
         'created_at',
         'updated_at',
     ];
-    
+
     /**
-     * 流程日志发起人
+     * 返回审批流程发起者对应的用户对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function initiator_user() {
-        return $this->belongsTo('App\Models\User')->select('id', 'realname');
+    public function initiatorUser() {
+
+        return $this->belongsTo('App\Models\User','initiator_user_id');
+
     }
-    
+
+
     /**
-     * 流程日志操作者
+     * 返回审批流程操作者对应的用户对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function operator_user() {
-        return $this->belongsTo('App\Models\User')->select('id', 'realname');
+    public function operatorUser() {
+        return $this->belongsTo('App\Models\User','operator_user_id');
     }
-    
+
     /**
-     * 流程日志与流程
+     * 返回指定流程日志所属的流程对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function procedure() {
         return $this->belongsTo('App\Models\Procedure');
     }
-    
+
     /**
-     * 流程日志与流程步骤
+     * 返回指定流程日志所属的流程步骤对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function procedure_step() {
-        return $this->belongsTo('App\Models\ProcedureStep');
+    public function procedureStep() {
+        return $this->belongsTo('App\Models\ProcedureStep','procedure_step_id');
     }
     
     /**
@@ -134,12 +145,12 @@ class ProcedureLog extends Model {
             ['db' => 'ProcedureLog.first_log_id', 'dt' => 0],
             [
                 'db' => 'ProcedureLog.initiator_user_id', 'dt' => 1,
-                'formatter' => function ($d, $row) {
+                'formatter' => function ($d) {
                     return $this->get_user($d)->realname;
                 }
             ],
-            ['db' => 'Procedures.name as procedurename', 'dt' => 2],
-            ['db' => 'ProcedureStep.name procedurestepname', 'dt' => 3],
+            ['db' => 'Procedures.name as procedure_name', 'dt' => 2],
+            ['db' => 'ProcedureStep.name procedure_step_name', 'dt' => 3],
             ['db' => 'ProcedureLog.initiator_msg', 'dt' => 4],
             ['db' => 'ProcedureLog.updated_at', 'dt' => 5],
             [

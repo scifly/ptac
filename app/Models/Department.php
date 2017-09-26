@@ -213,9 +213,9 @@ class Department extends Model {
         $department = $this->create($data);
         if ($department && $fireEvent) {
             event(new DepartmentCreated($department));
-            return true;
+            return $department;
         }
-        return $department ? true : false;
+        return $department ? $department : false;
         
     }
     
@@ -233,9 +233,9 @@ class Department extends Model {
         $updated = $department->update($data);
         if ($updated && $fireEvent) {
             event(new DepartmentUpdated($department));
-            return true;
+            return $department;
         }
-        return $updated ? true : false;
+        return $updated ? $department : false;
         
     }
     
@@ -410,7 +410,7 @@ class Department extends Model {
             $department = Department::find($departmentId);
             foreach ($department->users as $user) {
                 $departmentUsers[] = [
-                    'id' => 'UserId_' . $user['id'],
+                    'id' => $departmentId . 'UserId_' . $user['id'],
                     'parent' => $departmentId,
                     'text' => $user['username'],
                     'icon' => 'fa fa-user',
@@ -419,6 +419,9 @@ class Department extends Model {
             }
         }
         $data = [];
+        foreach ($departmentUsers as $departmentUser){
+            $data[] = $departmentUser;
+        }
         foreach ($departments as $department) {
             $parentId = isset($department['parent_id']) && in_array($department['parent_id'], $departmentParentIds)? $department['parent_id'] : '#';
             $text = $department['name'];
@@ -440,11 +443,7 @@ class Department extends Model {
                 'type' => $type
             ];
         }
-        foreach ($departmentUsers as $departmentUser){
-        $data[] = $departmentUser;
-        }
         return $data;
-
     }
 
     /**
