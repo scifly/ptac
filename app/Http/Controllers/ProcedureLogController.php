@@ -30,7 +30,7 @@ class ProcedureLogController extends Controller {
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
-    public function myProcedure() {
+    public function index() {
         if (Request::get('draw')) {
             $userId = 6;
             //查询我发布的流程最后一条log记录
@@ -66,8 +66,6 @@ class ProcedureLogController extends Controller {
             return response()->json($this->procedureLog->datatable($where));
             
         }
-        return $this->output(__METHOD__);
-        
     }
 
 
@@ -87,12 +85,12 @@ class ProcedureLogController extends Controller {
         return $this->output(__METHOD__);
         
     }
-    
+
     /**
      * 流程审批详情
      *
      * @param $firstLogId
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function show($firstLogId) {
         
@@ -103,12 +101,12 @@ class ProcedureLogController extends Controller {
             ->where('first_log_id', $firstLogId)
             ->orderBy('id', 'asc')
             ->get();
-        return view('procedure_log.procedure_info', [
-            'js' => 'js/procedure_log/procedure_info.js',
+        return $this->output(__METHOD__, [
+            'js' => 'js/procedure_log/show.js',
             'data' => $data,
             'user_id' => $userId
         ]);
-        
+
     }
     
     /**

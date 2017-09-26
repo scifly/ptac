@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Storage;
 trait ControllerTrait {
     
     /**
+     * 文件上传公共方法
+     *
      * @param UploadedFile $file
      * @param int $remark
      * @return array|bool

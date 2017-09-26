@@ -239,7 +239,12 @@ class Operator extends Model {
             ['db' => 'Mobile.mobile', 'dt' => 6],
             ['db' => 'Operator.created_at', 'dt' => 7],
             ['db' => 'Operator.updated_at', 'dt' => 8],
-            ['db' => 'User.enabled', 'dt' => 9],
+            [
+                'db' => 'User.enabled', 'dt' => 9,
+                'formatter' => function ($d, $row) {
+                    return Datatable::dtOps($this, $d, $row);
+                }
+            ]
         ];
         $joins = [
             [
