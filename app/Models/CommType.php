@@ -28,6 +28,10 @@ class CommType extends Model {
     protected $table = 'comm_types';
     
     protected $fillable = ['name', 'remark', 'enabled'];
+
+    public function messages(){
+        return $this->hasMany('App\Models\Messages');
+    }
     
     public function datatable() {
         

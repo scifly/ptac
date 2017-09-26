@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\MessageRequest;
+use App\Models\CommType;
 use App\Models\Department;
-use App\Models\DepartmentUser;
 use App\Models\Media;
 use App\Models\Message;
 use App\Models\User;
@@ -65,8 +65,12 @@ class MessageController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(MessageRequest $request) {
-        
-        return $this->message->store($request) ? $this->succeed() : $this->fail();
+        $commTypeName = ['微信', '短信', '应用'];
+        $input = $request->all();
+        $commType = CommType::whereId($input['comm_type_id'])->first();
+        if($commType->name == $commTypeName[0]){
+            return $this->message->store($request) ? $this->succeed() : $this->fail();
+        }
         
     }
     
