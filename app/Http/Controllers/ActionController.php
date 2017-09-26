@@ -19,6 +19,7 @@ class ActionController extends Controller {
     
     function __construct(Action $action) {
         
+        // $this->middleware(['auth', 'CheckRole']);
         $this->action = $action;
         
     }

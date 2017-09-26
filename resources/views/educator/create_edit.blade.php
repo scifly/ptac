@@ -43,6 +43,18 @@
                 </div>
             </div>
             <div class="form-group">
+                {{ Form::label('user[wechatid]', '微信号', [
+                    'class' => 'col-sm-3 control-label'
+                ]) }}
+                <div class="col-sm-6">
+                    {{ Form::text('user[wechatid]', null, [
+                        'class' => 'form-control',
+                        'data-parsley-type' => 'alphanum',
+                        'data-parsley-length' => '[2, 255]'
+                    ]) }}
+                </div>
+            </div>
+            <div class="form-group">
                 <label for="user[gender]" class="col-sm-3 control-label">性别</label>
                 <div class="col-sm-6">
                     <label id="user[gender]">

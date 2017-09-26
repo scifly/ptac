@@ -161,7 +161,8 @@ class Corp extends Model {
     public function remove($id, $fireEvent = false) {
         
         $corp = $this->find($id);
-        $removed = $this->removable($this, $id) ? $corp->delete() : false;
+        if (!$corp) { return false; }
+        $removed = $this->removable($corp) ? $corp->delete() : false;
         if ($removed && $fireEvent) {
             event(new CorpDeleted($corp));
             return true;

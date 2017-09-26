@@ -90,7 +90,7 @@ class ScoreRange extends Model {
         
         $scoreRange = $this->find($id);
         if (!$scoreRange) { return false; }
-        return $this->removable($this, $id) ? $scoreRange->delete() : false;
+        return $this->removable($scoreRange) ? $scoreRange->delete() : false;
         
     }
     

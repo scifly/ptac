@@ -45,14 +45,14 @@ class Procedure extends Model {
     
     /**
      * 返回指定流程所属的学校对象
-     *
+     * 
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function school() { return $this->belongsTo('App\Models\School'); }
     
     /**
      * 返回指定流程所属的流程类型对象
-     *
+     * 
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function procedureType() { return $this->belongsTo('App\Models\ProcedureType'); }
@@ -94,9 +94,7 @@ class Procedure extends Model {
     public function modify(array $data, $id) {
         
         $procedure = $this->find($id);
-        if (!$procedure) {
-            return false;
-        }
+        if (!$procedure) { return false; }
         return $procedure->update($data) ? true : false;
         
     }
@@ -111,7 +109,8 @@ class Procedure extends Model {
         
         $procedure = $this->find($id);
         if (!$procedure) { return false; }
-        return $this->removable($this, $id) ? $procedure->delete() : false;
+        return $this->removable($procedure) ? $procedure->delete() : false;
+        
     }
     
     public function datatable() {

@@ -211,7 +211,9 @@ class Menu extends Model {
         # 创建新的Menu记录及卡片绑定记录
         try {
             $exception = DB::transaction(function () use ($request) {
-                $m = $this->create($request->all());
+                $menu = $request->all();
+                $menu['position'] = $this->all()->count();
+                $m = $this->create($menu);
                 $menuTab = new MenuTab();
                 $tabIds = $request->input('tab_ids', []);
                 $menuTab->storeByMenuId($m->id, $tabIds);

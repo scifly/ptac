@@ -27,7 +27,7 @@
     <link rel="stylesheet" href="{{ URL::asset('css/procedure_info.css') }}">
     {{--上传--}}
     <link rel="stylesheet" href="{{ URL::asset('css/imgInput.css') }}">
-    <!-- fileinput-->
+    <!-- fileinput-->   
     <link rel="stylesheet" href="{{ URL::asset('js/plugins/fileinput/css/fileinput.min.css') }}">
     <link rel="stylesheet" href="{{ URL::asset('js/plugins/fileinput/themes/explorer/theme.css') }}">
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -161,7 +161,7 @@
                                     <a href="#" class="btn btn-default btn-flat">Profile</a>
                                 </div>
                                 <div class="pull-right">
-                                    <a href="#" class="btn btn-default btn-flat">退出登录</a>
+                                    <a href="{{URL::route('logout')}}" class="btn btn-default btn-flat">退出登录</a>
                                 </div>
                             </li>
                         </ul>
@@ -225,7 +225,7 @@
                         <ul class="nav nav-tabs">
                             @foreach ($tabs as $tab)
                                 <li @if($tab['active']) class="active" @endif>
-                                    <a href="#{{ $tab['id'] }}" data-toggle="tab" data-url="{{ $tab['url'] }}"
+                                    <a href="#{{ $tab['id'] }}" data-toggle="tab" data-uri="{{ $tab['url'] }}"
                                        class="tab">
                                         {{ $tab['name'] }}
                                     </a>

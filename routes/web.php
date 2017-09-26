@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 Route::auth();
+Route::get('logout','Auth\LoginController@logout');
 // Route::get('/', function() { return 'Dashboard'; });
 Route::get('/', 'HomeController@index');
 Route::get('/home', 'HomeController@index')->name('home');
@@ -37,8 +38,18 @@ Route::group(['prefix' => 'educators'], function() {
 });
 // 监护人
 Route::group(['prefix' => 'custodians'], routes('CustodianController'));
+Route::group(['prefix' => 'custodians'], function() {
+    $ctlr = 'CustodianController';
+    Route::post('edit/{id}', $ctlr . '@edit');
+    Route::post('create', $ctlr . '@create');
+});
 // 学生
 Route::group(['prefix' => 'students'], routes('StudentController'));
+Route::group(['prefix' => 'students'], function() {
+    $ctlr = 'StudentController';
+    Route::post('edit/{id}', $ctlr . '@edit');
+    Route::post('create', $ctlr . '@create');
+});
 // 用户
 Route::group(['prefix' => 'users'], routes('UserController'));
 Route::post('users/upload_ava/{id}', 'UserController@uploadAvatar');
@@ -131,9 +142,9 @@ Route::get('procedure_steps/getSchoolEducators/{id}', 'ProcedureStepController@g
 // 审批发起/处理
 Route::group(['prefix' => 'procedure_logs'], function() {
     $ctlr = 'ProcedureLogController';
-    Route::get('index', $ctlr . '@myProcedure');
+    Route::get('index', $ctlr . '@index');
     Route::get('pending', $ctlr . '@pending');
-    Route::get('show/{firstLogId}    ', $ctlr . '@procedureInfo');
+    Route::get('show/{firstLogId}    ', $ctlr . '@show');
     Route::get('create', $ctlr . '@create');
     Route::post('store', $ctlr . '@store');
     Route::post('decision', $ctlr . '@decision');
@@ -191,6 +202,10 @@ Route::group(['prefix' => 'subject_modules'], routes('SubjectModuleController'))
 Route::group(['prefix' => 'majors'], routes('MajorController'));
 // 角色/权限 - 角色管理.权限管理
 Route::group(['prefix' => 'groups'], routes('GroupController'));
+Route::group(['prefix' => 'groups'], function() {
+    Route::post('create', 'GroupController@create');
+    Route::post('edit/{id}', 'GroupController@edit');
+});
 // 年级/班级设置 - 年级管理.班级管理
 Route::group(['prefix' => 'grades'], routes('GradeController'));
 Route::group(['prefix' => 'classes'], routes('SquadController'));

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\Mobiles;
 use Illuminate\Foundation\Http\FormRequest;
 
 class OperatorRequest extends FormRequest {
@@ -21,41 +22,59 @@ class OperatorRequest extends FormRequest {
     public function rules() {
         
         return [
-            'Operator.company_id' => 'required|integer',
-            'Operator.user_id' => 'required|integer|unique:operators,user_id,' .
-                $this->input('Operator.id') . ',id',
-            'Operator.school_ids' => 'required|string',
-            'Operator.group_id' => 'required|integer',
-            'User.username' => 'required|string|unique:users,username,' .
-                $this->input('User.id') . ',id',
-            'User.realname' => 'required|string',
-            'User.gender' => 'required|boolean',
-            'User.enabled' => 'required|boolean',
-            'User.email' => 'nullable|email|unique:users,email,' .
-                $this->input('User.id') . ',id',
-            'User.password' => 'required|string|min:60',
-            'Mobile.mobile' => 'required|string|size:11|regex:/^0?(13|14|15|17|18)[0-9]{9}$/|' .
-                'unique:mobiles,mobile,' . $this->input('Mobile.id') . ',id',
-            'Mobile.isdefault' => 'required|boolean',
-            'Mobile.user_id' => 'required|integer',
-            'Mobile.enabled' => 'required|boolean'
+            'operator.company_id' => 'required|integer',
+//            'operator.user_id' => 'required|integer|unique:operators,user_id,' .
+//                $this->input('Operator.id') . ',id',
+            'operator.school_ids' => 'required|string',
+            'user.group_id' => 'required|integer',
+//            'user.username' => 'required|string|unique:users,username,' .
+//                $this->input('User.id') . ',id',
+            'user.realname' => 'required|string',
+            'user.gender' => 'required|boolean',
+            'user.enabled' => 'required|boolean',
+            'user.email' => 'nullable|email|unique:users,email,' .
+                $this->input('user_id') . ',id',
+//            'user.password' => 'required|string|min:60',
+            'mobile.*' => [
+                'required',new Mobiles(),
+            ],
         ];
-        
+
     }
     
     protected function prepareForValidation() {
         
         $input = $this->all();
-        if (isset($input['User.enabled']) && $input['User.enabled'] === 'on') {
-            $input['User.enabled'] = 1;
+        if (isset($input['user']['enabled']) && $input['user']['enabled'] === 'on') {
+            $input['user']['enabled'] = 1;
         }
-        if (!isset($input['User.enabled'])) {
-            $input['User.enabled'] = 0;
+        if (!isset($input['user']['enabled'])) {
+            $input['user']['enabled'] = 0;
         }
-        if (isset($input['Operator.school_ids'])) {
-            $input['Operator.school_ids'] = implode(',', $input['Operator.school_ids']);
+        if (isset($input['operator']['school_ids'])) {
+            $input['operator']['school_ids'] = implode(',', $input['operator']['school_ids']);
         }
-        
+
+        if (isset($input['mobile'])) {
+            $defaultIndex = $input['mobile']['isdefault'];
+            unset($input['mobile']['isdefault']);
+
+            for ($i = 0; $i < count($input['mobile']); $i++) {
+                if (($i == $defaultIndex)) {
+                    $input['mobile'][$i]['isdefault'] = 1;
+                }else{
+                    $input['mobile'][$i]['isdefault'] = 0;
+                }
+                if ((!isset($mobile[$i]['enabled']))) {
+                    $input['mobile'][$i]['enabled'] = 1;
+                }else{
+                    $input['mobile'][$i]['enabled'] = 0;
+                }
+            }
+
+        }
+        $this->replace($input);
+
     }
     
 }

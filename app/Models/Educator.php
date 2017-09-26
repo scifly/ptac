@@ -214,6 +214,7 @@ class Educator extends Model {
                     'gender' => $userInputData['gender'],
                     'avatar_url' => '00001.jpg',
                     'userid' => "11111",
+                    'wechatid' => $userInputData['wechatid'],
                     'isleader' => 0,
                     'english_name' => $userInputData['english_name'],
                     'telephone' => $userInputData['telephone'],
@@ -238,22 +239,22 @@ class Educator extends Model {
                     unset($departmentUserModel);
                 }
                 
-                $educator = $request->input('educator');
+                $educatorInputData = $request->input('educator');
                 $educatorData = [
                     'user_id' => $u->id,
-                    'school_id' => $educator['school_id'],
+                    'school_id' => $educatorInputData['school_id'],
                     'sms_quote' => 0,
                     'enabled' => $userInputData['enabled']
                 ];
                 
-                $educatorId = $this->create($educatorData);
+                $educator = $this->create($educatorData);
                 
-                $teamIds = $educator['team_id'];
+                $teamIds = $educatorInputData['team_id'];
                 if ($teamIds) {
                     $edTeam = new EducatorTeam();
                     foreach ($teamIds as $key => $row) {
                         $edData = [
-                            'educator_id' => $educatorId->id,
+                            'educator_id' => $educator->id,
                             'team_id' => $row,
                             'enabled' => $userInputData['enabled']
                         ];
@@ -278,7 +279,7 @@ class Educator extends Model {
                     foreach ($classSubjects as $key => $row) {
                         if ($row['class_id'] != 0 && $row['class_id'] != 0) {
                             $educatorClassData = [
-                                'educator_id' => $educatorId->id,
+                                'educator_id' => $educator->id,
                                 'class_id' => $row['class_id'],
                                 'subject_id' => $row['subject_id'],
                                 'enabled' => $userInputData['enabled']
@@ -307,8 +308,6 @@ class Educator extends Model {
                     }
                     unset($mobile);
                 }
-                $teams = $request->input('mobile');
-                
             });
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
@@ -316,7 +315,7 @@ class Educator extends Model {
         }
         
     }
-    
+    //二维数组去掉重复值
     function array_unique_fb($array2D) {
         foreach ($array2D as $v) {
             $v = join(',', $v); //降维,也可以用implode,将一维数组转换为用逗号连接的字符串
@@ -331,16 +330,12 @@ class Educator extends Model {
         }
         return $csArray;
     }
-    
-    //二维数组去掉重复值
 
     public function modify(EducatorRequest $request) {
         
         try {
             $exception = DB::transaction(function () use ($request) {
 
-//                $mobiles = $request->input('mobile');
-//                dd($mobiles);
 //                dd($request->all());die;
                 
                 $userInputData = $request->input('user');
@@ -351,11 +346,11 @@ class Educator extends Model {
                     'realname' => $userInputData['realname'],
                     'gender' => $userInputData['gender'],
                     'avatar_url' => '00001.jpg',
-                    'userid' => uniqid('custodian_'),
+                    'userid' => '111111',
+                    'wechatid' => $userInputData['wechatid'],
                     'isleader' => 0,
                     'english_name' => $userInputData['english_name'],
                     'telephone' => $userInputData['telephone'],
-                    'wechatid' => '',
                     'enabled' => $userInputData['enabled']
                 ];
                 $user = new User();
@@ -460,7 +455,7 @@ class Educator extends Model {
     public function remove($id, $fireEvent = false) {
         
         $school = $this->find($id);
-        $removed = $this->removable($this, $id) ? $school->delete() : false;
+        $removed = $this->removable($school) ? $school->delete() : false;
         if ($removed && $fireEvent) {
 //            event(new SchoolDeleted($school));
             return true;

@@ -52,7 +52,7 @@
                                             <button class="btn btn-box-tool  btn-class-remove btn-remove" type="button">
                                                 <i class="fa fa-minus text-blue"></i>
                                             </button>
-                                        </span>
+                                </span>
                             @endif
                         </td>
                     </tr>
@@ -84,11 +84,11 @@
                         </select>
                     </td>
                     <td style="text-align: center">
-                                    <span class="input-group-btn">
-                                        <button class="btn btn-box-tool btn-class-add" type="button">
-                                            <i class="fa fa-plus text-blue"></i>
-                                        </button>
-                                    </span>
+                        <span class="input-group-btn">
+                            <button class="btn btn-box-tool btn-class-add" type="button">
+                                <i class="fa fa-plus text-blue"></i>
+                            </button>
+                        </span>
                     </td>
                 </tr>
             @endif

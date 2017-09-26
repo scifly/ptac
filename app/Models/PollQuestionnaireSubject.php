@@ -69,10 +69,23 @@ class PollQuestionnaireSubject extends Model {
     public function remove($id) {
         
         $pqSubject = $this->find($id);
-        if (!$pqSubject) {
-            return false;
+        if (!$pqSubject) { return false; }
+        return $this->removable($pqSubject) ? $pqSubject->delete() : false;
+        
+    }
+    
+    public function getType($type) {
+        
+        switch ($type) {
+            case 0:
+                return '单选';
+            case 1:
+                return '多选';
+            case 2:
+                return '填空';
+            default:
+                return '错误';
         }
-        return $this->removable($this, $id) ? $pqSubject->delete() : false;
         
     }
     
@@ -112,18 +125,5 @@ class PollQuestionnaireSubject extends Model {
         ];
         
         return Datatable::simple($this, $columns, $joins);
-    }
-    
-    public function getType($type) {
-        switch ($type) {
-            case 0:
-                return '单选';
-            case 1:
-                return '多选';
-            case 2:
-                return '填空';
-            default:
-                return '错误';
-        }
     }
 }

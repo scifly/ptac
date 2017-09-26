@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Helpers\ControllerTrait;
 use App\Http\Requests\ProcedureLogRequest;
-use App\Models\Media;
 use App\Models\ProcedureLog;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Storage;
+use App\Helpers\ControllerTrait;
 
 /**
  * 申请/审批
@@ -17,22 +16,21 @@ use Illuminate\Support\Facades\Storage;
  * @package App\Http\Controllers
  */
 class ProcedureLogController extends Controller {
-    
+
     use ControllerTrait;
-    
+
     protected $procedureLog;
     
     function __construct(ProcedureLog $procedureLog) {
         $this->procedureLog = $procedureLog;
     }
-    
+
     /**
      * 我发起的流程审批列表
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
-    public function myProcedure() {
-        
+    public function index() {
         if (Request::get('draw')) {
             $userId = 6;
             //查询我发布的流程最后一条log记录
@@ -48,7 +46,7 @@ class ProcedureLogController extends Controller {
         return $this->output(__METHOD__);
         
     }
-    
+
     /**
      * 待审核的流程审批列表
      *
@@ -68,11 +66,9 @@ class ProcedureLogController extends Controller {
             return response()->json($this->procedureLog->datatable($where));
             
         }
-        return $this->output(__METHOD__);
-        
     }
-    
-    
+
+
     /**
      * 相关流程列表
      *
@@ -89,14 +85,14 @@ class ProcedureLogController extends Controller {
         return $this->output(__METHOD__);
         
     }
-    
+
     /**
      * 流程审批详情
      *
      * @param $firstLogId
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return bool|\Illuminate\Http\JsonResponse
      */
-    public function procedureInfo($firstLogId) {
+    public function show($firstLogId) {
         
         $userId = 7;
         //根据IDs查询数据
@@ -105,12 +101,12 @@ class ProcedureLogController extends Controller {
             ->where('first_log_id', $firstLogId)
             ->orderBy('id', 'asc')
             ->get();
-        return view('procedure_log.procedure_info', [
-            'js' => 'js/procedure_log/procedure_info.js',
+        return $this->output(__METHOD__, [
+            'js' => 'js/procedure_log/show.js',
             'data' => $data,
             'user_id' => $userId
         ]);
-        
+
     }
     
     /**
@@ -159,7 +155,7 @@ class ProcedureLogController extends Controller {
         return $this->fail();
         
     }
-    
+
     /**
      * 审批申请
      *
@@ -221,7 +217,7 @@ class ProcedureLogController extends Controller {
             $result['data'] = array();
             $mes = [];
             foreach ($files as $file) {
-                $mes [] = $this->uploadedMedias($file, '上传审批流程相关文件');
+                $mes []= $this->uploadedMedias($file,'上传审批流程相关文件');
             }
             $result['statusCode'] = 200;
             $result['message'] = '上传成功！';

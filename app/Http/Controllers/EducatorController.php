@@ -27,7 +27,13 @@ class EducatorController extends Controller {
     protected $department;
 
 
-    public function __construct(Educator $educator, Mobile $mobile, EducatorClass $educatorClass, Team $team, Department $department) {
+    public function __construct(
+        Educator $educator,
+        Mobile $mobile,
+        EducatorClass $educatorClass,
+        Team $team,
+        Department $department
+    ) {
         
         $this->educator = $educator;
         $this->mobile = $mobile;
@@ -119,6 +125,7 @@ class EducatorController extends Controller {
         }
 
         $selectedDepartments = $this->department->selectedNodes($selectedDepartmentIds);
+
         return $this->output(__METHOD__, [
             'mobiles' => $educator->user->mobiles,
             'educator' => $educator,
@@ -159,11 +166,10 @@ class EducatorController extends Controller {
         return $educator->modify($request) ? $this->succeed() : $this->fail();
         
     }
-
+    
     /**
      * 更新教职员工充值
      *
-     * @param EducatorRequest $request
      * @param $id
      * @return \Illuminate\Http\JsonResponse
      */

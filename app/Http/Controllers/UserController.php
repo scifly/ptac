@@ -68,9 +68,7 @@ class UserController extends Controller {
     public function show($id) {
         
         $user = $this->user->find($id);
-        if (!$user) {
-            return $this->notFound();
-        }
+        if (!$user) { return $this->notFound(); }
         return $this->output(__METHOD__, ['user' => $user]);
         
     }
@@ -84,9 +82,7 @@ class UserController extends Controller {
     public function edit($id) {
         
         $user = $this->user->find($id);
-        if (!$user) {
-            return $this->notFound();
-        }
+        if (!$user) { return $this->notFound(); }
         return $this->output(__METHOD__, ['user' => $user]);
         
     }
@@ -101,9 +97,7 @@ class UserController extends Controller {
     public function update(UserRequest $request, $id) {
         
         $user = $this->user->find($id);
-        if (!$user) {
-            return $this->notFound();
-        }
+        if (!$user) { return $this->notFound(); }
         if ($this->user->existed($request, $id)) {
             return $this->fail('已经有此记录');
         }

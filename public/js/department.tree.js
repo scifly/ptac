@@ -1,6 +1,5 @@
 var dept = {
     to: 0,
-
     $tree: function() {
         return $('#department-tree');//树形图 jstree 左边
     },
@@ -172,7 +171,7 @@ var dept = {
             dept.$treeBox().hide();
             $('.tree-box .box-footer').hide();
             dept.$tree().jstree('destroy');
-            dept.$todoList.empty();
+            dept.$todoList().empty();
         });
     },
     init: function(uri) {

@@ -213,9 +213,9 @@ class Department extends Model {
         $department = $this->create($data);
         if ($department && $fireEvent) {
             event(new DepartmentCreated($department));
-            return true;
+            return $department;
         }
-        return $department ? true : false;
+        return $department ? $department : false;
         
     }
     
@@ -233,9 +233,9 @@ class Department extends Model {
         $updated = $department->update($data);
         if ($updated && $fireEvent) {
             event(new DepartmentUpdated($department));
-            return true;
+            return $department;
         }
-        return $updated ? true : false;
+        return $updated ? $department : false;
         
     }
     
@@ -248,18 +248,8 @@ class Department extends Model {
     public function remove($id) {
         
         $department = $this->find($id);
-        if (!$department) {
-            return false;
-        }
-        if ($department->users) {
-            return false;
-        }
-        if ($department->children) {
-            return false;
-        }
-        if (!$this->removable($this, $id)) {
-            return false;
-        }
+        if (!$department) { return false; }
+        if (!$this->removable($department)) { return false; }
         try {
             $exception = DB::transaction(function () use ($id, $department) {
                 # 删除指定的Department记录
@@ -351,7 +341,13 @@ class Department extends Model {
         return response()->json($data);
         
     }
-    
+
+    /**
+     * 选中的部门节点
+     *
+     * @param $ids
+     * @return array
+     */
     public function selectedNodes($ids) {
         
         $departments = $this->whereIn('id', $ids)->get()->toArray();

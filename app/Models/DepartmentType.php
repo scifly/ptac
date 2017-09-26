@@ -73,10 +73,8 @@ class DepartmentType extends Model {
     public function remove($id) {
         
         $departmentType = $this->find($id);
-        if (!$departmentType) {
-            return false;
-        }
-        $removed = $this->removable($this, $id) ? $departmentType->delete() : false;
+        if (!$departmentType) { return false; }
+        $removed = $this->removable($departmentType) ? $departmentType->delete() : false;
         return $removed ? true : false;
         
     }

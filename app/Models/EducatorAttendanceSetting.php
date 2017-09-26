@@ -62,7 +62,8 @@ class EducatorAttendanceSetting extends Model {
             ['db' => 'School.name as schoolname ', 'dt' => 2],
             ['db' => 'EducatorAttendanceSetting.start', 'dt' => 3],
             ['db' => 'EducatorAttendanceSetting.end', 'dt' => 4],
-            ['db' => 'EducatorAttendanceSetting.inorout', 'dt' => 5,
+            [
+                'db' => 'EducatorAttendanceSetting.inorout', 'dt' => 5,
                 'formatter' => function ($d) {
                     return $d ? '进' : '出';
                 }
