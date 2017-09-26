@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use App\Events\UserCreated;
+use App\Events\UserDeleted;
+use App\Events\UserUpdated;
 use App\Facades\DatatableFacade as Datatable;
 use App\Http\Requests\UserRequest;
 use Illuminate\Database\Eloquent\Builder;
@@ -202,34 +205,53 @@ class User extends Authenticatable {
         return $users;
         
     }
-    
-    /**
-     * 判断用户记录是否已经存在
-     *
-     * @param UserRequest $request
-     * @param null $id
-     * @return bool
-     */
-    public function existed(UserRequest $request, $id = NULL) {
-        
-        if (!$id) {
-            $user = $this->where('username', $request->input('username'))
-                ->orWhere('email', $request->input('email'))
-                ->orWhere('wechatid', $request->input('wechatid'))
-                ->orWhere('mobile', $request->input('mobile'))
-                ->first();
-        } else {
-            $user = $this->where('username', $request->input('username'))
-                ->where('id', '<>', $id)
-                ->orWhere('email', $request->input('email'))
-                ->orWhere('wechatid', $request->input('wechatid'))
-                ->orWhere('mobile', $request->input('mobile'))
-                ->first();
+
+    public function createWechatUser($id)
+    {
+        $user = $this->find($id);
+        $mobile = Mobile::whereUserId($id)->where('isdefault', 1)->first()->mobile;
+        $department = [];
+        foreach ($user->departments as $d) {
+            $department[] = $d->id;
         }
-        return $user ? true : false;
-        
+
+        $data = [
+            'userid' => $user->userid,
+            'name' => $user->realname,
+            'english_name' => $user->english_name,
+            'mobile' => $mobile,
+            'department' => $department,
+            'gender' => $user->gender,
+            'enable' => $user->enabled,
+        ];
+        event(new UserCreated($data));
     }
-    
+
+    public function updateWechatUser($id)
+    {
+        $user = $this->find($id);
+        $mobile = Mobile::whereUserId($id)->where('isdefault', 1)->first()->mobile;
+        $department = [];
+        foreach ($user->departments as $d) {
+            $department[] = $d->id;
+        }
+
+        $data = [
+            'userid' => $user->userid,
+            'name' => $user->realname,
+            'english_name' => $user->english_name,
+            'mobile' => $mobile,
+            'department' => $department,
+            'gender' => $user->gender,
+            'enable' => $user->enabled,
+        ];
+        event(new UserUpdated($data));
+    }
+
+    public function deleteWechatUser($id)
+    {
+        event(new UserDeleted($this->find($id)->userid));
+    }
     public function datatable() {
         
         $columns = [

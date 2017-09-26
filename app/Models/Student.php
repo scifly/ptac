@@ -157,7 +157,7 @@ class Student extends Model {
                 ];
                 $user = new User();
                 $u = $user->create($userData);
-                unset($user);
+
                 $student = $request->input('student');
                 $studentData = [
                     'user_id' => $u->id,
@@ -204,6 +204,10 @@ class Student extends Model {
                     $custodianStudent->storeByStudentId($s->id, $custodianId_relationship);
                 }
                 unset($custodianStudent);
+
+                # 创建企业号成员
+                $user->createWechatUser($u->id);
+                unset($user);
             });
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
@@ -269,7 +273,7 @@ class Student extends Model {
                         'telephone' => $userData['telephone'],
                         'enabled' => $userData['enabled']
                     ]);
-                unset($user);
+
                 $studentData = $request->input('student');
                 $student->update([
                     'user_id' => $userId,
@@ -312,6 +316,10 @@ class Student extends Model {
                 $custodianStudent::where('student_id', $studentId)->delete();
                 $custodianStudent->storeByStudentId($studentId, $custodianId_relationship);
                 unset($custodianStudent);
+
+                # 更新企业号成员
+                $user->UpdateWechatUser($userId);
+                unset($user);
             });
             
             return is_null($exception) ? true : $exception;

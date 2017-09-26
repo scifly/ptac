@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\Mobiles;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -20,7 +21,6 @@ class CustodianRequest extends FormRequest {
      * @return array
      */
     public function rules() {
-        $input = $this->all();
         $rules = [
 //            'user.realname' => 'required|string|between:2,255|unique:users,realname,' .
 //                $this->input('user_id') . ',id,'.
@@ -32,19 +32,23 @@ class CustodianRequest extends FormRequest {
                 $this->input('user_id') . ',id',
 //            'mobile.mobile' => 'required|string|unique:mobiles,mobile,'
 //                . $this->input('user_id') . ',user_id',
+            'mobile.*' => [
+                'required',new Mobiles(),
+            ],
         ];
-        $validateRules=[];
-        foreach ($input['mobile'] as $index => $mobile) {
-            $rule =[
-                'mobile.'.$index.'.mobile' => 'required|string|size:11|regex:/^1[34578][0-9]{9}$/|' .
-                    'unique:mobiles,mobile,' . $this->input('mobile.' . $index . '.id') . ',id',
-                'mobile.'.$index.'.isdefault' => 'required|boolean',
-                'mobile.'.$index.'.enabled' => 'required|boolean'
-            ];
-            $validateRules =array_merge($rules,$rule,$validateRules);
-            unset($rule);
-        }
-        return $validateRules;
+        return $rules;
+//        $validateRules=[];
+//        foreach ($input['mobile'] as $index => $mobile) {
+//            $rule =[
+//                'mobile.'.$index.'.mobile' => 'required|string|size:11|regex:/^1[34578][0-9]{9}$/|' .
+//                    'unique:mobiles,mobile,' . $this->input('mobile.' . $index . '.id') . ',id',
+//                'mobile.'.$index.'.isdefault' => 'required|boolean',
+//                'mobile.'.$index.'.enabled' => 'required|boolean'
+//            ];
+//            $validateRules =array_merge($rules,$rule,$validateRules);
+//            unset($rule);
+//        }
+//        return $validateRules;
 
     }
 

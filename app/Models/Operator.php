@@ -88,7 +88,7 @@ class Operator extends Model {
                 ];
                 $user = new User();
                 $u = $user->create($userData);
-                unset($user);
+
 
                 $selectedDepartments = $request->input('selectedDepartments');
                 if (!empty($selectedDepartments)) {
@@ -128,6 +128,8 @@ class Operator extends Model {
                     }
                     unset($mobile);
                 }
+                # 创建企业号成员
+                $user->createWechatUser($u->id);
             });
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
@@ -161,7 +163,7 @@ class Operator extends Model {
                 ];
                 $user = new User();
                 $u = $user->where('id', $request->input('user_id'))->update($userData);
-                unset($user);
+
 
                 $selectedDepartments = $request->input('selectedDepartments');
                 if (!empty($selectedDepartments)) {
@@ -204,7 +206,12 @@ class Operator extends Model {
                     }
 
                     unset($mobile);
+
+
                 }
+                # 创建企业号成员
+                $user->UpdateWechatUser($request->input('user_id'));
+                unset($user);
 
             });
             return is_null($exception) ? true : $exception;

@@ -48,18 +48,20 @@ class ManageWechatDepartment implements ShouldQueue
         }
         $order = $this->department->order;
         $departmentId = $this->department->id;
-        $token = Wechat::getAccessToken('token.txt',$corpId, $secret);
-       // dd($departmentId.'+'.$name.'+'.$parent_id.'+'.$order);
+        $path = substr(dirname(__FILE__),0, stripos(dirname(__FILE__), 'app/Jobs'));
+        $tokenFile = $path . 'public/token.txt';
+
+        $token = Wechat::getAccessToken($tokenFile,$corpId, $secret);
         switch ($this->action){
             case 'create':
-                $result = Wechat::createDept($token, $name, $parent_id, $order, $departmentId);
+                Wechat::createDept($token, $name, $parent_id, $order, $departmentId);
                 break;
 
             case 'update':
-                $result = Wechat::updateDept($token, $departmentId, $name, $parent_id, $order);
+                 Wechat::updateDept($token, $departmentId, $name, $parent_id, $order);
                 break;
             default:
-                $result = Wechat::delDept($token, $departmentId);
+                Wechat::delDept($token, $departmentId);
                 break;
 
         }
