@@ -96,9 +96,7 @@ class SchoolController extends Controller {
      */
     public function update(SchoolRequest $request, $id) {
         
-        if (!$this->school->find($id)) {
-            return parent::notFound();
-        }
+        if (!$this->school->find($id)) { return parent::notFound(); }
         return $this->school->modify($request->all(), $id, true)
             ? parent::succeed() : parent::fail();
         
