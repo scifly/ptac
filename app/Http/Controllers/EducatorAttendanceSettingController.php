@@ -87,7 +87,6 @@ class EducatorAttendanceSettingController extends Controller {
         if (!$eas) {
             return $this->notFound();
         }
-        
         return $this->output(__METHOD__, ['eas' => $eas]);
     }
     

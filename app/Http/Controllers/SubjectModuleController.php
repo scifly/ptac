@@ -106,7 +106,6 @@ class SubjectModuleController extends Controller {
         if (!$subjectModule) {
             return $this->notFound();
         }
-        
         return $subjectModule->update($request->all()) ? $this->succeed() : $this->fail();
         
     }

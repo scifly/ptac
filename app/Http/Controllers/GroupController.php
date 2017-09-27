@@ -37,7 +37,6 @@ class GroupController extends Controller {
         if (Request::get('draw')) {
             return response()->json($this->group->datatable());
         }
-        
         return $this->output(__METHOD__);
         
     }
@@ -54,7 +53,6 @@ class GroupController extends Controller {
         if (Request::method() === 'POST') {
             return $this->menu->tree();
         }
-        
         return $this->output(__METHOD__);
         
     }
@@ -80,10 +78,7 @@ class GroupController extends Controller {
     public function show($id) {
         
         $group = $this->group->find($id);
-        if (!$group) {
-            return $this->notFound();
-        }
-        
+        if (!$group) { return $this->notFound(); }
         return $this->output(__METHOD__, ['group' => $group]);
         
     }
@@ -97,9 +92,7 @@ class GroupController extends Controller {
     public function edit($id) {
         
         $group = $this->group->find($id);
-        if (!$group) {
-            return $this->notFound();
-        }
+        if (!$group) { return $this->notFound(); }
         if (Request::method() === 'POST') {
             return $this->menu->tree();
         }
@@ -118,7 +111,6 @@ class GroupController extends Controller {
         foreach ($actions as $action) {
             $selectedActions[] = $action->id;
         }
-        
         return $this->output(__METHOD__, [
             'group'           => $group,
             'selectedMenuIds' => implode(',', $selectedMenuIds),
@@ -141,7 +133,6 @@ class GroupController extends Controller {
         if (!$group) {
             return $this->notFound();
         }
-        
         return $group->modify($request->all(), $id)
             ? $this->succeed() : $this->fail();
         
@@ -156,10 +147,7 @@ class GroupController extends Controller {
     public function destroy($id) {
         
         $group = $this->group->find($id);
-        if (!$group) {
-            return $this->notFound();
-        }
-        
+        if (!$group) { return $this->notFound(); }
         return $group->remove($id) ? $this->succeed() : $this->fail();
         
     }

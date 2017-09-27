@@ -74,7 +74,6 @@ class ExamController extends Controller {
         if (!$exam) {
             return $this->notFound();
         }
-        
         return $this->output(__METHOD__, [
             'exam'     => $exam,
             'classes'  => $this->exam->classes($exam->class_ids),

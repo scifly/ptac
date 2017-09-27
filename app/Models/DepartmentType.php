@@ -96,7 +96,6 @@ class DepartmentType extends Model {
                 },
             ],
         ];
-        
         return Datatable::simple($this, $columns);
         
     }

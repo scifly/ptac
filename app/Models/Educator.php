@@ -106,7 +106,6 @@ class Educator extends Model {
     public function gradeDeans($gradeId) {
         
         $educatorIds = Grade::whereId($gradeId)->where('enabled', 1)->first()->educator_ids;
-        
         return $this->whereIn('id', explode(',', $educatorIds))->whereEnabled(1)->get();
         
     }
@@ -120,7 +119,6 @@ class Educator extends Model {
     public function classDeans($classId) {
         
         $educatorIds = Squad::whereId($classId)->where('enabled', 1)->first()->educator_ids;
-        
         return $this->whereIn('id', explode(',', $educatorIds))->whereEnabled(1)->get();
         
     }
@@ -142,7 +140,6 @@ class Educator extends Model {
         foreach ($educators as $educator) {
             $educatorList[$educator->id] = $educator->user->realname;
         }
-        
         return $educatorList;
         
     }
@@ -165,7 +162,6 @@ class Educator extends Model {
                     $editLink = sprintf(Datatable::DT_LINK_EDIT, 'edit_' . $id);
                     $delLink = sprintf(Datatable::DT_LINK_DEL, $id);
                     $rechargeLink = sprintf(Datatable::DT_LINK_RECHARGE, 'recharge_' . $id);
-                    
                     return $status . Datatable::DT_SPACE . $showLink . Datatable::DT_SPACE .
                         $editLink . Datatable::DT_SPACE . $delLink . Datatable::DT_SPACE . $rechargeLink;
                 },
@@ -189,7 +185,6 @@ class Educator extends Model {
                 ],
             ],
         ];
-        
         return Datatable::simple($this, $columns, $joins);
         
     }
@@ -204,7 +199,7 @@ class Educator extends Model {
         
         try {
             $exception = DB::transaction(function () use ($request) {
-//                dd($request->all());
+               dd($request->all());
                 $userInputData = $request->input('user');
                 $userData = [
                     'username'     => $userInputData['username'],
@@ -219,7 +214,6 @@ class Educator extends Model {
                     'isleader'     => 0,
                     'english_name' => $userInputData['english_name'],
                     'telephone'    => $userInputData['telephone'],
-                    'wechatid'     => '',
                     'enabled'      => $userInputData['enabled'],
                 ];
                 $user = new User();
@@ -245,10 +239,9 @@ class Educator extends Model {
                     'enabled'   => $userInputData['enabled'],
                 ];
                 $educator = $this->create($educatorData);
-                $teamIds = $educatorInputData['team_id'];
-                if ($teamIds) {
+                if (isset($educatorInputData['team_id'])) {
                     $edTeam = new EducatorTeam();
-                    foreach ($teamIds as $key => $row) {
+                    foreach ($educatorInputData['team_id'] as $key => $row) {
                         $edData = [
                             'educator_id' => $educator->id,
                             'team_id'     => $row,
@@ -302,7 +295,6 @@ class Educator extends Model {
                 $user->createWechatUser($u->id);
                 unset($user);
             });
-            
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
             return false;
@@ -323,7 +315,6 @@ class Educator extends Model {
             $csArray[$k]['class_id'] = $tempArray[0];
             $csArray[$k]['subject_id'] = $tempArray[1];
         }
-        
         return $csArray;
     }
     
@@ -332,7 +323,7 @@ class Educator extends Model {
         try {
             $exception = DB::transaction(function () use ($request) {
 
-//                dd($request->all());die;
+               // dd($request->all());die;
                 $userInputData = $request->input('user');
                 $userData = [
                     'username'     => $userInputData['username'],
@@ -372,11 +363,10 @@ class Educator extends Model {
                     'enabled'   => $userInputData['enabled'],
                 ];
                 $educatorUpdate = $this->where('id', $request->input('id'))->update($educatorData);
-                $teamIds = $educator['team_id'];
-                if ($teamIds) {
+                if (isset($educator['team_id'])) {
                     $edTeam = new EducatorTeam();
                     $edTeam->where('educator_id', $request->input('id'))->delete();
-                    foreach ($teamIds as $key => $row) {
+                    foreach ($educator['team_id'] as $key => $row) {
                         $edData = [
                             'educator_id' => $request->input('id'),
                             'team_id'     => $row,
@@ -386,13 +376,21 @@ class Educator extends Model {
                     }
                     unset($edTeam);
                 }
-                $classSubject = $request->input('classSubject');
-                if ($classSubject) {
+                $classSubjectData = $request->input('classSubject');
+                if ($classSubjectData) {
                     $educatorClass = new EducatorClass();
                     $educatorClass->where('educator_id', $request->input('id'))->delete();
-                    $classSubject = $this->array_unique_fb($classSubject);
-                    foreach ($classSubject as $key => $row) {
-                        if ($row['class_id'] != "" && $row['class_id'] != "") {
+                    
+                    $uniqueArray = [];
+                    foreach ($classSubjectData['class_ids'] as $index => $class) {
+                        $uniqueArray[] = [
+                            'class_id'   => $class,
+                            'subject_id' => $classSubjectData['subject_ids'][$index],
+                        ];
+                    }
+                    $classSubjects = $this->array_unique_fb($uniqueArray);
+                    foreach ($classSubjects as $key => $row) {
+                        if ($row['class_id'] != 0 && $row['class_id'] != 0) {
                             $educatorClassData = [
                                 'educator_id' => $request->input('id'),
                                 'class_id'    => $row['class_id'],
@@ -400,8 +398,9 @@ class Educator extends Model {
                                 'enabled'     => $userInputData['enabled'],
                             ];
                             $educatorClass->create($educatorClassData);
+            
                         }
-                        
+        
                     }
                     unset($educatorClass);
                 }
@@ -425,7 +424,6 @@ class Educator extends Model {
                 unset($user);
                 
             });
-            
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
             return false;
@@ -448,7 +446,6 @@ class Educator extends Model {
 //            event(new SchoolDeleted($school));
             return true;
         }
-        
         return $removed ? true : false;
         
     }

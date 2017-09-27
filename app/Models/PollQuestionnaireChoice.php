@@ -65,7 +65,6 @@ class PollQuestionnaireChoice extends Model {
                 ],
             ],
         ];
-        
         return Datatable::simple($this, $columns, $joins);
     }
 }

@@ -94,10 +94,7 @@ class Procedure extends Model {
     public function modify(array $data, $id) {
         
         $procedure = $this->find($id);
-        if (!$procedure) {
-            return false;
-        }
-        
+        if (!$procedure) { return false; }
         return $procedure->update($data) ? true : false;
         
     }
@@ -111,10 +108,7 @@ class Procedure extends Model {
     public function remove($id) {
         
         $procedure = $this->find($id);
-        if (!$procedure) {
-            return false;
-        }
-        
+        if (!$procedure) { return false; }
         return $this->removable($procedure) ? $procedure->delete() : false;
         
     }

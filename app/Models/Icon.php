@@ -68,7 +68,6 @@ class Icon extends Model {
         foreach ($data as $icon) {
             $icons[$icon->iconType->name][$icon->id] = $icon->name;
         }
-        
         return $icons;
         
     }
@@ -114,10 +113,7 @@ class Icon extends Model {
     public function remove($id) {
         
         $icon = $this->find($id);
-        if (!$icon) {
-            return false;
-        }
-        
+        if (!$icon) { return false; }
         return $icon->removable($icon) ? $icon->delete() : false;
         
     }

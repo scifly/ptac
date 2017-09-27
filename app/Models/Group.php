@@ -67,8 +67,8 @@ class Group extends Model {
     public function store(array $data) {
         
         try {
-            $exception = DB::transaction(function () use ($data) {
-                
+            $exception = DB::transaction(function() use ($data) {
+
                 $groupData = [
                     'name'    => $data['name'],
                     'remark'  => $data['remark'],
@@ -89,7 +89,6 @@ class Group extends Model {
                 $groupTab->storeByGroupId($g->id, $tabIds);
                 
             });
-            
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
             return false;
@@ -133,7 +132,6 @@ class Group extends Model {
                 $groupTab->storeByGroupId($id, $tabIds);
                 
             });
-            
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
             return false;
@@ -150,10 +148,7 @@ class Group extends Model {
     public function remove($id) {
         
         $group = $this->find($id);
-        if (!$group) {
-            return false;
-        }
-        
+        if (!$group) { return false; }
         return $this->removable($group) ? $group->delete() : false;
         
     }

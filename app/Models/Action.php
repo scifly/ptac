@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
@@ -235,12 +236,10 @@ HTML;
                     $status = $d ? sprintf(self::DT_ON, '已启用') : sprintf(self::DT_OFF, '已禁用');
                     $showLink = sprintf(self::DT_LINK_SHOW, 'show_' . $id);
                     $editLink = sprintf(self::DT_LINK_EDIT, 'edit_' . $id);
-                    
                     return $status . '&nbsp;' . $showLink . '&nbsp;' . $editLink;
                 },
             ],
         ];
-        
         return Datatable::simple($this, $columns);
         
     }
@@ -382,7 +381,6 @@ HTML;
                 }
             }
         }
-        
         return $allData;
         
     }

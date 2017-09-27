@@ -24,7 +24,6 @@ class messageSendingLogs extends Model {
                     'received_count'  => 0,
                     'recipient_count' => $recipientCount,
                 ]);
-                
                 return $log->id;
             });
             

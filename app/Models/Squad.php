@@ -176,7 +176,6 @@ class Squad extends Model {
                 ],
             ],
         ];
-        
         return Datatable::simple($this, $columns, $joins);
         
     }

@@ -214,7 +214,6 @@ class Grade extends Model {
                 ],
             ],
         ];
-        
         return Datatable::simple($this, $columns, $joins);
         
     }

@@ -582,7 +582,6 @@ HTML;
                 $menu .= $mEnd;
             }
         }
-        
         return $menu;
         
     }

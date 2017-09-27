@@ -84,10 +84,7 @@ class StudentController extends Controller {
     public function show($id) {
         
         $student = $this->student->find($id);
-        if (!$student) {
-            return $this->notFound();
-        }
-        
+        if (!$student) { return $this->notFound(); }
         return $this->output(__METHOD__, ['student' => $student]);
         
     }
@@ -111,10 +108,8 @@ class StudentController extends Controller {
         }
         $selectedDepartments = $this->department->selectedNodes($selectedDepartmentIds);
         # 查询学生信息
-        if (!$student) {
-            return $this->notFound();
-        }
-        
+        if (!$student) { return $this->notFound(); }
+
         return $this->output(__METHOD__, [
             'mobiles'               => $student->user->mobiles,
             'student'               => $student,

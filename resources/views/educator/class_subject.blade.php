@@ -1,5 +1,5 @@
 <div class="form-group">
-    <label class="col-sm-3 control-label">空</label>
+    <label class="col-sm-3 control-label">班级科目关系</label>
     <div class="col-sm-6">
         <table id="classTable" class="table-bordered table-responsive" style="width: 100%;">
             <thead>
@@ -11,13 +11,13 @@
             </thead>
             <tbody>
 
-            @if(isset($educator->educatorClasses))
+            @if(isset($educator->educatorClasses) && count($educator->educatorClasses) !=0 )
                 @foreach($educator->educatorClasses  as $index=> $class)
                     <tr>
                         <td>
-                            <label for="classSubject[{{$index}}][class_id]"></label>
-                            <select name="classSubject[{{$index}}][class_id]"
-                                    id="classSubject[{{$index}}][class_id]"
+                            <label for="classSubject[class_ids][]"></label>
+                            <select name="classSubject[class_ids][]"
+                                    id="classSubject[class_ids][]"
                                     class="select2"
                                     style="width: 80%;"
                             >
@@ -28,9 +28,9 @@
                             </select>
                         </td>
                         <td>
-                            <label for="classSubject[{{$index}}][subject_id]"></label>
-                            <select name="classSubject[{{$index}}][subject_id]"
-                                    id="classSubject[{{$index}}][subject_id]"
+                            <label for="classSubject[subject_ids][]"></label>
+                            <select name="classSubject[subject_ids][]"
+                                    id="classSubject[subject_ids][]"
                                     class="select2"
                                     style="width: 80%"
                             >

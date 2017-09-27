@@ -72,7 +72,6 @@ class Exam extends Model {
             $class = Squad::whereId($classId)->first();
             $selectedClasses[$classId] = $class['name'];
         }
-        
         return $selectedClasses;
         
     }
@@ -89,7 +88,6 @@ class Exam extends Model {
         foreach ($subjectIds as $subjectId) {
             $selectedSubjects[$subjectId] = Subject::whereId($subjectId)->value('name');
         }
-        
         return $selectedSubjects;
         
     }
@@ -102,7 +100,6 @@ class Exam extends Model {
         foreach ($class_ids as $class_id) {
             $classes[] = Squad::whereId($class_id)->first();
         }
-        
         return $classes;
         
     }
@@ -123,7 +120,6 @@ class Exam extends Model {
                 $_exams[] = $exam;
             }
         }
-        
         return $_exams;
         
     }
@@ -143,7 +139,6 @@ class Exam extends Model {
         foreach ($subject_ids as $subject_id) {
             $subjects[] = Subject::whereId($subject_id)->first(['id', 'name']);
         }
-        
         return $subjects;
         
     }
@@ -157,7 +152,6 @@ class Exam extends Model {
     public function store(array $data) {
         
         $exam = $this->create($data);
-        
         return $exam ? true : false;
         
     }
@@ -175,7 +169,6 @@ class Exam extends Model {
         if (!$exam) {
             return false;
         }
-        
         return $exam->update($data) ? true : false;
         
     }
@@ -189,10 +182,7 @@ class Exam extends Model {
     public function remove($id) {
         
         $exam = $this->find($id);
-        if (!$exam) {
-            return false;
-        }
-        
+        if (!$exam) { return false; }
         return $exam->removable($exam) ? true : false;
         
     }
@@ -210,6 +200,7 @@ class Exam extends Model {
             ['db' => 'Exam.end_date', 'dt' => 7],
             ['db' => 'Exam.created_at', 'dt' => 8],
             ['db' => 'Exam.updated_at', 'dt' => 9],
+            
             [
                 'db'        => 'Exam.enabled', 'dt' => 10,
                 'formatter' => function ($d, $row) {
@@ -227,7 +218,6 @@ class Exam extends Model {
                 ],
             ],
         ];
-        
         return Datatable::simple($this, $columns, $joins);
         
     }

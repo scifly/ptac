@@ -49,7 +49,6 @@ class EducatorController extends Controller {
         if (Request::get('draw')) {
             return response()->json($this->educator->datatable());
         }
-        
         return $this->output(__METHOD__);
         
     }
@@ -64,7 +63,6 @@ class EducatorController extends Controller {
         if (Request::method() === 'POST') {
             return $this->department->tree();
         }
-        
         return $this->output(__METHOD__);
         
     }
@@ -93,7 +91,6 @@ class EducatorController extends Controller {
         if (!$educator) {
             return $this->notFound();
         }
-        
         return $this->output(__METHOD__, [
             'educator'  => $educator,
             'educators' => $this->educator->teams(),
@@ -125,7 +122,6 @@ class EducatorController extends Controller {
             $selectedDepartmentIds[] = $department->id;
         }
         $selectedDepartments = $this->department->selectedNodes($selectedDepartmentIds);
-        
         return $this->output(__METHOD__, [
             'mobiles'               => $educator->user->mobiles,
             'educator'              => $educator,
@@ -148,7 +144,6 @@ class EducatorController extends Controller {
         if (!$educator) {
             return $this->notFound();
         }
-        
         return $this->output(__METHOD__, [
             'educator' => $educator,
         ]);
@@ -168,7 +163,6 @@ class EducatorController extends Controller {
         if (!$educator) {
             return $this->notFound();
         }
-        
         return $educator->modify($request) ? $this->succeed() : $this->fail();
         
     }
@@ -187,7 +181,6 @@ class EducatorController extends Controller {
         }
         $recharge = Request::get('recharge');
         $educator->sms_quote += $recharge;
-        
         return $educator->save() ? $this->succeed() : $this->fail();
         
     }
@@ -204,7 +197,6 @@ class EducatorController extends Controller {
         if (!$educator) {
             return $this->notFound();
         }
-        
         return $this->educator->remove($id, true)
             ? parent::succeed() : parent::fail();
         

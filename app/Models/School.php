@@ -286,9 +286,7 @@ class School extends Model {
     public function remove($id, $fireEvent = false) {
         
         $school = $this->find($id);
-        if (!$school) {
-            return false;
-        }
+        if (!$school) { return false; }
         $removed = $this->removable($school) ? $school->delete() : false;
         if ($removed && $fireEvent) {
             event(new SchoolDeleted($school));
@@ -349,7 +347,7 @@ class School extends Model {
                 $schoolList[$school['id']] = $school['name'];
             }
         }
-        
+
         return $schoolList;
         
     }

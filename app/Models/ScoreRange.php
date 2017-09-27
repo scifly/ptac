@@ -74,10 +74,7 @@ class ScoreRange extends Model {
     public function modify(array $data, $id) {
         
         $scoreRange = $this->find($id);
-        if (!$scoreRange) {
-            return false;
-        }
-        
+        if (!$scoreRange) { return false; }
         return $scoreRange->update($data) ? true : false;
         
     }
@@ -91,10 +88,7 @@ class ScoreRange extends Model {
     public function remove($id) {
         
         $scoreRange = $this->find($id);
-        if (!$scoreRange) {
-            return false;
-        }
-        
+        if (!$scoreRange) { return false; }
         return $this->removable($scoreRange) ? $scoreRange->delete() : false;
         
     }

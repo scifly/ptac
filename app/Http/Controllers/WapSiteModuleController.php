@@ -91,7 +91,6 @@ class WapSiteModuleController extends Controller {
         if (!$wapSiteModule) {
             return parent::notFound();
         }
-        
         return parent::output(__METHOD__, [
             'wapSiteModule' => $wapSiteModule,
             'media'         => $this->media->find($wapSiteModule->media_id),

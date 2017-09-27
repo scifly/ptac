@@ -50,7 +50,6 @@ class ScoreTotalController extends Controller {
         if (!$scoreTotal) {
             return $this->notFound();
         }
-        
         return $this->output(__METHOD__, [
             'score_total' => $scoreTotal,
             'studentname' => $scoreTotal->student->user->realname,

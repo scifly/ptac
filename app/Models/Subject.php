@@ -244,7 +244,6 @@ class Subject extends Model {
                 'conditions' => ['School.id = Subject.school_id'],
             ],
         ];
-        
         return Datatable::simple($this, $columns, $joins);
         
     }

@@ -92,7 +92,6 @@ class PqChoiceController extends Controller {
         if (!$pqChoice) {
             return $this->notFound();
         }
-        
         return $this->output(__METHOD__, [
             'pqChoice' => $pqChoice,
         ]);

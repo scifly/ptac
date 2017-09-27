@@ -165,9 +165,8 @@ class Custodian extends Model {
                 $studentIds = $request->input('student_ids');
                 # 与学生之间的关系
                 $relationships = $request->input('relationship');
-                $custodianStudentRelations = [];
                 foreach ($studentIds as $key => $studentId) {
-                    $custodianStudentRelations[$studentId] = $relationships[$key];
+                    $studentId_Relationship[$studentId] = $relationships[$key];
                 }
                 $user = new User();
                 $user->where('id', $userId)
@@ -211,13 +210,14 @@ class Custodian extends Model {
                 unset($departmentUser);
                 # 向监护人学生表中添加数据
                 $custodianStudent = new CustodianStudent();
+//                $custodianStudent::whereCustodianId($custodianId)->delete();
                 $custodianStudent::where('custodian_id', $custodianId)->delete();
-                $custodianStudent->storeByCustodianId($custodianId, $custodianStudentRelations);
+                $custodianStudent->storeByCustodianId($custodianId, $studentId_Relationship);
                 unset($custodianStudent);
                 $user->UpdateWechatUser($userId);
                 unset($user);
             });
-            
+        
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
             return false;
@@ -280,7 +280,6 @@ class Custodian extends Model {
                  foreach ($mobiles as $key => $value) {
                      $mobile[] = $value->mobile;
                  }
-                
                  return implode(',', $mobile);
              },
             ],

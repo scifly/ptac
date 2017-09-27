@@ -122,7 +122,6 @@ class Major extends Model {
                 $majorSubject::whereMajorId($id)->delete();
                 $majorSubject->storeByMajorId($id, $subjectIds);
             });
-            
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
             return false;

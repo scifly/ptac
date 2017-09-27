@@ -48,7 +48,6 @@ class ProcedureLogRequest extends FormRequest {
                 $array[$key . '.' . $v] = $k_array[$key] . $v_array[$v];
             }
         }
-        
         return $array;
     }
     

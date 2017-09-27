@@ -141,7 +141,6 @@ HTML;
             }
         }
         unset($action);
-        
         return true;
         
     }
@@ -226,7 +225,6 @@ HTML;
                     $status = $d ? sprintf(self::DT_ON, '已启用') : sprintf(self::DT_OFF, '已禁用');
                     $showLink = sprintf(self::DT_LINK_SHOW, 'show_' . $id);
                     $editLink = sprintf(self::DT_LINK_EDIT, 'edit_' . $id);
-                    
                     return $status . '&nbsp;' . $showLink . '&nbsp;' . $editLink;
                 },
             ],
@@ -249,7 +247,6 @@ HTML;
                 ],
             ],
         ];
-        
         return Datatable::simple($this, $columns, $joins);
         
     }
@@ -298,7 +295,6 @@ HTML;
                 $menuTab::whereTabId($id)->delete();
                 $menuTab->storeByTabId($id, $menuIds);
             });
-            
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
             return false;
@@ -334,7 +330,6 @@ HTML;
                 }
             }
         }
-        
         return $allData;
         
     }

@@ -77,9 +77,7 @@ class ScoreRangeController extends Controller {
     public function show($id) {
         
         $scoreRange = $this->scoreRange->find($id);
-        if (!$scoreRange) {
-            return $this->notFound();
-        }
+        if (!$scoreRange) { return $this->notFound(); }
         $subjectsArr = explode(',', $scoreRange['subject_ids']);
         $str = '';
         foreach ($subjectsArr as $val) {
@@ -100,10 +98,7 @@ class ScoreRangeController extends Controller {
     public function edit($id) {
         
         $scoreRange = $this->scoreRange->find($id);
-        if (!$scoreRange) {
-            return $this->notFound();
-        }
-        
+        if (!$scoreRange) { return $this->notFound(); }
         return $this->output(__METHOD__, [
             'scoreRange'       => $scoreRange,
             'subjects'         => $this->subject->subjects(1),
@@ -122,9 +117,7 @@ class ScoreRangeController extends Controller {
     public function update(ScoreRangeRequest $request, $id) {
         
         $scoreRange = $this->scoreRange->find($id);
-        if (!$scoreRange) {
-            return $this->notFound();
-        }
+        if (!$scoreRange) { return $this->notFound(); }
         $score_range = $request->all();
         $score_range['subject_ids'] = implode(',', $score_range['subject_ids']);
         

@@ -75,7 +75,6 @@ class WapSiteController extends Controller {
             return parent::notFound();
         }
         $mediaIds = explode(",", $wapsite->media_ids);
-        
         return parent::output(__METHOD__, [
             'wapsite' => $wapsite,
             'medias'  => $this->media->medias($mediaIds),
@@ -201,7 +200,6 @@ class WapSiteController extends Controller {
         $wapSite = $this->wapSite
             ->where('school_id', Request::get('school_id'))
             ->first();
-        
         return view('frontend.wap_site.index', [
             'wapsite' => $wapSite,
             'medias'  => $this->media->medias($wapSite->media_ids),

@@ -157,7 +157,6 @@ class Wechat extends Facade {
         } else {
             $accessToken = $data['access_token'];
         }
-        
         return $accessToken;
         
     }
@@ -171,7 +170,6 @@ class Wechat extends Facade {
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
         $result = curl_exec($ch);
         curl_close($ch);
-        
         return $result;
         
     }
@@ -244,7 +242,6 @@ class Wechat extends Facade {
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $result = curl_exec($ch);
         curl_close($ch);
-        
         return $result;
         
     }

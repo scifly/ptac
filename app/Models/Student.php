@@ -305,7 +305,6 @@ class Student extends Model {
                 $user->UpdateWechatUser($userId);
                 unset($user);
             });
-            
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
             return false;
@@ -322,9 +321,7 @@ class Student extends Model {
     public function remove($studentId) {
         
         $student = $this->find($studentId);
-        if (!isset($custodian)) {
-            return false;
-        }
+        if (!isset($custodian)) { return false; }
         try {
             $exception = DB::transaction(function () use ($studentId, $student) {
                 # 删除指定的学生记录
@@ -337,7 +334,6 @@ class Student extends Model {
                 Mobile::where('user_id', $student['user_id'])->delete();
                 
             });
-            
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
             return false;
@@ -362,7 +358,6 @@ class Student extends Model {
                 'db'        => 'Student.oncampus', 'dt' => 6,
                 'formatter' => function ($d) {
                     $student = Student::whereId($d)->first();
-                    
                     return $student->oncampus == 1 ? '是' : '否';
                 },
             ],
@@ -374,7 +369,6 @@ class Student extends Model {
                  foreach ($mobiles as $key => $value) {
                      $mobile[] = $value->mobile;
                  }
-                
                  return implode(',', $mobile);
              },
             ],
@@ -411,7 +405,6 @@ class Student extends Model {
                 ],
             ],
         ];
-        
         return Datatable::simple($this, $columns, $joins);
         
     }

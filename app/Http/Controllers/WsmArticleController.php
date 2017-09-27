@@ -72,7 +72,6 @@ class WsmArticleController extends Controller {
         if (!$article) {
             return parent::notFound();
         }
-        
         return parent::output(__METHOD__, [
             'article' => $article,
             'medias'  => $this->media->medias($article->media_ids),

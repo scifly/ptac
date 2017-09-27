@@ -99,7 +99,6 @@ HTML;
         // Total data set length
         $resTotalLength = DB::select("SELECT COUNT(*) AS t FROM " . $tableName)[0]->t;
         $recordsTotal = $resTotalLength;
-        
         // Output
         return [
             "draw"            => intval(Request::get('draw')),
@@ -399,7 +398,6 @@ HTML;
         $showLink = sprintf(self::DT_LINK_SHOW, 'show_' . $id);
         $editLink = sprintf(self::DT_LINK_EDIT, 'edit_' . $id);
         $delLink = sprintf(self::DT_LINK_DEL, $id);
-        
         return $status . self::DT_SPACE . $showLink . self::DT_SPACE .
             $editLink . ($del ? self::DT_SPACE . $delLink : '');
         

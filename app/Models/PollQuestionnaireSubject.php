@@ -71,6 +71,7 @@ class PollQuestionnaireSubject extends Model {
         if (!$pqSubject) {
             return false;
         }
+        return $this->removable($pqSubject) ? $pqSubject->delete() : false;
         
         return $this->removable($pqSubject) ? $pqSubject->delete() : false;
         
@@ -110,7 +111,6 @@ class PollQuestionnaireSubject extends Model {
                 ],
             ],
         ];
-        
         return Datatable::simple($this, $columns, $joins);
     }
     

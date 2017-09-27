@@ -100,7 +100,6 @@ class Controller extends BaseController {
             'statusCode' => self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR,
             'message'    => $msg,
         ];
-        
         return response()->json($this->result);
     }
     
@@ -121,7 +120,6 @@ class Controller extends BaseController {
             'statusCode' => self::HTTP_STATUSCODE_OK,
             'message'    => $msg,
         ];
-        
         return response()->json($this->result);
         
     }

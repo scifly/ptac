@@ -55,7 +55,6 @@ class ExamType extends Model {
     public function store(array $data) {
         
         $examType = $this->create($data);
-        
         return $examType ? true : false;
         
     }
@@ -73,7 +72,6 @@ class ExamType extends Model {
         if (!$examType) {
             return false;
         }
-        
         return $examType->update($data) ? true : false;
         
     }
@@ -87,10 +85,7 @@ class ExamType extends Model {
     public function remove($id) {
         
         $examType = $this->find($id);
-        if (!$examType) {
-            return false;
-        }
-        
+        if (!$examType) { return false; }
         return $this->removable($examType) ? $examType->delete() : false;
         
     }

@@ -66,7 +66,6 @@ class ActionController extends Controller {
                 $selectedActionTypes[$actionTypeId] = $actionType['name'];
             }
         }
-        
         return parent::output(__METHOD__, [
             'action'              => $action,
             'selectedActionTypes' => $selectedActionTypes,

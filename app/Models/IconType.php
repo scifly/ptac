@@ -78,10 +78,7 @@ class IconType extends Model {
     public function remove($id) {
         
         $iconType = $this->find($id);
-        if (!$iconType) {
-            return false;
-        }
-        
+        if (!$iconType) { return false; }
         return $iconType->removable($iconType)
             ? $iconType->delete() : false;
         
@@ -102,7 +99,6 @@ class IconType extends Model {
                 },
             ],
         ];
-        
         return Datatable::simple($this, $columns);
     }
     
