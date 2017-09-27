@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Helpers\ModelTrait;
@@ -36,7 +35,7 @@ class Media extends Model {
     protected $table = 'medias';
     
     protected $fillable = [
-        'path', 'remark', 'media_type_id', 'enabled'
+        'path', 'remark', 'media_type_id', 'enabled',
     ];
     
     /**
@@ -66,6 +65,7 @@ class Media extends Model {
         foreach ($ids as $mediaId) {
             $medias[] = $this->find($mediaId);
         }
+        
         return $medias;
         
     }
@@ -79,6 +79,7 @@ class Media extends Model {
     public function store(array $data) {
         
         $media = $this->create($data);
+        
         return $media ? true : false;
         
     }
@@ -96,6 +97,7 @@ class Media extends Model {
         if (!$media) {
             return false;
         }
+        
         return $media->update($data) ? true : false;
         
     }
@@ -109,7 +111,10 @@ class Media extends Model {
     public function remove($id) {
         
         $media = $this->find($id);
-        if (!$media) { return false; }
+        if (!$media) {
+            return false;
+        }
+        
         return $media->removable($media) ? $media->delete() : false;
         
     }

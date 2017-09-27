@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
@@ -44,11 +43,11 @@ class SchoolType extends Model {
             ['db' => 'SchoolType.created_at', 'dt' => 3],
             ['db' => 'SchoolType.updated_at', 'dt' => 4],
             [
-                'db' => 'SchoolType.enabled', 'dt' => 5,
+                'db'        => 'SchoolType.enabled', 'dt' => 5,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
-                }
-            ]
+                },
+            ],
         ];
         
         return Datatable::simple($this, $columns);

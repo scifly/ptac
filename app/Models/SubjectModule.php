@@ -1,11 +1,9 @@
 <?php
-
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-
 
 /**
  * App\Models\SubjectModule
@@ -33,6 +31,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read \App\Models\Subject $subject
  */
 class SubjectModule extends Model {
+    
     //
     protected $table = 'subject_modules';
     protected $fillable = [
@@ -44,7 +43,6 @@ class SubjectModule extends Model {
     
     public function subject() { return $this->belongsTo('App\Models\Subject'); }
     
-    
     public function datatable() {
         
         $columns = [
@@ -55,24 +53,21 @@ class SubjectModule extends Model {
             ['db' => 'SubjectModule.created_at', 'dt' => 4],
             ['db' => 'SubjectModule.updated_at', 'dt' => 5],
             [
-                'db' => 'SubjectModule.enabled', 'dt' => 6,
+                'db'        => 'SubjectModule.enabled', 'dt' => 6,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
-                }
+                },
             ],
-        
-        
         ];
         $joins = [
             [
-                'table' => 'subjects',
-                'alias' => 'Subject',
-                'type' => 'INNER',
+                'table'      => 'subjects',
+                'alias'      => 'Subject',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'Subject.id = SubjectModule.subject_id'
-                ]
+                    'Subject.id = SubjectModule.subject_id',
+                ],
             ],
-        
         ];
         
         return Datatable::simple($this, $columns, $joins);

@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Helpers\ModelTrait;
@@ -61,6 +60,7 @@ class MenuType extends Model {
                 break;
             
         }
+        
         return $allowedTypeList;
         
     }
@@ -74,6 +74,7 @@ class MenuType extends Model {
     public function store(array $data) {
         
         $menuType = $this->create($data);
+        
         return $menuType ? true : false;
         
     }
@@ -91,6 +92,7 @@ class MenuType extends Model {
         if (!$menuType) {
             return false;
         }
+        
         return $menuType->update($data) ? true : false;
         
     }
@@ -104,7 +106,10 @@ class MenuType extends Model {
     public function remove($id) {
         
         $menuType = $this->find($id);
-        if (!$menuType) { return false; }
+        if (!$menuType) {
+            return false;
+        }
+        
         return $menuType->removable($menuType)
             ? $menuType->delete() : false;
         

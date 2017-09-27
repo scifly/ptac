@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CorpRequest;
@@ -28,6 +27,7 @@ class CorpController extends Controller {
         if (Request::get('draw')) {
             return response()->json($this->corp->datatable());
         }
+        
         return $this->output(__METHOD__);
         
     }
@@ -65,7 +65,10 @@ class CorpController extends Controller {
     public function show($id) {
         
         $corp = $this->corp->find($id);
-        if (!$corp) { return $this->notFound(); }
+        if (!$corp) {
+            return $this->notFound();
+        }
+        
         return $this->output(__METHOD__, ['corp' => $corp]);
         
     }
@@ -82,6 +85,7 @@ class CorpController extends Controller {
         if (!$corp) {
             return $this->notFound();
         }
+        
         return $this->output(__METHOD__, ['corp' => $corp]);
         
     }
@@ -95,7 +99,10 @@ class CorpController extends Controller {
      */
     public function update(CorpRequest $request, $id) {
         
-        if (!$this->corp->find($id)) { return $this->notFound(); }
+        if (!$this->corp->find($id)) {
+            return $this->notFound();
+        }
+        
         return $this->corp->modify($request->all(), $id, true)
             ? $this->succeed() : $this->fail();
         
@@ -109,7 +116,10 @@ class CorpController extends Controller {
      */
     public function destroy($id) {
         
-        if (!$this->corp->find($id)) { return $this->notFound(); }
+        if (!$this->corp->find($id)) {
+            return $this->notFound();
+        }
+        
         return $this->corp->remove($id, true)
             ? $this->succeed() : $this->fail();
         

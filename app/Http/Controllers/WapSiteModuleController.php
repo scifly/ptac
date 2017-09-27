@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\WapSiteModuleRequest;
@@ -35,6 +34,7 @@ class WapSiteModuleController extends Controller {
         if (Request::get('draw')) {
             return response()->json($this->wapSiteModule->datatable());
         }
+        
         return $this->output(__METHOD__);
     }
     
@@ -72,10 +72,10 @@ class WapSiteModuleController extends Controller {
         if (!$module) {
             return parent::notFound();
         }
+        
         return parent::output(__METHOD__, [
             '$module' => $module,
-            'media' => $this->media->find($module->media_id),
-        
+            'media'   => $this->media->find($module->media_id),
         ]);
         
     }
@@ -88,14 +88,13 @@ class WapSiteModuleController extends Controller {
      */
     public function edit($id) {
         $wapSiteModule = $this->wapSiteModule->find($id);
-        
         if (!$wapSiteModule) {
             return parent::notFound();
         }
         
         return parent::output(__METHOD__, [
             'wapSiteModule' => $wapSiteModule,
-            'media' => $this->media->find($wapSiteModule->media_id),
+            'media'         => $this->media->find($wapSiteModule->media_id),
         ]);
         
     }
@@ -125,6 +124,7 @@ class WapSiteModuleController extends Controller {
         if (!$wapSiteModule) {
             return parent::notFound();
         }
+        
         return $wapSiteModule->delete() ? parent::succeed() : parent::fail();
         
     }
@@ -138,9 +138,10 @@ class WapSiteModuleController extends Controller {
     public function wapSiteModuleHome($id) {
         
         $articles = WsmArticle::whereWsmId($id)->get();
+        
         return view('frontend.wap_site.module', [
             'articles' => $articles,
-            'ws' => true
+            'ws'       => true,
         ]);
         
     }

@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\SemesterRequest;
@@ -28,6 +27,7 @@ class SemesterController extends Controller {
         if (Request::get('draw')) {
             return response()->json($this->semester->datatable());
         }
+        
         return parent::output(__METHOD__);
         
     }
@@ -66,6 +66,7 @@ class SemesterController extends Controller {
         if (!$semester) {
             return $this->notFound();
         }
+        
         return $this->output(__METHOD__, ['semester' => $semester]);
     }
     
@@ -81,6 +82,7 @@ class SemesterController extends Controller {
         if (!$semester) {
             return $this->notFound();
         }
+        
         return $this->output(__METHOD__, ['semester' => $semester]);
         
     }
@@ -98,6 +100,7 @@ class SemesterController extends Controller {
         if (!$semester) {
             return $this->notFound();
         }
+        
         return $semester->update($request->all()) ? $this->succeed() : $this->fail();
         
     }
@@ -114,6 +117,7 @@ class SemesterController extends Controller {
         if (!$semester) {
             return $this->notFound();
         }
+        
         return $semester->delete() ? $this->succeed() : $this->fail();
         
     }

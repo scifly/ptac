@@ -1,14 +1,11 @@
 <?php
-
 namespace App\Http\Requests;
 
 use App\Rules\Mobiles;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class EducatorRequest extends FormRequest {
-    
+
 //    protected $strings_key = [
 //        'user_id' => '教职员工',
 //        'team_ids' => '所属组',
@@ -22,7 +19,6 @@ class EducatorRequest extends FormRequest {
 //        'unique' => '不唯一',
 //
 //    ];
-    
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -33,31 +29,27 @@ class EducatorRequest extends FormRequest {
     public function rules() {
         $input = $this->all();
 //        dd($input['mobile']);
-
-        $rules =  [
-
+        $rules = [
             'educator.school_id' => 'required|integer',
-            'user.group_id' => 'required|integer',
+            'user.group_id'      => 'required|integer',
 //            'user.username' => 'required|string|unique:users,username,' .
 //                $this->input('user_id') . ',id',
-            'user.realname' => 'required|string',
-            'user.gender' => 'required|boolean',
-            'user.enabled' => 'required|boolean',
-            'user.email' => 'nullable|email|unique:users,email,' .
+            'user.realname'      => 'required|string',
+            'user.gender'        => 'required|boolean',
+            'user.enabled'       => 'required|boolean',
+            'user.email'         => 'nullable|email|unique:users,email,' .
                 $this->input('user_id') . ',id',
-            'user.password' => 'string|min:3',
-            'mobile.*' => [
-                'required',new Mobiles(),
+            'user.password'      => 'string|min:3',
+            'mobile.*'           => [
+                'required', new Mobiles(),
             ],
-        //            'mobile.*.number' => 'required|string|size:11|regex:/^0?(13|14|15|17|18)[0-9]{9}$/|' .
-        //                'unique:mobiles,mobile,' . $this->input('mobile.*.id') . ',id',
-        //            'mobile.*.isdefault' => 'required|boolean',
-        //            'mobile.*.enabled' => 'required|boolean',
-
+            //            'mobile.*.number' => 'required|string|size:11|regex:/^0?(13|14|15|17|18)[0-9]{9}$/|' .
+            //                'unique:mobiles,mobile,' . $this->input('mobile.*.id') . ',id',
+            //            'mobile.*.isdefault' => 'required|boolean',
+            //            'mobile.*.enabled' => 'required|boolean',
         ];
-
+        
         return $rules;
-
         
     }
 //
@@ -81,7 +73,6 @@ class EducatorRequest extends FormRequest {
 //        return $array;
 //
 //    }
-    
     public function wantsJson() { return true; }
     
     protected function prepareForValidation() {
@@ -99,27 +90,23 @@ class EducatorRequest extends FormRequest {
         if (!isset($input['user']['gender'])) {
             $input['user']['gender'] = 0;
         }
-
         if (isset($input['mobile'])) {
             $defaultIndex = $input['mobile']['isdefault'];
             unset($input['mobile']['isdefault']);
             foreach ($input['mobile'] as $index => $mobile) {
                 if ($index == $defaultIndex) {
                     $input['mobile'][$index]['isdefault'] = 1;
-                }else{
+                } else {
                     $input['mobile'][$index]['isdefault'] = 0;
                 }
                 if (!isset($mobile['enabled'])) {
                     $input['mobile'][$index]['enabled'] = 0;
-                }else{
+                } else {
                     $input['mobile'][$index]['enabled'] = 1;
                 }
             }
         }
-
-
         dd($input['mobile']);
-
 //        dd($this->input('mobile.*.mobile'));
         $this->replace($input);
         

@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Listeners;
 
 use App\Models\Department;
@@ -38,8 +37,10 @@ class ClassEventSubscriber {
             $class = Squad::whereName($department->name)
                 ->where('grade_id', $parentGradeId)
                 ->first();
+            
             return $this->class->modify($data, $class->id);
         }
+        
         return true;
         
     }
@@ -60,8 +61,10 @@ class ClassEventSubscriber {
             if ($class->grade_id != $gradeId) {
                 return $class->modify(['grade_id' => $gradeId], $class->id);
             }
+            
             return true;
         }
+        
         return true;
         
     }

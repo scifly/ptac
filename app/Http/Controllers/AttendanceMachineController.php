@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\AttendanceMachineRequest;
@@ -28,6 +27,7 @@ class AttendanceMachineController extends Controller {
         if (Request::get('draw')) {
             return response()->json($this->am->datatable());
         }
+        
         return $this->output(__METHOD__);
         
     }
@@ -67,6 +67,7 @@ class AttendanceMachineController extends Controller {
         if (!$am) {
             return $this->notFound();
         }
+        
         return $this->output(__METHOD__, ['am' => $am]);
         
     }
@@ -83,6 +84,7 @@ class AttendanceMachineController extends Controller {
         if (!$am) {
             return $this->notFound();
         }
+        
         return $this->output(__METHOD__, ['am' => $am]);
         
     }
@@ -100,6 +102,7 @@ class AttendanceMachineController extends Controller {
         if (!$am) {
             return $this->notFound();
         }
+        
         return $am->update($request->all()) ? $this->succeed() : $this->fail();
         
     }
@@ -116,6 +119,7 @@ class AttendanceMachineController extends Controller {
         if (!$am) {
             return $this->notFound();
         }
+        
         return $am->delete() ? $this->succeed() : $this->fail();
         
     }

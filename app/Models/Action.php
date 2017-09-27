@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
@@ -84,7 +83,7 @@ HTML;
     protected $fillable = [
         'name', 'method', 'remark',
         'controller', 'view', 'route',
-        'js', 'action_type_ids', 'enabled'
+        'js', 'action_type_ids', 'enabled',
     ];
     // protected $actionType;
     protected $actionTypes;
@@ -117,7 +116,7 @@ HTML;
     public function actions() {
         
         $data = $this->whereEnabled(1)->get([
-            'controller', 'name', 'id', 'action_type_ids', 'route'
+            'controller', 'name', 'id', 'action_type_ids', 'route',
         ]);
         $actions = [];
         # 获取HTTP请求类型为GET的Action类型ID
@@ -131,6 +130,7 @@ HTML;
             }
         }
         ksort($actions);
+        
         return $actions;
         
     }
@@ -174,6 +174,7 @@ HTML;
                 # 更新指定的Action记录
                 $action->update($request->all());
             });
+            
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
             return false;
@@ -186,49 +187,49 @@ HTML;
         $columns = [
             ['db' => 'Action.id', 'dt' => 0],
             [
-                'db' => 'Action.name', 'dt' => 1,
+                'db'        => 'Action.name', 'dt' => 1,
                 'formatter' => function ($d) {
                     return empty($d) ? self::BADGE_GRAY : $d;
-                }
+                },
             ],
             [
-                'db' => 'Action.method', 'dt' => 2,
+                'db'        => 'Action.method', 'dt' => 2,
                 'formatter' => function ($d) {
                     return !empty($d) ? sprintf(self::BADGE_GREEN, $d) : self::BADGE_GRAY;
-                }
+                },
             ],
             [
-                'db' => 'Action.route', 'dt' => 3,
+                'db'        => 'Action.route', 'dt' => 3,
                 'formatter' => function ($d) {
                     return !empty($d) ? sprintf(self::BADGE_YELLOW, $d) : self::BADGE_GRAY;
-                }
+                },
             ],
             [
-                'db' => 'Action.controller', 'dt' => 4,
+                'db'        => 'Action.controller', 'dt' => 4,
                 'formatter' => function ($d) {
                     return !empty($d) ? sprintf(self::BADGE_RED, $d) : self::BADGE_GRAY;
-                }
+                },
             ],
             [
-                'db' => 'Action.view', 'dt' => 5,
+                'db'        => 'Action.view', 'dt' => 5,
                 'formatter' => function ($d) {
                     return !empty($d) ? sprintf(self::BADGE_LIGHT_BLUE, $d) : self::BADGE_GRAY;
-                }
+                },
             ],
             [
-                'db' => 'Action.js', 'dt' => 6,
+                'db'        => 'Action.js', 'dt' => 6,
                 'formatter' => function ($d) {
                     return !empty($d) ? sprintf(self::BADGE_MAROON, $d) : self::BADGE_GRAY;
-                }
+                },
             ],
             [
-                'db' => 'Action.action_type_ids', 'dt' => 7,
+                'db'        => 'Action.action_type_ids', 'dt' => 7,
                 'formatter' => function ($d) {
                     return !empty($d) ? $this->actionTypes($d) : self::BADGE_GRAY;
-                }
+                },
             ],
             [
-                'db' => 'Action.enabled', 'dt' => 8,
+                'db'        => 'Action.enabled', 'dt' => 8,
                 'formatter' => function ($d, $row) {
                     $id = $row['id'];
                     $status = $d ? sprintf(self::DT_ON, '已启用') : sprintf(self::DT_OFF, '已禁用');
@@ -236,8 +237,8 @@ HTML;
                     $editLink = sprintf(self::DT_LINK_EDIT, 'edit_' . $id);
                     
                     return $status . '&nbsp;' . $showLink . '&nbsp;' . $editLink;
-                }
-            ]
+                },
+            ],
         ];
         
         return Datatable::simple($this, $columns);
@@ -260,6 +261,7 @@ HTML;
                 $actionTypes[] = $actionType->name;
             }
         }
+        
         return implode(', ', $actionTypes);
         
     }
@@ -307,14 +309,14 @@ HTML;
                 ) {
                     $ctlr = $this->getControllerName($className);
                     $selfDefinedMethods[$className][$action] = [
-                        'name' => $this->getMethodComment($obj, $method),
-                        'method' => $action,
-                        'remark' => '',
-                        'controller' => $ctlr,
-                        'view' => $this->getViewPath($ctlr, $action),
-                        'route' => $this->getRoute($ctlr, $action),
+                        'name'            => $this->getMethodComment($obj, $method),
+                        'method'          => $action,
+                        'remark'          => '',
+                        'controller'      => $ctlr,
+                        'view'            => $this->getViewPath($ctlr, $action),
+                        'route'           => $this->getRoute($ctlr, $action),
                         'action_type_ids' => $this->getActionTypeIds($ctlr, $action),
-                        'js' => $this->getJsPath($ctlr, $action)
+                        'js'              => $this->getJsPath($ctlr, $action),
                     ];
                 }
             }
@@ -323,7 +325,7 @@ HTML;
             foreach ($actions as $action) {
                 $a = $this->where([
                     ['controller', $action['controller']],
-                    ['method', $action['method']]
+                    ['method', $action['method']],
                 ])->first();
                 if ($a) {
                     $a->name = $action['name'];
@@ -334,24 +336,24 @@ HTML;
                     $a->save();
                 } else {
                     $this->create([
-                        'name' => $action['name'],
-                        'method' => $action['method'],
-                        'remark' => $action['remark'],
-                        'controller' => $action['controller'],
-                        'view' => $action['view'],
-                        'route' => $action['route'],
+                        'name'            => $action['name'],
+                        'method'          => $action['method'],
+                        'remark'          => $action['remark'],
+                        'controller'      => $action['controller'],
+                        'view'            => $action['view'],
+                        'route'           => $action['route'],
                         'action_type_ids' => $action['action_type_ids'],
-                        'js' => $action['js'],
-                        'enabled' => 1
+                        'js'              => $action['js'],
+                        'enabled'         => 1,
                     ]);
                 }
             }
         }
+        
         return true;
     }
     
     /** Helper functions -------------------------------------------------------------------------------------------- */
-
     /**
      * 返回所有控制器的完整路径
      *
@@ -359,10 +361,10 @@ HTML;
      * @param array $allData
      * @return array
      */
-    public function scanDirectories($rootDir, $allData = array()) {
+    public function scanDirectories($rootDir, $allData = []) {
         
         // set filenames invisible if you want
-        $invisibleFileNames = array(".", "..", ".htaccess", ".htpasswd");
+        $invisibleFileNames = [".", "..", ".htaccess", ".htpasswd"];
         // run through content of root directory
         $dirContent = scandir($rootDir);
         foreach ($dirContent as $key => $content) {
@@ -413,6 +415,7 @@ HTML;
             $paths = explode('\\', $controller);
             $controllerNames[] = $paths[sizeof($paths) - 1];
         }
+        
         return $controllerNames;
         
     }
@@ -463,7 +466,7 @@ HTML;
         foreach ($methodDiffs as $method) {
             $a = $this->where([
                 ['controller', $controllerName],
-                ['method', $method]
+                ['method', $method],
             ])->first();
             if (!$this->remove($a->id)) {
                 return false;
@@ -487,6 +490,7 @@ HTML;
             /** @noinspection PhpUndefinedMethodInspection */
             $methodNames[] = $method->getName();
         }
+        
         return $methodNames;
         
     }
@@ -500,6 +504,7 @@ HTML;
     public function getControllerName($controller) {
         
         $nameSpacePaths = explode('\\', $controller);
+        
         return $nameSpacePaths[sizeof($nameSpacePaths) - 1];
         
     }
@@ -524,6 +529,7 @@ HTML;
                 $name = str_replace(str_split("\n/* "), '', $matches[0][0]);
             }
         }
+        
         return $name;
         
     }
@@ -554,8 +560,10 @@ HTML;
                     $viewPath = '';
                     break;
             }
+            
             return $viewPath;
         }
+        
         return '';
     }
     
@@ -574,6 +582,7 @@ HTML;
         if ($modelName === 'Squad') {
             return 'classes';
         }
+        
         return Inflector::pluralize(Inflector::tableize($modelName));
         
     }
@@ -596,7 +605,8 @@ HTML;
                 }
             }
         }
-        return NULL;
+        
+        return null;
         
     }
     
@@ -620,9 +630,11 @@ HTML;
                     }
                 }
             }
+            
             return implode(',', $actionTypeIds);
         }
-        return NULL;
+        
+        return null;
         
     }
     
@@ -638,6 +650,7 @@ HTML;
         if (!in_array($ctlr, $this->excludedControllers)) {
             $prefix = str_singular($this->getTableName($ctlr));
             $prefix = ($prefix === 'corps') ? 'corp' : $prefix;
+            
             return 'js/' . $prefix . '/' . $action . '.js';
             /*switch ($action) {
                 case 'index':
@@ -649,7 +662,8 @@ HTML;
                     return NULL;
             }*/
         }
-        return NULL;
+        
+        return null;
         
     }
     

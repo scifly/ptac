@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\ViewComposers;
 
 use App\Models\Exam;
@@ -24,7 +23,7 @@ class ScoreComposer {
         $view->with([
             'students' => $this->students->pluck('student_number', 'id'),
             'subjects' => $this->subjects->pluck('name', 'id'),
-            'exams' => $this->exams->pluck('name', 'id'),
+            'exams'    => $this->exams->pluck('name', 'id'),
         ]);
     }
     

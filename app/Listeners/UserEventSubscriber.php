@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Listeners;
 
 use App\Jobs\ManageWechatMember;
@@ -7,19 +6,19 @@ use Illuminate\Events\Dispatcher;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 
 class UserEventSubscriber {
-
+    
     use DispatchesJobs;
-
+    
     /**
      * 将"创建企业号会员"任务提交至work队列
      *
      * @param $event
      */
     public function onUserCreated($event) {
-
-        $job = new ManageWechatMember($event->user,'create');
+        
+        $job = new ManageWechatMember($event->user, 'create');
         $this->dispatch($job);
-
+        
     }
     
     /**
@@ -28,10 +27,10 @@ class UserEventSubscriber {
      * @param $event
      */
     public function onUserUpdated($event) {
-
-        $job = new ManageWechatMember($event->user,'update');
+        
+        $job = new ManageWechatMember($event->user, 'update');
         $this->dispatch($job);
-
+        
     }
     
     /**
@@ -39,26 +38,26 @@ class UserEventSubscriber {
      *
      * @param $event
      */
-    public function onUserDeleted($event){
-
-        $job = new ManageWechatMember($event->userId,'delete');
+    public function onUserDeleted($event) {
+        
+        $job = new ManageWechatMember($event->userId, 'delete');
         $this->dispatch($job);
-
+        
     }
-
+    
     /**
      * Register the listeners for the subscriber
      *
      * @param Dispatcher $events
      */
     public function subscribe(Dispatcher $events) {
-
+        
         $e = 'App\\Events\\';
         $l = 'App\\Listeners\\UserEventSubscriber@';
         $events->listen($e . 'UserCreated', $l . 'onUserCreated');
         $events->listen($e . 'UserUpdated', $l . 'onUserUpdated');
         $events->listen($e . 'UserDeleted', $l . 'onUserDeleted');
-
+        
     }
-
+    
 }

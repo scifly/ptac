@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\ViewComposers;
 
 use App\Models\Grade;
@@ -15,7 +14,6 @@ class StudentAttendanceSettingComposer {
         $this->grade = $grade;
         $this->semester = $semester;
         
-        
     }
     
     public function compose(View $view) {
@@ -26,14 +24,13 @@ class StudentAttendanceSettingComposer {
             '星期四' => '星期四',
             '星期五' => '星期五',
             '星期六' => '星期六',
-            '星期天' => '星期天'
+            '星期天' => '星期天',
         ];
-        
         $view->with([
 //            'schools' => $this->school->pluck('name', 'id'),
-            'grades' => $this->grade->pluck('name', 'id'),
+            'grades'    => $this->grade->pluck('name', 'id'),
             'semesters' => $this->semester->pluck('name', 'id'),
-            'days' => $day
+            'days'      => $day,
         ]);
         
     }

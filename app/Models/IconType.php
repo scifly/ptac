@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
@@ -47,6 +46,7 @@ class IconType extends Model {
     public function store(array $data) {
         
         $iconType = $this->create($data);
+        
         return $iconType ? true : false;
         
     }
@@ -64,6 +64,7 @@ class IconType extends Model {
         if (!$iconType) {
             return false;
         }
+        
         return $iconType->update($data) ? true : false;
         
     }
@@ -77,7 +78,10 @@ class IconType extends Model {
     public function remove($id) {
         
         $iconType = $this->find($id);
-        if (!$iconType) { return false; }
+        if (!$iconType) {
+            return false;
+        }
+        
         return $iconType->removable($iconType)
             ? $iconType->delete() : false;
         
@@ -92,11 +96,11 @@ class IconType extends Model {
             ['db' => 'IconType.created_at', 'dt' => 3],
             ['db' => 'IconType.updated_at', 'dt' => 4],
             [
-                'db' => 'IconType.enabled', 'dt' => 5,
+                'db'        => 'IconType.enabled', 'dt' => 5,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
-                }
-            ]
+                },
+            ],
         ];
         
         return Datatable::simple($this, $columns);

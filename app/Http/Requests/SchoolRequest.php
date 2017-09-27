@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
@@ -21,14 +20,14 @@ class SchoolRequest extends FormRequest {
     public function rules() {
         
         return [
-            'name' => 'required|string|between:6,255|unique:schools,name,' .
+            'name'           => 'required|string|between:6,255|unique:schools,name,' .
                 $this->input('id') . ',id',
-            'address' => 'required|string|between:6,255',
-            'department_id' => 'required|integer',
-            'corp_id' => 'required|integer',
-            'menu_id' => 'required|integer',
+            'address'        => 'required|string|between:6,255',
+            'department_id'  => 'required|integer',
+            'corp_id'        => 'required|integer',
+            'menu_id'        => 'required|integer',
             'school_type_id' => 'required|integer',
-            'enabled' => 'required|boolean'
+            'enabled'        => 'required|boolean',
         ];
         
     }

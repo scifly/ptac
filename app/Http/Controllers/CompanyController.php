@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CompanyRequest;
@@ -32,6 +31,7 @@ class CompanyController extends Controller {
         if (Request::get('draw')) {
             return response()->json($this->company->datatable());
         }
+        
         return $this->output(__METHOD__);
         
     }
@@ -72,6 +72,7 @@ class CompanyController extends Controller {
         if (!$company) {
             return $this->notFound();
         }
+        
         return $this->output(__METHOD__, ['company' => $company]);
         
     }
@@ -88,6 +89,7 @@ class CompanyController extends Controller {
         if (!$company) {
             return $this->notFound();
         }
+        
         return $this->output(__METHOD__, ['company' => $company]);
         
     }
@@ -104,6 +106,7 @@ class CompanyController extends Controller {
         if (!$this->company->find($id)) {
             return $this->notFound();
         }
+        
         return $this->company->modify($request->all(), $id, true)
             ? $this->succeed() : $this->fail();
         
@@ -120,6 +123,7 @@ class CompanyController extends Controller {
         if (!$this->company->find($id)) {
             return $this->notFound();
         }
+        
         return $this->company->remove($id, true)
             ? $this->succeed() : $this->fail();
         

@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ConferenceRoomRequest;
@@ -32,6 +31,7 @@ class ConferenceRoomController extends Controller {
         if (Request::get('draw')) {
             return response()->json($this->conferenceRoom->datatable());
         }
+        
         return $this->output(__METHOD__);
         
     }
@@ -71,6 +71,7 @@ class ConferenceRoomController extends Controller {
         if (!$conferenceRoom) {
             return $this->notFound();
         }
+        
         return $this->output(__METHOD__, ['conferenceRoom' => $conferenceRoom]);
         
     }
@@ -87,6 +88,7 @@ class ConferenceRoomController extends Controller {
         if (!$conferenceRoom) {
             return $this->notFound();
         }
+        
         return $this->output(__METHOD__, ['conferenceRoom' => $conferenceRoom]);
         
     }
@@ -104,6 +106,7 @@ class ConferenceRoomController extends Controller {
         if (!$conferenceRoom) {
             return $this->notFound();
         }
+        
         return $conferenceRoom->update($request->all()) ? $this->succeed() : $this->fail();
         
     }
@@ -120,6 +123,7 @@ class ConferenceRoomController extends Controller {
         if (!$conferenceRoom) {
             return $this->notFound();
         }
+        
         return $this->conferenceRoom->remove($id) ? $this->succeed() : $this->fail();
         
     }

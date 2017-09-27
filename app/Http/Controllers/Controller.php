@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Models\Action;
@@ -13,6 +12,7 @@ use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
 
 class Controller extends BaseController {
+    
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
     
     const HTTP_STATUSCODE_OK = 200;
@@ -37,7 +37,7 @@ class Controller extends BaseController {
     
     protected $result = [
         'statusCode' => self::HTTP_STATUSCODE_OK,
-        'message' => self::MSG_OK
+        'message'    => self::MSG_OK,
     ];
     
     /**
@@ -65,7 +65,6 @@ class Controller extends BaseController {
         if (!$view) {
             return $this->fail($method . '配置错误');
         }
-        
         $menu = Menu::whereId(session('menuId'))->first();
         $tab = Tab::whereId(Request::get('tabId'))->first();
         # 保存状态为active的卡片ID
@@ -76,7 +75,6 @@ class Controller extends BaseController {
             Session::forget('tabChanged');
         }
         session(['tabUrl' => Request::path()]);
-        
         if ($menu) {
             $params['breadcrumb'] = $menu->name . ' / ' . $tab->name . ' / ' . $action->name;
         } else {
@@ -87,10 +85,11 @@ class Controller extends BaseController {
                 "<span style=\"color: red\">菜单 - <strong>{$menuName}</strong> - 配置错误, 请检查后</span>" .
                 '<a href="' . session('pageUrl') . '">重试</a>';
         }
+        
         return response()->json([
-            'html' => view($view, $params)->render(),
-            'js' => $action->js,
-            'breadcrumb' => $params['breadcrumb']
+            'html'       => view($view, $params)->render(),
+            'js'         => $action->js,
+            'breadcrumb' => $params['breadcrumb'],
         ]);
         
     }
@@ -99,7 +98,7 @@ class Controller extends BaseController {
         
         $this->result = [
             'statusCode' => self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR,
-            'message' => $msg
+            'message'    => $msg,
         ];
         
         return response()->json($this->result);
@@ -109,8 +108,9 @@ class Controller extends BaseController {
         
         $this->result = [
             'statusCode' => self::HTTP_STATUSCODE_BAD_REQUEST,
-            'message' => self::MSG_BAD_REQUEST
+            'message'    => self::MSG_BAD_REQUEST,
         ];
+        
         return response()->json($this->result);
         
     }
@@ -119,7 +119,7 @@ class Controller extends BaseController {
         
         $this->result = [
             'statusCode' => self::HTTP_STATUSCODE_OK,
-            'message' => $msg
+            'message'    => $msg,
         ];
         
         return response()->json($this->result);

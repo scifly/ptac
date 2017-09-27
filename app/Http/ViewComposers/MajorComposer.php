@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\ViewComposers;
 
 use App\Models\School;
@@ -19,7 +18,7 @@ class MajorComposer {
     public function compose(View $view) {
         
         $view->with([
-            'schools' => $this->school->pluck('name', 'id'),
+            'schools'  => $this->school->pluck('name', 'id'),
             'subjects' => $this->subject->pluck('name', 'id'),
         ]);
         

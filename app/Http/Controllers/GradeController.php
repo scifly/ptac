@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\GradeRequest;
@@ -34,6 +33,7 @@ class GradeController extends Controller {
         if (Request::get('draw')) {
             return response()->json($this->grade->datatable());
         }
+        
         return $this->output(__METHOD__);
         
     }
@@ -74,9 +74,10 @@ class GradeController extends Controller {
         if (!$grade) {
             return $this->notFound();
         }
+        
         return $this->output(__METHOD__, [
-            'grade' => $grade,
-            'educators' => $this->educator->educators($grade->educator_ids)
+            'grade'     => $grade,
+            'educators' => $this->educator->educators($grade->educator_ids),
         ]);
         
     }
@@ -96,8 +97,8 @@ class GradeController extends Controller {
         $gradeIds = explode(",", $grade->educator_ids);
         
         return $this->output(__METHOD__, [
-            'grade' => $grade,
-            'selectedEducators' => $this->educator->educators($gradeIds)
+            'grade'             => $grade,
+            'selectedEducators' => $this->educator->educators($gradeIds),
         ]);
         
     }
@@ -111,7 +112,10 @@ class GradeController extends Controller {
      */
     public function update(GradeRequest $request, $id) {
         
-        if (!$this->grade->find($id)) { return $this->notFound(); }
+        if (!$this->grade->find($id)) {
+            return $this->notFound();
+        }
+        
         return $this->grade->modify($request->all(), $id, true)
             ? $this->succeed() : $this->fail();
         
@@ -125,7 +129,10 @@ class GradeController extends Controller {
      */
     public function destroy($id) {
         
-        if (!$this->grade->find($id)) { return $this->notFound();}
+        if (!$this->grade->find($id)) {
+            return $this->notFound();
+        }
+        
         return $this->grade->remove($id, true)
             ? $this->succeed() : $this->fail();
         

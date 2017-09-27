@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\TabRequest;
@@ -39,6 +38,7 @@ class TabController extends Controller {
         if (!$this->tab->scan()) {
             return parent::notFound();
         }
+        
         return parent::output(__METHOD__);
         
     }
@@ -51,7 +51,7 @@ class TabController extends Controller {
     public function create() {
         
         return parent::output(__METHOD__, [
-            'menus' => $this->menu->leaves(1)
+            'menus' => $this->menu->leaves(1),
         ]);
         
     }
@@ -81,6 +81,7 @@ class TabController extends Controller {
         if (!$tab) {
             return parent::notFound();
         };
+        
         return parent::output(__METHOD__, ['tab' => $tab]);
         
     }
@@ -102,9 +103,10 @@ class TabController extends Controller {
         foreach ($tabMenus as $menu) {
             $selectedMenus[$menu->id] = $menu->name;
         }
+        
         return parent::output(__METHOD__, [
-            'tab' => $tab,
-            'menus' => $this->menu->leaves(1),
+            'tab'           => $tab,
+            'menus'         => $this->menu->leaves(1),
             'selectedMenus' => $selectedMenus,
         ]);
         
@@ -123,6 +125,7 @@ class TabController extends Controller {
         if (!$tab) {
             return parent::notFound();
         }
+        
         return $this->tab->modify($request->all(), $id)
             ? parent::succeed() : parent::fail();
         
@@ -140,6 +143,7 @@ class TabController extends Controller {
         if (!$tab) {
             return parent::notFound();
         }
+        
         return $this->tab->remove($id)
             ? parent::succeed() : parent::fail();
         

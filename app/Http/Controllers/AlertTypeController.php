@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\AlertTypeRequest;
@@ -32,6 +31,7 @@ class AlertTypeController extends Controller {
         if (Request::get('draw')) {
             return response()->json($this->alertType->datatable());
         }
+        
         return $this->output(__METHOD__);
         
     }
@@ -71,6 +71,7 @@ class AlertTypeController extends Controller {
         if (!$alertType) {
             return $this->notFound();
         }
+        
         return $this->output(__METHOD__, ['alertType' => $alertType]);
         
     }
@@ -87,6 +88,7 @@ class AlertTypeController extends Controller {
         if (!$alertType) {
             return $this->notFound();
         }
+        
         return $this->output(__METHOD__, ['alertType' => $alertType]);
         
     }
@@ -104,6 +106,7 @@ class AlertTypeController extends Controller {
         if (!$alertType) {
             return $this->notFound();
         }
+        
         return $alertType->update($request->all());
         
     }
@@ -120,6 +123,7 @@ class AlertTypeController extends Controller {
         if (!$alertType) {
             return $this->notFound();
         }
+        
         return $alertType->delete() ? $this->succeed() : $this->fail();
         
     }

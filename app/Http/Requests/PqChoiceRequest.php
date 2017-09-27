@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
@@ -13,12 +12,11 @@ class PqChoiceRequest extends FormRequest {
     ];
     protected $strings_val = [
         'required' => '为必填项',
-        'string' => '为字符串',
-        'max' => '最大为:max',
-        'integer' => '必须为整数',
-        'boolean' => '为0或1',
-        'unique' => '不唯一',
-    
+        'string'   => '为字符串',
+        'max'      => '最大为:max',
+        'integer'  => '必须为整数',
+        'boolean'  => '为0或1',
+        'unique'   => '不唯一',
     ];
     
     /**
@@ -44,6 +42,7 @@ class PqChoiceRequest extends FormRequest {
                 $array[$key . '.' . $v] = $k_array[$key] . $v_array[$v];
             }
         }
+        
         return $array;
         
     }

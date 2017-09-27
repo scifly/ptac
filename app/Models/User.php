@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Events\UserCreated;
@@ -201,6 +200,7 @@ class User extends Authenticatable {
             $user = $this->find($id);
             $users[$user->id] = $user->realname;
         }
+        
         return $users;
         
     }
@@ -219,13 +219,13 @@ class User extends Authenticatable {
             $department[] = $d->id;
         }
         $data = [
-            'userid' => $user->userid,
-            'name' => $user->realname,
+            'userid'       => $user->userid,
+            'name'         => $user->realname,
             'english_name' => $user->english_name,
-            'mobile' => $mobile,
-            'department' => $department,
-            'gender' => $user->gender,
-            'enable' => $user->enabled,
+            'mobile'       => $mobile,
+            'department'   => $department,
+            'gender'       => $user->gender,
+            'enable'       => $user->enabled,
         ];
         event(new UserCreated($data));
         
@@ -245,13 +245,13 @@ class User extends Authenticatable {
             $department[] = $d->id;
         }
         $data = [
-            'userid' => $user->userid,
-            'name' => $user->realname,
+            'userid'       => $user->userid,
+            'name'         => $user->realname,
             'english_name' => $user->english_name,
-            'mobile' => $mobile,
-            'department' => $department,
-            'gender' => $user->gender,
-            'enable' => $user->enabled,
+            'mobile'       => $mobile,
+            'department'   => $department,
+            'gender'       => $user->gender,
+            'enable'       => $user->enabled,
         ];
         event(new UserUpdated($data));
         
@@ -277,30 +277,30 @@ class User extends Authenticatable {
             ['db' => 'User.avatar_url', 'dt' => 3],
             ['db' => 'User.realname', 'dt' => 4],
             [
-                'db' => 'User.gender', 'dt' => 5,
+                'db'        => 'User.gender', 'dt' => 5,
                 'formatter' => function ($d) {
                     return $d ? '男' : '女';
-                }
+                },
             ],
             ['db' => 'User.email', 'dt' => 6],
             ['db' => 'User.created_at', 'dt' => 7],
             ['db' => 'User.updated_at', 'dt' => 8],
             [
-                'db' => 'User.enabled', 'dt' => 9,
+                'db'        => 'User.enabled', 'dt' => 9,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
-                }
+                },
             ],
         ];
         $joins = [
             [
-                'table' => 'groups',
-                'alias' => 'Groups',
-                'type' => 'INNER',
+                'table'      => 'groups',
+                'alias'      => 'Groups',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'Groups.id = User.group_id'
-                ]
-            ]
+                    'Groups.id = User.group_id',
+                ],
+            ],
         ];
         
         return Datatable::simple($this, $columns, $joins);

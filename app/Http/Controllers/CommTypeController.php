@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CommTypeRequest;
@@ -32,6 +31,7 @@ class CommTypeController extends Controller {
         if (Request::get('draw')) {
             return response()->json($this->commType->datatable());
         }
+        
         return $this->output(__METHOD__);
         
     }
@@ -71,6 +71,7 @@ class CommTypeController extends Controller {
         if (!$commType) {
             return $this->notFound();
         }
+        
         return $this->output(__METHOD__, ['commType' => $commType]);
         
     }
@@ -88,6 +89,7 @@ class CommTypeController extends Controller {
         if (!$commType) {
             return $this->notFound();
         }
+        
         return $commType->update($request->all()) ? $this->succeed() : $this->fail();
         
     }
@@ -104,6 +106,7 @@ class CommTypeController extends Controller {
         if (!$commType) {
             return $this->notFound();
         }
+        
         return $commType->delete() ? $this->succeed() : $this->fail();
         
     }

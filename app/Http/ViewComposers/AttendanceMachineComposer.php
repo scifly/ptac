@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\ViewComposers;
 
 use App\Models\School;
@@ -18,7 +17,7 @@ class AttendanceMachineComposer {
     public function compose(View $view) {
         
         $view->with([
-            'schools' => $this->school->pluck('name', 'id')
+            'schools' => $this->school->pluck('name', 'id'),
         ]);
     }
     

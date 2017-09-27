@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ConferenceParticipantRequest;
@@ -32,6 +31,7 @@ class ConferenceParticipantController extends Controller {
         if (Request::get('draw')) {
             return response()->json($this->conferenceParticipant->datatable());
         }
+        
         return $this->output(__METHOD__);
         
     }
@@ -60,6 +60,7 @@ class ConferenceParticipantController extends Controller {
         if (!$conferenceParticipant) {
             return $this->notFound();
         }
+        
         return $this->output(__METHOD__, ['conferenceParticipant' => $conferenceParticipant]);
         
     }

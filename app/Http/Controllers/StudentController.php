@@ -1,14 +1,13 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StudentRequest;
-use App\Models\Student;
 use App\Models\Custodian;
 use App\Models\CustodianStudent;
 use App\Models\Department;
 use App\Models\DepartmentUser;
 use App\Models\Group;
+use App\Models\Student;
 use App\Models\User;
 use Illuminate\Support\Facades\Request;
 
@@ -19,20 +18,20 @@ use Illuminate\Support\Facades\Request;
  * @package App\Http\Controllers
  */
 class StudentController extends Controller {
-
-    protected $custodian, $department, $group, $user,$departmentUser,$student,$custodianStudent;
-
+    
+    protected $custodian, $department, $group, $user, $departmentUser, $student, $custodianStudent;
+    
     function __construct(Custodian $custodian, Department $department, Group $group, User $user,
-                         DepartmentUser $departmentUser,Student $student,CustodianStudent $custodianStudent) {
-
+                         DepartmentUser $departmentUser, Student $student, CustodianStudent $custodianStudent) {
+        
         $this->custodian = $custodian;
         $this->department = $department;
         $this->group = $group;
         $this->user = $user;
         $this->departmentUser = $departmentUser;
-        $this->student =$student;
+        $this->student = $student;
         $this->custodianStudent = $custodianStudent;
-
+        
     }
     
     /**
@@ -45,6 +44,7 @@ class StudentController extends Controller {
         if (Request::get('draw')) {
             return response()->json($this->student->datatable());
         }
+        
         return $this->output(__METHOD__);
         
     }
@@ -58,6 +58,7 @@ class StudentController extends Controller {
         if (Request::method() === 'POST') {
             return $this->department->tree();
         }
+        
         return $this->output(__METHOD__);
         
     }
@@ -69,11 +70,11 @@ class StudentController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(StudentRequest $request) {
-
+        
         return $this->student->store($request) ? $this->succeed() : $this->fail();
         
     }
-
+    
     /**
      * 学生记录详情
      *
@@ -83,7 +84,10 @@ class StudentController extends Controller {
     public function show($id) {
         
         $student = $this->student->find($id);
-        if (!$student) { return $this->notFound(); }
+        if (!$student) {
+            return $this->notFound();
+        }
+        
         return $this->output(__METHOD__, ['student' => $student]);
         
     }
@@ -95,7 +99,7 @@ class StudentController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function edit($id) {
-
+        
         if (Request::method() === 'POST') {
             return $this->department->tree();
         }
@@ -105,20 +109,19 @@ class StudentController extends Controller {
         foreach ($student->user->departments as $department) {
             $selectedDepartmentIds[] = $department->id;
         }
-
         $selectedDepartments = $this->department->selectedNodes($selectedDepartmentIds);
-
         # 查询学生信息
-        if (!$student) { return $this->notFound(); }
-
+        if (!$student) {
+            return $this->notFound();
+        }
+        
         return $this->output(__METHOD__, [
-            'mobiles' => $student->user->mobiles,
-            'student' => $student,
+            'mobiles'               => $student->user->mobiles,
+            'student'               => $student,
             'selectedDepartmentIds' => implode(',', $selectedDepartmentIds),
-            'selectedDepartments' => $selectedDepartments,
-
+            'selectedDepartments'   => $selectedDepartments,
         ]);
-
+        
     }
     
     /**
@@ -129,7 +132,7 @@ class StudentController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(StudentRequest $request, $id) {
-        return $this->student->modify($request,$id) ? $this->succeed() : $this->fail();
+        return $this->student->modify($request, $id) ? $this->succeed() : $this->fail();
         
     }
     
@@ -140,7 +143,7 @@ class StudentController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
-
+        
         return $this->custodian->remove($id) ? $this->succeed() : $this->fail();
         
     }

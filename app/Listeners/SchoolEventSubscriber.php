@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Listeners;
 
 use App\Models\Corp;
@@ -15,7 +14,7 @@ class SchoolEventSubscriber {
     protected $departmentTypeId, $menuTypeId;
     
     function __construct() {
-
+        
         $this->departmentTypeId = DepartmentType::whereName('学校')->first()->id;
         $this->menuTypeId = MenuType::whereName('学校')->first()->id;
         
@@ -36,8 +35,10 @@ class SchoolEventSubscriber {
             $data = ['department_id' => $department->id];
             # 更新对应"学校"的department_id
             $school = School::whereName($department->name)->first();
+            
             return $school->modify($data, $school->id);
         }
+        
         return true;
         
     }
@@ -57,8 +58,10 @@ class SchoolEventSubscriber {
             $data = ['menu_id' => $menu->id];
             # 更新对应"学校"的menu_id
             $school = School::whereName($menu->name)->first();
+            
             return $school->modify($data, $school->id);
         }
+        
         return true;
         
     }
@@ -80,8 +83,10 @@ class SchoolEventSubscriber {
             if ($school->corp_id != $corpId) {
                 return $school->modify(['corp_id' => $corpId], $school->id);
             }
+            
             return true;
         }
+        
         return true;
         
     }
@@ -103,8 +108,10 @@ class SchoolEventSubscriber {
             if ($school->corp_id != $corpId) {
                 return $school->modify(['corp_id' => $corpId], $school->id);
             }
+            
             return true;
         }
+        
         return true;
         
     }

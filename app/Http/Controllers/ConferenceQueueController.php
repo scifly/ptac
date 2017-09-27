@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ConferenceQueueRequest;
@@ -32,6 +31,7 @@ class ConferenceQueueController extends Controller {
         if (Request::get('draw')) {
             return response()->json($this->conferenceQueue->datatable());
         }
+        
         return $this->output(__METHOD__);
         
     }
@@ -71,6 +71,7 @@ class ConferenceQueueController extends Controller {
         if (!$conferenceQueue) {
             $this->notFound();
         }
+        
         return $this->output(__METHOD__, ['conferenceQueue' => $conferenceQueue]);
         
     }
@@ -87,6 +88,7 @@ class ConferenceQueueController extends Controller {
         if (!$conferenceQueue) {
             $this->notFound();
         }
+        
         return $this->output(__METHOD__, ['conferenceQueue' => $conferenceQueue]);
     }
     
@@ -103,6 +105,7 @@ class ConferenceQueueController extends Controller {
         if (!$conferenceQueue) {
             $this->notFound();
         }
+        
         return $this->conferenceQueue->modify($request, $id) ? $this->succeed() : $this->fail();
         
     }
@@ -119,6 +122,7 @@ class ConferenceQueueController extends Controller {
         if (!$conferenceQueue) {
             $this->notFound();
         }
+        
         return $this->conferenceQueue->remove($id) ? $this->succeed() : $this->fail();
         
     }

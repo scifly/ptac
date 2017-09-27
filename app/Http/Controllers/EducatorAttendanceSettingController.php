@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\EducatorAttendanceSettingRequest;
@@ -32,6 +31,7 @@ class EducatorAttendanceSettingController extends Controller {
         if (Request::get('draw')) {
             return response()->json($this->eas->datatable());
         }
+        
         return parent::output(__METHOD__);
     }
     
@@ -71,10 +71,10 @@ class EducatorAttendanceSettingController extends Controller {
         if (!$eas) {
             return $this->notFound();
         }
+        
         return $this->output(__METHOD__, ['eas' => $eas]);
         
     }
-    
     
     /**
      * 编辑教职员工考勤设置
@@ -104,6 +104,7 @@ class EducatorAttendanceSettingController extends Controller {
         if (!$eas) {
             return $this->notFound();
         }
+        
         return $eas->update($request->all())
             ? $this->succeed() : $this->fail();
         
@@ -121,6 +122,7 @@ class EducatorAttendanceSettingController extends Controller {
         if (!$eas) {
             return $this->notFound();
         }
+        
         return $eas->delete()
             ? $this->succeed() : $this->fail();
         

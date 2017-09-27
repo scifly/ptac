@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Providers;
 
 use App\Facades\DatatableFacade as Datatable;
@@ -24,7 +23,7 @@ class DatatableServiceProvider extends ServiceProvider {
      */
     public function register() {
         
-        $this->app->singleton('DatatableFacade', function() {
+        $this->app->singleton('DatatableFacade', function () {
             return new Datatable;
         });
         

@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\TeamRequest;
@@ -28,6 +27,7 @@ class TeamController extends Controller {
         if (Request::get('draw')) {
             return response()->json($this->team->datatable());
         }
+        
         return $this->output(__METHOD__);
         
     }
@@ -67,6 +67,7 @@ class TeamController extends Controller {
         if (!$team) {
             return $this->notFound();
         }
+        
         return $this->output(__METHOD__, ['team' => $team]);
         
     }
@@ -83,6 +84,7 @@ class TeamController extends Controller {
         if (!$team) {
             return $this->notFound();
         }
+        
         return $this->output(__METHOD__, ['team' => $team]);
         
     }
@@ -100,6 +102,7 @@ class TeamController extends Controller {
         if (!$team) {
             return $this->notFound();
         }
+        
         return $team->update($request->all()) ? $this->succeed() : $this->fail();
         
     }
@@ -116,6 +119,7 @@ class TeamController extends Controller {
         if (!$team) {
             return $this->notFound();
         }
+        
         return $team->delete() ? $this->succeed() : $this->fail();
         
     }

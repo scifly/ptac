@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
@@ -39,11 +38,12 @@ class MenuTab extends Model {
                 foreach ($tabIds as $tabId) {
                     $this->create([
                         'menu_id' => $menuId,
-                        'tab_id' => $tabId,
-                        'enabled' => 1
+                        'tab_id'  => $tabId,
+                        'enabled' => 1,
                     ]);
                 }
             });
+            
             return is_null($exception) ? true : $exception;
         } catch (Exception $exception) {
             return false;
@@ -58,11 +58,12 @@ class MenuTab extends Model {
                 foreach ($menuIds as $menuId) {
                     $this->create([
                         'menu_id' => $menuId,
-                        'tab_id' => $tabId,
-                        'enabled' => 1
+                        'tab_id'  => $tabId,
+                        'enabled' => 1,
                     ]);
                 }
             });
+            
             return is_null($exception) ? true : $exception;
         } catch (Exception $exception) {
             return false;
@@ -79,6 +80,7 @@ class MenuTab extends Model {
                         ->update(['tab_order' => $rank + 1]);
                 }
             });
+            
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
             return false;

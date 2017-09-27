@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\DepartmentTypeRequest;
@@ -32,6 +31,7 @@ class DepartmentTypeController extends Controller {
         if (Request::get('draw')) {
             return response()->json($this->departmentType->datatable());
         }
+        
         return $this->output(__METHOD__);
         
     }
@@ -71,6 +71,7 @@ class DepartmentTypeController extends Controller {
         if (!$departmentType) {
             return $this->notFound();
         }
+        
         return $this->output(__METHOD__, ['departmentType' => $departmentType]);
         
     }
@@ -87,6 +88,7 @@ class DepartmentTypeController extends Controller {
         if (!$this->departmentType->find($id)) {
             return $this->notFound();
         }
+        
         return $this->departmentType->modify($request->all(), $id) ? $this->succeed() : $this->fail();
         
     }
@@ -102,6 +104,7 @@ class DepartmentTypeController extends Controller {
         if (!$this->departmentType->find($id)) {
             return $this->notFound();
         }
+        
         return $this->departmentType->remove($id) ? $this->succeed() : $this->fail();
         
     }

@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Listeners;
 
 use App\Models\Company;
@@ -36,8 +35,10 @@ class CorpEventSubscriber {
             $data = ['department_id' => $department->id];
             # 更新对应企业的department_id (企业名称是唯一的)
             $corp = Corp::whereName($department->name)->first();
+            
             return $corp->modify($data, $corp->id);
         }
+        
         return true;
         
     }
@@ -57,8 +58,10 @@ class CorpEventSubscriber {
             $data = ['menu_id' => $menu->id];
             # 更新对应企业的menu_id (企业名称是唯一的)
             $corp = Corp::whereName($menu->name)->first();
+            
             return $corp->modify($data, $corp->id);
         }
+        
         return true;
         
     }
@@ -80,8 +83,10 @@ class CorpEventSubscriber {
             if ($corp->company_id != $companyId) {
                 return $corp->modify(['company_id' => $companyId], $corp->id);
             }
+            
             return true;
         }
+        
         return true;
         
     }
@@ -103,8 +108,10 @@ class CorpEventSubscriber {
             if ($corp->company_id != $companyId) {
                 return $corp->modify(['company_id' => $companyId], $corp->id);
             }
+            
             return true;
         }
+        
         return true;
         
     }

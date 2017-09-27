@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Models\ScoreTotal;
@@ -34,6 +33,7 @@ class ScoreTotalController extends Controller {
         if (Request::get('draw')) {
             return response()->json($this->scoreTotal->datatable());
         }
+        
         return $this->output(__METHOD__);
         
     }
@@ -54,7 +54,7 @@ class ScoreTotalController extends Controller {
         return $this->output(__METHOD__, [
             'score_total' => $scoreTotal,
             'studentname' => $scoreTotal->student->user->realname,
-            'subjects' => $this->subject->subjects($scoreTotal->subject_ids),
+            'subjects'    => $this->subject->subjects($scoreTotal->subject_ids),
             'na_subjects' => $this->subject->subjects($scoreTotal->na_subject_ids),
         ]);
         

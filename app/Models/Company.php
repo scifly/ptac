@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Events\CompanyCreated;
@@ -45,7 +44,7 @@ class Company extends Model {
     
     protected $fillable = [
         'name', 'remark', 'department_id',
-        'menu_id', 'enabled'
+        'menu_id', 'enabled',
     ];
     
     /**
@@ -99,8 +98,10 @@ class Company extends Model {
         $company = $this->create($data);
         if ($company && $fireEvent) {
             event(new CompanyCreated($company));
+            
             return true;
         }
+        
         return $company ? true : false;
         
     }
@@ -119,8 +120,10 @@ class Company extends Model {
         $updated = $company->update($data);
         if ($updated && $fireEvent) {
             event(new CompanyUpdated($company));
+            
             return true;
         }
+        
         return $updated ? true : false;
         
     }
@@ -135,12 +138,16 @@ class Company extends Model {
     public function remove($id, $fireEvent = false) {
         
         $company = $this->find($id);
-        if (!$company) { return false; }
+        if (!$company) {
+            return false;
+        }
         $removed = $this->removable($company) ? $company->delete() : false;
         if ($removed && $fireEvent) {
             event(new CompanyDeleted($company));
+            
             return true;
         }
+        
         return $removed ? true : false;
         
     }
@@ -154,11 +161,12 @@ class Company extends Model {
             ['db' => 'Company.created_at', 'dt' => 3],
             ['db' => 'Company.updated_at', 'dt' => 4],
             [
-                'db' => 'Company.enabled', 'dt' => 5,
+                'db'        => 'Company.enabled', 'dt' => 5,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
-                }]
+                }],
         ];
+        
         return Datatable::simple($this, $columns);
         
     }

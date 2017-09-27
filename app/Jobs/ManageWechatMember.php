@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Jobs;
 
 use App\Facades\Wechat;
@@ -46,11 +45,9 @@ class ManageWechatMember implements ShouldQueue {
         $corps = $corp::whereName('万浪软件')->first();
         $corpId = $corps->corpid;
         $secret = $corps->corpsecret;
-        
         $dir = dirname(__FILE__);
         $path = substr($dir, 0, stripos($dir, 'app/Jobs'));
         $tokenFile = $path . 'public/token.txt';
-        
         $token = Wechat::getAccessToken($tokenFile, $corpId, $secret);
         switch ($this->action) {
             case 'create':

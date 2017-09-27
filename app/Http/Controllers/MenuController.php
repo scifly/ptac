@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\MenuRequest;
@@ -37,6 +36,7 @@ class MenuController extends Controller {
         if (Request::method() === 'POST') {
             return $this->menu->tree();
         }
+        
         return parent::output(__METHOD__);
         
     }
@@ -50,8 +50,8 @@ class MenuController extends Controller {
     public function create($id) {
         
         return parent::output(__METHOD__, [
-            'parentId' => $id,
-            'menuTypeId' => MenuType::whereName('其他')->first()->id
+            'parentId'   => $id,
+            'menuTypeId' => MenuType::whereName('其他')->first()->id,
         ]);
         
     }
@@ -80,6 +80,7 @@ class MenuController extends Controller {
         if (!$menu) {
             return parent::notFound();
         }
+        
         return parent::output(__METHOD__, ['menu' => $menu]);
         
     }
@@ -96,16 +97,16 @@ class MenuController extends Controller {
         if (!$menu) {
             return parent::notFound();
         }
-        
         # 获取已选定的卡片
         $menuTabs = $menu->tabs;
         $selectedTabs = [];
         foreach ($menuTabs as $tab) {
             $selectedTabs[$tab->id] = $tab->name;
         }
+        
         return parent::output(__METHOD__, [
-            'menu' => $menu,
-            'selectedTabs' => $selectedTabs
+            'menu'         => $menu,
+            'selectedTabs' => $selectedTabs,
         ]);
         
     }
@@ -123,6 +124,7 @@ class MenuController extends Controller {
         if (!$menu) {
             return parent::notFound();
         }
+        
         return $this->menu->modify($request, $id) ? parent::succeed() : parent::fail();
         
     }
@@ -134,7 +136,7 @@ class MenuController extends Controller {
      * @param $parentId
      * @return \Illuminate\Http\JsonResponse
      */
-    public function move($id, $parentId = NULL) {
+    public function move($id, $parentId = null) {
         
         if (!$parentId) {
             return $this->fail('非法操作');
@@ -148,6 +150,7 @@ class MenuController extends Controller {
             return $this->menu->move($id, $parentId, true)
                 ? parent::succeed() : parent::fail();
         }
+        
         return $this->fail('非法操作');
         
     }
@@ -164,6 +167,7 @@ class MenuController extends Controller {
         if (!$menu) {
             return parent::notFound();
         }
+        
         return $this->menu->remove($id) ? parent::succeed() : parent::fail();
         
     }
@@ -202,6 +206,7 @@ class MenuController extends Controller {
             $tab = Tab::whereId($rank['tab_id'])->first();
             $tabs[] = $tab;
         }
+        
         // $tabs = $menu->tabs;
         return $this->output(__METHOD__, ['tabs' => $tabs]);
         
@@ -220,6 +225,7 @@ class MenuController extends Controller {
             return $this->notFound();
         }
         $ranks = Request::get('data');
+        
         return $this->menuTab->storeTabRanks($id, $ranks) ? $this->succeed() : $this->fail();
         
     }

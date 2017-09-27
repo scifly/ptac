@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\ViewComposers;
 
 use App\Models\Educator;
@@ -30,7 +29,7 @@ class EventComposer {
 //            die();
         $view->with([
             'educators' => $this->getEducators($this->userId),
-            'subjects' => $this->getSubjects($this->userId)
+            'subjects'  => $this->getSubjects($this->userId),
         ]);
     }
     
@@ -42,6 +41,7 @@ class EventComposer {
             $educatorArr[$v['id']] = $v['user']['realname'];
         }
         $educatorArr[0] = "无";
+        
         return $educatorArr;
     }
     
@@ -49,6 +49,7 @@ class EventComposer {
         $educator = Educator::where('user_id', $userId)->first();
         $subjects = Subject::where('school_id', $educator->school_id)->pluck('name', 'id');
         $subjects[0] = "无";
+        
         return $subjects;
     }
 }

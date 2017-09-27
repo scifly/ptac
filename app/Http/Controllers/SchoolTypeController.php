@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\SchoolTypeRequest;
@@ -33,6 +32,7 @@ class SchoolTypeController extends Controller {
         if (Request::get('draw')) {
             return response()->json($this->schoolType->datatable());
         }
+        
         return parent::output(__METHOD__);
         
     }
@@ -74,6 +74,7 @@ class SchoolTypeController extends Controller {
         if (!$schoolType) {
             return parent::notFound();
         }
+        
         return parent::output(__METHOD__, ['schoolType' => $schoolType]);
         
     }
@@ -90,6 +91,7 @@ class SchoolTypeController extends Controller {
         if (!$schoolType) {
             return parent::notFound();
         }
+        
         return parent::output(__METHOD__, ['schoolType' => $schoolType]);
         
     }
@@ -107,6 +109,7 @@ class SchoolTypeController extends Controller {
         if (!$schoolType) {
             return parent::notFound();
         }
+        
         return $schoolType->update($request->all()) ? parent::succeed() : parent::fail();
         
     }
@@ -123,6 +126,7 @@ class SchoolTypeController extends Controller {
         if (!$schoolType) {
             return parent::notFound();
         }
+        
         return $schoolType->delete() ? parent::succeed() : parent::fail();
         
     }

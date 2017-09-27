@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\ViewComposers;
 
 use App\Models\ExamType;
@@ -25,8 +24,8 @@ class ExamComposer {
         
         $view->with([
             'examtypes' => $this->examtypes->pluck('name', 'id'),
-            'classes' => $this->classes->pluck('name', 'id'),
-            'subjects' => $this->subjects->pluck('name', 'id'),
+            'classes'   => $this->classes->pluck('name', 'id'),
+            'subjects'  => $this->subjects->pluck('name', 'id'),
         ]);
     }
     

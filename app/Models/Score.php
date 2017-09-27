@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
@@ -45,7 +44,7 @@ class Score extends Model {
         'class_rank',
         'grade_rank',
         'score',
-        'enabled'
+        'enabled',
     ];
     
     public function student() { return $this->belongsTo('App\Models\Student'); }
@@ -54,7 +53,7 @@ class Score extends Model {
     
     public function exam() { return $this->belongsTo('App\Models\Exam'); }
     
-    public function existed(ScoreRequest $request, $id = NULL) {
+    public function existed(ScoreRequest $request, $id = null) {
         
         if (!$id) {
             $score = $this->where('student_id', $request->input('student_id'))
@@ -68,6 +67,7 @@ class Score extends Model {
                 ->where('exam_id', $request->input('exam_id'))
                 ->first();
         }
+        
         return $score ? true : false;
         
     }
@@ -80,60 +80,61 @@ class Score extends Model {
             ['db' => 'User.realname', 'dt' => 2],
             ['db' => 'Subject.name as subjectname', 'dt' => 3],
             ['db' => 'Exam.name as examname', 'dt' => 4],
-            ['db' => 'Score.class_rank', 'dt' => 5,
-                'formatter' => function ($d) {
-                    return $d === 0 ? "未统计" : $d;
-                }
+            ['db'        => 'Score.class_rank', 'dt' => 5,
+             'formatter' => function ($d) {
+                 return $d === 0 ? "未统计" : $d;
+             },
             ],
-            ['db' => 'Score.grade_rank', 'dt' => 6,
-                'formatter' => function ($d) {
-                    return $d === 0 ? "未统计" : $d;
-                }
+            ['db'        => 'Score.grade_rank', 'dt' => 6,
+             'formatter' => function ($d) {
+                 return $d === 0 ? "未统计" : $d;
+             },
             ],
             ['db' => 'Score.score', 'dt' => 7],
             ['db' => 'Score.created_at', 'dt' => 8],
             ['db' => 'Score.updated_at', 'dt' => 9],
             [
-                'db' => 'Score.enabled', 'dt' => 10,
+                'db'        => 'Score.enabled', 'dt' => 10,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
-                }
-            ]
+                },
+            ],
         ];
         $joins = [
             [
-                'table' => 'students',
-                'alias' => 'Student',
-                'type' => 'INNER',
+                'table'      => 'students',
+                'alias'      => 'Student',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'Student.id = Score.student_id'
-                ]
+                    'Student.id = Score.student_id',
+                ],
             ],
             [
-                'table' => 'subjects',
-                'alias' => 'Subject',
-                'type' => 'INNER',
+                'table'      => 'subjects',
+                'alias'      => 'Subject',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'Subject.id = Score.subject_id'
-                ]
+                    'Subject.id = Score.subject_id',
+                ],
             ],
             [
-                'table' => 'exams',
-                'alias' => 'Exam',
-                'type' => 'INNER',
+                'table'      => 'exams',
+                'alias'      => 'Exam',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'Exam.id = Score.exam_id'
-                ]
+                    'Exam.id = Score.exam_id',
+                ],
             ],
             [
-                'table' => 'users',
-                'alias' => 'User',
-                'type' => 'INNER',
+                'table'      => 'users',
+                'alias'      => 'User',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'User.id = Student.user_id'
-                ]
-            ]
+                    'User.id = Student.user_id',
+                ],
+            ],
         ];
+        
         return Datatable::simple($this, $columns, $joins);
     }
     
@@ -177,7 +178,6 @@ class Score extends Model {
                 foreach ($val as $grade_rank) {
                     $this->where('id', $grade_rank->id)->update(['grade_rank' => $grade_rank->grade_rank]);
                 }
-                
                 //通过班级分组
                 $classes = [];
                 foreach ($val as $item) {
@@ -200,6 +200,7 @@ class Score extends Model {
                 }
             }
         }
+        
         return true;
     }
     

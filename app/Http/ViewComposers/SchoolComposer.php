@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\ViewComposers;
 
 use App\Models\Corp;
@@ -22,7 +21,7 @@ class SchoolComposer {
         
         $view->with([
             'schoolTypes' => $this->schoolType->pluck('name', 'id'),
-            'corps' => $this->corp->pluck('name', 'id')
+            'corps'       => $this->corp->pluck('name', 'id'),
         ]);
     }
     

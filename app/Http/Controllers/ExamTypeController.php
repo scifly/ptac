@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ExamTypeRequest;
@@ -13,6 +12,7 @@ use Illuminate\Support\Facades\Request;
  * @package App\Http\Controllers
  */
 class ExamTypeController extends Controller {
+    
     protected $examType;
     
     function __construct(ExamType $examType) { $this->examType = $examType; }
@@ -27,6 +27,7 @@ class ExamTypeController extends Controller {
         if (Request::get('draw')) {
             return response()->json($this->examType->datatable());
         }
+        
         return $this->output(__METHOD__);
         
     }
@@ -67,8 +68,9 @@ class ExamTypeController extends Controller {
         if (!$examType) {
             return $this->notFound();
         }
+        
         return $this->output(__METHOD__, [
-            'examType' => $examType
+            'examType' => $examType,
         ]);
         
     }
@@ -85,6 +87,7 @@ class ExamTypeController extends Controller {
         if (!$examType) {
             return $this->notFound();
         }
+        
         return $this->output(__METHOD__, ['examType' => $examType]);
         
     }
@@ -102,6 +105,7 @@ class ExamTypeController extends Controller {
         if (!$examType) {
             return $this->notFound();
         }
+        
         return $examType->modify($request->all(), $id)
             ? $this->succeed() : $this->fail();
         
@@ -119,6 +123,7 @@ class ExamTypeController extends Controller {
         if (!$examType) {
             return $this->notFound();
         }
+        
         return $examType->remove($id)
             ? $this->succeed() : $this->fail();
         

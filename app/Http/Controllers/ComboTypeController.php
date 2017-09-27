@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CommTypeRequest;
@@ -32,6 +31,7 @@ class ComboTypeController extends Controller {
         if (Request::get('draw')) {
             return response()->json($this->comboType->datatable());
         }
+        
         return $this->output(__METHOD__);
         
     }
@@ -71,6 +71,7 @@ class ComboTypeController extends Controller {
         if (!$comboType) {
             return $this->notFound();
         }
+        
         return $this->output(__METHOD__, ['comboType' => $comboType]);
         
     }
@@ -88,6 +89,7 @@ class ComboTypeController extends Controller {
         if (!$comboType) {
             return $this->notFound();
         }
+        
         return $comboType->update($request->all()) ? $this->succeed() : $this->fail();
         
     }
@@ -104,6 +106,7 @@ class ComboTypeController extends Controller {
         if (!$comboType) {
             return $this->notFound();
         }
+        
         return $comboType->delete() ? $this->succeed() : $this->fail();
         
     }

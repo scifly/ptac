@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
@@ -73,8 +72,11 @@ class DepartmentType extends Model {
     public function remove($id) {
         
         $departmentType = $this->find($id);
-        if (!$departmentType) { return false; }
+        if (!$departmentType) {
+            return false;
+        }
         $removed = $this->removable($departmentType) ? $departmentType->delete() : false;
+        
         return $removed ? true : false;
         
     }
@@ -88,10 +90,10 @@ class DepartmentType extends Model {
             ['db' => 'DepartmentType.created_at', 'dt' => 3],
             ['db' => 'DepartmentType.updated_at', 'dt' => 4],
             [
-                'db' => 'DepartmentType.enabled', 'dt' => 5,
+                'db'        => 'DepartmentType.enabled', 'dt' => 5,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
-                }
+                },
             ],
         ];
         

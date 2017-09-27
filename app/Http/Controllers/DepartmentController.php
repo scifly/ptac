@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\DepartmentRequest;
@@ -34,6 +33,7 @@ class DepartmentController extends Controller {
         if (Request::method() === 'POST') {
             return $this->department->tree();
         }
+        
         return parent::output(__METHOD__);
         
     }
@@ -47,9 +47,10 @@ class DepartmentController extends Controller {
     public function create($id) {
         
         $departmentTypeId = DepartmentType::whereName('其他')->first()->id;
+        
         return $this->output(__METHOD__, [
-            'parentId' => $id,
-            'departmentTypeId' => $departmentTypeId
+            'parentId'         => $id,
+            'departmentTypeId' => $departmentTypeId,
         ]);
         
     }
@@ -79,6 +80,7 @@ class DepartmentController extends Controller {
         if (!$department) {
             return $this->notFound();
         }
+        
         return $this->output(__METHOD__, [
             'department' => $department,
         ]);
@@ -97,6 +99,7 @@ class DepartmentController extends Controller {
         if (!$department) {
             return $this->notFound();
         }
+        
         return $this->output(__METHOD__, [
             'department' => $department,
         ]);
@@ -115,6 +118,7 @@ class DepartmentController extends Controller {
         if (!$this->department->find($id)) {
             return $this->notFound();
         }
+        
         return $this->department->modify($request->all(), $id, true)
             ? $this->succeed() : $this->fail();
         
@@ -131,6 +135,7 @@ class DepartmentController extends Controller {
         if (!$this->department->find($id)) {
             return $this->notFound();
         }
+        
         return $this->department->remove($id) ? $this->succeed() : $this->fail();
         
     }
@@ -142,7 +147,7 @@ class DepartmentController extends Controller {
      * @param $parentId
      * @return \Illuminate\Http\JsonResponse
      */
-    public function move($id, $parentId = NULL) {
+    public function move($id, $parentId = null) {
         
         if (!$parentId) {
             return $this->fail('非法操作');
@@ -156,6 +161,7 @@ class DepartmentController extends Controller {
             return $this->department->move($id, $parentId, true)
                 ? parent::succeed() : parent::fail();
         }
+        
         return $this->fail('非法操作');
         
     }

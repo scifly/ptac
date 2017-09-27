@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
@@ -83,6 +82,7 @@ class Icon extends Model {
     public function store(array $data) {
         
         $icon = $this->create($data);
+        
         return $icon ? true : false;
         
     }
@@ -100,6 +100,7 @@ class Icon extends Model {
         if (!$icon) {
             return false;
         }
+        
         return $icon->update($data) ? true : false;
         
     }
@@ -113,7 +114,10 @@ class Icon extends Model {
     public function remove($id) {
         
         $icon = $this->find($id);
-        if (!$icon) { return false; }
+        if (!$icon) {
+            return false;
+        }
+        
         return $icon->removable($icon) ? $icon->delete() : false;
         
     }
@@ -123,32 +127,33 @@ class Icon extends Model {
         $columns = [
             ['db' => 'Icon.id', 'dt' => 0],
             [
-                'db' => 'Icon.name', 'dt' => 1,
+                'db'        => 'Icon.name', 'dt' => 1,
                 'formatter' => function ($d) {
                     return '<i class="' . $d . '"></i>&nbsp;' . $d;
-                }
+                },
             ],
             ['db' => 'IconType.name as icontypename', 'dt' => 2],
             ['db' => 'Icon.remark', 'dt' => 3],
             ['db' => 'Icon.created_at', 'dt' => 4],
             ['db' => 'Icon.updated_at', 'dt' => 5],
             [
-                'db' => 'Icon.enabled', 'dt' => 6,
+                'db'        => 'Icon.enabled', 'dt' => 6,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
-                }
-            ]
+                },
+            ],
         ];
         $joins = [
             [
-                'table' => 'icon_types',
-                'alias' => 'IconType',
-                'type' => 'INNER',
+                'table'      => 'icon_types',
+                'alias'      => 'IconType',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'IconType.id = Icon.icon_type_id'
-                ]
-            ]
+                    'IconType.id = Icon.icon_type_id',
+                ],
+            ],
         ];
+        
         return Datatable::simple($this, $columns, $joins);
         
     }

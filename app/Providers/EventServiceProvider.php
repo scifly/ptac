@@ -1,10 +1,10 @@
 <?php
-
 namespace App\Providers;
 
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
 class EventServiceProvider extends ServiceProvider {
+    
     /**
      * The event listener mappings for the application.
      *
@@ -22,6 +22,7 @@ class EventServiceProvider extends ServiceProvider {
         'App\Listeners\MenuEventSubScriber',
         'App\Listeners\UserEventSubScriber',
     ];
+    
     /**
      * Register any events for your application.
      *

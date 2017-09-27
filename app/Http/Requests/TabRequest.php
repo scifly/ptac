@@ -1,10 +1,10 @@
 <?php
-
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
 class TabRequest extends FormRequest {
+    
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -20,12 +20,12 @@ class TabRequest extends FormRequest {
     public function rules() {
         
         return [
-            'name' => 'required|string|between:2,255|unique:tabs,name, ' .
+            'name'      => 'required|string|between:2,255|unique:tabs,name, ' .
                 $this->input('id') . ',id',
-            'remark' => 'nullable|string|between:2,255',
+            'remark'    => 'nullable|string|between:2,255',
             'action_id' => 'required|integer',
-            'icon_id' => 'nullable|integer',
-            'enabled' => 'required|boolean'
+            'icon_id'   => 'nullable|integer',
+            'enabled'   => 'required|boolean',
         ];
         
     }

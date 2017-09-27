@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\MessageTypeRequest;
@@ -28,6 +27,7 @@ class MessageTypeController extends Controller {
         if (Request::get('draw')) {
             return response()->json($this->messageType->datatable());
         }
+        
         return $this->output(__METHOD__);
         
     }
@@ -67,6 +67,7 @@ class MessageTypeController extends Controller {
         if (!$messageType) {
             return $this->notFound();
         }
+        
         return $this->output(__METHOD__, ['messageType' => $messageType]);
         
     }
@@ -83,6 +84,7 @@ class MessageTypeController extends Controller {
         if (!$messageType) {
             return $this->notFound();
         }
+        
         return $this->output(__METHOD__, ['messageType' => $messageType]);
         
     }
@@ -100,6 +102,7 @@ class MessageTypeController extends Controller {
         if (!$messageType) {
             return $this->notFound();
         }
+        
         return $messageType->update($request->all()) ? $this->succeed() : $this->fail();
         
     }
@@ -116,6 +119,7 @@ class MessageTypeController extends Controller {
         if (!$messageType) {
             return $this->notFound();
         }
+        
         return $messageType->delete() ? $this->succeed() : $this->fail();
         
     }

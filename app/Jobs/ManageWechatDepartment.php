@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Jobs;
 
 use App\Facades\Wechat;
@@ -47,18 +46,16 @@ class ManageWechatDepartment implements ShouldQueue {
         $corps = $corp::whereName('万浪软件')->first();
         $corpId = $corps->corpid;
         $secret = $corps->corpsecret;
-        
         $name = $this->department->name;
         $parent_id = $this->department->departmentType->name == '学校'
             ? 1 : $this->department->parent->id;
         $order = $this->department->order;
         $departmentId = $this->department->id;
         $dir = dirname(__FILE__);
-        $path = substr($dir,0, stripos($dir, 'app/Jobs'));
+        $path = substr($dir, 0, stripos($dir, 'app/Jobs'));
         $tokenFile = $path . 'public/token.txt';
-
-        $token = Wechat::getAccessToken($tokenFile,$corpId, $secret);
-        switch ($this->action){
+        $token = Wechat::getAccessToken($tokenFile, $corpId, $secret);
+        switch ($this->action) {
             case 'create':
                 Wechat::createDept(
                     $token, $name, $parent_id, $order, $departmentId
@@ -77,7 +74,6 @@ class ManageWechatDepartment implements ShouldQueue {
     }
     
     public function failed(Exception $e) {
-    
     
     }
     

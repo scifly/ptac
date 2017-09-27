@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
@@ -47,7 +46,7 @@ class ConferenceQueue extends Model {
     protected $fillable = [
         'name', 'remark', 'start', 'end',
         'educator_id', 'educator_ids', 'attended_educator_ids',
-        'conference_room_id', 'attendance_qrcode_url', 'event_id'
+        'conference_room_id', 'attendance_qrcode_url', 'event_id',
     ];
     
     /**
@@ -112,38 +111,39 @@ class ConferenceQueue extends Model {
             ['db' => 'User.realname', 'dt' => 5],
             ['db' => 'ConferenceRoom.name as conferenceroomname', 'dt' => 6],
             [
-                'db' => 'ConferenceQueue.end', 'dt' => 7,
+                'db'        => 'ConferenceQueue.end', 'dt' => 7,
                 'formatter' => function ($d, $row) {
                     // 进行中, 已结束, 已取消; 查看, 编辑, 删除
-                }
+                },
             ],
         ];
         $joins = [
             [
-                'table' => 'conference_rooms',
-                'alias' => 'ConferenceRoom',
-                'type' => 'INNER',
+                'table'      => 'conference_rooms',
+                'alias'      => 'ConferenceRoom',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'ConferenceRoom.id = ConferenceQueue.conference_room_id'
-                ]
+                    'ConferenceRoom.id = ConferenceQueue.conference_room_id',
+                ],
             ],
             [
-                'table' => 'educators',
-                'alias' => 'Educator',
-                'type' => 'INNER',
+                'table'      => 'educators',
+                'alias'      => 'Educator',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'Educator.id = ConferenceQueue.educator_id'
-                ]
+                    'Educator.id = ConferenceQueue.educator_id',
+                ],
             ],
             [
-                'table' => 'users',
-                'alias' => 'User',
-                'type' => 'INNER',
+                'table'      => 'users',
+                'alias'      => 'User',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'User.id = Educator.user_id'
-                ]
-            ]
+                    'User.id = Educator.user_id',
+                ],
+            ],
         ];
+        
         return Datatable::simple($this, $columns, $joins);
         
     }

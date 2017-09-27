@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
@@ -50,6 +49,7 @@ class MessageType extends Model {
     public function store(array $data) {
         
         $messageType = $this->create($data);
+        
         return $messageType ? true : false;
         
     }
@@ -67,6 +67,7 @@ class MessageType extends Model {
         if (!$messageType) {
             return false;
         }
+        
         return $messageType->update($data) ? true : false;
         
     }
@@ -80,7 +81,10 @@ class MessageType extends Model {
     public function remove($id) {
         
         $messageType = $this->find($id);
-        if (!$messageType) { return false; }
+        if (!$messageType) {
+            return false;
+        }
+        
         return $messageType->removable($messageType) ? $messageType->delete() : false;
         
     }
@@ -93,14 +97,14 @@ class MessageType extends Model {
             ['db' => 'MessageType.remark', 'dt' => 2],
             ['db' => 'MessageType.created_at', 'dt' => 3],
             ['db' => 'MessageType.updated_at', 'dt' => 4],
-            
             [
-                'db' => 'MessageType.enabled', 'dt' => 5,
+                'db'        => 'MessageType.enabled', 'dt' => 5,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
-                }
-            ]
+                },
+            ],
         ];
+        
         return Datatable::simple($this, $columns);
         
     }

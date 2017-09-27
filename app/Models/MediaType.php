@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Helpers\ModelTrait;
@@ -52,6 +51,7 @@ class MediaType extends Model {
     public function store(array $data) {
         
         $mediaType = $this->create($data);
+        
         return $mediaType ? true : false;
         
     }
@@ -69,6 +69,7 @@ class MediaType extends Model {
         if (!$mediaType) {
             return false;
         }
+        
         return $mediaType->update($data) ? true : false;
         
     }
@@ -82,7 +83,10 @@ class MediaType extends Model {
     public function remove($id) {
         
         $mediaType = $this->find($id);
-        if (!$mediaType) { return false; }
+        if (!$mediaType) {
+            return false;
+        }
+        
         return $mediaType->removable($mediaType)
             ? $mediaType->delete() : false;
         
