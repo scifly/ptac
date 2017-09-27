@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use App\Events\UserCreated;
@@ -204,7 +205,13 @@ class User extends Authenticatable {
         
     }
     
+    /**
+     * 创建企业号会员
+     *
+     * @param $id
+     */
     public function createWechatUser($id) {
+        
         $user = $this->find($id);
         $mobile = Mobile::whereUserId($id)->where('isdefault', 1)->first()->mobile;
         $department = [];
@@ -212,18 +219,25 @@ class User extends Authenticatable {
             $department[] = $d->id;
         }
         $data = [
-            'userid'       => $user->userid,
-            'name'         => $user->realname,
+            'userid' => $user->userid,
+            'name' => $user->realname,
             'english_name' => $user->english_name,
-            'mobile'       => $mobile,
-            'department'   => $department,
-            'gender'       => $user->gender,
-            'enable'       => $user->enabled,
+            'mobile' => $mobile,
+            'department' => $department,
+            'gender' => $user->gender,
+            'enable' => $user->enabled,
         ];
         event(new UserCreated($data));
+        
     }
     
+    /**
+     * 更新企业号会员
+     *
+     * @param $id
+     */
     public function updateWechatUser($id) {
+        
         $user = $this->find($id);
         $mobile = Mobile::whereUserId($id)->where('isdefault', 1)->first()->mobile;
         $department = [];
@@ -231,19 +245,27 @@ class User extends Authenticatable {
             $department[] = $d->id;
         }
         $data = [
-            'userid'       => $user->userid,
-            'name'         => $user->realname,
+            'userid' => $user->userid,
+            'name' => $user->realname,
             'english_name' => $user->english_name,
-            'mobile'       => $mobile,
-            'department'   => $department,
-            'gender'       => $user->gender,
-            'enable'       => $user->enabled,
+            'mobile' => $mobile,
+            'department' => $department,
+            'gender' => $user->gender,
+            'enable' => $user->enabled,
         ];
         event(new UserUpdated($data));
+        
     }
     
+    /**
+     * 删除企业号会员
+     *
+     * @param $id
+     */
     public function deleteWechatUser($id) {
+        
         event(new UserDeleted($this->find($id)->userid));
+        
     }
     
     public function datatable() {
@@ -255,32 +277,34 @@ class User extends Authenticatable {
             ['db' => 'User.avatar_url', 'dt' => 3],
             ['db' => 'User.realname', 'dt' => 4],
             [
-                'db'        => 'User.gender', 'dt' => 5,
+                'db' => 'User.gender', 'dt' => 5,
                 'formatter' => function ($d) {
                     return $d ? '男' : '女';
-                },
+                }
             ],
             ['db' => 'User.email', 'dt' => 6],
             ['db' => 'User.created_at', 'dt' => 7],
             ['db' => 'User.updated_at', 'dt' => 8],
             [
-                'db'        => 'User.enabled', 'dt' => 9,
+                'db' => 'User.enabled', 'dt' => 9,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
-                },
+                }
             ],
         ];
         $joins = [
             [
-                'table'      => 'groups',
-                'alias'      => 'Groups',
-                'type'       => 'INNER',
+                'table' => 'groups',
+                'alias' => 'Groups',
+                'type' => 'INNER',
                 'conditions' => [
-                    'Groups.id = User.group_id',
-                ],
-            ],
+                    'Groups.id = User.group_id'
+                ]
+            ]
         ];
+        
         return Datatable::simple($this, $columns, $joins);
+        
     }
     
 }
