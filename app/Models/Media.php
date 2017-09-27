@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Helpers\ModelTrait;
@@ -36,7 +35,7 @@ class Media extends Model {
     protected $table = 'medias';
     
     protected $fillable = [
-        'path', 'remark', 'media_type_id', 'enabled'
+        'path', 'remark', 'media_type_id', 'enabled',
     ];
     
     /**
@@ -109,7 +108,9 @@ class Media extends Model {
     public function remove($id) {
         
         $media = $this->find($id);
-        if (!$media) { return false; }
+        if (!$media) {
+            return false;
+        }
         return $media->removable($media) ? $media->delete() : false;
         
     }

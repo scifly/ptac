@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\ViewComposers;
 
 use App\Models\Educator;
@@ -30,7 +29,7 @@ class EventComposer {
 //            die();
         $view->with([
             'educators' => $this->getEducators($this->userId),
-            'subjects' => $this->getSubjects($this->userId)
+            'subjects'  => $this->getSubjects($this->userId),
         ]);
     }
     

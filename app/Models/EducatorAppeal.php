@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
@@ -41,7 +40,7 @@ class EducatorAppeal extends Model {
     protected $fillable = [
         'educator_id', 'ea_ids', 'appeal_content',
         'procedure_log_id', 'approver_educator_ids',
-        'reated_educator_ids', 'status'
+        'reated_educator_ids', 'status',
     ];
     
     /**
@@ -68,24 +67,23 @@ class EducatorAppeal extends Model {
             ['db' => 'EducatorAppeal.created_at', 'dt' => 4],
             ['db' => 'EducatorAppeal.updated_at', 'dt' => 5],
             [
-                'db' => 'EducatorAppeal.status', 'dt' => 6,
+                'db'        => 'EducatorAppeal.status', 'dt' => 6,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
-                }
+                },
             ],
         ];
         $joins = [
             [
-                'table' => 'educators',
-                'alias' => 'Educator',
-                'type' => 'INNER',
+                'table'      => 'educators',
+                'alias'      => 'Educator',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'Educator.id = EducatorAppeal.educator_id'
-                ]
-            ]
+                    'Educator.id = EducatorAppeal.educator_id',
+                ],
+            ],
         ];
         return Datatable::simple($this, $columns, $joins);
     }
-    
     
 }

@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\ViewComposers;
 
 use App\Models\School;
@@ -18,7 +17,7 @@ class ActionComposer {
     public function compose(View $view) {
         
         $view->with([
-            'actionTypes' => $this->actionType->pluck('name', 'id')
+            'actionTypes' => $this->actionType->pluck('name', 'id'),
         ]);
         
     }

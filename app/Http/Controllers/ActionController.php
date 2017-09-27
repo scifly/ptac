@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ActionRequest;
@@ -59,17 +58,16 @@ class ActionController extends Controller {
         $actionTypeIds = explode(',', $ids);
         $selectedActionTypes = [];
         if (empty($actionTypeIds[0])) {
-            $selectedActionTypes = NULL;
+            $selectedActionTypes = null;
         } else {
             foreach ($actionTypeIds as $actionTypeId) {
                 $actionType = School::whereId($actionTypeId)->first()->toArray();
                 $selectedActionTypes[$actionTypeId] = $actionType['name'];
             }
         }
-        
         return parent::output(__METHOD__, [
-            'action' => $action,
-            'selectedActionTypes' => $selectedActionTypes
+            'action'              => $action,
+            'selectedActionTypes' => $selectedActionTypes,
         ]);
         
     }

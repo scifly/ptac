@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\DepartmentRequest;
@@ -48,8 +47,8 @@ class DepartmentController extends Controller {
         
         $departmentTypeId = DepartmentType::whereName('其他')->first()->id;
         return $this->output(__METHOD__, [
-            'parentId' => $id,
-            'departmentTypeId' => $departmentTypeId
+            'parentId'         => $id,
+            'departmentTypeId' => $departmentTypeId,
         ]);
         
     }
@@ -142,7 +141,7 @@ class DepartmentController extends Controller {
      * @param $parentId
      * @return \Illuminate\Http\JsonResponse
      */
-    public function move($id, $parentId = NULL) {
+    public function move($id, $parentId = null) {
         
         if (!$parentId) {
             return $this->fail('非法操作');

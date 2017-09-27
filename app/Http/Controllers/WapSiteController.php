@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\WapSiteRequest;
@@ -75,10 +74,9 @@ class WapSiteController extends Controller {
             return parent::notFound();
         }
         $mediaIds = explode(",", $wapsite->media_ids);
-        
         return parent::output(__METHOD__, [
             'wapsite' => $wapsite,
-            'medias' => $this->media->medias($mediaIds),
+            'medias'  => $this->media->medias($mediaIds),
         ]);
         
     }
@@ -96,7 +94,7 @@ class WapSiteController extends Controller {
         }
         return parent::output(__METHOD__, [
             'wapSite' => $wapSite,
-            'medias' => $this->media->medias($wapSite->media_ids),
+            'medias'  => $this->media->medias($wapSite->media_ids),
         ]);
         
     }
@@ -142,7 +140,7 @@ class WapSiteController extends Controller {
             $result['message'] = '您还未选择图片！';
             return $result;
         } else {
-            $result['data'] = array();
+            $result['data'] = [];
             $mes = [];
             foreach ($files as $key => $file) {
                 $this->validateFile($file, $mes);
@@ -173,13 +171,13 @@ class WapSiteController extends Controller {
             if (Storage::disk('uploads')->put($filename, file_get_contents($realPath))) {
                 $filePath = 'storage/app/uploads/' . date('Y-m-d') . '/' . $filename;
                 $mediaId = Media::insertGetId([
-                    'path' => $filePath,
-                    'remark' => '微网站轮播图',
+                    'path'          => $filePath,
+                    'remark'        => '微网站轮播图',
                     'media_type_id' => '1',
-                    'enabled' => '1',
+                    'enabled'       => '1',
                 ]);
                 $filePaths[] = [
-                    'id' => $mediaId,
+                    'id'   => $mediaId,
                     'path' => $filePath,
                 ];
             }
@@ -197,11 +195,10 @@ class WapSiteController extends Controller {
         $wapSite = $this->wapSite
             ->where('school_id', Request::get('school_id'))
             ->first();
-        
         return view('frontend.wap_site.index', [
             'wapsite' => $wapSite,
-            'medias' => $this->media->medias($wapSite->media_ids),
-            'ws' => true
+            'medias'  => $this->media->medias($wapSite->media_ids),
+            'ws'      => true,
         ]);
         
     }

@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
@@ -36,9 +35,9 @@ class DepartmentUser extends Model {
             $exception = DB::transaction(function () use ($userId, $departmentIds) {
                 foreach ($departmentIds as $departmentId) {
                     $this->create([
-                        'user_id' => $userId,
+                        'user_id'       => $userId,
                         'department_id' => $departmentId,
-                        'enabled' => 1,
+                        'enabled'       => 1,
                     ]);
                 }
             });
@@ -55,9 +54,9 @@ class DepartmentUser extends Model {
             $exception = DB::transaction(function () use ($departmentId, $userIds) {
                 foreach ($userIds as $userId) {
                     $this->create([
-                        'user_id' => $userId,
+                        'user_id'       => $userId,
                         'department_id' => $departmentId,
-                        'enabled' => 1,
+                        'enabled'       => 1,
                     ]);
                 }
             });

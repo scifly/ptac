@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Helpers\ModelTrait;
@@ -78,7 +77,9 @@ class Mobile extends Model {
     public function remove($id) {
         
         $mobile = $this->find($id);
-        if (!$mobile) { return false; }
+        if (!$mobile) {
+            return false;
+        }
         return $mobile->removable($mobile) ? $mobile->delete() : false;
         
     }

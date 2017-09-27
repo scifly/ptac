@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\SubjectModuleRequest;
@@ -101,11 +100,9 @@ class SubjectModuleController extends Controller {
     public function update(SubjectModuleRequest $request, $id) {
         
         $subjectModule = $this->subjectModule->find($id);
-        
         if (!$subjectModule) {
             return $this->notFound();
         }
-        
         return $subjectModule->update($request->all()) ? $this->succeed() : $this->fail();
         
     }

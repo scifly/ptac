@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StudentAttendanceSettingRequest;
@@ -102,8 +101,6 @@ class StudentAttendanceSettingController extends Controller {
      * @param $id
      * @return \Illuminate\Http\JsonResponse
      */
-    
-    
     public function update(StudentAttendanceSettingRequest $request, $id) {
         
         $sas = $this->sas->find($id);

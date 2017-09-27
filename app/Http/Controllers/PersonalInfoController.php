@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\PersonalInfoRequest;
@@ -15,7 +14,7 @@ use Illuminate\Support\Facades\Request;
  */
 class PersonalInfoController extends Controller {
     
-    public $imgPath = array();
+    public $imgPath = [];
     protected $user;
     
     function __construct(User $user) {

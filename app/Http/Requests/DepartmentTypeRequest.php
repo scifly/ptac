@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
@@ -20,10 +19,10 @@ class DepartmentTypeRequest extends FormRequest {
      */
     public function rules() {
         return [
-            'name' => 'required|string|between:2,60|unique:department_types,name,' .
+            'name'    => 'required|string|between:2,60|unique:department_types,name,' .
                 $this->input('id') . ',id',
-            'remark' => 'nullable|string',
-            'enabled' => 'required|boolean'
+            'remark'  => 'nullable|string',
+            'enabled' => 'required|boolean',
         ];
     }
     

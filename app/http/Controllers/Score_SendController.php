@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 //用到学校数据模型
@@ -22,7 +21,6 @@ class Score_SendController extends Controller {
     
     protected $exam, $score, $user, $student,
         $class, $school, $grade, $subject, $scoreTotal;
-    
     
     /**
      * Score_SendController constructor.
@@ -67,14 +65,12 @@ class Score_SendController extends Controller {
         return view("score_send.index", ['js' => 'js/score_send/index.js', 'schools' => $this->school->all(['name', 'id']), 'form' => 0, 'datatable' => 1]);
     }
     
-    
     /**
      * @param null $id
      * @return string
      */
     public function getGrade($id = null) {
         //根据学校ID获取年级信息
-        
         return json_encode($this->grade->all(['id', 'name', 'school_id'])->where("school_id", $id));
         
     }
@@ -85,11 +81,9 @@ class Score_SendController extends Controller {
      */
     public function getClass($id = null) {
         //根据年级ID获取班级信息
-        
         return json_encode($this->class->all(['id', 'name', 'grade_id'])->where("grade_id", $id));
         
     }
-    
     
     /**
      * @param null $id
@@ -109,7 +103,6 @@ class Score_SendController extends Controller {
         //获取考次关联的科目
         return json_encode($this->exam->subjectsByExamId($id));
     }
-    
     
     /**
      * @param $examId
@@ -140,9 +133,7 @@ class Score_SendController extends Controller {
                 ->get(['scores.score'
                     , 'scores.subject_id', 'subjects.max_score', 'subjects.pass_score'
                     , 'scores.class_rank', 'scores.grade_rank', 'students.id']);
-        
         #获取班级的考试信息
-        
         $class_scores =
             $this->student->where('class_id', $classId)
                 ->join('classes', 'students.class_id', 'classes.id')
@@ -155,8 +146,6 @@ class Score_SendController extends Controller {
                 ->get(['users.realname', 'scores.score', 'exams.name as examname', 'subjects.name'
                     , 'scores.subject_id', 'subjects.max_score', 'subjects.pass_score'
                     , 'scores.class_rank', 'scores.grade_rank', 'students.id']);
-        
-        
         #年级总分信息
         $grade_total_scores =
             $this->student->join('classes', 'students.class_id', 'classes.id')
@@ -176,7 +165,6 @@ class Score_SendController extends Controller {
                     'score_totals.score as totals_score']);
         #获取学生信息
         $students = $class_scores->groupBy('id');
-        
         #拼接信息
         $strs = [];
         foreach ($students as $student) {
@@ -226,8 +214,6 @@ class Score_SendController extends Controller {
                     $str .= '及格分:' . $student->where('subject_id', $sid)->first()->pass_score;
                 }
             }
-            
-            
             #判断总分
             if (in_array('0', $subject_Ids)) {
                 $str .= '总分:' . $class_total_scores
@@ -268,12 +254,9 @@ class Score_SendController extends Controller {
 //                    $str .='及格分:' . $student->where('subject_id',$sid)->first()->pass_score;
 //                }
             }
-            
             $strs[] = ["id" => $student[0]->id, 'name' => $student[0]->realname, "msg" => $str];
         }
-        
         return json_encode($strs);
     }
-    
     
 }

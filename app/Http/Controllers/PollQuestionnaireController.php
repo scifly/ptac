@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\PqRequest;
@@ -13,6 +12,7 @@ use Illuminate\Support\Facades\Request;
  * @package App\Http\Controllers
  */
 class PollQuestionnaireController extends Controller {
+    
     protected $pollQuestionnaire;
     
     function __construct(PollQuestionnaire $pollQuestionnaire) {

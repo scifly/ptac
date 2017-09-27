@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProcedureRequest;
@@ -65,7 +64,9 @@ class ProcedureController extends Controller {
     public function show($id) {
         
         $procedure = $this->procedure->find($id);
-        if (!$procedure) { return $this->notFound(); }
+        if (!$procedure) {
+            return $this->notFound();
+        }
         return $this->output(__METHOD__, ['procedure' => $procedure]);
         
     }
@@ -79,7 +80,9 @@ class ProcedureController extends Controller {
     public function edit($id) {
         
         $procedure = $this->procedure->find($id);
-        if (!$procedure) { return $this->notFound(); }
+        if (!$procedure) {
+            return $this->notFound();
+        }
         return $this->output(__METHOD__, ['procedure' => $procedure]);
         
     }
@@ -94,7 +97,9 @@ class ProcedureController extends Controller {
     public function update(ProcedureRequest $request, $id) {
         
         $procedure = $this->procedure->find($id);
-        if (!$procedure) { return $this->notFound(); }
+        if (!$procedure) {
+            return $this->notFound();
+        }
         return $procedure->modify($request->all(), $id)
             ? $this->succeed() : $this->fail();
     }
@@ -108,7 +113,9 @@ class ProcedureController extends Controller {
     public function destroy($id) {
         
         $procedure = $this->procedure->find($id);
-        if (!$procedure) { return $this->notFound(); }
+        if (!$procedure) {
+            return $this->notFound();
+        }
         return $procedure->remove($id)
             ? $this->succeed() : $this->fail();
         

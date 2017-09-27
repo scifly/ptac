@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\ViewComposers;
 
 use App\Models\IconType;
@@ -18,7 +17,7 @@ class IconComposer {
     public function compose(View $view) {
         
         $view->with([
-            'iconTypes' => $this->iconType->pluck('name', 'id')
+            'iconTypes' => $this->iconType->pluck('name', 'id'),
         ]);
         
     }

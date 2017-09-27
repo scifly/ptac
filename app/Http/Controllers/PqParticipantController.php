@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Models\PollQuestionnaire;
@@ -69,7 +68,6 @@ class PqParticipantController extends Controller {
         
         #先获取项和题转换数组操作
         $json = json_decode($this->show($q->get('pollQuestion')));
-        
         foreach ($json as $item) {
             $var = '';
             switch ($item->subject_type) {
@@ -105,7 +103,6 @@ class PqParticipantController extends Controller {
                 $hasObject = false;
             #如果不存在创建新Model
             if (!$hasObject) $Answer = new PollQuestionnaireAnswer();
-            
             $Answer->pq_id = $item->pq_id;
             $Answer->pqs_id = $item->id;
             #这里获取Session用户ID
@@ -187,7 +184,6 @@ class PqParticipantController extends Controller {
                     $temp['subject_type'] = $subject->subject_type;
                     #选项题
                     $temp['choices'] = $this->tempChoice;
-                    
                     $this->result[] = $temp;
                 }
             );

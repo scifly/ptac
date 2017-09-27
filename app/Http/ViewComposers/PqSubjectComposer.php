@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\ViewComposers;
 
 use App\Models\PollQuestionnaire;
@@ -18,7 +17,7 @@ class PqSubjectComposer {
     public function compose(View $view) {
         
         $view->with([
-            'pq' => $this->pq->pluck('name', 'id'),
+            'pq'           => $this->pq->pluck('name', 'id'),
             'subject_type' => [0 => '单选', 1 => '多选', 2 => '填空'],
         ]);
     }

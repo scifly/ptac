@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\EventRequest;
@@ -13,6 +12,7 @@ use Illuminate\Support\Facades\Request;
  * @package App\Http\Controllers
  */
 class EventController extends Controller {
+    
     protected $event;
     
     function __construct(Event $event) {
@@ -33,9 +33,9 @@ class EventController extends Controller {
             ->where('enabled', '0')
             ->get()->toArray();
         return $this->output(__METHOD__, [
-            'events' => $events,
-            'userId' => $userId,
-            'isAdmin' => $isAdmin
+            'events'  => $events,
+            'userId'  => $userId,
+            'isAdmin' => $isAdmin,
         ]);
         
     }

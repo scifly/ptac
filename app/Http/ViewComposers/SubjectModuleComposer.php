@@ -1,10 +1,8 @@
 <?php
-
 namespace App\Http\ViewComposers;
 
 use App\Models\Subject;
 use Illuminate\Contracts\View\View;
-
 
 class SubjectModuleComposer {
     

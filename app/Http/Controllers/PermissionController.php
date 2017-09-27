@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Models\Action;
@@ -34,7 +33,5 @@ class PermissionController extends Controller {
         $this->groupTab = $groupTab;
         
     }
-    
-    
     
 }

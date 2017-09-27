@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
@@ -20,15 +19,15 @@ class ActionRequest extends FormRequest {
      */
     public function rules() {
         return [
-            'name' => 'required|string|between:2,255',
-            'method' => 'required|string|between:2,255',
-            'controller' => 'required|string|between:2,255',
-            'remark' => 'nullable|string|between:2,255',
-            'view' => 'nullable|string|between:2,255',
-            'route' => 'nullable|string|between:2,255',
-            'js' => 'nullable|string|between:2,255',
-            'enabled' => 'required|boolean',
-            'action_type_ids' => 'nullable|string|between:3,60'
+            'name'            => 'required|string|between:2,255',
+            'method'          => 'required|string|between:2,255',
+            'controller'      => 'required|string|between:2,255',
+            'remark'          => 'nullable|string|between:2,255',
+            'view'            => 'nullable|string|between:2,255',
+            'route'           => 'nullable|string|between:2,255',
+            'js'              => 'nullable|string|between:2,255',
+            'enabled'         => 'required|boolean',
+            'action_type_ids' => 'nullable|string|between:3,60',
         ];
     }
     
@@ -47,6 +46,5 @@ class ActionRequest extends FormRequest {
         $this->replace($input);
         
     }
-    
     
 }

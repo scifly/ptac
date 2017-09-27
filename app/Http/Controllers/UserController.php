@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\UserRequest;
@@ -68,7 +67,9 @@ class UserController extends Controller {
     public function show($id) {
         
         $user = $this->user->find($id);
-        if (!$user) { return $this->notFound(); }
+        if (!$user) {
+            return $this->notFound();
+        }
         return $this->output(__METHOD__, ['user' => $user]);
         
     }
@@ -82,7 +83,9 @@ class UserController extends Controller {
     public function edit($id) {
         
         $user = $this->user->find($id);
-        if (!$user) { return $this->notFound(); }
+        if (!$user) {
+            return $this->notFound();
+        }
         return $this->output(__METHOD__, ['user' => $user]);
         
     }
@@ -97,7 +100,9 @@ class UserController extends Controller {
     public function update(UserRequest $request, $id) {
         
         $user = $this->user->find($id);
-        if (!$user) { return $this->notFound(); }
+        if (!$user) {
+            return $this->notFound();
+        }
         if ($this->user->existed($request, $id)) {
             return $this->fail('已经有此记录');
         }
@@ -149,7 +154,6 @@ class UserController extends Controller {
         if (!$file->move($path, $fileName)) {
             return $this->fail('头像保存失败');
         }
-        
         //如果是create操作，图片路径不能直接存储数据库
         //TODO:需要处理默认头像、图片缓存问题
         if ($id < 1) {

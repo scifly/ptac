@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\TabRequest;
@@ -51,7 +50,7 @@ class TabController extends Controller {
     public function create() {
         
         return parent::output(__METHOD__, [
-            'menus' => $this->menu->leaves(1)
+            'menus' => $this->menu->leaves(1),
         ]);
         
     }
@@ -103,8 +102,8 @@ class TabController extends Controller {
             $selectedMenus[$menu->id] = $menu->name;
         }
         return parent::output(__METHOD__, [
-            'tab' => $tab,
-            'menus' => $this->menu->leaves(1),
+            'tab'           => $tab,
+            'menus'         => $this->menu->leaves(1),
             'selectedMenus' => $selectedMenus,
         ]);
         

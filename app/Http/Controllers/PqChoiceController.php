@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\PqChoiceRequest;
@@ -13,6 +12,7 @@ use Illuminate\Support\Facades\Request;
  * @package App\Http\Controllers
  */
 class PqChoiceController extends Controller {
+    
     protected $pqChoice;
     
     /**
@@ -90,7 +90,6 @@ class PqChoiceController extends Controller {
         if (!$pqChoice) {
             return $this->notFound();
         }
-        
         return $this->output(__METHOD__, [
             'pqChoice' => $pqChoice,
         ]);

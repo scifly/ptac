@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
@@ -64,38 +63,38 @@ class ConferenceParticipant extends Model {
             ['db' => 'ConferenceParticipant.created_at', 'dt' => 4],
             ['db' => 'ConferenceParticipant.updated_at', 'dt' => 5],
             [
-                'db' => 'ConferenceParticipant.status', 'dt' => 6,
+                'db'        => 'ConferenceParticipant.status', 'dt' => 6,
                 'formatter' => function ($d) {
                     return $d ? '<span class="badge bg-green">签到已到</span>' :
                         '<span class="badge bg-yellow">签到未到</span>';
-                }
+                },
             ],
         ];
         $joins = [
             [
-                'table' => 'educators',
-                'alias' => 'Educator',
-                'type' => 'INNER',
+                'table'      => 'educators',
+                'alias'      => 'Educator',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'Educator.id = ConferenceParticipant.educator_id'
-                ]
+                    'Educator.id = ConferenceParticipant.educator_id',
+                ],
             ],
             [
-                'table' => 'users',
-                'alias' => 'User',
-                'type' => 'INNER',
+                'table'      => 'users',
+                'alias'      => 'User',
+                'type'       => 'INNER',
                 'conditions' => [
                     'User.id = Educator.user_id',
-                ]
+                ],
             ],
             [
-                'table' => 'conference_queues',
-                'alias' => 'ConferenceQueue',
-                'type' => 'INNER',
+                'table'      => 'conference_queues',
+                'alias'      => 'ConferenceQueue',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'ConferenceQueue.id = ConferenceParticipant.conference_queue_id'
-                ]
-            ]
+                    'ConferenceQueue.id = ConferenceParticipant.conference_queue_id',
+                ],
+            ],
         ];
         return Datatable::simple($this, $columns, $joins);
         

@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Middleware;
 
 use App\Models\Action;
@@ -19,7 +18,7 @@ class CheckRole {
         $this->actionGroup = $actionGroup;
         
     }
-
+    
     /**
      * Handle an incoming request.
      *

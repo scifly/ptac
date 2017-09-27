@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Events\MenuCreated;
@@ -63,7 +62,7 @@ class Menu extends Model {
     protected $fillable = [
         'parent_id', 'name', 'remark',
         'menu_type_id', 'position', 'media_id',
-        'action_id', 'icon_id', 'enabled'
+        'action_id', 'icon_id', 'enabled',
     ];
     
     /**
@@ -145,7 +144,7 @@ class Menu extends Model {
      * @param null $rootMenuId
      * @return Collection|static[]
      */
-    public function leaves($rootMenuId = NULL) {
+    public function leaves($rootMenuId = null) {
         
         $leaves = [];
         $leafPath = [];
@@ -371,7 +370,7 @@ class Menu extends Model {
         if (!isset($menu)) {
             return false;
         }
-        $menu->parent_id = $parentId === '#' ? NULL : intval($parentId);
+        $menu->parent_id = $parentId === '#' ? null : intval($parentId);
         $moved = $menu->save();
         if ($moved && $fireEvent) {
             event(new MenuMoved($this->find($id)));
@@ -387,7 +386,7 @@ class Menu extends Model {
      * @param null $rootMenuId
      * @return \Illuminate\Http\JsonResponse
      */
-    public function tree($rootMenuId = NULL) {
+    public function tree($rootMenuId = null) {
         
         $fields = ['id', 'parent_id', 'name', 'position', 'menu_type_id'];
         $menuColor = '<span style="color: %s;">%s</span>';
@@ -431,10 +430,10 @@ class Menu extends Model {
             }
             $parentId = isset($menu['parent_id']) ? $menu['parent_id'] : '#';
             $data[] = [
-                'id' => $menu['id'],
+                'id'     => $menu['id'],
                 'parent' => $parentId,
-                'text' => $text,
-                'type' => $type
+                'text'   => $text,
+                'type'   => $type,
             ];
         }
         return response()->json($data);
@@ -493,7 +492,6 @@ HTML;
             ->where('id', '<>', 1)
             ->orderBy('position')->get();
         $menu = '';
-        
         $level = 1;
         $parentId = 1;
         foreach ($menus as $m) {
@@ -514,7 +512,6 @@ HTML;
             $lvl = 0;
             $this->getMenuLevel($m, $lvl);
             $mLevel = $lvl;
-            
             if ($m->parent_id == $parentId) {
                 if ($hasChildren) {
                     $level += 1;
@@ -569,7 +566,6 @@ HTML;
                 $menu .= $mEnd;
             }
         }
-        
         return $menu;
         
     }

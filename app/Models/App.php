@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
@@ -55,7 +54,7 @@ class App extends Model {
         'report_location_flag', 'logo_mediaid',
         'redirect_domain', 'isreportuser',
         'isreportenter', 'home_url',
-        'chat_extension_url', 'menu', 'enabled'
+        'chat_extension_url', 'menu', 'enabled',
     ];
     
     public function datatable() {
@@ -70,11 +69,11 @@ class App extends Model {
             ['db' => 'App.created_at', 'dt' => 6],
             ['db' => 'App.updated_at', 'dt' => 7],
             [
-                'db' => 'App.enabled', 'dt' => 8,
+                'db'        => 'App.enabled', 'dt' => 8,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
-                }
-            ]
+                },
+            ],
         ];
         return Datatable::simple($this, $columns);
         

@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Events\SchoolCreated;
@@ -74,7 +73,7 @@ class School extends Model {
     
     protected $fillable = [
         'name', 'address', 'school_type_id', 'menu_id',
-        'corp_id', 'department_id', 'enabled'
+        'corp_id', 'department_id', 'enabled',
     ];
     
     /**
@@ -282,7 +281,9 @@ class School extends Model {
     public function remove($id, $fireEvent = false) {
         
         $school = $this->find($id);
-        if (!$school) { return false; }
+        if (!$school) {
+            return false;
+        }
         $removed = $this->removable($school) ? $school->delete() : false;
         if ($removed && $fireEvent) {
             event(new SchoolDeleted($school));
@@ -303,46 +304,45 @@ class School extends Model {
             ['db' => 'School.created_at', 'dt' => 5],
             ['db' => 'School.updated_at', 'dt' => 6],
             [
-                'db' => 'School.enabled', 'dt' => 7,
+                'db'        => 'School.enabled', 'dt' => 7,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
-                }
-            ]
+                },
+            ],
         ];
         $joins = [
             [
-                'table' => 'school_types',
-                'alias' => 'SchoolType',
-                'type' => 'INNER',
+                'table'      => 'school_types',
+                'alias'      => 'SchoolType',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'SchoolType.id = School.school_type_id'
-                ]
+                    'SchoolType.id = School.school_type_id',
+                ],
             ],
             [
-                'table' => 'corps',
-                'alias' => 'Corp',
-                'type' => 'INNER',
+                'table'      => 'corps',
+                'alias'      => 'Corp',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'Corp.id = School.corp_id'
-                ]
-            ]
+                    'Corp.id = School.corp_id',
+                ],
+            ],
         ];
         return Datatable::simple($this, $columns, $joins);
         
     }
-
+    
     public function schools($schoolIds) {
-
+        
         $schoolList = [];
         if (!empty($schoolIds)) {
-            $schools = $this->whereIn('id', explode(',',$schoolIds))->get()->toArray();
+            $schools = $this->whereIn('id', explode(',', $schoolIds))->get()->toArray();
             foreach ($schools as $school) {
                 $schoolList[$school['id']] = $school['name'];
             }
         }
-
         return $schoolList;
-
+        
     }
-
+    
 }

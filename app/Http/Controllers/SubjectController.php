@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\SubjectRequest;
@@ -51,7 +50,7 @@ class SubjectController extends Controller {
         
         return parent::output(__METHOD__, [
             'majors' => $this->major->majors(1),
-            'grades' => $this->grade->grades([1])
+            'grades' => $this->grade->grades([1]),
         ]);
         
     }
@@ -78,7 +77,9 @@ class SubjectController extends Controller {
     public function show($id) {
         
         $subject = $this->subject->find($id);
-        if (!$subject) { return $this->notFound(); }
+        if (!$subject) {
+            return $this->notFound();
+        }
         return $this->output(__METHOD__, ['subject' => $subject]);
         
     }
@@ -92,8 +93,9 @@ class SubjectController extends Controller {
     public function edit($id) {
         
         $subject = $this->subject->find($id);
-        if (!$subject) { return $this->notFound(); }
-        
+        if (!$subject) {
+            return $this->notFound();
+        }
         $gradeIds = explode(',', $subject['grade_ids']);
         $selectedGrades = [];
         foreach ($gradeIds as $gradeId) {
@@ -104,13 +106,12 @@ class SubjectController extends Controller {
         foreach ($subject->majors as $major) {
             $selectedMajors[$major->id] = $major->name;
         }
-        
         return parent::output(__METHOD__, [
-            'subject' => $subject,
+            'subject'        => $subject,
             'selectedGrades' => $selectedGrades,
             'selectedMajors' => $selectedMajors,
-            'majors' => $this->major->majors(1),
-            'grades' => $this->grade->grades([1])
+            'majors'         => $this->major->majors(1),
+            'grades'         => $this->grade->grades([1]),
         ]);
         
     }

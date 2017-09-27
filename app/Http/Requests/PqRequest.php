@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
@@ -7,21 +6,20 @@ use Illuminate\Foundation\Http\FormRequest;
 class PqRequest extends FormRequest {
     
     protected $strings_key = [
-        'name' => '问卷名称',
+        'name'      => '问卷名称',
         'school_id' => '所属学校',
-        'start' => '开始时间',
-        'end' => '结束时间',
-        'enabled' => '是否启用'
+        'start'     => '开始时间',
+        'end'       => '结束时间',
+        'enabled'   => '是否启用',
     ];
     protected $strings_val = [
-        'required' => '为必填项',
-        'string' => '为字符串',
-        'max' => '最大为:max',
-        'integer' => '必须为整数',
-        'boolean' => '为0或1',
-        'unique' => '不唯一',
+        'required'    => '为必填项',
+        'string'      => '为字符串',
+        'max'         => '最大为:max',
+        'integer'     => '必须为整数',
+        'boolean'     => '为0或1',
+        'unique'      => '不唯一',
         'date_format' => '格式不正确',
-    
     ];
     
     /**
@@ -53,13 +51,13 @@ class PqRequest extends FormRequest {
     
     public function rules() {
         return [
-            'name' => 'required|string|max:255|unique:poll_questionnaires,name,' .
+            'name'      => 'required|string|max:255|unique:poll_questionnaires,name,' .
                 $this->input('id') . ',id,' .
                 'school_id,' . $this->input('school_id'),
             'school_id' => 'required|integer',
-            'start' => 'required|date_format:Y-m-d H:i:s',
-            'end' => 'required|date_format:Y-m-d H:i:s',
-            'enabled' => 'required|boolean'
+            'start'     => 'required|date_format:Y-m-d H:i:s',
+            'end'       => 'required|date_format:Y-m-d H:i:s',
+            'enabled'   => 'required|boolean',
         ];
     }
     

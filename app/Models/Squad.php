@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Events\ClassCreated;
@@ -124,7 +123,9 @@ class Squad extends Model {
     public function remove($id, $fireEvent = false) {
         
         $class = $this->find($id);
-        if (!$class) { return false; }
+        if (!$class) {
+            return false;
+        }
         $removed = $this->removable($class) ? $class->delete() : false;
         if ($removed && $fireEvent) {
             event(new ClassDeleted($class));
@@ -144,33 +145,31 @@ class Squad extends Model {
             ['db' => 'Squad.educator_ids', 'dt' => 4],
             ['db' => 'Squad.created_at', 'dt' => 5],
             ['db' => 'Squad.updated_at', 'dt' => 6],
-            
             [
-                'db' => 'Squad.enabled', 'dt' => 7,
+                'db'        => 'Squad.enabled', 'dt' => 7,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
-                }
-            ]
+                },
+            ],
         ];
         $joins = [
             [
-                'table' => 'grades',
-                'alias' => 'Grade',
-                'type' => 'INNER',
+                'table'      => 'grades',
+                'alias'      => 'Grade',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'Grade.id = Squad.grade_id'
-                ]
+                    'Grade.id = Squad.grade_id',
+                ],
             ],
             [
-                'table' => 'schools',
-                'alias' => 'School',
-                'type' => 'INNER',
+                'table'      => 'schools',
+                'alias'      => 'School',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'School.id = Grade.school_id'
-                ]
-            ]
+                    'School.id = Grade.school_id',
+                ],
+            ],
         ];
-        
         return Datatable::simple($this, $columns, $joins);
         
     }

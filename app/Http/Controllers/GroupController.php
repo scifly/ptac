@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\GroupRequest;
@@ -79,7 +78,9 @@ class GroupController extends Controller {
     public function show($id) {
         
         $group = $this->group->find($id);
-        if (!$group) { return $this->notFound(); }
+        if (!$group) {
+            return $this->notFound();
+        }
         return $this->output(__METHOD__, ['group' => $group]);
         
     }
@@ -91,34 +92,34 @@ class GroupController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function edit($id) {
-
+        
         $group = $this->group->find($id);
-        if (!$group) { return $this->notFound(); }
+        if (!$group) {
+            return $this->notFound();
+        }
         if (Request::method() === 'POST') {
             return $this->menu->tree();
         }
         $menus = $group->menus;
         $selectedMenuIds = [];
-        foreach ($menus as $menu){
+        foreach ($menus as $menu) {
             $selectedMenuIds[] = $menu->id;
         }
         $tabs = $group->tabs;
         $selectedTabs = [];
-        foreach ($tabs as $tab){
+        foreach ($tabs as $tab) {
             $selectedTabs[] = $tab->id;
         }
-        
         $actions = $group->actions;
         $selectedActions = [];
-        foreach ($actions as $action){
+        foreach ($actions as $action) {
             $selectedActions[] = $action->id;
         }
-
         return $this->output(__METHOD__, [
-            'group' => $group,
-            'selectedMenuIds' => implode(',',$selectedMenuIds),
-            'selectedTabs' => $selectedTabs,
-            'selectedActions' => $selectedActions
+            'group'           => $group,
+            'selectedMenuIds' => implode(',', $selectedMenuIds),
+            'selectedTabs'    => $selectedTabs,
+            'selectedActions' => $selectedActions,
         ]);
         
     }
@@ -150,7 +151,9 @@ class GroupController extends Controller {
     public function destroy($id) {
         
         $group = $this->group->find($id);
-        if (!$group) { return $this->notFound(); }
+        if (!$group) {
+            return $this->notFound();
+        }
         return $group->remove($id) ? $this->succeed() : $this->fail();
         
     }

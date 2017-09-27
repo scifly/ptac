@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
@@ -39,8 +38,8 @@ class MenuTab extends Model {
                 foreach ($tabIds as $tabId) {
                     $this->create([
                         'menu_id' => $menuId,
-                        'tab_id' => $tabId,
-                        'enabled' => 1
+                        'tab_id'  => $tabId,
+                        'enabled' => 1,
                     ]);
                 }
             });
@@ -58,8 +57,8 @@ class MenuTab extends Model {
                 foreach ($menuIds as $menuId) {
                     $this->create([
                         'menu_id' => $menuId,
-                        'tab_id' => $tabId,
-                        'enabled' => 1
+                        'tab_id'  => $tabId,
+                        'enabled' => 1,
                     ]);
                 }
             });
