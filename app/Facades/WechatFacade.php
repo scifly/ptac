@@ -323,51 +323,35 @@ class Wechat extends Facade {
         );
         
     }
-    
+
     /**
      * 成员管理 - 创建成员
      *
      * @param string $accessToken 接口调用凭证
-     * @param string $userId 用户UserID。对应管理端的帐号，企业内必须唯一。不区分大小写，长度为1~64个字节
-     * @param string $name 用户名称。长度为1~64个字节
-     * @param string $englishName 英文名。长度为1-64个字节。第三方暂不支持
-     * @param string $mobile 手机号码。企业内必须唯一
-     * @param array $department 成员所属部门id列表,不超过20个
-     * @param array $order 部门内的排序值，默认为0。数量必须和department一致，数值越大排序越前面。第三方暂不支持
-     * @param string $position 职位信息。长度为0~64个字节
-     * @param boolean $gender 性别。1表示男性，2表示女性
-     * @param string $email 邮箱。长度为0~64个字节。企业内必须唯一
-     * @param boolean $isLeader 上级字段，标识是否为上级。第三方暂不支持
-     * @param boolean $enable 启用/禁用成员。1表示启用成员，0表示禁用成员
-     * @param string $avatarMediaId 成员头像的mediaid，通过多媒体接口上传图片获得的mediaid
-     * @param string $telephone 座机。长度0-64个字节。第三方暂不支持
-     * @param array $extAttr 自定义字段。自定义字段需要先在WEB管理端“我的企业” — “通讯录管理”添加，否则忽略未知属性的赋值
+     * @param array $data
      * @return mixed json格式
+     * @internal param string $userId 用户UserID。对应管理端的帐号，企业内必须唯一。不区分大小写，长度为1~64个字节
+     * @internal param string $name 用户名称。长度为1~64个字节
+     * @internal param string $englishName 英文名。长度为1-64个字节。第三方暂不支持
+     * @internal param string $mobile 手机号码。企业内必须唯一
+     * @internal param array $department 成员所属部门id列表,不超过20个
+     * @internal param array $order 部门内的排序值，默认为0。数量必须和department一致，数值越大排序越前面。第三方暂不支持
+     * @internal param string $position 职位信息。长度为0~64个字节
+     * @internal param bool $gender 性别。1表示男性，2表示女性
+     * @internal param string $email 邮箱。长度为0~64个字节。企业内必须唯一
+     * @internal param bool $isLeader 上级字段，标识是否为上级。第三方暂不支持
+     * @internal param bool $enable 启用/禁用成员。1表示启用成员，0表示禁用成员
+     * @internal param string $avatarMediaId 成员头像的mediaid，通过多媒体接口上传图片获得的mediaid
+     * @internal param string $telephone 座机。长度0-64个字节。第三方暂不支持
+     * @internal param array $extAttr 自定义字段。自定义字段需要先在WEB管理端“我的企业” — “通讯录管理”添加，否则忽略未知属性的赋值
      */
     static function createUser(
-        $accessToken, $userId, $name, $mobile, $department, $order = NULL, $englishName = NULL, $position = NULL,
-        $gender = NULL, $email = NULL, $isLeader = NULL, $enable = NULL, $avatarMediaId = NULL, $telephone = NULL,
-        $extAttr = NULL
+        $accessToken, array $data
     ) {
         
         return self::curlPost(
             sprintf(self::URL_CREATE_USER, $accessToken),
-            json_encode([
-                'userid' => $userId,
-                'name' => $name,
-                'english_name' => $englishName,
-                'modbile' => $mobile,
-                'department' => $department,
-                'order' => $order,
-                'position' => $position,
-                'gender' => $gender,
-                'email' => $email,
-                'isleader' => $isLeader,
-                'enable' => $enable,
-                'avatar_mediaid' => $avatarMediaId,
-                'telephone' => $telephone,
-                'extattr' => $extAttr
-            ])
+            json_encode($data)
         );
         
     }
@@ -383,51 +367,35 @@ class Wechat extends Facade {
         return self::curlGet(sprintf(self::URL_GET_USER, $accessToken, $userId));
         
     }
-    
+
     /**
      * 成员管理 - 更新成员
      *
      * @param string $accessToken 接口调用凭证
-     * @param string $userId 用户UserID。对应管理端的帐号，企业内必须唯一。不区分大小写，长度为1~64个字节
-     * @param string $name 用户名称。长度为1~64个字节
-     * @param string $englishName 英文名。长度为1-64个字节。第三方暂不支持
-     * @param string $mobile 手机号码。企业内必须唯一
-     * @param array $department 成员所属部门id列表,不超过20个
-     * @param array $order 部门内的排序值，默认为0。数量必须和department一致，数值越大排序越前面。第三方暂不支持
-     * @param string $position 职位信息。长度为0~64个字节
-     * @param boolean $gender 性别。1表示男性，2表示女性
-     * @param string $email 邮箱。长度为0~64个字节。企业内必须唯一
-     * @param boolean $isLeader 上级字段，标识是否为上级。第三方暂不支持
-     * @param boolean $enable 启用/禁用成员。1表示启用成员，0表示禁用成员
-     * @param string $avatarMediaId 成员头像的mediaid，通过多媒体接口上传图片获得的mediaid
-     * @param string $telephone 座机。长度0-64个字节。第三方暂不支持
-     * @param array $extAttr 自定义字段。自定义字段需要先在WEB管理端“我的企业” — “通讯录管理”添加，否则忽略未知属性的赋值
+     * @param array $data
      * @return mixed json格式
+     * @internal param string $userId 用户UserID。对应管理端的帐号，企业内必须唯一。不区分大小写，长度为1~64个字节
+     * @internal param string $name 用户名称。长度为1~64个字节
+     * @internal param string $englishName 英文名。长度为1-64个字节。第三方暂不支持
+     * @internal param string $mobile 手机号码。企业内必须唯一
+     * @internal param array $department 成员所属部门id列表,不超过20个
+     * @internal param array $order 部门内的排序值，默认为0。数量必须和department一致，数值越大排序越前面。第三方暂不支持
+     * @internal param string $position 职位信息。长度为0~64个字节
+     * @internal param bool $gender 性别。1表示男性，2表示女性
+     * @internal param string $email 邮箱。长度为0~64个字节。企业内必须唯一
+     * @internal param bool $isLeader 上级字段，标识是否为上级。第三方暂不支持
+     * @internal param bool $enable 启用/禁用成员。1表示启用成员，0表示禁用成员
+     * @internal param string $avatarMediaId 成员头像的mediaid，通过多媒体接口上传图片获得的mediaid
+     * @internal param string $telephone 座机。长度0-64个字节。第三方暂不支持
+     * @internal param array $extAttr 自定义字段。自定义字段需要先在WEB管理端“我的企业” — “通讯录管理”添加，否则忽略未知属性的赋值
      */
     static function updateUser(
-        $accessToken, $userId, $name = NULL, $mobile = NULL, $department = NULL, $order = NULL,
-        $englishName = NULL, $position = NULL, $gender = NULL, $email = NULL, $isLeader = NULL,
-        $enable = NULL, $avatarMediaId = NULL, $telephone = NULL, $extAttr = NULL
+        $accessToken, array $data
     ) {
         
         return self::curlPost(
             sprintf(self::URL_UPDATE_USER, $accessToken),
-            json_encode([
-                'userid' => $userId,
-                'name' => $name,
-                'english_name' => $englishName,
-                'mobile' => $mobile,
-                'department' => $department,
-                'order' => $order,
-                'position' => $position,
-                'gender' => $gender,
-                'email' => $email,
-                'isleader' => $isLeader,
-                'enable' => $enable,
-                'avatar_mediaid' => $avatarMediaId,
-                'telephone' => $telephone,
-                'extattr' => $extAttr
-            ])
+            json_encode($data)
         );
         
     }

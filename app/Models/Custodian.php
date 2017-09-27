@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Events\UserCreated;
 use App\Facades\DatatableFacade as Datatable;
 use App\Models\CustodianStudent;
 use App\Models\Mobile;
@@ -73,7 +74,7 @@ class Custodian extends Model {
      * @return bool|mixed
      */
     public function store(CustodianRequest $request) {
-    
+
         try {
             $exception = DB::transaction(function() use ($request) {
 
@@ -82,7 +83,7 @@ class Custodian extends Model {
                 $studentIds = $request->input('student_ids');
                 # 与学生之间的关系
                 $relationships = $request->input('relationship');
-
+                $studentId_relationship = [];
                 foreach ($studentIds as $key=>$studentId)
                 {
                     $studentId_relationship[$studentId] = $relationships[$key];
@@ -105,7 +106,6 @@ class Custodian extends Model {
                 ];
                 $user = new User();
                 $u = $user->create($userData);
-                unset($user);
                 $custodianData = [
                     'user_id' => $u->id,
                     'expiry' => '1970-01-01 00:00:00'
@@ -143,7 +143,11 @@ class Custodian extends Model {
                     $custodianStudent->storeByCustodianId($c->id, $studentId_relationship);
                 }
                 unset($custodianStudent);
+                # 创建企业号成员
+                $user->createWechatUser($u->id);
+                unset($user);
             });
+
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
             return false;
@@ -187,11 +191,11 @@ class Custodian extends Model {
                     'telephone' => $userData['telephone'],
                     'enabled' =>$userData['enabled']
                 ]);
-                unset($user);
+
 
                 $custodian->update([
                     'user_id' => $userId,
-                    'expiry' => $request->input('expiry')
+                    'expiry' => '1970-01-01 00:00:00'
                 ]);
 
                 $mobiles = $request->input('mobile');
@@ -217,7 +221,7 @@ class Custodian extends Model {
                 $departmentIds = $request->input('selectedDepartments');
                 $departmentUser = new DepartmentUser();
                 $departmentUser::where('user_id',$userId)->delete();
-                $departmentUser ->storeByDepartmentId($userId, $departmentIds);
+                $departmentUser ->storeByUserId($userId, $departmentIds);
                 unset($departmentUser);
                 # 向监护人学生表中添加数据
                 $custodianStudent = new CustodianStudent();
@@ -225,6 +229,8 @@ class Custodian extends Model {
                 $custodianStudent::where('custodian_id',$custodianId)->delete();
                 $custodianStudent->storeByCustodianId($custodianId, $studentId_Relationship);
                 unset($custodianStudent);
+                $user->UpdateWechatUser($userId);
+                unset($user);
             });
         
             return is_null($exception) ? true : $exception;

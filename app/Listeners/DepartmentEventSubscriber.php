@@ -112,9 +112,9 @@ class DepartmentEventSubscriber {
         $departments = $this->department->modify($data, $$model->department_id);
         $job = new ManageWechatDepartment($departments, 'update');
         $this->dispatch($job);
-        // ManageWechatDepartment::dispatch($departments, 'update');
+//        ManageWechatDepartment::dispatch($departments, 'update');
         return $departments ? true : false;
-        
+
     }
     
     /**
