@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\MajorRequest;
@@ -46,7 +45,7 @@ class MajorController extends Controller {
     public function create() {
         
         return $this->output(__METHOD__, [
-            'subjects' => $this->subject->subjects(1)
+            'subjects' => $this->subject->subjects(1),
         ]);
         
     }
@@ -88,14 +87,16 @@ class MajorController extends Controller {
     public function edit($id) {
         
         $major = $this->major->find($id);
-        if (!$major) { return $this->notFound(); }
+        if (!$major) {
+            return $this->notFound();
+        }
         $majorSubjects = $major->subjects;
         $selectedSubjects = [];
         foreach ($majorSubjects as $subject) {
             $selectedSubjects[$subject->id] = $subject->name;
         }
         return $this->output(__METHOD__, [
-            'major' => $major,
+            'major'            => $major,
 //            'subjects' => $this->subject->subjects(1),
             'selectedSubjects' => $selectedSubjects,
         ]);

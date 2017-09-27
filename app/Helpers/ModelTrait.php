@@ -11,7 +11,6 @@ trait ModelTrait {
         $relations = [];
         $class = get_class($model);
         $reflectionClass = new ReflectionClass($class);
-        
         foreach ($reflectionClass->getMethods() as $method) {
             if ($method->isUserDefined() && $method->isPublic() && $method->class == $class) {
                 $doc = $method->getDocComment();
@@ -21,7 +20,9 @@ trait ModelTrait {
             }
         }
         foreach ($relations as $relation) {
-            if ($model->{$relation}) { return false; }
+            if ($model->{$relation}) {
+                return false;
+            }
         }
         return true;
         

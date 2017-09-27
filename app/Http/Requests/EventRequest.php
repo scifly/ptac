@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
@@ -20,11 +19,11 @@ class EventRequest extends FormRequest {
      */
     public function rules() {
         return [
-            'title' => 'required|string|between:1,40',
-            'remark' => 'required',
+            'title'    => 'required|string|between:1,40',
+            'remark'   => 'required',
             'location' => 'required|string',
-            'contact' => 'required|string',
-            'url' => 'required|string'
+            'contact'  => 'required|string',
+            'url'      => 'required|string',
         ];
     }
     

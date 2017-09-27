@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ExamRequest;
@@ -74,10 +73,9 @@ class ExamController extends Controller {
         if (!$exam) {
             return $this->notFound();
         }
-        
         return $this->output(__METHOD__, [
-            'exam' => $exam,
-            'classes' => $this->exam->classes($exam->class_ids),
+            'exam'     => $exam,
+            'classes'  => $this->exam->classes($exam->class_ids),
             'subjects' => $this->exam->subjects(),
         ]);
         
@@ -95,8 +93,8 @@ class ExamController extends Controller {
             return $this->notFound();
         }
         return $this->output(__METHOD__, [
-            'exam' => $exam,
-            'selectedClasses' => $this->exam->classes($exam->class_ids),
+            'exam'             => $exam,
+            'selectedClasses'  => $this->exam->classes($exam->class_ids),
             'selectedSubjects' => $this->exam->subjects($exam->subject_ids),
         ]);
     }

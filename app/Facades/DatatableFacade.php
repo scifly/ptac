@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Facades;
 
 use Illuminate\Database\Eloquent\Model;
@@ -52,7 +51,7 @@ HTML;
      * @internal param string $table SQL table to query
      * @internal param string $primaryKey Primary key of the table
      */
-    static function simple(Model $model, array $columns, array $joins = NULL, $condition = NULL) {
+    static function simple(Model $model, array $columns, array $joins = null, $condition = null) {
         
         $modelName = class_basename($model);
         $tableName = $model->getTable();
@@ -82,7 +81,6 @@ HTML;
                     ' ON ' . implode(' AND ', $join['conditions']);
             }
         }
-        
         // Build the SQL query string from the request
         $limit = self::limit();
         $order = self::order($columns);
@@ -90,27 +88,23 @@ HTML;
         if (isset($condition)) {
             $where = empty($where) ? ' WHERE ' . $condition : $where . ' AND ' . $condition;
         }
-        
         // Main query to actually get the data
         $query = "SELECT SQL_CALC_FOUND_ROWS " .
             implode(", ", self::pluck($columns, 'db')) .
             " FROM " . $from . $where . $order . $limit;
         $data = DB::select($query);
-        
         // Data set length after filtering
         $resFilterLength = DB::select("SELECT FOUND_ROWS() AS t");
         $recordsFiltered = $resFilterLength[0]->t;
-        
         // Total data set length
         $resTotalLength = DB::select("SELECT COUNT(*) AS t FROM " . $tableName)[0]->t;
         $recordsTotal = $resTotalLength;
-        
         // Output
         return [
-            "draw" => intval(Request::get('draw')),
-            "recordsTotal" => intval($recordsTotal),
+            "draw"            => intval(Request::get('draw')),
+            "recordsTotal"    => intval($recordsTotal),
             "recordsFiltered" => intval($recordsFiltered),
-            "data" => self::data_output($columns, $data)
+            "data"            => self::data_output($columns, $data),
         ];
         
     }
@@ -148,7 +142,6 @@ HTML;
         
         $orderBy = '';
         $order = Request::get('order');
-        
         if (isset($order) && count($order)) {
             $orderBy = [];
             $dtColumns = self::pluck($columns, 'dt');
@@ -356,10 +349,10 @@ HTML;
          * Output
          */
         return [
-            "draw" => intval(Request::get('draw')),
-            "recordsTotal" => intval($recordsTotal),
+            "draw"            => intval(Request::get('draw')),
+            "recordsTotal"    => intval($recordsTotal),
             "recordsFiltered" => intval($recordsFiltered),
-            "data" => self::data_output($columns, $data)
+            "data"            => self::data_output($columns, $data),
         ];
     }
     
@@ -397,7 +390,6 @@ HTML;
         $showLink = sprintf(self::DT_LINK_SHOW, 'show_' . $id);
         $editLink = sprintf(self::DT_LINK_EDIT, 'edit_' . $id);
         $delLink = sprintf(self::DT_LINK_DEL, $id);
-        
         return $status . self::DT_SPACE . $showLink . self::DT_SPACE .
             $editLink . ($del ? self::DT_SPACE . $delLink : '');
         

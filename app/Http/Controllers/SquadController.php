@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\SquadRequest;
@@ -75,10 +74,9 @@ class SquadController extends Controller {
             return $this->notFound();
         }
         $educatorIds = explode(",", $class->educator_ids);
-        
         return $this->output(__METHOD__, [
-            'class' => $class,
-            'educators' => $this->educator->educators($educatorIds)
+            'class'     => $class,
+            'educators' => $this->educator->educators($educatorIds),
         ]);
         
     }
@@ -96,10 +94,9 @@ class SquadController extends Controller {
             return $this->notFound();
         }
         $educatorIds = explode(",", $class->educator_ids);
-        
         return $this->output(__METHOD__, [
-            'class' => $class,
-            'selectedEducators' => $this->educator->educators($educatorIds)
+            'class'             => $class,
+            'selectedEducators' => $this->educator->educators($educatorIds),
         ]);
         
     }

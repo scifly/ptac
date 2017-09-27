@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
@@ -21,11 +20,11 @@ class CompanyRequest extends FormRequest {
     public function rules() {
         
         return [
-            'name' => 'required|string|between:4,40|unique:companies,name,' .
+            'name'          => 'required|string|between:4,40|unique:companies,name,' .
                 $this->input('id') . ',id',
             'department_id' => 'required|integer',
-            'menu_id' => 'required|integer',
-            'remark' => 'required',
+            'menu_id'       => 'required|integer',
+            'remark'        => 'required',
         ];
         
     }
@@ -33,10 +32,10 @@ class CompanyRequest extends FormRequest {
     public function messages() {
         
         return [
-            'name.required' => '公司名称不能为空',
-            'name.between' => '公司名称应该在4~40个字符之间',
-            'name.unique' => '已有该记录',
-            'remark.required' => '备注不能为空'
+            'name.required'   => '公司名称不能为空',
+            'name.between'    => '公司名称应该在4~40个字符之间',
+            'name.unique'     => '已有该记录',
+            'remark.required' => '备注不能为空',
         ];
         
     }

@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Events\GradeCreated;
@@ -168,7 +167,9 @@ class Grade extends Model {
     public function remove($id, $fireEvent = false) {
         
         $grade = $this->find($id);
-        if (!$grade) { return false; }
+        if (!$grade) {
+            return false;
+        }
         $removed = $this->removable($grade) ? $grade->delete() : false;
         if ($removed && $fireEvent) {
             event(new GradeDeleted($grade));
@@ -187,26 +188,23 @@ class Grade extends Model {
             ['db' => 'Grade.educator_ids', 'dt' => 3],
             ['db' => 'Grade.created_at', 'dt' => 4],
             ['db' => 'Grade.updated_at', 'dt' => 5],
-            
             [
-                'db' => 'Grade.enabled', 'dt' => 6,
+                'db'        => 'Grade.enabled', 'dt' => 6,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
-                }
-            ]
+                },
+            ],
         ];
         $joins = [
             [
-                'table' => 'schools',
-                'alias' => 'School',
-                'type' => 'INNER',
+                'table'      => 'schools',
+                'alias'      => 'School',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'School.id = Grade.school_id'
-                ]
-            
-            ]
+                    'School.id = Grade.school_id',
+                ],
+            ],
         ];
-        
         return Datatable::simple($this, $columns, $joins);
         
     }

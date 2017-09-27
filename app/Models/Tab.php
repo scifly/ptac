@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
@@ -53,11 +52,11 @@ HTML;
 HTML;
     protected $fillable = [
         'name', 'remark', 'icon_id',
-        'action_id', 'enabled', 'controller'
+        'action_id', 'enabled', 'controller',
     ];
     protected $excluded_controllers = [
         'ForgotPasswordController', 'Controller', 'RegisterController',
-        'LoginController', 'ResetPasswordController', 'TestController'
+        'LoginController', 'ResetPasswordController', 'TestController',
     ];
     
     protected $dir = '/media/sf_sandbox/ptac/app/Http/Controllers';
@@ -124,11 +123,11 @@ HTML;
             $ctlrName = $paths[sizeof($paths) - 1];
             if (in_array($ctlrName, $this->excluded_controllers)) continue;
             $record = [
-                'name' => $this->getControllerComment($obj),
+                'name'       => $this->getControllerComment($obj),
                 'controller' => $ctlrName,
-                'remark' => $controller,
-                'action_id' => $this->getIndexActionId($ctlrName),
-                'enabled' => 1
+                'remark'     => $controller,
+                'action_id'  => $this->getIndexActionId($ctlrName),
+                'enabled'    => 1,
             ];
             $tab = $this->where('controller', $record['controller'])->first();
             if ($tab) {
@@ -142,7 +141,6 @@ HTML;
             }
         }
         unset($action);
-        
         return true;
         
     }
@@ -209,45 +207,43 @@ HTML;
             ['db' => 'Tab.id', 'dt' => 0],
             ['db' => 'Tab.name', 'dt' => 1],
             [
-                'db' => 'Icon.name as iconname', 'dt' => 2,
+                'db'        => 'Icon.name as iconname', 'dt' => 2,
                 'formatter' => function ($d) {
                     return isset($d) ? '<i class="' . $d . '"></i>&nbsp;' . $d : '[n/a]';
-                }
+                },
             ],
             ['db' => 'Action.name as actionname', 'dt' => 3],
             ['db' => 'Tab.created_at', 'dt' => 4],
             ['db' => 'Tab.updated_at', 'dt' => 5],
             [
-                'db' => 'Tab.enabled', 'dt' => 6,
+                'db'        => 'Tab.enabled', 'dt' => 6,
                 'formatter' => function ($d, $row) {
                     $id = $row['id'];
                     $status = $d ? sprintf(self::DT_ON, '已启用') : sprintf(self::DT_OFF, '已禁用');
                     $showLink = sprintf(self::DT_LINK_SHOW, 'show_' . $id);
                     $editLink = sprintf(self::DT_LINK_EDIT, 'edit_' . $id);
-                    
                     return $status . '&nbsp;' . $showLink . '&nbsp;' . $editLink;
-                }
-            ]
+                },
+            ],
         ];
         $joins = [
             [
-                'table' => 'icons',
-                'alias' => 'Icon',
-                'type' => 'LEFT',
+                'table'      => 'icons',
+                'alias'      => 'Icon',
+                'type'       => 'LEFT',
                 'conditions' => [
-                    'Icon.id = Tab.icon_id'
-                ]
+                    'Icon.id = Tab.icon_id',
+                ],
             ],
             [
-                'table' => 'actions',
-                'alias' => 'Action',
-                'type' => 'LEFT',
+                'table'      => 'actions',
+                'alias'      => 'Action',
+                'type'       => 'LEFT',
                 'conditions' => [
-                    'Action.id = Tab.action_id'
-                ]
-            ]
+                    'Action.id = Tab.action_id',
+                ],
+            ],
         ];
-        
         return Datatable::simple($this, $columns, $joins);
         
     }
@@ -295,7 +291,6 @@ HTML;
                 $menuTab::whereTabId($id)->delete();
                 $menuTab->storeByTabId($id, $menuIds);
             });
-            
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
             return false;
@@ -310,10 +305,10 @@ HTML;
      * @param array $allData
      * @return array
      */
-    private function scanDirectories($rootDir, $allData = array()) {
+    private function scanDirectories($rootDir, $allData = []) {
         
         // set filenames invisible if you want
-        $invisibleFileNames = array(".", "..", ".htaccess", ".htpasswd");
+        $invisibleFileNames = [".", "..", ".htaccess", ".htpasswd"];
         // run through content of root directory
         $dirContent = scandir($rootDir);
         foreach ($dirContent as $key => $content) {
@@ -331,7 +326,6 @@ HTML;
                 }
             }
         }
-        
         return $allData;
         
     }

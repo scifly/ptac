@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
@@ -32,8 +31,8 @@ class MajorSubject extends Model {
         
         foreach ($subjectIds as $subjectId) {
             $this->create([
-                'major_id' => $majorId,
-                'subject_id' => $subjectId
+                'major_id'   => $majorId,
+                'subject_id' => $subjectId,
             ]);
         }
         
@@ -43,8 +42,8 @@ class MajorSubject extends Model {
         
         foreach ($majorIds as $majorId) {
             $this->create([
-                'major_id' => $majorId,
-                'subject_id' => $subjectId
+                'major_id'   => $majorId,
+                'subject_id' => $subjectId,
             ]);
         }
         

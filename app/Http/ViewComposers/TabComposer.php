@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\ViewComposers;
 
 use App\Models\Action;
@@ -20,8 +19,8 @@ class TabComposer {
     public function compose(View $view) {
         
         $view->with([
-            'icons' => $this->icon->icons(),
-            'actions' => $this->action->actions()
+            'icons'   => $this->icon->icons(),
+            'actions' => $this->action->actions(),
         ]);
         
     }

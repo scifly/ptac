@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
@@ -46,7 +45,7 @@ class Subject extends Model {
     protected $fillable = [
         'school_id', 'name', 'isaux',
         'max_score', 'pass_score', 'grade_ids',
-        'enabled'
+        'enabled',
     ];
     
     /**
@@ -119,13 +118,13 @@ class Subject extends Model {
         try {
             $exception = DB::transaction(function () use ($request) {
                 $subjectData = [
-                    'name' => $request->input('name'),
-                    'school_id' => $request->input('school_id'),
-                    'max_score' => $request->input('max_score'),
+                    'name'       => $request->input('name'),
+                    'school_id'  => $request->input('school_id'),
+                    'max_score'  => $request->input('max_score'),
                     'pass_score' => $request->input('pass_score'),
-                    'grade_ids' => $request->input('grade_ids'),
-                    'isaux' => $request->input('isaux'),
-                    'enabled' => $request->input('enabled')
+                    'grade_ids'  => $request->input('grade_ids'),
+                    'isaux'      => $request->input('isaux'),
+                    'enabled'    => $request->input('enabled'),
                 ];
                 $subject = $this->create($subjectData);
                 $majorSubject = new MajorSubject();
@@ -148,17 +147,19 @@ class Subject extends Model {
     public function modify(SubjectRequest $request, $id) {
         
         $subject = $this->find($id);
-        if (!isset($subject)) { return false; }
+        if (!isset($subject)) {
+            return false;
+        }
         try {
             $exception = DB::transaction(function () use ($request, $id, $subject) {
                 $subject->update([
-                    'name' => $request->input('name'),
-                    'school_id' => $request->input('school_id'),
-                    'max_score' => $request->input('max_score'),
+                    'name'       => $request->input('name'),
+                    'school_id'  => $request->input('school_id'),
+                    'max_score'  => $request->input('max_score'),
                     'pass_score' => $request->input('pass_score'),
-                    'grade_ids' => $request->input('grade_ids'),
-                    'isaux' => $request->input('isaux'),
-                    'enabled' => $request->input('enabled')
+                    'grade_ids'  => $request->input('grade_ids'),
+                    'isaux'      => $request->input('isaux'),
+                    'enabled'    => $request->input('enabled'),
                 ]);
                 $majorSubject = new MajorSubject();
                 $majorSubject::whereSubjectId($id)->delete();
@@ -180,7 +181,9 @@ class Subject extends Model {
     public function remove($subjectId) {
         
         $subject = $this->find($subjectId);
-        if (!isset($subject)) { return false; }
+        if (!isset($subject)) {
+            return false;
+        }
         try {
             $exception = DB::transaction(function () use ($subjectId, $subject) {
                 # 删除指定的科目记录
@@ -210,32 +213,31 @@ class Subject extends Model {
             ['db' => 'Subject.name', 'dt' => 1],
             ['db' => 'School.name as schoolname', 'dt' => 2],
             [
-                'db' => 'Subject.isaux', 'dt' => 3,
+                'db'        => 'Subject.isaux', 'dt' => 3,
                 'formatter' => function ($d) {
                     $subject = Subject::whereId($d)->first();
                     return $subject->isaux == 1 ? '是' : '否';
-                }
+                },
             ],
             ['db' => 'Subject.max_score', 'dt' => 4],
             ['db' => 'Subject.pass_score', 'dt' => 5],
             ['db' => 'Subject.created_at', 'dt' => 6],
             ['db' => 'Subject.updated_at', 'dt' => 7],
             [
-                'db' => 'Subject.enabled', 'dt' => 8,
+                'db'        => 'Subject.enabled', 'dt' => 8,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
-                }
-            ]
+                },
+            ],
         ];
         $joins = [
             [
-                'table' => 'schools',
-                'alias' => 'School',
-                'type' => 'INNER',
-                'conditions' => ['School.id = Subject.school_id']
-            ]
+                'table'      => 'schools',
+                'alias'      => 'School',
+                'type'       => 'INNER',
+                'conditions' => ['School.id = Subject.school_id'],
+            ],
         ];
-        
         return Datatable::simple($this, $columns, $joins);
         
     }

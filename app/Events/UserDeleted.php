@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Events;
 
 use Illuminate\Broadcasting\Channel;
@@ -9,21 +8,21 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
 class UserDeleted {
-
+    
     use Dispatchable, InteractsWithSockets, SerializesModels;
-
+    
     public $userid;
-
+    
     /**
      * Create a new event instance.
      * @param string $userid
      */
     public function __construct($userid) {
-
+        
         $this->userid = $userid;
-
+        
     }
-
+    
     /**
      * Get the channels the event should broadcast on.
      *

@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -20,13 +19,13 @@ class GroupTab extends Model {
     public function storeByGroupId($groupId, array $ids = []) {
         
         try {
-            $exception = DB::transaction(function() use ($groupId, $ids) {
+            $exception = DB::transaction(function () use ($groupId, $ids) {
                 $this->where('group_id', $groupId)->delete();
                 foreach ($ids as $id) {
                     $this->create([
                         'group_id' => $groupId,
-                        'tab_id' => $id,
-                        'enabled' => 1
+                        'tab_id'   => $id,
+                        'enabled'  => 1,
                     ]);
                 }
             });

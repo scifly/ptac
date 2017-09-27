@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Helpers\ModelTrait;
@@ -82,7 +81,9 @@ class MediaType extends Model {
     public function remove($id) {
         
         $mediaType = $this->find($id);
-        if (!$mediaType) { return false; }
+        if (!$mediaType) {
+            return false;
+        }
         return $mediaType->removable($mediaType)
             ? $mediaType->delete() : false;
         

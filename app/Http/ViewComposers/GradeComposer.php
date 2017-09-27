@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\ViewComposers;
 
 use App\Models\Educator;
@@ -26,7 +25,7 @@ class GradeComposer {
             $educatorUsers[$educator->id] = $educator->user->username;
         }
         $view->with([
-            'schools' => $this->school->pluck('name', 'id'),
+            'schools'   => $this->school->pluck('name', 'id'),
             'educators' => $educatorUsers,
         ]);
     }

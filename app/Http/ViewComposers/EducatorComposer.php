@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\ViewComposers;
 
 use App\Models\Group;
@@ -13,7 +12,6 @@ use Illuminate\Contracts\View\View;
 class EducatorComposer {
     
     protected $user, $subject, $school, $squad, $group, $team;
-    
     
     public function __construct(User $user, Subject $subject, School $school, Squad $squad, Group $group, Team $team) {
         
@@ -32,13 +30,12 @@ class EducatorComposer {
         $subjects = $this->subject->pluck('name', 'id')->toArray();
         array_unshift($subjects, '(请选择)');
         $view->with([
-            'users' => $this->user->pluck('realname', 'id'),
-            'schools' => $this->school->pluck('name', 'id'),
-            'squads' => $squads,
+            'users'    => $this->user->pluck('realname', 'id'),
+            'schools'  => $this->school->pluck('name', 'id'),
+            'squads'   => $squads,
             'subjects' => $subjects,
-            'groups' => $this->group->pluck('name', 'id'),
-            'teams' => $this->team->pluck('name', 'id')
-        
+            'groups'   => $this->group->pluck('name', 'id'),
+            'teams'    => $this->team->pluck('name', 'id'),
         ]);
     }
     

@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
@@ -35,7 +34,7 @@ class Group extends Model {
     protected $table = 'groups';
     
     protected $fillable = [
-        'name', 'school_id', 'remark', 'enabled'
+        'name', 'school_id', 'remark', 'enabled',
     ];
     
     /**
@@ -51,13 +50,13 @@ class Group extends Model {
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function school() { return $this->belongsTo('App\Models\School'); }
-
-    public function menus() { return $this->belongsToMany('App\Models\Menu','groups_menus'); }
-
-    public function actions() { return $this->belongsToMany('App\Models\Action','actions_groups'); }
-
-    public function tabs() { return $this->belongsToMany('App\Models\Tab','groups_tabs'); }
-
+    
+    public function menus() { return $this->belongsToMany('App\Models\Menu', 'groups_menus'); }
+    
+    public function actions() { return $this->belongsToMany('App\Models\Action', 'actions_groups'); }
+    
+    public function tabs() { return $this->belongsToMany('App\Models\Tab', 'groups_tabs'); }
+    
     /**
      * 保存角色
      *
@@ -66,35 +65,35 @@ class Group extends Model {
      * @internal param array $data
      */
     public function store(array $data) {
-
+        
         try {
-            $exception = DB::transaction(function() use ($data) {
-
+            $exception = DB::transaction(function () use ($data) {
+                
                 $groupData = [
-                    'name' => $data['name'],
-                    'remark' => $data['remark'],
+                    'name'    => $data['name'],
+                    'remark'  => $data['remark'],
                     'enabled' => $data['enabled'],
                 ];
                 $g = $this->create($groupData);
                 # 功能与角色的对应关系
                 $actionIds = $data['acitonId'];
                 $actionGroup = new ActionGroup();
-                $actionGroup->storeByGroupId($g->id,$actionIds);
+                $actionGroup->storeByGroupId($g->id, $actionIds);
                 # 功能与菜单的对应关系
-                $menuIds = explode(',',$data['menu_ids']);
+                $menuIds = explode(',', $data['menu_ids']);
                 $groupMenu = new GroupMenu();
                 $groupMenu->storeByGroupId($g->id, $menuIds);
                 # 功能与卡片的对应关系
                 $tabIds = $data['tabId'];
                 $groupTab = new GroupTab();
                 $groupTab->storeByGroupId($g->id, $tabIds);
-
+                
             });
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
             return false;
         }
-
+        
     }
     
     /**
@@ -105,37 +104,39 @@ class Group extends Model {
      * @return bool
      */
     public function modify(array $data, $id) {
-
+        
         $group = $this->find($id);
-        if (!$group) { return false; }
+        if (!$group) {
+            return false;
+        }
         try {
-            $exception = DB::transaction(function() use ($data, $group ,$id) {
-
+            $exception = DB::transaction(function () use ($data, $group, $id) {
+                
                 $groupData = [
-                    'name' => $data['name'],
-                    'remark' => $data['remark'],
+                    'name'    => $data['name'],
+                    'remark'  => $data['remark'],
                     'enabled' => $data['enabled'],
                 ];
                 $group->update($groupData);
                 # 功能与角色的对应关系
                 $actionIds = $data['acitonId'];
                 $actionGroup = new ActionGroup();
-                $actionGroup->storeByGroupId($id,$actionIds);
+                $actionGroup->storeByGroupId($id, $actionIds);
                 # 功能与菜单的对应关系
-                $menuIds = explode(',',$data['menu_ids']);
+                $menuIds = explode(',', $data['menu_ids']);
                 $groupMenu = new GroupMenu();
                 $groupMenu->storeByGroupId($id, $menuIds);
                 # 功能与卡片的对应关系
                 $tabIds = $data['tabId'];
                 $groupTab = new GroupTab();
                 $groupTab->storeByGroupId($id, $tabIds);
-
+                
             });
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
             return false;
         }
-
+        
     }
     
     /**
@@ -147,7 +148,9 @@ class Group extends Model {
     public function remove($id) {
         
         $group = $this->find($id);
-        if (!$group) { return false; }
+        if (!$group) {
+            return false;
+        }
         return $this->removable($group) ? $group->delete() : false;
         
     }
@@ -161,12 +164,11 @@ class Group extends Model {
             ['db' => 'Groups.created_at', 'dt' => 3],
             ['db' => 'Groups.updated_at', 'dt' => 4],
             [
-                'db' => 'Groups.enabled', 'dt' => 5,
+                'db'        => 'Groups.enabled', 'dt' => 5,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
-                }
-            ]
-        
+                },
+            ],
         ];
         return Datatable::simple($this, $columns);
         

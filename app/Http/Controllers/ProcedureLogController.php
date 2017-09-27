@@ -1,13 +1,12 @@
 <?php
-
 namespace App\Http\Controllers;
 
+use App\Helpers\ControllerTrait;
 use App\Http\Requests\ProcedureLogRequest;
 use App\Models\ProcedureLog;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Storage;
-use App\Helpers\ControllerTrait;
 
 /**
  * 申请/审批
@@ -16,15 +15,15 @@ use App\Helpers\ControllerTrait;
  * @package App\Http\Controllers
  */
 class ProcedureLogController extends Controller {
-
+    
     use ControllerTrait;
-
+    
     protected $procedureLog;
     
     function __construct(ProcedureLog $procedureLog) {
         $this->procedureLog = $procedureLog;
     }
-
+    
     /**
      * 我发起的流程审批列表
      *
@@ -39,14 +38,13 @@ class ProcedureLogController extends Controller {
                 ->groupBy('first_log_id')
                 ->pluck('id')->toArray();
             $where = 'ProcedureLog.id in (' . implode(',', $ids) . ')';
-            
             return response()->json($this->procedureLog->datatable($where));
             
         }
         return $this->output(__METHOD__);
         
     }
-
+    
     /**
      * 待审核的流程审批列表
      *
@@ -62,13 +60,11 @@ class ProcedureLogController extends Controller {
                 ->pluck('id')
                 ->toArray();
             $where = 'ProcedureLog.id in (' . implode(',', $ids) . ') and FIND_IN_SET(' . $userId . ',ProcedureStep.approver_user_ids)';
-            
             return response()->json($this->procedureLog->datatable($where));
             
         }
     }
-
-
+    
     /**
      * 相关流程列表
      *
@@ -85,7 +81,7 @@ class ProcedureLogController extends Controller {
         return $this->output(__METHOD__);
         
     }
-
+    
     /**
      * 流程审批详情
      *
@@ -102,11 +98,11 @@ class ProcedureLogController extends Controller {
             ->orderBy('id', 'asc')
             ->get();
         return $this->output(__METHOD__, [
-            'js' => 'js/procedure_log/show.js',
-            'data' => $data,
-            'user_id' => $userId
+            'js'      => 'js/procedure_log/show.js',
+            'data'    => $data,
+            'user_id' => $userId,
         ]);
-
+        
     }
     
     /**
@@ -136,18 +132,17 @@ class ProcedureLogController extends Controller {
             ->orderBy('id', 'asc')
             ->first();
         $data = [
-            'procedure_id' => $request->input('procedure_id'),
-            'initiator_user_id' => $userId,
-            'procedure_step_id' => $procedureStep->id,
-            'operator_user_id' => 0,
-            'operator_msg' => 0,
-            'operator_media_ids' => 0,
-            'step_status' => 2,
-            'first_log_id' => 0,
-            'initiator_msg' => $request->input('initiator_msg'),
-            'initiator_media_ids' => empty($mediaIds) ? 0 : implode(',', $mediaIds)
+            'procedure_id'        => $request->input('procedure_id'),
+            'initiator_user_id'   => $userId,
+            'procedure_step_id'   => $procedureStep->id,
+            'operator_user_id'    => 0,
+            'operator_msg'        => 0,
+            'operator_media_ids'  => 0,
+            'step_status'         => 2,
+            'first_log_id'        => 0,
+            'initiator_msg'       => $request->input('initiator_msg'),
+            'initiator_media_ids' => empty($mediaIds) ? 0 : implode(',', $mediaIds),
         ];
-        
         if ($id = $this->procedureLog->insertGetId($data)) {
             $this->procedureLog->where('id', $id)->update(['first_log_id' => $id]);
             return $this->succeed();
@@ -155,7 +150,7 @@ class ProcedureLogController extends Controller {
         return $this->fail();
         
     }
-
+    
     /**
      * 审批申请
      *
@@ -166,33 +161,31 @@ class ProcedureLogController extends Controller {
         $request = Request::all();
         $update = $this->procedureLog->where('id', $request['id'])
             ->update([
-                'step_status' => $request['step_status'],
-                'operator_user_id' => $userId,
-                'operator_msg' => $request['operator_msg'],
-                'operator_media_ids' => empty($request['media_ids']) ? 0 : implode(',', $request['media_ids'])
+                'step_status'        => $request['step_status'],
+                'operator_user_id'   => $userId,
+                'operator_msg'       => $request['operator_msg'],
+                'operator_media_ids' => empty($request['media_ids']) ? 0 : implode(',', $request['media_ids']),
             ]);
-        
         if (!$update) {
             return $this->fail();
         }
-        
         if ($request['step_status'] == 0) {
             $procedureStep = DB::table('procedure_steps')->where([
                 ['procedure_id', '=', $request['procedure_id']],
-                ['id', '>', $request['procedure_step_id']]
+                ['id', '>', $request['procedure_step_id']],
             ])->orderBy('id', 'asc')->first();
             if (!empty($procedureStep)) {
                 $data = [
-                    'procedure_id' => $request['procedure_id'],
-                    'initiator_user_id' => $request['initiator_user_id'],
-                    'procedure_step_id' => $procedureStep->id,
-                    'operator_user_id' => 0,
-                    'operator_msg' => 0,
-                    'operator_media_ids' => 0,
-                    'step_status' => 2,
-                    'first_log_id' => $request['first_log_id'],
-                    'initiator_msg' => $request['initiator_msg'],
-                    'initiator_media_ids' => empty($request['initiator_media_ids']) ? 0 : $request['initiator_media_ids']
+                    'procedure_id'        => $request['procedure_id'],
+                    'initiator_user_id'   => $request['initiator_user_id'],
+                    'procedure_step_id'   => $procedureStep->id,
+                    'operator_user_id'    => 0,
+                    'operator_msg'        => 0,
+                    'operator_media_ids'  => 0,
+                    'step_status'         => 2,
+                    'first_log_id'        => $request['first_log_id'],
+                    'initiator_msg'       => $request['initiator_msg'],
+                    'initiator_media_ids' => empty($request['initiator_media_ids']) ? 0 : $request['initiator_media_ids'],
                 ];
                 $this->procedureLog->insertGetId($data);
             }
@@ -200,7 +193,6 @@ class ProcedureLogController extends Controller {
         return $this->succeed();
         
     }
-    
     
     /**
      * 上传审批流程相关文件
@@ -214,10 +206,10 @@ class ProcedureLogController extends Controller {
             $result['statusCode'] = 500;
             $result['message'] = '您还未选择文件！';
         } else {
-            $result['data'] = array();
+            $result['data'] = [];
             $mes = [];
             foreach ($files as $file) {
-                $mes []= $this->uploadedMedias($file,'上传审批流程相关文件');
+                $mes [] = $this->uploadedMedias($file, '上传审批流程相关文件');
             }
             $result['statusCode'] = 200;
             $result['message'] = '上传成功！';
@@ -237,7 +229,6 @@ class ProcedureLogController extends Controller {
         $path = Media::whereId($id)->value('path');
         $path_arr = explode("/", $path);
         Storage::disk('uploads')->delete($path_arr[5]);
-        
         if (Media::whereId($id)->delete()) {
             $result['statusCode'] = self::HTTP_STATUSCODE_OK;
             $result['message'] = self::MSG_DEL_OK;

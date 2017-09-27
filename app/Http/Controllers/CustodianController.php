@@ -1,16 +1,13 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CustodianRequest;
 use App\Models\Custodian;
+use App\Models\CustodianStudent;
 use App\Models\Department;
 use App\Models\DepartmentUser;
 use App\Models\Group;
-use App\Models\User;
-use App\Models\Mobile;
 use App\Models\Student;
-use App\Models\CustodianStudent;
 use Illuminate\Support\Facades\Request;
 
 /**
@@ -21,19 +18,20 @@ use Illuminate\Support\Facades\Request;
  */
 class CustodianController extends Controller {
     
-    protected $custodian, $department, $group, $departmentUser,$student,$custodianStudent;
+    protected $custodian, $department, $group, $departmentUser, $student, $custodianStudent;
     
     function __construct(Custodian $custodian, Department $department, Group $group,
-    DepartmentUser $departmentUser,Student $student,CustodianStudent $custodianStudent) {
-    
+                         DepartmentUser $departmentUser, Student $student, CustodianStudent $custodianStudent) {
+        
         $this->custodian = $custodian;
         $this->department = $department;
         $this->group = $group;
         $this->departmentUser = $departmentUser;
-        $this->student =$student;
+        $this->student = $student;
         $this->custodianStudent = $custodianStudent;
         
     }
+    
     /**
      * 监护人列表
      *
@@ -52,7 +50,7 @@ class CustodianController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function create() {
-
+        
         if (Request::method() === 'POST') {
             return $this->department->tree();
         }
@@ -67,7 +65,7 @@ class CustodianController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(CustodianRequest $request) {
-
+        
         return $this->custodian->store($request) ? $this->succeed() : $this->fail();
         
     }
@@ -88,29 +86,25 @@ class CustodianController extends Controller {
      * @internal param Custodian $custodian
      */
     public function edit($id) {
-
+        
         if (Request::method() === 'POST') {
             return $this->department->tree();
         }
         $custodian = $this->custodian->find($id);
-
         $departments = $custodian->user->departments;
         $selectedDepartmentIds = [];
         foreach ($departments as $department) {
             $selectedDepartmentIds[] = $department->id;
         }
         $selectedDepartments = $this->department->selectedNodes($selectedDepartmentIds);
-
         if (!$custodian) {
             return $this->notFound();
         }
         return $this->output(__METHOD__, [
-            'mobiles' => $custodian->user->mobiles,
-            'custodian' => $custodian,
+            'mobiles'               => $custodian->user->mobiles,
+            'custodian'             => $custodian,
             'selectedDepartmentIds' => implode(',', $selectedDepartmentIds),
-            'selectedDepartments' => $selectedDepartments,
-
-
+            'selectedDepartments'   => $selectedDepartments,
         ]);
         
     }
@@ -122,11 +116,11 @@ class CustodianController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(CustodianRequest $request, $id) {
-
-        return $this->custodian->modify($request,$id) ? $this->succeed() : $this->fail();
+        
+        return $this->custodian->modify($request, $id) ? $this->succeed() : $this->fail();
         
     }
-
+    
     /**
      * 删除指定的监护人
      *

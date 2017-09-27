@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
@@ -50,13 +49,12 @@ class ProcedureType extends Model {
             ['db' => 'ProcedureType.created_at', 'dt' => 3],
             ['db' => 'ProcedureType.updated_at', 'dt' => 4],
             [
-                'db' => 'ProcedureType.enabled', 'dt' => 5,
+                'db'        => 'ProcedureType.enabled', 'dt' => 5,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
-                }
+                },
             ],
         ];
-        
         return Datatable::simple($this, $columns);
     }
 }

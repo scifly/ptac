@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
@@ -35,6 +34,7 @@ use Illuminate\Support\Facades\Storage;
  * @property-read \App\Models\Media $media
  */
 class WapSiteModule extends Model {
+    
     //
     protected $table = 'wap_site_modules';
     protected $fillable = [
@@ -77,7 +77,6 @@ class WapSiteModule extends Model {
         $mediaIds = $request->input('del_ids');
         if ($mediaIds) {
             $medias = Media::whereIn('id', $mediaIds)->get(['id', 'path']);
-            
             foreach ($medias as $media) {
                 $paths = explode("/", $media->path);
                 Storage::disk('uploads')->delete($paths[5]);
@@ -114,25 +113,23 @@ class WapSiteModule extends Model {
             ['db' => 'WapSite.site_title', 'dt' => 2],
             ['db' => 'WapSiteModule.created_at', 'dt' => 3],
             ['db' => 'WapSiteModule.updated_at', 'dt' => 4],
-            
             [
-                'db' => 'WapSiteModule.enabled', 'dt' => 5,
+                'db'        => 'WapSiteModule.enabled', 'dt' => 5,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
-                }
-            ]
+                },
+            ],
         ];
         $joins = [
             [
-                'table' => 'wap_sites',
-                'alias' => 'WapSite',
-                'type' => 'INNER',
+                'table'      => 'wap_sites',
+                'alias'      => 'WapSite',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'WapSite.id = WapSiteModule.wap_site_id'
-                ]
-            ]
+                    'WapSite.id = WapSiteModule.wap_site_id',
+                ],
+            ],
         ];
-        
         return Datatable::simple($this, $columns, $joins);
     }
     

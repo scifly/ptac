@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\ViewComposers;
 
 use App\Models\School;
@@ -15,7 +14,6 @@ class ScoreRangeComposer {
     public function __construct(School $schools, Subject $subjects) {
         
         $this->schools = $schools;
-        
         $this->subjects = $subjects;
         
     }
@@ -23,7 +21,7 @@ class ScoreRangeComposer {
     public function compose(View $view) {
         
         $view->with([
-            'schools' => $this->schools->pluck('name', 'id'),
+            'schools'  => $this->schools->pluck('name', 'id'),
             'subjects' => $this->subjects->pluck('name', 'id'),
         ]);
     }

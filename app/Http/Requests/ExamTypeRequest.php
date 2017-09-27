@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
@@ -7,14 +6,14 @@ use Illuminate\Foundation\Http\FormRequest;
 class ExamTypeRequest extends FormRequest {
     
     protected $strings_key = [
-        'name' => '考试类型',
+        'name'   => '考试类型',
         'remark' => '备注',
     ];
     protected $strings_val = [
         'required' => '为必填项',
-        'string' => '为字符串',
-        'max' => '最大为:max',
-        'unique' => '不唯一',
+        'string'   => '为字符串',
+        'max'      => '最大为:max',
+        'unique'   => '不唯一',
     ];
     
     /**
@@ -47,11 +46,11 @@ class ExamTypeRequest extends FormRequest {
     public function rules() {
         
         return [
-            'name' => 'required|string|max:255|unique:exam_types,name,' .
+            'name'      => 'required|string|max:255|unique:exam_types,name,' .
                 $this->input('id') . ',id,' .
                 'school_id,' . $this->input('school_id'),
             'school_id' => 'required|integer',
-            'remark' => 'required|string|max:255',
+            'remark'    => 'required|string|max:255',
         ];
         
     }

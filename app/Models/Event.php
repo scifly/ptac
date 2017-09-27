@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
@@ -52,6 +51,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|Event whereTitle($value)
  */
 class Event extends Model {
+    
     protected $table = 'events';
     protected $fillable = [
         'title',
@@ -70,7 +70,7 @@ class Event extends Model {
         'user_id',
         'created_at',
         'updated_at',
-        'enabled'
+        'enabled',
     ];
     
     /**
@@ -93,7 +93,6 @@ class Event extends Model {
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function subject() { return $this->belongsTo('App\Models\Subject'); }
-    
     
     /**
      * 显示日历事件

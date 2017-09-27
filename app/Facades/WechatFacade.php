@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Facades;
 
 use Illuminate\Support\Facades\Facade;
@@ -100,7 +99,6 @@ class Wechat extends Facade {
     # 接收事件推送 - https://work.weixin.qq.com/api/doc#10427
     # 接收普通消息 - https://work.weixin.qq.com/api/doc#10426
     # 被动回复消息 - https://work.weixin.qq.com/api/doc#10428
-    
     /** 自定义菜单 */
     # 创建菜单(POST) - https://work.weixin.qq.com/api/doc#10786
     const URL_CREATE_MENU = 'https://qyapi.weixin.qq.com/cgi-bin/menu/create?access_token=%s&agentid=%s';
@@ -159,7 +157,6 @@ class Wechat extends Facade {
         } else {
             $accessToken = $data['access_token'];
         }
-        
         return $accessToken;
         
     }
@@ -167,15 +164,12 @@ class Wechat extends Facade {
     static function curlGet($url) {
         
         $ch = curl_init();
-        
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-        
         $result = curl_exec($ch);
         curl_close($ch);
-        
         return $result;
         
     }
@@ -245,10 +239,8 @@ class Wechat extends Facade {
         curl_setopt($ch, CURLOPT_AUTOREFERER, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        
         $result = curl_exec($ch);
         curl_close($ch);
-        
         return $result;
         
     }
@@ -311,19 +303,19 @@ class Wechat extends Facade {
      * @param null $agentId 授权方应用id
      * @return mixed
      */
-    static function getLoginUrl($accessToken, $loginTicket, $target, $agentId = NULL) {
+    static function getLoginUrl($accessToken, $loginTicket, $target, $agentId = null) {
         
         return self::curlPost(
             sprintf(self::URL_GET_LOGIN_URL, $accessToken),
             json_encode([
                 'login_ticket' => $loginTicket,
-                'target' => $target,
-                'agentid' => $agentId
+                'target'       => $target,
+                'agentid'      => $agentId,
             ])
         );
         
     }
-
+    
     /**
      * 成员管理 - 创建成员
      *
@@ -367,7 +359,7 @@ class Wechat extends Facade {
         return self::curlGet(sprintf(self::URL_GET_USER, $accessToken, $userId));
         
     }
-
+    
     /**
      * 成员管理 - 更新成员
      *
@@ -437,7 +429,7 @@ class Wechat extends Facade {
      * @param boolean $fetchChild 1/0：是否递归获取子部门下面的成员
      * @return mixed json格式
      */
-    static function getDeptUser($accessToken, $departmentId, $fetchChild = NULL) {
+    static function getDeptUser($accessToken, $departmentId, $fetchChild = null) {
         
         return self::curlGet(sprintf(self::URL_GET_DEPT_USER, $accessToken, $departmentId, $fetchChild));
         
@@ -451,7 +443,7 @@ class Wechat extends Facade {
      * @param bool $fetch_child 1/0：是否递归获取子部门下面的成员
      * @return mixed json格式
      */
-    static function getDeptUserDetail($accessToken, $departmentId, $fetch_child = NULL) {
+    static function getDeptUserDetail($accessToken, $departmentId, $fetch_child = null) {
         
         return self::curlGet(sprintf(self::URL_GET_DEPT_USER_DETAIL, $accessToken, $departmentId, $fetch_child));
         
@@ -467,15 +459,15 @@ class Wechat extends Facade {
      * @param integer $id 部门id。指定时必须大于1，否则自动生成
      * @return mixed
      */
-    static function createDept($accessToken, $name, $parentId, $order = NULL, $id = NULL) {
+    static function createDept($accessToken, $name, $parentId, $order = null, $id = null) {
         
         return self::curlPost(
             sprintf(self::URL_CREATE_DEPT, $accessToken),
             json_encode([
-                'name' => $name,
+                'name'     => $name,
                 'parentid' => $parentId,
-                'order' => $order,
-                'id' => $id
+                'order'    => $order,
+                'id'       => $id,
             ])
         );
     }
@@ -490,15 +482,15 @@ class Wechat extends Facade {
      * @param integer $order 在父部门中的次序值， 值越大的排序越靠前。
      * @return mixed {"errcode": 0, "errmsg": "updated"}
      */
-    static function updateDept($accessToken, $id, $name = NULL, $parentId = NULL, $order = NULL) {
+    static function updateDept($accessToken, $id, $name = null, $parentId = null, $order = null) {
         
         return self::curlPost(
             sprintf(self::URL_UPDATE_DEPT, $accessToken),
             json_encode([
-                'id' => $id,
-                'name' => $name,
+                'id'       => $id,
+                'name'     => $name,
                 'parentid' => $parentId,
-                'order' => $order
+                'order'    => $order,
             ])
         );
         
@@ -524,7 +516,7 @@ class Wechat extends Facade {
      * @param integer $id 部门id。获取指定部门及其下的子部门。 如果不填，默认获取全量组织架构
      * @return mixed
      */
-    static function getDeptList($accessToken, $id = NULL) {
+    static function getDeptList($accessToken, $id = null) {
         
         return self::curlGet(sprintf(self::URL_GET_DEPT_LIST, $accessToken, $id));
         
@@ -541,8 +533,8 @@ class Wechat extends Facade {
      * @return mixed json格式
      */
     static function incrementalUpdateUser(
-        $accessToken, $mediaId, $url = NULL,
-        $token = NULL, $encodingAesKey = NULL
+        $accessToken, $mediaId, $url = null,
+        $token = null, $encodingAesKey = null
     ) {
         
         return self::curlPost(
@@ -550,10 +542,10 @@ class Wechat extends Facade {
             json_encode([
                 'media_id' => $mediaId,
                 'callback' => [
-                    'url' => $url,
-                    'token' => $token,
-                    'encodingaeskey' => $encodingAesKey
-                ]
+                    'url'            => $url,
+                    'token'          => $token,
+                    'encodingaeskey' => $encodingAesKey,
+                ],
             ])
         );
         
@@ -570,8 +562,8 @@ class Wechat extends Facade {
      * @return mixed json格式
      */
     static function overrideUser(
-        $accessToken, $mediaId, $url = NULL,
-        $token = NULL, $encodingAesKey = NULL
+        $accessToken, $mediaId, $url = null,
+        $token = null, $encodingAesKey = null
     ) {
         
         return self::curlPost(
@@ -579,10 +571,10 @@ class Wechat extends Facade {
             json_encode([
                 'media_id' => $mediaId,
                 'callback' => [
-                    'url' => $url,
-                    'token' => $token,
-                    'encodingaeskey' => $encodingAesKey
-                ]
+                    'url'            => $url,
+                    'token'          => $token,
+                    'encodingaeskey' => $encodingAesKey,
+                ],
             ])
         );
     }
@@ -598,8 +590,8 @@ class Wechat extends Facade {
      * @return mixed json格式
      */
     static function overrideDept(
-        $accessToken, $mediaId, $url = NULL,
-        $token = NULL, $encodingAesKey = NULL
+        $accessToken, $mediaId, $url = null,
+        $token = null, $encodingAesKey = null
     ) {
         
         return self::curlPost(
@@ -607,10 +599,10 @@ class Wechat extends Facade {
             json_encode([
                 'media_id' => $mediaId,
                 'callback' => [
-                    'url' => $url,
-                    'token' => $token,
-                    'encodingaeskey' => $encodingAesKey
-                ]
+                    'url'            => $url,
+                    'token'          => $token,
+                    'encodingaeskey' => $encodingAesKey,
+                ],
             ])
         );
         
@@ -639,7 +631,7 @@ class Wechat extends Facade {
      * @param integer $tagId 标签id，非负整型，指定此参数时新增的标签会生成对应的标签id，不指定时则以目前最大的id自增。
      * @return mixed
      */
-    static function createTag($accessToken, $tagName, $tagId = NULL) {
+    static function createTag($accessToken, $tagName, $tagId = null) {
         
         return self::curlPost(
             sprintf(self::URL_CREATE_TAG, $accessToken),
@@ -700,14 +692,14 @@ class Wechat extends Facade {
      * @param array $partyList 企业部门ID列表，注意：userlist、partylist不能同时为空，单次请求长度不超过100
      * @return mixed json格式
      */
-    static function addUserTag($accessToken, $tagId, $userList = NULL, $partyList = NULL) {
+    static function addUserTag($accessToken, $tagId, $userList = null, $partyList = null) {
         
         return self::curlPost(
             sprintf(self::URL_ADD_TAG_USER, $accessToken),
             json_encode([
-                'tagid' => $tagId,
-                'userlist' => $userList,
-                'partylist' => $partyList
+                'tagid'     => $tagId,
+                'userlist'  => $userList,
+                'partylist' => $partyList,
             ])
         );
         
@@ -722,14 +714,14 @@ class Wechat extends Facade {
      * @param array $partyList 企业部门ID列表，注意：userlist、partylist不能同时为空，单次请求长度不超过100
      * @return mixed json格式
      */
-    static function delUserTag($accessToken, $tagId, $userList = NULL, $partyList = NULL) {
+    static function delUserTag($accessToken, $tagId, $userList = null, $partyList = null) {
         
         return self::curlPost(
             sprintf(self::URL_DEL_TAG_USER, $accessToken),
             json_encode([
-                'tagId' => $tagId,
-                'userlist' => $userList,
-                'partylist' => $partyList
+                'tagId'     => $tagId,
+                'userlist'  => $userList,
+                'partylist' => $partyList,
             ])
         );
         
@@ -794,20 +786,20 @@ class Wechat extends Facade {
      * @return mixed json格式 {"errcode":0, "errmsg":"ok"}
      */
     static function configApp(
-        $accessToken, $agentId, $reportLocationFlag = NULL, $logoMediaId = NULL, $name = NULL, $description = NULL,
-        $redirectDomain = NULL, $isReportEnter = NULL, $homeUrl = NULL
+        $accessToken, $agentId, $reportLocationFlag = null, $logoMediaId = null, $name = null, $description = null,
+        $redirectDomain = null, $isReportEnter = null, $homeUrl = null
     ) {
         return self::curlPost(
             sprintf(self::URL_CONFIG_APP, $accessToken),
             json_encode([
-                'agentid' => $agentId,
+                'agentid'              => $agentId,
                 'report_location_flag' => $reportLocationFlag,
-                'logo_mediaid' => $logoMediaId,
-                'name' => $name,
-                'description' => $description,
-                'redirect_domain' => $redirectDomain,
-                'isreportenter' => $isReportEnter,
-                'home_url' => $homeUrl
+                'logo_mediaid'         => $logoMediaId,
+                'name'                 => $name,
+                'description'          => $description,
+                'redirect_domain'      => $redirectDomain,
+                'isreportenter'        => $isReportEnter,
+                'home_url'             => $homeUrl,
             ])
         );
         
@@ -858,7 +850,7 @@ class Wechat extends Facade {
      */
     static function activateAcct(
         $corpId, $pwd, $corpName, $contact, $mobile,
-        $email = NULL, $remark = NULL, $tel = NULL
+        $email = null, $remark = null, $tel = null
     ) {
         
         return self::curlGet(sprintf(
@@ -867,7 +859,6 @@ class Wechat extends Facade {
         ));
         
     }
-    
     
     /**
      * 更改密码
@@ -914,7 +905,7 @@ class Wechat extends Facade {
      * -103、IP未导白
      * @internal param string $SendTime 定时时间,可选填
      */
-    static function batchSend($corpId, $pwd, $mobiles, $content, $ext = NULL, $sendTime = NULL) {
+    static function batchSend($corpId, $pwd, $mobiles, $content, $ext = null, $sendTime = null) {
         
         return self::curlPost(sprintf(
             self::URL_BATCH_SEND_SMS,

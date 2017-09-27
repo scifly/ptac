@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\MenuRequest;
@@ -50,8 +49,8 @@ class MenuController extends Controller {
     public function create($id) {
         
         return parent::output(__METHOD__, [
-            'parentId' => $id,
-            'menuTypeId' => MenuType::whereName('其他')->first()->id
+            'parentId'   => $id,
+            'menuTypeId' => MenuType::whereName('其他')->first()->id,
         ]);
         
     }
@@ -96,7 +95,6 @@ class MenuController extends Controller {
         if (!$menu) {
             return parent::notFound();
         }
-        
         # 获取已选定的卡片
         $menuTabs = $menu->tabs;
         $selectedTabs = [];
@@ -104,8 +102,8 @@ class MenuController extends Controller {
             $selectedTabs[$tab->id] = $tab->name;
         }
         return parent::output(__METHOD__, [
-            'menu' => $menu,
-            'selectedTabs' => $selectedTabs
+            'menu'         => $menu,
+            'selectedTabs' => $selectedTabs,
         ]);
         
     }
@@ -134,7 +132,7 @@ class MenuController extends Controller {
      * @param $parentId
      * @return \Illuminate\Http\JsonResponse
      */
-    public function move($id, $parentId = NULL) {
+    public function move($id, $parentId = null) {
         
         if (!$parentId) {
             return $this->fail('非法操作');

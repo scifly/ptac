@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
@@ -39,7 +38,7 @@ class ProcedureStep extends Model {
     
     protected $fillable = [
         'procedure_id', 'name', 'approver_user_ids',
-        'related_user_ids', 'remark', 'enabled'
+        'related_user_ids', 'remark', 'enabled',
     ];
     
     /**
@@ -88,7 +87,9 @@ class ProcedureStep extends Model {
     public function remove($id) {
         
         $procedureStep = $this->find($id);
-        if (!$procedureStep) { return false; }
+        if (!$procedureStep) {
+            return false;
+        }
         return $procedureStep->removable($procedureStep) ? $procedureStep->delete() : false;
         
     }
@@ -99,40 +100,38 @@ class ProcedureStep extends Model {
             ['db' => 'ProcedureStep.id', 'dt' => 0],
             ['db' => 'Procedures.name as procedurename', 'dt' => 1],
             [
-                'db' => 'ProcedureStep.approver_user_ids', 'dt' => 2,
+                'db'        => 'ProcedureStep.approver_user_ids', 'dt' => 2,
                 'formatter' => function ($d) {
                     return $this->user_names($d);
-                }
+                },
             ],
             [
-                'db' => 'ProcedureStep.related_user_ids', 'dt' => 3,
+                'db'        => 'ProcedureStep.related_user_ids', 'dt' => 3,
                 'formatter' => function ($d) {
                     return $this->user_names($d);
-                }
+                },
             ],
             ['db' => 'ProcedureStep.name', 'dt' => 4],
             ['db' => 'ProcedureStep.remark', 'dt' => 5],
             ['db' => 'ProcedureStep.created_at', 'dt' => 6],
             ['db' => 'ProcedureStep.updated_at', 'dt' => 7],
             [
-                'db' => 'ProcedureStep.enabled', 'dt' => 8,
+                'db'        => 'ProcedureStep.enabled', 'dt' => 8,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
-                }
+                },
             ],
         ];
-        
         $joins = [
             [
-                'table' => 'procedures',
-                'alias' => 'Procedures',
-                'type' => 'INNER',
+                'table'      => 'procedures',
+                'alias'      => 'Procedures',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'Procedures.id = ProcedureStep.procedure_id'
-                ]
-            ]
+                    'Procedures.id = ProcedureStep.procedure_id',
+                ],
+            ],
         ];
-        
         return Datatable::simple($this, $columns, $joins);
     }
     

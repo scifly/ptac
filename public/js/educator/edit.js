@@ -12,6 +12,8 @@ var $formEducator = $('#formEducator');
 // $(crud.mobileMgmt('formEducator'));
 // 班级、科目
 $(document).on('click', '.btn-class-add', function (e) {
+    $(document).off('click', '.btn-class-add');
+    $(document).off('click', '.btn-class-remove');
     e.preventDefault();
     var html = $tbody2.find('tr').last().clone();
     html.find('span.select2').remove();

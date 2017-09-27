@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\EducatorAttendanceSettingRequest;
@@ -75,7 +74,6 @@ class EducatorAttendanceSettingController extends Controller {
         
     }
     
-    
     /**
      * 编辑教职员工考勤设置
      * @param $id
@@ -87,7 +85,6 @@ class EducatorAttendanceSettingController extends Controller {
         if (!$eas) {
             return $this->notFound();
         }
-        
         return $this->output(__METHOD__, ['eas' => $eas]);
     }
     

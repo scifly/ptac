@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
@@ -36,7 +35,7 @@ class ConferenceRoom extends Model {
     
     protected $fillable = [
         'name', 'school_id', 'capacity',
-        'remark', 'enabled'
+        'remark', 'enabled',
     ];
     
     /**
@@ -93,21 +92,21 @@ class ConferenceRoom extends Model {
             ['db' => 'ConferenceRoom.created_at', 'dt' => 5],
             ['db' => 'ConferenceRoom.updated_at', 'dt' => 6],
             [
-                'db' => 'ConferenceRoom.created_at', 'dt' => 7,
+                'db'        => 'ConferenceRoom.created_at', 'dt' => 7,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
-                }
+                },
             ],
         ];
         $joins = [
             [
-                'table' => 'schools',
-                'alias' => 'School',
-                'type' => 'INNER',
+                'table'      => 'schools',
+                'alias'      => 'School',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'School.id = ConferenceRoom.school_id'
-                ]
-            ]
+                    'School.id = ConferenceRoom.school_id',
+                ],
+            ],
         ];
         return Datatable::simple($this, $columns, $joins);
         
