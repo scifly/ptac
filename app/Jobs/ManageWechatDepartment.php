@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Jobs;
 
 use App\Facades\Wechat;
@@ -10,6 +11,12 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Mockery\Exception;
 
+/**
+ * 企业号部门管理
+ *
+ * Class ManageWechatDepartment
+ * @package App\Jobs
+ */
 class ManageWechatDepartment implements ShouldQueue {
     
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
@@ -19,11 +26,14 @@ class ManageWechatDepartment implements ShouldQueue {
     /**
      * Create a new job instance.
      *
-     * @return void
+     * @param $department
+     * @param $action
      */
     public function __construct($department, $action) {
+        
         $this->department = $department;
         $this->action = $action;
+        
     }
     
     /**
@@ -32,37 +42,42 @@ class ManageWechatDepartment implements ShouldQueue {
      * @return void
      */
     public function handle() {
+        
         $corp = new Corp();
         $corps = $corp::whereName('万浪软件')->first();
         $corpId = $corps->corpid;
         $secret = $corps->corpsecret;
+        
         $name = $this->department->name;
-        if ($this->department->departmentType->name == '学校') {
-            $parent_id = 1;
-        } else {
-            $parent_id = $this->department->parent->id;
-        }
+        $parent_id = $this->department->departmentType->name == '学校'
+            ? 1 : $this->department->parent->id;
         $order = $this->department->order;
         $departmentId = $this->department->id;
-        $path = substr(dirname(__FILE__), 0, stripos(dirname(__FILE__), 'app/Jobs'));
+        $dir = dirname(__FILE__);
+        $path = substr($dir,0, stripos($dir, 'app/Jobs'));
         $tokenFile = $path . 'public/token.txt';
-        $token = Wechat::getAccessToken($tokenFile, $corpId, $secret);
-        switch ($this->action) {
+
+        $token = Wechat::getAccessToken($tokenFile,$corpId, $secret);
+        switch ($this->action){
             case 'create':
-                Wechat::createDept($token, $name, $parent_id, $order, $departmentId);
+                Wechat::createDept(
+                    $token, $name, $parent_id, $order, $departmentId
+                );
                 break;
             case 'update':
-                Wechat::updateDept($token, $departmentId, $name, $parent_id, $order);
+                Wechat::updateDept(
+                    $token, $departmentId, $name, $parent_id, $order
+                );
                 break;
             default:
                 Wechat::delDept($token, $departmentId);
                 break;
-            
         }
         
     }
     
     public function failed(Exception $e) {
+    
     
     }
     

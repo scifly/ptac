@@ -33,7 +33,8 @@ class OperatorRequest extends FormRequest {
             'user.enabled'        => 'required|boolean',
             'user.email'          => 'nullable|email|unique:users,email,' .
                 $this->input('user_id') . ',id',
-//            'user.password' => 'required|string|min:60',
+            'user.password'      => 'string|min:3|confirmed',
+            'user.password_confirmation '      => 'string|min:3',
             'mobile.*'            => [
                 'required', new Mobiles(),
             ],

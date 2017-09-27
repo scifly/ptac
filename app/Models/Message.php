@@ -171,7 +171,6 @@ class Message extends Model {
 //            return false;
 //        }
 //    }
-
     public function datatable() {
         
         $columns = [
