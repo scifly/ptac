@@ -33,9 +33,7 @@ class ActionController extends Controller {
         if (Request::get('draw')) {
             return response()->json($this->action->datatable());
         }
-        if (!$this->action->scan()) {
-            return parent::notFound();
-        }
+        if (!$this->action->scan()) { return parent::notFound(); }
         
         return parent::output(__METHOD__);
         

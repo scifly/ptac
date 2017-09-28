@@ -270,9 +270,7 @@ HTML;
         $actionType = new ActionType();
         $this->actionTypes = $actionType->pluck('id', 'name')->toArray();
         $this->routes = Route::getRoutes()->getRoutes();
-        # 获取控制器的绝对路径
-        $siteRoot = substr(__DIR__, 0, stripos(__DIR__, 'app/Models'));
-        $controllers = $this->scanDirectories($siteRoot . $this->ctlrDir);
+        $controllers = $this->scanDirectories($this->getSiteRoot() . $this->ctlrDir);
         # 获取控制器的名字空间
         $this->getControllerNamespaces($controllers);
         $controllerNames = $this->getControllerNames($controllers);
@@ -393,11 +391,18 @@ HTML;
      */
     public function getControllerNamespaces(&$controllers) {
         
+        $siteRoot = str_replace('/', '\\', $this->getSiteRoot());
         for ($i = 0; $i < sizeof($controllers); $i++) {
             $controllers[$i] = str_replace('/', '\\', $controllers[$i]);
-            $controllers[$i] = str_replace('\\media\\sf_sandbox\\ptac\\', '', $controllers[$i]);
+            $controllers[$i] = str_replace($siteRoot, '', $controllers[$i]);
             $controllers[$i] = str_replace('.php', '', $controllers[$i]);
         }
+        
+    }
+    
+    public function getSiteRoot() {
+    
+        return substr(__DIR__, 0, stripos(__DIR__, 'app/Models'));
         
     }
     

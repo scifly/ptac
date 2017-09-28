@@ -97,9 +97,7 @@ HTML;
     public function scan() {
         
         $action = new Action();
-        # 获取控制器的绝对路径
-        $siteRoot = substr(__DIR__, 0, stripos(__DIR__, 'app/Models'));
-        $controllers = $this->scanDirectories($siteRoot . $this->ctlrDir);
+        $controllers = $this->scanDirectories($action->getSiteRoot() . $this->ctlrDir);
         $action->getControllerNamespaces($controllers);
         $controllerNames = $action->getControllerNames($controllers);
         // remove nonexisting controllers
@@ -112,9 +110,7 @@ HTML;
         foreach ($ctlrDiff as $ctlr) {
             $tab = $this->where('controller', $ctlr)->first();
             if ($tab) {
-                if (!$this->remove($tab->id)) {
-                    return false;
-                };
+                if (!$this->remove($tab->id)) { return false; };
             }
         }
         // create new Tabs or update the existing Tabs
