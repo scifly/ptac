@@ -273,6 +273,7 @@ HTML;
         # 获取控制器的绝对路径
         $siteRoot = substr(__DIR__, 0, stripos(__DIR__, 'app/Models'));
         $controllers = $this->scanDirectories($siteRoot . $this->ctlrDir);
+        # 获取控制器的名字空间
         $this->getControllerNamespaces($controllers);
         $controllerNames = $this->getControllerNames($controllers);
         $selfDefinedMethods = [];
@@ -286,9 +287,7 @@ HTML;
         foreach ($ctlrDiff as $ctlr) {
             $actions = $this->where('controller', $ctlr)->get();
             foreach ($actions as $a) {
-                if (!$this->remove($a->id)) {
-                    return false;
-                };
+                if (!$this->remove($a->id)) { return false; };
             }
             # $this->where('controller', $ctlr)->delete();
         }

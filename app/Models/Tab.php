@@ -97,7 +97,9 @@ HTML;
     public function scan() {
         
         $action = new Action();
-        $controllers = $action->scanDirectories($this->ctlrDir);
+        # 获取控制器的绝对路径
+        $siteRoot = substr(__DIR__, 0, stripos(__DIR__, 'app/Models'));
+        $controllers = $this->scanDirectories($siteRoot . $this->ctlrDir);
         $action->getControllerNamespaces($controllers);
         $controllerNames = $action->getControllerNames($controllers);
         // remove nonexisting controllers
