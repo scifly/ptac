@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ProcedureLogRequest extends FormRequest {
-
+    
     protected $rules = [
         'procedure_id'  => 'required|integer',
         'initiator_msg' => 'required|string|max:255',
@@ -23,7 +23,7 @@ class ProcedureLogRequest extends FormRequest {
         'integer'  => '必须为整数',
         'boolean'  => '为0或1',
     ];
-
+    
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -32,7 +32,7 @@ class ProcedureLogRequest extends FormRequest {
     public function authorize() {
         return true;
     }
-
+    
     public function messages() {
         $rules = $this->rules();
         $k_array = $this->strings_key;
@@ -48,15 +48,14 @@ class ProcedureLogRequest extends FormRequest {
                 $array[$key . '.' . $v] = $k_array[$key] . $v_array[$v];
             }
         }
-
         return $array;
     }
-
+    
     public function rules() {
-
+        
         return $this->rules;
-
+        
     }
-
+    
     public function wantsJson() { return true; }
 }

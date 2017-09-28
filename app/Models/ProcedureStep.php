@@ -31,23 +31,23 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read Procedure $procedure
  */
 class ProcedureStep extends Model {
-
+    
     use ModelTrait;
-
+    
     protected $table = 'procedure_steps';
-
+    
     protected $fillable = [
         'procedure_id', 'name', 'approver_user_ids',
         'related_user_ids', 'remark', 'enabled',
     ];
-
+    
     /**
      * 返回指定审批流程步骤所属的审批流程对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function procedure() { return $this->belongsTo('App\Models\Procedure'); }
-
+    
     /**
      * 保存审批流程步骤
      *
@@ -55,13 +55,13 @@ class ProcedureStep extends Model {
      * @return bool
      */
     public function store(array $data) {
-
+        
         $procedureStep = $this->create($data);
-
+        
         return $procedureStep ? true : false;
-
+        
     }
-
+    
     /**
      * 更新审批流程步骤
      *
@@ -70,16 +70,16 @@ class ProcedureStep extends Model {
      * @return bool
      */
     public function modify(array $data, $id) {
-
+        
         $procedureStep = $this->find($id);
         if (!$procedureStep) {
             return false;
         }
-
+        
         return $procedureStep->update($data) ? true : false;
-
+        
     }
-
+    
     /**
      * 删除审批流程步骤
      *
@@ -87,18 +87,15 @@ class ProcedureStep extends Model {
      * @return bool|null
      */
     public function remove($id) {
-
+        
         $procedureStep = $this->find($id);
-        if (!$procedureStep) {
-            return false;
-        }
-
+        if (!$procedureStep) { return false; }
         return $procedureStep->removable($procedureStep) ? $procedureStep->delete() : false;
-
+        
     }
-
+    
     public function datatable() {
-
+        
         $columns = [
             ['db' => 'ProcedureStep.id', 'dt' => 0],
             ['db' => 'Procedures.name as procedurename', 'dt' => 1],
@@ -135,8 +132,8 @@ class ProcedureStep extends Model {
                 ],
             ],
         ];
-
+        
         return Datatable::simple($this, $columns, $joins);
     }
-
+    
 }

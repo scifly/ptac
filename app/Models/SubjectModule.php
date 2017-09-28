@@ -31,7 +31,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read \App\Models\Subject $subject
  */
 class SubjectModule extends Model {
-
+    
     //
     protected $table = 'subject_modules';
     protected $fillable = [
@@ -40,11 +40,11 @@ class SubjectModule extends Model {
         'weight',
         'enabled',
     ];
-
+    
     public function subject() { return $this->belongsTo('App\Models\Subject'); }
-
+    
     public function datatable() {
-
+        
         $columns = [
             ['db' => 'SubjectModule.id', 'dt' => 0],
             ['db' => 'Subject.name as subjectname', 'dt' => 1],
@@ -69,9 +69,8 @@ class SubjectModule extends Model {
                 ],
             ],
         ];
-
         return Datatable::simple($this, $columns, $joins);
-
+        
     }
-
+    
 }

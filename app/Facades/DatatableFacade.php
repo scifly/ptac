@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Facade;
 use Illuminate\Support\Facades\Request;
 
 class DatatableFacade extends Facade {
-
+    
     const DT_ON = '<span class="badge bg-green">%s</span>';
     const DT_OFF = '<span class="badge bg-gray">%s</span>';
     const DT_LINK_EDIT = <<<HTML
@@ -34,7 +34,7 @@ HTML;
     const DT_PRIMARY = '<span class="badge badge-info">%s</span>';
     const DT_LOCK = '<i class="fa fa-lock"></i>&nbsp;已占用';
     const DT_UNLOCK = '<i class="fa fa-unlock"></i>&nbsp;空闲中';
-
+    
     /**
      * Perform the SQL queries needed for an server-side processing requested,
      * utilising the menu functions of this class, limit(), order() and
@@ -52,7 +52,7 @@ HTML;
      * @internal param string $primaryKey Primary key of the table
      */
     static function simple(Model $model, array $columns, array $joins = null, $condition = null) {
-
+        
         $modelName = class_basename($model);
         $tableName = $model->getTable();
         switch ($modelName) {
@@ -99,7 +99,6 @@ HTML;
         // Total data set length
         $resTotalLength = DB::select("SELECT COUNT(*) AS t FROM " . $tableName)[0]->t;
         $recordsTotal = $resTotalLength;
-
         // Output
         return [
             "draw"            => intval(Request::get('draw')),
@@ -107,9 +106,9 @@ HTML;
             "recordsFiltered" => intval($recordsFiltered),
             "data"            => self::data_output($columns, $data),
         ];
-
+        
     }
-
+    
     /**
      * Paging
      *
@@ -119,18 +118,18 @@ HTML;
      * @internal param array $columns Column information array
      */
     private static function limit() {
-
+        
         $limit = '';
         $start = Request::get('start');
         $length = Request::get('length');
         if (isset($start) && $length != -1) {
             $limit = "LIMIT " . intval($start) . ", " . intval($length);
         }
-
+        
         return $limit;
-
+        
     }
-
+    
     /**
      * Ordering
      *
@@ -141,7 +140,7 @@ HTML;
      * @internal param Request $request Data sent to server by DataTables
      */
     private static function order(array $columns) {
-
+        
         $orderBy = '';
         $order = Request::get('order');
         if (isset($order) && count($order)) {
@@ -165,11 +164,11 @@ HTML;
             }
             $orderBy = ' ORDER BY ' . implode(', ', $orderBy);
         }
-
+        
         return $orderBy;
-
+        
     }
-
+    
     /**
      * Pull a particular property from each assoc. array in a numeric array,
      * returning and array of the property values from each item.
@@ -179,16 +178,16 @@ HTML;
      * @return array        Array of property values
      */
     private static function pluck(array $a, $prop) {
-
+        
         $out = [];
         for ($i = 0, $len = count($a); $i < $len; $i++) {
             $out[] = $a[$i][$prop];
         }
-
+        
         return $out;
-
+        
     }
-
+    
     /**
      * Searching / Filtering
      *
@@ -205,7 +204,7 @@ HTML;
      *    sql_exec() function
      */
     private static function filter(array $columns) {
-
+        
         $globalSearch = [];
         $columnSearch = [];
         $dtColumns = self::pluck($columns, 'dt');
@@ -251,11 +250,11 @@ HTML;
         if ($where !== '') {
             $where = ' WHERE ' . $where;
         }
-
+        
         return $where;
-
+        
     }
-
+    
     /**
      * Create the data output array for the DataTables rows
      *
@@ -264,7 +263,7 @@ HTML;
      * @return array Formatted data in a row based format
      */
     static function data_output(array $columns, array $data) {
-
+        
         $out = [];
         $length = count($data);
         for ($i = 0; $i < $length; $i++) {
@@ -287,11 +286,11 @@ HTML;
             }
             $out[] = $row;
         }
-
+        
         return $out;
-
+        
     }
-
+    
     /**
      * The difference between this method and the `simple` one, is that you can
      * apply additional `where` conditions to the SQL queries. These can be in
@@ -317,7 +316,7 @@ HTML;
      * @internal param string $primaryKey Primary key of the table
      */
     static function complex(Model $model, $columns, $whereResult = null, $whereAll = null) {
-
+        
         # $localWhereResult = [];
         # $localWhereAll = [];
         $whereAllSql = '';
@@ -351,11 +350,11 @@ HTML;
         // Total data set length
         $resTotalLength = DB::select("SELECT COUNT(*) AS cnt FROM " . $table . $whereAllSql);
         $recordsTotal = $resTotalLength[0]->cnt;
-
+        
         /*
          * Output
          */
-
+        
         return [
             "draw"            => intval(Request::get('draw')),
             "recordsTotal"    => intval($recordsTotal),
@@ -363,7 +362,7 @@ HTML;
             "data"            => self::data_output($columns, $data),
         ];
     }
-
+    
     /**
      * Return a string from an array or a string
      *
@@ -372,17 +371,17 @@ HTML;
      * @return string Joined string
      */
     static function _flatten($a, $join = ' AND ') {
-
+        
         if (!$a) {
             return '';
         } else if ($a && is_array($a)) {
             return implode($join, $a);
         }
-
+        
         return $a;
-
+        
     }
-
+    
     /**
      * Display data entry operations
      *
@@ -393,18 +392,17 @@ HTML;
      * @return string
      */
     static function dtOps(Model $model, $active, $row, $del = true) {
-
+        
         $id = $row['id'];
         $status = $active ? sprintf(self::DT_ON, '已启用') : sprintf(self::DT_OFF, '未启用');
         $showLink = sprintf(self::DT_LINK_SHOW, 'show_' . $id);
         $editLink = sprintf(self::DT_LINK_EDIT, 'edit_' . $id);
         $delLink = sprintf(self::DT_LINK_DEL, $id);
-
         return $status . self::DT_SPACE . $showLink . self::DT_SPACE .
             $editLink . ($del ? self::DT_SPACE . $delLink : '');
-
+        
     }
-
+    
     protected static function getFacadeAccessor() { return 'Datatable'; }
-
+    
 }

@@ -30,26 +30,26 @@ use Mockery\Exception;
  * @property-read User $user
  */
 class Operator extends Model {
-
+    
     protected $fillable = [
         'company_id', 'user_id', 'school_ids',
         'type', 'enabled',
     ];
-
+    
     /**
      * 返回指定管理/操作员所属的运营者公司对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function company() { return $this->belongsTo('App\Models\Company'); }
-
+    
     /**
      * 获取指定管理/操作员对应的用户对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function user() { return $this->belongsTo('App\Models\User'); }
-
+    
     /**
      * 返回指定管理/操作员管理的所有学校对象
      *
@@ -57,13 +57,13 @@ class Operator extends Model {
      * @return \Illuminate\Database\Eloquent\Collection|static[]
      */
     public function schools($schoolIds) {
-
+        
         return School::whereEnabled(1)->
         whereIn('id', explode(',', $schoolIds))->
         get();
-
+        
     }
-
+    
     public function store(OperatorRequest $request) {
         try {
             $exception = DB::transaction(function () use ($request) {
@@ -124,16 +124,16 @@ class Operator extends Model {
                 # 创建企业号成员
                 $user->createWechatUser($u->id);
             });
-
+            
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
             return false;
         }
-
+        
     }
-
+    
     public function modify(OperatorRequest $request, $id) {
-
+        
         try {
             $exception = DB::transaction(function () use ($request) {
 
@@ -191,29 +191,29 @@ class Operator extends Model {
                         $mobileModel->create($mobileData);
                     }
                     unset($mobile);
-
+                    
                 }
                 # 创建企业号成员
                 $user->UpdateWechatUser($request->input('user_id'));
                 unset($user);
-
+                
             });
-
+            
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
             return false;
         }
-
+        
     }
-
+    
     public function remove($id) {
-
+        
         return true;
-
+        
     }
-
+    
     public function datatable() {
-
+        
         $columns = [
             ['db' => 'Operator.id', 'dt' => 0],
             ['db' => 'User.realname', 'dt' => 1],
@@ -260,9 +260,8 @@ class Operator extends Model {
                 ],
             ],
         ];
-
         return Datatable::simple($this, $columns, $joins);
-
+        
     }
-
+    
 }

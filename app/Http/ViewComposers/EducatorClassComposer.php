@@ -7,21 +7,21 @@ use App\Models\Subject;
 use Illuminate\Contracts\View\View;
 
 class EducatorClassComposer {
-
+    
     protected $squad;
     protected $subject;
     protected $educator;
-
+    
     public function __construct(Squad $squad, Subject $subject, Educator $educator) {
-
+        
         $this->squad = $squad;
         $this->subject = $subject;
         $this->educator = $educator;
-
+        
     }
-
+    
     public function compose(View $view) {
-
+        
         $educators = Educator::with('user')->get()->toArray();
         if (!empty($educators)) {
             foreach ($educators as $k => $v) {
@@ -32,7 +32,7 @@ class EducatorClassComposer {
             'squad'   => $this->squad->pluck('name', 'id'),
             'subject' => $this->subject->pluck('name', 'id'),
         ]);
-
+        
     }
-
+    
 }

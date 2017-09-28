@@ -10,20 +10,20 @@ use App\Models\User;
 use Illuminate\Contracts\View\View;
 
 class EducatorComposer {
-
+    
     protected $user, $subject, $school, $squad, $group, $team;
-
+    
     public function __construct(User $user, Subject $subject, School $school, Squad $squad, Group $group, Team $team) {
-
+        
         $this->user = $user;
         $this->subject = $subject;
         $this->school = $school;
         $this->squad = $squad;
         $this->group = $group;
         $this->team = $team;
-
+        
     }
-
+    
     public function compose(View $view) {
         $squads = $this->squad->pluck('name', 'id')->toArray();
         array_unshift($squads, '(请选择)');
@@ -38,5 +38,5 @@ class EducatorComposer {
             'teams'    => $this->team->pluck('name', 'id'),
         ]);
     }
-
+    
 }

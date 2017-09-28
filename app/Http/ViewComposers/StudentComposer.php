@@ -8,18 +8,18 @@ use App\Models\User;
 use Illuminate\Contracts\View\View;
 
 class StudentComposer {
-
+    
     protected $user, $class, $custodian, $group;
-
+    
     public function __construct(User $user, Squad $class, Group $group, Custodian $custodian) {
-
+        
         $this->user = $user;
         $this->class = $class;
         $this->group = $group;
         $this->custodian = $custodian;
-
+        
     }
-
+    
     public function compose(View $view) {
         $Custodian = Custodian::with('user')->get()->toArray();
         if (!empty($Custodian)) {
@@ -35,7 +35,7 @@ class StudentComposer {
 //            'departments' => $this->department->pluck('name','id'),
 //            'departments' => $this->department->departments([1]),
         ]);
-
+        
     }
-
+    
 }

@@ -11,7 +11,7 @@ use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class Handler extends ExceptionHandler {
-
+    
     /**
      * A list of the exception types that should not be reported.
      *
@@ -25,7 +25,7 @@ class Handler extends ExceptionHandler {
         TokenMismatchException::class,
         ValidationException::class,
     ];
-
+    
     /**
      * Report or log an exception.
      *
@@ -37,7 +37,7 @@ class Handler extends ExceptionHandler {
     public function report(Exception $exception) {
         parent::report($exception);
     }
-
+    
     /**
      * Render an exception into an HTTP response.
      *
@@ -63,9 +63,9 @@ class Handler extends ExceptionHandler {
 //            return response()->json($response, $status);
 //        }
         return parent::render($request, $exception);
-
+        
     }
-
+    
     /**
      * Convert an authentication exception into an unauthenticated response.
      *
@@ -77,7 +77,6 @@ class Handler extends ExceptionHandler {
         if ($request->expectsJson()) {
             return response()->json(['error' => 'Unauthenticated.'], 401);
         }
-
         return redirect()->guest(route('login'));
     }
 }

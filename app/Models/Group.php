@@ -28,35 +28,35 @@ use Illuminate\Support\Facades\DB;
  * @property-read Collection|User[] $users
  */
 class Group extends Model {
-
+    
     use ModelTrait;
-
+    
     protected $table = 'groups';
-
+    
     protected $fillable = [
         'name', 'school_id', 'remark', 'enabled',
     ];
-
+    
     /**
      * 获取指定角色下的所有用户对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function users() { return $this->hasMany('App\Models\User'); }
-
+    
     /**
      * 返回指定角色所属的学校对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function school() { return $this->belongsTo('App\Models\School'); }
-
+    
     public function menus() { return $this->belongsToMany('App\Models\Menu', 'groups_menus'); }
-
+    
     public function actions() { return $this->belongsToMany('App\Models\Action', 'actions_groups'); }
-
+    
     public function tabs() { return $this->belongsToMany('App\Models\Tab', 'groups_tabs'); }
-
+    
     /**
      * 保存角色
      *
@@ -65,9 +65,9 @@ class Group extends Model {
      * @internal param array $data
      */
     public function store(array $data) {
-
+        
         try {
-            $exception = DB::transaction(function () use ($data) {
+            $exception = DB::transaction(function() use ($data) {
 
                 $groupData = [
                     'name'    => $data['name'],
@@ -87,16 +87,15 @@ class Group extends Model {
                 $tabIds = $data['tabId'];
                 $groupTab = new GroupTab();
                 $groupTab->storeByGroupId($g->id, $tabIds);
-
+                
             });
-
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
             return false;
         }
-
+        
     }
-
+    
     /**
      * 更新角色
      *
@@ -105,14 +104,14 @@ class Group extends Model {
      * @return bool
      */
     public function modify(array $data, $id) {
-
+        
         $group = $this->find($id);
         if (!$group) {
             return false;
         }
         try {
             $exception = DB::transaction(function () use ($data, $group, $id) {
-
+                
                 $groupData = [
                     'name'    => $data['name'],
                     'remark'  => $data['remark'],
@@ -131,16 +130,15 @@ class Group extends Model {
                 $tabIds = $data['tabId'];
                 $groupTab = new GroupTab();
                 $groupTab->storeByGroupId($id, $tabIds);
-
+                
             });
-
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
             return false;
         }
-
+        
     }
-
+    
     /**
      * 删除角色
      *
@@ -148,18 +146,15 @@ class Group extends Model {
      * @return bool
      */
     public function remove($id) {
-
+        
         $group = $this->find($id);
-        if (!$group) {
-            return false;
-        }
-
+        if (!$group) { return false; }
         return $this->removable($group) ? $group->delete() : false;
-
+        
     }
-
+    
     public function datatable() {
-
+        
         $columns = [
             ['db' => 'Groups.id', 'dt' => 0],
             ['db' => 'Groups.name', 'dt' => 1],
@@ -173,8 +168,8 @@ class Group extends Model {
                 },
             ],
         ];
-
+        
         return Datatable::simple($this, $columns);
-
+        
     }
 }

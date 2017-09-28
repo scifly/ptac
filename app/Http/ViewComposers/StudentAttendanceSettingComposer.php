@@ -6,16 +6,16 @@ use App\Models\Semester;
 use Illuminate\Contracts\View\View;
 
 class StudentAttendanceSettingComposer {
-
+    
     protected $grade, $semester, $school;
-
+    
     public function __construct(Grade $grade, Semester $semester) {
-
+        
         $this->grade = $grade;
         $this->semester = $semester;
-
+        
     }
-
+    
     public function compose(View $view) {
         $day = [
             '星期一' => '星期一',
@@ -32,7 +32,7 @@ class StudentAttendanceSettingComposer {
             'semesters' => $this->semester->pluck('name', 'id'),
             'days'      => $day,
         ]);
-
+        
     }
-
+    
 }

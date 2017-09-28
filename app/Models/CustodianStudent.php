@@ -26,24 +26,20 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|CustodianStudent whereEnabled($value)
  */
 class CustodianStudent extends Model {
-
+    
     protected $table = 'custodians_students';
-
+    
     protected $fillable = [
         'custodian_id', 'student_id',
         'relationship', 'enabled',
     ];
-
-    public function custodian() {
-        return $this->belongsTo('App\Models\Custodian');
-    }
-
-    public function student() {
-        return $this->belongsTo('App\Models\Student');
-    }
-
+    
+    public function custodian() { return $this->belongsTo('App\Models\Custodian'); }
+    
+    public function student() { return $this->belongsTo('App\Models\Student'); }
+    
     public function storeByCustodianId($custodianId, array $studentIds) {
-
+        
         foreach ($studentIds as $studentId => $relationship) {
             $this->create([
                 'custodian_id' => $custodianId,
@@ -52,11 +48,11 @@ class CustodianStudent extends Model {
                 'relationship' => $relationship,
             ]);
         }
-
+        
     }
-
+    
     public function storeByStudentId($studentId, array $custodianIds) {
-
+        
         foreach ($custodianIds as $custodianId => $relationship) {
             $this->create([
                 'student_id'   => $studentId,
@@ -65,7 +61,7 @@ class CustodianStudent extends Model {
                 'enabled'      => 1,
             ]);
         }
-
+        
     }
-
+    
 }

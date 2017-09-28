@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\ServiceProvider;
 
 class BroadcastServiceProvider extends ServiceProvider {
-
+    
     /**
      * Bootstrap any application services.
      *

@@ -6,7 +6,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
 trait ControllerTrait {
-
+    
     /**
      * 文件上传公共方法
      *
@@ -15,7 +15,7 @@ trait ControllerTrait {
      * @return array|bool
      */
     public function uploadedMedias(UploadedFile $file, $remark = 0) {
-
+        
         if ($file->isValid()) {
             // 获取文件相关信息
             # 文件原名
@@ -41,7 +41,7 @@ trait ControllerTrait {
                     'media_type_id' => $type,
                     'enabled'       => '1',
                 ]);
-
+                
                 return [
                     'id'       => $mediaId,
                     'path'     => $filePath,
@@ -52,13 +52,13 @@ trait ControllerTrait {
                 return false;
             }
         }
-
+        
         return false;
-
+        
     }
-
+    
     private function getMediaType($type) {
-
+        
         switch (explode('/', $type)[0]) {
             case 'image':
                 return 1;
@@ -75,8 +75,8 @@ trait ControllerTrait {
             default:
                 return 5;
         }
-
+        
     }
-
+    
 }
 

@@ -19,7 +19,7 @@ use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 
 class Kernel extends HttpKernel {
-
+    
     /**
      * The application's global HTTP middleware stack.
      *
@@ -33,7 +33,7 @@ class Kernel extends HttpKernel {
         TrimStrings::class,
         ConvertEmptyStringsToNull::class,
     ];
-
+    
     /**
      * The application's route middleware groups.
      *
@@ -54,7 +54,7 @@ class Kernel extends HttpKernel {
             'bindings',
         ],
     ];
-
+    
     /**
      * The application's route middleware.
      *

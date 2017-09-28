@@ -13,16 +13,16 @@ use Illuminate\Support\Facades\Request;
  * @package App\Http\Controllers
  */
 class PersonalInfoController extends Controller {
-
+    
     public $imgPath = [];
     protected $user;
-
+    
     function __construct(User $user) {
-
+        
         $this->user = $user;
-
+        
     }
-
+    
     /**
      * 修改个人信息
      * @return \Illuminate\Http\Response
@@ -30,16 +30,16 @@ class PersonalInfoController extends Controller {
      * @internal param User $user
      */
     public function index() {
-
+        
         //$id = Session::get('user');
         $id = 1;
         $personalInfo = $this->user->find($id);
         $group = $personalInfo->group()->whereId($personalInfo->group_id)->first();
-
+        
         return $this->output(__METHOD__, ['personalInfo' => $personalInfo, 'group' => $group]);
-
+        
     }
-
+    
     /**
      * 更新个人信息
      *
@@ -50,17 +50,17 @@ class PersonalInfoController extends Controller {
      * @internal param User $user
      */
     public function update(PersonalInfoRequest $request, $id) {
-
+        
         $input = $request->except(['group_id', 'avatar_url']);
         $personInfo = $this->user->find($id);
         if (!$personInfo) {
             return $this->notFound();
         }
-
+        
         return $personInfo->update($input) ? $this->succeed() : $this->fail('更新个人信息失败');
-
+        
     }
-
+    
     /**
      * 上传个人信息头像
      *
@@ -68,7 +68,7 @@ class PersonalInfoController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function uploadAvatar($id) {
-
+        
         $file = Request::file('avatar');
         $check = $this->checkFile($file);
         if (!$check['status']) {
@@ -89,11 +89,11 @@ class PersonalInfoController extends Controller {
         if (!$file->move($path, $fileName)) {
             return $this->fail('头像保存失败');
         }
-
+        
         return $this->saveImg($id, $fileName);
-
+        
     }
-
+    
     /**
      * 验证文件是否上传成功
      *
@@ -101,18 +101,18 @@ class PersonalInfoController extends Controller {
      * @return array
      */
     private function checkFile(UploadedFile $file) {
-
+        
         if (!$file->isValid()) {
             return ['status' => false, 'msg' => '文件上传失败'];
         }
         if ($file->getClientSize() > $file->getMaxFilesize()) {
             return ['status' => false, 'msg' => '图片过大'];
         }
-
+        
         return ['status' => true];
-
+        
     }
-
+    
     /**
      * 将图片路径存入数据库
      *
@@ -121,7 +121,7 @@ class PersonalInfoController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     private function saveImg($id, $imgName) {
-
+        
         $personalImg = $this->user->whereId($id)->first();
         //判断数据库头像是否相同
         if ($imgName !== $personalImg->avatar_url) {
@@ -131,9 +131,9 @@ class PersonalInfoController extends Controller {
             }
         }
         $personalImg->avatar_url = $imgName;
-
+        
         return $personalImg->save() ? $this->succeed($imgName) : $this->fail('头像保存失败');
-
+        
     }
-
+    
 }

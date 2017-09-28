@@ -34,7 +34,7 @@ use Illuminate\Support\Facades\Storage;
  * @property-read \App\Models\Media $media
  */
 class WapSiteModule extends Model {
-
+    
     //
     protected $table = 'wap_site_modules';
     protected $fillable = [
@@ -46,16 +46,16 @@ class WapSiteModule extends Model {
         'updated_at',
         'enabled',
     ];
-
+    
     public function wsmarticles() {
         return $this->hasMany('App\Models\WsmArticle', 'wsm_id', 'id');
     }
-
+    
     public function wapsite() {
         return $this->belongsTo('App\Models\WapSite');
-
+        
     }
-
+    
     public function store(WapSiteModuleRequest $request) {
         try {
             $exception = DB::transaction(function () use ($request) {
@@ -63,13 +63,13 @@ class WapSiteModule extends Model {
                 $this->removeMedias($request);
                 $this->create($request->all());
             });
-
+            
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
             return false;
         }
     }
-
+    
     /**
      * @param $request
      */
@@ -81,12 +81,12 @@ class WapSiteModule extends Model {
             foreach ($medias as $media) {
                 $paths = explode("/", $media->path);
                 Storage::disk('uploads')->delete($paths[5]);
-
+                
             }
             Media::whereIn('id', $mediaIds)->delete();
         }
     }
-
+    
     public function modify(WapSiteModuleRequest $request, $id) {
         $wapSite = $this->find($id);
         if (!$wapSite) {
@@ -95,21 +95,21 @@ class WapSiteModule extends Model {
         try {
             $exception = DB::transaction(function () use ($request, $id) {
                 $this->removeMedias($request);
-
+                
                 return $this->where('id', $id)->update($request->except('_method', '_token'));
             });
-
+            
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
             return false;
         }
     }
-
+    
     /**
      * @return array
      */
     public function datatable() {
-
+        
         $columns = [
             ['db' => 'WapSiteModule.id', 'dt' => 0],
             ['db' => 'WapSiteModule.name', 'dt' => 1],
@@ -133,8 +133,7 @@ class WapSiteModule extends Model {
                 ],
             ],
         ];
-
         return Datatable::simple($this, $columns, $joins);
     }
-
+    
 }

@@ -29,30 +29,30 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read StudentAttendance[] $studentAttendances
  */
 class AttendanceMachine extends Model {
-
+    
     protected $table = 'attendance_machines';
-
+    
     protected $fillable = [
         'name', 'location', 'school_id',
         'machineid', 'enabled',
     ];
-
+    
     /**
      * 返回考勤机所属的学校对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function school() { return $this->belongsTo('App\Models\School'); }
-
+    
     /**
      * 获取指定考勤机记录的学生考勤记录对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function studentAttendances() { return $this->hasMany('App\Models\StudentAttendance'); }
-
+    
     public function datatable() {
-
+        
         $columns = [
             ['db' => 'AttendanceMachine.id', 'dt' => 0],
             ['db' => 'AttendanceMachine.name', 'dt' => 1],
@@ -78,8 +78,8 @@ class AttendanceMachine extends Model {
                 ],
             ],
         ];
-
+        
         return Datatable::simple($this, $columns, $joins);
     }
-
+    
 }

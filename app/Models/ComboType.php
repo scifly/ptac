@@ -31,23 +31,23 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read School $school
  */
 class ComboType extends Model {
-
+    
     protected $table = 'combo_types';
-
+    
     protected $fillable = [
         'name', 'amount', 'discount',
         'school_id', 'months', 'enabled',
     ];
-
+    
     /**
      * 返回套餐类型所属的学校对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function school() { return $this->belongsTo('App\Models\school'); }
-
+    
     public function datatable() {
-
+        
         $columns = [
             ['db' => 'ComboType.id', 'dt' => 0],
             ['db' => 'ComboType.name', 'dt' => 1],
@@ -74,9 +74,9 @@ class ComboType extends Model {
                 ],
             ],
         ];
-
+        
         return Datatable::simple($this, $columns, $joins);
-
+        
     }
-
+    
 }

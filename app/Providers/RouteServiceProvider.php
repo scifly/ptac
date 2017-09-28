@@ -5,7 +5,7 @@ use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvi
 use Illuminate\Support\Facades\Route;
 
 class RouteServiceProvider extends ServiceProvider {
-
+    
     /**
      * This namespace is applied to your controller routes.
      *
@@ -14,30 +14,30 @@ class RouteServiceProvider extends ServiceProvider {
      * @var string
      */
     protected $namespace = 'App\Http\Controllers';
-
+    
     /**
      * Define your route model bindings, pattern filters, etc.
      *
      * @return void
      */
     public function boot() {
-
+        
         parent::boot();
         // Route::model('school', School::class);
     }
-
+    
     /**
      * Define the routes for the application.
      *
      * @return void
      */
     public function map() {
-
+        
         $this->mapApiRoutes();
         $this->mapWebRoutes();
-
+        
     }
-
+    
     /**
      * Define the "api" routes for the application.
      *
@@ -46,14 +46,14 @@ class RouteServiceProvider extends ServiceProvider {
      * @return void
      */
     protected function mapApiRoutes() {
-
+        
         Route::prefix('api')
             ->middleware('api')
             ->namespace($this->namespace)
             ->group(base_path('routes/api.php'));
-
+        
     }
-
+    
     /**
      * Define the "web" routes for the application.
      *
@@ -62,11 +62,11 @@ class RouteServiceProvider extends ServiceProvider {
      * @return void
      */
     protected function mapWebRoutes() {
-
+        
         Route::middleware('web')
             ->namespace($this->namespace)
             ->group(base_path('routes/web.php'));
-
+        
     }
-
+    
 }

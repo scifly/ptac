@@ -28,8 +28,8 @@ use Illuminate\Database\Eloquent\Model;
  * @mixin \Eloquent
  */
 class SmsEducator extends Model {
-
+    
     //
     protected $table = 'sms_educators';
-
+    
 }

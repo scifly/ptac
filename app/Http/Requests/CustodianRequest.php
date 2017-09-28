@@ -5,14 +5,14 @@ use App\Rules\Mobiles;
 use Illuminate\Foundation\Http\FormRequest;
 
 class CustodianRequest extends FormRequest {
-
+    
     /**
      * Determine if the user is authorized to make this request.
      *
      * @return bool
      */
     public function authorize() { return true; }
-
+    
     /**
      * Get the validation rules that apply to the request.
      *
@@ -34,7 +34,7 @@ class CustodianRequest extends FormRequest {
                 'required', new Mobiles(),
             ],
         ];
-
+        
         return $rules;
 //        $validateRules=[];
 //        foreach ($input['mobile'] as $index => $mobile) {
@@ -49,9 +49,9 @@ class CustodianRequest extends FormRequest {
 //        }
 //        return $validateRules;
     }
-
+    
     protected function prepareForValidation() {
-
+        
         $input = $this->all();
         if (isset($input['user']['enabled']) && $input['user']['enabled'] === 'on') {
             $input['user']['enabled'] = 1;
@@ -77,5 +77,5 @@ class CustodianRequest extends FormRequest {
         }
         $this->replace($input);
     }
-
+    
 }

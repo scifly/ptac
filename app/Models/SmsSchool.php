@@ -14,6 +14,6 @@ use Illuminate\Database\Eloquent\Model;
  * @mixin \Eloquent
  */
 class SmsSchool extends Model {
-
+    
     //
 }

@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StudentAttendanceSettingRequest extends FormRequest {
-
+    
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -13,7 +13,7 @@ class StudentAttendanceSettingRequest extends FormRequest {
     public function authorize() {
         return true;
     }
-
+    
     /**
      * Get the validation rules that apply to the request.
      *
@@ -28,9 +28,9 @@ class StudentAttendanceSettingRequest extends FormRequest {
             'msg_template' => 'required|string|between:2,255',
         ];
     }
-
+    
     public function messages() {
-
+        
         return [
             'name.required'         => '名称不能为空',
             'name.between'          => '名称应该在2~60个字符之间',
@@ -38,11 +38,11 @@ class StudentAttendanceSettingRequest extends FormRequest {
             'msg_template.required' => '消息模板不能为空',
             'msg_template.between'  => '消息模板应该在2~225个字符之间',
         ];
-
+        
     }
-
+    
     protected function prepareForValidation() {
-
+        
         $input = $this->all();
         if (isset($input['ispublic']) && $input['ispublic'] === 'on') {
             $input['ispublic'] = 1;

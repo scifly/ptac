@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 
 class WapSiteModuleRequest extends FormRequest {
-
+    
     protected $rules = [
         'wap_site_id' => 'required|integer',
         'name'        => 'required|string|max:255',
@@ -24,7 +24,7 @@ class WapSiteModuleRequest extends FormRequest {
         'integer'  => '必须为整数',
         'boolean'  => '为0或1',
     ];
-
+    
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -33,7 +33,7 @@ class WapSiteModuleRequest extends FormRequest {
     public function authorize() {
         return true;
     }
-
+    
     public function messages() {
         $rules = $this->rules();
         $k_array = $this->strings_key;
@@ -49,20 +49,19 @@ class WapSiteModuleRequest extends FormRequest {
                 $array[$key . '.' . $v] = $k_array[$key] . $v_array[$v];
             }
         }
-
         return $array;
     }
-
+    
     public function rules() {
-
+        
         return $this->rules;
-
+        
     }
-
+    
     public function wantsJson() { return true; }
-
+    
     protected function prepareForValidation() {
-
+        
         $input = $this->all();
         if (isset($input['enabled']) && $input['enabled'] === 'on') {
             $input['enabled'] = 1;

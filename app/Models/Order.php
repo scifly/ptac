@@ -33,35 +33,35 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read User $user
  */
 class Order extends Model {
-
+    
     protected $table = 'orders';
-
+    
     protected $fillable = [
         'ordersn', 'user_id', 'pay_user_id',
         'status', 'combo_type_id', 'payment',
         'transactionid', 'created_at', 'updated_at',
     ];
-
+    
     /**
      * 返回指定订单所属的用户对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function user() { return $this->belongsTo('App\Models\User'); }
-
+    
     /**
      * 返回指定订单所属的套餐类型对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function comboType() {
-
+        
         return $this->belongsTo('App\models\ComboType');
-
+        
     }
-
+    
     public function datatable() {
-
+        
         $columns = [
             ['db' => 'Orders.id', 'dt' => 0],
             ['db' => 'User.realname', 'dt' => 1],
@@ -96,9 +96,9 @@ class Order extends Model {
                 ],
             ],
         ];
-
+        
         return Datatable::simple($this, $columns, $joins);
-
+        
     }
-
+    
 }

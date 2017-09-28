@@ -5,7 +5,7 @@ use App\Services\Test;
 use Illuminate\Support\ServiceProvider;
 
 class TestServiceProvider extends ServiceProvider {
-
+    
     /**
      * Bootstrap the application services.
      *
@@ -14,7 +14,7 @@ class TestServiceProvider extends ServiceProvider {
     public function boot() {
         //
     }
-
+    
     /**
      * Register the application services.
      *

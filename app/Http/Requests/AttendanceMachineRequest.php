@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 
 class AttendanceMachineRequest extends FormRequest {
-
+    
     protected $strings_key = [
         'name'      => '考勤机名称',
         'location'  => '位置',
@@ -19,16 +19,16 @@ class AttendanceMachineRequest extends FormRequest {
         'max'      => '最大为:max',
         'boolean'  => '为0或1',
     ];
-
+    
     /**
      * Determine if the user is authorized to make this request.
      *
      * @return bool
      */
     public function authorize() { return true; }
-
+    
     public function messages() {
-
+        
         $rules = $this->rules();
         $k_array = $this->strings_key;
         $v_array = $this->strings_val;
@@ -43,17 +43,16 @@ class AttendanceMachineRequest extends FormRequest {
                 $array[$key . '.' . $v] = $k_array[$key] . $v_array[$v];
             }
         }
-
         return $array;
     }
-
+    
     /**
      * Get the validation rules that apply to the request.
      *
      * @return array
      */
     public function rules() {
-
+        
         return [
             'name'      => 'required|string|between:2,60|unique:attendance_machines,name,' .
                 $this->input('id') . ',id,' .
@@ -64,9 +63,9 @@ class AttendanceMachineRequest extends FormRequest {
             'machineid' => 'required|string|betweeen:2,20',
             'enabled'   => 'required|boolean',
         ];
-
+        
     }
-
+    
     public function wantsJson() { return true; }
-
+    
 }

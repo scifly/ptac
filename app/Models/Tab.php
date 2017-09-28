@@ -37,7 +37,7 @@ use ReflectionClass;
  * @method static Builder|Tab whereController($value)
  */
 class Tab extends Model {
-
+    
     const DT_ON = '<span class="badge bg-green">%s</span>';
     const DT_OFF = '<span class="badge bg-gray">%s</span>';
     const DT_LINK_EDIT = <<<HTML
@@ -58,46 +58,46 @@ HTML;
         'ForgotPasswordController', 'Controller', 'RegisterController',
         'LoginController', 'ResetPasswordController', 'TestController',
     ];
-
-    protected $dir = '/media/sf_sandbox/ptac/app/Http/Controllers';
-
+    
+    protected $ctlrDir = 'app/Http/Controllers';
+    
     /**
      * 返回指定卡片所属的菜单对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function menus() {
-
+        
         return $this->belongsToMany('App\Models\Menu', 'menus_tabs');
-
+        
     }
-
+    
     /**
      * 返回指定卡片所属的图标对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function icon() {
-
+        
         return $this->belongsTo('App\Models\Icon');
-
+        
     }
-
+    
     /**
      * 返回指定卡片默认的Action对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function action() {
-
+        
         return $this->belongsTo('App\Models\Action');
-
+        
     }
-
+    
     public function scan() {
-
+        
         $action = new Action();
-        $controllers = $action->scanDirectories($this->dir);
+        $controllers = $this->scanDirectories($action->getSiteRoot() . $this->ctlrDir);
         $action->getControllerNamespaces($controllers);
         $controllerNames = $action->getControllerNames($controllers);
         // remove nonexisting controllers
@@ -110,9 +110,7 @@ HTML;
         foreach ($ctlrDiff as $ctlr) {
             $tab = $this->where('controller', $ctlr)->first();
             if ($tab) {
-                if (!$this->remove($tab->id)) {
-                    return false;
-                };
+                if (!$this->remove($tab->id)) { return false; };
             }
         }
         // create new Tabs or update the existing Tabs
@@ -141,11 +139,10 @@ HTML;
             }
         }
         unset($action);
-
         return true;
-
+        
     }
-
+    
     /**
      * 移除指定的卡片
      *
@@ -153,7 +150,7 @@ HTML;
      * @return bool|mixed
      */
     public function remove($id) {
-
+        
         $tab = $this->find($id);
         if (!isset($tab)) {
             return false;
@@ -165,16 +162,16 @@ HTML;
                 # 删除与指定卡片绑定的菜单记录
                 MenuTab::whereTabId($id)->delete();
             });
-
+            
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
             return false;
         }
-
+        
     }
-
+    
     private function getControllerComment(ReflectionClass $controller) {
-
+        
         $comment = $controller->getDocComment();
         $name = 'n/a';
         preg_match_all("#\/\*\*\n\s{1}\*[^\*]*\*#", $comment, $matches);
@@ -186,13 +183,13 @@ HTML;
                 $name = str_replace(str_split("\n/* "), '', $matches[0][0]);
             }
         }
-
+        
         return $name;
-
+        
     }
-
+    
     private function getIndexActionId($ctlrName) {
-
+        
         $action = new Action();
         $a = $actionId = $action::whereEnabled(1)->
         where('controller', $ctlrName)->
@@ -200,13 +197,13 @@ HTML;
         if (!$a) {
             return 0;
         }
-
+        
         return $a->id;
-
+        
     }
-
+    
     public function datatable() {
-
+        
         $columns = [
             ['db' => 'Tab.id', 'dt' => 0],
             ['db' => 'Tab.name', 'dt' => 1],
@@ -226,7 +223,6 @@ HTML;
                     $status = $d ? sprintf(self::DT_ON, '已启用') : sprintf(self::DT_OFF, '已禁用');
                     $showLink = sprintf(self::DT_LINK_SHOW, 'show_' . $id);
                     $editLink = sprintf(self::DT_LINK_EDIT, 'edit_' . $id);
-
                     return $status . '&nbsp;' . $showLink . '&nbsp;' . $editLink;
                 },
             ],
@@ -249,11 +245,10 @@ HTML;
                 ],
             ],
         ];
-
         return Datatable::simple($this, $columns, $joins);
-
+        
     }
-
+    
     /**
      * 保存卡片
      *
@@ -261,7 +256,7 @@ HTML;
      * @return bool|mixed
      */
     public function store(array $data) {
-
+        
         try {
             $exception = DB::transaction(function () use ($data) {
                 $t = $this->create($data);
@@ -269,14 +264,14 @@ HTML;
                 $menuIds = $data['menu_ids'];
                 $menuTab->storeByTabId($t->id, $menuIds);
             });
-
+            
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
             return false;
         }
-
+        
     }
-
+    
     /**
      * 更新指定的卡片
      *
@@ -285,7 +280,7 @@ HTML;
      * @return bool|mixed
      */
     public function modify(array $data, $id) {
-
+        
         $tab = $this->find($id);
         if (!isset($tab)) {
             return false;
@@ -298,14 +293,13 @@ HTML;
                 $menuTab::whereTabId($id)->delete();
                 $menuTab->storeByTabId($id, $menuIds);
             });
-
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
             return false;
         }
-
+        
     }
-
+    
     /**
      * 返回所有控制器的完整路径
      *
@@ -314,7 +308,7 @@ HTML;
      * @return array
      */
     private function scanDirectories($rootDir, $allData = []) {
-
+        
         // set filenames invisible if you want
         $invisibleFileNames = [".", "..", ".htaccess", ".htpasswd"];
         // run through content of root directory
@@ -334,9 +328,8 @@ HTML;
                 }
             }
         }
-
         return $allData;
-
+        
     }
-
+    
 }

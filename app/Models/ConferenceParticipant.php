@@ -28,33 +28,33 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read ConferenceQueue $conferenceQueue
  */
 class ConferenceParticipant extends Model {
-
+    
     protected $fillable = ['educator_id', 'attendance_time', 'conference_queue_id', 'status'];
-
+    
     /**
      * 返回与会者的教职员工对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function educator() {
-
+        
         return $this->belongsTo('\App\Models\Educator');
-
+        
     }
-
+    
     /**
      * 返回与会者参加的会议对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function conferenceQueue() {
-
+        
         return $this->belongsTo('App\Models\ConferenceQueue');
-
+        
     }
-
+    
     public function datatable() {
-
+        
         $columns = [
             ['db' => 'ConferenceParticipant.id', 'dt' => 0],
             ['db' => 'User.realname', 'dt' => 1],
@@ -96,9 +96,9 @@ class ConferenceParticipant extends Model {
                 ],
             ],
         ];
-
+        
         return Datatable::simple($this, $columns, $joins);
-
+        
     }
-
+    
 }

@@ -5,21 +5,21 @@ use App\Rules\Mobiles;
 use Illuminate\Foundation\Http\FormRequest;
 
 class OperatorRequest extends FormRequest {
-
+    
     /**
      * Determine if the user is authorized to make this request.
      *
      * @return bool
      */
     public function authorize() { return true; }
-
+    
     /**
      * Get the validation rules that apply to the request.
      *
      * @return array
      */
     public function rules() {
-
+        
         return [
             'operator.company_id' => 'required|integer',
 //            'operator.user_id' => 'required|integer|unique:operators,user_id,' .
@@ -33,16 +33,17 @@ class OperatorRequest extends FormRequest {
             'user.enabled'        => 'required|boolean',
             'user.email'          => 'nullable|email|unique:users,email,' .
                 $this->input('user_id') . ',id',
-//            'user.password' => 'required|string|min:60',
+            'user.password'      => 'string|min:3|confirmed',
+            'user.password_confirmation '      => 'string|min:3',
             'mobile.*'            => [
                 'required', new Mobiles(),
             ],
         ];
-
+        
     }
-
+    
     protected function prepareForValidation() {
-
+        
         $input = $this->all();
         if (isset($input['user']['enabled']) && $input['user']['enabled'] === 'on') {
             $input['user']['enabled'] = 1;
@@ -68,10 +69,10 @@ class OperatorRequest extends FormRequest {
                     $input['mobile'][$i]['enabled'] = 0;
                 }
             }
-
+            
         }
         $this->replace($input);
-
+        
     }
-
+    
 }

@@ -25,20 +25,20 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read Collection|\App\Models\Menu[] $menus
  */
 class MenuType extends Model {
-
+    
     use ModelTrait;
-
+    
     protected $fillable = ['name', 'remark', 'enabled'];
-
+    
     /**
      * 获取指定菜单类型所包含的所有菜单对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function menus() { return $this->hasMany('App\Models\Menu'); }
-
+    
     public function typeList($type) {
-
+        
         $list = $this->pluck('name', 'id')->toArray();
         $types = collect($this->where('enabled', 1)->get(['name'])->toArray())
             ->flatten()->all();
@@ -58,13 +58,13 @@ class MenuType extends Model {
                 break;
             default:
                 break;
-
+            
         }
-
+        
         return $allowedTypeList;
-
+        
     }
-
+    
     /**
      * 保存菜单类型
      *
@@ -72,13 +72,13 @@ class MenuType extends Model {
      * @return bool
      */
     public function store(array $data) {
-
+        
         $menuType = $this->create($data);
-
+        
         return $menuType ? true : false;
-
+        
     }
-
+    
     /**
      * 更新菜单类型
      *
@@ -87,16 +87,16 @@ class MenuType extends Model {
      * @return bool
      */
     public function modify(array $data, $id) {
-
+        
         $menuType = $this->find($id);
         if (!$menuType) {
             return false;
         }
-
+        
         return $menuType->update($data) ? true : false;
-
+        
     }
-
+    
     /**
      * 删除删除菜单类型
      *
@@ -104,15 +104,12 @@ class MenuType extends Model {
      * @return bool|null
      */
     public function remove($id) {
-
+        
         $menuType = $this->find($id);
-        if (!$menuType) {
-            return false;
-        }
-
+        if (!$menuType) { return false; }
         return $menuType->removable($menuType)
             ? $menuType->delete() : false;
-
+        
     }
-
+    
 }

@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UserRequest extends FormRequest {
-
+    
     protected $rules = [
         'group_id'   => 'required|integer',
         'username'   => 'required|string|max:255|unique:users',
@@ -15,7 +15,7 @@ class UserRequest extends FormRequest {
         'wechatid'   => 'required|string|max:255',
         'enabled'    => 'required|boolean',
     ];
-
+    
     protected $strings_key = [
         'group_id'   => '分组类型',
         'username'   => '用户名',
@@ -34,16 +34,16 @@ class UserRequest extends FormRequest {
         'max'      => '最大为:max',
         'boolean'  => '为0或1',
     ];
-
+    
     /**
      * Determine if the user is authorized to make this request.
      *
      * @return bool
      */
     public function authorize() { return true; }
-
+    
     public function messages() {
-
+        
         $rules = $this->rules();
         $k_array = $this->strings_key;
         $v_array = $this->strings_val;
@@ -58,21 +58,20 @@ class UserRequest extends FormRequest {
                 $array[$key . '.' . $v] = $k_array[$key] . $v_array[$v];
             }
         }
-
         return $array;
     }
-
+    
     /**
      * Get the validation rules that apply to the request.
      *
      * @return array
      */
     public function rules() { return $this->rules; }
-
+    
     public function wantsJson() { return true; }
-
+    
     protected function prepareForValidation() {
-
+        
         $input = $this->all();
         if (isset($input['enabled']) && $input['enabled'] === 'on') {
             $input['enabled'] = 1;
@@ -82,7 +81,7 @@ class UserRequest extends FormRequest {
         }
         $input['password'] = '12345678';
         $this->replace($input);
-
+        
     }
-
+    
 }

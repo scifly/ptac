@@ -37,44 +37,44 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|Squad whereDepartmentId($value)
  */
 class Squad extends Model {
-
+    
     use ModelTrait;
-
+    
     protected $table = 'classes';
-
+    
     protected $fillable = [
         'id', 'grade_id', 'name', 'department_id',
         'educator_ids', 'enabled',
     ];
-
+    
     /**
      * 返回对应的部门对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function department() { return $this->belongsTo('App\Models\Department'); }
-
+    
     /**
      * 返回指定班级所属的年级对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function grade() { return $this->belongsTo('App\Models\Grade'); }
-
+    
     /**
      * 获取指定班级包含的所有学生对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function students() { return $this->hasMany('App\Models\Student'); }
-
+    
     /**
      * 获取指定班级包含的所有教职员工对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function educators() { return $this->belongsToMany('App\Models\Educator', 'educators_classes'); }
-
+    
     /**
      * 保存班级
      *
@@ -83,18 +83,18 @@ class Squad extends Model {
      * @return bool
      */
     public function store(array $data, $fireEvent = false) {
-
+        
         $class = $this->create($data);
         if ($class && $fireEvent) {
             event(new ClassCreated($class));
-
+            
             return true;
         }
-
+        
         return $class ? true : false;
-
+        
     }
-
+    
     /**
      * 更新班级
      *
@@ -104,19 +104,19 @@ class Squad extends Model {
      * @return bool
      */
     public function modify(array $data, $id, $fireEvent = false) {
-
+        
         $class = $this->find($id);
         $updated = $class->update($data);
         if ($updated && $fireEvent) {
             event(new ClassUpdated($class));
-
+            
             return true;
         }
-
+        
         return $updated ? true : false;
-
+        
     }
-
+    
     /**
      * 删除班级
      *
@@ -125,7 +125,7 @@ class Squad extends Model {
      * @return bool
      */
     public function remove($id, $fireEvent = false) {
-
+        
         $class = $this->find($id);
         if (!$class) {
             return false;
@@ -133,16 +133,16 @@ class Squad extends Model {
         $removed = $this->removable($class) ? $class->delete() : false;
         if ($removed && $fireEvent) {
             event(new ClassDeleted($class));
-
+            
             return true;
         }
-
+        
         return $removed ? true : false;
-
+        
     }
-
+    
     public function datatable() {
-
+        
         $columns = [
             ['db' => 'Squad.id', 'dt' => 0],
             ['db' => 'Squad.name', 'dt' => 1],
@@ -176,9 +176,8 @@ class Squad extends Model {
                 ],
             ],
         ];
-
         return Datatable::simple($this, $columns, $joins);
-
+        
     }
-
+    
 }

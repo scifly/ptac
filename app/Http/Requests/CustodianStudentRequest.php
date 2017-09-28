@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 
 class CustodianStudentRequest extends FormRequest {
-
+    
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -13,7 +13,7 @@ class CustodianStudentRequest extends FormRequest {
     public function authorize() {
         return true;
     }
-
+    
     /**
      * Get the validation rules that apply to the request.
      *
@@ -24,16 +24,16 @@ class CustodianStudentRequest extends FormRequest {
             'relationship' => 'required|string|min:2',
         ];
     }
-
+    
     public function messages() {
         return [
             'relationship.required' => '关系不能为空!',
             'relationship.min'      => '不能少于2个字符!',
         ];
     }
-
+    
     protected function prepareForValidation() {
-
+        
         $input = $this->all();
         if (isset($input['enabled']) && $input['enabled'] === 'on') {
             $input['enabled'] = 1;

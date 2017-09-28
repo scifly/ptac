@@ -16,34 +16,34 @@ use Illuminate\Support\Facades\Request;
  * @package App\Http\Controllers
  */
 class MessageController extends Controller {
-
+    
     protected $message;
     protected $user;
     protected $media;
     protected $department;
-
+    
     public function __construct(Message $message, User $user, Media $media, Department $department) {
         $this->message = $message;
         $this->user = $user;
         $this->media = $media;
         $this->department = $department;
     }
-
+    
     /**
      * 消息列表
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
-
+        
         if (Request::get('draw')) {
             return response()->json($this->message->datatable());
         }
-
+        
         return $this->output(__METHOD__);
-
+        
     }
-
+    
     /**
      * 创建消息
      *
@@ -53,11 +53,11 @@ class MessageController extends Controller {
         if (Request::method() === 'POST') {
             return $this->department->tree();
         }
-
+        
         return $this->output(__METHOD__);
-
+        
     }
-
+    
     /**
      * 保存消息
      *
@@ -71,9 +71,9 @@ class MessageController extends Controller {
         if ($commType->name == $commTypeName[0]) {
             return $this->message->store($request) ? $this->succeed() : $this->fail();
         }
-
+        
     }
-
+    
     /**
      * 消息详情
      *
@@ -81,20 +81,20 @@ class MessageController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function show($id) {
-
+        
         $message = $this->message->find($id);
         if (!$message) {
             return $this->notFound();
         }
-
+        
         return $this->output(__METHOD__, [
             'message' => $message,
             'users'   => $this->user->users($message->user_ids),
             'medias'  => $this->media->educators($message->media_ids),
         ]);
-
+        
     }
-
+    
     /**
      * 编辑消息
      *
@@ -103,20 +103,20 @@ class MessageController extends Controller {
      *
      */
     public function edit($id) {
-
+        
         $message = $this->message->find($id);
         if (!$message) {
             return $this->notFound();
         }
-
+        
         return $this->output(__METHOD__, [
             'message'       => $message,
             'selectedUsers' => $this->user->users($message->user_ids),
             'medias'        => $this->media->medias($message->media_ids),
         ]);
-
+        
     }
-
+    
     /**
      * 更新消息
      *
@@ -125,11 +125,11 @@ class MessageController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(MessageRequest $request, $id) {
-
+        
         return $this->message->modify($request, $id) ? $this->succeed() : $this->fail();
-
+        
     }
-
+    
     /**
      * 删除消息
      *
@@ -137,23 +137,23 @@ class MessageController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
-
+        
         $message = $this->message->find($id);
         if (!$message) {
             return $this->notFound();
         }
-
+        
         return $message->delete() ? $this->succeed() : $this->fail();
-
+        
     }
-
+    
     public function getDepartmentUsers() {
-
+        
         return $this->department->showDepartments($this->checkRole());
     }
-
+    
     private function checkRole($userId = 1) {
-
+        
         $user = User::find($userId);
         $departments = [];
         $childDepartmentId = [];
@@ -164,10 +164,10 @@ class MessageController extends Controller {
             $childDepartmentId = $this->departmentChildIds($departmentId);
         }
         $departmentIds = array_merge($departments, $childDepartmentId);
-
+        
         return array_unique($departmentIds);
     }
-
+    
     /**
      * 获取该部门下所有部门id
      * @param $id
@@ -182,7 +182,7 @@ class MessageController extends Controller {
                 $this->departmentChildIds($firstId['id']);
             }
         }
-
+        
         return $childIds;
     }
 
@@ -218,7 +218,7 @@ class MessageController extends Controller {
         $messages = $this->message->where('r_user_id', $userId)
             ->where('message_type_id', $messageType)->get();
     }
-
+    
     private function userSendMessages() {
         //当前用户发送消息
     }

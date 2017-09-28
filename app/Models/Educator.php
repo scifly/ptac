@@ -38,65 +38,65 @@ use Mockery\Exception;
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\EducatorClass[] $educatorClasses
  */
 class Educator extends Model {
-
+    
     use ModelTrait;
-
+    
     protected $fillable = [
         'user_id', 'team_ids', 'school_id',
         'sms_quote', 'enabled',
     ];
-
+    
     /**
      * 返回指定教职员工对应的用户对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function user() { return $this->belongsTo('App\Models\User'); }
-
+    
     /**
      * 返回指定教职员工所属的学校对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function school() { return $this->belongsTo('App\Models\School'); }
-
+    
     /**
      * 获取指定教职员工所属的所有班级对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function classes() {
-
+        
         return $this->belongsToMany(
             'App\Models\Squad',
             'educators_classes',
             'educator_id',
             'class_id'
         );
-
+        
     }
-
+    
     /**
      * 获取指定教职员工所属的所有教职员工组对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function teams() {
-
+        
         return $this->belongsToMany(
             'App\Models\Team',
             'educators_teams'
         );
-
+        
     }
-
+    
     /**
      *  获取指定教职员工的班级科目关系
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function educatorClasses() { return $this->hasMany('App\Models\EducatorClass'); }
-
+    
     /**
      * 获取指定年级的年级主任教职员工对象
      *
@@ -104,13 +104,12 @@ class Educator extends Model {
      * @return Collection|static[]
      */
     public function gradeDeans($gradeId) {
-
+        
         $educatorIds = Grade::whereId($gradeId)->where('enabled', 1)->first()->educator_ids;
-
         return $this->whereIn('id', explode(',', $educatorIds))->whereEnabled(1)->get();
-
+        
     }
-
+    
     /**
      * 获取指定班级的班级主任教职员工对象
      *
@@ -118,13 +117,12 @@ class Educator extends Model {
      * @return Collection|static[]
      */
     public function classDeans($classId) {
-
+        
         $educatorIds = Squad::whereId($classId)->where('enabled', 1)->first()->educator_ids;
-
         return $this->whereIn('id', explode(',', $educatorIds))->whereEnabled(1)->get();
-
+        
     }
-
+    
     /**
      * 获取指定学校的教职员工列表
      *
@@ -132,7 +130,7 @@ class Educator extends Model {
      * @return array
      */
     public function educators(array $schoolIds = []) {
-
+        
         $educatorList = [];
         if (empty($schoolIds)) {
             $educators = $this->all();
@@ -142,13 +140,12 @@ class Educator extends Model {
         foreach ($educators as $educator) {
             $educatorList[$educator->id] = $educator->user->realname;
         }
-
         return $educatorList;
-
+        
     }
-
+    
     public function datatable() {
-
+        
         $columns = [
             ['db' => 'Educator.id', 'dt' => 0],
             ['db' => 'User.realname as username', 'dt' => 1],
@@ -165,7 +162,6 @@ class Educator extends Model {
                     $editLink = sprintf(Datatable::DT_LINK_EDIT, 'edit_' . $id);
                     $delLink = sprintf(Datatable::DT_LINK_DEL, $id);
                     $rechargeLink = sprintf(Datatable::DT_LINK_RECHARGE, 'recharge_' . $id);
-
                     return $status . Datatable::DT_SPACE . $showLink . Datatable::DT_SPACE .
                         $editLink . Datatable::DT_SPACE . $delLink . Datatable::DT_SPACE . $rechargeLink;
                 },
@@ -189,11 +185,10 @@ class Educator extends Model {
                 ],
             ],
         ];
-
         return Datatable::simple($this, $columns, $joins);
-
+        
     }
-
+    
     /**
      * 保存新创建的教职员工记录
      *
@@ -201,10 +196,10 @@ class Educator extends Model {
      * @return bool|mixed
      */
     public function store(EducatorRequest $request) {
-
+        
         try {
             $exception = DB::transaction(function () use ($request) {
-//                dd($request->all());
+               dd($request->all());
                 $userInputData = $request->input('user');
                 $userData = [
                     'username'     => $userInputData['username'],
@@ -219,7 +214,6 @@ class Educator extends Model {
                     'isleader'     => 0,
                     'english_name' => $userInputData['english_name'],
                     'telephone'    => $userInputData['telephone'],
-                    'wechatid'     => '',
                     'enabled'      => $userInputData['enabled'],
                 ];
                 $user = new User();
@@ -245,10 +239,9 @@ class Educator extends Model {
                     'enabled'   => $userInputData['enabled'],
                 ];
                 $educator = $this->create($educatorData);
-                $teamIds = $educatorInputData['team_id'];
-                if ($teamIds) {
+                if (isset($educatorInputData['team_id'])) {
                     $edTeam = new EducatorTeam();
-                    foreach ($teamIds as $key => $row) {
+                    foreach ($educatorInputData['team_id'] as $key => $row) {
                         $edData = [
                             'educator_id' => $educator->id,
                             'team_id'     => $row,
@@ -278,9 +271,9 @@ class Educator extends Model {
                                 'enabled'     => $userInputData['enabled'],
                             ];
                             $educatorClass->create($educatorClassData);
-
+                            
                         }
-
+                        
                     }
                     unset($educatorClass);
                 }
@@ -302,14 +295,13 @@ class Educator extends Model {
                 $user->createWechatUser($u->id);
                 unset($user);
             });
-
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
             return false;
         }
-
+        
     }
-
+    
     //二维数组去掉重复值
     function array_unique_fb($array2D) {
         foreach ($array2D as $v) {
@@ -323,16 +315,15 @@ class Educator extends Model {
             $csArray[$k]['class_id'] = $tempArray[0];
             $csArray[$k]['subject_id'] = $tempArray[1];
         }
-
         return $csArray;
     }
-
+    
     public function modify(EducatorRequest $request) {
-
+        
         try {
             $exception = DB::transaction(function () use ($request) {
 
-//                dd($request->all());die;
+               // dd($request->all());die;
                 $userInputData = $request->input('user');
                 $userData = [
                     'username'     => $userInputData['username'],
@@ -372,11 +363,10 @@ class Educator extends Model {
                     'enabled'   => $userInputData['enabled'],
                 ];
                 $educatorUpdate = $this->where('id', $request->input('id'))->update($educatorData);
-                $teamIds = $educator['team_id'];
-                if ($teamIds) {
+                if (isset($educator['team_id'])) {
                     $edTeam = new EducatorTeam();
                     $edTeam->where('educator_id', $request->input('id'))->delete();
-                    foreach ($teamIds as $key => $row) {
+                    foreach ($educator['team_id'] as $key => $row) {
                         $edData = [
                             'educator_id' => $request->input('id'),
                             'team_id'     => $row,
@@ -386,13 +376,21 @@ class Educator extends Model {
                     }
                     unset($edTeam);
                 }
-                $classSubject = $request->input('classSubject');
-                if ($classSubject) {
+                $classSubjectData = $request->input('classSubject');
+                if ($classSubjectData) {
                     $educatorClass = new EducatorClass();
                     $educatorClass->where('educator_id', $request->input('id'))->delete();
-                    $classSubject = $this->array_unique_fb($classSubject);
-                    foreach ($classSubject as $key => $row) {
-                        if ($row['class_id'] != "" && $row['class_id'] != "") {
+                    
+                    $uniqueArray = [];
+                    foreach ($classSubjectData['class_ids'] as $index => $class) {
+                        $uniqueArray[] = [
+                            'class_id'   => $class,
+                            'subject_id' => $classSubjectData['subject_ids'][$index],
+                        ];
+                    }
+                    $classSubjects = $this->array_unique_fb($uniqueArray);
+                    foreach ($classSubjects as $key => $row) {
+                        if ($row['class_id'] != 0 && $row['class_id'] != 0) {
                             $educatorClassData = [
                                 'educator_id' => $request->input('id'),
                                 'class_id'    => $row['class_id'],
@@ -400,8 +398,9 @@ class Educator extends Model {
                                 'enabled'     => $userInputData['enabled'],
                             ];
                             $educatorClass->create($educatorClassData);
+            
                         }
-
+        
                     }
                     unset($educatorClass);
                 }
@@ -423,16 +422,15 @@ class Educator extends Model {
                 # 更新企业号成员
                 $user->UpdateWechatUser($request->input('user_id'));
                 unset($user);
-
+                
             });
-
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
             return false;
         }
-
+        
     }
-
+    
     /**
      * 删除教职员工
      *
@@ -441,16 +439,15 @@ class Educator extends Model {
      * @return bool
      */
     public function remove($id, $fireEvent = false) {
-
+        
         $school = $this->find($id);
         $removed = $this->removable($school) ? $school->delete() : false;
         if ($removed && $fireEvent) {
 //            event(new SchoolDeleted($school));
             return true;
         }
-
         return $removed ? true : false;
-
+        
     }
 }
 

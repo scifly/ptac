@@ -47,7 +47,7 @@ use Illuminate\Database\Eloquent\Model;
  * @mixin \Eloquent
  */
 class App extends Model {
-
+    
     protected $fillable = [
         'name', 'description', 'agentid',
         'url', 'token', 'encodingaeskey',
@@ -56,9 +56,9 @@ class App extends Model {
         'isreportenter', 'home_url',
         'chat_extension_url', 'menu', 'enabled',
     ];
-
+    
     public function datatable() {
-
+        
         $columns = [
             ['db' => 'App.id', 'dt' => 0],
             ['db' => 'App.name', 'dt' => 1],
@@ -75,9 +75,9 @@ class App extends Model {
                 },
             ],
         ];
-
+        
         return Datatable::simple($this, $columns);
-
+        
     }
-
+    
 }

@@ -34,48 +34,48 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read User $user
  */
 class PollQuestionnaire extends Model {
-
+    
     use ModelTrait;
-
+    
     protected $table = 'poll_questionnaires';
-
+    
     protected $fillable = ['school_id', 'user_id', 'name', 'start', 'end', 'enabled'];
-
+    
     /**
      * 返回指定调查问卷所属的学校对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function school() { return $this->belongsTo('App\Models\School'); }
-
+    
     /**
      * 返回调查问卷发起者的用户对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function user() { return $this->belongsTo('App\Models\User'); }
-
+    
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
     public function poll_questionnaire_answer() {
         return $this->hasOne('App\Models\PollQuestionnaireAnswer', 'pq_id');
     }
-
+    
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
     public function poll_questionnaire_partcipant() {
         return $this->hasOne('App\Models\PollQuestionnaireParticipant', 'pq_id');
     }
-
+    
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function poll_questionnaire_subject() {
         return $this->hasMany('App\Models\PollQuestionnaireSubject', 'pq_id');
     }
-
+    
     /**
      * 删除问卷
      *
@@ -83,18 +83,15 @@ class PollQuestionnaire extends Model {
      * @return bool|null
      */
     public function remove($id) {
-
+        
         $pollQuestionnaire = $this->find($id);
-        if (!$pollQuestionnaire) {
-            return false;
-        }
-
+        if (!$pollQuestionnaire) { return false; }
         return $this->removable($pollQuestionnaire) ? $pollQuestionnaire->delete() : false;
-
+        
     }
-
+    
     public function dataTable() {
-
+        
         $columns = [
             ['db' => 'PollQuestionnaire.id', 'dt' => 0],
             ['db' => 'PollQuestionnaire.name', 'dt' => 1],
@@ -129,7 +126,6 @@ class PollQuestionnaire extends Model {
                 ],
             ],
         ];
-
         return Datatable::simple($this, $columns, $joins);
     }
 }

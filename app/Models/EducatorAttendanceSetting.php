@@ -31,30 +31,30 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read \App\Models\School $school
  */
 class EducatorAttendanceSetting extends Model {
-
+    
     protected $table = 'educator_attendance_settings';
-
+    
     protected $fillable = [
         'name', 'school_id', 'start',
         'end', 'inorout',
     ];
-
+    
     /**
      * 获取对应的所有教职员工考勤记录对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function educatorAttendances() { return $this->hasMany('App\Models\EducatorAttendance', 'eas_id'); }
-
+    
     /**
      * 返回所属的学校对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function school() { return $this->belongsTo('App\Models\School'); }
-
+    
     public function datatable() {
-
+        
         $columns = [
             ['db' => 'EducatorAttendanceSetting.id', 'dt' => 0],
             ['db' => 'EducatorAttendanceSetting.name', 'dt' => 1],
@@ -87,9 +87,9 @@ class EducatorAttendanceSetting extends Model {
                 ],
             ],
         ];
-
+        
         return Datatable::simple($this, $columns, $joins);
-
+        
     }
-
+    
 }

@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 
 class EducatorClassRequest extends FormRequest {
-
+    
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -13,7 +13,7 @@ class EducatorClassRequest extends FormRequest {
     public function authorize() {
         return true;
     }
-
+    
     /**
      * Get the validation rules that apply to the request.
      *
@@ -24,11 +24,11 @@ class EducatorClassRequest extends FormRequest {
             //
         ];
     }
-
+    
     public function wantsJson() { return true; }
-
+    
     protected function prepareForValidation() {
-
+        
         $input = $this->all();
         if (isset($input['enabled']) && $input['enabled'] === 'on') {
             $input['enabled'] = 1;

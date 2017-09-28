@@ -29,23 +29,23 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read School $school
  */
 class Team extends Model {
-
+    
     protected $fillable = ['name', 'school_id', 'remark', 'enabled'];
-
+    
     /**
      * 返回指定教职员工组所属的学校对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function school() { return $this->belongsTo('App\Models\School'); }
-
+    
     /**
      * 获取指定教职员工组包含的所有教职员工对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function educators() { return $this->belongsToMany('App\Models\Educator', 'educators_teams'); }
-
+    
     /**
      * 获取教职员工组列表
      *
@@ -53,19 +53,19 @@ class Team extends Model {
      * @return array
      */
     public function teams(array $teamIds) {
-
+        
         $teams = [];
         foreach ($teamIds as $id) {
             $team = $this->find($id);
             $teams[$team['id']] = $team['name'];
         }
-
+        
         return $teams;
-
+        
     }
-
+    
     public function datatable() {
-
+        
         $columns = [
             ['db' => 'Team.id', 'dt' => 0],
             ['db' => 'Team.name', 'dt' => 1],
@@ -90,9 +90,8 @@ class Team extends Model {
                 ],
             ],
         ];
-
         return Datatable::simple($this, $columns, $joins);
-
+        
     }
-
+    
 }

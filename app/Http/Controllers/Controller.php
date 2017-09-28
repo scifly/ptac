@@ -12,9 +12,9 @@ use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
 
 class Controller extends BaseController {
-
+    
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
-
+    
     const HTTP_STATUSCODE_OK = 200;
     const HTTP_STATUSCODE_BAD_REQUEST = 400;
     const HTTP_STATUSCODE_UNAUTHORIZED = 401;
@@ -22,7 +22,7 @@ class Controller extends BaseController {
     const HTTP_STATUSCODE_NOT_FOUND = 404;
     const HTTP_STATUSCODE_METHOD_NOT_ALLOWED = 405;
     const HTTP_STATUSCODE_INTERNAL_SERVER_ERROR = 500;
-
+    
     const MSG_OK = '操作成功';
     const MSG_FAIL = '操作失败';
     const MSG_CREATE_OK = '添加成功';
@@ -34,12 +34,12 @@ class Controller extends BaseController {
     const MSG_NOT_FOUND = '找不到需要访问的页面';
     const MSG_METHOD_NOT_ALLOWED = '不支持该请求方法';
     const MSG_INTERNAL_SERVER_ERROR = '内部服务器错误';
-
+    
     protected $result = [
         'statusCode' => self::HTTP_STATUSCODE_OK,
         'message'    => self::MSG_OK,
     ];
-
+    
     /**
      * 根据__METHOD__输出对应的view
      *
@@ -48,7 +48,7 @@ class Controller extends BaseController {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     protected function output($method, array $params = []) {
-
+        
         # 获取功能名称
         $arr = explode('::', $method);
         $m = $arr[1];
@@ -85,45 +85,43 @@ class Controller extends BaseController {
                 "<span style=\"color: red\">菜单 - <strong>{$menuName}</strong> - 配置错误, 请检查后</span>" .
                 '<a href="' . session('pageUrl') . '">重试</a>';
         }
-
+        
         return response()->json([
             'html'       => view($view, $params)->render(),
             'js'         => $action->js,
             'breadcrumb' => $params['breadcrumb'],
         ]);
-
+        
     }
-
+    
     protected function fail($msg = self::MSG_FAIL) {
-
+        
         $this->result = [
             'statusCode' => self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR,
             'message'    => $msg,
         ];
-
         return response()->json($this->result);
     }
-
+    
     protected function notFound() {
-
+        
         $this->result = [
             'statusCode' => self::HTTP_STATUSCODE_BAD_REQUEST,
             'message'    => self::MSG_BAD_REQUEST,
         ];
-
+        
         return response()->json($this->result);
-
+        
     }
-
+    
     protected function succeed($msg = self::MSG_OK) {
-
+        
         $this->result = [
             'statusCode' => self::HTTP_STATUSCODE_OK,
             'message'    => $msg,
         ];
-
         return response()->json($this->result);
-
+        
     }
-
+    
 }

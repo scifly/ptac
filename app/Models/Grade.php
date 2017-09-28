@@ -39,49 +39,49 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|Grade whereDepartmentId($value)
  */
 class Grade extends Model {
-
+    
     use ModelTrait;
-
+    
     protected $fillable = [
         'name', 'school_id', 'department_id',
         'educator_ids', 'enabled',
     ];
-
+    
     /**
      * 返回对应的部门对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function department() { return $this->belongsTo('App\Models\Department'); }
-
+    
     /**
      * 返回指定年级所属的学校对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function school() { return $this->belongsTo('App\Models\School'); }
-
+    
     /**
      * 获取指定年级包含的所有班级对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function classes() { return $this->hasMany('App\Models\Squad'); }
-
+    
     /**
      * 获取指定年级包含的学生考勤设置对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
     public function studentAttendanceSetting() { return $this->hasOne('App\Models\StudentAttendanceSetting'); }
-
+    
     /**
      * 通过Squad中间对象获取指定年级包含的所有学生对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
      */
     public function students() { return $this->hasManyThrough('App\Models\Student', 'App\Models\Squad'); }
-
+    
     /**
      * 根据学校ID返回年级列表(id, name)
      *
@@ -89,7 +89,7 @@ class Grade extends Model {
      * @return array|\Illuminate\Support\Collection
      */
     public function grades(array $schoolIds = []) {
-
+        
         if (sizeof($schoolIds) === 1) {
             return $this->where('school_id', $schoolIds[0])
                 ->where('enabled', 1)
@@ -100,28 +100,28 @@ class Grade extends Model {
         # 获取所有年级对象
         if (empty($schoolIds)) {
             $grades = $this->whereEnabled(1)->get(['id', 'name', 'school_id']);
-
+            
             return $this->getGradesList($grades, $schools);
         }
         # 获取指定学校的所有年级列表
         $grades = $this->whereIn('school_id', $schoolIds)
             ->where('enabled', 1)->get();
-
+        
         return $this->getGradesList($grades, $schools);
-
+        
     }
-
+    
     private function getGradesList($grades, $schools) {
-
+        
         $gradesList = [];
         foreach ($grades as $grade) {
             $gradesList[$schools[$grade['school_id']]][$grade['id']] = $grade['name'];
         }
-
+        
         return $gradesList;
-
+        
     }
-
+    
     /**
      * 保存年级
      *
@@ -130,18 +130,18 @@ class Grade extends Model {
      * @return bool
      */
     public function store(array $data, $fireEvent = false) {
-
+        
         $grade = $this->create($data);
         if ($grade && $fireEvent) {
             event(new GradeCreated($grade));
-
+            
             return true;
         }
-
+        
         return $grade ? true : false;
-
+        
     }
-
+    
     /**
      * 更新年级
      *
@@ -151,19 +151,19 @@ class Grade extends Model {
      * @return bool
      */
     public function modify(array $data, $id, $fireEvent = false) {
-
+        
         $grade = $this->find($id);
         $updated = $grade->update($data);
         if ($updated && $fireEvent) {
             event(new GradeUpdated($grade));
-
+            
             return true;
         }
-
+        
         return $updated ? true : false;
-
+        
     }
-
+    
     /**
      * 删除年级
      *
@@ -172,7 +172,7 @@ class Grade extends Model {
      * @return bool
      */
     public function remove($id, $fireEvent = false) {
-
+        
         $grade = $this->find($id);
         if (!$grade) {
             return false;
@@ -180,16 +180,16 @@ class Grade extends Model {
         $removed = $this->removable($grade) ? $grade->delete() : false;
         if ($removed && $fireEvent) {
             event(new GradeDeleted($grade));
-
+            
             return true;
         }
-
+        
         return $removed ? true : false;
-
+        
     }
-
+    
     public function datatable() {
-
+        
         $columns = [
             ['db' => 'Grade.id', 'dt' => 0],
             ['db' => 'Grade.name', 'dt' => 1],
@@ -214,9 +214,8 @@ class Grade extends Model {
                 ],
             ],
         ];
-
         return Datatable::simple($this, $columns, $joins);
-
+        
     }
-
+    
 }

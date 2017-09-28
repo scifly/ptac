@@ -59,16 +59,16 @@ use Mockery\Exception;
  * @method static Builder|Message whereSent($value)
  */
 class Message extends Model {
-
+    
     //
     protected $table = 'messages';
-
+    
     protected $fillable = [
         'comm_type_id', 'app_id', 'msl_id', 'content',
         'serviceid', 'message_id', 'url', 'media_ids',
         's_user_id', 'r_user_id', 'message_type_id', 'readed', 'sent',
     ];
-
+    
     /**
      * 返回指定消息所属的消息类型对象
      *
@@ -77,7 +77,7 @@ class Message extends Model {
     public function messageType() {
         return $this->belongsTo('App\Models\MessageType');
     }
-
+    
     /**
      * 返回指定消息所属的用户对象
      *
@@ -86,21 +86,21 @@ class Message extends Model {
     public function user() {
         return $this->belongsTo('App\Models\User');
     }
-
+    
     public function classes(array $classIds) {
-
+        
         return Squad::whereIn('id', $classIds)->get(['id', 'name']);
-
+        
     }
-
+    
     public function messageSendinglogs() {
         return $this->belongsTo('App\Models\MessageSendingLogs');
     }
-
+    
     public function commType() {
         return $this->belongsTo('App\Models\CommType');
     }
-
+    
     public function store(MessageRequest $request) {
         $input = $request->all();
         $messageSendingLog = new MessageSendingLogs();
@@ -119,13 +119,13 @@ class Message extends Model {
                     $crateDate->update($updateUrl);
                 });
             }
-
+            
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
             return false;
         }
     }
-
+    
     /**
      * @param $request
      */
@@ -137,12 +137,12 @@ class Message extends Model {
             foreach ($medias as $media) {
                 $paths = explode("/", $media->path);
                 Storage::disk('uploads')->delete($paths[5]);
-
+                
             }
             Media::whereIn('id', $mediaIds)->delete();
         }
     }
-
+    
     public function modify(MessageRequest $request, $id) {
         $message = $this->find($id);
         if (!$message) {
@@ -151,10 +151,10 @@ class Message extends Model {
         try {
             $exception = DB::transaction(function () use ($request, $id) {
                 $this->removeMedias($request);
-
+                
                 return $this->where('id', $id)->update($request->except('_method', '_token'));
             });
-
+            
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
             return false;
@@ -175,7 +175,7 @@ class Message extends Model {
 //        }
 //    }
     public function datatable() {
-
+        
         $columns = [
             ['db' => 'Message.id', 'dt' => 0],
             ['db' => 'CommType.name as commtypename', 'dt' => 1],
@@ -235,7 +235,7 @@ class Message extends Model {
                 ],
             ],
         ];
-
+        
         return Datatable::simple($this, $columns, $joins);
     }
 }

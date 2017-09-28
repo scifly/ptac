@@ -51,7 +51,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|Event whereTitle($value)
  */
 class Event extends Model {
-
+    
     protected $table = 'events';
     protected $fillable = [
         'title',
@@ -72,28 +72,28 @@ class Event extends Model {
         'updated_at',
         'enabled',
     ];
-
+    
     /**
      * 返回事件创建者的用户对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function user() { return $this->belongsTo('App\Models\User'); }
-
+    
     /**
      * 返回课程表事件对应的教职员工对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function educator() { return $this->belongsTo('App\Models\Educator'); }
-
+    
     /**
      * 返回课程表事件对应的科目对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function subject() { return $this->belongsTo('App\Models\Subject'); }
-
+    
     /**
      * 显示日历事件
      * @param $userId
@@ -125,11 +125,11 @@ class Event extends Model {
         if ($this->getRole($userId)) {
             return response()->json(array_merge($pubEvents, $perEvents));
         }
-
+        
         //如果是用户
         return response()->json(array_merge($pubNoCourseEvents, $perEvents, $pubCourEvents));
     }
-
+    
     /**
      * 判断当前用户权限
      * @param $userId
@@ -137,10 +137,10 @@ class Event extends Model {
      */
     public function getRole($userId) {
         $role = User::find($userId)->group;
-
+        
         return $role->name == '管理员' ? true : false;
     }
-
+    
     /**
      * 根据角色验证时间冲突
      *
@@ -159,10 +159,10 @@ class Event extends Model {
                 return $this->isRepeatTimeAdmin($educator_id, $start, $end, $id);
             }
         }
-
+        
         return false;
     }
-
+    
     /**
      * 验证用户添加事件是否有重复
      * @param $userId
@@ -224,10 +224,10 @@ class Event extends Model {
                 ->where('start', '<', $end)
                 ->first();
         }
-
+        
         return !empty($event);
     }
-
+    
     /**
      * 验证管理员添加事件是否有重复
      * 未判断管理员个人事件重复
@@ -270,10 +270,10 @@ class Event extends Model {
                 ->where('start', '<', $start)
                 ->first();
         }
-
+        
         return !empty($event);
     }
-
+    
     /**
      * 计算拖动后的时间差
      * @param $day
@@ -285,8 +285,8 @@ class Event extends Model {
         $days = $day * 24 * 60 * 60;
         $hours = $hour * 60 * 60;
         $minutes = $minute * 60;
-
+        
         return $diffTime = $days + $hours + $minutes;
     }
-
+    
 }

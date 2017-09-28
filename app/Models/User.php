@@ -78,10 +78,10 @@ use Illuminate\Notifications\Notifiable;
  * @property-read Collection|Order[] $orders
  */
 class User extends Authenticatable {
-
+    
     use Notifiable;
     protected $table = 'users';
-
+    
     /**
      * The attributes that are mass assignable.
      *
@@ -95,98 +95,98 @@ class User extends Authenticatable {
         'telephone', 'order', 'mobile',
         'avatar_mediaid', 'enabled',
     ];
-
+    
     /**
      * The attributes that should be hidden for arrays.
      *
      * @var array
      */
     protected $hidden = ['password', 'remember_token'];
-
+    
     /**
      * 返回指定用户所属的角色对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function group() { return $this->belongsTo('App\Models\Group'); }
-
+    
     /**
      * 获取指定用户对应的监护人对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
     public function custodian() { return $this->hasOne('App\Models\Custodian'); }
-
+    
     /**
      * 获取指定用户对应的教职员工对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
     public function educator() { return $this->hasOne('App\Models\Educator'); }
-
+    
     /**
      * 获取指定用户对应的学生对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
     public function student() { return $this->hasOne('App\Models\Student'); }
-
+    
     /**
      * 获取指定用户对应的管理/操作员对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
     public function operator() { return $this->hasOne('App\Models\Operator'); }
-
+    
     /**
      * 获取指定用户的所有订单对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function orders() { return $this->hasMany('App\Models\Order'); }
-
+    
     /**
      * 获取指定用户的所有手机号码对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function mobiles() { return $this->hasMany('App\Models\Mobile'); }
-
+    
     /**
      * 获取指定用户所属的所有部门对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function departments() { return $this->belongsToMany('App\Models\Department', 'departments_users'); }
-
+    
     /**
      * 获取指定用户发起的所有调查问卷对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function pollQuestionnaires() { return $this->hasMany('App\Models\PollQuestionnaire'); }
-
+    
     /**
      * 获取指定用户参与的调查问卷所给出的答案对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function pollQuestionnaireAnswers() { return $this->hasMany('App\Models\PollQuestionnaireAnswer'); }
-
+    
     /**
      * 获取指定用户参与的所有调查问卷对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function pollQuestionnairePartcipants() { return $this->hasMany('App\Models\PollQuestionnaireParticipant'); }
-
+    
     /**
      * 获取指定用户发出的消息对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function messages() { return $this->hasMany('App\Models\Message'); }
-
+    
     /**
      * 返回用户列表(id, name)
      *
@@ -194,18 +194,24 @@ class User extends Authenticatable {
      * @return array
      */
     public function users(array $userIds) {
-
+        
         $users = [];
         foreach ($userIds as $id) {
             $user = $this->find($id);
             $users[$user->id] = $user->realname;
         }
-
+        
         return $users;
-
+        
     }
-
+    
+    /**
+     * 创建企业号会员
+     *
+     * @param $id
+     */
     public function createWechatUser($id) {
+        
         $user = $this->find($id);
         $mobile = Mobile::whereUserId($id)->where('isdefault', 1)->first()->mobile;
         $department = [];
@@ -222,9 +228,16 @@ class User extends Authenticatable {
             'enable'       => $user->enabled,
         ];
         event(new UserCreated($data));
+        
     }
-
+    
+    /**
+     * 更新企业号会员
+     *
+     * @param $id
+     */
     public function updateWechatUser($id) {
+        
         $user = $this->find($id);
         $mobile = Mobile::whereUserId($id)->where('isdefault', 1)->first()->mobile;
         $department = [];
@@ -241,14 +254,22 @@ class User extends Authenticatable {
             'enable'       => $user->enabled,
         ];
         event(new UserUpdated($data));
+        
     }
-
+    
+    /**
+     * 删除企业号会员
+     *
+     * @param $id
+     */
     public function deleteWechatUser($id) {
+        
         event(new UserDeleted($this->find($id)->userid));
+        
     }
-
+    
     public function datatable() {
-
+        
         $columns = [
             ['db' => 'User.id', 'dt' => 0],
             ['db' => 'User.username', 'dt' => 2],
@@ -281,8 +302,9 @@ class User extends Authenticatable {
                 ],
             ],
         ];
-
+        
         return Datatable::simple($this, $columns, $joins);
+        
     }
-
+    
 }

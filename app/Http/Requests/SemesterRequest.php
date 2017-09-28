@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 
 class SemesterRequest extends FormRequest {
-
+    
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -13,7 +13,7 @@ class SemesterRequest extends FormRequest {
     public function authorize() {
         return false;
     }
-
+    
     /**
      * Get the validation rules that apply to the request.
      *
@@ -29,9 +29,9 @@ class SemesterRequest extends FormRequest {
             'enabled'    => 'required|boolean',
         ];
     }
-
+    
     protected function prepareForValidation() {
-
+        
         $input = $this->all();
         if (isset($input['enabled']) && $input['enabled'] === 'on') {
             $input['enabled'] = 1;
@@ -40,7 +40,7 @@ class SemesterRequest extends FormRequest {
             $input['enabled'] = 0;
         }
         $this->replace($input);
-
+        
     }
-
+    
 }

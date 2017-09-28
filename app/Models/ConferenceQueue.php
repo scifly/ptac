@@ -41,28 +41,28 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read ConferenceRoom $conferenceRoom
  */
 class ConferenceQueue extends Model {
-
+    
     protected $table = 'conference_queues';
     protected $fillable = [
         'name', 'remark', 'start', 'end',
         'educator_id', 'educator_ids', 'attended_educator_ids',
         'conference_room_id', 'attendance_qrcode_url', 'event_id',
     ];
-
+    
     /**
      * 返回举行指定会议的会议室对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function conferenceRoom() { return $this->belongsTo('App\Models\ConferenceRoom'); }
-
+    
     /**
      * 获取参与指定会议的所有教职员工对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function conferenceParticipants() { return $this->hasMany('App\Models\ConferenceParticipant'); }
-
+    
     /**
      * 保存会议
      *
@@ -70,11 +70,11 @@ class ConferenceQueue extends Model {
      * @return bool
      */
     public function store(ConferenceQueueRequest $request) {
-
+        
         return true;
-
+        
     }
-
+    
     /**
      * 更新会议
      *
@@ -83,11 +83,11 @@ class ConferenceQueue extends Model {
      * @return bool
      */
     public function modify(ConferenceQueueRequest $request, $id) {
-
+        
         return true;
-
+        
     }
-
+    
     /**
      * 删除会议
      *
@@ -95,13 +95,13 @@ class ConferenceQueue extends Model {
      * @return bool
      */
     public function remove($id) {
-
+        
         return true;
-
+        
     }
-
+    
     public function datatable() {
-
+        
         $columns = [
             ['db' => 'ConferenceQueue.id', 'dt' => 0],
             ['db' => 'ConferenceQueue.name', 'dt' => 1],
@@ -143,9 +143,9 @@ class ConferenceQueue extends Model {
                 ],
             ],
         ];
-
+        
         return Datatable::simple($this, $columns, $joins);
-
+        
     }
-
+    
 }

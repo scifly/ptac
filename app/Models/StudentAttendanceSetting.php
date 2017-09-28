@@ -37,7 +37,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read \App\Models\Semester $semester
  */
 class StudentAttendanceSetting extends Model {
-
+    
     //
     protected $table = 'student_attendance_settings';
     protected $fillable = [
@@ -51,17 +51,17 @@ class StudentAttendanceSetting extends Model {
         'inorout',
         'msg_template',
     ];
-
+    
     public function grade() {
         return $this->belongsTo('App\Models\Grade');
     }
-
+    
     public function semester() {
         return $this->belongsTo('App\Models\Semester', 'semester_id', 'id');
     }
-
+    
     public function datatable() {
-
+        
         $columns = [
             ['db' => 'StudentAttendanceSetting.id', 'dt' => 0],
             ['db' => 'StudentAttendanceSetting.name', 'dt' => 1],
@@ -107,8 +107,7 @@ class StudentAttendanceSetting extends Model {
                 ],
             ],
         ];
-
         return Datatable::simple($this, $columns, $joins);
-
+        
     }
 }

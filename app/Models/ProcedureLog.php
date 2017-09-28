@@ -43,11 +43,11 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|ProcedureLog whereFirstLogId($value)
  */
 class ProcedureLog extends Model {
-
+    
     const DT_PEND = '<span class="badge bg-orange">%s</span>';
-
+    
     protected $table = 'procedure_logs';
-
+    
     protected $joins = [
         [
             'table'      => 'procedures',
@@ -66,7 +66,7 @@ class ProcedureLog extends Model {
             ],
         ],
     ];
-
+    
     protected $fillable = [
         'initiator_user_id',
         'procedure_id',
@@ -80,18 +80,18 @@ class ProcedureLog extends Model {
         'created_at',
         'updated_at',
     ];
-
+    
     /**
      * 返回审批流程发起者对应的用户对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function initiatorUser() {
-
+        
         return $this->belongsTo('App\Models\User', 'initiator_user_id');
-
+        
     }
-
+    
     /**
      * 返回审批流程操作者对应的用户对象
      *
@@ -100,7 +100,7 @@ class ProcedureLog extends Model {
     public function operatorUser() {
         return $this->belongsTo('App\Models\User', 'operator_user_id');
     }
-
+    
     /**
      * 返回指定流程日志所属的流程对象
      *
@@ -109,7 +109,7 @@ class ProcedureLog extends Model {
     public function procedure() {
         return $this->belongsTo('App\Models\Procedure');
     }
-
+    
     /**
      * 返回指定流程日志所属的流程步骤对象
      *
@@ -118,26 +118,25 @@ class ProcedureLog extends Model {
     public function procedureStep() {
         return $this->belongsTo('App\Models\ProcedureStep', 'procedure_step_id');
     }
-
+    
     /**
      * 拆分initiator_media_ids、operator_media_ids,
      * @param $media_ids
      * @return array 处理后字典 key=>media.id,value => media
      */
     public function operate_ids($media_ids) {
-
+        
         $ids = explode(',', $media_ids);
         $medias = [];
         foreach ($ids as $mid) {
             $media = Media::find($mid);
             $medias[$mid] = $media;
         }
-
         return $medias;
     }
-
+    
     public function datatable($where) {
-
+        
         $columns = [
             ['db' => 'ProcedureLog.first_log_id', 'dt' => 0],
             [
@@ -153,9 +152,9 @@ class ProcedureLog extends Model {
             [
                 'db'        => 'ProcedureLog.step_status', 'dt' => 6,
                 'formatter' => function ($d, $row) {
-
+                    
                     switch ($d) {
-
+                        
                         case 0:
                             $status = sprintf(Datatable::DT_ON, '通过');
                             break;
@@ -171,16 +170,14 @@ class ProcedureLog extends Model {
                     }
                     $id = $row['first_log_id'];
                     $showLink = '<a id = ' . $id . ' href="show/' . $id . '" class="btn btn-primary btn-icon btn-circle btn-xs" data-toggle="modal"><i class="fa fa-eye"></i></a>';
-
                     return $status . Datatable::DT_SPACE . $showLink;
-
+                    
                 },
             ],
         ];
-
         return Datatable::simple($this, $columns, $this->joins, $where);
     }
-
+    
     /**
      * 获取用户信息
      * @param $userId
@@ -189,5 +186,5 @@ class ProcedureLog extends Model {
     public function get_user($userId) {
         return User::find($userId);
     }
-
+    
 }

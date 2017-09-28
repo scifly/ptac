@@ -24,13 +24,13 @@ use Mockery\Exception;
  * @mixin \Eloquent
  */
 class DepartmentUser extends Model {
-
+    
     protected $table = 'departments_users';
-
+    
     protected $fillable = ['department_id', 'user_id', 'enabled'];
-
+    
     public function storeByUserId($userId, array $departmentIds) {
-
+        
         try {
             $exception = DB::transaction(function () use ($userId, $departmentIds) {
                 foreach ($departmentIds as $departmentId) {
@@ -41,16 +41,16 @@ class DepartmentUser extends Model {
                     ]);
                 }
             });
-
+            
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
             return false;
         }
-
+        
     }
-
+    
     public function storeByDepartmentId($departmentId, array $userIds) {
-
+        
         try {
             $exception = DB::transaction(function () use ($departmentId, $userIds) {
                 foreach ($userIds as $userId) {
@@ -61,12 +61,12 @@ class DepartmentUser extends Model {
                     ]);
                 }
             });
-
+            
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
             return false;
         }
-
+        
     }
-
+    
 }

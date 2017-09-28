@@ -23,17 +23,17 @@ use Illuminate\Database\Eloquent\Model;
  * @mixin \Eloquent
  */
 class CommType extends Model {
-
+    
     protected $table = 'comm_types';
-
+    
     protected $fillable = ['name', 'remark', 'enabled'];
-
+    
     public function messages() {
         return $this->hasMany('App\Models\Messages');
     }
-
+    
     public function datatable() {
-
+        
         $columns = [
             ['db' => 'CommType.id', 'dt' => 0],
             ['db' => 'CommType.name', 'dt' => 1],
@@ -47,9 +47,9 @@ class CommType extends Model {
                 },
             ],
         ];
-
+        
         return Datatable::simple($this, $columns);
-
+        
     }
-
+    
 }

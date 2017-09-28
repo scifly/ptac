@@ -4,14 +4,14 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ActionRequest extends FormRequest {
-
+    
     /**
      * Determine if the user is authorized to make this request.
      *
      * @return bool
      */
     public function authorize() { return true; }
-
+    
     /**
      * Get the validation rules that apply to the request.
      *
@@ -30,9 +30,9 @@ class ActionRequest extends FormRequest {
             'action_type_ids' => 'nullable|string|between:3,60',
         ];
     }
-
+    
     protected function prepareForValidation() {
-
+        
         $input = $this->all();
         if (isset($input['enabled']) && $input['enabled'] === 'on') {
             $input['enabled'] = 1;
@@ -44,7 +44,7 @@ class ActionRequest extends FormRequest {
             $input['action_type_ids'] = implode(',', $input['action_type_ids']);
         }
         $this->replace($input);
-
+        
     }
-
+    
 }

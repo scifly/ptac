@@ -1,8 +1,8 @@
 <?php
+
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
-use App\Helpers\ModelTrait;
 use App\Http\Requests\ActionRequest;
 use App\Models\ActionType as ActionType;
 use Doctrine\Common\Inflector\Inflector;
@@ -56,8 +56,7 @@ use ReflectionMethod;
  * @property-read Collection|Tab[] $tabs
  */
 class Action extends Model {
-
-    use ModelTrait;
+    
     const BADGE_GRAY = '<span class="badge bg-black">[n/a]</span>';
     const BADGE_GREEN = '<span class="badge bg-green">%s</span>';
     const BADGE_YELLOW = '<span class="badge bg-yellow">%s</span>';
@@ -81,7 +80,7 @@ HTML;
             <i class="fa fa-eye"></i>
         </a>
 HTML;
-
+    
     protected $fillable = [
         'name', 'method', 'remark',
         'controller', 'view', 'route',
@@ -100,25 +99,23 @@ HTML;
         'Score_SendController',
     ];
     protected $routes;
-    # 控制器路径
-    protected $dir = '/media/sf_sandbox/ptac/app/Http/Controllers';
-
+    # 控制器相对路径
+    protected $ctlrDir = 'app/Http/Controllers';
+    
     /**
      * 返回当前action包含的卡片
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function tabs() { return $this->hasMany('App\Models\Tab'); }
-
-    public function groups() { return $this->belongsToMany('App\Models\Group', 'actions_groups'); }
-
+    
     /**
      * 返回HTTP请求方法中包含GET以及路由中不带参数的action列表
      *
      * @return array
      */
     public function actions() {
-
+        
         $data = $this->whereEnabled(1)->get([
             'controller', 'name', 'id', 'action_type_ids', 'route',
         ]);
@@ -134,11 +131,11 @@ HTML;
             }
         }
         ksort($actions);
-
+        
         return $actions;
-
+        
     }
-
+    
     /**
      * 保存新创建的Action记录
      *
@@ -146,20 +143,20 @@ HTML;
      * @return bool|mixed
      */
     public function store(ActionRequest $request) {
-
+        
         # 创建新的Action记录及卡片绑定记录
         try {
             $exception = DB::transaction(function () use ($request) {
                 $this->create($request->all());
             });
-
+            
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
             return false;
         }
-
+        
     }
-
+    
     /**
      * 修改指定的Action记录
      *
@@ -168,7 +165,7 @@ HTML;
      * @return bool|mixed
      */
     public function modify(ActionRequest $request, $actionId) {
-
+        
         $action = $this->find($actionId);
         if (!isset($action)) {
             return false;
@@ -178,16 +175,16 @@ HTML;
                 # 更新指定的Action记录
                 $action->update($request->all());
             });
-
+            
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
             return false;
         }
-
+        
     }
-
+    
     public function datatable() {
-
+        
         $columns = [
             ['db' => 'Action.id', 'dt' => 0],
             [
@@ -235,21 +232,18 @@ HTML;
             [
                 'db'        => 'Action.enabled', 'dt' => 8,
                 'formatter' => function ($d, $row) {
-
                     $id = $row['id'];
                     $status = $d ? sprintf(self::DT_ON, '已启用') : sprintf(self::DT_OFF, '已禁用');
                     $showLink = sprintf(self::DT_LINK_SHOW, 'show_' . $id);
                     $editLink = sprintf(self::DT_LINK_EDIT, 'edit_' . $id);
-
                     return $status . '&nbsp;' . $showLink . '&nbsp;' . $editLink;
                 },
             ],
         ];
-
         return Datatable::simple($this, $columns);
-
+        
     }
-
+    
     /**
      * 根据ActionType IDs返回Http action名称
      *
@@ -257,7 +251,7 @@ HTML;
      * @return string
      */
     private function actionTypes($action_type_ids) {
-
+        
         $actionTypes = [];
         $actionTypeIds = explode(',', $action_type_ids);
         foreach ($actionTypeIds as $actionTypeId) {
@@ -266,17 +260,18 @@ HTML;
                 $actionTypes[] = $actionType->name;
             }
         }
-
+        
         return implode(', ', $actionTypes);
-
+        
     }
-
+    
     public function scan() {
-
+        
         $actionType = new ActionType();
         $this->actionTypes = $actionType->pluck('id', 'name')->toArray();
         $this->routes = Route::getRoutes()->getRoutes();
-        $controllers = $this->scanDirectories($this->dir);
+        $controllers = $this->scanDirectories($this->getSiteRoot() . $this->ctlrDir);
+        # 获取控制器的名字空间
         $this->getControllerNamespaces($controllers);
         $controllerNames = $this->getControllerNames($controllers);
         $selfDefinedMethods = [];
@@ -290,9 +285,7 @@ HTML;
         foreach ($ctlrDiff as $ctlr) {
             $actions = $this->where('controller', $ctlr)->get();
             foreach ($actions as $a) {
-                if (!$this->remove($a->id)) {
-                    return false;
-                };
+                if (!$this->remove($a->id)) { return false; };
             }
             # $this->where('controller', $ctlr)->delete();
         }
@@ -354,10 +347,10 @@ HTML;
                 }
             }
         }
-
+        
         return true;
     }
-
+    
     /** Helper functions -------------------------------------------------------------------------------------------- */
     /**
      * 返回所有控制器的完整路径
@@ -387,26 +380,32 @@ HTML;
                 }
             }
         }
-
         return $allData;
-
+        
     }
-
+    
     /**
      * 返回控制器的完整名字空间路径
      *
      * @param $controllers
      */
     public function getControllerNamespaces(&$controllers) {
-
+        
+        $siteRoot = str_replace('/', '\\', $this->getSiteRoot());
         for ($i = 0; $i < sizeof($controllers); $i++) {
             $controllers[$i] = str_replace('/', '\\', $controllers[$i]);
-            $controllers[$i] = str_replace('\\media\\sf_sandbox\\ptac\\', '', $controllers[$i]);
+            $controllers[$i] = str_replace($siteRoot, '', $controllers[$i]);
             $controllers[$i] = str_replace('.php', '', $controllers[$i]);
         }
-
+        
     }
-
+    
+    public function getSiteRoot() {
+    
+        return substr(__DIR__, 0, stripos(__DIR__, 'app/Models'));
+        
+    }
+    
     /**
      * 返回去除名字空间路径的控制器名称数组
      *
@@ -414,17 +413,17 @@ HTML;
      * @return array
      */
     public function getControllerNames($controllers) {
-
+        
         $controllerNames = [];
         foreach ($controllers as $controller) {
             $paths = explode('\\', $controller);
             $controllerNames[] = $paths[sizeof($paths) - 1];
         }
-
+        
         return $controllerNames;
-
+        
     }
-
+    
     /**
      * 移除指定的Action记录
      *
@@ -432,7 +431,7 @@ HTML;
      * @return bool|mixed
      */
     public function remove($actionId) {
-
+        
         $action = $this->find($actionId);
         if (!isset($action)) {
             return false;
@@ -442,14 +441,14 @@ HTML;
                 # 删除指定的Action记录
                 $action->delete();
             });
-
+            
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
             return false;
         }
-
+        
     }
-
+    
     /**
      * 删除指定控制器中不存在的方法
      *
@@ -458,7 +457,7 @@ HTML;
      * @return bool
      */
     private function delNonExistingMethods($methods, $className) {
-
+        
         // remove non-existing methods of current controller
         $currentMethods = $this->getMethodNames($methods);
         $existingMethods = [];
@@ -477,11 +476,11 @@ HTML;
                 return false;
             };
         }
-
+        
         return true;
-
+        
     }
-
+    
     /**
      * 获取指定方法的名称
      *
@@ -489,17 +488,17 @@ HTML;
      * @return array
      */
     private function getMethodNames($methods) {
-
+        
         $methodNames = [];
         foreach ($methods as $method) {
             /** @noinspection PhpUndefinedMethodInspection */
             $methodNames[] = $method->getName();
         }
-
+        
         return $methodNames;
-
+        
     }
-
+    
     /**
      * 返回去除名字空间路径的控制器名称
      *
@@ -507,13 +506,13 @@ HTML;
      * @return mixed
      */
     public function getControllerName($controller) {
-
+        
         $nameSpacePaths = explode('\\', $controller);
-
+        
         return $nameSpacePaths[sizeof($nameSpacePaths) - 1];
-
+        
     }
-
+    
     /**
      * 获取方法备注名称
      *
@@ -522,7 +521,7 @@ HTML;
      * @return mixed|string
      */
     private function getMethodComment(ReflectionClass $controllerObj, ReflectionMethod $method) {
-
+        
         $comment = $controllerObj->getMethod($method->getName())->getDocComment();
         $name = 'n/a';
         preg_match_all("#\/\*\*\n\s{5}\*[^\*]*\*#", $comment, $matches);
@@ -534,11 +533,11 @@ HTML;
                 $name = str_replace(str_split("\n/* "), '', $matches[0][0]);
             }
         }
-
+        
         return $name;
-
+        
     }
-
+    
     /**
      * 获取控制器action对应的View路径
      *
@@ -547,7 +546,7 @@ HTML;
      * @return string
      */
     private function getViewPath($controller, $action) {
-
+        
         if (!in_array($controller, $this->excludedControllers)) {
             switch ($action) {
                 case 'index':
@@ -565,13 +564,13 @@ HTML;
                     $viewPath = '';
                     break;
             }
-
+            
             return $viewPath;
         }
-
+        
         return '';
     }
-
+    
     /**
      * 根据控制器名称返回表名称
      *
@@ -579,7 +578,7 @@ HTML;
      * @return string 数据表名称
      */
     private function getTableName($controller) {
-
+        
         $modelName = substr(
             $controller, 0,
             strlen($controller) - strlen('Controller')
@@ -587,11 +586,11 @@ HTML;
         if ($modelName === 'Squad') {
             return 'classes';
         }
-
+        
         return Inflector::pluralize(Inflector::tableize($modelName));
-
+        
     }
-
+    
     /**
      * 根据控制器名称和action名称返回action对应的路由名称
      *
@@ -600,7 +599,7 @@ HTML;
      * @return mixed 路由名称
      */
     private function getRoute($controller, $action) {
-
+        
         $action = ($action == 'destroy' ? 'delete' : $action);
         if (!in_array($controller, $this->excludedControllers)) {
             $route = $this->getTableName($controller) . '/' . $action;
@@ -610,11 +609,11 @@ HTML;
                 }
             }
         }
-
+        
         return null;
-
+        
     }
-
+    
     /**
      * 返回指定action的HTTP请求类型名称
      *
@@ -623,7 +622,7 @@ HTML;
      * @return null|string
      */
     private function getActionTypeIds($controller, $action) {
-
+        
         $action = ($action == 'destroy' ? 'delete' : $action);
         if (!in_array($controller, $this->excludedControllers)) {
             $route = $this->getTableName($controller) . '/' . $action;
@@ -635,14 +634,14 @@ HTML;
                     }
                 }
             }
-
+            
             return implode(',', $actionTypeIds);
         }
-
+        
         return null;
-
+        
     }
-
+    
     /**
      * 返回指定action对应的js路径
      *
@@ -651,11 +650,11 @@ HTML;
      * @return mixed
      */
     private function getJsPath($ctlr, $action) {
-
+        
         if (!in_array($ctlr, $this->excludedControllers)) {
             $prefix = str_singular($this->getTableName($ctlr));
             $prefix = ($prefix === 'corps') ? 'corp' : $prefix;
-
+            
             return 'js/' . $prefix . '/' . $action . '.js';
             /*switch ($action) {
                 case 'index':
@@ -667,9 +666,9 @@ HTML;
                     return NULL;
             }*/
         }
-
+        
         return null;
-
+        
     }
-
+    
 }

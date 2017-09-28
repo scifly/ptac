@@ -32,58 +32,64 @@ use Mockery\Exception;
  * @property-read School $school
  */
 class ConferenceRoom extends Model {
-
+    
     protected $fillable = [
         'name', 'school_id', 'capacity',
         'remark', 'enabled',
     ];
-
+    
     /**
      * 返回会议室所属的学校对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function school() {
-
+        
         return $this->belongsTo('\App\Models\School');
-
+        
     }
-
+    
     /**
      * 获取指定会议室的会议队列
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function conferenceQueues() {
-
+        
         return $this->hasMany('App\Models\ConferenceQueue');
-
+        
     }
-
-    public function remove($conferenceRoomId) {
-
-        $conferenceRoom = $this->find($conferenceRoomId);
+    
+    /**
+     * 删除指定的会议室
+     *
+     * @param $id
+     * @return bool
+     */
+    public function remove($id) {
+        
+        $conferenceRoom = $this->find($id);
         if (!$conferenceRoom) {
             return false;
         }
         try {
-            $exception = DB::transaction(function () use ($conferenceRoom, $conferenceRoomId) {
+            $exception = DB::transaction(function () use ($conferenceRoom, $id) {
                 $conferenceRoom->delete();
-                $conferenceQueues = ConferenceQueue::whereConferenceRoomId($conferenceRoomId)->get();
+                $conferenceQueues = ConferenceQueue::whereConferenceRoomId($id)->get();
                 foreach ($conferenceQueues as $queue) {
                     $queue->delete();
                 }
             });
-
+            
             return is_null($exception) ? true : false;
         } catch (Exception $e) {
             return false;
         }
-
+        
     }
-
+    
     public function datatable() {
-
+        
         $columns = [
             ['db' => 'ConferenceRoom.id', 'dt' => 0],
             ['db' => 'ConferenceRoom.name', 'dt' => 1],
@@ -109,9 +115,9 @@ class ConferenceRoom extends Model {
                 ],
             ],
         ];
-
+        
         return Datatable::simple($this, $columns, $joins);
-
+        
     }
-
+    
 }

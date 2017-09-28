@@ -12,38 +12,38 @@ use Illuminate\Support\Facades\Request;
  * @package App\Http\Controllers
  */
 class AppController extends Controller {
-
+    
     protected $app;
-
+    
     function __construct(App $app) { $this->app = $app; }
-
+    
     /**
      * 微信应用列表
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
-
+        
         $this->authorize('index');
         if (Request::get('draw')) {
             return response()->json($this->app->datatable());
         }
-
+        
         return $this->output(__METHOD__);
-
+        
     }
-
+    
     /**
      * 创建微信应用
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function create() {
-
+        
         return $this->output(__METHOD__);
-
+        
     }
-
+    
     /**
      * 保存微信应用
      *
@@ -51,11 +51,11 @@ class AppController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(AppRequest $request) {
-
+        
         return $this->app->create($request->all()) ? $this->succeed() : $this->fail();
-
+        
     }
-
+    
     /**
      * 微信应用详情
      *
@@ -63,16 +63,16 @@ class AppController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function show($id) {
-
+        
         $app = $this->app->find($id);
         if (!$app) {
             return $this->notFound();
         }
-
+        
         return $this->output(__METHOD__, ['app' => $app]);
-
+        
     }
-
+    
     /**
      * 编辑微信应用
      *
@@ -80,16 +80,16 @@ class AppController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function edit($id) {
-
+        
         $app = $this->app->find($id);
         if (!$app) {
             return $this->notFound();
         }
-
+        
         return $this->output(__METHOD__, ['app' => $app]);
-
+        
     }
-
+    
     /**
      * 更新指定的微信应用记录
      *
@@ -98,16 +98,16 @@ class AppController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(AppRequest $request, $id) {
-
+        
         $app = $this->app->find($id);
         if (!$app) {
             return $this->notFound();
         }
-
+        
         return $app->update($request->all()) ? $this->succeed() : $this->fail();
-
+        
     }
-
+    
     /**
      * 删除指定的微信应用记录
      *
@@ -115,14 +115,14 @@ class AppController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
-
+        
         $app = $this->app->find($id);
         if (!$app) {
             return $this->notFound();
         }
-
+        
         return $app->delete() ? $this->succeed() : $this->fail();
-
+        
     }
-
+    
 }

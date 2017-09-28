@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ScoreTotalRequest extends FormRequest {
-
+    
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -13,7 +13,7 @@ class ScoreTotalRequest extends FormRequest {
     public function authorize() {
         return true;
     }
-
+    
     /**
      * Get the validation rules that apply to the request.
      *
@@ -25,7 +25,7 @@ class ScoreTotalRequest extends FormRequest {
             'subject_ids' => 'required|string',
         ];
     }
-
+    
     public function messages() {
         return [
             'score.required'       => '成绩不能为空',
@@ -35,7 +35,7 @@ class ScoreTotalRequest extends FormRequest {
             'subject_ids.string'   => '必须是字符串',
         ];
     }
-
+    
     public function wantsJson() {
         return true;
     }

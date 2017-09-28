@@ -4,14 +4,14 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 
 class SubjectRequest extends FormRequest {
-
+    
     /**
      * Determine if the user is authorized to make this request.
      *
      * @return bool
      */
     public function authorize() { return true; }
-
+    
     /**
      * Get the validation rules that apply to the request.
      *
@@ -30,9 +30,9 @@ class SubjectRequest extends FormRequest {
             'grade_ids'  => 'required',
         ];
     }
-
+    
     public function messages() {
-
+        
         return [
             'name.required'       => '科目名称不能为空',
             'name.between'        => '科目名称应该在2~20个字符之间',
@@ -44,11 +44,11 @@ class SubjectRequest extends FormRequest {
             'pass_score.max'      => '及格分数不能超过5位数',
             'grade_ids.required'  => '年级不能为空',
         ];
-
+        
     }
-
+    
     protected function prepareForValidation() {
-
+        
         $input = $this->all();
         if (isset($input['grade_ids'])) {
             $input['grade_ids'] = implode(',', $input['grade_ids']);
@@ -66,7 +66,7 @@ class SubjectRequest extends FormRequest {
             $input['enabled'] = 0;
         }
         $this->replace($input);
-
+        
     }
-
+    
 }

@@ -36,7 +36,7 @@ use Illuminate\Support\Facades\DB;
  * @property-read \App\Models\Subject $subject
  */
 class Score extends Model {
-
+    
     protected $fillable = [
         'student_id',
         'subject_id',
@@ -46,15 +46,15 @@ class Score extends Model {
         'score',
         'enabled',
     ];
-
+    
     public function student() { return $this->belongsTo('App\Models\Student'); }
-
+    
     public function subject() { return $this->belongsTo('App\Models\Subject'); }
-
+    
     public function exam() { return $this->belongsTo('App\Models\Exam'); }
-
+    
     public function existed(ScoreRequest $request, $id = null) {
-
+        
         if (!$id) {
             $score = $this->where('student_id', $request->input('student_id'))
                 ->where('subject_id', $request->input('subject_id'))
@@ -67,13 +67,13 @@ class Score extends Model {
                 ->where('exam_id', $request->input('exam_id'))
                 ->first();
         }
-
+        
         return $score ? true : false;
-
+        
     }
-
+    
     public function datatable() {
-
+        
         $columns = [
             ['db' => 'Score.id', 'dt' => 0],
             ['db' => 'Student.student_number', 'dt' => 1],
@@ -134,10 +134,10 @@ class Score extends Model {
                 ],
             ],
         ];
-
+        
         return Datatable::simple($this, $columns, $joins);
     }
-
+    
     public function statistics($exam_id) {
         $class_ids = DB::table('exams')->where('id', $exam_id)->value('class_ids');
         $class = DB::table('classes')
@@ -200,8 +200,8 @@ class Score extends Model {
                 }
             }
         }
-
+        
         return true;
     }
-
+    
 }

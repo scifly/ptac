@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StudentRequest extends FormRequest {
-
+    
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -13,14 +13,18 @@ class StudentRequest extends FormRequest {
     public function authorize() {
         return true;
     }
-
+    
     /**
      * Get the validation rules that apply to the request.
      *
      * @return array
      */
     public function rules() {
+        $input = $this->all();
         $rules = [
+//            'name' => 'required|string|between:2,30|unique:users,name,' .
+//                $this->input('user_id') . ',id,' .
+//                'mobile,' . $this->input('mobile') ,
             'student.student_number' => 'required|alphanum|between:2,32',
             'student.card_number'    => 'required|alphanum|between:2,32',
             'student.remark'         => 'required|string|between:2,32',
@@ -28,15 +32,26 @@ class StudentRequest extends FormRequest {
             'user.gender'            => 'required|boolean',
             'user.email'             => 'nullable|email|unique:users,email,' .
                 $this->input('user_id') . ',id',
+//            'mobile.mobile' => 'required|string|unique:mobiles,mobile,'
+//                . $this->input('user_id') . ',user_id',
             'student.student_number' => 'required|alphanum|between:2,32|unique:students,student_number,'
                 . $this->input('user_id') . ',user_id,' .
                 'card_number,' . $this->input('student.card_number'),
             'student.birthday'       => 'required',
-            'mobile.*'               => ['required', new Mobiles(),],
         ];
-
-        return $rules;
-
+        $validateRules = [];
+        foreach ($input['mobile'] as $index => $mobile) {
+            $rule = [
+                'mobile.' . $index . '.mobile'    => 'required|string|size:11|regex:/^1[34578][0-9]{9}$/|' .
+                    'unique:mobiles,mobile,' . $this->input('mobile.' . $index . '.id') . ',id',
+                'mobile.' . $index . '.isdefault' => 'required|boolean',
+                'mobile.' . $index . '.enabled'   => 'required|boolean',
+            ];
+            $validateRules = array_merge($rules, $rule, $validateRules);
+            unset($rule);
+        }
+        
+        return $validateRules;
     }
 
 //    public function messages() {
@@ -61,7 +76,7 @@ class StudentRequest extends FormRequest {
 //
 //    }
     protected function prepareForValidation() {
-
+        
         $input = $this->all();
         if (isset($input['student']['oncampus']) && $input['student']['oncampus'] === 'on') {
             $input['student']['oncampus'] = 1;
@@ -93,5 +108,5 @@ class StudentRequest extends FormRequest {
         }
         $this->replace($input);
     }
-
+    
 }

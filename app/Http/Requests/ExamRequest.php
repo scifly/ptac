@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ExamRequest extends FormRequest {
-
+    
     protected $strings_key = [
         'name'         => '考试名称',
         'remark'       => '备注',
@@ -26,16 +26,16 @@ class ExamRequest extends FormRequest {
         'boolean'  => '为0或1',
         'unique'   => '不唯一',
     ];
-
+    
     /**
      * Determine if the user is authorized to make this request.
      *
      * @return bool
      */
     public function authorize() { return true; }
-
+    
     public function messages() {
-
+        
         $rules = $this->rules();
         $k_array = $this->strings_key;
         $v_array = $this->strings_val;
@@ -50,13 +50,12 @@ class ExamRequest extends FormRequest {
                 $array[$key . '.' . $v] = $k_array[$key] . $v_array[$v];
             }
         }
-
         return $array;
-
+        
     }
-
+    
     public function rules() {
-
+        
         return [
             'name'         => 'required|string|max:255|unique:exams,name,' .
                 $this->input('id') . ',id',
@@ -70,13 +69,13 @@ class ExamRequest extends FormRequest {
             'end_date'     => 'required|date',
             'enabled'      => 'required|boolean',
         ];
-
+        
     }
-
+    
     public function wantsJson() { return true; }
-
+    
     protected function prepareForValidation() {
-
+        
         $input = $this->all();
         if (isset($input['enabled']) && $input['enabled'] === 'on') {
             $input['enabled'] = 1;
@@ -91,7 +90,7 @@ class ExamRequest extends FormRequest {
             $input['subject_ids'] = implode(',', $input['subject_ids']);
         }
         $this->replace($input);
-
+        
     }
-
+    
 }

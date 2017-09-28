@@ -25,7 +25,7 @@ class EducatorRequest extends FormRequest {
      * @return bool
      */
     public function authorize() { return true; }
-
+    
     public function rules() {
         $input = $this->all();
 //        dd($input['mobile']);
@@ -39,7 +39,8 @@ class EducatorRequest extends FormRequest {
             'user.enabled'       => 'required|boolean',
             'user.email'         => 'nullable|email|unique:users,email,' .
                 $this->input('user_id') . ',id',
-            'user.password'      => 'string|min:3',
+            'user.password'      => 'string|min:3|confirmed',
+            'user.password_confirmation '      => 'string|min:3',
             'mobile.*'           => [
                 'required', new Mobiles(),
             ],
@@ -48,9 +49,8 @@ class EducatorRequest extends FormRequest {
             //            'mobile.*.isdefault' => 'required|boolean',
             //            'mobile.*.enabled' => 'required|boolean',
         ];
-
         return $rules;
-
+        
     }
 //
 //    public function messages() {
@@ -74,9 +74,9 @@ class EducatorRequest extends FormRequest {
 //
 //    }
     public function wantsJson() { return true; }
-
+    
     protected function prepareForValidation() {
-
+        
         $input = $this->all();
         if (isset($input['user']['enabled']) && $input['user']['enabled'] === 'on') {
             $input['user']['enabled'] = 1;
@@ -106,10 +106,10 @@ class EducatorRequest extends FormRequest {
                 }
             }
         }
-        dd($input['mobile']);
+        // dd($input['mobile']);
 //        dd($this->input('mobile.*.mobile'));
         $this->replace($input);
-
+        
     }
-
+    
 }

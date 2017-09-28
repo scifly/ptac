@@ -23,11 +23,11 @@ use Illuminate\Database\Eloquent\Model;
  * @mixin \Eloquent
  */
 class AlertType extends Model {
-
+    
     protected $fillable = ['name', 'english_name', 'enabled'];
-
+    
     public function datatable() {
-
+        
         $columns = [
             ['db' => 'AlertType.id', 'dt' => 0],
             ['db' => 'AlertType.name', 'dt' => 1],
@@ -41,9 +41,9 @@ class AlertType extends Model {
                 },
             ],
         ];
-
+        
         return Datatable::simple($this, $columns);
-
+        
     }
-
+    
 }

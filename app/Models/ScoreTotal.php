@@ -38,7 +38,7 @@ use Illuminate\Support\Facades\DB;
  * @method static Builder|ScoreTotal whereEnabled($value)
  */
 class ScoreTotal extends Model {
-
+    
     protected $table = 'score_totals';
     protected $fillable = [
         'student_id',
@@ -50,21 +50,21 @@ class ScoreTotal extends Model {
         'grade_rank',
         'enabled',
     ];
-
+    
     public function student() {
         return $this->belongsTo('App\Models\Student');
     }
-
+    
     public function exam() {
         return $this->belongsTo('App\Models\Exam');
     }
-
+    
     function subjects() {
         return $this->belongsTo('App\Models\Subject');
     }
-
+    
     public function datatable() {
-
+        
         $columns = [
             ['db' => 'ScoreTotal.id', 'dt' => 0],
             ['db' => 'Student.student_number', 'dt' => 1],
@@ -77,12 +77,11 @@ class ScoreTotal extends Model {
             [
                 'db'        => 'ScoreTotal.updated_at', 'dt' => 8,
                 'formatter' => function ($d, $row) {
-
+                    
                     $id = $row['id'];
                     $showLink = $d . sprintf(Datatable::DT_LINK_SHOW, $id);
-
                     return Datatable::DT_SPACE . $showLink;
-
+                    
                 },
             ],
         ];
@@ -112,10 +111,10 @@ class ScoreTotal extends Model {
                 ],
             ],
         ];
-
+        
         return Datatable::simple($this, $columns, $joins);
     }
-
+    
     public function statistics($exam_id) {
         //删除之前这场考试的统计
         $this->where('exam_id', $exam_id)->delete();
@@ -204,7 +203,7 @@ class ScoreTotal extends Model {
                 $this->insert($inserts);
             }
         }
-
+        
         return true;
     }
 }

@@ -30,49 +30,48 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tab[] $tabs
  */
 class Icon extends Model {
-
+    
     use ModelTrait;
-
+    
     protected $fillable = ['name', 'remark', 'icon_type_id', 'enabled'];
-
+    
     /**
      * 返回指定图标所属的图标类型对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function iconType() { return $this->belongsTo('App\Models\IconType'); }
-
+    
     /**
      * 返回Icon包含的菜单对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function menus() { return $this->hasMany('App\Models\Menu'); }
-
+    
     /**
      * 返回指定图标包含的所有卡片对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function tabs() { return $this->hasMany('App\Models\Tab'); }
-
+    
     /**
      * 返回Icon列表
      *
      * @return array
      */
     public function icons() {
-
+        
         $data = $this->whereEnabled(1)->get();
         $icons = [];
         foreach ($data as $icon) {
             $icons[$icon->iconType->name][$icon->id] = $icon->name;
         }
-
         return $icons;
-
+        
     }
-
+    
     /**
      * 保存图标
      *
@@ -80,13 +79,13 @@ class Icon extends Model {
      * @return bool
      */
     public function store(array $data) {
-
+        
         $icon = $this->create($data);
-
+        
         return $icon ? true : false;
-
+        
     }
-
+    
     /**
      * 更新图标
      *
@@ -95,16 +94,16 @@ class Icon extends Model {
      * @return bool
      */
     public function modify(array $data, $id) {
-
+        
         $icon = $this->find($id);
         if (!$icon) {
             return false;
         }
-
+        
         return $icon->update($data) ? true : false;
-
+        
     }
-
+    
     /**
      * 删除图标
      *
@@ -112,18 +111,15 @@ class Icon extends Model {
      * @return bool|null
      */
     public function remove($id) {
-
+        
         $icon = $this->find($id);
-        if (!$icon) {
-            return false;
-        }
-
+        if (!$icon) { return false; }
         return $icon->removable($icon) ? $icon->delete() : false;
-
+        
     }
-
+    
     public function datatable() {
-
+        
         $columns = [
             ['db' => 'Icon.id', 'dt' => 0],
             [
@@ -153,9 +149,9 @@ class Icon extends Model {
                 ],
             ],
         ];
-
+        
         return Datatable::simple($this, $columns, $joins);
-
+        
     }
-
+    
 }

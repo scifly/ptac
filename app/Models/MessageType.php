@@ -26,20 +26,20 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Message[] $messages
  */
 class MessageType extends Model {
-
+    
     use ModelTrait;
-
+    
     protected $table = 'message_types';
-
+    
     protected $fillable = ['name', 'remark', 'enabled'];
-
+    
     /**
      * 获取指定消息类型包含的所有消息对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function messages() { return $this->hasMany('App\Models\Message'); }
-
+    
     /**
      * 保存消息类型
      *
@@ -47,13 +47,13 @@ class MessageType extends Model {
      * @return bool
      */
     public function store(array $data) {
-
+        
         $messageType = $this->create($data);
-
+        
         return $messageType ? true : false;
-
+        
     }
-
+    
     /**
      * 更新消息类型
      *
@@ -62,16 +62,16 @@ class MessageType extends Model {
      * @return bool
      */
     public function modify(array $data, $id) {
-
+        
         $messageType = $this->find($id);
         if (!$messageType) {
             return false;
         }
-
+        
         return $messageType->update($data) ? true : false;
-
+        
     }
-
+    
     /**
      * 删除消息类型
      *
@@ -79,18 +79,15 @@ class MessageType extends Model {
      * @return bool|null
      */
     public function remove($id) {
-
+        
         $messageType = $this->find($id);
-        if (!$messageType) {
-            return false;
-        }
-
+        if (!$messageType) { return false; }
         return $messageType->removable($messageType) ? $messageType->delete() : false;
-
+        
     }
-
+    
     public function datatable() {
-
+        
         $columns = [
             ['db' => 'MessageType.id', 'dt' => 0],
             ['db' => 'MessageType.name', 'dt' => 1],
@@ -104,9 +101,9 @@ class MessageType extends Model {
                 },
             ],
         ];
-
+        
         return Datatable::simple($this, $columns);
-
+        
     }
-
+    
 }

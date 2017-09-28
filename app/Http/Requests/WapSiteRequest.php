@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 
 class WapSiteRequest extends FormRequest {
-
+    
     protected $strings_key = [
         'school_id'  => '所属学校',
         'site_title' => '首页抬头',
@@ -19,14 +19,14 @@ class WapSiteRequest extends FormRequest {
         'boolean'  => '为0或1',
         'unique'   => '不唯一',
     ];
-
+    
     /**
      * Determine if the user is authorized to make this request.
      *
      * @return bool
      */
     public function authorize() { return true; }
-
+    
     public function messages() {
         $rules = $this->rules();
         $k_array = $this->strings_key;
@@ -42,10 +42,9 @@ class WapSiteRequest extends FormRequest {
                 $array[$key . '.' . $v] = $k_array[$key] . $v_array[$v];
             }
         }
-
         return $array;
     }
-
+    
     public function rules() {
         return [
             'school_id'  => 'required|integer|unique:wap_sites,school_id,' .
@@ -55,11 +54,11 @@ class WapSiteRequest extends FormRequest {
             'enabled'    => 'required|boolean',
         ];
     }
-
+    
     public function wantsJson() { return true; }
-
+    
     protected function prepareForValidation() {
-
+        
         $input = $this->all();
         if (isset($input['enabled']) && $input['enabled'] === 'on') {
             $input['enabled'] = 1;
@@ -71,6 +70,6 @@ class WapSiteRequest extends FormRequest {
             $input['media_ids'] = implode(',', $input['media_ids']);
         }
         $this->replace($input);
-
+        
     }
 }

@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 
 class PqSubjectRequest extends FormRequest {
-
+    
     protected $strings_key = [
         'subject'      => '题目名称',
         'pq_id'        => '所属问卷',
@@ -18,16 +18,16 @@ class PqSubjectRequest extends FormRequest {
         'boolean'  => '为0或1',
         'unique'   => '不唯一',
     ];
-
+    
     /**
      * Determine if the user is authorized to make this request.
      *
      * @return bool
      */
     public function authorize() { return true; }
-
+    
     public function messages() {
-
+        
         $rules = $this->rules();
         $k_array = $this->strings_key;
         $v_array = $this->strings_val;
@@ -42,11 +42,11 @@ class PqSubjectRequest extends FormRequest {
                 $array[$key . '.' . $v] = $k_array[$key] . $v_array[$v];
             }
         }
-
+        
         return $array;
-
+        
     }
-
+    
     public function rules() {
         return [
             'subject'      => 'required|string|max:255|unique:poll_questionnaire_subjects,subject,' .
@@ -56,7 +56,7 @@ class PqSubjectRequest extends FormRequest {
             'subject_type' => 'required|integer',
         ];
     }
-
+    
     public function wantsJson() { return true; }
-
+    
 }

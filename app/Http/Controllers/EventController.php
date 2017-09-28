@@ -12,35 +12,35 @@ use Illuminate\Support\Facades\Request;
  * @package App\Http\Controllers
  */
 class EventController extends Controller {
-
+    
     protected $event;
-
+    
     function __construct(Event $event) {
         $this->event = $event;
     }
-
+    
     /**
      * 事件列表
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
-
+        
         $userId = 2;
         $isAdmin = $this->event->getRole($userId) ? 1 : 0;
         $events = $this->event
             ->where('User_id', $userId)
             ->where('enabled', '0')
             ->get()->toArray();
-
+        
         return $this->output(__METHOD__, [
             'events'  => $events,
             'userId'  => $userId,
             'isAdmin' => $isAdmin,
         ]);
-
+        
     }
-
+    
     /**
      * 显示日历事件
      *
@@ -48,11 +48,11 @@ class EventController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function calendarEvents($userId) {
-
+        
         return $this->event->showCalendar($userId);
-
+        
     }
-
+    
     /**
      * 新增一个列表事件
      *
@@ -63,10 +63,10 @@ class EventController extends Controller {
     public function store(EventRequest $request) {
         $inputEvent = $request->all();
         $listDate = $this->event->create($inputEvent);
-
+        
         return $listDate ? $this->succeed($listDate) : $this->fail();
     }
-
+    
     /**
      * 编辑日程事件的表单
      *
@@ -83,10 +83,10 @@ class EventController extends Controller {
             }
         }
         $data = view('event.show', ['events' => $this->event->find($id)])->render();
-
+        
         return !empty($data) ? $this->succeed($data) : $this->fail();
     }
-
+    
     /**
      * 更新指定日历事件
      *
@@ -110,10 +110,10 @@ class EventController extends Controller {
         if (!$event) {
             return $this->notFound();
         }
-
+        
         return $event->update($input) ? $this->succeed() : $this->fail();
     }
-
+    
     /**
      *删除事件包括日历事件和列表事件
      *
@@ -126,10 +126,10 @@ class EventController extends Controller {
         if (!$event) {
             return $this->notFound();
         }
-
+        
         return $event->delete() ? $this->succeed() : $this->fail();
     }
-
+    
     /**
      * 拖动列表添加日历事件
      */
@@ -146,10 +146,10 @@ class EventController extends Controller {
         if ($this->event->isValidateTime($event['user_id'], $event['educator_id'], $event['start'], $event['end'])) {
             return $this->fail('时间有冲突！');
         }
-
+        
         return $this->event->create($event) ? $this->succeed() : $this->fail();
     }
-
+    
     /**
      * 拖动实时保存日历事件
      *
@@ -169,8 +169,8 @@ class EventController extends Controller {
         if ($this->event->isValidateTime($event->user_id, $event->educator_id, $event->start, $event->end, $event->id)) {
             return $this->fail('时间有冲突！');
         }
-
+        
         return $event->save() ? $this->succeed() : $this->fail();
     }
-
+    
 }

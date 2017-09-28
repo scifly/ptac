@@ -4,14 +4,14 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 
 class SubjectModuleRequest extends FormRequest {
-
+    
     /**
      * Determine if the user is authorized to make this request.
      *
      * @return bool
      */
     public function authorize() { return true; }
-
+    
     /**
      * Get the validation rules that apply to the request.
      *
@@ -26,9 +26,9 @@ class SubjectModuleRequest extends FormRequest {
             'weight' => 'required|numeric',
         ];
     }
-
+    
     public function messages() {
-
+        
         return [
             'name.required'   => '科目名称不能为空',
             'name.between'    => '科目名称应该在2~20个字符之间',
@@ -36,11 +36,11 @@ class SubjectModuleRequest extends FormRequest {
             'weight.required' => '次分类权重不能为空',
             'weight.numeric'  => '次分类权重必须为数字',
         ];
-
+        
     }
-
+    
     protected function prepareForValidation() {
-
+        
         $input = $this->all();
         if (isset($input['enabled']) && $input['enabled'] === 'on') {
             $input['enabled'] = 1;
@@ -49,7 +49,7 @@ class SubjectModuleRequest extends FormRequest {
             $input['enabled'] = 0;
         }
         $this->replace($input);
-
+        
     }
-
+    
 }

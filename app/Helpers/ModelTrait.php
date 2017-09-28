@@ -5,9 +5,9 @@ use Illuminate\Database\Eloquent\Model;
 use ReflectionClass;
 
 trait ModelTrait {
-
+    
     public function removable(Model $model) {
-
+        
         $relations = [];
         $class = get_class($model);
         $reflectionClass = new ReflectionClass($class);
@@ -24,10 +24,10 @@ trait ModelTrait {
                 return false;
             }
         }
-
+        
         return true;
-
+        
     }
-
+    
 }
 
