@@ -48,8 +48,6 @@ class GroupController extends Controller {
      */
     public function create() {
         
-        xdebug_break();
-        $abc = 'abc';
         if (Request::method() === 'POST') {
             return $this->menu->tree();
         }
