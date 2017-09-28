@@ -32,19 +32,14 @@ class DepartmentController extends Controller {
     public function index() {
         $user = Session::get('user');
         $departmentIds = [];
-
-        foreach ($user->departments as $d)
-        {
+        foreach ($user->departments as $d) {
             $departmentIds[] = $d->id;
         }
-
         foreach ($departmentIds as $departmentId) {
             $childDepartmentId = $this->departmentChildIds($departmentId);
         }
-
         $departmentIds = array_merge($departmentIds, $childDepartmentId);
         $Id = array_unique($departmentIds);
-
         if (Request::method() === 'POST') {
             // return $this->department->tree();
             return $this->department->getDepartment($Id);
@@ -52,6 +47,24 @@ class DepartmentController extends Controller {
 
         return parent::output(__METHOD__);
 
+    }
+
+    /**
+     * 获取该部门下所有部门id
+     * @param $id
+     * @return array
+     */
+    private function departmentChildIds($id) {
+        static $childIds = [];
+        $firstIds = Department::where('parent_id', $id)->get(['id'])->toArray();
+        if ($firstIds) {
+            foreach ($firstIds as $firstId) {
+                $childIds[] = $firstId['id'];
+                $this->departmentChildIds($firstId['id']);
+            }
+        }
+
+        return $childIds;
     }
 
     /**
@@ -196,24 +209,6 @@ class DepartmentController extends Controller {
             }
         }
 
-    }
-
-    /**
-     * 获取该部门下所有部门id
-     * @param $id
-     * @return array
-     */
-    private function departmentChildIds($id) {
-        static $childIds = [];
-        $firstIds = Department::where('parent_id', $id)->get(['id'])->toArray();
-        if ($firstIds) {
-            foreach ($firstIds as $firstId) {
-                $childIds[] = $firstId['id'];
-                $this->departmentChildIds($firstId['id']);
-            }
-        }
-
-        return $childIds;
     }
 
 }

@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http;
 
 use App\Http\Middleware\EncryptCookies;
@@ -20,6 +19,7 @@ use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 
 class Kernel extends HttpKernel {
+
     /**
      * The application's global HTTP middleware stack.
      *
@@ -33,7 +33,7 @@ class Kernel extends HttpKernel {
         TrimStrings::class,
         ConvertEmptyStringsToNull::class,
     ];
-    
+
     /**
      * The application's route middleware groups.
      *
@@ -54,7 +54,7 @@ class Kernel extends HttpKernel {
             'bindings',
         ],
     ];
-    
+
     /**
      * The application's route middleware.
      *
@@ -63,12 +63,11 @@ class Kernel extends HttpKernel {
      * @var array
      */
     protected $routeMiddleware = [
-        'auth' => Authenticate::class,
+        'auth'       => Authenticate::class,
         'auth.basic' => AuthenticateWithBasicAuth::class,
-        'bindings' => SubstituteBindings::class,
-        'can' => Authorize::class,
-        'guest' => RedirectIfAuthenticated::class,
-        'throttle' => ThrottleRequests::class,
-
+        'bindings'   => SubstituteBindings::class,
+        'can'        => Authorize::class,
+        'guest'      => RedirectIfAuthenticated::class,
+        'throttle'   => ThrottleRequests::class,
     ];
 }

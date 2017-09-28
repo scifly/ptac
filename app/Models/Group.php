@@ -158,7 +158,6 @@ class Group extends Model {
 
     }
 
-
     public function datatable() {
 
         $columns = [

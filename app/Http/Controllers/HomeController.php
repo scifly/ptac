@@ -86,30 +86,21 @@ class HomeController extends Controller {
         }
         # 获取session中用户信息
         $user = Session::get('user');
-
         $department = new Department();
         $level = $department->groupLevel($user->id);
-
         $menuIds = collect(Menu::whereEnabled(1)->get(['id'])->toArray())
             ->flatten()->toArray();
-
-        $tabIds  = collect(Tab::whereEnabled(1)->get(['id'])->toArray())
+        $tabIds = collect(Tab::whereEnabled(1)->get(['id'])->toArray())
             ->flatten()->toArray();
-        $groupTabIds = collect(GroupTab::where('group_id',$user->group_id)->get(['tab_id'])->toArray())
+        $groupTabIds = collect(GroupTab::where('group_id', $user->group_id)->get(['tab_id'])->toArray())
             ->flatten()->toArray();
-        $groupMenuIds = collect(GroupMenu::where('group_id',$user->group_id)->get(['menu_id'])->toArray())
+        $groupMenuIds = collect(GroupMenu::where('group_id', $user->group_id)->get(['menu_id'])->toArray())
             ->flatten()->toArray();
-
-        switch ($level)
-        {
+        switch ($level) {
             case 'company':
-
                 break;
-
             case 'corp':
-
                 break;
-
             case 'school':
                 break;
             default:
@@ -168,8 +159,8 @@ class HomeController extends Controller {
             ];
         }
         # 获取菜单列表
-
         $menu = $this->menu->getMenuHtml($id);
+
         return view('home.page', [
             'menu'   => $menu,
             'tabs'   => $tabArray,

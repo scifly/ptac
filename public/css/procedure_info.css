@@ -1,26 +1,31 @@
-.stepFlex{
+.stepFlex {
     border-top: 5px solid transparent;
     text-align: center;
-    margin:30px auto;
+    margin: 30px auto;
 }
-.stepFlex dl{
+
+.stepFlex dl {
     position: relative;
-    width:160px;
-    top:-5px;
+    width: 160px;
+    top: -5px;
     border-top: 5px solid #f00;
     float: left;
     cursor: pointer;
 }
-.stepFlex dl.doing{
+
+.stepFlex dl.doing {
     border-top: 5px solid #cccccc;
 }
-.stepFlex dl.success{
+
+.stepFlex dl.success {
     border-top: 5px solid #00a65a;
 }
-.stepFlex dl.fail{
+
+.stepFlex dl.fail {
     border-top: 5px solid #f00;
 }
-.stepFlex dl .s-num{
+
+.stepFlex dl .s-num {
     position: relative;
     margin: -15px auto 0;
     color: #fff;
@@ -32,21 +37,27 @@
     border-radius: 50%;
     text-align: center;
 }
-.stepFlex dl.success .s-num{
+
+.stepFlex dl.success .s-num {
     background-color: #00a65a;
 }
-.stepFlex dl.fail .s-num{
+
+.stepFlex dl.fail .s-num {
     background-color: #f00;
 }
-.stepFlex dl .s-text{
+
+.stepFlex dl .s-text {
     color: #555;
 }
-.stepFlex dl.success .s-text{
+
+.stepFlex dl.success .s-text {
     color: #00a65a;
 }
-.stepFlex dl.fail .s-text{
+
+.stepFlex dl.fail .s-text {
     color: #f00;
 }
-.stepInfo .info-item{
+
+.stepInfo .info-item {
     display: none;
 }

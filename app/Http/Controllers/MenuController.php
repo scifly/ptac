@@ -6,11 +6,9 @@ use App\Models\Department;
 use App\Models\Menu;
 use App\Models\MenuTab;
 use App\Models\MenuType;
-use App\Models\School;
 use App\Models\Tab;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
-
 
 /**
  * 菜单
@@ -39,10 +37,10 @@ class MenuController extends Controller {
         $user = Session::get('user');
         $department = new Department();
         $level = $department->groupLevel($user->id);
-        switch ($level){
+        switch ($level) {
             case 'root':
-                $typeId = 1 ;
-                $menuId = 1 ;
+                $typeId = 1;
+                $menuId = 1;
                 break;
             case 'company':
                 $typeId = 2;
@@ -50,7 +48,6 @@ class MenuController extends Controller {
                 break;
             case 'corp':
                 $typeId = 3;
-
                 break;
             case 'school':
                 $typeId = 4;
@@ -59,14 +56,12 @@ class MenuController extends Controller {
                 break;
 
         }
-        if($typeId ==4 )
-        {
-            $menus = Menu::whereMenuTypeId($typeId)->where('name',$user->group->school->name)->first();
-        }else{
+        if ($typeId == 4) {
+            $menus = Menu::whereMenuTypeId($typeId)->where('name', $user->group->school->name)->first();
+        } else {
             $menus = Menu::whereId($menuId)->first();
         }
         $menuId = $menus->id;
-
         if (Request::method() === 'POST') {
             return $this->menu->tree();
         }

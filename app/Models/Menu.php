@@ -410,22 +410,20 @@ class Menu extends Model {
         if (isset($rootMenuId)) {
             $rootMenu = $this->find($rootMenuId);
             $menus = $rootMenu->children()->get($fields)->sortBy(['position'])->toArray();
-            foreach ($menus as $key=>$v)
-            {
-                $menus[$key+1]=$v;
+            foreach ($menus as $key => $v) {
+                $menus[$key + 1] = $v;
             }
-                $menus[0]=[
-                    'id'=>$rootMenu->id,
-                    'parent_id'=> null,
-                    'name'=>$rootMenu->name,
-                    'position'=>$rootMenu->position,
-                    'menu_type_id'=>$rootMenu->menu_type_id
-                ];
+            $menus[0] = [
+                'id'           => $rootMenu->id,
+                'parent_id'    => null,
+                'name'         => $rootMenu->name,
+                'position'     => $rootMenu->position,
+                'menu_type_id' => $rootMenu->menu_type_id,
+            ];
 
         } else {
             $menus = $this->get($fields)->sortBy(['position'])->toArray();
         }
-
         $data = [];
         foreach ($menus as $menu) {
             $name = $menu['name'];
@@ -456,9 +454,7 @@ class Menu extends Model {
                     $type = 'other';
                     break;
             }
-
             $parentId = isset($menu['parent_id']) ? $menu['parent_id'] : '#';
-
             $data[] = [
                 'id'     => $menu['id'],
                 'parent' => $parentId,
@@ -503,17 +499,15 @@ class Menu extends Model {
 
         // $parents = [$activeMenuId];
         //  $this->getParent($activeMenuId, $parents);
-        $parents = [1,2];
+        $parents = [1, 2];
         $id = '';
-        if($activeMenuId>2)
-        {
+        if ($activeMenuId > 2) {
             $childrenId = $this->getChildren($activeMenuId);
-            $childrenId[]=$activeMenuId;
+            $childrenId[] = $activeMenuId;
             $childrenId = array_merge($parents, $childrenId);
             sort($childrenId);
-            $id=array_unique($childrenId);
+            $id = array_unique($childrenId);
         }
-
         # 不含子菜单的HTML模板
         $mSimple = '<li%s><a id="%s" href="%s"><i class="%s"></i> %s</a></li>';
         # 包含子菜单的HTML模板
@@ -530,24 +524,22 @@ HTML;
         # ul列表尾部
         $mEnd = '</ul></li>';
         # 获取指定学校所有已启用的菜单对象
-            // $menus = $this->where('enabled', 1)
-            //     ->where('id', '<>', 1)
-            //     ->orderBy('position')->get();
-        if($id){
-            $menus = $this->whereIn('id',$id)
+        // $menus = $this->where('enabled', 1)
+        //     ->where('id', '<>', 1)
+        //     ->orderBy('position')->get();
+        if ($id) {
+            $menus = $this->whereIn('id', $id)
                 ->where('id', '<>', 1)
                 ->get();
-        }else{
+        } else {
             $menus = $this->where('enabled', 1)
                 ->where('id', '<>', 1)
                 ->orderBy('position')->get();
         }
-
-
         $menu = '';
         $level = 1;
         $parentId = 1;
-        foreach ($menus as $k=>$m) {
+        foreach ($menus as $k => $m) {
             # 获取菜单ID
             $mId = $m->id;
             $isActive = in_array($mId, $parents);
@@ -625,23 +617,6 @@ HTML;
     }
 
     /**
-     * 获取指定菜单所有上级菜单ID
-     *
-     * @param $menuId
-     * @param array $parents
-     */
-    private function getParent($menuId, array &$parents) {
-
-        $menu = $this->find($menuId);
-        if ($menu->parent) {
-            $id = $menu->parent->id;
-            $parents[] = $id;
-            $this->getParent($id, $parents);
-        }
-
-    }
-
-    /**
      * 获取指定菜单所有的子菜单Id
      *
      * @param $menuId
@@ -656,9 +631,9 @@ HTML;
                 $this->getChildren($firstId['id']);
             }
         }
+
         return $childIds;
     }
-
 
     /**
      * 计算指定菜单所处的level
@@ -701,6 +676,23 @@ HTML;
                 $this->getMenus($children->sortBy('position'), $menus[$i]['children']);
                 $i++;
             }
+        }
+
+    }
+
+    /**
+     * 获取指定菜单所有上级菜单ID
+     *
+     * @param $menuId
+     * @param array $parents
+     */
+    private function getParent($menuId, array &$parents) {
+
+        $menu = $this->find($menuId);
+        if ($menu->parent) {
+            $id = $menu->parent->id;
+            $parents[] = $id;
+            $this->getParent($id, $parents);
         }
 
     }

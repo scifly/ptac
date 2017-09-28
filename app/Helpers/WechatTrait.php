@@ -1,129 +1,117 @@
 <?php
 namespace App\Helpers;
-
 trait WechatTrait {
+
     # 应用授权作用域
-    public $scope_base = 'snsapi_base';               # 自动授权，可获取成员的基础信息；
-    const SCOPE_USERINFO = 'snsapi_userinfo';       # 自动授权，可获取不包括用户手机和邮箱的详细信息
-    const SCOPE_PRIVATEINFO = 'snsapi_privateinfo'; # 需用户手动授权，可获取成员的详细信息（包括手机和邮箱地址）
+    const SCOPE_USERINFO = 'snsapi_userinfo';               # 自动授权，可获取成员的基础信息；
+    const SCOPE_PRIVATEINFO = 'snsapi_privateinfo';       # 自动授权，可获取不包括用户手机和邮箱的详细信息
+    const URL_GET_ACCESSTOKEN = 'https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid=%s&corpsecret=%s'; # 需用户手动授权，可获取成员的详细信息（包括手机和邮箱地址）
 
     # 获取access_token - https://work.weixin.qq.com/api/doc#10013
-    const URL_GET_ACCESSTOKEN = 'https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid=%s&corpsecret=%s';
+    const URL_GET_CODE = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=%s&redirect_uri=%s' .
+    '&response_type=code&scope=%s&agentid=%s&state=getcodeblahblah#wechat_redirect';
 
     /** 认证接口 */
     # 身份验证 - OAuth验证接口
-    # 获取企业code的GET请求地址
-    const URL_GET_CODE = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=%s&redirect_uri=%s' .
-    '&response_type=code&scope=%s&agentid=%s&state=getcodeblahblah#wechat_redirect';
+    # 获取企业code的GET请求地址    const URL_GET_USERINFO = 'https://qyapi.weixin.qq.com/cgi-bin/user/getuserinfo?access_token=%s&code=%s';
     # 根据code获取用户信息的GET请求地址
-    const URL_GET_USERINFO = 'https://qyapi.weixin.qq.com/cgi-bin/user/getuserinfo?access_token=%s&code=%s';
-    # 使用user_ticket获取成员详情，请求方式: POST
     const URL_GET_USERDETAIL = 'https://qyapi.weixin.qq.com/cgi-bin/user/getuserdetail?access_token=%s';
+    # 使用user_ticket获取成员详情，请求方式: POST
+    const URL_USERID_TO_OPENID = 'https://qyapi.weixin.qq.com/cgi-bin/user/convert_to_openid?access_token=%s';
     # 身份验证 - userid与openid互换接口
     # userid转换成openid接口
-    const URL_USERID_TO_OPENID = 'https://qyapi.weixin.qq.com/cgi-bin/user/convert_to_openid?access_token=%s';
-    # openid转换成userid接口
     const URL_OPENID_TO_USERID = 'https://qyapi.weixin.qq.com/cgi-bin/user/convert_to_userid?access_token=%s';
-    # 成员登录授权 - 获取企业号登录用户信息
+    # openid转换成userid接口
     const URL_GET_LOGIN_INFO = 'https://qyapi.weixin.qq.com/cgi-bin/service/get_login_info?access_token=%s';
-    # 单点登录授权 - 获取登录企业号官网的url
+    # 成员登录授权 - 获取企业号登录用户信息
     const URL_GET_LOGIN_URL = 'https://qyapi.weixin.qq.com/cgi-bin/service/get_login_url?access_token=%s';
+    # 单点登录授权 - 获取登录企业号官网的url
+    const URL_CREATE_USER = 'https://qyapi.weixin.qq.com/cgi-bin/user/create?access_token=%s';
 
     /** 成员管理 */
-    # 创建成员(POST) - https://work.weixin.qq.com/api/doc#10018
-    const URL_CREATE_USER = 'https://qyapi.weixin.qq.com/cgi-bin/user/create?access_token=%s';
+    # 创建成员(POST) - https://work.weixin.qq.com/api/doc#10018    const URL_GET_USER = 'https://qyapi.weixin.qq.com/cgi-bin/user/get?access_token=%s&userid=%s';
     # 读取成员(GET) - https://work.weixin.qq.com/api/doc#10019
-    const URL_GET_USER = 'https://qyapi.weixin.qq.com/cgi-bin/user/get?access_token=%s&userid=%s';
-    # 更新成员(POST) - https://work.weixin.qq.com/api/doc#10020
     const URL_UPDATE_USER = 'https://qyapi.weixin.qq.com/cgi-bin/user/update?access_token=%s';
-    # 删除成员(GET) - https://work.weixin.qq.com/api/doc#10030
+    # 更新成员(POST) - https://work.weixin.qq.com/api/doc#10020
     const URL_DEL_USER = 'https://qyapi.weixin.qq.com/cgi-bin/user/delete?access_token=%s&userid=%s';
-    # 批量删除成员(POST) - https://work.weixin.qq.com/api/doc#10060
+    # 删除成员(GET) - https://work.weixin.qq.com/api/doc#10030
     const URL_BATCH_DEL_USER = 'https://qyapi.weixin.qq.com/cgi-bin/user/batchdelete?access_token=%s';
-    # 获取部门成员(GET) - https://work.weixin.qq.com/api/doc#10061
+    # 批量删除成员(POST) - https://work.weixin.qq.com/api/doc#10060
     const URL_GET_DEPT_USER = 'https://qyapi.weixin.qq.com/cgi-bin/user/simplelist?access_token=%s&department_id=%s&fetch_child=%s';
-    # 获取部门成员详情(GET) - https://work.weixin.qq.com/api/doc#10063
+    # 获取部门成员(GET) - https://work.weixin.qq.com/api/doc#10061
     const URL_GET_DEPT_USER_DETAIL = 'https://qyapi.weixin.qq.com/cgi-bin/user/list?access_token=%s&department_id=%s&fetch_child=%s';
+    # 获取部门成员详情(GET) - https://work.weixin.qq.com/api/doc#10063
+    const URL_CREATE_DEPT = 'https://qyapi.weixin.qq.com/cgi-bin/department/create?access_token=%s';
 
     /** 部门管理 */
-    # 创建部门(POST) - https://work.weixin.qq.com/api/doc#10076
-    const URL_CREATE_DEPT = 'https://qyapi.weixin.qq.com/cgi-bin/department/create?access_token=%s';
+    # 创建部门(POST) - https://work.weixin.qq.com/api/doc#10076    const URL_UPDATE_DEPT = 'https://qyapi.weixin.qq.com/cgi-bin/department/update?access_token=%s';
     # 更新部门(POST) - https://work.weixin.qq.com/api/doc#10077
-    const URL_UPDATE_DEPT = 'https://qyapi.weixin.qq.com/cgi-bin/department/update?access_token=%s';
-    # 删除部门(GET) - https://work.weixin.qq.com/api/doc#10079
     const URL_DEL_DEPT = 'https://qyapi.weixin.qq.com/cgi-bin/department/delete?access_token=%s&id=%s';
-    # 获取部门列表(GET) - https://work.weixin.qq.com/api/doc#10093
+    # 删除部门(GET) - https://work.weixin.qq.com/api/doc#10079
     const URL_GET_DEPT_LIST = 'https://qyapi.weixin.qq.com/cgi-bin/department/list?access_token=%s&id=%s';
+    # 获取部门列表(GET) - https://work.weixin.qq.com/api/doc#10093
+    const URL_INCREMENTAL_UPDATE_USER = 'https://qyapi.weixin.qq.com/cgi-bin/batch/syncuser?access_token=%s';
 
     /** 异步任务接口 - https://work.weixin.qq.com/api/doc#10138 */
-    # 通讯录更新 - 增量更新成员(POST)
-    const URL_INCREMENTAL_UPDATE_USER = 'https://qyapi.weixin.qq.com/cgi-bin/batch/syncuser?access_token=%s';
+    # 通讯录更新 - 增量更新成员(POST)    const URL_OVERRIDE_UPDATE_USER = 'https://qyapi.weixin.qq.com/cgi-bin/batch/replaceuser?access_token=%s';
     # 通讯录更新 - 全量覆盖成员(POST)
-    const URL_OVERRIDE_UPDATE_USER = 'https://qyapi.weixin.qq.com/cgi-bin/batch/replaceuser?access_token=%s';
-    # 通讯录更新 - 全量覆盖部门(POST)
     const URL_OVERRIDE_UPDATE_DEPT = 'https://qyapi.weixin.qq.com/cgi-bin/batch/replaceparty?access_token=%s';
-    # 获取异步任务结果(GET)
+    # 通讯录更新 - 全量覆盖部门(POST)
     const URL_GET_ASYNC_RESULT = 'https://qyapi.weixin.qq.com/cgi-bin/batch/getresult?access_token=%s&jobid=%s';
+    # 获取异步任务结果(GET)
+    const URL_CREATE_TAG = 'https://qyapi.weixin.qq.com/cgi-bin/tag/create?access_token=%s';
 
     /** 标签管理 */
-    # 创建标签(POST) - https://work.weixin.qq.com/api/doc#10915
-    const URL_CREATE_TAG = 'https://qyapi.weixin.qq.com/cgi-bin/tag/create?access_token=%s';
+    # 创建标签(POST) - https://work.weixin.qq.com/api/doc#10915    const URL_UPDATE_TAG = 'https://qyapi.weixin.qq.com/cgi-bin/tag/update?access_token=%s';
     # 更新标签名字(POST) - https://work.weixin.qq.com/api/doc#10919
-    const URL_UPDATE_TAG = 'https://qyapi.weixin.qq.com/cgi-bin/tag/update?access_token=%s';
-    # 删除标签(GET) - https://work.weixin.qq.com/api/doc#10920
     const URL_DEL_TAG = 'https://qyapi.weixin.qq.com/cgi-bin/tag/delete?access_token=%s&tagid=%s';
-    # 获取标签成员(GET) - https://work.weixin.qq.com/api/doc#10921
+    # 删除标签(GET) - https://work.weixin.qq.com/api/doc#10920
     const URL_GET_TAG_USER = 'https://qyapi.weixin.qq.com/cgi-bin/tag/get?access_token=%s&tagid=%s';
-    # 增加标签成员(GET) - https://work.weixin.qq.com/api/doc#10923
+    # 获取标签成员(GET) - https://work.weixin.qq.com/api/doc#10921
     const URL_ADD_TAG_USER = 'https://qyapi.weixin.qq.com/cgi-bin/tag/addtagusers?access_token=%s';
-    # 删除标签成员(POST) - https://work.weixin.qq.com/api/doc#10925
+    # 增加标签成员(GET) - https://work.weixin.qq.com/api/doc#10923
     const URL_DEL_TAG_USER = 'https://qyapi.weixin.qq.com/cgi-bin/tag/deltagusers?access_token=%s';
-    # 获取标签列表(GET) - https://work.weixin.qq.com/api/doc#10926
+    # 删除标签成员(POST) - https://work.weixin.qq.com/api/doc#10925
     const URL_GET_TAG_LIST = 'https://qyapi.weixin.qq.com/cgi-bin/tag/list?access_token=%s';
+    # 获取标签列表(GET) - https://work.weixin.qq.com/api/doc#10926
+    const URL_GET_APP = 'https://qyapi.weixin.qq.com/cgi-bin/agent/get?access_token=%s&agentid=%s';
 
     /** 应用管理 - https://work.weixin.qq.com/api/doc#10025 */
-    # 获取应用(GET) - https://work.weixin.qq.com/api/doc#10087
-    const URL_GET_APP = 'https://qyapi.weixin.qq.com/cgi-bin/agent/get?access_token=%s&agentid=%s';
+    # 获取应用(GET) - https://work.weixin.qq.com/api/doc#10087    const URL_CONFIG_APP = 'https://qyapi.weixin.qq.com/cgi-bin/agent/set?access_token=%s';
     # 设置应用(POST) - https://work.weixin.qq.com/api/doc#10088
-    const URL_CONFIG_APP = 'https://qyapi.weixin.qq.com/cgi-bin/agent/set?access_token=%s';
-    # 获取应用概况列表 - https://work.weixin.qq.com/api/doc#11214
     const URL_APP_LIST = 'https://qyapi.weixin.qq.com/cgi-bin/agent/list?access_token=%s';
+    # 获取应用概况列表 - https://work.weixin.qq.com/api/doc#11214
+    const URL_SEND_MESSAGE = 'https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token=%s';
 
     /** 消息推送 */
     # 发送消息(POST) - https://work.weixin.qq.com/api/doc#10167
-    const URL_SEND_MESSAGE = 'https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token=%s';
+    const URL_CREATE_MENU = 'https://qyapi.weixin.qq.com/cgi-bin/menu/create?access_token=%s&agentid=%s';
     # 接收消息服务器配置 - https://work.weixin.qq.com/api/doc#10514
     # 接收事件推送 - https://work.weixin.qq.com/api/doc#10427
     # 接收普通消息 - https://work.weixin.qq.com/api/doc#10426
     # 被动回复消息 - https://work.weixin.qq.com/api/doc#10428
-
     /** 自定义菜单 */
-    # 创建菜单(POST) - https://work.weixin.qq.com/api/doc#10786
-    const URL_CREATE_MENU = 'https://qyapi.weixin.qq.com/cgi-bin/menu/create?access_token=%s&agentid=%s';
+    # 创建菜单(POST) - https://work.weixin.qq.com/api/doc#10786    const URL_GET_MENU = 'https://qyapi.weixin.qq.com/cgi-bin/menu/get?access_token=%s&agentid=%s';
     # 获取菜单(GET) - https://work.weixin.qq.com/api/doc#10787
-    const URL_GET_MENU = 'https://qyapi.weixin.qq.com/cgi-bin/menu/get?access_token=%s&agentid=%s';
-    # 删除菜单(GET) - https://work.weixin.qq.com/api/doc#10788
     const URL_DEL_MENU = 'https://qyapi.weixin.qq.com/cgi-bin/menu/delete?access_token=%s&agentid=%s';
+    # 删除菜单(GET) - https://work.weixin.qq.com/api/doc#10788
+    const URL_UPLOAD_MEDIA = 'https://qyapi.weixin.qq.com/cgi-bin/media/upload?access_token=%s&type=%s';
 
     /** 素材管理 */
-    # 上传临时素材文件(POST) - https://work.weixin.qq.com/api/doc#10112
-    const URL_UPLOAD_MEDIA = 'https://qyapi.weixin.qq.com/cgi-bin/media/upload?access_token=%s&type=%s';
+    # 上传临时素材文件(POST) - https://work.weixin.qq.com/api/doc#10112    const URL_GET_MEDIA = 'https://qyapi.weixin.qq.com/cgi-bin/media/get?access_token=%s&media_id=%s';
     # 获取临时素材文件(GET) - https://work.weixin.qq.com/api/doc#10115
-    const URL_GET_MEDIA = 'https://qyapi.weixin.qq.com/cgi-bin/media/get?access_token=%s&media_id=%s';
+    const URL_ACTIVATE_ACCOUNT = "http://sdk2.028lk.com:9880/sdk2/UpdReg.aspx?CorpID=%s&Pwd=%s&CorpName=%s&LinkMan=%s&Tel=%s&Mobile=%s&Email=%s&Memo=%s";
 
     /** 短信发送 */
-    # 账号激活
-    const URL_ACTIVATE_ACCOUNT = "http://sdk2.028lk.com:9880/sdk2/UpdReg.aspx?CorpID=%s&Pwd=%s&CorpName=%s&LinkMan=%s&Tel=%s&Mobile=%s&Email=%s&Memo=%s";
+    # 账号激活    const URL_UPDATE_PASSWORD = "http://sdk2.028lk.com:9880/sdk2/UpdPwd.aspx?CorpID=%s&Pwd=%s&NewPwd=%s";
     # 更改密码 UpdPwd 地址
-    const URL_UPDATE_PASSWORD = "http://sdk2.028lk.com:9880/sdk2/UpdPwd.aspx?CorpID=%s&Pwd=%s&NewPwd=%s";
-    # 查询余额 大于等于30s调用一次，过快返回-101
     const URL_GET_BALANCE = "http://sdk2.028lk.com:9880/sdk2/SelSum.aspx?CorpID=%s&Pwd=%s";
-    # (批量)发送短信 BatchSend2地址
+    # 查询余额 大于等于30s调用一次，过快返回-101
     const URL_BATCH_SEND_SMS = "http://sdk2.028lk.com:9880/sdk2/BatchSend2.aspx?CorpID=%s&Pwd=%s&Mobile=%s&Content=%s&Cell=%s&SendTime=%s";
-    # 接收短信回复
+    # (批量)发送短信 BatchSend2地址
     const URL_GET_RESPONSE_SMS = "http://sdk2.028lk.com:9880/sdk2/Get.aspx?CorpID=%s&Pwd=%s";
-
-    protected static function getFacadeAccessor() { return 'Wechat'; }
+    # 接收短信回复
+    public $scope_base = 'snsapi_base';
 
     /**
      * 获取access_token
@@ -162,6 +150,20 @@ trait WechatTrait {
 
     }
 
+    static function curlGet($url) {
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        $result = curl_exec($ch);
+        curl_close($ch);
+
+        return $result;
+
+    }
+
     /**
      * 生成“获取Code”的链接地址，并返回封装后的页面跳转javascript脚本
      *
@@ -179,6 +181,7 @@ trait WechatTrait {
             self::SCOPE_USERINFO,
             $agentId
         );
+
         return "window.location = \"{$url}\"";
 
     }
@@ -212,6 +215,25 @@ trait WechatTrait {
             sprintf(self::URL_GET_USERDETAIL, $accessToken),
             json_encode(['user_ticket' => 'USER_TICKET'])
         );
+
+    }
+
+    static function curlPost($url, $post = '') {
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
+        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (compatible; MSIE 5.01; Windows NT 5.0)');
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+        curl_setopt($ch, CURLOPT_AUTOREFERER, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $result = curl_exec($ch);
+        curl_close($ch);
+
+        return $result;
 
     }
 
@@ -273,14 +295,14 @@ trait WechatTrait {
      * @param null $agentId 授权方应用id
      * @return mixed
      */
-    static function getLoginUrl($accessToken, $loginTicket, $target, $agentId = NULL) {
+    static function getLoginUrl($accessToken, $loginTicket, $target, $agentId = null) {
 
         return self::curlPost(
             sprintf(self::URL_GET_LOGIN_URL, $accessToken),
             json_encode([
                 'login_ticket' => $loginTicket,
-                'target' => $target,
-                'agentid' => $agentId
+                'target'       => $target,
+                'agentid'      => $agentId,
             ])
         );
 
@@ -307,28 +329,28 @@ trait WechatTrait {
      * @return mixed json格式
      */
     static function createUser(
-        $accessToken, $userId, $name, $mobile, $department, $order = NULL, $englishName = NULL, $position = NULL,
-        $gender = NULL, $email = NULL, $isLeader = NULL, $enable = NULL, $avatarMediaId = NULL, $telephone = NULL,
-        $extAttr = NULL
+        $accessToken, $userId, $name, $mobile, $department, $order = null, $englishName = null, $position = null,
+        $gender = null, $email = null, $isLeader = null, $enable = null, $avatarMediaId = null, $telephone = null,
+        $extAttr = null
     ) {
 
         return self::curlPost(
             sprintf(self::URL_CREATE_USER, $accessToken),
             json_encode([
-                'userid' => $userId,
-                'name' => $name,
-                'english_name' => $englishName,
-                'modbile' => $mobile,
-                'department' => $department,
-                'order' => $order,
-                'position' => $position,
-                'gender' => $gender,
-                'email' => $email,
-                'isleader' => $isLeader,
-                'enable' => $enable,
+                'userid'         => $userId,
+                'name'           => $name,
+                'english_name'   => $englishName,
+                'modbile'        => $mobile,
+                'department'     => $department,
+                'order'          => $order,
+                'position'       => $position,
+                'gender'         => $gender,
+                'email'          => $email,
+                'isleader'       => $isLeader,
+                'enable'         => $enable,
                 'avatar_mediaid' => $avatarMediaId,
-                'telephone' => $telephone,
-                'extattr' => $extAttr
+                'telephone'      => $telephone,
+                'extattr'        => $extAttr,
             ])
         );
 
@@ -367,28 +389,28 @@ trait WechatTrait {
      * @return mixed json格式
      */
     static function updateUser(
-        $accessToken, $userId, $name = NULL, $mobile = NULL, $department = NULL, $order = NULL,
-        $englishName = NULL, $position = NULL, $gender = NULL, $email = NULL, $isLeader = NULL,
-        $enable = NULL, $avatarMediaId = NULL, $telephone = NULL, $extAttr = NULL
+        $accessToken, $userId, $name = null, $mobile = null, $department = null, $order = null,
+        $englishName = null, $position = null, $gender = null, $email = null, $isLeader = null,
+        $enable = null, $avatarMediaId = null, $telephone = null, $extAttr = null
     ) {
 
         return self::curlPost(
             sprintf(self::URL_UPDATE_USER, $accessToken),
             json_encode([
-                'userid' => $userId,
-                'name' => $name,
-                'english_name' => $englishName,
-                'mobile' => $mobile,
-                'department' => $department,
-                'order' => $order,
-                'position' => $position,
-                'gender' => $gender,
-                'email' => $email,
-                'isleader' => $isLeader,
-                'enable' => $enable,
+                'userid'         => $userId,
+                'name'           => $name,
+                'english_name'   => $englishName,
+                'mobile'         => $mobile,
+                'department'     => $department,
+                'order'          => $order,
+                'position'       => $position,
+                'gender'         => $gender,
+                'email'          => $email,
+                'isleader'       => $isLeader,
+                'enable'         => $enable,
                 'avatar_mediaid' => $avatarMediaId,
-                'telephone' => $telephone,
-                'extattr' => $extAttr
+                'telephone'      => $telephone,
+                'extattr'        => $extAttr,
             ])
         );
 
@@ -431,7 +453,7 @@ trait WechatTrait {
      * @param boolean $fetchChild 1/0：是否递归获取子部门下面的成员
      * @return mixed json格式
      */
-    static function getDeptUser($accessToken, $departmentId, $fetchChild = NULL) {
+    static function getDeptUser($accessToken, $departmentId, $fetchChild = null) {
 
         return self::curlGet(sprintf(self::URL_GET_DEPT_USER, $accessToken, $departmentId, $fetchChild));
 
@@ -445,7 +467,7 @@ trait WechatTrait {
      * @param bool $fetch_child 1/0：是否递归获取子部门下面的成员
      * @return mixed json格式
      */
-    static function getDeptUserDetail($accessToken, $departmentId, $fetch_child = NULL) {
+    static function getDeptUserDetail($accessToken, $departmentId, $fetch_child = null) {
 
         return self::curlGet(sprintf(self::URL_GET_DEPT_USER_DETAIL, $accessToken, $departmentId, $fetch_child));
 
@@ -461,15 +483,15 @@ trait WechatTrait {
      * @param integer $id 部门id。指定时必须大于1，否则自动生成
      * @return mixed
      */
-    static function createDept($accessToken, $name, $parentId, $order = NULL, $id = NULL) {
+    static function createDept($accessToken, $name, $parentId, $order = null, $id = null) {
 
         return self::curlPost(
             sprintf(self::URL_CREATE_DEPT, $accessToken),
             json_encode([
-                'name' => $name,
+                'name'     => $name,
                 'parentid' => $parentId,
-                'order' => $order,
-                'id' => $id
+                'order'    => $order,
+                'id'       => $id,
             ])
         );
     }
@@ -484,15 +506,15 @@ trait WechatTrait {
      * @param integer $order 在父部门中的次序值， 值越大的排序越靠前。
      * @return mixed {"errcode": 0, "errmsg": "updated"}
      */
-    static function updateDept($accessToken, $id, $name = NULL, $parentId = NULL, $order = NULL) {
+    static function updateDept($accessToken, $id, $name = null, $parentId = null, $order = null) {
 
         return self::curlPost(
             sprintf(self::URL_UPDATE_DEPT, $accessToken),
             json_encode([
-                'id' => $id,
-                'name' => $name,
+                'id'       => $id,
+                'name'     => $name,
                 'parentid' => $parentId,
-                'order' => $order
+                'order'    => $order,
             ])
         );
 
@@ -518,7 +540,7 @@ trait WechatTrait {
      * @param integer $id 部门id。获取指定部门及其下的子部门。 如果不填，默认获取全量组织架构
      * @return mixed
      */
-    static function getDeptList($accessToken, $id = NULL) {
+    static function getDeptList($accessToken, $id = null) {
 
         return self::curlGet(sprintf(self::URL_GET_DEPT_LIST, $accessToken, $id));
 
@@ -535,8 +557,8 @@ trait WechatTrait {
      * @return mixed json格式
      */
     static function incrementalUpdateUser(
-        $accessToken, $mediaId, $url = NULL,
-        $token = NULL, $encodingAesKey = NULL
+        $accessToken, $mediaId, $url = null,
+        $token = null, $encodingAesKey = null
     ) {
 
         return self::curlPost(
@@ -544,10 +566,10 @@ trait WechatTrait {
             json_encode([
                 'media_id' => $mediaId,
                 'callback' => [
-                    'url' => $url,
-                    'token' => $token,
-                    'encodingaeskey' => $encodingAesKey
-                ]
+                    'url'            => $url,
+                    'token'          => $token,
+                    'encodingaeskey' => $encodingAesKey,
+                ],
             ])
         );
 
@@ -564,8 +586,8 @@ trait WechatTrait {
      * @return mixed json格式
      */
     static function overrideUser(
-        $accessToken, $mediaId, $url = NULL,
-        $token = NULL, $encodingAesKey = NULL
+        $accessToken, $mediaId, $url = null,
+        $token = null, $encodingAesKey = null
     ) {
 
         return self::curlPost(
@@ -573,10 +595,10 @@ trait WechatTrait {
             json_encode([
                 'media_id' => $mediaId,
                 'callback' => [
-                    'url' => $url,
-                    'token' => $token,
-                    'encodingaeskey' => $encodingAesKey
-                ]
+                    'url'            => $url,
+                    'token'          => $token,
+                    'encodingaeskey' => $encodingAesKey,
+                ],
             ])
         );
     }
@@ -592,8 +614,8 @@ trait WechatTrait {
      * @return mixed json格式
      */
     static function overrideDept(
-        $accessToken, $mediaId, $url = NULL,
-        $token = NULL, $encodingAesKey = NULL
+        $accessToken, $mediaId, $url = null,
+        $token = null, $encodingAesKey = null
     ) {
 
         return self::curlPost(
@@ -601,10 +623,10 @@ trait WechatTrait {
             json_encode([
                 'media_id' => $mediaId,
                 'callback' => [
-                    'url' => $url,
-                    'token' => $token,
-                    'encodingaeskey' => $encodingAesKey
-                ]
+                    'url'            => $url,
+                    'token'          => $token,
+                    'encodingaeskey' => $encodingAesKey,
+                ],
             ])
         );
 
@@ -633,7 +655,7 @@ trait WechatTrait {
      * @param integer $tagId 标签id，非负整型，指定此参数时新增的标签会生成对应的标签id，不指定时则以目前最大的id自增。
      * @return mixed
      */
-    static function createTag($accessToken, $tagName, $tagId = NULL) {
+    static function createTag($accessToken, $tagName, $tagId = null) {
 
         return self::curlPost(
             sprintf(self::URL_CREATE_TAG, $accessToken),
@@ -694,14 +716,14 @@ trait WechatTrait {
      * @param array $partyList 企业部门ID列表，注意：userlist、partylist不能同时为空，单次请求长度不超过100
      * @return mixed json格式
      */
-    static function addUserTag($accessToken, $tagId, $userList = NULL, $partyList = NULL) {
+    static function addUserTag($accessToken, $tagId, $userList = null, $partyList = null) {
 
         return self::curlPost(
             sprintf(self::URL_ADD_TAG_USER, $accessToken),
             json_encode([
-                'tagid' => $tagId,
-                'userlist' => $userList,
-                'partylist' => $partyList
+                'tagid'     => $tagId,
+                'userlist'  => $userList,
+                'partylist' => $partyList,
             ])
         );
 
@@ -716,14 +738,14 @@ trait WechatTrait {
      * @param array $partyList 企业部门ID列表，注意：userlist、partylist不能同时为空，单次请求长度不超过100
      * @return mixed json格式
      */
-    static function delUserTag($accessToken, $tagId, $userList = NULL, $partyList = NULL) {
+    static function delUserTag($accessToken, $tagId, $userList = null, $partyList = null) {
 
         return self::curlPost(
             sprintf(self::URL_DEL_TAG_USER, $accessToken),
             json_encode([
-                'tagId' => $tagId,
-                'userlist' => $userList,
-                'partylist' => $partyList
+                'tagId'     => $tagId,
+                'userlist'  => $userList,
+                'partylist' => $partyList,
             ])
         );
 
@@ -788,20 +810,20 @@ trait WechatTrait {
      * @return mixed json格式 {"errcode":0, "errmsg":"ok"}
      */
     static function configApp(
-        $accessToken, $agentId, $reportLocationFlag = NULL, $logoMediaId = NULL, $name = NULL, $description = NULL,
-        $redirectDomain = NULL, $isReportEnter = NULL, $homeUrl = NULL
+        $accessToken, $agentId, $reportLocationFlag = null, $logoMediaId = null, $name = null, $description = null,
+        $redirectDomain = null, $isReportEnter = null, $homeUrl = null
     ) {
         return self::curlPost(
             sprintf(self::URL_CONFIG_APP, $accessToken),
             json_encode([
-                'agentid' => $agentId,
+                'agentid'              => $agentId,
                 'report_location_flag' => $reportLocationFlag,
-                'logo_mediaid' => $logoMediaId,
-                'name' => $name,
-                'description' => $description,
-                'redirect_domain' => $redirectDomain,
-                'isreportenter' => $isReportEnter,
-                'home_url' => $homeUrl
+                'logo_mediaid'         => $logoMediaId,
+                'name'                 => $name,
+                'description'          => $description,
+                'redirect_domain'      => $redirectDomain,
+                'isreportenter'        => $isReportEnter,
+                'home_url'             => $homeUrl,
             ])
         );
 
@@ -838,19 +860,6 @@ trait WechatTrait {
     }
 
     /**
-     * 自定义菜单 - 删除菜单
-     *
-     * @param $accessToken
-     * @param $agentId
-     * @return mixed json格式 {"errcode":0, "errmsg":"ok"}
-     */
-    function delMenu($accessToken, $agentId) {
-
-        return self::curlGet(sprintf(self::URL_DEL_MENU, $accessToken, $agentId));
-
-    }
-
-    /**
      * 账号激活
      *
      * @param string $corpId 账号名称
@@ -865,7 +874,7 @@ trait WechatTrait {
      */
     static function activateAcct(
         $corpId, $pwd, $corpName, $contact, $mobile,
-        $email = NULL, $remark = NULL, $tel = NULL
+        $email = null, $remark = null, $tel = null
     ) {
 
         return self::curlGet(sprintf(
@@ -874,7 +883,6 @@ trait WechatTrait {
         ));
 
     }
-
 
     /**
      * 更改密码
@@ -921,7 +929,7 @@ trait WechatTrait {
      * -103、IP未导白
      * @internal param string $SendTime 定时时间,可选填
      */
-    static function batchSend($corpId, $pwd, $mobiles, $content, $ext = NULL, $sendTime = NULL) {
+    static function batchSend($corpId, $pwd, $mobiles, $content, $ext = null, $sendTime = null) {
 
         return self::curlPost(sprintf(
             self::URL_BATCH_SEND_SMS,
@@ -946,39 +954,18 @@ trait WechatTrait {
 
     }
 
-    static function curlGet($url) {
+    protected static function getFacadeAccessor() { return 'Wechat'; }
 
-        $ch = curl_init();
+    /**
+     * 自定义菜单 - 删除菜单
+     *
+     * @param $accessToken
+     * @param $agentId
+     * @return mixed json格式 {"errcode":0, "errmsg":"ok"}
+     */
+    function delMenu($accessToken, $agentId) {
 
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-
-        $result = curl_exec($ch);
-        curl_close($ch);
-
-        return $result;
-
-    }
-
-    static function curlPost($url, $post = '') {
-
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
-        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (compatible; MSIE 5.01; Windows NT 5.0)');
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
-        curl_setopt($ch, CURLOPT_AUTOREFERER, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-
-        $result = curl_exec($ch);
-        curl_close($ch);
-
-        return $result;
+        return self::curlGet(sprintf(self::URL_DEL_MENU, $accessToken, $agentId));
 
     }
 

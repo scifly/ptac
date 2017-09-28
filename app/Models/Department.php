@@ -317,7 +317,6 @@ class Department extends Model {
     public function tree() {
 
         $departments = $this->nodes();
-
         $data = [];
         foreach ($departments as $department) {
             $parentId = isset($department['parent_id']) ? $department['parent_id'] : '#';
@@ -353,6 +352,7 @@ class Department extends Model {
                 'type'   => $type,
             ];
         }
+
         return response()->json($data);
 
     }
@@ -527,7 +527,6 @@ class Department extends Model {
 
         $departments = $this->whereIn('id', $ids)->get()->toArray();
         $departmentParentIds = [];
-
         foreach ($departments as $key => $department) {
             $departmentParentIds[] = $department['id'];
         }
@@ -627,26 +626,21 @@ class Department extends Model {
 
     }
 
-    public function groupLevel($userId)
-    {
+    public function groupLevel($userId) {
         $group = User::whereId($userId)->first()->group;
-        if(isset($group->school_id)) {
+        if (isset($group->school_id)) {
             return 'school';
         }
         $departments = User::whereId($userId)->first()->departments;
         $departmentIds = [];
-        foreach ($departments as $d)
-        {
+        foreach ($departments as $d) {
             $departmentIds[] = $d->id;
         }
-
         sort($departmentIds);
-
         $topDepartmentId = $departmentIds[0];
         $departmentType = $this->find($topDepartmentId)->departmentType->name;
         //  $departmentType = $this->find($topDepartmentId)->departmentType->id;
-        switch ($departmentType)
-        {
+        switch ($departmentType) {
             case '根':
                 $type = 'root';
                 break;
@@ -659,9 +653,9 @@ class Department extends Model {
             default:
                 break;
         }
+
         return $type;
         // return $departmentType == '运营' ? 'company' : 'corp';
-
     }
 
 }

@@ -1,9 +1,7 @@
 <?php
-
 namespace App\Listeners;
 
 use App\Jobs\ManageWechatMember;
-use App\Models\Log;
 use Illuminate\Events\Dispatcher;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 
@@ -16,20 +14,21 @@ class UserEventSubscriber {
      */
     public function onUserCreated($event) {
 
-        $job = new ManageWechatMember($event->user,'create');
+        $job = new ManageWechatMember($event->user, 'create');
         $this->dispatch($job);
 
     }
+
     public function onUserUpdated($event) {
 
-        $job = new ManageWechatMember($event->user,'update');
+        $job = new ManageWechatMember($event->user, 'update');
         $this->dispatch($job);
 
     }
 
-    public function onUserDeleted($event){
+    public function onUserDeleted($event) {
 
-        $job = new ManageWechatMember($event->userId,'delete');
+        $job = new ManageWechatMember($event->userId, 'delete');
         $this->dispatch($job);
 
     }

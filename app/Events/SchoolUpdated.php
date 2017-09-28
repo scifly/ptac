@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Events;
 
 use App\Models\School;
@@ -10,22 +9,22 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
 class SchoolUpdated {
-    
+
     use Dispatchable, InteractsWithSockets, SerializesModels;
-    
+
     public $school;
-    
+
     /**
      * Create a new event instance.
      *
      * @param School $school
      */
     public function __construct(School $school) {
-        
+
         $this->school = $school;
-        
+
     }
-    
+
     /**
      * Get the channels the event should broadcast on.
      *

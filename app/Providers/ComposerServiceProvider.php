@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Providers;
 
 use Illuminate\Support\Facades\View;
@@ -13,7 +12,7 @@ class ComposerServiceProvider extends ServiceProvider {
      * @return void
      */
     public function boot() {
-        
+
         View::composer('school.create_edit', 'App\Http\ViewComposers\SchoolComposer');
         View::composer('corp.create_edit', 'App\Http\ViewComposers\CorpComposer');
         View::composer('grade.create_edit', 'App\Http\ViewComposers\GradeComposer');
@@ -74,7 +73,6 @@ class ComposerServiceProvider extends ServiceProvider {
     public function register() {
 
         //
-
     }
 
 }

@@ -2,6 +2,7 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Helpers\ModelTrait;
 use App\Http\Requests\ActionRequest;
 use App\Models\ActionType as ActionType;
 use Doctrine\Common\Inflector\Inflector;
@@ -13,7 +14,6 @@ use Illuminate\Support\Facades\Route;
 use Mockery\Exception;
 use ReflectionClass;
 use ReflectionMethod;
-use App\Helpers\ModelTrait;
 
 /**
  * App\Models\Action 功能
@@ -56,6 +56,7 @@ use App\Helpers\ModelTrait;
  * @property-read Collection|Tab[] $tabs
  */
 class Action extends Model {
+
     use ModelTrait;
     const BADGE_GRAY = '<span class="badge bg-black">[n/a]</span>';
     const BADGE_GREEN = '<span class="badge bg-green">%s</span>';
@@ -109,8 +110,8 @@ HTML;
      */
     public function tabs() { return $this->hasMany('App\Models\Tab'); }
 
+    public function groups() { return $this->belongsToMany('App\Models\Group', 'actions_groups'); }
 
-    public function groups(){ return $this->belongsToMany('App\Models\Group','actions_groups'); }
     /**
      * 返回HTTP请求方法中包含GET以及路由中不带参数的action列表
      *
@@ -233,17 +234,12 @@ HTML;
             ],
             [
                 'db'        => 'Action.enabled', 'dt' => 8,
-                'formatter' => function ($d,$row) {
+                'formatter' => function ($d, $row) {
 
                     $id = $row['id'];
                     $status = $d ? sprintf(self::DT_ON, '已启用') : sprintf(self::DT_OFF, '已禁用');
-
-                        $showLink = sprintf(self::DT_LINK_SHOW, 'show_' . $id);
-
-
-                        $editLink = sprintf(self::DT_LINK_EDIT, 'edit_' . $id);
-
-
+                    $showLink = sprintf(self::DT_LINK_SHOW, 'show_' . $id);
+                    $editLink = sprintf(self::DT_LINK_EDIT, 'edit_' . $id);
 
                     return $status . '&nbsp;' . $showLink . '&nbsp;' . $editLink;
                 },
@@ -675,7 +671,5 @@ HTML;
         return null;
 
     }
-
-
 
 }

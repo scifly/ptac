@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Events;
 
 use App\Models\Corp;
@@ -10,21 +9,21 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
 class CorpDeleted {
-    
+
     use Dispatchable, InteractsWithSockets, SerializesModels;
-    
+
     public $corp;
-    
+
     /**
      * Create a new event instance.
      * @param Corp $corp
      */
     public function __construct(Corp $corp) {
-        
+
         $this->corp = $corp;
-        
+
     }
-    
+
     /**
      * Get the channels the event should broadcast on.
      *

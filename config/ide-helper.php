@@ -1,7 +1,5 @@
 <?php
-
-return array(
-
+return [
     /*
     |--------------------------------------------------------------------------
     | Filename & Format
@@ -10,10 +8,8 @@ return array(
     | The default filename (without extension) and the format (php or json)
     |
     */
-
-    'filename'  => '_ide_helper',
-    'format'    => 'php',
-
+    'filename'                    => '_ide_helper',
+    'format'                      => 'php',
     /*
     |--------------------------------------------------------------------------
     | Fluent helpers
@@ -22,9 +18,7 @@ return array(
     | Set to true to generate commonly used Fluent methods
     |
     */
-
-    'include_fluent' => false,
-
+    'include_fluent'              => false,
     /*
     |--------------------------------------------------------------------------
     | Write Model Magic methods
@@ -33,9 +27,7 @@ return array(
     | Set to false to disable write magic methods of model
     |
     */
-
-    'write_model_magic_where' => true,
-
+    'write_model_magic_where'     => true,
     /*
     |--------------------------------------------------------------------------
     | Helper files to include
@@ -45,13 +37,10 @@ return array(
     | -- helpers (-H) option. Extra menu files can be included.
     |
     */
-
-    'include_helpers' => false,
-
-    'helper_files' => array(
-        base_path().'/vendor/laravel/framework/src/Illuminate/Support/helpers.php',
-    ),
-
+    'include_helpers'             => false,
+    'helper_files'                => [
+        base_path() . '/vendor/laravel/framework/src/Illuminate/Support/helpers.php',
+    ],
     /*
     |--------------------------------------------------------------------------
     | Model locations to include
@@ -61,12 +50,9 @@ return array(
     | for models.
     |
     */
-
-    'model_locations' => array(
+    'model_locations'             => [
         'app',
-    ),
-
-
+    ],
     /*
     |--------------------------------------------------------------------------
     | Extra classes
@@ -75,14 +61,12 @@ return array(
     | These implementations are not really extended, but called with magic functions
     |
     */
-
-    'extra' => array(
-        'Eloquent' => array('Illuminate\Database\Eloquent\Builder', 'Illuminate\Database\Query\Builder'),
-        'Session' => array('Illuminate\Session\Store'),
-    ),
-
-    'magic' => array(
-        'Log' => array(
+    'extra'                       => [
+        'Eloquent' => ['Illuminate\Database\Eloquent\Builder', 'Illuminate\Database\Query\Builder'],
+        'Session'  => ['Illuminate\Session\Store'],
+    ],
+    'magic'                       => [
+        'Log' => [
             'debug'     => 'Monolog\Logger::addDebug',
             'info'      => 'Monolog\Logger::addInfo',
             'notice'    => 'Monolog\Logger::addNotice',
@@ -91,9 +75,8 @@ return array(
             'critical'  => 'Monolog\Logger::addCritical',
             'alert'     => 'Monolog\Logger::addAlert',
             'emergency' => 'Monolog\Logger::addEmergency',
-        )
-    ),
-
+        ],
+    ],
     /*
     |--------------------------------------------------------------------------
     | Interface implementations
@@ -103,11 +86,8 @@ return array(
     | are detected by the helpers, others can be listed below.
     |
     */
-
-    'interfaces' => array(
-
-    ),
-
+    'interfaces'                  => [
+    ],
     /*
     |--------------------------------------------------------------------------
     | Support for custom DB types
@@ -134,10 +114,8 @@ return array(
     |  ),
     |
     */
-    'custom_db_types' => array(
-
-    ),
-
+    'custom_db_types'             => [
+    ],
     /*
      |--------------------------------------------------------------------------
      | Support for camel cased models
@@ -163,7 +141,6 @@ return array(
      |
      */
     'model_camel_case_properties' => false,
-
     /*
     |--------------------------------------------------------------------------
     | Property Casts
@@ -172,8 +149,8 @@ return array(
     | Cast the given "real type" to the given "type".
     |
     */
-   'type_overrides' => array(
+    'type_overrides'              => [
         'integer' => 'int',
         'boolean' => 'bool',
-   ),
-);
+    ],
+];

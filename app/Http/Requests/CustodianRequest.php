@@ -1,20 +1,18 @@
 <?php
-
 namespace App\Http\Requests;
 
 use App\Rules\Mobiles;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class CustodianRequest extends FormRequest {
-    
+
     /**
      * Determine if the user is authorized to make this request.
      *
      * @return bool
      */
     public function authorize() { return true; }
-    
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -26,16 +24,17 @@ class CustodianRequest extends FormRequest {
 //                $this->input('user_id') . ',id,'.
 //                'gender,' . $this->input('user.gender') ,
             'user.realname' => 'required|string',
-            'user.gender' => 'required|boolean',
+            'user.gender'   => 'required|boolean',
             'user.group_id' => 'required|integer',
-            'user.email' => 'nullable|email|unique:users,email,' .
+            'user.email'    => 'nullable|email|unique:users,email,' .
                 $this->input('user_id') . ',id',
 //            'mobile.mobile' => 'required|string|unique:mobiles,mobile,'
 //                . $this->input('user_id') . ',user_id',
-            'mobile.*' => [
-                'required',new Mobiles(),
+            'mobile.*'      => [
+                'required', new Mobiles(),
             ],
         ];
+
         return $rules;
 //        $validateRules=[];
 //        foreach ($input['mobile'] as $index => $mobile) {
@@ -49,11 +48,7 @@ class CustodianRequest extends FormRequest {
 //            unset($rule);
 //        }
 //        return $validateRules;
-
     }
-
-
-
 
     protected function prepareForValidation() {
 
@@ -70,18 +65,17 @@ class CustodianRequest extends FormRequest {
             foreach ($input['mobile'] as $index => $mobile) {
                 if ($index == $defaultIndex) {
                     $input['mobile'][$index]['isdefault'] = 1;
-                }else{
+                } else {
                     $input['mobile'][$index]['isdefault'] = 0;
                 }
                 if (!isset($mobile['enabled'])) {
                     $input['mobile'][$index]['enabled'] = 0;
-                }else{
+                } else {
                     $input['mobile'][$index]['enabled'] = 1;
                 }
             }
         }
-
         $this->replace($input);
     }
-    
+
 }

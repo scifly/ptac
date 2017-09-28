@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Requests;
 
 use App\Models\Department;
@@ -8,14 +7,14 @@ use Illuminate\Foundation\Http\FormRequest;
 class MessageRequest extends FormRequest {
 
     protected $rules = [
-        'content' => 'required|string|max:255',
+        'content'         => 'required|string|max:255',
         //'serviceid' => 'required|string|max:255',
         //'message_id' => 'required|integer',
         //'url' => 'required|string|max:255',
         'message_type_id' => 'required|integer',
     ];
     protected $strings_key = [
-        'content' => '消息内容',
+        'content'         => '消息内容',
         //'serviceid' => '业务id',
         //'message_id' => '消息id',
         //'url' => '网页地址',
@@ -23,11 +22,10 @@ class MessageRequest extends FormRequest {
     ];
     protected $strings_val = [
         'required' => '为必填项',
-        'string' => '为字符串',
-        'max' => '最大为:max',
-        'integer' => '必须为整数',
+        'string'   => '为字符串',
+        'max'      => '最大为:max',
+        'integer'  => '必须为整数',
     ];
-
 
     /**
      * Determine if the user is authorized to make this request.
@@ -91,6 +89,7 @@ class MessageRequest extends FormRequest {
         $input['s_user_id'] = 1;
         $this->replace($input);
     }
+
     /**
      *
      * 参数 传入选中的department和user的id
@@ -98,16 +97,16 @@ class MessageRequest extends FormRequest {
      * @param $ids
      * @return array
      */
-    private function getInputUserIds($ids){
+    private function getInputUserIds($ids) {
         $accordUserGetId = [];
         $accordDepartGetId = [];
         $str = 'UserId_';
-        foreach ($ids as $userId){
+        foreach ($ids as $userId) {
             #筛选出是user的id
-            if(strpos($userId,$str) !== false){
-                $deleteHeaderNum = strstr($userId,$str);
+            if (strpos($userId, $str) !== false) {
+                $deleteHeaderNum = strstr($userId, $str);
                 $accordUserGetId[] = substr($deleteHeaderNum, 7);
-            }else{
+            } else {
                 #这里是部门对应的userId
                 $department = Department::find($userId);
                 foreach ($department->users as $user) {
@@ -115,7 +114,8 @@ class MessageRequest extends FormRequest {
                 }
             }
         }
-        return $receiveUserIds = array_unique(array_merge($accordUserGetId,$accordDepartGetId));
+
+        return $receiveUserIds = array_unique(array_merge($accordUserGetId, $accordDepartGetId));
     }
 
 }

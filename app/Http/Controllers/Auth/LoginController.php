@@ -63,6 +63,7 @@ class LoginController extends Controller {
             )
             ) {
                 session(['user' => User::whereId($mobile->user_id)->first()]);
+
                 return response()->json([
                     'statusCode' => 200,
                     'url'        => '../public',
@@ -73,6 +74,7 @@ class LoginController extends Controller {
         }
         if (Auth::attempt([$field => $input, 'password' => $password])) {
             session(['user' => $user]);
+
             return response()->json([
                 'statusCode' => 200,
                 'url'        => '../public',

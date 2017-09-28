@@ -16,7 +16,6 @@ class ActionGroup extends Model {
 
     protected $fillable = ['action_id', 'group_id', 'enabled'];
 
-
     public function storeByGroupId($groupId, array $ids = []) {
 
         try {

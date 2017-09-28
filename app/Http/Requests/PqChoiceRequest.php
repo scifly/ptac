@@ -1,11 +1,10 @@
 <?php
-
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
 class PqChoiceRequest extends FormRequest {
-    
+
     protected $strings_key = [
         'choice' => '选项内容',
         'pqs_id' => '所属题目',
@@ -13,23 +12,22 @@ class PqChoiceRequest extends FormRequest {
     ];
     protected $strings_val = [
         'required' => '为必填项',
-        'string' => '为字符串',
-        'max' => '最大为:max',
-        'integer' => '必须为整数',
-        'boolean' => '为0或1',
-        'unique' => '不唯一',
-    
+        'string'   => '为字符串',
+        'max'      => '最大为:max',
+        'integer'  => '必须为整数',
+        'boolean'  => '为0或1',
+        'unique'   => '不唯一',
     ];
-    
+
     /**
      * Determine if the user is authorized to make this request.
      *
      * @return bool
      */
     public function authorize() { return true; }
-    
+
     public function messages() {
-        
+
         $rules = $this->rules();
         $k_array = $this->strings_key;
         $v_array = $this->strings_val;
@@ -44,10 +42,11 @@ class PqChoiceRequest extends FormRequest {
                 $array[$key . '.' . $v] = $k_array[$key] . $v_array[$v];
             }
         }
+
         return $array;
-        
+
     }
-    
+
     public function rules() {
         return [
             'choice' => 'required|string|max:255|unique:poll_questionnaire_subject_choices,choice,' .
@@ -57,7 +56,7 @@ class PqChoiceRequest extends FormRequest {
             'seq_no' => 'required|integer|max:3',
         ];
     }
-    
+
     public function wantsJson() { return true; }
-    
+
 }

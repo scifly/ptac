@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Exceptions;
 
 use Exception;
@@ -12,6 +11,7 @@ use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class Handler extends ExceptionHandler {
+
     /**
      * A list of the exception types that should not be reported.
      *
@@ -25,7 +25,7 @@ class Handler extends ExceptionHandler {
         TokenMismatchException::class,
         ValidationException::class,
     ];
-    
+
     /**
      * Report or log an exception.
      *
@@ -46,7 +46,7 @@ class Handler extends ExceptionHandler {
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function render($request, Exception $exception) {
-        
+
 //        if ($request->ajax() || $request->wantsJson()) {
 //            $response = [
 //                'errors' => '对不起，好像出了点儿问题'
@@ -65,7 +65,7 @@ class Handler extends ExceptionHandler {
         return parent::render($request, $exception);
 
     }
-    
+
     /**
      * Convert an authentication exception into an unauthenticated response.
      *
@@ -77,7 +77,7 @@ class Handler extends ExceptionHandler {
         if ($request->expectsJson()) {
             return response()->json(['error' => 'Unauthenticated.'], 401);
         }
-        
+
         return redirect()->guest(route('login'));
     }
 }
