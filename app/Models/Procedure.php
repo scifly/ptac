@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
@@ -33,44 +32,44 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\ProcedureStep[] $procedureSteps
  */
 class Procedure extends Model {
-    
+
     use ModelTrait;
-    
+
     protected $table = 'procedures';
-    
+
     protected $fillable = [
         'procedure_type_id', 'school_id', 'name',
         'remark', 'enabled',
     ];
-    
+
     /**
      * 返回指定流程所属的学校对象
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function school() { return $this->belongsTo('App\Models\School'); }
-    
+
     /**
      * 返回指定流程所属的流程类型对象
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function procedureType() { return $this->belongsTo('App\Models\ProcedureType'); }
-    
+
     /**
      * 获取指定审批流程包含的所有审批流程步骤对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function procedureSteps() { return $this->hasMany('App\Models\ProcedureStep'); }
-    
+
     /**
      * 获取指定审批流程包含的所有流程审批日志对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function procedureLogs() { return $this->hasMany('App\Models\ProcedureLog'); }
-    
+
     /**
      * 保存审批流程
      *
@@ -78,12 +77,13 @@ class Procedure extends Model {
      * @return bool
      */
     public function store(array $data) {
-        
+
         $procedure = $this->create($data);
+
         return $procedure ? true : false;
-        
+
     }
-    
+
     /**
      * 更新审批流程
      *
@@ -92,13 +92,16 @@ class Procedure extends Model {
      * @return bool
      */
     public function modify(array $data, $id) {
-        
+
         $procedure = $this->find($id);
-        if (!$procedure) { return false; }
+        if (!$procedure) {
+            return false;
+        }
+
         return $procedure->update($data) ? true : false;
-        
+
     }
-    
+
     /**
      * 删除审批流程
      *
@@ -106,15 +109,18 @@ class Procedure extends Model {
      * @return bool|null
      */
     public function remove($id) {
-        
+
         $procedure = $this->find($id);
-        if (!$procedure) { return false; }
+        if (!$procedure) {
+            return false;
+        }
+
         return $this->removable($procedure) ? $procedure->delete() : false;
-        
+
     }
-    
+
     public function datatable() {
-        
+
         $columns = [
             ['db' => 'Procedures.id', 'dt' => 0],
             ['db' => 'ProcedureType.name as proceduretypename', 'dt' => 1],
@@ -124,34 +130,33 @@ class Procedure extends Model {
             ['db' => 'Procedures.created_at', 'dt' => 5],
             ['db' => 'Procedures.updated_at', 'dt' => 6],
             [
-                'db' => 'Procedures.enabled', 'dt' => 7,
+                'db'        => 'Procedures.enabled', 'dt' => 7,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
-                }
+                },
             ],
         ];
-        
         $joins = [
             [
-                'table' => 'schools',
-                'alias' => 'School',
-                'type' => 'INNER',
+                'table'      => 'schools',
+                'alias'      => 'School',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'School.id = Procedures.school_id'
-                ]
+                    'School.id = Procedures.school_id',
+                ],
             ],
             [
-                'table' => 'procedure_types',
-                'alias' => 'ProcedureType',
-                'type' => 'INNER',
+                'table'      => 'procedure_types',
+                'alias'      => 'ProcedureType',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'ProcedureType.id = Procedures.procedure_type_id'
-                ]
-            ]
+                    'ProcedureType.id = Procedures.procedure_type_id',
+                ],
+            ],
         ];
-        
+
         return Datatable::simple($this, $columns, $joins);
     }
-    
+
 }
 

@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ScoreRequest;
@@ -17,44 +16,45 @@ use Illuminate\Support\Facades\Request;
  * @package App\Http\Controllers
  */
 class ScoreController extends Controller {
-    
+
     protected $score;
     protected $exam;
     protected $student;
     protected $subject;
-    
+
     function __construct(Score $score, Exam $exam, Student $student, Subject $subject) {
         $this->score = $score;
         $this->exam = $exam;
         $this->student = $student;
         $this->subject = $subject;
     }
-    
+
     /**
      * 成绩列表
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
-        
+
         if (Request::get('draw')) {
             return response()->json($this->score->datatable());
         }
+
         return $this->output(__METHOD__);
-        
+
     }
-    
+
     /**
      * 录入成绩
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function create() {
-        
+
         return $this->output(__METHOD__);
-        
+
     }
-    
+
     /**
      * 保存成绩
      *
@@ -62,11 +62,11 @@ class ScoreController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(ScoreRequest $request) {
-        
+
         return $this->score->create($request->all()) ? $this->succeed() : $this->fail();
-        
+
     }
-    
+
     /**
      * 成绩详情
      *
@@ -74,18 +74,19 @@ class ScoreController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function show($id) {
-        
+
         $score = $this->score->find($id);
         if (!$score) {
             return $this->notFound();
         }
+
         return $this->output(__METHOD__, [
-            'score' => $score,
-            'studentName' => $score->student->user->realname
+            'score'       => $score,
+            'studentName' => $score->student->user->realname,
         ]);
-        
+
     }
-    
+
     /**
      * 修改成绩
      *
@@ -93,18 +94,19 @@ class ScoreController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function edit($id) {
-        
+
         $score = $this->score->find($id);
         if (!$score) {
             return $this->notFound();
         }
+
         return $this->output(__METHOD__, [
-            'score' => $score,
-            'studentName' => $score->student->user->realname
+            'score'       => $score,
+            'studentName' => $score->student->user->realname,
         ]);
-        
+
     }
-    
+
     /**
      * 更新成绩
      *
@@ -113,15 +115,16 @@ class ScoreController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(ScoreRequest $request, $id) {
-        
+
         $score = $this->score->find($id);
         if (!$score) {
             return $this->notFound();
         }
+
         return $score->update($request->all()) ? $this->succeed() : $this->fail();
-        
+
     }
-    
+
     /**
      * 删除成绩
      *
@@ -129,15 +132,16 @@ class ScoreController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
-        
+
         $score = $this->score->find($id);
         if (!$score) {
             return $this->notFound();
         }
+
         return $score->delete() ? $this->succeed() : $this->fail();
-        
+
     }
-    
+
     /**
      * 统计成绩排名
      *
@@ -145,12 +149,11 @@ class ScoreController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function statistics($examId) {
-        
+
         return $this->score->statistics($examId) ? $this->succeed() : $this->fail();
-        
+
     }
-    
-    
+
     /**
      * Excel模板生成
      * @param $examId
@@ -164,7 +167,6 @@ class ScoreController extends Controller {
         }
         $cellData = $this->student->studentsNum($exam->class_ids);
         array_unshift($cellData, $heading);
-        
         Excel::create('score', function ($excel) use ($cellData, $examId) {
             $excel->sheet('score', function ($sheet) use ($cellData) {
                 $sheet->rows($cellData);
@@ -172,8 +174,7 @@ class ScoreController extends Controller {
             $excel->setTitle($examId);
         })->store('xls')->export('xls');
     }
-    
-    
+
     /**
      * 成绩导入
      */
@@ -197,15 +198,16 @@ class ScoreController extends Controller {
                                 $insert [] = [
                                     'student_id' => $studentNum,
                                     'subject_id' => $subjects[$key],
-                                    'exam_id' => $exam_id,
-                                    'score' => $row,
-                                    'enabled' => 1,
+                                    'exam_id'    => $exam_id,
+                                    'score'      => $row,
+                                    'enabled'    => 1,
                                 ];
                             }
                     }
                 }
             });
         });
+
         return $this->score->insert($insert) ? $this->succeed() : $this->fail();
     }
 }

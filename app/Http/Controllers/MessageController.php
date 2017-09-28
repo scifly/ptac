@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\MessageRequest;
@@ -40,6 +39,7 @@ class MessageController extends Controller {
         if (Request::get('draw')) {
             return response()->json($this->message->datatable());
         }
+
         return $this->output(__METHOD__);
 
     }
@@ -57,7 +57,7 @@ class MessageController extends Controller {
         return $this->output(__METHOD__);
 
     }
-    
+
     /**
      * 保存消息
      *
@@ -68,12 +68,12 @@ class MessageController extends Controller {
         $commTypeName = ['微信', '短信', '应用'];
         $input = $request->all();
         $commType = CommType::whereId($input['comm_type_id'])->first();
-        if($commType->name == $commTypeName[0]){
+        if ($commType->name == $commTypeName[0]) {
             return $this->message->store($request) ? $this->succeed() : $this->fail();
         }
-        
+
     }
-    
+
     /**
      * 消息详情
      *
@@ -86,14 +86,15 @@ class MessageController extends Controller {
         if (!$message) {
             return $this->notFound();
         }
+
         return $this->output(__METHOD__, [
             'message' => $message,
-            'users' => $this->user->users($message->user_ids),
-            'medias' => $this->media->educators($message->media_ids)
+            'users'   => $this->user->users($message->user_ids),
+            'medias'  => $this->media->educators($message->media_ids),
         ]);
 
     }
-    
+
     /**
      * 编辑消息
      *
@@ -107,14 +108,15 @@ class MessageController extends Controller {
         if (!$message) {
             return $this->notFound();
         }
+
         return $this->output(__METHOD__, [
-            'message' => $message,
+            'message'       => $message,
             'selectedUsers' => $this->user->users($message->user_ids),
-            'medias' => $this->media->medias($message->media_ids)
+            'medias'        => $this->media->medias($message->media_ids),
         ]);
 
     }
-    
+
     /**
      * 更新消息
      *
@@ -123,11 +125,11 @@ class MessageController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(MessageRequest $request, $id) {
-        
+
         return $this->message->modify($request, $id) ? $this->succeed() : $this->fail();
 
     }
-    
+
     /**
      * 删除消息
      *
@@ -140,6 +142,7 @@ class MessageController extends Controller {
         if (!$message) {
             return $this->notFound();
         }
+
         return $message->delete() ? $this->succeed() : $this->fail();
 
     }
@@ -152,15 +155,16 @@ class MessageController extends Controller {
     private function checkRole($userId = 1) {
 
         $user = User::find($userId);
-        $departments = Array();
-        $childDepartmentId = Array();
+        $departments = [];
+        $childDepartmentId = [];
         foreach ($user->departments as $department) {
             $departments[] = $department['id'];
         }
         foreach ($departments as $departmentId) {
             $childDepartmentId = $this->departmentChildIds($departmentId);
         }
-        $departmentIds = array_merge($departments,$childDepartmentId);
+        $departmentIds = array_merge($departments, $childDepartmentId);
+
         return array_unique($departmentIds);
     }
 
@@ -170,7 +174,7 @@ class MessageController extends Controller {
      * @return array
      */
     private function departmentChildIds($id) {
-        static $childIds = Array();
+        static $childIds = [];
         $firstIds = Department::where('parent_id', $id)->get(['id'])->toArray();
         if ($firstIds) {
             foreach ($firstIds as $firstId) {
@@ -178,6 +182,7 @@ class MessageController extends Controller {
                 $this->departmentChildIds($firstId['id']);
             }
         }
+
         return $childIds;
     }
 
@@ -197,7 +202,6 @@ class MessageController extends Controller {
 //        $dataView = view('message.wechat_message', ['departmentUsers' => $departmentUsers])->render();
 //        return is_null($departmentUsers) ? $this->fail('该部门下暂时还没有人员') : $this->succeed($dataView);
 //    }
-
 //    public function userMessages() {
 //        //判断用户是否为消息接收者
 //        $userId = 1;
@@ -209,7 +213,6 @@ class MessageController extends Controller {
 //        dd($userReceiveMessages);
 //        return view('message.wechat_messgae', [$userReceiveMessages]);
 //    }
-
     private function userReceiveMessages($userId, $messageType) {
         //显示当前用户能接受到的消息
         $messages = $this->message->where('r_user_id', $userId)
@@ -218,6 +221,5 @@ class MessageController extends Controller {
 
     private function userSendMessages() {
         //当前用户发送消息
-
     }
 }

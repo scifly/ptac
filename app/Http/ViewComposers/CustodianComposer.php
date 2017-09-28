@@ -30,7 +30,7 @@ class CustodianComposer {
                 $students[$v['id']] = $v['user']['realname'];
             }
         }
-
+        array_unshift($students, '(请选择)');
         $view->with([
             'user' => $this->user->pluck('realname','id'),
 //            'departments' => $this->department->departments([1]),

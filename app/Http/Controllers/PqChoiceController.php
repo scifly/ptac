@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\PqChoiceRequest;
@@ -13,42 +12,44 @@ use Illuminate\Support\Facades\Request;
  * @package App\Http\Controllers
  */
 class PqChoiceController extends Controller {
+
     protected $pqChoice;
-    
+
     /**
      * PqChoiceController constructor.
      * @param PollQuestionnaireChoice $pqChoice
      */
     function __construct(PollQuestionnaireChoice $pqChoice) {
-        
+
         $this->pqChoice = $pqChoice;
     }
-    
+
     /**
      * 选项列表
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
-        
+
         if (Request::get('draw')) {
             return response()->json($this->pqChoice->datatable());
         }
+
         return $this->output(__METHOD__);
-        
+
     }
-    
+
     /**
      * 创建选项
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function create() {
-        
+
         return $this->output(__METHOD__);
-        
+
     }
-    
+
     /**
      * 保存选项
      *
@@ -56,11 +57,11 @@ class PqChoiceController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(PqChoiceRequest $request) {
-        
+
         return $this->pqChoice->create($request->all()) ? $this->succeed() : $this->fail();
-        
+
     }
-    
+
     /**
      * 选项详情
      *
@@ -68,35 +69,36 @@ class PqChoiceController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function show($id) {
-        
+
         $pqChoice = $this->pqChoice->find($id);
         if (!$pqChoice) {
             return $this->notFound();
         }
+
         return $this->output(__METHOD__, [
             'pqChoice' => $pqChoice,
         ]);
-        
+
     }
-    
+
     /**
      * 编辑选项
      * @param $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id) {
-        
+
         $pqChoice = $this->pqChoice->find($id);
         if (!$pqChoice) {
             return $this->notFound();
         }
-        
+
         return $this->output(__METHOD__, [
             'pqChoice' => $pqChoice,
         ]);
-        
+
     }
-    
+
     /**
      * 更新选项
      *
@@ -105,14 +107,15 @@ class PqChoiceController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(PqChoiceRequest $request, $id) {
-        
+
         $pqChoice = $this->pqChoice->find($id);
         if (!$pqChoice) {
             return $this->notFound();
         }
+
         return $pqChoice->update($request->all()) ? $this->succeed() : $this->fail();
     }
-    
+
     /**
      * 删除选项
      *
@@ -120,12 +123,13 @@ class PqChoiceController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
-        
+
         $pqChoice = $this->pqChoice->find($id);
         if (!$pqChoice) {
             return $this->notFound();
         }
+
         return $pqChoice->delete() ? $this->succeed() : $this->fail();
-        
+
     }
 }

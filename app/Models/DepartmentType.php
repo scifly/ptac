@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
@@ -27,18 +26,18 @@ use Illuminate\Database\Eloquent\Model;
  * @mixin \Eloquent
  */
 class DepartmentType extends Model {
-    
+
     use ModelTrait;
-    
+
     protected $fillable = ['name', 'remark', 'enabled'];
-    
+
     /**
      * 获取指定部门类型包含的所有部门对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function departments() { return $this->hasMany('App\Models\Department'); }
-    
+
     /**
      * 创建部门类型
      *
@@ -46,11 +45,11 @@ class DepartmentType extends Model {
      * @return $this|Model
      */
     public function store(array $data) {
-        
+
         return $this->create($data);
-        
+
     }
-    
+
     /**
      * 更新不猛类型
      *
@@ -59,11 +58,11 @@ class DepartmentType extends Model {
      * @return bool
      */
     public function modify(array $data, $id) {
-        
+
         return $this->find($id)->update($data);
-        
+
     }
-    
+
     /**
      * 删除部门类型
      *
@@ -71,16 +70,19 @@ class DepartmentType extends Model {
      * @return bool|null
      */
     public function remove($id) {
-        
+
         $departmentType = $this->find($id);
-        if (!$departmentType) { return false; }
+        if (!$departmentType) {
+            return false;
+        }
         $removed = $this->removable($departmentType) ? $departmentType->delete() : false;
+
         return $removed ? true : false;
-        
+
     }
-    
+
     public function datatable() {
-        
+
         $columns = [
             ['db' => 'DepartmentType.id', 'dt' => 0],
             ['db' => 'DepartmentType.name', 'dt' => 1],
@@ -88,15 +90,15 @@ class DepartmentType extends Model {
             ['db' => 'DepartmentType.created_at', 'dt' => 3],
             ['db' => 'DepartmentType.updated_at', 'dt' => 4],
             [
-                'db' => 'DepartmentType.enabled', 'dt' => 5,
+                'db'        => 'DepartmentType.enabled', 'dt' => 5,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
-                }
+                },
             ],
         ];
-        
+
         return Datatable::simple($this, $columns);
-        
+
     }
-    
+
 }

@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Models\Action;
@@ -11,10 +10,10 @@ use App\Models\Menu;
 use App\Models\Tab;
 
 class PermissionController extends Controller {
-    
+
     protected $group, $action, $tab, $menu;
     protected $actionGroup, $groupMenu, $groupTab;
-    
+
     function __construct(
         Group $group,
         Action $action,
@@ -24,7 +23,7 @@ class PermissionController extends Controller {
         GroupMenu $groupMenu,
         GroupTab $groupTab
     ) {
-        
+
         $this->group = $group;
         $this->action = $action;
         $this->tab = $tab;
@@ -32,9 +31,7 @@ class PermissionController extends Controller {
         $this->actionGroup = $actionGroup;
         $this->groupMenu = $groupMenu;
         $this->groupTab = $groupTab;
-        
+
     }
-    
-    
-    
+
 }

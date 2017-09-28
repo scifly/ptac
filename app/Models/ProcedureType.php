@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
@@ -27,22 +26,22 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read Collection|Procedure[] $procedures
  */
 class ProcedureType extends Model {
-    
+
     use ModelTrait;
-    
+
     protected $table = 'procedure_types';
-    
+
     protected $fillable = ['name', 'remark', 'enabled'];
-    
+
     /**
      * 返回指定审批流程类型包含的所有审批流程对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function procedures() { return $this->hasMany('App\Models\Procedure'); }
-    
+
     public function datatable() {
-        
+
         $columns = [
             ['db' => 'ProcedureType.id', 'dt' => 0],
             ['db' => 'ProcedureType.name', 'dt' => 1],
@@ -50,13 +49,13 @@ class ProcedureType extends Model {
             ['db' => 'ProcedureType.created_at', 'dt' => 3],
             ['db' => 'ProcedureType.updated_at', 'dt' => 4],
             [
-                'db' => 'ProcedureType.enabled', 'dt' => 5,
+                'db'        => 'ProcedureType.enabled', 'dt' => 5,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
-                }
+                },
             ],
         ];
-        
+
         return Datatable::simple($this, $columns);
     }
 }

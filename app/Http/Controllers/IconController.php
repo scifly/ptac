@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\IconRequest;
@@ -13,36 +12,37 @@ use Illuminate\Support\Facades\Request as Request;
  * @package App\Http\Controllers
  */
 class IconController extends Controller {
-    
+
     protected $icon;
-    
+
     function __construct(Icon $icon) { $this->icon = $icon; }
-    
+
     /**
      * 图标列表
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
-        
+
         if (Request::get('draw')) {
             return response()->json($this->icon->datatable());
         }
+
         return $this->output(__METHOD__);
-        
+
     }
-    
+
     /**
      * 创建图标
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function create() {
-        
+
         return $this->output(__METHOD__);
-        
+
     }
-    
+
     /**
      * 保存图标
      *
@@ -50,12 +50,12 @@ class IconController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(IconRequest $request) {
-        
+
         return $this->icon->store($request->all())
             ? $this->succeed() : $this->fail();
-        
+
     }
-    
+
     /**
      * 图标详情
      *
@@ -63,15 +63,16 @@ class IconController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function show($id) {
-        
+
         $icon = $this->icon->find($id);
         if (!$icon) {
             return $this->notFound();
         }
+
         return $this->output(__METHOD__, ['icon' => $icon]);
-        
+
     }
-    
+
     /**
      * 编辑图标
      *
@@ -79,15 +80,16 @@ class IconController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function edit($id) {
-        
+
         $icon = $this->icon->find($id);
         if (!$icon) {
             return $this->notFound();
         }
+
         return $this->output(__METHOD__, ['icon' => $icon]);
-        
+
     }
-    
+
     /**
      * 更新图标
      *
@@ -96,16 +98,17 @@ class IconController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(IconRequest $request, $id) {
-        
+
         $icon = $this->icon->find($id);
         if (!$icon) {
             return $this->notFound();
         }
+
         return $icon->modify($request->all(), $id)
             ? $this->succeed() : $this->fail();
-        
+
     }
-    
+
     /**
      * 删除图标
      *
@@ -113,14 +116,15 @@ class IconController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
-        
+
         $icon = $this->icon->find($id);
         if (!$icon) {
             return $this->notFound();
         }
+
         return $icon->remove($id)
             ? $this->succeed() : $this->fail();
-        
+
     }
-    
+
 }

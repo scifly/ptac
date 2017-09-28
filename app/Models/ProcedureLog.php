@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
@@ -44,30 +43,30 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|ProcedureLog whereFirstLogId($value)
  */
 class ProcedureLog extends Model {
-    
+
     const DT_PEND = '<span class="badge bg-orange">%s</span>';
-    
+
     protected $table = 'procedure_logs';
-    
+
     protected $joins = [
         [
-            'table' => 'procedures',
-            'alias' => 'Procedures',
-            'type' => 'INNER',
+            'table'      => 'procedures',
+            'alias'      => 'Procedures',
+            'type'       => 'INNER',
             'conditions' => [
-                'Procedures.id = ProcedureLog.procedure_id'
-            ]
+                'Procedures.id = ProcedureLog.procedure_id',
+            ],
         ],
         [
-            'table' => 'procedure_steps',
-            'alias' => 'ProcedureStep',
-            'type' => 'INNER',
+            'table'      => 'procedure_steps',
+            'alias'      => 'ProcedureStep',
+            'type'       => 'INNER',
             'conditions' => [
-                'ProcedureStep.id = ProcedureLog.procedure_step_id'
-            ]
-        ]
+                'ProcedureStep.id = ProcedureLog.procedure_step_id',
+            ],
+        ],
     ];
-    
+
     protected $fillable = [
         'initiator_user_id',
         'procedure_id',
@@ -89,10 +88,9 @@ class ProcedureLog extends Model {
      */
     public function initiatorUser() {
 
-        return $this->belongsTo('App\Models\User','initiator_user_id');
+        return $this->belongsTo('App\Models\User', 'initiator_user_id');
 
     }
-
 
     /**
      * 返回审批流程操作者对应的用户对象
@@ -100,7 +98,7 @@ class ProcedureLog extends Model {
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function operatorUser() {
-        return $this->belongsTo('App\Models\User','operator_user_id');
+        return $this->belongsTo('App\Models\User', 'operator_user_id');
     }
 
     /**
@@ -118,76 +116,71 @@ class ProcedureLog extends Model {
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function procedureStep() {
-        return $this->belongsTo('App\Models\ProcedureStep','procedure_step_id');
+        return $this->belongsTo('App\Models\ProcedureStep', 'procedure_step_id');
     }
-    
+
     /**
      * 拆分initiator_media_ids、operator_media_ids,
      * @param $media_ids
      * @return array 处理后字典 key=>media.id,value => media
      */
     public function operate_ids($media_ids) {
-        
+
         $ids = explode(',', $media_ids);
-        
-        $medias = array();
+        $medias = [];
         foreach ($ids as $mid) {
             $media = Media::find($mid);
             $medias[$mid] = $media;
         }
-        
+
         return $medias;
     }
-    
+
     public function datatable($where) {
-        
+
         $columns = [
             ['db' => 'ProcedureLog.first_log_id', 'dt' => 0],
             [
-                'db' => 'ProcedureLog.initiator_user_id', 'dt' => 1,
+                'db'        => 'ProcedureLog.initiator_user_id', 'dt' => 1,
                 'formatter' => function ($d) {
                     return $this->get_user($d)->realname;
-                }
+                },
             ],
             ['db' => 'Procedures.name as procedure_name', 'dt' => 2],
             ['db' => 'ProcedureStep.name procedure_step_name', 'dt' => 3],
             ['db' => 'ProcedureLog.initiator_msg', 'dt' => 4],
             ['db' => 'ProcedureLog.updated_at', 'dt' => 5],
             [
-                'db' => 'ProcedureLog.step_status', 'dt' => 6,
+                'db'        => 'ProcedureLog.step_status', 'dt' => 6,
                 'formatter' => function ($d, $row) {
-                    
+
                     switch ($d) {
-                        
+
                         case 0:
                             $status = sprintf(Datatable::DT_ON, '通过');
                             break;
-                        
                         case 1:
                             $status = sprintf(Datatable::DT_OFF, '拒绝');
                             break;
-                        
                         case 2:
                             $status = sprintf(self::DT_PEND, '待定');
                             break;
-                        
                         default:
                             $status = sprintf(Datatable::DT_OFF, '错误');
                             break;
                     }
-                    
                     $id = $row['first_log_id'];
                     $showLink = '<a id = ' . $id . ' href="show/' . $id . '" class="btn btn-primary btn-icon btn-circle btn-xs" data-toggle="modal"><i class="fa fa-eye"></i></a>';
-                    
+
                     return $status . Datatable::DT_SPACE . $showLink;
-                    
-                }
+
+                },
             ],
         ];
-        
+
         return Datatable::simple($this, $columns, $this->joins, $where);
     }
-    
+
     /**
      * 获取用户信息
      * @param $userId
@@ -196,5 +189,5 @@ class ProcedureLog extends Model {
     public function get_user($userId) {
         return User::find($userId);
     }
-    
+
 }

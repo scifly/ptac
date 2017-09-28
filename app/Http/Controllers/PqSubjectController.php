@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\PqSubjectRequest;
@@ -12,8 +11,8 @@ use Illuminate\Support\Facades\Request;
  * Class PqSubjectController
  * @package App\Http\Controllers
  */
-class PqSubjectController extends Controller
-{
+class PqSubjectController extends Controller {
+
     protected $pqSubject;
 
     function __construct(PollQuestionnaireSubject $pqSubject) {
@@ -31,6 +30,7 @@ class PqSubjectController extends Controller
         if (Request::get('draw')) {
             return response()->json($this->pqSubject->dataTable());
         }
+
         return $this->output(__METHOD__);
 
     }
@@ -67,7 +67,10 @@ class PqSubjectController extends Controller
     public function show($id) {
 
         $pqSubject = $this->pqSubject->find($id);
-        if (!$pqSubject) { return $this->notFound(); }
+        if (!$pqSubject) {
+            return $this->notFound();
+        }
+
         return $this->output(__METHOD__, [
             'pqSubject' => $pqSubject,
         ]);
@@ -82,7 +85,10 @@ class PqSubjectController extends Controller
     public function edit($id) {
 
         $pqSubject = $this->pqSubject->find($id);
-        if (!$pqSubject) { return $this->notFound(); }
+        if (!$pqSubject) {
+            return $this->notFound();
+        }
+
         return $this->output(__METHOD__, ['pqSubject' => $pqSubject]);
 
     }
@@ -97,7 +103,10 @@ class PqSubjectController extends Controller
     public function update(PqSubjectRequest $request, $id) {
 
         $pqSubject = $this->pqSubject->find($id);
-        if (!$pqSubject) { return $this->notFound(); }
+        if (!$pqSubject) {
+            return $this->notFound();
+        }
+
         return $pqSubject->update($request->all()) ? $this->succeed() : $this->fail();
     }
 
@@ -110,7 +119,10 @@ class PqSubjectController extends Controller
     public function destroy($id) {
 
         $pqSubject = $this->pqSubject->find($id);
-        if (!$pqSubject) { return $this->notFound(); }
+        if (!$pqSubject) {
+            return $this->notFound();
+        }
+
         return $pqSubject->remove($id) ? $this->succeed() : $this->fail('失败：该题目存在有效关联数据，不能删除');
 
     }

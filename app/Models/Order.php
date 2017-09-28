@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
@@ -34,35 +33,35 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read User $user
  */
 class Order extends Model {
-    
+
     protected $table = 'orders';
-    
+
     protected $fillable = [
         'ordersn', 'user_id', 'pay_user_id',
         'status', 'combo_type_id', 'payment',
-        'transactionid', 'created_at', 'updated_at'
+        'transactionid', 'created_at', 'updated_at',
     ];
-    
+
     /**
      * 返回指定订单所属的用户对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function user() { return $this->belongsTo('App\Models\User'); }
-    
+
     /**
      * 返回指定订单所属的套餐类型对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function comboType() {
-        
+
         return $this->belongsTo('App\models\ComboType');
-        
+
     }
-    
+
     public function datatable() {
-        
+
         $columns = [
             ['db' => 'Orders.id', 'dt' => 0],
             ['db' => 'User.realname', 'dt' => 1],
@@ -73,32 +72,33 @@ class Order extends Model {
             ['db' => 'Orders.created_at', 'dt' => 6],
             ['db' => 'Orders.updated_at', 'dt' => 7],
             [
-                'db' => 'Orders.status', 'dt' => 8,
+                'db'        => 'Orders.status', 'dt' => 8,
                 'formatter' => function ($d, $row) {
                     // 已支付, 待支付
-                }
+                },
             ],
         ];
         $joins = [
             [
-                'table' => 'users',
-                'alias' => 'User',
-                'type' => 'INNER',
+                'table'      => 'users',
+                'alias'      => 'User',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'User.id = Orders.user_id'
-                ]
+                    'User.id = Orders.user_id',
+                ],
             ],
             [
-                'table' => 'combo_types',
-                'alias' => 'ComboType',
-                'type' => 'INNER',
+                'table'      => 'combo_types',
+                'alias'      => 'ComboType',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'ComboType.id = Orders.combo_type_id'
-                ]
-            ]
+                    'ComboType.id = Orders.combo_type_id',
+                ],
+            ],
         ];
+
         return Datatable::simple($this, $columns, $joins);
-        
+
     }
-    
+
 }

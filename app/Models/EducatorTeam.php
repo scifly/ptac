@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
@@ -23,9 +22,9 @@ use Illuminate\Database\Eloquent\Model;
  * @mixin \Eloquent
  */
 class EducatorTeam extends Model {
-    
+
     protected $table = 'educators_teams';
-    
+
     protected $fillable = ['educator_id', 'team_id', 'enabled'];
-    
+
 }

@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
@@ -35,31 +34,31 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read ProcedureLog $procedureLog
  */
 class EducatorAppeal extends Model {
-    
+
     protected $table = 'educator_appeals';
-    
+
     protected $fillable = [
         'educator_id', 'ea_ids', 'appeal_content',
         'procedure_log_id', 'approver_educator_ids',
-        'reated_educator_ids', 'status'
+        'reated_educator_ids', 'status',
     ];
-    
+
     /**
      * 获取对应的教职员工对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function educator() { return $this->belongsTo('App\Models\Educator'); }
-    
+
     /**
      * 获取对应的流程日志对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function procedureLog() { return $this->belongsTo('App\Models\ProcedureLog'); }
-    
+
     public function datatable() {
-        
+
         $columns = [
             ['db' => 'EducatorAppeal.id', 'dt' => 0],
             ['db' => 'Educator.name as educatorname', 'dt' => 1],
@@ -68,24 +67,24 @@ class EducatorAppeal extends Model {
             ['db' => 'EducatorAppeal.created_at', 'dt' => 4],
             ['db' => 'EducatorAppeal.updated_at', 'dt' => 5],
             [
-                'db' => 'EducatorAppeal.status', 'dt' => 6,
+                'db'        => 'EducatorAppeal.status', 'dt' => 6,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
-                }
+                },
             ],
         ];
         $joins = [
             [
-                'table' => 'educators',
-                'alias' => 'Educator',
-                'type' => 'INNER',
+                'table'      => 'educators',
+                'alias'      => 'Educator',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'Educator.id = EducatorAppeal.educator_id'
-                ]
-            ]
+                    'Educator.id = EducatorAppeal.educator_id',
+                ],
+            ],
         ];
+
         return Datatable::simple($this, $columns, $joins);
     }
-    
-    
+
 }

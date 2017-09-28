@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Helpers\ModelTrait;
@@ -27,18 +26,18 @@ use Illuminate\Database\Eloquent\Model;
  * @mixin \Eloquent
  */
 class Mobile extends Model {
-    
+
     use ModelTrait;
-    
+
     protected $fillable = ['mobile', 'user_id', 'isdefault', 'enabled'];
-    
+
     /**
      * 返回指定手机所属的用户对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function user() { return $this->belongsTo('App\Models\User'); }
-    
+
     /**
      * 保存手机号码
      *
@@ -46,12 +45,13 @@ class Mobile extends Model {
      * @return bool
      */
     public function store(array $data) {
-        
+
         $mobile = $this->create($data);
+
         return $mobile ? true : false;
-        
+
     }
-    
+
     /**
      * 更新手机号码
      *
@@ -60,15 +60,16 @@ class Mobile extends Model {
      * @return bool
      */
     public function modify(array $data, $id) {
-        
+
         $mobile = $this->find($id);
         if (!$mobile) {
             return false;
         }
+
         return $mobile->update($data) ? true : false;
-        
+
     }
-    
+
     /**
      * 删除手机号码
      *
@@ -76,11 +77,14 @@ class Mobile extends Model {
      * @return bool|null
      */
     public function remove($id) {
-        
+
         $mobile = $this->find($id);
-        if (!$mobile) { return false; }
+        if (!$mobile) {
+            return false;
+        }
+
         return $mobile->removable($mobile) ? $mobile->delete() : false;
-        
+
     }
-    
+
 }

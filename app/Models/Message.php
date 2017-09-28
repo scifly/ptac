@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
@@ -9,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Mockery\Exception;
-use App\Models\MessageSendingLogs;
+
 /**
  * App\Models\Message
  *
@@ -60,13 +59,14 @@ use App\Models\MessageSendingLogs;
  * @method static Builder|Message whereSent($value)
  */
 class Message extends Model {
+
     //
     protected $table = 'messages';
 
     protected $fillable = [
         'comm_type_id', 'app_id', 'msl_id', 'content',
         'serviceid', 'message_id', 'url', 'media_ids',
-        's_user_id', 'r_user_id', 'message_type_id', 'readed', 'sent'
+        's_user_id', 'r_user_id', 'message_type_id', 'readed', 'sent',
     ];
 
     /**
@@ -97,7 +97,7 @@ class Message extends Model {
         return $this->belongsTo('App\Models\MessageSendingLogs');
     }
 
-    public function commType(){
+    public function commType() {
         return $this->belongsTo('App\Models\CommType');
     }
 
@@ -119,22 +119,7 @@ class Message extends Model {
                     $crateDate->update($updateUrl);
                 });
             }
-            return is_null($exception) ? true : $exception;
-        } catch (Exception $e) {
-            return false;
-        }
-    }
 
-    public function modify(MessageRequest $request, $id) {
-        $message = $this->find($id);
-        if (!$message) {
-            return false;
-        }
-        try {
-            $exception = DB::transaction(function () use ($request, $id) {
-                $this->removeMedias($request);
-                return $this->where('id', $id)->update($request->except('_method', '_token'));
-            });
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
             return false;
@@ -149,13 +134,30 @@ class Message extends Model {
         $mediaIds = $request->input('del_ids');
         if ($mediaIds) {
             $medias = Media::whereIn('id', $mediaIds)->get(['id', 'path']);
-
             foreach ($medias as $media) {
                 $paths = explode("/", $media->path);
                 Storage::disk('uploads')->delete($paths[5]);
 
             }
             Media::whereIn('id', $mediaIds)->delete();
+        }
+    }
+
+    public function modify(MessageRequest $request, $id) {
+        $message = $this->find($id);
+        if (!$message) {
+            return false;
+        }
+        try {
+            $exception = DB::transaction(function () use ($request, $id) {
+                $this->removeMedias($request);
+
+                return $this->where('id', $id)->update($request->except('_method', '_token'));
+            });
+
+            return is_null($exception) ? true : $exception;
+        } catch (Exception $e) {
+            return false;
         }
     }
 //    private function addMessageSendingLog($recipientCount) {
@@ -172,6 +174,7 @@ class Message extends Model {
 //            return false;
 //        }
 //    }
+
     public function datatable() {
 
         $columns = [
@@ -181,58 +184,57 @@ class Message extends Model {
             ['db' => 'Message.msl_id', 'dt' => 3],
             ['db' => 'User.realname', 'dt' => 4],
             ['db' => 'MessageType.name', 'dt' => 5],
-            ['db' => 'Message.readed', 'dt' => 6,
-                'formatter' => function ($d) {
-                    return $d === 0 ? "否" : "是";
-                }
+            ['db'        => 'Message.readed', 'dt' => 6,
+             'formatter' => function ($d) {
+                 return $d === 0 ? "否" : "是";
+             },
             ],
-            ['db' => 'Message.sent', 'dt' => 7,
-                'formatter' => function ($d) {
-                    return $d === 0 ? "否" : "是";
-                }
+            ['db'        => 'Message.sent', 'dt' => 7,
+             'formatter' => function ($d) {
+                 return $d === 0 ? "否" : "是";
+             },
             ],
             ['db' => 'Message.created_at', 'dt' => 8],
-
             [
-                'db' => 'Message.updated_at', 'dt' => 9,
+                'db'        => 'Message.updated_at', 'dt' => 9,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
-                }
-            ]
+                },
+            ],
         ];
         $joins = [
             [
-                'table' => 'comm_types',
-                'alias' => 'CommType',
-                'type' => 'INNER',
+                'table'      => 'comm_types',
+                'alias'      => 'CommType',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'CommType.id = Message.comm_type_id'
-                ]
+                    'CommType.id = Message.comm_type_id',
+                ],
             ],
             [
-                'table' => 'apps',
-                'alias' => 'App',
-                'type' => 'INNER',
+                'table'      => 'apps',
+                'alias'      => 'App',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'App.id = Message.app_id'
-                ]
+                    'App.id = Message.app_id',
+                ],
             ],
             [
-                'table' => 'message_types',
-                'alias' => 'MessageType',
-                'type' => 'INNER',
+                'table'      => 'message_types',
+                'alias'      => 'MessageType',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'MessageType.id = Message.message_type_id'
-                ]
+                    'MessageType.id = Message.message_type_id',
+                ],
             ],
             [
-                'table' => 'users',
-                'alias' => 'User',
-                'type' => 'INNER',
+                'table'      => 'users',
+                'alias'      => 'User',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'User.id = Message.s_user_id'
-                ]
-            ]
+                    'User.id = Message.s_user_id',
+                ],
+            ],
         ];
 
         return Datatable::simple($this, $columns, $joins);

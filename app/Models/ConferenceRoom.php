@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
@@ -33,36 +32,36 @@ use Mockery\Exception;
  * @property-read School $school
  */
 class ConferenceRoom extends Model {
-    
+
     protected $fillable = [
         'name', 'school_id', 'capacity',
-        'remark', 'enabled'
+        'remark', 'enabled',
     ];
-    
+
     /**
      * 返回会议室所属的学校对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function school() {
-        
+
         return $this->belongsTo('\App\Models\School');
-        
+
     }
-    
+
     /**
      * 获取指定会议室的会议队列
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function conferenceQueues() {
-        
+
         return $this->hasMany('App\Models\ConferenceQueue');
-        
+
     }
-    
+
     public function remove($conferenceRoomId) {
-        
+
         $conferenceRoom = $this->find($conferenceRoomId);
         if (!$conferenceRoom) {
             return false;
@@ -75,15 +74,16 @@ class ConferenceRoom extends Model {
                     $queue->delete();
                 }
             });
+
             return is_null($exception) ? true : false;
         } catch (Exception $e) {
             return false;
         }
-        
+
     }
-    
+
     public function datatable() {
-        
+
         $columns = [
             ['db' => 'ConferenceRoom.id', 'dt' => 0],
             ['db' => 'ConferenceRoom.name', 'dt' => 1],
@@ -93,24 +93,25 @@ class ConferenceRoom extends Model {
             ['db' => 'ConferenceRoom.created_at', 'dt' => 5],
             ['db' => 'ConferenceRoom.updated_at', 'dt' => 6],
             [
-                'db' => 'ConferenceRoom.created_at', 'dt' => 7,
+                'db'        => 'ConferenceRoom.created_at', 'dt' => 7,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
-                }
+                },
             ],
         ];
         $joins = [
             [
-                'table' => 'schools',
-                'alias' => 'School',
-                'type' => 'INNER',
+                'table'      => 'schools',
+                'alias'      => 'School',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'School.id = ConferenceRoom.school_id'
-                ]
-            ]
+                    'School.id = ConferenceRoom.school_id',
+                ],
+            ],
         ];
+
         return Datatable::simple($this, $columns, $joins);
-        
+
     }
-    
+
 }

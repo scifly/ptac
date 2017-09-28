@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
@@ -39,7 +38,7 @@ use Illuminate\Support\Facades\Storage;
  * @property-read \App\Models\Media $thumbnailmedia
  */
 class WsmArticle extends Model {
-    
+
     protected $table = 'wsm_articles';
     protected $fillable = [
         'id',
@@ -53,24 +52,26 @@ class WsmArticle extends Model {
         'updated_at',
         'enabled',
     ];
-    
+
     public function wapSiteModule() {
         return $this->belongsTo('App\Models\WapSiteModule', 'wsm_id', 'id');
     }
-    
+
     public function store(WsmArticleRequest $request) {
         try {
             $exception = DB::transaction(function () use ($request) {
                 //删除原有的图片
                 $this->removeMedias($request);
+
                 return $this->create($request->all());
             });
+
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
             return false;
         }
     }
-    
+
     /**
      * @param $request
      */
@@ -79,16 +80,15 @@ class WsmArticle extends Model {
         $mediaIds = $request->input('del_ids');
         if ($mediaIds) {
             $medias = Media::whereIn('id', $mediaIds)->get(['id', 'path']);
-            
             foreach ($medias as $media) {
                 $paths = explode("/", $media->path);
                 Storage::disk('uploads')->delete($paths[5]);
-                
+
             }
             Media::whereIn('id', $mediaIds)->delete();
         }
     }
-    
+
     public function modify(WsmArticleRequest $request, $id) {
         $wapSite = $this->find($id);
         if (!$wapSite) {
@@ -97,19 +97,21 @@ class WsmArticle extends Model {
         try {
             $exception = DB::transaction(function () use ($request, $id) {
                 $this->removeMedias($request);
+
                 return $this->where('id', $id)->update($request->except('_method', '_token'));
             });
+
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
             return false;
         }
     }
-    
+
     /**
      * @return array
      */
     public function datatable() {
-        
+
         $columns = [
             ['db' => 'WsmArticle.id', 'dt' => 0],
             ['db' => 'Wsm.name as wsmname', 'dt' => 1],
@@ -117,25 +119,24 @@ class WsmArticle extends Model {
             ['db' => 'WsmArticle.summary', 'dt' => 3],
             ['db' => 'WsmArticle.created_at', 'dt' => 4],
             ['db' => 'WsmArticle.updated_at', 'dt' => 5],
-            
             [
-                'db' => 'WsmArticle.enabled', 'dt' => 6,
+                'db'        => 'WsmArticle.enabled', 'dt' => 6,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
-                }
-            ]
+                },
+            ],
         ];
         $joins = [
             [
-                'table' => 'wap_site_modules',
-                'alias' => 'Wsm',
-                'type' => 'INNER',
+                'table'      => 'wap_site_modules',
+                'alias'      => 'Wsm',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'Wsm.id = WsmArticle.wsm_id'
-                ]
-            ]
+                    'Wsm.id = WsmArticle.wsm_id',
+                ],
+            ],
         ];
-        
+
         return Datatable::simple($this, $columns, $joins);
     }
 }
