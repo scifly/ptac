@@ -4,11 +4,7 @@ var page = {
     inform: function(title, text, image) {
         $.gritter.add({title: title, text: text, image: page.siteRoot() + image});
     },
-    siteRoot: function() {
-        var path = window.location.pathname;
-        var paths = path.split('/');
-        return '/' + paths[1] + '/' + paths[2] + '/';
-    },
+    siteRoot: function() { return '../'; },
     ajaxLoader: function() {
         return "<img id='ajaxLoader' alt='' src='" + page.siteRoot() + "/img/throbber.gif' " +
         "style='vertical-align: middle;'/>"
