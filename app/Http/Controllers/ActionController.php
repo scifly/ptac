@@ -32,11 +32,11 @@ class ActionController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
-        $user = Session::get('user');
+        // $user = Session::get('user');
 
-        $group = Group::whereId($user->group_id)->first();
+        // $group = Group::whereId($user->group_id)->first();
         $route = [];
-        foreach ($group->actions as $a)
+        /*foreach ($group->actions as $a)
         {
             if(stripos($a->route,'/{id}')&& !(stripos($a->route,'/{id}/')))
             {
@@ -47,7 +47,7 @@ class ActionController extends Controller {
                 $a->route = substr($a->route,0,stripos($a->route,'/{id}/'));
             }
             $route[] = $a->route;
-        }
+        }*/
 
         if (Request::get('draw')) {
             return response()->json($this->action->datatable());
