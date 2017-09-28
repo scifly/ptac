@@ -34,10 +34,10 @@ class MenuController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
-        $user = Session::get('user');
+        // $user = Session::get('user');
         $department = new Department();
-        $level = $department->groupLevel($user->id);
-        switch ($level) {
+        // $level = $department->groupLevel($user->id);
+        /*switch ($level) {
             case 'root':
                 $typeId = 1;
                 $menuId = 1;
@@ -61,7 +61,7 @@ class MenuController extends Controller {
         } else {
             $menus = Menu::whereId($menuId)->first();
         }
-        $menuId = $menus->id;
+        $menuId = $menus->id;*/
         if (Request::method() === 'POST') {
             return $this->menu->tree();
         }
