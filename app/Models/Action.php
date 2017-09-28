@@ -99,8 +99,8 @@ HTML;
         'Score_SendController',
     ];
     protected $routes;
-    # 控制器路径
-    protected $dir = '/media/sf_sandbox/ptac/app/Http/Controllers';
+    # 控制器相对路径
+    protected $ctlrDir = 'app/Http/Controllers';
     
     /**
      * 返回当前action包含的卡片
@@ -270,7 +270,9 @@ HTML;
         $actionType = new ActionType();
         $this->actionTypes = $actionType->pluck('id', 'name')->toArray();
         $this->routes = Route::getRoutes()->getRoutes();
-        $controllers = $this->scanDirectories($this->dir);
+        # 获取控制器的绝对路径
+        $siteRoot = substr(__DIR__, 0, stripos(__DIR__, 'app/Models'));
+        $controllers = $this->scanDirectories($siteRoot . $this->ctlrDir);
         $this->getControllerNamespaces($controllers);
         $controllerNames = $this->getControllerNames($controllers);
         $selfDefinedMethods = [];
@@ -361,7 +363,7 @@ HTML;
      * @return array
      */
     public function scanDirectories($rootDir, $allData = []) {
-        
+
         // set filenames invisible if you want
         $invisibleFileNames = [".", "..", ".htaccess", ".htpasswd"];
         // run through content of root directory

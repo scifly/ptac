@@ -59,7 +59,7 @@ HTML;
         'LoginController', 'ResetPasswordController', 'TestController',
     ];
     
-    protected $dir = '/media/sf_sandbox/ptac/app/Http/Controllers';
+    protected $ctlrDir = 'app/Http/Controllers';
     
     /**
      * 返回指定卡片所属的菜单对象
@@ -97,7 +97,7 @@ HTML;
     public function scan() {
         
         $action = new Action();
-        $controllers = $action->scanDirectories($this->dir);
+        $controllers = $action->scanDirectories($this->ctlrDir);
         $action->getControllerNamespaces($controllers);
         $controllerNames = $action->getControllerNames($controllers);
         // remove nonexisting controllers
