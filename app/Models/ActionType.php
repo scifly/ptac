@@ -22,8 +22,8 @@ use Illuminate\Database\Eloquent\Model;
  * @mixin \Eloquent
  */
 class ActionType extends Model {
-    
+
     protected $fillable = ['name', 'remark', 'enabled'];
-    
+
 }
 

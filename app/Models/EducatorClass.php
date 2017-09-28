@@ -27,11 +27,11 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|EducatorClass whereEnabled($value)
  */
 class EducatorClass extends Model {
-    
+
     protected $table = 'educators_classes';
-    
+
     protected $fillable = ['educator_id', 'class_id', 'subject_id', 'enabled'];
-    
+
     public function classes() { return $this->belongsTo('App\Models\Educator'); }
-    
+
 }

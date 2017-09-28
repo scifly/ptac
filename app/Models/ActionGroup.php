@@ -11,13 +11,13 @@ use Mockery\Exception;
  * @mixin \Eloquent
  */
 class ActionGroup extends Model {
-    
+
     protected $table = 'actions_groups';
-    
+
     protected $fillable = ['action_id', 'group_id', 'enabled'];
-    
+
     public function storeByGroupId($groupId, array $ids = []) {
-        
+
         try {
             $exception = DB::transaction(function () use ($groupId, $ids) {
                 $this->where('group_id', $groupId)->delete();
@@ -29,12 +29,12 @@ class ActionGroup extends Model {
                     ]);
                 }
             });
-            
+
             return !is_null($exception) ? true : $exception;
         } catch (Exception $e) {
             return false;
         }
-        
+
     }
-    
+
 }

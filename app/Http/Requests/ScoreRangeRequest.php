@@ -4,21 +4,21 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ScoreRangeRequest extends FormRequest {
-    
+
     /**
      * Determine if the user is authorized to make this request.
      *
      * @return bool
      */
     public function authorize() { return true; }
-    
+
     /**
      * Get the validation rules that apply to the request.
      *
      * @return array
      */
     public function rules() {
-        
+
         return [
             'name'        => 'required|string|max:60|unique:score_ranges,name,' .
                 $this->input('id') . ',id,' .
@@ -30,11 +30,11 @@ class ScoreRangeRequest extends FormRequest {
             'end_score'   => 'required|numeric|regex:/^\d+(\.\d{1,2})?$/',
             'enabled'     => 'required|boolean',
         ];
-        
+
     }
-    
+
     protected function prepareForValidation() {
-        
+
         $input = $this->all();
         if (isset($input['enabled']) && $input['enabled'] === 'on') {
             $input['enabled'] = 1;
@@ -45,7 +45,7 @@ class ScoreRangeRequest extends FormRequest {
         if (isset($input['subject_ids'])) {
             $input['subject_ids'] = implode(',', $input['subject_ids']);
         }
-        
+
     }
-    
+
 }

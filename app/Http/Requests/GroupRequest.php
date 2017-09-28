@@ -4,24 +4,24 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 
 class GroupRequest extends FormRequest {
-    
+
     public function authorize() { return true; }
-    
+
     /**
      * Get the validation rules that apply to the request.
      *
      * @return array
      */
     public function rules() {
-        
+
         return [
             'name'   => 'required|string|between:2,255|unique:groups,name,' .
                 $this->input('id') . ',id',
             'remark' => 'required|string|between:2,20',
         ];
-        
+
     }
-    
+
     public function messages() {
         return [
             'name.required'   => '角色名称不能为空',
@@ -32,11 +32,11 @@ class GroupRequest extends FormRequest {
             'remark.max'      => '备注不能大于20个字符',
         ];
     }
-    
+
     public function wantsJson() { return true; }
-    
+
     protected function prepareForValidation() {
-        
+
         $input = $this->all();
         if (isset($input['enabled']) && $input['enabled'] === 'on') {
             $input['enabled'] = 1;
@@ -59,7 +59,7 @@ class GroupRequest extends FormRequest {
             $input['acitonId'] = $actionIds;
         }
         $this->replace($input);
-        
+
     }
-    
+
 }

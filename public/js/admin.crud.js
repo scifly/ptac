@@ -1,21 +1,23 @@
 var crud = {
     crSelector: 'input[type="checkbox"].minimal, input[type="radio"].minimal',
     initICheck: function (object) {
-        if(typeof object === 'undefined') {
+        if (typeof object === 'undefined') {
             $(crud.crSelector).iCheck({
                 checkboxClass: 'icheckbox_square-blue',
                 radioClass: 'iradio_minimal-blue'
             });
-        }else {
+        } else {
             object.find(crud.crSelector).iCheck({
                 checkboxClass: 'icheckbox_minimal-blue',
                 radioClass: 'iradio_minimal-blue'
             });
         }
     },
-    $tbody: function () { return $("#mobileTable").find("tbody"); },
+    $tbody: function () {
+        return $("#mobileTable").find("tbody");
+    },
     // mobileSize: function () { $('#mobile-size').val(); },
-    unbindEvents: function() {
+    unbindEvents: function () {
         $('#add-record').unbind('click');
         $(document).off('click', '.fa-edit');
         $(document).off('click', '.fa-eye');
@@ -180,7 +182,7 @@ var crud = {
         $mobile.attr('required', 'true');
         crud.formParsley($form, requestType, ajaxUrl);
     },
-    mobile: function(formId, size, requestType, ajaxUrl) {
+    mobile: function (formId, size, requestType, ajaxUrl) {
         $(document).off('click', '.btn-mobile-add');
         $(document).off('click', '.btn-mobile-remove');
         $(document).on('click', '.btn-mobile-add', function (e) {
@@ -189,10 +191,10 @@ var crud = {
             size++;
             crud.$tbody().append(
                 '<tr><td><input class="form-control" placeholder="（请输入手机号码）" ' +
-                'name="mobile['+ size +'][mobile]" value=""></td><td style="text-align: center">' +
+                'name="mobile[' + size + '][mobile]" value=""></td><td style="text-align: center">' +
                 '<input type="radio" class="minimal" id="mobile[isdefault]" name="mobile[isdefault]" ' +
                 'value="' + size + '"></td><td style="text-align: center"><input type="checkbox" ' +
-                'class="minimal" name="mobile['+ size +'][enabled]"></td><td style="text-align: center">' +
+                'class="minimal" name="mobile[' + size + '][enabled]"></td><td style="text-align: center">' +
                 '<button class="btn btn-box-tool btn-add btn-mobile-add" type="button">' +
                 '<i class="fa fa-plus text-blue"></i></button></td></tr>'
             );
@@ -208,7 +210,9 @@ var crud = {
                     return false;
                 }
             });
-            if (!defaultChecked) { $($defaults[0]).iCheck('check'); }
+            if (!defaultChecked) {
+                $($defaults[0]).iCheck('check');
+            }
             return false;
         });
     },
@@ -217,6 +221,8 @@ var crud = {
             if ($('.parsley-error').length === 0) {
                 crud.ajaxRequest(requestType, page.siteRoot() + ajaxUrl, $form.serialize(), $form[0]);
             }
-        }).on('form:submit', function() {return false; });
+        }).on('form:submit', function () {
+            return false;
+        });
     }
 };

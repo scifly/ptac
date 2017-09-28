@@ -1,13 +1,16 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CustodianRequest;
 use App\Models\Custodian;
-use App\Models\CustodianStudent;
 use App\Models\Department;
 use App\Models\DepartmentUser;
 use App\Models\Group;
+use App\Models\User;
+use App\Models\Mobile;
 use App\Models\Student;
+use App\Models\CustodianStudent;
 use Illuminate\Support\Facades\Request;
 
 /**
@@ -17,21 +20,21 @@ use Illuminate\Support\Facades\Request;
  * @package App\Http\Controllers
  */
 class CustodianController extends Controller {
-    
+
     protected $custodian, $department, $group, $departmentUser, $student, $custodianStudent;
-    
+
     function __construct(Custodian $custodian, Department $department, Group $group,
                          DepartmentUser $departmentUser, Student $student, CustodianStudent $custodianStudent) {
-        
+
         $this->custodian = $custodian;
         $this->department = $department;
         $this->group = $group;
         $this->departmentUser = $departmentUser;
         $this->student = $student;
         $this->custodianStudent = $custodianStudent;
-        
+
     }
-    
+
     /**
      * 监护人列表
      *
@@ -41,25 +44,25 @@ class CustodianController extends Controller {
         if (Request::get('draw')) {
             return response()->json($this->custodian->datatable());
         }
-        
+
         return parent::output(__METHOD__);
     }
-    
+
     /**
      * 创建监护人
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function create() {
-        
+
         if (Request::method() === 'POST') {
             return $this->department->tree();
         }
-        
+
         return parent::output(__METHOD__);
-        
+
     }
-    
+
     /**
      * 保存监护人
      *
@@ -67,20 +70,20 @@ class CustodianController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(CustodianRequest $request) {
-        
+
         return $this->custodian->store($request) ? $this->succeed() : $this->fail();
-        
+
     }
-    
+
     /**
      * Display the specified resource.
      * @param  \App\Models\Custodian $custodian
      * @return \Illuminate\Http\Response
      */
     public function show(Custodian $custodian) {
-    
+
     }
-    
+
     /**
      * 编辑监护人.
      * @param $id
@@ -88,7 +91,7 @@ class CustodianController extends Controller {
      * @internal param Custodian $custodian
      */
     public function edit($id) {
-        
+
         if (Request::method() === 'POST') {
             return $this->department->tree();
         }
@@ -102,16 +105,16 @@ class CustodianController extends Controller {
         if (!$custodian) {
             return $this->notFound();
         }
-        
+
         return $this->output(__METHOD__, [
             'mobiles'               => $custodian->user->mobiles,
             'custodian'             => $custodian,
             'selectedDepartmentIds' => implode(',', $selectedDepartmentIds),
             'selectedDepartments'   => $selectedDepartments,
         ]);
-        
+
     }
-    
+
     /**
      * 更新监护人.
      * @param CustodianRequest $request
@@ -119,11 +122,11 @@ class CustodianController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(CustodianRequest $request, $id) {
-        
+
         return $this->custodian->modify($request, $id) ? $this->succeed() : $this->fail();
-        
+
     }
-    
+
     /**
      * 删除指定的监护人
      *

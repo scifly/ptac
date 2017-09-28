@@ -28,20 +28,20 @@ use Mockery\Exception;
  * @property-read Collection|CustodianStudent[] $custodianStudent
  * @property int $menu_id
  * @property int $department_id
- * @method static Builder|Custodian whereDepartmentId($value)
- * @method static Builder|Custodian whereMenuId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Custodian whereDepartmentId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Custodian whereMenuId($value)
  */
 class Custodian extends Model {
-    
+
     protected $fillable = ['user_id', 'expiry'];
-    
+
     /**
      * 返回对应的用户对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function user() { return $this->belongsTo('App\Models\User'); }
-    
+
     /**
      * 返回对应的学生对象
      *
@@ -55,14 +55,14 @@ class Custodian extends Model {
             'student_id'
         );
     }
-    
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function custodianStudents() {
         return $this->hasMany('App\Models\CustodianStudent');
     }
-    
+
     /**
      * 保存新创建的监护人记录
      *
@@ -70,10 +70,10 @@ class Custodian extends Model {
      * @return bool|mixed
      */
     public function store(CustodianRequest $request) {
-        
+
         try {
             $exception = DB::transaction(function () use ($request) {
-                
+
                 $user = $request->input('user');
                 # 包含学生的Id
                 $studentIds = $request->input('student_ids');
@@ -135,14 +135,14 @@ class Custodian extends Model {
                 $user->createWechatUser($u->id);
                 unset($user);
             });
-            
+
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
             return false;
         }
-        
+
     }
-    
+
     /**
      * 更新指定的监护人记录
      *
@@ -151,14 +151,14 @@ class Custodian extends Model {
      * @return bool|mixed
      */
     public function modify(CustodianRequest $request, $custodianId) {
-        
+
         $custodian = $this->find($custodianId);
         if (!isset($custodian)) {
             return false;
         }
         try {
             $exception = DB::transaction(function () use ($request, $custodianId, $custodian) {
-                
+
                 $userId = $request->input('user_id');
                 $userData = $request->input('user');
                 # 包含学生的Id
@@ -217,14 +217,14 @@ class Custodian extends Model {
                 $user->UpdateWechatUser($userId);
                 unset($user);
             });
-        
+
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
             return false;
         }
-        
+
     }
-    
+
     /**
      * 删除指定的监护人记录
      *
@@ -232,7 +232,7 @@ class Custodian extends Model {
      * @return bool|mixed
      */
     public function remove($custodianId) {
-        
+
         $custodian = $this->find($custodianId);
         if (!isset($custodian)) {
             return false;
@@ -247,23 +247,23 @@ class Custodian extends Model {
                 DepartmentUser::where('user_id', $custodian['user_id'])->delete();
                 # 删除与指定监护人绑定的手机记录
                 Mobile::where('user_id', $custodian['user_id'])->delete();
-                
+
             });
-            
+
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
             return false;
         }
-        
+
     }
-    
+
     /**
      * 返回监护人记录列表
      *
      * @return array
      */
     public function datatable() {
-        
+
         $columns = [
             ['db' => 'Custodian.id', 'dt' => 0],
             ['db' => 'User.realname', 'dt' => 1],
@@ -280,6 +280,7 @@ class Custodian extends Model {
                  foreach ($mobiles as $key => $value) {
                      $mobile[] = $value->mobile;
                  }
+
                  return implode(',', $mobile);
              },
             ],
@@ -303,9 +304,9 @@ class Custodian extends Model {
                 ],
             ],
         ];
-        
+
         return Datatable::simple($this, $columns, $joins);
-        
+
     }
-    
+
 }

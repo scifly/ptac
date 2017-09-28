@@ -23,14 +23,14 @@ use Illuminate\Database\Eloquent\Model;
  * @mixin \Eloquent
  */
 class Attachment extends Model {
-    
+
     protected $fillable = ['accachment_type_id', 'url', 'enabled'];
-    
+
     /**
      * 返回所属附件类型对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function attachmentType() { return $this->belongsTo('App\Models\AttachmentType'); }
-    
+
 }

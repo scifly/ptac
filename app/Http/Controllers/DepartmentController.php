@@ -5,7 +5,7 @@ use App\Http\Requests\DepartmentRequest;
 use App\Models\Department;
 use App\Models\DepartmentType;
 use Illuminate\Support\Facades\Request;
-
+use Illuminate\Support\Facades\Session;
 /**
  * 部门
  *
@@ -29,11 +29,13 @@ class DepartmentController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
-        
+        $user = Session::get('user');
+        $departmentId = [];
+        // foreach ($user->department)
         if (Request::method() === 'POST') {
             return $this->department->tree();
         }
-        
+
         return parent::output(__METHOD__);
         
     }
@@ -47,10 +49,10 @@ class DepartmentController extends Controller {
     public function create($id) {
         
         $departmentTypeId = DepartmentType::whereName('其他')->first()->id;
-        
+
         return $this->output(__METHOD__, [
-            'parentId'         => $id,
-            'departmentTypeId' => $departmentTypeId,
+            'parentId' => $id,
+            'departmentTypeId' => $departmentTypeId
         ]);
         
     }
@@ -80,7 +82,7 @@ class DepartmentController extends Controller {
         if (!$department) {
             return $this->notFound();
         }
-        
+
         return $this->output(__METHOD__, [
             'department' => $department,
         ]);
@@ -99,7 +101,7 @@ class DepartmentController extends Controller {
         if (!$department) {
             return $this->notFound();
         }
-        
+
         return $this->output(__METHOD__, [
             'department' => $department,
         ]);
@@ -118,7 +120,7 @@ class DepartmentController extends Controller {
         if (!$this->department->find($id)) {
             return $this->notFound();
         }
-        
+
         return $this->department->modify($request->all(), $id, true)
             ? $this->succeed() : $this->fail();
         
@@ -135,7 +137,7 @@ class DepartmentController extends Controller {
         if (!$this->department->find($id)) {
             return $this->notFound();
         }
-        
+
         return $this->department->remove($id) ? $this->succeed() : $this->fail();
         
     }
@@ -161,7 +163,7 @@ class DepartmentController extends Controller {
             return $this->department->move($id, $parentId, true)
                 ? parent::succeed() : parent::fail();
         }
-        
+
         return $this->fail('非法操作');
         
     }

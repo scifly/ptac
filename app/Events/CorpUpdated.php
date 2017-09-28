@@ -9,11 +9,11 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
 class CorpUpdated {
-    
+
     use Dispatchable, InteractsWithSockets, SerializesModels;
-    
+
     public $corp;
-    
+
     /**
      * Create a new event instance.
      *
@@ -22,11 +22,11 @@ class CorpUpdated {
      * @internal param Company $company
      */
     public function __construct(Corp $corp) {
-        
+
         $this->corp = $corp;
-        
+
     }
-    
+
     /**
      * Get the channels the event should broadcast on.
      *
