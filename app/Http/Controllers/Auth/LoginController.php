@@ -62,7 +62,7 @@ class LoginController extends Controller {
             ) {
                 return response()->json([
                     'statusCode' => 200,
-                    'url'        => '../public',
+                    'url'        => '/',
                 ]);
             } else {
                 return response()->json(['statusCode' => 500]);
@@ -71,7 +71,7 @@ class LoginController extends Controller {
         if (Auth::attempt([$field => $input, 'password' => $password])) {
             return response()->json([
                 'statusCode' => 200,
-                'url'        => '../public',
+                'url'        => '/',
             ]);
         }
         
