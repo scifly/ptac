@@ -82,6 +82,7 @@ class WapSite extends Model {
             $medias = Media::whereIn('id', $mediaIds)->get(['id', 'path']);
             foreach ($medias as $media) {
                 $paths = explode("/", $media->path);
+                dd($paths);
                 Storage::disk('public')->delete($paths[6]);
                 
             }

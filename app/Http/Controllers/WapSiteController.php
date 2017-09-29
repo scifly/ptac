@@ -198,6 +198,8 @@ class WapSiteController extends Controller {
      */
     public function wapHome() {
         
+        
+        
         $wapSite = $this->wapSite
             ->where('school_id', 1)
             ->first();
