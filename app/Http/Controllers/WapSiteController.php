@@ -202,7 +202,7 @@ class WapSiteController extends Controller {
             ->where('school_id', 1)
             ->first();
         // dd($wapSite->wapSiteModules->media);
-        return view('wap_site.web_index', [
+        return view('frontend.wap_site.index', [
             'wapsite' => $wapSite,
             'medias'  => $this->media->medias($wapSite->media_ids),
             'ws'      => true,
