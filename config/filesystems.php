@@ -10,7 +10,7 @@ return [
     | based disks are available to your application. Just store away!
     |
     */
-    'default' => 'local',
+    'default' => env('FILESYSTEM_DRIVER', 'local'),
     /*
     |--------------------------------------------------------------------------
     | Default Cloud Filesystem Disk
@@ -21,7 +21,7 @@ return [
     | will be bound as the Cloud disk implementation in the container.
     |
     */
-    'cloud'   => 's3',
+    'cloud'   => env('FILESYSTEM_CLOUD', 's3'),
     /*
     |--------------------------------------------------------------------------
     | Filesystem Disks
@@ -42,7 +42,7 @@ return [
         'public'  => [
             'driver'     => 'local',
             'root'       => storage_path('app/public'),
-            // 'url'        => env('APP_URL') . '/storage',
+            'url'        => env('APP_URL') . '/storage',
             'visibility' => 'public',
         ],
         's3'      => [
@@ -54,7 +54,7 @@ return [
         ],
         'uploads' => [
             'driver' => 'local',
-            'root'   => storage_path('uploads/' . date('Y') . '/' . date('m') . '/' . date('d')),
+            'root'   => storage_path('app/uploads/' . date('Y') . '/' . date('m') . '/' . date('d')),
         ],
     ],
 ];
