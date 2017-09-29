@@ -45,6 +45,8 @@ class Media extends Model {
      */
     public function mediaType() { return $this->belongsTo('App\Models\MediaType'); }
     
+    public function wapSiteModules() { return $this->hasOne('App\Models\WapSiteModule'); }
+    
     /**
      * 获取指定媒体所包含的所有菜单对象
      *

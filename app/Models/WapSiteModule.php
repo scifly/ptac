@@ -51,9 +51,9 @@ class WapSiteModule extends Model {
         return $this->hasMany('App\Models\WsmArticle', 'wsm_id', 'id');
     }
     
-    // public function media() {
-    //     return $this->hasOne('App\Models\Media');
-    // }
+    public function media() {
+        return $this->belongsTo('App\Models\Media');
+    }
     
     public function wapsite() {
         return $this->belongsTo('App\Models\WapSite');
