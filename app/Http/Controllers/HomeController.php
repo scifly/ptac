@@ -10,6 +10,7 @@ use App\Models\Menu;
 use App\Models\MenuTab;
 use App\Models\MenuType;
 use App\Models\Tab;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
 
@@ -85,7 +86,7 @@ class HomeController extends Controller {
             Session::forget('menuChanged');
         }
         # 获取session中用户信息
-         $user = Session::get('user');
+         // $user = Session::get('user');
         // $department = new Department();
         // //$level = $department->groupLevel($user->id);
         // $menuIds = collect(Menu::whereEnabled(1)->get(['id'])->toArray())
@@ -166,7 +167,7 @@ class HomeController extends Controller {
             'tabs'   => $tabArray,
             'menuId' => $id,
             'js'     => 'js/home/page.js',
-            'user'   => $user,
+            'user'   => Auth::user(),
         ]);
 
     }
