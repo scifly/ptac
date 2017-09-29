@@ -1,7 +1,9 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Facades\Wechat;
 use App\Http\Requests\WapSiteRequest;
+use App\Models\Corp;
 use App\Models\Media;
 use App\Models\WapSite;
 use Illuminate\Http\UploadedFile;
@@ -184,7 +186,7 @@ class WapSiteController extends Controller {
                 ]);
                 $filePaths[] = [
                     'id'   => $mediaId,
-                    'path' => $filePath,
+                     'path' => $filePath,
                 ];
             }
         }
@@ -197,8 +199,18 @@ class WapSiteController extends Controller {
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function wapHome() {
+        $corp = new Corp();
+        $corps = $corp::whereName('万浪软件')->first();
+        $corpId = $corps->corpid;
+        $secret = $corps->corpsecret;
+        $dir = dirname(__FILE__);
+        $path = substr($dir, 0, stripos($dir, 'app/Jobs'));
+        $tokenFile = $path . 'public/token.txt';
+        $token = Wechat::getAccessToken($tokenFile, $corpId, $secret);
         
+        $codeUrl = Wechat::getCodeUrl($corpId, '1000006', 'http://weixin.028lk.com/wap_sites/userInfo');
         
+        Wechat::curlGet($codeUrl);
         
         $wapSite = $this->wapSite
             ->where('school_id', 1)

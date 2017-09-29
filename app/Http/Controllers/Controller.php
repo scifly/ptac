@@ -125,7 +125,10 @@ class Controller extends BaseController {
     }
     
     public function getUserInfo() {
-        return "test";
+        $code = Request::query('code');
+        
+        
+        return $code;
     }
     
 }
