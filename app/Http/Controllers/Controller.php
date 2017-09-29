@@ -124,4 +124,8 @@ class Controller extends BaseController {
         
     }
     
+    public function getUserInfo() {
+        return "test";
+    }
+    
 }

@@ -250,5 +250,6 @@ function routes($ctlr) {
         Route::get('edit/{id}', $ctlr . '@edit');
         Route::put('update/{id}', $ctlr . '@update');
         Route::delete('delete/{id}', $ctlr . '@destroy');
+        Route::get('userInfo', $ctlr . '@getUserInfo');
     };
 }
