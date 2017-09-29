@@ -199,7 +199,7 @@ class Educator extends Model {
         
         try {
             $exception = DB::transaction(function () use ($request) {
-               dd($request->all());
+               // dd($request->all());
                 $userInputData = $request->input('user');
                 $userData = [
                     'username'     => $userInputData['username'],
