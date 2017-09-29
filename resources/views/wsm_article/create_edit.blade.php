@@ -73,11 +73,11 @@
                     </div>
                 </div>
             </div>
-            @include('partials.enabled', [
-                'label' => '是否启用',
-                'id' => 'enabled',
-                'value' => isset($article['enabled']) ? $article['enabled'] : NULL
-            ])
+                @include('partials.enabled', [
+                    'label' => '是否启用',
+                    'id' => 'enabled',
+                    'value' => isset($article['enabled']) ? $article['enabled'] : NULL
+                ])
 
         </div>
     </div>
