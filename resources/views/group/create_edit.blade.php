@@ -33,6 +33,21 @@
                                 ]) !!}
                             </div>
                         </div>
+                            {{--@include('partials.single_select', [--}}
+                            {{--'label' => '所属企业',--}}
+                            {{--'id' => 'corp_id',--}}
+                            {{--'items' => $corps--}}
+                            {{--])--}}
+                            <div class="form-group">
+                                <label  class="col-sm-3 control-label">学校</label>
+                                <div class="col-sm-6">
+                                    <select name="school_id" class="form-control menu" id="school_id" style="width: 100%">
+                                        @foreach($schools as $key=>$v)
+                                            <option value="{{$v}}" >{{$key}}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
                         <div class="form-group">
                             {!! Form::label('remark', '备注', [
                                 'class' => 'col-sm-3 control-label'

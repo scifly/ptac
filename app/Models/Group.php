@@ -56,7 +56,8 @@ class Group extends Model {
     public function actions() { return $this->belongsToMany('App\Models\Action', 'actions_groups'); }
     
     public function tabs() { return $this->belongsToMany('App\Models\Tab', 'groups_tabs'); }
-    
+
+    public function groupType(){ return $this->belongsTo('App\Models\GroupType'); }
     /**
      * 保存角色
      *
@@ -73,6 +74,7 @@ class Group extends Model {
                     'name'    => $data['name'],
                     'remark'  => $data['remark'],
                     'enabled' => $data['enabled'],
+                    'school_id' => $data['school_id'],
                 ];
                 $g = $this->create($groupData);
                 # 功能与角色的对应关系
@@ -153,7 +155,7 @@ class Group extends Model {
         
     }
     
-    public function datatable() {
+    public function datatable(array $params = []) {
         
         $columns = [
             ['db' => 'Groups.id', 'dt' => 0],
@@ -169,7 +171,7 @@ class Group extends Model {
             ],
         ];
         
-        return Datatable::simple($this, $columns);
+        return Datatable::simple($this, $columns, null, empty($params) ? null : $params);
         
     }
 }

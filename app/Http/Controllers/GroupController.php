@@ -3,9 +3,13 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\GroupRequest;
 use App\Models\Action;
+use App\Models\Corp;
+use App\Models\Department;
 use App\Models\Group;
 use App\Models\Menu;
+use App\Models\School;
 use App\Models\Tab;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 
 /**
@@ -16,15 +20,16 @@ use Illuminate\Support\Facades\Request;
  */
 class GroupController extends Controller {
     
-    protected $group, $menu, $tab, $action;
+    protected $group, $menu, $tab, $action, $corp, $school;
     
-    function __construct(Group $group, Menu $menu, Tab $tab, Action $action) {
+    function __construct(Group $group, Menu $menu, Tab $tab, Action $action, Corp $corp, School $school) {
         
         $this->group = $group;
         $this->menu = $menu;
         $this->tab = $tab;
         $this->action = $action;
-        
+        $this->corp = $corp;
+        $this->school = $school;
     }
     
     /**
@@ -33,10 +38,24 @@ class GroupController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
-        
+        //$user = Auth::user();
+        // $departmentIds = [];
+        // foreach ($user->departments as $d)
+        // {
+        //     $departmentIds[] = $d->id;
+        // }
+        // sort($departmentIds);
+        // $rootId = $departmentIds[0];
+        // $department = Department::whereId($rootId)->first();
+        // # 根目录名称
+        // $rootName = $department->name;
+        // $rootTypeName = $department->departmentType->name;
+        # 判断管理员角色
+        # 如果是校级管理员
         if (Request::get('draw')) {
             return response()->json($this->group->datatable());
         }
+
         return $this->output(__METHOD__);
         
     }
@@ -47,11 +66,20 @@ class GroupController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function create() {
-        
+
         if (Request::method() === 'POST') {
+            // $schoolId = Request::query('schoolId');
+            // $menuId = School::whereId($schoolId)->first()->menu_id;
+            // return $this->menu->getTreeByMenuId($menuId);
             return $this->menu->tree();
         }
-        return $this->output(__METHOD__);
+
+        $corps = $this->corp->pluck('name', 'id');
+
+        return $this->output(__METHOD__,[
+            'corps' => $corps,
+
+        ]);
         
     }
     
@@ -76,6 +104,7 @@ class GroupController extends Controller {
     public function show($id) {
         
         $group = $this->group->find($id);
+
         if (!$group) { return $this->notFound(); }
         return $this->output(__METHOD__, ['group' => $group]);
         

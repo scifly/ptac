@@ -56,6 +56,9 @@ class WsmArticle extends Model {
     public function wapSiteModule() {
         return $this->belongsTo('App\Models\WapSiteModule', 'wsm_id', 'id');
     }
+    public function thumbnailmedia() {
+        return $this->belongsTo('App\Models\Media', 'thumbnail_media_id', 'id');
+    }
     
     public function store(WsmArticleRequest $request) {
         try {
@@ -98,7 +101,7 @@ class WsmArticle extends Model {
             $exception = DB::transaction(function () use ($request, $id) {
                 $this->removeMedias($request);
                 
-                return $this->where('id', $id)->update($request->except('_method', '_token'));
+                return $this->where('id', $id)->update($request->except('_method', '_token', 'del_ids'));
             });
             
             return is_null($exception) ? true : $exception;

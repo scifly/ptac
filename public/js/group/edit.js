@@ -85,6 +85,7 @@ $menuTree.jstree({
     $menuTree.jstree().select_node(menuIds);
     $menuTree.jstree('open_all');
 });
+
 $('.collapsed-box').boxWidget('collapse');
 $(document).on('ifChecked', '.tabs', function(e) {
     var $actionContainer = $(this).parentsUntil($('.box .box-default'), '.box-header').next();

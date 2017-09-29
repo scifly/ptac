@@ -137,7 +137,10 @@ class WapSiteModuleController extends Controller {
     public function wapSiteModuleHome($id) {
         
         $articles = WsmArticle::whereWsmId($id)->get();
-        
+        // foreach ($articles as $v) {
+        //     dd($v->thumbnailmedia);
+        //
+        // }
         return view('frontend.wap_site.module', [
             'articles' => $articles,
             'ws'       => true,
