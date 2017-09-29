@@ -86,7 +86,7 @@ class Custodian extends Model {
                 $userData = [
                     'username'     => uniqid('custodian_'),
                     'group_id'     => $user['group_id'],
-                    'password'     => 'custodian8888',
+                    'password'     => bcrypt('custodian8888'),
                     'email'        => $user['email'],
                     'realname'     => $user['realname'],
                     'gender'       => $user['gender'],

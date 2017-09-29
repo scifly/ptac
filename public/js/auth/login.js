@@ -3,7 +3,7 @@ $('#signin').on('click',function (e) {
     $.ajax({
         type:'POST',
         dataType:'json',
-        url: 'http://sandbox.dev:8080/ptac/public/login',
+        url: 'login',
         data: {
             input: $('#input').val(),
             password: $('#password').val(),
