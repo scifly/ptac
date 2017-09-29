@@ -105,7 +105,7 @@ Route::group(['prefix' => 'events'], function () {
 // 微网站设置 - 微网站管理.网站模块管理.文章管理
 Route::group(['prefix' => 'wap_sites'], routes('WapSiteController'));
 Route::any('wap_sites/uploadImages', 'WapSiteController@uploadImages');
-Route::get('wap_sites/webindex', 'WapSiteController@webindex');
+Route::get('wap_sites/webindex', 'WapSiteController@wapHome');
 Route::group(['prefix' => 'wap_site_modules'], routes('WapSiteModuleController'));
 Route::get('wap_site_modules/webindex/{id}', 'WapSiteModuleController@webindex');
 Route::group(['prefix' => 'wsm_articles'], routes('WsmArticleController'));
