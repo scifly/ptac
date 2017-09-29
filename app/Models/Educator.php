@@ -199,12 +199,12 @@ class Educator extends Model {
         
         try {
             $exception = DB::transaction(function () use ($request) {
-               dd($request->all());
+               // dd($request->all());
                 $userInputData = $request->input('user');
                 $userData = [
                     'username'     => $userInputData['username'],
                     'group_id'     => $userInputData['group_id'],
-                    'password'     => $userInputData['password'],
+                    'password'     => bcrypt($userInputData['password']),
                     'email'        => $userInputData['email'],
                     'realname'     => $userInputData['realname'],
                     'gender'       => $userInputData['gender'],

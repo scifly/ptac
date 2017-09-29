@@ -51,6 +51,10 @@ class WapSiteModule extends Model {
         return $this->hasMany('App\Models\WsmArticle', 'wsm_id', 'id');
     }
     
+    public function media() {
+        return $this->belongsTo('App\Models\Media');
+    }
+    
     public function wapsite() {
         return $this->belongsTo('App\Models\WapSite');
         
@@ -75,12 +79,12 @@ class WapSiteModule extends Model {
      */
     private function removeMedias(WapSiteModuleRequest $request) {
         //删除原有的图片
-        $mediaIds = $request->input('del_ids');
+        $mediaIds = $request->input('del_id');
         if ($mediaIds) {
             $medias = Media::whereIn('id', $mediaIds)->get(['id', 'path']);
             foreach ($medias as $media) {
                 $paths = explode("/", $media->path);
-                Storage::disk('uploads')->delete($paths[5]);
+                Storage::disk('public')->delete($paths[5]);
                 
             }
             Media::whereIn('id', $mediaIds)->delete();
@@ -96,7 +100,7 @@ class WapSiteModule extends Model {
             $exception = DB::transaction(function () use ($request, $id) {
                 $this->removeMedias($request);
                 
-                return $this->where('id', $id)->update($request->except('_method', '_token'));
+                return $this->where('id', $id)->update($request->except('_method', '_token', 'del_id'));
             });
             
             return is_null($exception) ? true : $exception;

@@ -1,7 +1,9 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Facades\Wechat;
 use App\Http\Requests\WapSiteRequest;
+use App\Models\Corp;
 use App\Models\Media;
 use App\Models\WapSite;
 use Illuminate\Http\UploadedFile;
@@ -173,8 +175,9 @@ class WapSiteController extends Controller {
             // 上传图片
             $filename = uniqid() . '.' . $ext;
             // 使用新建的uploads本地存储空间（目录）
-            if (Storage::disk('uploads')->put($filename, file_get_contents($realPath))) {
-                $filePath = 'storage/app/uploads/' . date('Y-m-d') . '/' . $filename;
+            if (Storage::disk('public')->put($filename, file_get_contents($realPath))) {
+                // $filePath = 'storage/app/uploads/' . date('Y') . '/' . date('m') . '/' . date('d') . '/' . $filename;
+                $filePath = Storage::url('public/'. date('Y') . '/' . date('m') . '/' . date('d') . '/' . $filename);
                 $mediaId = Media::insertGetId([
                     'path'          => $filePath,
                     'remark'        => '微网站轮播图',
@@ -183,7 +186,7 @@ class WapSiteController extends Controller {
                 ]);
                 $filePaths[] = [
                     'id'   => $mediaId,
-                    'path' => $filePath,
+                     'path' => $filePath,
                 ];
             }
         }
@@ -196,10 +199,23 @@ class WapSiteController extends Controller {
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function wapHome() {
+        $corp = new Corp();
+        $corps = $corp::whereName('万浪软件')->first();
+        $corpId = $corps->corpid;
+        $secret = $corps->corpsecret;
+        $dir = dirname(__FILE__);
+        $path = substr($dir, 0, stripos($dir, 'app/Jobs'));
+        $tokenFile = $path . 'public/token.txt';
+        $token = Wechat::getAccessToken($tokenFile, $corpId, $secret);
+        
+        $codeUrl = Wechat::getCodeUrl($corpId, '1000006', 'http://weixin.028lk.com/wap_sites/userInfo');
+        
+        Wechat::curlGet($codeUrl);
         
         $wapSite = $this->wapSite
-            ->where('school_id', Request::get('school_id'))
+            ->where('school_id', 1)
             ->first();
+        // dd($wapSite->wapSiteModules->media);
         return view('frontend.wap_site.index', [
             'wapsite' => $wapSite,
             'medias'  => $this->media->medias($wapSite->media_ids),
