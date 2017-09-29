@@ -97,8 +97,8 @@ class WapSite extends Model {
         try {
             $exception = DB::transaction(function () use ($request, $id) {
                 $this->removeMedias($request);
-                dd($request->except('_method', '_token'));
-                return $this->where('id', $id)->update($request->except('_method', '_token'));
+                // dd($request->except('_method', '_token'));
+                return $this->where('id', $id)->update($request->except('_method', '_token', 'del_ids'));
             });
             
             return is_null($exception) ? true : $exception;
