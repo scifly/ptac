@@ -55,7 +55,7 @@
                             <div class="item-list">
                                 <div class="row">
                                     <div class="col-xs-12">
-                                        @foreach($wapsite->wapsitemodule as $v)
+                                        @foreach($wapsite->wapSiteModules as $v)
                                             <a href="javascript:" class="col-xs-4">
                                                 <div class="item-icon">
                                                     <img src="../../{{$v->media->path}}" alt="">
