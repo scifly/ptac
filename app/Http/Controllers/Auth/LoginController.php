@@ -7,6 +7,8 @@ use App\Models\User;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
+
 
 class LoginController extends Controller {
     
@@ -44,8 +46,10 @@ class LoginController extends Controller {
         $input = $request->input('input');
         $password = $request->input('password');
         if (User::whereUsername($input)->first()) {
+            $user = User::whereUsername($input)->first();
             $field = 'username';
         } elseif (User::whereEmail($input)->first()) {
+            $user = User::whereEmail($input)->first();
             $field = 'email';
         } else {
             $mobile = Mobile::where('mobile', $input)
@@ -54,12 +58,14 @@ class LoginController extends Controller {
                 return response()->json(['statusCode' => 500]);
             }
             $username = User::whereId($mobile->user_id)->first()->username;
+            $user = User::whereUsername($username)->first();
             if (
             Auth::attempt(
                 ['username' => $username, 'password' => $password],
                 $request->input('remember')
             )
             ) {
+                Session::put('user',$user);
                 return response()->json([
                     'statusCode' => 200,
                     'url'        => '../public',
@@ -69,6 +75,7 @@ class LoginController extends Controller {
             }
         }
         if (Auth::attempt([$field => $input, 'password' => $password])) {
+            Session::put('user',$user);
             return response()->json([
                 'statusCode' => 200,
                 'url'        => '../public',

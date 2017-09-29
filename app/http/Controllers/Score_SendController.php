@@ -21,11 +21,8 @@ class Score_SendController extends Controller {
 
     protected $exam, $score, $user, $student,
         $class, $school, $grade, $subject, $scoreTotal;
-<<<<<<< HEAD
 
-=======
-    
->>>>>>> refs/remotes/origin/master
+
     /**
      * Score_SendController constructor.
      * 初始化注入关联模型
@@ -68,11 +65,8 @@ class Score_SendController extends Controller {
         //如果是普通老师获取关联的考次，班主任获取管理班级所考次，科任老师获取任教科目考次
         return view("score_send.index", ['js' => 'js/score_send/index.js', 'schools' => $this->school->all(['name', 'id']), 'form' => 0, 'datatable' => 1]);
     }
-<<<<<<< HEAD
 
-=======
-    
->>>>>>> refs/remotes/origin/master
+
     /**
      * @param null $id
      * @return string
@@ -92,11 +86,7 @@ class Score_SendController extends Controller {
         return json_encode($this->class->all(['id', 'name', 'grade_id'])->where("grade_id", $id));
 
     }
-<<<<<<< HEAD
 
-=======
-    
->>>>>>> refs/remotes/origin/master
     /**
      * @param null $id
      * @return string
@@ -115,11 +105,7 @@ class Score_SendController extends Controller {
         //获取考次关联的科目
         return json_encode($this->exam->subjectsByExamId($id));
     }
-<<<<<<< HEAD
 
-=======
-    
->>>>>>> refs/remotes/origin/master
     /**
      * @param $examId
      * @param $classId
@@ -272,14 +258,9 @@ class Score_SendController extends Controller {
             }
             $strs[] = ["id" => $student[0]->id, 'name' => $student[0]->realname, "msg" => $str];
         }
-<<<<<<< HEAD
+
 
         return json_encode($strs);
     }
 
-=======
-        return json_encode($strs);
-    }
-    
->>>>>>> refs/remotes/origin/master
 }

@@ -10,6 +10,7 @@ use App\Models\Menu;
 use App\Models\MenuTab;
 use App\Models\MenuType;
 use App\Models\Tab;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
 
@@ -32,7 +33,7 @@ class HomeController extends Controller {
         Tab $tab,
         Department $department
     ) {
-        $this->middleware(['auth']);
+        // $this->middleware(['auth']);
         $this->menu = $menu;
         $this->action = $action;
         $this->tab = $tab;
@@ -84,32 +85,24 @@ class HomeController extends Controller {
         } else {
             Session::forget('menuChanged');
         }
-        # 获取session中用户信息
-         $user = Session::get('user');
-        // $department = new Department();
-        // //$level = $department->groupLevel($user->id);
-        // $menuIds = collect(Menu::whereEnabled(1)->get(['id'])->toArray())
-        //     ->flatten()->toArray();
-        // $tabIds = collect(Tab::whereEnabled(1)->get(['id'])->toArray())
-        //     ->flatten()->toArray();
-        // $groupTabIds = collect(GroupTab::where('group_id', $user->group_id)->get(['tab_id'])->toArray())
-        //     ->flatten()->toArray();
-        // $groupMenuIds = collect(GroupMenu::where('group_id', $user->group_id)->get(['menu_id'])->toArray())
-        //     ->flatten()->toArray();
-        // switch ($level) {
-        //     case 'company':
-        //         break;
-        //     case 'corp':
-        //         break;
-        //     case 'school':
-        //         break;
-        //     default:
-        //         break;
+        // # 获取session中用户信息
+        // $user = Auth::user();
+        // $departmentIds = [];
+        // foreach ($user->departments as $d)
+        // {
+        //     $departmentIds[] = $d->id;
         // }
+        // sort($departmentIds);
+        // $rootId = $departmentIds[0];
+        // $rootName = Department::whereId($rootId)->first()->name;
+        // # 获取根菜单Id
+        // $menuId = Menu::whereName($rootName)->first()->id;
+
         # 获取卡片列表
         $tabArray = [];
         $isTabLegit = true;
         $tabRanks = MenuTab::whereMenuId($id)->get()->sortBy('tab_order')->toArray();
+
         if (empty($tabRanks)) {
             $isTabLegit = false;
         };
@@ -159,6 +152,7 @@ class HomeController extends Controller {
             ];
         }
         # 获取菜单列表
+
         $menu = $this->menu->getMenuHtml($id);
 
         return view('home.page', [
@@ -166,7 +160,7 @@ class HomeController extends Controller {
             'tabs'   => $tabArray,
             'menuId' => $id,
             'js'     => 'js/home/page.js',
-            'user'   => $user,
+            // 'user'   => $user,
         ]);
 
     }

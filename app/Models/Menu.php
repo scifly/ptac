@@ -399,28 +399,38 @@ class Menu extends Model {
      * 获取用于显示jstree的菜单数据
      *
      * @param null $rootMenuId
+     * @param null $rootType
      * @return \Illuminate\Http\JsonResponse
      */
-    public function tree($rootMenuId = null) {
+    public function tree($rootMenuId = null, $rootType = null) {
 
         $fields = ['id', 'parent_id', 'name', 'position', 'menu_type_id'];
         $menuColor = '<span style="color: %s;">%s</span>';
         $htmlDefaultIcon = '<i class="fa fa-circle-o"></i>';
         $htmlIcon = '<i class="%s"></i>';
         if (isset($rootMenuId)) {
-            $rootMenu = $this->find($rootMenuId);
-            $menus = $rootMenu->children()->get($fields)->sortBy(['position'])->toArray();
-            foreach ($menus as $key => $v) {
-                $menus[$key + 1] = $v;
-            }
-            $menus[0] = [
-                'id'           => $rootMenu->id,
-                'parent_id'    => null,
-                'name'         => $rootMenu->name,
-                'position'     => $rootMenu->position,
-                'menu_type_id' => $rootMenu->menu_type_id,
-            ];
+            switch ($rootType)
+            {
+                case '运营':
+                    $menus = $this->get($fields)->sortBy(['position'])->toArray();
+                    break;
+                default:
+                    $rootMenu = $this->find($rootMenuId);
+                    $childrenId = $this->getChildren($rootMenuId);
+                    $menus = $this->whereIn('id',$childrenId)->get($fields)->sortBy(['position'])->toArray();
+                    foreach ($menus as $key => $v) {
+                        $menus[$key + 1] = $v;
+                    }
+                    $menus[] = [
+                        'id'           => $rootMenu->id,
+                        'parent_id'    => null,
+                        'name'         => $rootMenu->name,
+                        'position'     => $rootMenu->position,
+                        'menu_type_id' => $rootMenu->menu_type_id,
+                    ];
+                 break;
 
+            }
         } else {
             $menus = $this->get($fields)->sortBy(['position'])->toArray();
         }
@@ -462,8 +472,46 @@ class Menu extends Model {
                 'type'   => $type,
             ];
         }
-
+     
         return response()->json($data);
+
+    }
+
+    private function menus($id, &$menus = []) {
+        $htmlDefaultIcon = '<i class="fa fa-circle-o"></i>';
+        $htmlIcon = '<i class="%s"></i>';
+        $children = $this->find($id)->children;
+        foreach ($children as $child) {
+            $name = $child['name'];
+            if (isset($child['parent_id'])) {
+                $icon = $this->find($child['id'])->icon;
+                $iconHtml = $icon ? sprintf($htmlIcon, $icon->name) : $htmlDefaultIcon;
+                $name = $iconHtml . '&nbsp;&nbsp;' . $name;
+            }
+            $menus[] = [
+                'id' => $child->id,
+                'parent' => $child->parent_id,
+                'text' => $name,
+                'type' => 'other'
+            ];
+            $this->menus($child->id, $menus);
+        }
+        return $menus;
+
+    }
+
+
+    public function getTreeByMenuId($id) {
+
+        $data = [];
+        $menu = $this->find($id);
+        $data[] = [
+            'id'     => $menu['id'],
+            'parent' => '#',
+            'text'   => '<i class="fa fa-university"></i>&nbsp;&nbsp;' . $menu['name'],
+            'type'   => 'school'
+        ];
+        return response()->json($this->menus($id, $data));
 
     }
 
@@ -497,17 +545,15 @@ class Menu extends Model {
      */
     public function getMenuHtml($activeMenuId) {
 
-        // $parents = [$activeMenuId];
-        //  $this->getParent($activeMenuId, $parents);
-        $parents = [1, 2];
+        $parents = [$activeMenuId];
+        $this->getParent($activeMenuId, $parents);
+
         $id = '';
-        if ($activeMenuId > 2) {
-            $childrenId = $this->getChildren($activeMenuId);
-            $childrenId[] = $activeMenuId;
-            $childrenId = array_merge($parents, $childrenId);
-            sort($childrenId);
-            $id = array_unique($childrenId);
-        }
+        // if ($activeMenuId > 3) {
+        //     $childrenId = $this->getChildren($activeMenuId);
+        //     $id = array_unique($childrenId);
+        // }
+
         # 不含子菜单的HTML模板
         $mSimple = '<li%s><a id="%s" href="%s"><i class="%s"></i> %s</a></li>';
         # 包含子菜单的HTML模板
@@ -527,15 +573,25 @@ HTML;
         // $menus = $this->where('enabled', 1)
         //     ->where('id', '<>', 1)
         //     ->orderBy('position')->get();
-        if ($id) {
-            $menus = $this->whereIn('id', $id)
-                ->where('id', '<>', 1)
-                ->get();
-        } else {
-            $menus = $this->where('enabled', 1)
-                ->where('id', '<>', 1)
-                ->orderBy('position')->get();
-        }
+        // if(isset($id)&& !empty($id))
+        // {
+        //     if ($id>3) {
+        //         $menus = $this->whereIn('id', $id)
+        //             ->where('id', '<>', 1)
+        //             ->orderBy('position')->get();
+        //     } else {
+        //         $menus = $this->where('enabled', 1)
+        //             ->where('id', '<>', 1)
+        //             ->orderBy('position')->get();
+        //     }
+        // }else{
+        //     $menus = $this->where('enabled', 1)
+        //         ->where('id', '<>', 1)
+        //         ->orderBy('position')->get();
+        // }
+        $menus = $this->where('enabled', 1)
+            ->where('id', '<>', 1)
+            ->orderBy('position')->get();
         $menu = '';
         $level = 1;
         $parentId = 1;
@@ -552,7 +608,7 @@ HTML;
             # 获取菜单对应的默认Route
             // $mUrl = $m->action_id ? '/urlshortener/public/' . $m->action->route : '#';
             // $mUrl = $mUrl ? $mUrl : '#';
-            $mUrl = '/ptac/public/pages/' . $m->id;
+            $mUrl = '../pages/' . $m->id;
             # 计算菜单所处的level
             $lvl = 0;
             $this->getMenuLevel($m, $lvl);
