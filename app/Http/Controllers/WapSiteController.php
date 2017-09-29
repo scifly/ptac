@@ -199,7 +199,7 @@ class WapSiteController extends Controller {
     public function wapHome() {
         
         $wapSite = $this->wapSite
-            ->where('school_id', Request::get('school_id'))
+            ->where('school_id', 1)
             ->first();
         return view('frontend.wap_site.index', [
             'wapsite' => $wapSite,
