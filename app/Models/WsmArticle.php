@@ -56,6 +56,9 @@ class WsmArticle extends Model {
     public function wapSiteModule() {
         return $this->belongsTo('App\Models\WapSiteModule', 'wsm_id', 'id');
     }
+    public function thumbnailmedia() {
+        return $this->belongsTo('App\Models\Media', 'thumbnail_media_id', 'id');
+    }
     
     public function store(WsmArticleRequest $request) {
         try {
