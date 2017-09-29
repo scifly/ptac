@@ -53,7 +53,7 @@ class LoginController extends Controller {
         } else {
             $mobile = Mobile::where('mobile', $input)
                 ->where('isdefault', 1)->first();
-            if (!$mobile->user_id) {
+            if (!$mobile || !$mobile->user_id) {
                 return response()->json(['statusCode' => 500]);
             }
             $username = User::whereId($mobile->user_id)->first()->username;

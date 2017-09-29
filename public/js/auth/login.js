@@ -3,7 +3,7 @@ $('#signin').on('click', function (e) {
     $.ajax({
         type: 'POST',
         dataType: 'json',
-        url: '../login',
+        url: 'login',
         data: {
             input: $('#input').val(),
             password: $('#password').val(),
