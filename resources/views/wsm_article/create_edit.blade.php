@@ -65,7 +65,7 @@
                 {!! Form::label('content', '文章内容', ['class' => 'control-label col-sm-3']) !!}
                 <div class="col-sm-6">
                     <div class="preview">
-                        <script id="container" name="content" type="text/plain">
+                        <script id="container" name="content" type="text/plain" style="height: 300px;">
                             @if(isset($article))
                                 {!! $article['content'] !!}
                             @endif
