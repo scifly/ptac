@@ -136,7 +136,7 @@ class WapSiteModuleController extends Controller {
      */
     public function wapSiteModuleHome($id) {
         
-        $articles = WsmArticle::whereWsmId($id)->get();
+        $articles = WapSiteModule::whereId($id)->get();
         dd($articles);
         return view('frontend.wap_site.module', [
             'articles' => $articles,
