@@ -201,6 +201,7 @@ class WapSiteController extends Controller {
         $wapSite = $this->wapSite
             ->where('school_id', 1)
             ->first();
+        dd($wapSite);
         return view('wap_site.web_index', [
             'wapsite' => $wapSite,
             'medias'  => $this->media->medias($wapSite->media_ids),
