@@ -54,7 +54,7 @@ return [
         ],
         'uploads' => [
             'driver' => 'local',
-            'root'   => ('/img/uploads/' . date('Y') . '/' . date('m') . '/' . date('d')),
+            'root'   => public_path('uploads/' . date('Y') . '/' . date('m') . '/' . date('d')),
         ],
     ],
 ];
