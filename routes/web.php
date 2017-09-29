@@ -107,7 +107,7 @@ Route::group(['prefix' => 'wap_sites'], routes('WapSiteController'));
 Route::any('wap_sites/uploadImages', 'WapSiteController@uploadImages');
 Route::get('wap_sites/webindex', 'WapSiteController@wapHome');
 Route::group(['prefix' => 'wap_site_modules'], routes('WapSiteModuleController'));
-Route::get('wap_site_modules/webindex/{id}', 'WapSiteModuleController@webindex');
+Route::get('wap_site_modules/webindex/{id}', 'WapSiteModuleController@wapSiteModuleHome');
 Route::group(['prefix' => 'wsm_articles'], routes('WsmArticleController'));
 Route::get('wsm_articles/detail/{id}', 'WsmArticleController@detail');
 /** 投票问卷 */
