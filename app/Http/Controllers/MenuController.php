@@ -34,34 +34,34 @@ class MenuController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
-        $user = Session::get('user');
-        $department = new Department();
-        $level = $department->groupLevel($user->id);
-        switch ($level) {
-            case 'root':
-                $typeId = 1;
-                $menuId = 1;
-                break;
-            case 'company':
-                $typeId = 2;
-                $menuId = 2;
-                break;
-            case 'corp':
-                $typeId = 3;
-                break;
-            case 'school':
-                $typeId = 4;
-                break;
-            default:
-                break;
-
-        }
-        if ($typeId == 4) {
-            $menus = Menu::whereMenuTypeId($typeId)->where('name', $user->group->school->name)->first();
-        } else {
-            $menus = Menu::whereId($menuId)->first();
-        }
-        $menuId = $menus->id;
+        // $user = Session::get('user');
+        // $department = new Department();
+        // $level = $department->groupLevel($user->id);
+        // switch ($level) {
+        //     case 'root':
+        //         $typeId = 1;
+        //         $menuId = 1;
+        //         break;
+        //     case 'company':
+        //         $typeId = 2;
+        //         $menuId = 2;
+        //         break;
+        //     case 'corp':
+        //         $typeId = 3;
+        //         break;
+        //     case 'school':
+        //         $typeId = 4;
+        //         break;
+        //     default:
+        //         break;
+        //
+        // }
+        // if ($typeId == 4) {
+        //     $menus = Menu::whereMenuTypeId($typeId)->where('name', $user->group->school->name)->first();
+        // } else {
+        //     $menus = Menu::whereId($menuId)->first();
+        // }
+        // $menuId = $menus->id;
         if (Request::method() === 'POST') {
             return $this->menu->tree();
         }
