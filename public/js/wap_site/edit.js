@@ -30,7 +30,7 @@ $(function () {
         $.each(response, function (index, obj) {
             $pre.append(
                 '<div class="img-item">' +
-                    '<img src="/' + obj.path + '" id="' + obj.id + '">' +
+                    '<img src="../' + obj.path + '" id="' + obj.id + '">' +
                     '<div class="del-mask">' +
                         '<i class="delete glyphicon glyphicon-trash"></i>' +
                     '</div>' +
