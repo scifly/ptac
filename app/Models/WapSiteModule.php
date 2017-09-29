@@ -80,7 +80,7 @@ class WapSiteModule extends Model {
             $medias = Media::whereIn('id', $mediaIds)->get(['id', 'path']);
             foreach ($medias as $media) {
                 $paths = explode("/", $media->path);
-                Storage::disk('uploads')->delete($paths[5]);
+                Storage::disk('public')->delete($paths[6]);
                 
             }
             Media::whereIn('id', $mediaIds)->delete();
@@ -96,7 +96,7 @@ class WapSiteModule extends Model {
             $exception = DB::transaction(function () use ($request, $id) {
                 $this->removeMedias($request);
                 
-                return $this->where('id', $id)->update($request->except('_method', '_token'));
+                return $this->where('id', $id)->update($request->except('_method', '_token', 'del_ids'));
             });
             
             return is_null($exception) ? true : $exception;
