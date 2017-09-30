@@ -67,7 +67,6 @@ class Operator extends Model {
     public function store(OperatorRequest $request) {
         try {
             $exception = DB::transaction(function () use ($request) {
-//                dd($request->all());
                 $userInputData = $request->input('user');
                 $userData = [
                     'username'     => $userInputData['username'],
@@ -136,8 +135,6 @@ class Operator extends Model {
         
         try {
             $exception = DB::transaction(function () use ($request) {
-
-//                dd($request->all());die;
                 $userInputData = $request->input('user');
                 $userData = [
                     'username'     => $userInputData['username'],
