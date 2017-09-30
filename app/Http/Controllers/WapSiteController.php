@@ -212,9 +212,7 @@ class WapSiteController extends Controller {
         
         // $result = Wechat::curlGet($codeUrl);
         redirect($codeUrl);
-        dd($codeUrl);
         $code = Request::query('code');
-        dd($code);
         $wapSite = $this->wapSite
             ->where('school_id', 1)
             ->first();
