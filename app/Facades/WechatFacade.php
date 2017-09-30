@@ -139,7 +139,12 @@ class Wechat extends Facade {
     static function getAccessToken($tokenFile, $corpId, $corpSecret) {
         
         $accessToken = '';
-        $data = json_decode(file_get_contents($tokenFile), true);
+        // $data = json_decode(file_get_contents($tokenFile), true);
+        $data = [
+            'expire_time' =>1506501099,
+            'access_token' =>"Y2qS1NCn1Jcww3rNTTGIdJMuq0iqUAII4j3c-bBFo0CFJIEDVEEl_6tQVGvLy36X3NVQAFZcWjai6iPUx_eqeZi5EveYfgMYaCgq4smxfg3l2TDsozUCYVyYNgXIgLNnBQSZLYdd9cSQDL5OwL2hf6NXnM8f75k1ICou3HoHIUKRNsZT5sZddKqDK4EuVJtIkbl7i4ykzFBom0fhlRoFGw",
+            
+        ];
         if ($data['expire_time'] < time() || !$data['expire_time']) {
             $result = json_decode(
                 self::curlGet(sprintf(self::URL_GET_ACCESSTOKEN, $corpId, $corpSecret)), true
