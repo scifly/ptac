@@ -153,9 +153,9 @@ class Wechat extends Facade {
                 $accessToken = $result['access_token'];
                 $data['expire_time'] = time() + 7000;
                 $data['access_token'] = $accessToken;
-                $fp = fopen($tokenFile, 'w');
-                fwrite($fp, json_encode($data));
-                fclose($fp);
+                // $fp = fopen($tokenFile, 'w');
+                // fwrite($fp, json_encode($data));
+                // fclose($fp);
             } else {
                 // TODO: do something if nothing is returned
             }
