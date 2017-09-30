@@ -131,7 +131,7 @@
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                             <img src="{{ URL::asset('img/user2-160x160.jpg') }}" class="user-image" alt="User Image">
                             <span class="hidden-xs">
-                                {{--{{$user->realname}}--}}
+                                {{$user->realname}}
                             </span>
                         </a>
                         <ul class="dropdown-menu">
@@ -140,7 +140,7 @@
                                      alt="User Image">
 
                                 <p>
-                                    {{--{{$user->realname}} -{{isset($user->group->name) ? $user->group->name : null}}--}}
+                                    {{$user->realname}} -{{isset($user->group->name) ? $user->group->name : null}}
                                     <small>2012年入会</small>
                                 </p>
                             </li>
@@ -185,10 +185,10 @@
                 </div>
                 <div class="pull-left info">
                     <p>
-                        {{--{{$user->realname}}--}}
+                        {{$user->realname}}
                     </p>
                     <a href="#"><i class="fa fa-circle text-success"></i>
-                        {{--{{isset($user->group->name)?$user->group->name:null}}--}}
+                        {{isset($user->group->name)?$user->group->name:null}}
                     </a>
                 </div>
             </div>

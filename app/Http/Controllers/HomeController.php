@@ -33,7 +33,7 @@ class HomeController extends Controller {
         Tab $tab,
         Department $department
     ) {
-        // $this->middleware(['auth']);
+        $this->middleware(['auth']);
         $this->menu = $menu;
         $this->action = $action;
         $this->tab = $tab;
@@ -85,18 +85,25 @@ class HomeController extends Controller {
         } else {
             Session::forget('menuChanged');
         }
-        // # 获取session中用户信息
-        // $user = Auth::user();
-        // $departmentIds = [];
-        // foreach ($user->departments as $d)
-        // {
-        //     $departmentIds[] = $d->id;
-        // }
-        // sort($departmentIds);
-        // $rootId = $departmentIds[0];
-        // $rootName = Department::whereId($rootId)->first()->name;
-        // # 获取根菜单Id
-        // $menuId = Menu::whereName($rootName)->first()->id;
+        # 获取session中用户信息
+        $user = Auth::user();
+        $departmentIds = [];
+
+        foreach ($user->departments as $d)
+        {
+            $departmentIds[] = $d->id;
+        }
+        sort($departmentIds);
+
+        $rootId = $departmentIds[0];
+        if($rootId == 1)
+        {
+            $menuId = 1;
+        }else{
+            $rootName = Department::whereId($rootId)->first()->name;
+            # 获取根菜单Id
+            $menuId = Menu::whereName($rootName)->first()->id;
+        }
 
         # 获取卡片列表
         $tabArray = [];
@@ -153,14 +160,14 @@ class HomeController extends Controller {
         }
         # 获取菜单列表
 
-        $menu = $this->menu->getMenuHtml($id);
+        $menu = $this->menu->getMenuHtml($menuId);
 
         return view('home.page', [
             'menu'   => $menu,
             'tabs'   => $tabArray,
             'menuId' => $id,
             'js'     => 'js/home/page.js',
-            // 'user'   => $user,
+            'user'   => $user,
         ]);
 
     }

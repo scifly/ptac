@@ -411,7 +411,8 @@ class Menu extends Model {
         if (isset($rootMenuId)) {
             switch ($rootType)
             {
-                case '运营':
+                # 说明是运营管理员
+                case '根':
                     $menus = $this->get($fields)->sortBy(['position'])->toArray();
                     break;
                 default:
@@ -421,7 +422,7 @@ class Menu extends Model {
                     foreach ($menus as $key => $v) {
                         $menus[$key + 1] = $v;
                     }
-                    $menus[] = [
+                    $menus[0] = [
                         'id'           => $rootMenu->id,
                         'parent_id'    => null,
                         'name'         => $rootMenu->name,
@@ -472,7 +473,7 @@ class Menu extends Model {
                 'type'   => $type,
             ];
         }
-     
+
         return response()->json($data);
 
     }
@@ -549,10 +550,10 @@ class Menu extends Model {
         $this->getParent($activeMenuId, $parents);
 
         $id = '';
-        // if ($activeMenuId > 3) {
-        //     $childrenId = $this->getChildren($activeMenuId);
-        //     $id = array_unique($childrenId);
-        // }
+        if ($activeMenuId>=3) {
+            $childrenId = $this->getChildren($activeMenuId);
+            $id = array_unique($childrenId);
+        }
 
         # 不含子菜单的HTML模板
         $mSimple = '<li%s><a id="%s" href="%s"><i class="%s"></i> %s</a></li>';
@@ -573,25 +574,23 @@ HTML;
         // $menus = $this->where('enabled', 1)
         //     ->where('id', '<>', 1)
         //     ->orderBy('position')->get();
-        // if(isset($id)&& !empty($id))
-        // {
-        //     if ($id>3) {
-        //         $menus = $this->whereIn('id', $id)
-        //             ->where('id', '<>', 1)
-        //             ->orderBy('position')->get();
-        //     } else {
-        //         $menus = $this->where('enabled', 1)
-        //             ->where('id', '<>', 1)
-        //             ->orderBy('position')->get();
-        //     }
-        // }else{
-        //     $menus = $this->where('enabled', 1)
-        //         ->where('id', '<>', 1)
-        //         ->orderBy('position')->get();
-        // }
-        $menus = $this->where('enabled', 1)
-            ->where('id', '<>', 1)
-            ->orderBy('position')->get();
+        if(isset($id)&& !empty($id))
+        {
+            if ($id>3) {
+                $menus = $this->whereIn('id', $id)
+                    ->where('id', '<>', 1)
+                    ->orderBy('position')->get();
+            } else {
+                $menus = $this->where('enabled', 1)
+                    ->where('id', '<>', 1)
+                    ->orderBy('position')->get();
+            }
+        }else{
+            $menus = $this->where('enabled', 1)
+                ->where('id', '<>', 1)
+                ->orderBy('position')->get();
+        }
+
         $menu = '';
         $level = 1;
         $parentId = 1;

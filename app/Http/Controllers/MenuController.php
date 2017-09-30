@@ -35,23 +35,30 @@ class MenuController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
-        // $user = Auth::user();
-        // $departmentIds = [];
-        // foreach ($user->departments as $d)
-        // {
-        //     $departmentIds[] = $d->id;
-        // }
-        // sort($departmentIds);
-        // $rootId = $departmentIds[0];
-        // $department = Department::whereId($rootId)->first();
-        // # 根目录名称
-        // $rootName = $department->name;
-        // $rootTypeName = $department->departmentType->name;
-        //
-        // # 获取根菜单Id
-        // $menuId = Menu::whereName($rootName)->first()->id;
+        $user = Auth::user();
+        $departmentIds = [];
+        foreach ($user->departments as $d)
+        {
+            $departmentIds[] = $d->id;
+        }
+        sort($departmentIds);
+        $rootId = $departmentIds[0];
+        if($rootId == 1)
+        {
+            $menuId = 1;
+            $rootTypeName = '根';
+        }else{
+            $department = Department::whereId($rootId)->first();
+            # 根目录名称
+            $rootName = $department->name;
+
+            $rootTypeName = $department->departmentType->name;
+
+            # 获取根菜单Id
+            $menuId = Menu::whereName($rootName)->first()->id;
+        }
         if (Request::method() === 'POST') {
-            return $this->menu->tree();
+            return $this->menu->tree($menuId,$rootTypeName);
         }
 
         return parent::output(__METHOD__);
