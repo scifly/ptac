@@ -212,12 +212,15 @@ class WapSiteController extends Controller {
         
         Wechat::curlGet($codeUrl);
         
+        $code = Request::query('code');
+        
         $wapSite = $this->wapSite
             ->where('school_id', 1)
             ->first();
         // dd($wapSite->wapSiteModules->media);
         return view('frontend.wap_site.index', [
             'wapsite' => $wapSite,
+            'code' => $code,
             'medias'  => $this->media->medias($wapSite->media_ids),
             'ws'      => true,
         ]);
