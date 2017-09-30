@@ -196,9 +196,10 @@ class WapSiteController extends Controller {
     /**
      * 微网站首页
      *
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function wapHome() {
+    public function wapHome(\Illuminate\Http\Request $request) {
         $corp = new Corp();
         $corps = $corp::whereName('万浪软件')->first();
         $corpId = $corps->corpid;
@@ -208,10 +209,18 @@ class WapSiteController extends Controller {
         $tokenFile = $path . 'public/token.txt';
         $token = Wechat::getAccessToken($tokenFile, $corpId, $secret);
         
-        $codeUrl = Wechat::getCodeUrl($corpId, '1000006', 'http://weixin.028lk.com/wap_sites/userInfo');
+        // $codeUrl = Wechat::getCodeUrl($corpId, '1000006', 'http://weixin.028lk.com/wap_sites/userInfo');
         
         // $result = Wechat::curlGet($codeUrl);
-        return redirect($codeUrl);
+        $code = $request->input('code');
+        if (empty($code)){
+//            $codeUrl = Wechat::getCodeUrl($corpId, '1000006', 'http://weixin.028lk.com/wap_sites/userInfo');
+            $codeUrl = Wechat::getCodeUrl($corpId, '1000006', $request->fullUrl());
+            return redirect($codeUrl);
+        }else{
+            $userInfo = Wechat::getUserInfo($token, $code);
+        }
+        echo "<pre>";print_r($userInfo);exit();
         $code = Request::query('code');
         $wapSite = $this->wapSite
             ->where('school_id', 1)
