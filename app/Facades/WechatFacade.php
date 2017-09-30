@@ -175,7 +175,7 @@ class Wechat extends Facade {
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
         curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_0);
         $result = curl_exec($ch);
-        dd(curl_error($ch));
+        dd(curl_errno($ch));
     
         curl_close($ch);
         return $result;
