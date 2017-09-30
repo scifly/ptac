@@ -210,7 +210,8 @@ class WapSiteController extends Controller {
         
         $codeUrl = Wechat::getCodeUrl($corpId, '1000006', 'http://weixin.028lk.com/wap_sites/userInfo');
         
-        $result = Wechat::curlGet($codeUrl);
+        // $result = Wechat::curlGet($codeUrl);
+        redirect($codeUrl);
         dd($codeUrl);
         $code = Request::query('code');
         dd($code);
