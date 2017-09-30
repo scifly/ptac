@@ -198,7 +198,7 @@ class Wechat extends Facade {
             $agentId
         );
         
-        return "window.location = \"{$url}\"";
+        return $url;
         
     }
     

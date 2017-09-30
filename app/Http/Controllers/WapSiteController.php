@@ -216,8 +216,9 @@ class WapSiteController extends Controller {
         if (empty($code)){
 //            $codeUrl = Wechat::getCodeUrl($corpId, '1000006', 'http://weixin.028lk.com/wap_sites/userInfo');
             $codeUrl = Wechat::getCodeUrl($corpId, '1000006', $request->fullUrl());
-            $url = explode('https',$codeUrl);
-            return redirect('https'.$url[1]);
+            // $url = explode('https',$codeUrl);
+            return redirect($codeUrl);
+            // return redirect('https'.$url[1]);
         }else{
             $userInfo = Wechat::getUserInfo($token, $code);
         }
