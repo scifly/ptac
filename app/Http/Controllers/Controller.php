@@ -130,7 +130,7 @@ class Controller extends BaseController {
         $url = 'http://weixin.028lk.com/wap_sites/webindex?code='.$code;
         
         if($code) {
-            return $code;
+            return \redirect($url);
         }else{
             return 'no code !';
         }
