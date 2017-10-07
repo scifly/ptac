@@ -18,6 +18,14 @@ var dept = {
     $checkedTreeNodes: function () {
         return $('#department-nodes-checked');//教职员工 编辑表单 选择好的部门列表
     },
+    unbindEvents: function() {
+        $(document).off('click', '.remove-node');
+        $(document).off('click', '.close-selected');
+        $(document).off('click', '#save-nodes');
+        $(document).off('click', '#cancel-nodes');
+        $('#search_node').unbind('keyup');
+        $('#add-department').unbind('click');
+    },
     remove: function () {
         $(document).on('click', '.remove-node', function () {
             var nodeId = $(this).parents('li').find('input').val();
@@ -60,11 +68,9 @@ var dept = {
         var selectedDepartmentIds = selectedNodes.split(',');
         dept.$footer().hide();
         dept.$form().hide();
-
         dept.$treeBox().show();
         //部门树形图中的保存取消按钮
         $('.tree-box .box-footer').show();
-
         dept.$tree().data('jstree', false).empty();
         dept.$tree().jstree({
             selectedNodes: selectedNodes,
@@ -94,7 +100,7 @@ var dept = {
             types: tree.nodeTypes
         }).on('select_node.jstree', function (node, selected) {
             //选中事件 将选中的节点增|加到右边列表
-            console.log(selected);
+            // console.log(selected);
             var nodeHtml = '<li id="tree' + selected.node.id + '">' +
                 '<span class="handle ui-sortable-handle">' +
                 '<i class="' + selected.node.icon + '"></i>' +
@@ -179,17 +185,19 @@ var dept = {
         });
     },
     init: function (uri) {
-        //部门
-        //点击 表单中的部门修改按钮
+        // 取消所有事件绑定
+        dept.unbindEvents();
+        // 点击表单中的部门修改按钮
         dept.$tree().empty();
         dept.$todoList().empty();
         // 初始化“修改按钮”
+        console.log(uri);
         dept.modify(uri);
-        //节点搜索功能
+        // 初始化节点搜索功能
         dept.search();
-        //右侧选中节点中的 删除图标 点击后移除本身并且将左侧取消选中
+        // 右侧选中节点中的 删除图标 点击后移除本身并且将左侧取消选中
         dept.remove();
-        //保存选中的节点
+        // 初始化保存选中节点的功能
         dept.save();
         // 点击 教职员工编辑表单中的 删除部门
         dept.purge();

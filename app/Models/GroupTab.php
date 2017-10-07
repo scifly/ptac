@@ -9,6 +9,18 @@ use Mockery\Exception;
  * App\Models\GroupTab
  *
  * @mixin \Eloquent
+ * @property int $id
+ * @property int $group_id
+ * @property int $tab_id
+ * @property \Carbon\Carbon|null $created_at
+ * @property \Carbon\Carbon|null $updated_at
+ * @property int $enabled
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\GroupTab whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\GroupTab whereEnabled($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\GroupTab whereGroupId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\GroupTab whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\GroupTab whereTabId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\GroupTab whereUpdatedAt($value)
  */
 class GroupTab extends Model {
     

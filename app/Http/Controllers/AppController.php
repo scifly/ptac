@@ -52,7 +52,8 @@ class AppController extends Controller {
      */
     public function store(AppRequest $request) {
         
-        return $this->app->create($request->all()) ? $this->succeed() : $this->fail();
+        return $this->app->create($request->all())
+            ? $this->succeed() : $this->fail();
         
     }
     
@@ -65,9 +66,7 @@ class AppController extends Controller {
     public function show($id) {
         
         $app = $this->app->find($id);
-        if (!$app) {
-            return $this->notFound();
-        }
+        if (!$app) { return $this->notFound(); }
         
         return $this->output(__METHOD__, ['app' => $app]);
         
@@ -82,16 +81,14 @@ class AppController extends Controller {
     public function edit($id) {
         
         $app = $this->app->find($id);
-        if (!$app) {
-            return $this->notFound();
-        }
+        if (!$app) { return $this->notFound(); }
         
         return $this->output(__METHOD__, ['app' => $app]);
         
     }
     
     /**
-     * 更新指定的微信应用记录
+     * 更新微信应用
      *
      * @param AppRequest $request
      * @param $id
@@ -100,16 +97,15 @@ class AppController extends Controller {
     public function update(AppRequest $request, $id) {
         
         $app = $this->app->find($id);
-        if (!$app) {
-            return $this->notFound();
-        }
+        if (!$app) { return $this->notFound(); }
         
-        return $app->update($request->all()) ? $this->succeed() : $this->fail();
+        return $app->update($request->all())
+            ? $this->succeed() : $this->fail();
         
     }
     
     /**
-     * 删除指定的微信应用记录
+     * 删除微信应用
      *
      * @param $id
      * @return \Illuminate\Http\JsonResponse
@@ -117,11 +113,10 @@ class AppController extends Controller {
     public function destroy($id) {
         
         $app = $this->app->find($id);
-        if (!$app) {
-            return $this->notFound();
-        }
+        if (!$app) { return $this->notFound(); }
         
-        return $app->delete() ? $this->succeed() : $this->fail();
+        return $app->delete()
+            ? $this->succeed() : $this->fail();
         
     }
     

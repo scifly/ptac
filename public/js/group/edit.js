@@ -1,9 +1,7 @@
-
 var data;
 var $menuTree = $('#menu_tree');
 // Switchery
 Switcher.init();
-
 // iCheck
 crud.initICheck();
 var id = $('#id').val();
@@ -13,23 +11,16 @@ $('#cancel, #record-list').on('click', function () {
     page.getTabContent($activeTabPane, 'groups/index');
     crud.unbindEvents();
 });
-
 // Parsley
 var $form = $('#formGroup');
-// crud.formParsley($form, requestType, ajaxUrl);
 $form.parsley().on('form:validated', function () {
-    var data = $form.serialize();
-
     if ($('.parsley-error').length === 0) {
         var url =  page.siteRoot() + 'groups/update/'+id;
-        menuIds = $menuTree.jstree().get_selected();
-
+        var menuIds = $menuTree.jstree().get_selected();
         $menuTree.find(".jstree-undetermined").each(function (i, element) {
             menuIds.push($(element).parents().eq(1).attr('id'));
         });
-
         $('#menu_ids').val(menuIds.join());
-
         $.ajax({
             type: 'POST',
             dataType: 'json',
@@ -47,11 +38,8 @@ $form.parsley().on('form:validated', function () {
                 page.inform('出现异常', obj['message'], page.failure);
             }
         });
-        // crud.ajaxRequest(requestType, page.siteRoot() + 'groups/store', data, $form[0]);
     }
 }).on('form:submit', function() {return false; });
-
-
 $menuTree.jstree({
     core: {
         themes: {
@@ -63,7 +51,7 @@ $menuTree.jstree({
         multiple: true,
         animation: 0,
         data: {
-            url: page.siteRoot() + 'groups/edit/'+id,
+            url: page.siteRoot() + 'groups/edit/'+id + '?schoolId=' + $('#school_id').val(),
             type: 'POST',
             dataType: 'json',
             data: function (node) {
@@ -81,7 +69,6 @@ $menuTree.jstree({
 }).on('deselect_node.jstree', function (node, selected) {
 }).on('loaded.jstree', function () {
     var menuIds = $('#menu_ids').val().split(',');
-    console.log(menuIds);
     $menuTree.jstree().select_node(menuIds);
     $menuTree.jstree('open_all');
 });
@@ -116,9 +103,48 @@ $(document).on('ifUnchecked', '.actions', function() {
     });
     if (!checks) {
         $tabContainer.find('input').iCheck('uncheck');
+    } else {
+        var method = $(this).attr('data-method');
+        switch (method) {
+            case 'index':
+                $tabContainer.next().find('input').iCheck('uncheck');
+                break;
+            case 'create':
+                $tabContainer.next().find('input[data-method="store"]').iCheck('uncheck');
+                break;
+            case 'store':
+                $tabContainer.next().find('input[data-method="create"]').iCheck('uncheck');
+                break;
+            case 'edit':
+                $tabContainer.next().find('input[data-method="update"]').iCheck('uncheck');
+                break;
+            case 'update':
+                $tabContainer.next().find('input[data-method="edit"]').iCheck('uncheck');
+                break;
+            default: break;
+        }
     }
 });
 $(document).on('ifChecked', '.actions', function(e) {
     var $tabContainer = $(this).parentsUntil($('.col-md-3'), '.box .box-default').find('.box-header');
     $tabContainer.find('input').iCheck('check');
+    var method = $(this).attr('data-method');
+    if (method !== 'index') {
+        $tabContainer.next().find('input[data-method="index"]').iCheck('check');
+    }
+    switch (method) {
+        case 'create':
+            $tabContainer.next().find('input[data-method="store"]').iCheck('check');
+            break;
+        case 'store':
+            $tabContainer.next().find('input[data-method="create"]').iCheck('check');
+            break;
+        case 'edit':
+            $tabContainer.next().find('input[data-method="update"]').iCheck('check');
+            break;
+        case 'update':
+            $tabContainer.next().find('input[data-method="edit"]').iCheck('check');
+            break;
+        default: break;
+    }
 });

@@ -11,7 +11,7 @@
             </tr>
             </thead>
             <tbody>
-            @if(isset($mobiles))
+            @if(!empty($mobiles))
                 @foreach($mobiles as $key => $mobile)
                     <tr>
                         <td>
@@ -20,11 +20,13 @@
                                    placeholder="（请输入手机号码）"
                                    value='{{ $mobile->mobile }}'
                                    required
-                                   pattern="/^1[0-9]{10}$/">
+                                   pattern="/^1[0-9]{10}$/"
+                            />
                             <input class="form-control"
                                    name="mobile[{{ $key }}][id]"
                                    type="hidden"
-                                   value='{{ $mobile->id }}'>
+                                   value='{{ $mobile->id }}'
+                            />
                         </td>
                         <td style="text-align: center;">
                             <label for="mobile[isdefault]"></label>
@@ -67,7 +69,7 @@
                 <input class="form-control"
                        type="hidden"
                        id="mobile-size"
-                       value={{sizeof($mobiles)}}>
+                       value={{ sizeof($mobiles) }}>
             @else
                 <tr>
                     <td>
@@ -76,13 +78,16 @@
                                placeholder="（请输入手机号码）"
                                value=''
                                required
-                               pattern="/^1[0-9]{10}$/">
+                               pattern="/^1[0-9]{10}$/"
+                        />
                     </td>
                     <td style="text-align: center;">
-                        <input name="mobile[isdefault]" value="0" checked type="radio" class="minimal">
+                        <label for="mobile[isdefault]"></label>
+                        <input id="mobile[isdefault]" name="mobile[isdefault]" value="0" checked type="radio" class="minimal">
                     </td>
                     <td style="text-align: center;">
-                        <input name="mobile[0][enabled]"  checked type="checkbox" class="minimal">
+                        <label for="mobile[0][enabled]"></label>
+                        <input id="mobile[0][enabled]" name="mobile[0][enabled]"  checked type="checkbox" class="minimal">
                     </td>
                     <td style="text-align: center;">
                         <span class="input-group-btn">

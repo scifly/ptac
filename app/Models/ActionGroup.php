@@ -9,6 +9,18 @@ use Mockery\Exception;
  * App\Models\ActionGroup
  *
  * @mixin \Eloquent
+ * @property int $id
+ * @property int $action_id
+ * @property int $group_id
+ * @property \Carbon\Carbon|null $created_at
+ * @property \Carbon\Carbon|null $updated_at
+ * @property int $enabled
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ActionGroup whereActionId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ActionGroup whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ActionGroup whereEnabled($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ActionGroup whereGroupId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ActionGroup whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ActionGroup whereUpdatedAt($value)
  */
 class ActionGroup extends Model {
 

@@ -517,9 +517,7 @@ class Menu extends Model {
 
     public function movable($id, $parentId) {
 
-        if (!isset($parentId)) {
-            return false;
-        }
+        if (!isset($parentId)) { return false; }
         $type = $this->find($id)->menuType->name;
         $parentType = $this->find($parentId)->menuType->name;
         switch ($type) {

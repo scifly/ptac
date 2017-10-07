@@ -55,7 +55,8 @@ class CommTypeController extends Controller {
      */
     public function store(CommTypeRequest $request) {
         
-        return $this->commType->create($request->all()) ? $this->succeed() : $this->fail();
+        return $this->commType->create($request->all())
+            ? $this->succeed() : $this->fail();
         
     }
     
@@ -68,9 +69,7 @@ class CommTypeController extends Controller {
     public function edit($id) {
         
         $commType = $this->commType->find($id);
-        if (!$commType) {
-            return $this->notFound();
-        }
+        if (!$commType) { return $this->notFound(); }
         
         return $this->output(__METHOD__, ['commType' => $commType]);
         
@@ -86,11 +85,10 @@ class CommTypeController extends Controller {
     public function update(CommTypeRequest $request, $id) {
         
         $commType = $this->commType->find($id);
-        if (!$commType) {
-            return $this->notFound();
-        }
+        if (!$commType) { return $this->notFound(); }
         
-        return $commType->update($request->all()) ? $this->succeed() : $this->fail();
+        return $commType->update($request->all())
+            ? $this->succeed() : $this->fail();
         
     }
     
@@ -103,11 +101,10 @@ class CommTypeController extends Controller {
     public function destroy($id) {
         
         $commType = $this->commType->find($id);
-        if (!$commType) {
-            return $this->notFound();
-        }
+        if (!$commType) { return $this->notFound(); }
         
         return $commType->delete() ? $this->succeed() : $this->fail();
         
     }
+    
 }

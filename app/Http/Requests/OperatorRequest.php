@@ -21,13 +21,7 @@ class OperatorRequest extends FormRequest {
     public function rules() {
         
         return [
-            'operator.company_id' => 'required|integer',
-//            'operator.user_id' => 'required|integer|unique:operators,user_id,' .
-//                $this->input('Operator.id') . ',id',
-            'operator.school_ids' => 'required|string',
             'user.group_id'       => 'required|integer',
-//            'user.username' => 'required|string|unique:users,username,' .
-//                $this->input('User.id') . ',id',
             'user.realname'       => 'required|string',
             'user.gender'         => 'required|boolean',
             'user.enabled'        => 'required|boolean',

@@ -78,7 +78,7 @@ class HomeController extends Controller {
 
         if (!session('menuId') || session('menuId') !== $id) {
             session(['menuId' => $id]);
-            session(['menuName' => Menu::whereId($id)->first()->name]);
+            session(['menuName' => Menu::find($id)->name]);
             session(['pageUrl' => Request::fullUrl()]);
             session(['menuChanged' => true]);
         } else {

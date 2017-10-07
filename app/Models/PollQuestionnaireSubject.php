@@ -25,6 +25,9 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read \App\Models\PollQuestionnaireAnswer $pollquestionnaireAnswer
  * @property-read \App\Models\PollQuestionnaire $pollquestionnaire
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\PollQuestionnaireChoice[] $pollquestionnairechoice
+ * @property-read \App\Models\PollQuestionnaire $poll_questionnaire
+ * @property-read \App\Models\PollQuestionnaireAnswer $poll_questionnaire_answer
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\PollQuestionnaireChoice[] $poll_questionnaire_choice
  */
 class PollQuestionnaireSubject extends Model {
     

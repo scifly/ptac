@@ -78,15 +78,11 @@ class Controller extends BaseController {
         if ($menu) {
             $params['breadcrumb'] = $menu->name . ' / ' . $tab->name . ' / ' . $action->name;
         } else {
-            // Todo: redirect to login
-            $menuName = session('menuName');
-            // $menuName = $this->menuName;
-            $params['breadcrumb'] =
-                "<span style=\"color: red\">菜单 - <strong>{$menuName}</strong> - 配置错误, 请检查后</span>" .
-                '<a href="' . session('pageUrl') . '">重试</a>';
+            return response()->json(['statusCode' => self::HTTP_STATUSCODE_UNAUTHORIZED]);
         }
         
         return response()->json([
+            'statusCode' => 200,
             'html'       => view($view, $params)->render(),
             'js'         => $action->js,
             'breadcrumb' => $params['breadcrumb'],

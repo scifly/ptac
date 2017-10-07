@@ -117,7 +117,8 @@ HTML;
     public function actions() {
         
         $data = $this->whereEnabled(1)->get([
-            'controller', 'name', 'id', 'action_type_ids', 'route',
+            'controller', 'name', 'id',
+            'action_type_ids', 'route',
         ]);
         $actions = [];
         # 获取HTTP请求类型为GET的Action类型ID
@@ -490,8 +491,8 @@ HTML;
     private function getMethodNames($methods) {
         
         $methodNames = [];
+        /** @var ReflectionMethod $method */
         foreach ($methods as $method) {
-            /** @noinspection PhpUndefinedMethodInspection */
             $methodNames[] = $method->getName();
         }
         
@@ -526,11 +527,11 @@ HTML;
         $name = 'n/a';
         preg_match_all("#\/\*\*\n\s{5}\*[^\*]*\*#", $comment, $matches);
         if (isset($matches[0][0])) {
-            $name = str_replace(str_split("\n/* "), '', $matches[0][0]);
+            $name = str_replace(str_split("\r\n/* "), '', $matches[0][0]);
         } else {
             preg_match_all("#\/\*\*\r\n\s{5}\*[^\*]*\*#", $comment, $matches);
             if (isset($matches[0][0])) {
-                $name = str_replace(str_split("\n/* "), '', $matches[0][0]);
+                $name = str_replace(str_split("\r\n/* "), '', $matches[0][0]);
             }
         }
         
@@ -656,15 +657,6 @@ HTML;
             $prefix = ($prefix === 'corps') ? 'corp' : $prefix;
             
             return 'js/' . $prefix . '/' . $action . '.js';
-            /*switch ($action) {
-                case 'index':
-                case 'create':
-                case 'edit':
-                case ''
-                
-                default:
-                    return NULL;
-            }*/
         }
         
         return null;

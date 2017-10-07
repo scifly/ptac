@@ -144,6 +144,23 @@ class Educator extends Model {
         
     }
     
+    /**
+     * 根据教职员工Id获取教职员工列表
+     *
+     * @param array $ids
+     * @return array
+     */
+    public function getEducatorListByIds(array $ids) {
+        
+        $educators = [];
+        foreach ($ids as $id) {
+            $educator = $this->find($id);
+            $educators[$id] = $educator->user->realname;
+        }
+        return $educators;
+        
+    }
+    
     public function datatable() {
         
         $columns = [

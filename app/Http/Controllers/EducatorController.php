@@ -75,7 +75,8 @@ class EducatorController extends Controller {
      */
     public function store(EducatorRequest $request) {
         
-        return $this->educator->store($request) ? $this->succeed() : $this->fail();
+        return $this->educator->store($request)
+            ? $this->succeed() : $this->fail();
         
     }
     
@@ -88,9 +89,7 @@ class EducatorController extends Controller {
     public function show($id) {
         
         $educator = $this->educator->find($id);
-        if (!$educator) {
-            return $this->notFound();
-        }
+        if (!$educator) { return $this->notFound(); }
         return $this->output(__METHOD__, [
             'educator'  => $educator,
             'educators' => $this->educator->teams(),
@@ -110,9 +109,7 @@ class EducatorController extends Controller {
             return $this->department->tree();
         }
         $educator = $this->educator->find($id);
-        if (!$educator) {
-            return $this->notFound();
-        }
+        if (!$educator) { return $this->notFound(); }
         $selectedTeams = [];
         foreach ($educator->teams as $v) {
             $selectedTeams[$v->id] = $v->name;

@@ -29,6 +29,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read School $schools
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\EducatorAttendance[] $educatorAttendances
  * @property-read \App\Models\School $school
+ * @property int $enabled
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\EducatorAttendanceSetting whereEnabled($value)
  */
 class EducatorAttendanceSetting extends Model {
     

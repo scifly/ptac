@@ -69,9 +69,7 @@ class CompanyController extends Controller {
     public function show($id) {
         
         $company = $this->company->find($id);
-        if (!$company) {
-            return $this->notFound();
-        }
+        if (!$company) { return $this->notFound(); }
         
         return $this->output(__METHOD__, ['company' => $company]);
         
@@ -86,9 +84,7 @@ class CompanyController extends Controller {
     public function edit($id) {
         
         $company = $this->company->find($id);
-        if (!$company) {
-            return $this->notFound();
-        }
+        if (!$company) { return $this->notFound(); }
         
         return $this->output(__METHOD__, ['company' => $company]);
         
@@ -103,11 +99,10 @@ class CompanyController extends Controller {
      */
     public function update(CompanyRequest $request, $id) {
         
-        if (!$this->company->find($id)) {
-            return $this->notFound();
-        }
+        $company = $this->company->find($id);
+        if (!$company) { return $this->notFound(); }
         
-        return $this->company->modify($request->all(), $id, true)
+        return $company->modify($request->all(), $id, true)
             ? $this->succeed() : $this->fail();
         
     }
@@ -119,12 +114,11 @@ class CompanyController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
+    
+        $company = $this->company->find($id);
+        if (!$company) { return $this->notFound(); }
         
-        if (!$this->company->find($id)) {
-            return $this->notFound();
-        }
-        
-        return $this->company->remove($id, true)
+        return $company->remove($id, true)
             ? $this->succeed() : $this->fail();
         
     }

@@ -79,9 +79,7 @@ class CorpController extends Controller {
     public function edit($id) {
         
         $corp = $this->corp->find($id);
-        if (!$corp) {
-            return $this->notFound();
-        }
+        if (!$corp) { return $this->notFound(); }
         
         return $this->output(__METHOD__, ['corp' => $corp]);
         
