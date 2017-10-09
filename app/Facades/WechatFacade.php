@@ -210,17 +210,13 @@ class Wechat extends Facade {
      * @return mixed
      */
     static function getUserInfo($accessToken, $code) {
-        dd(sprintf(
+
+        return self::curlGet(sprintf(
             self::URL_GET_USERINFO,
             $accessToken,
             $code
         ));
-        $url = self::curlGet(sprintf(
-            self::URL_GET_USERINFO,
-            $accessToken,
-            $code
-        ));
-        return;
+        
     }
     
     /**
