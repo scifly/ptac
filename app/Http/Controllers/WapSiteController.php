@@ -203,7 +203,7 @@ class WapSiteController extends Controller {
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function wapHome(\Illuminate\Http\Request $request, $school_id) {
+    public function wapHome(\Illuminate\Http\Request $request) {
         $corp = new Corp();
         $corps = $corp::whereName('万浪软件')->first();
         $corpId = $corps->corpid;
