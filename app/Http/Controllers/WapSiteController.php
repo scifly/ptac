@@ -238,7 +238,7 @@ class WapSiteController extends Controller {
         $type = $departmentType::whereName('学校')->first();
         $department = new Department();
         # userid
-        $level = $department->groupLevel(3);
+        $level = $department->groupLevel(4);
         dd($level);die;
         // echo "<pre>";print_r($userInfo);exit();
         // $code = Request::query('code');
