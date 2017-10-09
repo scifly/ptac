@@ -8,6 +8,7 @@ use App\Models\Department;
 use App\Models\DepartmentType;
 use App\Models\DepartmentUser;
 use App\Models\Media;
+use App\Models\User;
 use App\Models\WapSite;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Request;
@@ -202,36 +203,36 @@ class WapSiteController extends Controller {
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function wapHome(\Illuminate\Http\Request $request) {
-//         $corp = new Corp();
-//         $corps = $corp::whereName('万浪软件')->first();
-//         $corpId = $corps->corpid;
-//         $secret = $corps->corpsecret;
-//         $dir = dirname(__FILE__);
-//         $path = substr($dir, 0, stripos($dir, 'app/Jobs'));
-//         $tokenFile = $path . 'public/token.txt';
-//         $token = Wechat::getAccessToken($tokenFile, $corpId, $secret);
-//         // dd($token);die;
-//         // $codeUrl = Wechat::getCodeUrl($corpId, '1000006', 'http://weixin.028lk.com/wap_sites/userInfo');
-//
-//         // $result = Wechat::curlGet($codeUrl);
-//         $code = $request->input('code');
-//         if (empty($code)){
-// //            $codeUrl = Wechat::getCodeUrl($corpId, '1000006', 'http://weixin.028lk.com/wap_sites/userInfo');
-//             $codeUrl = Wechat::getCodeUrl($corpId, '1000006', 'http://weixin.028lk.com/wap_sites/webindex');
-//             $url = explode('https',$codeUrl);
-//             // return redirect($codeUrl);
-//             // var_dump('https'.$url[1]);die;
-//             return redirect('https'.$url[1]);
-//         }else{
-//             // echo $code;die;
-//             $userInfo = Wechat::getUserInfo($token, $code);
-//
-//
-//
-//
-//             dd($userInfo);die;
-//         }
+    public function wapHome(\Illuminate\Http\Request $request, $school_id) {
+        $corp = new Corp();
+        $corps = $corp::whereName('万浪软件')->first();
+        $corpId = $corps->corpid;
+        $secret = $corps->corpsecret;
+        $dir = dirname(__FILE__);
+        $path = substr($dir, 0, stripos($dir, 'app/Jobs'));
+        $tokenFile = $path . 'public/token.txt';
+        $token = Wechat::getAccessToken($tokenFile, $corpId, $secret);
+        // dd($token);die;
+        // $codeUrl = Wechat::getCodeUrl($corpId, '1000006', 'http://weixin.028lk.com/wap_sites/userInfo');
+
+        // $result = Wechat::curlGet($codeUrl);
+        $code = $request->input('code');
+        if (empty($code)){
+//            $codeUrl = Wechat::getCodeUrl($corpId, '1000006', 'http://weixin.028lk.com/wap_sites/userInfo');
+            $codeUrl = Wechat::getCodeUrl($corpId, '1000006', 'http://weixin.028lk.com/wap_sites/webindex');
+            $url = explode('https',$codeUrl);
+            // return redirect($codeUrl);
+            // var_dump('https'.$url[1]);die;
+            return redirect('https'.$url[1]);
+        }else{
+            // echo $code;die;
+            $userInfo = Wechat::getUserInfo($token, $code);
+
+
+
+
+            dd($userInfo);die;
+        }
         
         
         $departmentType = new DepartmentType();
@@ -239,19 +240,27 @@ class WapSiteController extends Controller {
         $department = new Department();
         # userid
         $level = $department->groupLevel(4);
+        $group = User::whereId(4)->first()->group;
+        if ($level == 'school' || $school_id) {
+            $school_id = empty($school_id) ? $group->school_id : $school_id ;
+            $wapSite = $this->wapSite
+                ->where('school_id', $school_id)
+                ->first();
+            // dd($wapSite->wapSiteModules->media);
+            return view('frontend.wap_site.index', [
+                'wapsite' => $wapSite,
+                // 'code' => $code,
+                'medias'  => $this->media->medias($wapSite->media_ids),
+                'ws'      => true,
+            ]);
+        }else{
+        
+        
+        }
         dd($level);die;
         // echo "<pre>";print_r($userInfo);exit();
         // $code = Request::query('code');
-        $wapSite = $this->wapSite
-            ->where('school_id', 1)
-            ->first();
-        // dd($wapSite->wapSiteModules->media);
-        return view('frontend.wap_site.index', [
-            'wapsite' => $wapSite,
-            'code' => $code,
-            'medias'  => $this->media->medias($wapSite->media_ids),
-            'ws'      => true,
-        ]);
+        
         
     }
     
