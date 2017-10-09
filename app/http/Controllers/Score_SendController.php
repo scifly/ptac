@@ -21,11 +21,7 @@ class Score_SendController extends Controller {
 
     protected $exam, $score, $user, $student,
         $class, $school, $grade, $subject, $scoreTotal;
-<<<<<<< HEAD
-=======
 
-
->>>>>>> redmine/master
     /**
      * Score_SendController constructor.
      * 初始化注入关联模型
@@ -69,10 +65,6 @@ class Score_SendController extends Controller {
         return view("score_send.index", ['js' => 'js/score_send/index.js', 'schools' => $this->school->all(['name', 'id']), 'form' => 0, 'datatable' => 1]);
     }
 
-<<<<<<< HEAD
-=======
-
->>>>>>> redmine/master
     /**
      * @param null $id
      * @return string
@@ -92,10 +84,7 @@ class Score_SendController extends Controller {
         return json_encode($this->class->all(['id', 'name', 'grade_id'])->where("grade_id", $id));
 
     }
-<<<<<<< HEAD
-=======
 
->>>>>>> redmine/master
     /**
      * @param null $id
      * @return string
@@ -267,12 +256,9 @@ class Score_SendController extends Controller {
             }
             $strs[] = ["id" => $student[0]->id, 'name' => $student[0]->realname, "msg" => $str];
         }
-
-
-<<<<<<< HEAD
-=======
+        
         return json_encode($strs);
     }
 
->>>>>>> redmine/master
+
 }

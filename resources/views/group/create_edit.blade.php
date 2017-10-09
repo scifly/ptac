@@ -38,6 +38,7 @@
                             {{--'id' => 'corp_id',--}}
                             {{--'items' => $corps--}}
                             {{--])--}}
+                            @if(isset($schools)&& $schools!=null )
                             <div class="form-group">
                                 <label  class="col-sm-3 control-label">学校</label>
                                 <div class="col-sm-6">
@@ -48,6 +49,8 @@
                                     </select>
                                 </div>
                             </div>
+                            @else
+                                @endif
                         <div class="form-group">
                             {!! Form::label('remark', '备注', [
                                 'class' => 'col-sm-3 control-label'

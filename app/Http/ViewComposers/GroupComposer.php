@@ -37,37 +37,40 @@ class GroupComposer {
                 'actions' => $actionList,
             ];
         }
-        // $user = Auth::user();
-        // $group = $user->group->name;
-        // $departmentIds = [];
+        $user = Auth::user();
+        $group = $user->group->name;
+        $departmentIds = [];
 
-        // switch ($group) {
-        //     case '运营':
-        //         $schools = School::whereEnabled(1)->pluck('id', 'name');
-        //         break;
-        //     case '企业':
-        //         foreach ($user->departments as $d) {
-        //             $departmentIds[] = $d->id;
-        //         }
-        //         sort($departmentIds);
-        //         $corpId = Corp::whereDepartmentId($departmentIds[0])->first()->id;
-        //         $schools = School::whereCorpId($corpId)->where('enabled', 1)->pluck('id', 'name');
-        //         break;
-        //     case '学校':
-        //         $departmentIds = [];
-        //         foreach ($user->departments as $d)
-        //         {
-        //             $departmentIds[] = $d->id;
-        //         }
-        //         sort($departmentIds);
-        //         $rootId = $departmentIds[0];
-        //         $schools = School::whereDepartmentId($rootId)->first()->pluck('id', 'name');
-        //         break;
-        //     default: break;
-        // }
+        switch ($group) {
+            case '运营':
+                $schools = School::whereEnabled(1)->pluck('id', 'name');
+                break;
+            case '企业':
+                $schools = School::whereEnabled(1)->pluck('id', 'name');
+                break;
+            case '学校':
+                foreach ($user->departments as $d) {
+                    $departmentIds[] = $d->id;
+                }
+                sort($departmentIds);
+                $corpId = Corp::whereDepartmentId($departmentIds[0])->first()->id;
+                $schools = School::whereCorpId($corpId)->where('enabled', 1)->pluck('id', 'name');
+                break;
+            default:
+                $schools = '';
+                // $departmentIds = [];
+                // foreach ($user->departments as $d)
+                // {
+                //     $departmentIds[] = $d->id;
+                // }
+                // sort($departmentIds);
+                // $rootId = $departmentIds[0];
+                // $schools = School::whereDepartmentId($rootId)->first()->pluck('id', 'name');
+                // break;
+        }
         $view->with([
             'tabActions' => $tabActions,
-            // 'schools' => $schools,
+            'schools' => $schools,
             // 'schoolId' => $schoolId,
         ]);
     }

@@ -51,7 +51,51 @@ $form.parsley().on('form:validated', function () {
     }
 }).on('form:submit', function() {return false; });
 
+loadTree($('#school_id').val());
 
+$('.menu').change(function(){
+    var school_id = $(this).val();
+    loadTree(school_id);
+});
+
+function loadTree(schoolId) {
+    $.jstree.destroy();
+    $('a[href="#tab02"]').html(page.ajaxLoader());
+    var $menuTree = $('#menu_tree');
+    $menuTree.jstree({
+        core: {
+            themes: {
+                variant: 'large',
+                dots: true,
+                icons: false,
+                stripes: true
+            },
+            multiple: true,
+            animation: 0,
+            data: {
+                url: page.siteRoot() + 'groups/edit/'+id+'?schoolId=' + schoolId,
+                type: 'POST',
+                dataType: 'json',
+                data: function (node) {
+                    return {id: node.id, _token: $('#csrf_token').attr('content')}
+                }
+            }
+        },
+        checkbox: {
+            // keep_selected_style : false,
+            // three_state: false
+        },
+        plugins: ['types', 'search', 'checkbox', 'wholerow'],
+        types: tree.nodeTypes
+    }).on('select_node.jstree', function(node, selected) {
+    }).on('deselect_node.jstree', function (node, selected) {
+    }).on('loaded.jstree', function () {
+        $menuTree.jstree('open_all');
+        $('a[href="#tab02"]').html('菜单权限');
+    });
+}
+
+/*
 $menuTree.jstree({
     core: {
         themes: {
@@ -85,6 +129,7 @@ $menuTree.jstree({
     $menuTree.jstree().select_node(menuIds);
     $menuTree.jstree('open_all');
 });
+*/
 
 $('.collapsed-box').boxWidget('collapse');
 $(document).on('ifChecked', '.tabs', function(e) {

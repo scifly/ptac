@@ -201,13 +201,16 @@ class WapSiteController extends Controller {
     public function wapHome() {
         $corp = new Corp();
         $corps = $corp::whereName('万浪软件')->first();
+
         $corpId = $corps->corpid;
+
         $secret = $corps->corpsecret;
         $dir = dirname(__FILE__);
+
         $path = substr($dir, 0, stripos($dir, 'app/Jobs'));
         $tokenFile = $path . 'public/token.txt';
         $token = Wechat::getAccessToken($tokenFile, $corpId, $secret);
-        
+
         $codeUrl = Wechat::getCodeUrl($corpId, '1000006', 'http://weixin.028lk.com/wap_sites/userInfo');
         
         Wechat::curlGet($codeUrl);

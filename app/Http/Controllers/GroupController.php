@@ -38,7 +38,7 @@ class GroupController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
-        //$user = Auth::user();
+        // $user = Auth::user();
         // $departmentIds = [];
         // foreach ($user->departments as $d)
         // {
@@ -68,10 +68,10 @@ class GroupController extends Controller {
     public function create() {
 
         if (Request::method() === 'POST') {
-            // $schoolId = Request::query('schoolId');
-            // $menuId = School::whereId($schoolId)->first()->menu_id;
-            // return $this->menu->getTreeByMenuId($menuId);
-            return $this->menu->tree();
+            $schoolId = Request::query('schoolId');
+            $menuId = School::whereId($schoolId)->first()->menu_id;
+            return $this->menu->getTreeByMenuId($menuId);
+            // return $this->menu->tree();
         }
 
         $corps = $this->corp->pluck('name', 'id');
@@ -120,13 +120,19 @@ class GroupController extends Controller {
         
         $group = $this->group->find($id);
         if (!$group) { return $this->notFound(); }
+        // if (Request::method() === 'POST') {
+        //     return $this->menu->tree();
+        // }
+        // $menus = $group->menus;
+        // $selectedMenuIds = [];
+        // foreach ($menus as $menu) {
+        //     $selectedMenuIds[] = $menu->id;
+        // }
         if (Request::method() === 'POST') {
-            return $this->menu->tree();
-        }
-        $menus = $group->menus;
-        $selectedMenuIds = [];
-        foreach ($menus as $menu) {
-            $selectedMenuIds[] = $menu->id;
+            $schoolId = Request::query('schoolId');
+            $menuId = School::whereId($schoolId)->first()->menu_id;
+            return $this->menu->getTreeByMenuId($menuId);
+            // return $this->menu->tree();
         }
         $tabs = $group->tabs;
         $selectedTabs = [];
@@ -140,7 +146,7 @@ class GroupController extends Controller {
         }
         return $this->output(__METHOD__, [
             'group'           => $group,
-            'selectedMenuIds' => implode(',', $selectedMenuIds),
+            // 'selectedMenuIds' => implode(',', $selectedMenuIds),
             'selectedTabs'    => $selectedTabs,
             'selectedActions' => $selectedActions,
         ]);

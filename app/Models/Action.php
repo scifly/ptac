@@ -266,10 +266,12 @@ HTML;
     }
     
     public function scan() {
-        
+
         $actionType = new ActionType();
         $this->actionTypes = $actionType->pluck('id', 'name')->toArray();
+
         $this->routes = Route::getRoutes()->getRoutes();
+
         $controllers = $this->scanDirectories($this->getSiteRoot() . $this->ctlrDir);
         # 获取控制器的名字空间
         $this->getControllerNamespaces($controllers);
