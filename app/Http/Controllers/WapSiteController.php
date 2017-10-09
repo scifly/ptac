@@ -220,6 +220,7 @@ class WapSiteController extends Controller {
             // return redirect($codeUrl);
             return redirect('https'.$url[1]);
         }else{
+            echo $code;die;
             $userInfo = Wechat::getUserInfo($token, $code);
         }
         echo "<pre>";print_r($userInfo);exit();
