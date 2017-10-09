@@ -215,7 +215,7 @@ class Wechat extends Facade {
         //     $accessToken,
         //     $code
         // );die;
-        return redirect(sprintf(
+        return self::curlGet(sprintf(
             self::URL_GET_USERINFO,
             $accessToken,
             $code
