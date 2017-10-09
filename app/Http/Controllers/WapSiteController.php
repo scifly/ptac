@@ -208,7 +208,7 @@ class WapSiteController extends Controller {
         $path = substr($dir, 0, stripos($dir, 'app/Jobs'));
         $tokenFile = $path . 'public/token.txt';
         $token = Wechat::getAccessToken($tokenFile, $corpId, $secret);
-        
+        dd($token);die;
         // $codeUrl = Wechat::getCodeUrl($corpId, '1000006', 'http://weixin.028lk.com/wap_sites/userInfo');
         
         // $result = Wechat::curlGet($codeUrl);
