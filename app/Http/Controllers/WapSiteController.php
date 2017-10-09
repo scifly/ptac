@@ -228,9 +228,6 @@ class WapSiteController extends Controller {
             // echo $code;die;
             $userInfo = Wechat::getUserInfo($token, $code);
 
-
-
-
             dd($userInfo);die;
         }
         
