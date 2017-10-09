@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 use App\Facades\Wechat;
 use App\Http\Requests\WapSiteRequest;
 use App\Models\Corp;
+use App\Models\Department;
+use App\Models\DepartmentType;
+use App\Models\DepartmentUser;
 use App\Models\Media;
 use App\Models\WapSite;
 use Illuminate\Http\UploadedFile;
@@ -200,33 +203,45 @@ class WapSiteController extends Controller {
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function wapHome(\Illuminate\Http\Request $request) {
-        $corp = new Corp();
-        $corps = $corp::whereName('万浪软件')->first();
-        $corpId = $corps->corpid;
-        $secret = $corps->corpsecret;
-        $dir = dirname(__FILE__);
-        $path = substr($dir, 0, stripos($dir, 'app/Jobs'));
-        $tokenFile = $path . 'public/token.txt';
-        $token = Wechat::getAccessToken($tokenFile, $corpId, $secret);
-        dd($token);die;
-        // $codeUrl = Wechat::getCodeUrl($corpId, '1000006', 'http://weixin.028lk.com/wap_sites/userInfo');
+//         $corp = new Corp();
+//         $corps = $corp::whereName('万浪软件')->first();
+//         $corpId = $corps->corpid;
+//         $secret = $corps->corpsecret;
+//         $dir = dirname(__FILE__);
+//         $path = substr($dir, 0, stripos($dir, 'app/Jobs'));
+//         $tokenFile = $path . 'public/token.txt';
+//         $token = Wechat::getAccessToken($tokenFile, $corpId, $secret);
+//         // dd($token);die;
+//         // $codeUrl = Wechat::getCodeUrl($corpId, '1000006', 'http://weixin.028lk.com/wap_sites/userInfo');
+//
+//         // $result = Wechat::curlGet($codeUrl);
+//         $code = $request->input('code');
+//         if (empty($code)){
+// //            $codeUrl = Wechat::getCodeUrl($corpId, '1000006', 'http://weixin.028lk.com/wap_sites/userInfo');
+//             $codeUrl = Wechat::getCodeUrl($corpId, '1000006', 'http://weixin.028lk.com/wap_sites/webindex');
+//             $url = explode('https',$codeUrl);
+//             // return redirect($codeUrl);
+//             // var_dump('https'.$url[1]);die;
+//             return redirect('https'.$url[1]);
+//         }else{
+//             // echo $code;die;
+//             $userInfo = Wechat::getUserInfo($token, $code);
+//
+//
+//
+//
+//             dd($userInfo);die;
+//         }
         
-        // $result = Wechat::curlGet($codeUrl);
-        $code = $request->input('code');
-        if (empty($code)){
-//            $codeUrl = Wechat::getCodeUrl($corpId, '1000006', 'http://weixin.028lk.com/wap_sites/userInfo');
-            $codeUrl = Wechat::getCodeUrl($corpId, '1000006', 'http://weixin.028lk.com/wap_sites/webindex');
-            $url = explode('https',$codeUrl);
-            // return redirect($codeUrl);
-            // var_dump('https'.$url[1]);die;
-            return redirect('https'.$url[1]);
-        }else{
-            // echo $code;die;
-            $userInfo = Wechat::getUserInfo($token, $code);
-            dd($userInfo);die;
-        }
-        echo "<pre>";print_r($userInfo);exit();
-        $code = Request::query('code');
+        
+        $departmentType = new DepartmentType();
+        $type = $departmentType::whereName('学校')->first();
+        $department = new Department();
+        # userid
+        $level = $department->groupLevel(3);
+        dd($level);die;
+        // echo "<pre>";print_r($userInfo);exit();
+        // $code = Request::query('code');
         $wapSite = $this->wapSite
             ->where('school_id', 1)
             ->first();
