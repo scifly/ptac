@@ -26,11 +26,9 @@ var page = {
                 if (result.statusCode === 200) {
                     // $tabPane.html(result.html);
                     $('#ajaxLoader').after(result.html);
-                    setTimeout(function() {
-                        $.getScript(page.siteRoot() + result.js, function() {
-                            $('#ajaxLoader').remove();
-                        });
-                    }, 0);
+                    $.getScript(page.siteRoot() + result.js, function() {
+                        setTimeout(function() {$('#ajaxLoader').remove();}, 1000)
+                    });
                 } else {
                     window.location = 'login';
                 }

@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 
 use App\Helpers\ControllerTrait;
 use App\Http\Requests\ProcedureLogRequest;
+use App\Models\Media;
 use App\Models\ProcedureLog;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
@@ -40,7 +41,6 @@ class ProcedureLogController extends Controller {
                 ->pluck('id')->toArray();
             $where = 'ProcedureLog.id in (' . implode(',', $ids) . ')';
             return response()->json($this->procedureLog->datatable($where));
-            
         }
         
         return $this->output(__METHOD__);

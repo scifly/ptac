@@ -19,10 +19,15 @@ use Illuminate\Support\Facades\Request;
  */
 class StudentController extends Controller {
     
-    protected $custodian, $department, $group, $user, $departmentUser, $student, $custodianStudent;
+    protected $custodian, $department, $group, $user;
+    protected $departmentUser, $student, $custodianStudent;
     
-    function __construct(Custodian $custodian, Department $department, Group $group, User $user,
-                         DepartmentUser $departmentUser, Student $student, CustodianStudent $custodianStudent) {
+    function __construct(
+        Custodian $custodian, Department $department,
+        Group $group, User $user,
+        DepartmentUser $departmentUser, Student $student,
+        CustodianStudent $custodianStudent
+    ) {
         
         $this->custodian = $custodian;
         $this->department = $department;
@@ -55,6 +60,7 @@ class StudentController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function create() {
+        
         if (Request::method() === 'POST') {
             return $this->department->tree();
         }
@@ -71,7 +77,8 @@ class StudentController extends Controller {
      */
     public function store(StudentRequest $request) {
         
-        return $this->student->store($request) ? $this->succeed() : $this->fail();
+        return $this->student->store($request)
+            ? $this->succeed() : $this->fail();
         
     }
     
@@ -127,7 +134,9 @@ class StudentController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(StudentRequest $request, $id) {
-        return $this->student->modify($request, $id) ? $this->succeed() : $this->fail();
+        
+        return $this->student->modify($request, $id)
+            ? $this->succeed() : $this->fail();
         
     }
     
@@ -139,7 +148,8 @@ class StudentController extends Controller {
      */
     public function destroy($id) {
         
-        return $this->custodian->remove($id) ? $this->succeed() : $this->fail();
+        return $this->custodian->remove($id)
+            ? $this->succeed() : $this->fail();
         
     }
     

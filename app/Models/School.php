@@ -65,8 +65,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $menu_id 对应的菜单ID
  * @property-read \App\Models\Menu $menu
  * @method static Builder|School whereMenuId($value)
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\ExamType[] $examTypes
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Group[] $groups
+ * @property-read Collection|ExamType[] $examTypes
+ * @property-read Collection|Group[] $groups
  */
 class School extends Model {
     
