@@ -216,7 +216,7 @@ class User extends Authenticatable {
         $departmentIds = $user->departments->pluck('id')->toArray();
         sort($departmentIds);
         
-        return $departmentIds[0];
+        return !empty($departmentIds) ? $departmentIds[0] : 1;
         
     }
     

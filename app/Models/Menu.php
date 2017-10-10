@@ -10,6 +10,7 @@ use App\Models\MenuTab as MenuTab;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Mockery\Exception;
 
@@ -58,86 +59,86 @@ use Mockery\Exception;
  * @property-read \App\Models\Media|null $media
  */
 class Menu extends Model {
-
+    
     protected $fillable = [
         'parent_id', 'name', 'remark',
         'menu_type_id', 'position', 'media_id',
         'action_id', 'icon_id', 'enabled',
     ];
-
+    
     /**
      * 获取菜单所属类型
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function menuType() { return $this->belongsTo('App\Models\MenuType'); }
-
+    
     /**
      * 返回菜单所属的媒体对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function media() { return $this->belongsTo('App\Models\Media'); }
-
+    
     /**
      * 获取对应的公司对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
     public function company() { return $this->hasOne('App\Models\Company'); }
-
+    
     /**
      * 获取对应的企业对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
     public function corp() { return $this->hasOne('App\Models\Corp'); }
-
+    
     /**
      * 获取对应的学校对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
     public function school() { return $this->hasOne('App\Models\School'); }
-
+    
     /**
      * 获取菜单包含的卡片
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function tabs() {
-
+        
         return $this->belongsToMany(
             'App\Models\Tab',
             'menus_tabs',
             'menu_id',
             'tab_id'
         );
-
+        
     }
-
+    
     /**
      * 获取上级菜单
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function parent() {
-
+        
         return $this->belongsTo('App\Models\Menu', 'parent_id');
-
+        
     }
-
+    
     /**
      * 获取图标
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function icon() {
-
+        
         return $this->belongsTo('App\Models\Icon');
-
+        
     }
-
+    
     /**
      * 获取所有叶节点菜单
      *
@@ -145,7 +146,7 @@ class Menu extends Model {
      * @return Collection|static[]
      */
     public function leaves($rootMenuId = null) {
-
+        
         $leaves = [];
         $leafPath = [];
         if (isset($rootMenuId)) {
@@ -162,22 +163,22 @@ class Menu extends Model {
                 $leafPath = [];
             }
         }
-
+        
         return $leaves;
-
+        
     }
-
+    
     /**
      * 获取指定菜单的子菜单
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function children() {
-
+        
         return $this->hasMany('App\Models\Menu', 'parent_id', 'id');
-
+        
     }
-
+    
     /**
      * 获取指定菜单的完整路径
      *
@@ -186,7 +187,7 @@ class Menu extends Model {
      * @return string
      */
     private function leafPath($id, array &$path) {
-
+        
         $menu = $this->find($id);
         if (!isset($menu)) {
             return '';
@@ -196,11 +197,11 @@ class Menu extends Model {
             $this->leafPath($menu->parent_id, $path);
         }
         krsort($path);
-
+        
         return implode(' . ', $path);
-
+        
     }
-
+    
     /**
      * 创建Menu记录, 及卡片绑定记录
      *
@@ -208,7 +209,7 @@ class Menu extends Model {
      * @return bool|mixed
      */
     public function store(MenuRequest $request) {
-
+        
         # 创建新的Menu记录及卡片绑定记录
         try {
             $exception = DB::transaction(function () use ($request) {
@@ -219,14 +220,14 @@ class Menu extends Model {
                 $tabIds = $request->input('tab_ids', []);
                 $menuTab->storeByMenuId($m->id, $tabIds);
             });
-
+            
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
             return false;
         }
-
+        
     }
-
+    
     /**
      * 新建菜单记录
      *
@@ -235,18 +236,18 @@ class Menu extends Model {
      * @return bool
      */
     public function preserve(array $data, $fireEvent = false) {
-
+        
         $menu = $this->create($data);
         if ($menu && $fireEvent) {
             event(new MenuCreated($menu));
-
+            
             return true;
         }
-
+        
         return $menu ? true : false;
-
+        
     }
-
+    
     /**
      * 更新菜单记录
      *
@@ -256,23 +257,23 @@ class Menu extends Model {
      * @return bool
      */
     public function alter(array $data, $id, $fireEvent = false) {
-
+        
         $menu = $this->find($id);
         if ($menu) {
             $updated = $menu->update($data);
             if ($updated && $fireEvent) {
                 event(new MenuUpdated($menu));
-
+                
                 return true;
             }
-
+            
             return $updated ? true : false;
         }
-
+        
         return false;
-
+        
     }
-
+    
     /**
      * 删除菜单记录
      *
@@ -281,23 +282,23 @@ class Menu extends Model {
      * @return bool
      */
     public function purge($id, $fireEvent = false) {
-
+        
         $menu = $this->find($id);
         if ($menu) {
             $deleted = $menu->remove($id);
             if ($deleted && $fireEvent) {
                 event(new MenuDeleted($menu));
-
+                
                 return true;
             }
-
+            
             return $deleted ? true : false;
         }
-
+        
         return false;
-
+        
     }
-
+    
     /**
      * 删除Menu记录
      *
@@ -305,7 +306,7 @@ class Menu extends Model {
      * @return bool|mixed
      */
     public function remove($menuId) {
-
+        
         $menu = $this->find($menuId);
         if (!isset($menu)) {
             return false;
@@ -321,16 +322,16 @@ class Menu extends Model {
                 foreach ($subMenus as $subMenu) {
                     $this->remove($subMenu->id);
                 }
-
+                
             });
-
+            
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
             return false;
         }
-
+        
     }
-
+    
     /**
      * 修改Menu记录
      *
@@ -339,7 +340,7 @@ class Menu extends Model {
      * @return bool|mixed
      */
     public function modify(MenuRequest $request, $menuId) {
-
+        
         $menu = $this->find($menuId);
         if (!isset($menu)) {
             return false;
@@ -361,14 +362,14 @@ class Menu extends Model {
                     ]);
                 }*/
             });
-
+            
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
             return false;
         }
-
+        
     }
-
+    
     /**
      * 更改菜单所处位置
      *
@@ -378,63 +379,41 @@ class Menu extends Model {
      * @return bool
      */
     public function move($id, $parentId, $fireEvent = false) {
-
+        
         $menu = $this->find($id);
-        if (!isset($menu)) {
-            return false;
-        }
+        if (!isset($menu)) { return false; }
         $menu->parent_id = $parentId === '#' ? null : intval($parentId);
         $moved = $menu->save();
         if ($moved && $fireEvent) {
             event(new MenuMoved($this->find($id)));
-
+            
             return true;
         }
-
+        
         return $moved ? true : false;
-
+        
     }
-
+    
     /**
      * 获取用于显示jstree的菜单数据
      *
-     * @param null $rootMenuId
-     * @param null $rootType
+     * @param null $rootId
      * @return \Illuminate\Http\JsonResponse
      */
-    public function tree($rootMenuId = null, $rootType = null) {
-
-        $fields = ['id', 'parent_id', 'name', 'position', 'menu_type_id'];
+    public function tree($rootId) {
+        
+        $root = $this->find($rootId);
         $menuColor = '<span style="color: %s;">%s</span>';
         $htmlDefaultIcon = '<i class="fa fa-circle-o"></i>';
         $htmlIcon = '<i class="%s"></i>';
-        if (isset($rootMenuId)) {
-            switch ($rootType)
-            {
-                # 说明是运营管理员
-                case '根':
-                    $menus = $this->get($fields)->sortBy(['position'])->toArray();
-                    break;
-                default:
-                    $rootMenu = $this->find($rootMenuId);
-                    $childrenId = $this->getChildren($rootMenuId);
-                    $menus = $this->whereIn('id',$childrenId)->get($fields)->sortBy(['position'])->toArray();
-                    foreach ($menus as $key => $v) {
-                        $menus[$key + 1] = $v;
-                    }
-                    $menus[0] = [
-                        'id'           => $rootMenu->id,
-                        'parent_id'    => null,
-                        'name'         => $rootMenu->name,
-                        'position'     => $rootMenu->position,
-                        'menu_type_id' => $rootMenu->menu_type_id,
-                    ];
-                 break;
-
-            }
-        } else {
-            $menus = $this->get($fields)->sortBy(['position'])->toArray();
-        }
+        $menus = $this->getMenus($rootId, $this->getChildren($rootId))->toArray();
+        array_unshift($menus, [
+            'id'           => $root->id,
+            'parent_id'    => null,
+            'name'         => $root->name,
+            'position'     => $root->position,
+            'menu_type_id' => $root->menu_type_id,
+        ]);
         $data = [];
         foreach ($menus as $menu) {
             $name = $menu['name'];
@@ -473,12 +452,39 @@ class Menu extends Model {
                 'type'   => $type,
             ];
         }
-
+        
         return response()->json($data);
-
+        
     }
+    
+    /**
+     * 获取当前登录用户的根菜单ID
+     *
+     * @return int|mixed
+     */
+    public function rootMenuId() {
 
+        $user = Auth::user();
+        $rootMenuId = 1;
+        switch ($user->group->name) {
+            case '运营':  break;
+            case '企业':
+                $rootMenuId = Corp::find(Department::find($user->topDeptId($user))->id)->menu_id;
+                break;
+            case '学校':
+                $rootMenuId = School::find(Department::find($user->topDeptId($user))->id)->menu_id;
+                break;
+            default:
+                $rootMenuId = School::find(Group::find($user->group->id)->school_id)->menu_id;
+                break;
+        }
+        
+        return $rootMenuId;
+        
+    }
+    
     private function menus($id, &$menus = []) {
+        
         $htmlDefaultIcon = '<i class="fa fa-circle-o"></i>';
         $htmlIcon = '<i class="%s"></i>';
         $children = $this->find($id)->children;
@@ -490,35 +496,38 @@ class Menu extends Model {
                 $name = $iconHtml . '&nbsp;&nbsp;' . $name;
             }
             $menus[] = [
-                'id' => $child->id,
+                'id'     => $child->id,
                 'parent' => $child->parent_id,
-                'text' => $name,
-                'type' => 'other'
+                'text'   => $name,
+                'type'   => 'other',
             ];
             $this->menus($child->id, $menus);
         }
+        
         return $menus;
-
+        
     }
-
-
+    
     public function getTreeByMenuId($id) {
-
+        
         $data = [];
         $menu = $this->find($id);
         $data[] = [
             'id'     => $menu['id'],
             'parent' => '#',
             'text'   => '<i class="fa fa-university"></i>&nbsp;&nbsp;' . $menu['name'],
-            'type'   => 'school'
+            'type'   => 'school',
         ];
+        
         return response()->json($this->menus($id, $data));
-
+        
     }
-
+    
     public function movable($id, $parentId) {
-
-        if (!isset($parentId)) { return false; }
+        
+        if (!isset($parentId)) {
+            return false;
+        }
         $type = $this->find($id)->menuType->name;
         $parentType = $this->find($parentId)->menuType->name;
         switch ($type) {
@@ -533,26 +542,21 @@ class Menu extends Model {
             default:
                 return false;
         }
-
+        
     }
-
+    
     /**
      * 获取后台Menu的HTML字符串
      *
-     * @param $activeMenuId
+     * @param $rootMenuId
      * @return string
      */
-    public function getMenuHtml($activeMenuId) {
-
-        $parents = [$activeMenuId];
-        $this->getParent($activeMenuId, $parents);
-
+    public function getMenuHtml($rootMenuId) {
+        
+        $parents = [$rootMenuId];
+        $this->getParent($rootMenuId, $parents);
         $id = '';
-        if ($activeMenuId>=3) {
-            $childrenId = $this->getChildren($activeMenuId);
-            $id = array_unique($childrenId);
-        }
-
+        $childrenIds = $this->getChildren($rootMenuId);
         # 不含子菜单的HTML模板
         $mSimple = '<li%s><a id="%s" href="%s"><i class="%s"></i> %s</a></li>';
         # 包含子菜单的HTML模板
@@ -569,26 +573,7 @@ HTML;
         # ul列表尾部
         $mEnd = '</ul></li>';
         # 获取指定学校所有已启用的菜单对象
-        // $menus = $this->where('enabled', 1)
-        //     ->where('id', '<>', 1)
-        //     ->orderBy('position')->get();
-        if(isset($id)&& !empty($id))
-        {
-            if ($id>3) {
-                $menus = $this->whereIn('id', $id)
-                    ->where('id', '<>', 1)
-                    ->orderBy('position')->get();
-            } else {
-                $menus = $this->where('enabled', 1)
-                    ->where('id', '<>', 1)
-                    ->orderBy('position')->get();
-            }
-        }else{
-            $menus = $this->where('enabled', 1)
-                ->where('id', '<>', 1)
-                ->orderBy('position')->get();
-        }
-
+        $menus = $this->getMenus($rootMenuId, $childrenIds);
         $menu = '';
         $level = 1;
         $parentId = 1;
@@ -603,8 +588,6 @@ HTML;
             # 获取菜单对应的Icon
             $mIcon = $m->icon_id ? $m->icon->name : 'fa fa-circle-o';
             # 获取菜单对应的默认Route
-            // $mUrl = $m->action_id ? '/urlshortener/public/' . $m->action->route : '#';
-            // $mUrl = $mUrl ? $mUrl : '#';
             $mUrl = '../pages/' . $m->id;
             # 计算菜单所处的level
             $lvl = 0;
@@ -613,22 +596,10 @@ HTML;
             if ($m->parent_id == $parentId) {
                 if ($hasChildren) {
                     $level += 1;
-                    $menu .= sprintf(
-                        $mTree,
-                        $isActive ? ' active' : '',
-                        $mIcon,
-                        $mName
-                    );
+                    $menu .= sprintf($mTree, $isActive ? ' active' : '', $mIcon, $mName);
                     $parentId = $m->id;
                 } else {
-                    $menu .= sprintf(
-                        $mSimple,
-                        $isActive ? ' class="active"' : '',
-                        $mId,
-                        $mUrl,
-                        $mIcon,
-                        $mName
-                    );
+                    $menu .= sprintf($mSimple, $isActive ? ' class="active"' : '', $mId, $mUrl, $mIcon, $mName);
                 }
             } else {
                 $parentId = $m->parent_id;
@@ -639,36 +610,23 @@ HTML;
                 $level = $mLevel;
                 if ($hasChildren) {
                     $level += 1;
-                    $menu .= sprintf(
-                        $mTree,
-                        $isActive ? ' active' : '',
-                        $mIcon,
-                        $mName
-                    );
+                    $menu .= sprintf($mTree, $isActive ? ' active' : '', $mIcon, $mName);
                     $parentId = $m->id;
                 } else {
-                    $menu .= sprintf(
-                        $mSimple,
-                        $isActive ? ' class="active"' : '',
-                        $mId,
-                        $mUrl,
-                        $mIcon,
-                        $mName
-                    );
+                    $menu .= sprintf($mSimple, $isActive ? ' class="active"' : '', $mId, $mUrl, $mIcon, $mName);
                 }
             }
-
+            
         }
         if ($level > 1) {
             for ($i = 0; $i < $level - 1; $i++) {
                 $menu .= $mEnd;
             }
         }
-
         return $menu;
-
+        
     }
-
+    
     /**
      * 获取指定菜单所有的子菜单Id
      *
@@ -684,10 +642,10 @@ HTML;
                 $this->getChildren($firstId['id']);
             }
         }
-
+        
         return $childIds;
     }
-
+    
     /**
      * 计算指定菜单所处的level
      *
@@ -695,14 +653,14 @@ HTML;
      * @param $lvl
      */
     private function getMenuLevel(Menu $m, &$lvl) {
-
+        
         if ($m->parent) {
             $lvl += 1;
             $this->getMenuLevel($m->parent, $lvl);
         }
-
+        
     }
-
+    
     /**
      * 获取后台菜单数组
      *
@@ -710,7 +668,7 @@ HTML;
      * @param array $menus 菜单数组
      */
     public function getMenuArray($records, &$menus) {
-
+        
         if (isset($records)) {
             $i = 0;
             foreach ($records as $r) {
@@ -730,9 +688,9 @@ HTML;
                 $i++;
             }
         }
-
+        
     }
-
+    
     /**
      * 获取指定菜单所有上级菜单ID
      *
@@ -740,14 +698,39 @@ HTML;
      * @param array $parents
      */
     private function getParent($menuId, array &$parents) {
-
+        
         $menu = $this->find($menuId);
         if ($menu->parent) {
             $id = $menu->parent->id;
             $parents[] = $id;
             $this->getParent($id, $parents);
         }
-
+        
     }
-
+    
+    /**
+     * 根据根菜单ID返回其下所有的菜单对象
+     *
+     * @param $rootId
+     * @param $childrenIds
+     * @return Collection|static[]
+     */
+    private function getMenus($rootId, $childrenIds) {
+        
+        $fields = ['id', 'parent_id', 'name', 'position', 'menu_type_id'];
+        if ($rootId == 1) {
+            $menus = $this::whereEnabled(1)
+                ->where('id', '<>', 1)
+                ->orderBy('position')
+                ->get($fields);
+        } else {
+            $menus = $this::whereEnabled(1)
+                ->whereIn('id', $childrenIds)
+                ->orderBy('position')
+                ->get($fields);
+        }
+        
+        return $menus;
+    }
+    
 }

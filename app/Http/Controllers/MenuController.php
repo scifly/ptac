@@ -2,10 +2,13 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\MenuRequest;
+use App\Models\Corp;
 use App\Models\Department;
+use App\Models\Group;
 use App\Models\Menu;
 use App\Models\MenuTab;
 use App\Models\MenuType;
+use App\Models\School;
 use App\Models\Tab;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
@@ -23,6 +26,7 @@ class MenuController extends Controller {
 
     function __construct(Menu $menu, MenuType $menuType, MenuTab $menuTab) {
 
+        $this->middleware('auth');
         $this->menu = $menu;
         $this->menuType = $menuType;
         $this->menuTab = $menuTab;
@@ -35,30 +39,9 @@ class MenuController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
-        $user = Auth::user();
-        $departmentIds = [];
-        foreach ($user->departments as $d)
-        {
-            $departmentIds[] = $d->id;
-        }
-        sort($departmentIds);
-        $rootId = $departmentIds[0];
-        if($rootId == 1)
-        {
-            $menuId = 1;
-            $rootTypeName = '根';
-        }else{
-            $department = Department::whereId($rootId)->first();
-            # 根目录名称
-            $rootName = $department->name;
-
-            $rootTypeName = $department->departmentType->name;
-
-            # 获取根菜单Id
-            $menuId = Menu::whereName($rootName)->first()->id;
-        }
+        
         if (Request::method() === 'POST') {
-            return $this->menu->tree($menuId,$rootTypeName);
+            return $this->menu->tree($this->menu->rootMenuId());
         }
 
         return parent::output(__METHOD__);
