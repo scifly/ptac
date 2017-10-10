@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\DepartmentRequest;
 use App\Models\Department;
 use App\Models\DepartmentType;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
 /**
@@ -29,22 +30,22 @@ class DepartmentController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
-        // $user = Session::get('user');
-        // $departmentId = [];
-        // foreach ($user->departments as $d)
-        // {
-        //     $departmentId[] = $d->id;
-        // }
-        // $childrenIds = [];
-        // foreach ($departmentId as $d)
-        // {
-        //     $childrenIds = $this->departmentChildIds($d);
-        // }
-        // $id = array_merge($departmentId,$childrenIds);
+        $user = Auth::user();
+        $departmentId = [];
+        foreach ($user->departments as $d)
+        {
+            $departmentId[] = $d->id;
+        }
+        $childrenIds = [];
+        foreach ($departmentId as $d)
+        {
+            $childrenIds = $this->departmentChildIds($d);
+        }
+        $id = array_merge($departmentId,$childrenIds);
 
         if (Request::method() === 'POST') {
-            return $this->department->tree();
-            // return $this->department->getDepartment($id);
+           // return $this->department->tree();
+             return $this->department->getDepartment($id);
         }
 
         return parent::output(__METHOD__);

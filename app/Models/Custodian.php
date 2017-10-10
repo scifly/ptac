@@ -205,6 +205,7 @@ class Custodian extends Model {
                 }
                 # 向部门用户表添加数据
                 $departmentIds = $request->input('selectedDepartments');
+                sort($departmentIds);
                 $departmentUser = new DepartmentUser();
                 $departmentUser::where('user_id', $userId)->delete();
                 $departmentUser->storeByUserId($userId, $departmentIds);

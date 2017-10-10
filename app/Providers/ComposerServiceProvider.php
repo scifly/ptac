@@ -65,6 +65,7 @@ class ComposerServiceProvider extends ServiceProvider {
         View::composer('conference_queue.edit', 'App\Http\ViewComposers\ConferenceQueueEditComposer');
         View::composer('conference_participant.create_edit', 'App\Http\ViewComposers\ConferenceParticipantComposer');
         View::composer('combo_type.create_edit', 'App\Http\ViewComposers\ComboTypeComposer');
+        View::composer('app.index', 'App\Http\ViewComposers\AppIndexComposer');
         
     }
     

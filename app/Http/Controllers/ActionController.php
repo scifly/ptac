@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ActionRequest;
 use App\Models\Action;
 use App\Models\ActionGroup;
+use App\Models\ActionType;
 use App\Models\Group;
 use App\Models\School;
 use Illuminate\Support\Facades\Request;

@@ -28,6 +28,14 @@
                     </p>
                 </a>
             @endforeach
+                <a href="#" class="weui-grid js_grid">
+                    <div class="weui-grid__icon">
+                        <img src="" alt="Button">
+                    </div>
+                    <p class="weui-grid__label">
+                        {{$code}}
+                    </p>
+                </a>
         @endif
 
     </div>

@@ -319,9 +319,7 @@ class Student extends Model {
     public function remove($studentId) {
         
         $student = $this->find($studentId);
-        if (!isset($custodian)) {
-            return false;
-        }
+        if (!isset($custodian)) { return false; }
         try {
             $exception = DB::transaction(function () use ($studentId, $student) {
                 # 删除指定的学生记录
@@ -332,7 +330,7 @@ class Student extends Model {
                 DepartmentUser::where('user_id', $student['user_id'])->delete();
                 # 删除与指定学生绑定的手机记录
                 Mobile::where('user_id', $student['user_id'])->delete();
-                
+
             });
             
             return is_null($exception) ? true : $exception;

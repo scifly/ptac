@@ -105,7 +105,7 @@ Route::group(['prefix' => 'events'], function () {
 // 微网站设置 - 微网站管理.网站模块管理.文章管理
 Route::group(['prefix' => 'wap_sites'], routes('WapSiteController'));
 Route::any('wap_sites/uploadImages', 'WapSiteController@uploadImages');
-Route::get('wap_sites/webindex', 'WapSiteController@wapHome');
+Route::get('wap_sites/webindex/{$school_id}', 'WapSiteController@wapHome');
 Route::group(['prefix' => 'wap_site_modules'], routes('WapSiteModuleController'));
 Route::get('wap_site_modules/webindex/{id}', 'WapSiteModuleController@wapSiteModuleHome');
 Route::group(['prefix' => 'wsm_articles'], routes('WsmArticleController'));
@@ -200,6 +200,8 @@ Route::group(['prefix' => 'grades'], routes('GradeController'));
 Route::group(['prefix' => 'classes'], routes('SquadController'));
 // 应用设置 - 微信应用管理
 Route::group(['prefix' => 'apps'], routes('AppController'));
+Route::post('apps/index', 'AppController@index');
+Route::get('apps/menu/{id}', 'AppController@menu');
 // 图标管理 - 图标设置.图标类型管理
 Route::group(['prefix' => 'icons'], routes('IconController'));
 Route::group(['prefix' => 'icon_types'], routes('IconTypeController'));
