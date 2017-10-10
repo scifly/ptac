@@ -44,7 +44,7 @@
                                 <div class="col-sm-6">
                                     <select name="school_id" class="form-control menu" id="school_id" style="width: 100%">
                                         @foreach($schools as $key=>$v)
-                                            <option value="{{$v}}" >{{$key}}</option>
+                                            <option value="{{$key}}" >{{$v}}</option>
                                         @endforeach
                                     </select>
                                 </div>

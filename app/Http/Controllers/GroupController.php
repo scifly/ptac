@@ -38,20 +38,7 @@ class GroupController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
-        // $user = Auth::user();
-        // $departmentIds = [];
-        // foreach ($user->departments as $d)
-        // {
-        //     $departmentIds[] = $d->id;
-        // }
-        // sort($departmentIds);
-        // $rootId = $departmentIds[0];
-        // $department = Department::whereId($rootId)->first();
-        // # 根目录名称
-        // $rootName = $department->name;
-        // $rootTypeName = $department->departmentType->name;
-        # 判断管理员角色
-        # 如果是校级管理员
+
         if (Request::get('draw')) {
             return response()->json($this->group->datatable());
         }
@@ -69,9 +56,35 @@ class GroupController extends Controller {
 
         if (Request::method() === 'POST') {
             $schoolId = Request::query('schoolId');
-            $menuId = School::whereId($schoolId)->first()->menu_id;
+
+            if($schoolId == 0)
+            {
+                $user = Auth::user();
+                $departmentIds = [];
+                foreach ($user->departments as $d)
+                {
+                    $departmentIds[] = $d->id;
+                }
+                sort($departmentIds);
+                $rootId = $departmentIds[0];
+                if($rootId == 1)
+                {
+                    $menuId = 1;
+
+                }else{
+                    $department = Department::whereId($rootId)->first();
+                    # 根目录名称
+                    $rootName = $department->name;
+                    # 获取根菜单Id
+                    $menuId = Menu::whereName($rootName)->first()->id;
+
+                }
+            }else{
+                $menuId = School::whereId($schoolId)->first()->menu_id;
+            }
+
             return $this->menu->getTreeByMenuId($menuId);
-            // return $this->menu->tree();
+
         }
 
         $corps = $this->corp->pluck('name', 'id');
@@ -130,9 +143,35 @@ class GroupController extends Controller {
         // }
         if (Request::method() === 'POST') {
             $schoolId = Request::query('schoolId');
-            $menuId = School::whereId($schoolId)->first()->menu_id;
+
+            if($schoolId == 0)
+            {
+                $user = Auth::user();
+                $departmentIds = [];
+                foreach ($user->departments as $d)
+                {
+                    $departmentIds[] = $d->id;
+                }
+                sort($departmentIds);
+                $rootId = $departmentIds[0];
+                if($rootId == 1)
+                {
+                    $menuId = 1;
+
+                }else{
+                    $department = Department::whereId($rootId)->first();
+                    # 根目录名称
+                    $rootName = $department->name;
+                    # 获取根菜单Id
+                    $menuId = Menu::whereName($rootName)->first()->id;
+
+                }
+            }else{
+                $menuId = School::whereId($schoolId)->first()->menu_id;
+            }
+
             return $this->menu->getTreeByMenuId($menuId);
-            // return $this->menu->tree();
+
         }
         $tabs = $group->tabs;
         $selectedTabs = [];

@@ -43,10 +43,12 @@ class GroupComposer {
 
         switch ($group) {
             case '运营':
-                $schools = School::whereEnabled(1)->pluck('id', 'name');
+                $schools = School::whereEnabled(1)->pluck('name', 'id')->toArray();
+                array_unshift($schools,'全部');
                 break;
             case '企业':
-                $schools = School::whereEnabled(1)->pluck('id', 'name');
+                $schools = School::whereEnabled(1)->pluck('name', 'id')->toArray();
+                array_unshift($schools,'全部');
                 break;
             case '学校':
                 foreach ($user->departments as $d) {
@@ -54,19 +56,21 @@ class GroupComposer {
                 }
                 sort($departmentIds);
                 $corpId = Corp::whereDepartmentId($departmentIds[0])->first()->id;
-                $schools = School::whereCorpId($corpId)->where('enabled', 1)->pluck('id', 'name');
+                $schools = School::whereCorpId($corpId)->where('enabled', 1)->pluck('name', 'id');
                 break;
             default:
-                $schools = '';
-                // $departmentIds = [];
-                // foreach ($user->departments as $d)
-                // {
-                //     $departmentIds[] = $d->id;
-                // }
-                // sort($departmentIds);
-                // $rootId = $departmentIds[0];
-                // $schools = School::whereDepartmentId($rootId)->first()->pluck('id', 'name');
-                // break;
+
+                $departmentIds = [];
+                foreach ($user->departments as $d)
+                {
+                    $departmentIds[] = $d->id;
+                }
+                sort($departmentIds);
+                $rootId = $departmentIds[0];
+                $departmentName = Department::whereId($rootId)->first()->name;
+
+                $schools = School::whereName($departmentName)->pluck('name', 'id');
+                break;
         }
         $view->with([
             'tabActions' => $tabActions,

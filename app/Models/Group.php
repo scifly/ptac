@@ -30,7 +30,17 @@ use Illuminate\Support\Facades\DB;
 class Group extends Model {
     
     use ModelTrait;
-    
+
+    const DT_ON = '<span class="badge bg-green">%s</span>';
+    const DT_OFF = '<span class="badge bg-gray">%s</span>';
+    const DT_LINK_SHOW = <<<HTML
+        <a id="%s" href="javascript:void(0)" class="btn btn-primary btn-icon btn-circle btn-xs"  data-toggle="modal">
+            <i class="fa fa-eye"></i>
+        </a>
+HTML;
+
+    const DT_SPACE = '&nbsp;';
+
     protected $table = 'groups';
     
     protected $fillable = [
@@ -166,7 +176,16 @@ class Group extends Model {
             [
                 'db'        => 'Groups.enabled', 'dt' => 5,
                 'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($this, $d, $row);
+            if($row['id'] < 4){
+                $id = $row['id'];
+                $status = $d ? sprintf(self::DT_ON, '已启用') : sprintf(self::DT_OFF, '未启用');
+                $showLink = sprintf(self::DT_LINK_SHOW, 'show_' . $id);
+
+                return $status . self::DT_SPACE . $showLink . self::DT_SPACE ;
+            }else{
+                return Datatable::dtOps($this, $d, $row);
+            }
+
                 },
             ],
         ];
