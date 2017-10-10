@@ -49,17 +49,15 @@ class LoginController extends Controller {
             $field = 'username';
         } elseif (User::whereEmail($input)->first()) {
             $user = User::whereEmail($input)->first();
-    
             $field = 'email';
         } else {
             $mobile = Mobile::where('mobile', $input)
                 ->where('isdefault', 1)->first();
-            if (!$mobile->user_id) {
+            if (!$mobile || !$mobile->user_id) {
                 return response()->json(['statusCode' => 500]);
             }
             $username = User::whereId($mobile->user_id)->first()->username;
             $user = User::whereUsername($username)->first();
-    
             if (
             Auth::attempt(
                 ['username' => $username, 'password' => $password],

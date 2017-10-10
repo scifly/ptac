@@ -256,8 +256,16 @@ class Score_SendController extends Controller {
             }
             $strs[] = ["id" => $student[0]->id, 'name' => $student[0]->realname, "msg" => $str];
         }
+<<<<<<< HEAD
 
         return json_encode($strs);
     }
     
+=======
+        
+        return json_encode($strs);
+    }
+
+
+>>>>>>> origin/master
 }

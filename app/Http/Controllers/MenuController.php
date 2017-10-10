@@ -7,8 +7,9 @@ use App\Models\Menu;
 use App\Models\MenuTab;
 use App\Models\MenuType;
 use App\Models\Tab;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
-use Illuminate\Support\Facades\Session;
+
 
 /**
  * 菜单
@@ -34,36 +35,30 @@ class MenuController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
-        // $user = Session::get('user');
-        // $department = new Department();
-        // $level = $department->groupLevel($user->id);
-        // switch ($level) {
-        //     case 'root':
-        //         $typeId = 1;
-        //         $menuId = 1;
-        //         break;
-        //     case 'company':
-        //         $typeId = 2;
-        //         $menuId = 2;
-        //         break;
-        //     case 'corp':
-        //         $typeId = 3;
-        //         break;
-        //     case 'school':
-        //         $typeId = 4;
-        //         break;
-        //     default:
-        //         break;
-        //
-        // }
-        // if ($typeId == 4) {
-        //     $menus = Menu::whereMenuTypeId($typeId)->where('name', $user->group->school->name)->first();
-        // } else {
-        //     $menus = Menu::whereId($menuId)->first();
-        // }
-        // $menuId = $menus->id;
+        $user = Auth::user();
+        $departmentIds = [];
+        foreach ($user->departments as $d)
+        {
+            $departmentIds[] = $d->id;
+        }
+        sort($departmentIds);
+        $rootId = $departmentIds[0];
+        if($rootId == 1)
+        {
+            $menuId = 1;
+            $rootTypeName = '根';
+        }else{
+            $department = Department::whereId($rootId)->first();
+            # 根目录名称
+            $rootName = $department->name;
+
+            $rootTypeName = $department->departmentType->name;
+
+            # 获取根菜单Id
+            $menuId = Menu::whereName($rootName)->first()->id;
+        }
         if (Request::method() === 'POST') {
-            return $this->menu->tree();
+            return $this->menu->tree($menuId,$rootTypeName);
         }
 
         return parent::output(__METHOD__);

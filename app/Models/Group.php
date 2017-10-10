@@ -34,7 +34,17 @@ use Illuminate\Support\Facades\DB;
 class Group extends Model {
     
     use ModelTrait;
-    
+
+    const DT_ON = '<span class="badge bg-green">%s</span>';
+    const DT_OFF = '<span class="badge bg-gray">%s</span>';
+    const DT_LINK_SHOW = <<<HTML
+        <a id="%s" href="javascript:void(0)" class="btn btn-primary btn-icon btn-circle btn-xs"  data-toggle="modal">
+            <i class="fa fa-eye"></i>
+        </a>
+HTML;
+
+    const DT_SPACE = '&nbsp;';
+
     protected $table = 'groups';
     
     protected $fillable = [
@@ -60,7 +70,8 @@ class Group extends Model {
     public function actions() { return $this->belongsToMany('App\Models\Action', 'actions_groups'); }
     
     public function tabs() { return $this->belongsToMany('App\Models\Tab', 'groups_tabs'); }
-    
+
+    public function groupType(){ return $this->belongsTo('App\Models\GroupType'); }
     /**
      * 保存角色
      *
@@ -77,6 +88,7 @@ class Group extends Model {
                     'name'    => $data['name'],
                     'remark'  => $data['remark'],
                     'enabled' => $data['enabled'],
+                    'school_id' => $data['school_id'],
                 ];
                 $g = $this->create($groupData);
                 # 功能与角色的对应关系
@@ -157,7 +169,7 @@ class Group extends Model {
         
     }
     
-    public function datatable() {
+    public function datatable(array $params = []) {
         
         $columns = [
             ['db' => 'Groups.id', 'dt' => 0],
@@ -168,12 +180,21 @@ class Group extends Model {
             [
                 'db'        => 'Groups.enabled', 'dt' => 5,
                 'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($this, $d, $row);
+            if($row['id'] < 4){
+                $id = $row['id'];
+                $status = $d ? sprintf(self::DT_ON, '已启用') : sprintf(self::DT_OFF, '未启用');
+                $showLink = sprintf(self::DT_LINK_SHOW, 'show_' . $id);
+
+                return $status . self::DT_SPACE . $showLink . self::DT_SPACE ;
+            }else{
+                return Datatable::dtOps($this, $d, $row);
+            }
+
                 },
             ],
         ];
         
-        return Datatable::simple($this, $columns);
+        return Datatable::simple($this, $columns, null, empty($params) ? null : $params);
         
     }
 }

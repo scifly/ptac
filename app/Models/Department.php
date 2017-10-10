@@ -531,18 +531,6 @@ class Department extends Model {
         foreach ($departments as $key => $department) {
             $departmentParentIds[] = $department['id'];
         }
-        foreach ($departmentParentIds as $departmentId) {
-            $department = Department::find($departmentId);
-            foreach ($department->users as $user) {
-                $departmentUsers[] = [
-                    'id'     => $departmentId . 'UserId_' . $user['id'],
-                    'parent' => $departmentId,
-                    'text'   => $user['username'],
-                    'icon'   => 'fa fa-user',
-                    'type'   => 'user',
-                ];
-            }
-        }
         foreach ($departments as $department) {
             $parentId = isset($department['parent_id']) && in_array($department['parent_id'], $departmentParentIds) ? $department['parent_id'] : '#';
             $text = $department['name'];
