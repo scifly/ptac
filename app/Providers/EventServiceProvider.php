@@ -21,6 +21,7 @@ class EventServiceProvider extends ServiceProvider {
         'App\Listeners\ClassEventSubscriber',
         'App\Listeners\MenuEventSubscriber',
         'App\Listeners\UserEventSubscriber',
+        'App\Listeners\AppEventSubscriber',
     ];
     
     /**

@@ -206,6 +206,22 @@ class User extends Authenticatable {
     }
     
     /**
+     * 返回用户所属最顶级部门的ID
+     *
+     * @param User $user
+     * @return mixed
+     */
+    public function topDeptId(User $user) {
+        
+        $departmentIds = $user->departments->pluck('id')->toArray();
+        sort($departmentIds);
+        
+        return $departmentIds[0];
+        
+    }
+    
+    
+    /**
      * 创建企业号会员
      *
      * @param $id

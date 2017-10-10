@@ -223,14 +223,14 @@ class Department extends Model {
         return $department ? $department : false;
 
     }
-
+    
     /**
      * 更新部门
      *
      * @param array $data
      * @param $id
      * @param bool $fireEvent
-     * @return bool
+     * @return bool|Collection|Model|null|static|static[]
      */
     public function modify(array $data, $id, $fireEvent = false) {
 

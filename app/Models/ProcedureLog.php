@@ -41,6 +41,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read User $operator_user
  * @property-read ProcedureStep $procedure_step
  * @method static Builder|ProcedureLog whereFirstLogId($value)
+ * @property-read \App\Models\User $initiatorUser
+ * @property-read \App\Models\User $operatorUser
  */
 class ProcedureLog extends Model {
     

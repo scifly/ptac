@@ -9,6 +9,18 @@ use Mockery\Exception;
  * App\Models\GroupMenu
  *
  * @mixin \Eloquent
+ * @property int $id
+ * @property int $group_id
+ * @property int $menu_id
+ * @property \Carbon\Carbon|null $created_at
+ * @property \Carbon\Carbon|null $updated_at
+ * @property int $enabled
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\GroupMenu whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\GroupMenu whereEnabled($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\GroupMenu whereGroupId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\GroupMenu whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\GroupMenu whereMenuId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\GroupMenu whereUpdatedAt($value)
  */
 class GroupMenu extends Model {
     

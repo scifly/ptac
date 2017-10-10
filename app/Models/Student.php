@@ -45,6 +45,7 @@ use Mockery\Exception;
  * @property-read Collection|Custodian[] $custodians
  * @property-read Collection|ScoreTotal[] $scoreTotals
  * @property-read Collection|Score[] $scores
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\CustodianStudent[] $custodianStudents
  */
 class Student extends Model {
 

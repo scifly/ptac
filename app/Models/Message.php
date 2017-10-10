@@ -57,6 +57,8 @@ use Mockery\Exception;
  * @method static Builder|Message whereReaded($value)
  * @method static Builder|Message whereSUserId($value)
  * @method static Builder|Message whereSent($value)
+ * @property-read \App\Models\CommType $commType
+ * @property-read \App\Models\messageSendingLogs $messageSendinglogs
  */
 class Message extends Model {
     

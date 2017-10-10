@@ -27,6 +27,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read WapSiteModule $wapsitemoudle
  * @property-read WsmArticle $wasmarticle
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Menu[] $menus
+ * @property-read \App\Models\WapSiteModule $wapSiteModule
+ * @property-read \App\Models\WsmArticle $wsmArticle
  */
 class Media extends Model {
     

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ActionRequest;
 use App\Models\Action;
 use App\Models\ActionGroup;
+use App\Models\ActionType;
 use App\Models\Group;
 use App\Models\School;
 use Illuminate\Support\Facades\Request;
@@ -81,7 +82,7 @@ class ActionController extends Controller {
             $selectedActionTypes = null;
         } else {
             foreach ($actionTypeIds as $actionTypeId) {
-                $actionType = School::whereId($actionTypeId)->first()->toArray();
+                $actionType = ActionType::whereId($actionTypeId)->first()->toArray();
                 $selectedActionTypes[$actionTypeId] = $actionType['name'];
             }
         }

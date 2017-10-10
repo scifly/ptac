@@ -1,6 +1,8 @@
 <?php
 namespace App\Facades;
 
+use App\Models\App;
+use App\Models\Corp;
 use Illuminate\Support\Facades\Facade;
 
 class Wechat extends Facade {
@@ -89,7 +91,7 @@ class Wechat extends Facade {
     const URL_GET_APP = 'https://qyapi.weixin.qq.com/cgi-bin/agent/get?access_token=%s&agentid=%s';
     # 设置应用(POST) - https://work.weixin.qq.com/api/doc#10088
     const URL_CONFIG_APP = 'https://qyapi.weixin.qq.com/cgi-bin/agent/set?access_token=%s';
-    # 获取应用概况列表 - https://work.weixin.qq.com/api/doc#11214
+    # 获取应用列表 - https://work.weixin.qq.com/api/doc#11214
     const URL_APP_LIST = 'https://qyapi.weixin.qq.com/cgi-bin/agent/list?access_token=%s';
     
     /** 消息推送 */
@@ -125,43 +127,35 @@ class Wechat extends Facade {
     # 接收短信回复
     const URL_GET_RESPONSE_SMS = "http://sdk2.028lk.com:9880/sdk2/Get.aspx?CorpID=%s&Pwd=%s";
     
+    
     /**
      * 获取access_token
      *
-     * 如果$tokenFile不存在或存在但已过期，则从微信服务器获取，保存在$tokenFile文件中并返回
-     * 如果access_token存在且未过期，直接从$tokenFile文件中读取并返回
-     *
-     * @param string $tokenFile access_token文件的存放位置
      * @param string $corpId 企业号ID
-     * @param string $corpSecret 企业号Secret
-     * @return string $accessToken
+     * @param string $secret 应用secret
+     * @param string $agentid 应用ID
+     * @return bool|mixed
      */
-    static function getAccessToken($tokenFile, $corpId, $corpSecret) {
+    static function getAccessToken($corpId, $secret, $agentid) {
         
-        $accessToken = '';
-        // $data = json_decode(file_get_contents($tokenFile), true);
-        $data = [
-            'expire_time' =>1506501099,
-            'access_token' =>"Y2qS1NCn1Jcww3rNTTGIdJMuq0iqUAII4j3c-bBFo0CFJIEDVEEl_6tQVGvLy36X3NVQAFZcWjai6iPUx_eqeZi5EveYfgMYaCgq4smxfg3l2TDsozUCYVyYNgXIgLNnBQSZLYdd9cSQDL5OwL2hf6NXnM8f75k1ICou3HoHIUKRNsZT5sZddKqDK4EuVJtIkbl7i4ykzFBom0fhlRoFGw",
-            
-        ];
-        if ($data['expire_time'] < time() || !$data['expire_time']) {
+        $app = App::whereAgentid($agentid)->where('corp_id', $corpId)->first();
+        if ($app['expire_at'] < time() || !isset($app['expire_at'])) {
             $result = json_decode(
-                self::curlGet(sprintf(self::URL_GET_ACCESSTOKEN, $corpId, $corpSecret)), true
+                self::curlGet(sprintf(self::URL_GET_ACCESSTOKEN, Corp::find($corpId)->corpid, $secret)), true
             );
             if ($result) {
                 $accessToken = $result['access_token'];
-                $data['expire_time'] = time() + 7000;
-                $data['access_token'] = $accessToken;
-                // $fp = fopen($tokenFile, 'w');
-                // fwrite($fp, json_encode($data));
-                // fclose($fp);
+                $app->update([
+                    'expire_at' => date('Y-m-d H:i:s', time()+7000),
+                    'access_token' => $accessToken
+                ]);
             } else {
-                // TODO: do something if nothing is returned
+                return false;
             }
         } else {
-            $accessToken = $data['access_token'];
+            $accessToken = $app['access_token'];
         }
+        
         return $accessToken;
         
     }
@@ -763,7 +757,7 @@ class Wechat extends Facade {
     }
     
     /**
-     * 应用管理 - 创建应用
+     * 应用管理 - 获取应用
      *
      * @param string $accessToken 接口调用凭证
      * @param integer $agentId 企业应用id
@@ -782,34 +776,28 @@ class Wechat extends Facade {
      * 应用管理 - 设置应用
      *
      * @param string $accessToken 接口调用凭证 调用接口凭证
-     * @param integer $agentId 企业应用id
-     * @param boolean $reportLocationFlag 企业应用是否打开地理位置上报 0：不上报；1：进入会话上报
-     * @param integer $logoMediaId 企业应用头像的mediaid，通过多媒体接口上传图片获得mediaid，上传后会自动裁剪成方形和圆形两个头像
-     * @param string $name 企业应用名称
-     * @param string $description 企业应用详情
-     * @param string $redirectDomain 企业应用可信域名
-     * @param boolean $isReportEnter 是否上报用户进入应用事件。0：不接收；1：接收。
-     * @param string $homeUrl 应用主页url。url必须以http或者https开头。
+     * @param array $data
      * @return mixed json格式 {"errcode":0, "errmsg":"ok"}
+     * @internal param int $agentId 企业应用id
+     * @internal param bool $reportLocationFlag 企业应用是否打开地理位置上报 0：不上报；1：进入会话上报
+     * @internal param int $logoMediaId 企业应用头像的mediaid，通过多媒体接口上传图片获得mediaid，上传后会自动裁剪成方形和圆形两个头像
+     * @internal param string $name 企业应用名称
+     * @internal param string $description 企业应用详情
+     * @internal param string $redirectDomain 企业应用可信域名
+     * @internal param bool $isReportEnter 是否上报用户进入应用事件。0：不接收；1：接收。
+     * @internal param string $homeUrl 应用主页url。url必须以http或者https开头。
      */
-    static function configApp(
-        $accessToken, $agentId, $reportLocationFlag = null, $logoMediaId = null, $name = null, $description = null,
-        $redirectDomain = null, $isReportEnter = null, $homeUrl = null
-    ) {
+    static function configApp($accessToken, array $data) {
         return self::curlPost(
             sprintf(self::URL_CONFIG_APP, $accessToken),
-            json_encode([
-                'agentid'              => $agentId,
-                'report_location_flag' => $reportLocationFlag,
-                'logo_mediaid'         => $logoMediaId,
-                'name'                 => $name,
-                'description'          => $description,
-                'redirect_domain'      => $redirectDomain,
-                'isreportenter'        => $isReportEnter,
-                'home_url'             => $homeUrl,
-            ])
+            json_encode($data)
         );
         
+    }
+    
+    static function getAppList($accessToken) {
+        //
+        return self::curlGet(sprintf(self::URL_APP_LIST, $accessToken));
     }
     
     /**

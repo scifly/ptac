@@ -3,8 +3,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\AppRequest;
 use App\Models\App;
+use App\Models\Corp;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
-
+use App\Facades\Wechat;
 /**
  * 微信企业应用
  *
@@ -15,7 +17,10 @@ class AppController extends Controller {
     
     protected $app;
     
-    function __construct(App $app) { $this->app = $app; }
+    function __construct(App $app) {
+        $this->app = $app;
+        // $this->middleware('auth');
+    }
     
     /**
      * 微信应用列表
@@ -23,10 +28,9 @@ class AppController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
-        
-        $this->authorize('index');
-        if (Request::get('draw')) {
-            return response()->json($this->app->datatable());
+    
+        if (Request::method() == 'POST') {
+            return $this->app->store();
         }
         
         return $this->output(__METHOD__);
@@ -82,9 +86,7 @@ class AppController extends Controller {
     public function edit($id) {
         
         $app = $this->app->find($id);
-        if (!$app) {
-            return $this->notFound();
-        }
+        if (!$app) { return $this->notFound(); }
         
         return $this->output(__METHOD__, ['app' => $app]);
         
@@ -100,14 +102,29 @@ class AppController extends Controller {
     public function update(AppRequest $request, $id) {
         
         $app = $this->app->find($id);
-        if (!$app) {
-            return $this->notFound();
-        }
+        if (!$app) { return $this->notFound(); }
         
-        return $app->update($request->all()) ? $this->succeed() : $this->fail();
+        return $app->modify($request->all(), $id)
+            ? $this->succeed() : $this->fail();
         
     }
     
+    /**
+     * 获取指定应用的menu
+     *
+     * @param $id
+     * @return bool|\Illuminate\Http\JsonResponse
+     */
+    public function menu($id) {
+        $app = $this->app->find($id);
+        if (!$app) { return $this->notFound(); }
+        $accessToken = Wechat::getAccessToken($app->corp_id, $app->secret, $app->agentid);
+    
+        $menu = json_decode(Wechat::getMenu($accessToken, $app->agentid));
+        $a = $app->update(['menu' => json_encode($menu->button)]);
+        
+        return $this->output(__METHOD__, ['menu' => $menu]);
+    }
     /**
      * 删除指定的微信应用记录
      *

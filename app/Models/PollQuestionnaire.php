@@ -32,6 +32,9 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read PollQuestionnaireParticipant $pollquestionnairePartcipant
  * @property-read School $school
  * @property-read User $user
+ * @property-read \App\Models\PollQuestionnaireAnswer $poll_questionnaire_answer
+ * @property-read \App\Models\PollQuestionnaireParticipant $poll_questionnaire_partcipant
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\PollQuestionnaireSubject[] $poll_questionnaire_subject
  */
 class PollQuestionnaire extends Model {
     

@@ -26,6 +26,10 @@ use Illuminate\Support\Facades\DB;
  * @method static Builder|Group whereUpdatedAt($value)
  * @mixin \Eloquent
  * @property-read Collection|User[] $users
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Action[] $actions
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Menu[] $menus
+ * @property-read \App\Models\School $school
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tab[] $tabs
  */
 class Group extends Model {
     

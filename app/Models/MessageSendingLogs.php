@@ -3,7 +3,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Mockery\Exception;
 
+/**
+ * App\Models\messageSendingLogs
+ *
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Message[] $messages
+ * @mixin \Eloquent
+ */
 class messageSendingLogs extends Model {
     
     protected $fillable = [
@@ -13,7 +20,7 @@ class messageSendingLogs extends Model {
     ];
     
     public function messages() {
-        return $this->hasMany('App\Message');
+        return $this->hasMany('App\Models\Message');
     }
     
     public function addMessageSendingLog($recipientCount) {
