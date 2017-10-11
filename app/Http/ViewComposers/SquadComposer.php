@@ -23,7 +23,7 @@ class SquadComposer {
         $educators = [];
         if (!empty($data)) {
             foreach ($data as $v) {
-                $educators[$v['id']] = $v['user']['username'];
+                $educators[$v['id']] = $v['user']['realname'];
             }
         }
         $view->with([

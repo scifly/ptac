@@ -469,10 +469,10 @@ class Menu extends Model {
         switch ($user->group->name) {
             case '运营':  break;
             case '企业':
-                $rootMenuId = Corp::find(Department::find($user->topDeptId($user))->id)->menu_id;
+                $rootMenuId = Corp::whereDepartmentId($user->topDeptId($user))->first()->menu_id;
                 break;
             case '学校':
-                $rootMenuId = School::find(Department::find($user->topDeptId($user))->id)->menu_id;
+                $rootMenuId = School::whereDepartmentId($user->topDeptId($user))->first()->menu_id;
                 break;
             default:
                 $rootMenuId = School::find(Group::find($user->group->id)->school_id)->menu_id;
@@ -555,7 +555,6 @@ class Menu extends Model {
         
         $parents = [$rootMenuId];
         $this->getParent($rootMenuId, $parents);
-        $id = '';
         $childrenIds = $this->getChildren($rootMenuId);
         # 不含子菜单的HTML模板
         $mSimple = '<li%s><a id="%s" href="%s"><i class="%s"></i> %s</a></li>';

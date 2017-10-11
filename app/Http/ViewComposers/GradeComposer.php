@@ -22,7 +22,7 @@ class GradeComposer {
         $educators = $this->educator->all();
         $educatorUsers = [];
         foreach ($educators as $educator) {
-            $educatorUsers[$educator->id] = $educator->user->username;
+            $educatorUsers[$educator->id] = $educator->user->realname;
         }
         $view->with([
             'schools'   => $this->school->pluck('name', 'id'),

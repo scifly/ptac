@@ -194,7 +194,17 @@ class Grade extends Model {
             ['db' => 'Grade.id', 'dt' => 0],
             ['db' => 'Grade.name', 'dt' => 1],
             ['db' => 'School.name as schoolname', 'dt' => 2],
-            ['db' => 'Grade.educator_ids', 'dt' => 3],
+            ['db' => 'Grade.educator_ids', 'dt' => 3,
+             'formatter' => function ($d) {
+                 $educatorId = explode(',',$d);
+                 foreach ($educatorId as $id)
+                 {
+                     $educator[] = Educator::whereId($id)->first()->user->realname;
+                 }
+                 $userName = implode('&nbsp;,&nbsp;',$educator);
+                 return $userName;
+             },
+            ],
             ['db' => 'Grade.created_at', 'dt' => 4],
             ['db' => 'Grade.updated_at', 'dt' => 5],
             [
