@@ -1,4 +1,3 @@
-
 <div class="box box-widget">
     <div class="box-header with-border">
         @include('partials.form_header')
@@ -43,19 +42,58 @@
                     <label id="user[gender]">
                         <input id="user[gender]"
                                @if((isset($operator) && $operator->user->gender) || !isset($operator))
-                               checked
+                                   checked
                                @endif
-                               type="radio" name="user[gender]" class="minimal" value="1">
+                               type="radio" name="user[gender]" class="minimal" value="1"
+                        />
                     </label> 男
                     <label id="user[gender]">
                         <input id="user[gender]"
-                               @if((isset($operator) && $operator->user->gender ==0 ))
-                               checked
+                               @if((isset($operator) && $operator->user->gender == 0 ))
+                                   checked
                                @endif
-                               type="radio" name="user[gender]" class="minimal" value="0">
+                               type="radio" name="user[gender]" class="minimal" value="0"
+                        />
                     </label> 女
                 </div>
             </div>
+            @if(!isset($operator))
+                {!! Form::hidden('role', $role, ['id' => 'role']) !!}
+                @include('partials.single_select', [
+                    'label' => '角色',
+                    'id' => 'user[group_id]',
+                    'items' => $groups
+                ])
+                @switch($role)
+                    @case('运营')
+                        @include('partials.single_select', [
+                            'label' => '所属企业',
+                            'id' => 'corp_id',
+                            'items' => $corps,
+                            'divId' => 'corps'
+                        ])
+                        @include('partials.single_select', [
+                            'label' => '所属学校',
+                            'id' => 'school_id',
+                            'items' => $schools,
+                            'divId' => 'schools'
+                        ])
+                        @break
+                    @case('企业')
+                        {!! Form::hidden('root_id', $rootId, ['id' => 'root_id']) !!}
+                        @include('partials.single_select', [
+                            'label' => '所属学校',
+                            'id' => 'school_id',
+                            'items' => $schools,
+                            'divId' => 'schools'
+                        ])
+                        @break
+                    @case('学校')
+                        {!! Form::hidden('root_id', $rootId, ['id' => 'root_id']) !!}
+                        @break
+                    @default @break
+                @endswitch
+            @endif
             <div class="form-group">
                 {!! Form::label('user[username]', '用户名', [
                     'class' => 'col-sm-3 control-label',
@@ -96,7 +134,6 @@
                         ]) !!}
                     </div>
                 </div>
-
             @endif
             <div class="form-group">
                 {{ Form::label('user[telephone]', '座机', [
@@ -117,7 +154,6 @@
                     {!! Form::email('user[email]', null, [
                         'class' => 'form-control',
                         'placeholder' => '(请输入电子邮件地址)',
-
                     ]) !!}
                 </div>
             </div>
@@ -130,41 +166,28 @@
                     <div id="department-nodes-checked">
                         @if(isset($selectedDepartments))
                             @foreach($selectedDepartments as $key => $department)
-                                <button type="button" class="btn btn-flat" style="margin-right: 5px;margin-bottom: 5px">
-                                    <i class="{{$department['icon']}}"></i>
-                                    {{$department['text']}}
+                                <button type="button" class="btn btn-flat" style="margin: 0 5px 5px 0;">
+                                    <i class="{{ $department['icon'] }}"></i>
+                                    {{ $department['text'] }}
                                     <i class="fa fa-close close-selected"></i>
-                                    <input type="hidden" name="selectedDepartments[]" value="{{$department['id']}}"/>
+                                    <input type="hidden"
+                                           name="selectedDepartments[]"
+                                           value="{{ $department['id'] }}"
+                                    />
                                 </button>
                             @endforeach
-
                         @endif
                     </div>
                     @if(isset($selectedDepartmentIds))
-                        <input type="hidden" id="selectedDepartmentIds" value="{{$selectedDepartmentIds}}"/>
+                        <input type="hidden" id="selectedDepartmentIds"
+                               value="{{ $selectedDepartmentIds }}"
+                        />
                     @else
                         <input type="hidden" id="selectedDepartmentIds" value=""/>
                     @endif
-                    <a id="add-department" class="btn btn-primary" style="margin-bottom: 5px">修改</a>
+                    <a id="add-department" class="btn btn-primary" style="margin-bottom: 5px;">修改</a>
                 </div>
             </div>
-
-            @include('partials.single_select', [
-                'label' => '角色',
-                'id' => 'user[group_id]',
-                'items' => $groups
-            ])
-            @include('partials.single_select', [
-                'label' => '所属公司',
-                'id' => 'operator[company_id]',
-                'items' => $companies
-            ])
-            @include('partials.multiple_select', [
-                'label' => '可管理的学校',
-                'id' => 'operator[school_ids]',
-                'items' => $schools,
-                'selectedItems' => isset($selectedSchools) ? $selectedSchools : []
-            ])
             @include('partials.enabled', [
                 'label' => '是否启用',
                 'id' => 'user[enabled]',

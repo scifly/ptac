@@ -167,6 +167,7 @@ class Score_SendController extends Controller {
         $students = $class_scores->groupBy('id');
         #拼接信息
         $strs = [];
+        /** @var Student $student */
         foreach ($students as $student) {
             $str = '';
             #获取考试名称及姓名
@@ -256,16 +257,8 @@ class Score_SendController extends Controller {
             }
             $strs[] = ["id" => $student[0]->id, 'name' => $student[0]->realname, "msg" => $str];
         }
-<<<<<<< HEAD
-
-        return json_encode($strs);
+        return '';
+        
     }
     
-=======
-        
-        return json_encode($strs);
-    }
-
-
->>>>>>> origin/master
 }

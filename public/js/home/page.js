@@ -23,11 +23,15 @@ var page = {
             url: page.siteRoot() + url,
             data: { tabId: tabId },
             success: function(result) {
-                // $tabPane.html(result.html);
-                $('#ajaxLoader').after(result.html);
-                $.getScript(page.siteRoot() + result.js, function() {
-                    $('#ajaxLoader').remove();
-                });
+                if (result.statusCode === 200) {
+                    // $tabPane.html(result.html);
+                    $('#ajaxLoader').after(result.html);
+                    $.getScript(page.siteRoot() + result.js, function() {
+                        setTimeout(function() {$('#ajaxLoader').remove();}, 1000)
+                    });
+                } else {
+                    window.location = 'login';
+                }
             },
             error: function(e) {
                 var obj = JSON.parse(e.responseText);

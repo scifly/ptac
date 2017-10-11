@@ -236,6 +236,11 @@ Route::group(['prefix' => 'menus'], function () {
 });
 // 管理员
 Route::group(['prefix' => 'operators'], routes('OperatorController'));
+Route::group(['prefix' => 'operators'], function() {
+    $ctlr = 'OperatorController';
+    Route::post('create', $ctlr . '@create');
+    Route::post('edit/{id}', $ctlr . '@edit');
+});
 /**
  * routes - Helper function
  * 返回resource路由

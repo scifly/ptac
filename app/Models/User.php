@@ -216,10 +216,9 @@ class User extends Authenticatable {
         $departmentIds = $user->departments->pluck('id')->toArray();
         sort($departmentIds);
         
-        return $departmentIds[0];
+        return !empty($departmentIds) ? $departmentIds[0] : 1;
         
     }
-    
     
     /**
      * 创建企业号会员
@@ -230,16 +229,12 @@ class User extends Authenticatable {
         
         $user = $this->find($id);
         $mobile = Mobile::whereUserId($id)->where('isdefault', 1)->first()->mobile;
-        $department = [];
-        foreach ($user->departments as $d) {
-            $department[] = $d->id;
-        }
         $data = [
             'userid'       => $user->userid,
             'name'         => $user->realname,
             'english_name' => $user->english_name,
             'mobile'       => $mobile,
-            'department'   => $department,
+            'department'   => $user->departments->pluck('id')->toArray(),
             'gender'       => $user->gender,
             'enable'       => $user->enabled,
         ];
@@ -256,16 +251,12 @@ class User extends Authenticatable {
         
         $user = $this->find($id);
         $mobile = Mobile::whereUserId($id)->where('isdefault', 1)->first()->mobile;
-        $department = [];
-        foreach ($user->departments as $d) {
-            $department[] = $d->id;
-        }
         $data = [
             'userid'       => $user->userid,
             'name'         => $user->realname,
             'english_name' => $user->english_name,
             'mobile'       => $mobile,
-            'department'   => $department,
+            'department'   => $user->departments->pluck('id')->toArray(),
             'gender'       => $user->gender,
             'enable'       => $user->enabled,
         ];

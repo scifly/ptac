@@ -55,7 +55,8 @@ class ComboTypeController extends Controller {
      */
     public function store(CommTypeRequest $request) {
         
-        return $this->comboType->create($request->all()) ? $this->succeed() : $this->fail();
+        return $this->comboType->create($request->all())
+            ? $this->succeed() : $this->fail();
         
     }
     
@@ -68,9 +69,7 @@ class ComboTypeController extends Controller {
     public function edit($id) {
         
         $comboType = $this->comboType->find($id);
-        if (!$comboType) {
-            return $this->notFound();
-        }
+        if (!$comboType) { return $this->notFound(); }
         
         return $this->output(__METHOD__, ['comboType' => $comboType]);
         
@@ -86,11 +85,10 @@ class ComboTypeController extends Controller {
     public function update(CommTypeRequest $request, $id) {
         
         $comboType = $this->comboType->find($id);
-        if (!$comboType) {
-            return $this->notFound();
-        }
+        if (!$comboType) { return $this->notFound(); }
         
-        return $comboType->update($request->all()) ? $this->succeed() : $this->fail();
+        return $comboType->update($request->all())
+            ? $this->succeed() : $this->fail();
         
     }
     
@@ -103,11 +101,10 @@ class ComboTypeController extends Controller {
     public function destroy($id) {
         
         $comboType = $this->comboType->find($id);
-        if (!$comboType) {
-            return $this->notFound();
-        }
+        if (!$comboType) { return $this->notFound(); }
         
-        return $comboType->delete() ? $this->succeed() : $this->fail();
+        return $comboType->delete()
+            ? $this->succeed() : $this->fail();
         
     }
     

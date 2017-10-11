@@ -56,7 +56,8 @@ class AppController extends Controller {
      */
     public function store(AppRequest $request) {
         
-        return $this->app->create($request->all()) ? $this->succeed() : $this->fail();
+        return $this->app->create($request->all())
+            ? $this->succeed() : $this->fail();
         
     }
     
@@ -69,9 +70,7 @@ class AppController extends Controller {
     public function show($id) {
         
         $app = $this->app->find($id);
-        if (!$app) {
-            return $this->notFound();
-        }
+        if (!$app) { return $this->notFound(); }
         
         return $this->output(__METHOD__, ['app' => $app]);
         
@@ -93,7 +92,7 @@ class AppController extends Controller {
     }
     
     /**
-     * 更新指定的微信应用记录
+     * 更新微信应用
      *
      * @param AppRequest $request
      * @param $id
@@ -104,7 +103,7 @@ class AppController extends Controller {
         $app = $this->app->find($id);
         if (!$app) { return $this->notFound(); }
         
-        return $app->modify($request->all(), $id)
+        return $app->update($request->all())
             ? $this->succeed() : $this->fail();
         
     }
@@ -121,9 +120,11 @@ class AppController extends Controller {
         $accessToken = Wechat::getAccessToken($app->corp_id, $app->secret, $app->agentid);
     
         $menu = json_decode(Wechat::getMenu($accessToken, $app->agentid));
+
         $a = $app->update(['menu' => json_encode($menu)->button]);
         $menus = $this->app->object_to_array($menu->button);
         return $this->output(__METHOD__, ['menu' => $menus]);
+
     }
-    
+
 }

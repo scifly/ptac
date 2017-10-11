@@ -7,8 +7,6 @@ use App\Models\Custodian;
 use App\Models\Department;
 use App\Models\DepartmentUser;
 use App\Models\Group;
-use App\Models\User;
-use App\Models\Mobile;
 use App\Models\Student;
 use App\Models\CustodianStudent;
 use Illuminate\Support\Facades\Request;
@@ -23,8 +21,11 @@ class CustodianController extends Controller {
 
     protected $custodian, $department, $group, $departmentUser, $student, $custodianStudent;
 
-    function __construct(Custodian $custodian, Department $department, Group $group,
-                         DepartmentUser $departmentUser, Student $student, CustodianStudent $custodianStudent) {
+    function __construct(
+        Custodian $custodian, Department $department, Group $group,
+        DepartmentUser $departmentUser, Student $student,
+        CustodianStudent $custodianStudent
+    ) {
 
         $this->custodian = $custodian;
         $this->department = $department;
@@ -41,11 +42,13 @@ class CustodianController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
+        
         if (Request::get('draw')) {
             return response()->json($this->custodian->datatable());
         }
 
         return parent::output(__METHOD__);
+        
     }
 
     /**
@@ -71,24 +74,25 @@ class CustodianController extends Controller {
      */
     public function store(CustodianRequest $request) {
 
-        return $this->custodian->store($request) ? $this->succeed() : $this->fail();
+        return $this->custodian->store($request)
+            ? $this->succeed() : $this->fail();
 
     }
 
     /**
-     * Display the specified resource.
+     * 监护人详情
+     *
      * @param  \App\Models\Custodian $custodian
-     * @return \Illuminate\Http\Response
      */
     public function show(Custodian $custodian) {
 
     }
-
+    
     /**
-     * 编辑监护人.
+     * 编辑监护人
+     *
      * @param $id
-     * @return \Illuminate\Http\Response
-     * @internal param Custodian $custodian
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function edit($id) {
 
@@ -102,9 +106,7 @@ class CustodianController extends Controller {
             $selectedDepartmentIds[] = $department->id;
         }
         $selectedDepartments = $this->department->selectedNodes($selectedDepartmentIds);
-        if (!$custodian) {
-            return $this->notFound();
-        }
+        if (!$custodian) { return $this->notFound(); }
 
         return $this->output(__METHOD__, [
             'mobiles'               => $custodian->user->mobiles,
@@ -123,7 +125,8 @@ class CustodianController extends Controller {
      */
     public function update(CustodianRequest $request, $id) {
 
-        return $this->custodian->modify($request, $id) ? $this->succeed() : $this->fail();
+        return $this->custodian->modify($request, $id)
+            ? $this->succeed() : $this->fail();
 
     }
 
@@ -134,6 +137,10 @@ class CustodianController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
-        return $this->custodian->remove($id) ? $this->succeed() : $this->fail();
+        
+        return $this->custodian->remove($id)
+            ? $this->succeed() : $this->fail();
+        
     }
+    
 }

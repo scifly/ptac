@@ -14,7 +14,7 @@ use Mockery\Exception;
  * @property int $menu_id
  * @property \Carbon\Carbon|null $created_at
  * @property \Carbon\Carbon|null $updated_at
- * @property int $enabled
+ * @property int|null $enabled
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\GroupMenu whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\GroupMenu whereEnabled($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\GroupMenu whereGroupId($value)

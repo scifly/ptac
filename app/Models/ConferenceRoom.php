@@ -2,10 +2,9 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Helpers\ModelTrait;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
-use Mockery\Exception;
 
 /**
  * App\Models\ConferenceRoom 会议室
@@ -32,6 +31,8 @@ use Mockery\Exception;
  * @property-read School $school
  */
 class ConferenceRoom extends Model {
+    
+    use ModelTrait;
     
     protected $fillable = [
         'name', 'school_id', 'capacity',
@@ -61,30 +62,44 @@ class ConferenceRoom extends Model {
     }
     
     /**
-     * 删除指定的会议室
+     * 保存会议室
+     *
+     * @param array $data
+     * @return bool
+     */
+    public function store(array $data) {
+        
+        $cr = $this->create($data);
+        return $cr ? true : false;
+        
+    }
+    
+    /**
+     * 更新会议室
+     *
+     * @param array $data
+     * @param $id
+     * @return bool
+     */
+    public function modify(array $data, $id) {
+        
+        $cr = $this->find($id);
+        if (!$cr) { return false; }
+        return $cr->update($data) ? true : false;
+        
+    }
+    
+    /**
+     * 删除会议室
      *
      * @param $id
      * @return bool
      */
     public function remove($id) {
         
-        $conferenceRoom = $this->find($id);
-        if (!$conferenceRoom) {
-            return false;
-        }
-        try {
-            $exception = DB::transaction(function () use ($conferenceRoom, $id) {
-                $conferenceRoom->delete();
-                $conferenceQueues = ConferenceQueue::whereConferenceRoomId($id)->get();
-                foreach ($conferenceQueues as $queue) {
-                    $queue->delete();
-                }
-            });
-            
-            return is_null($exception) ? true : false;
-        } catch (Exception $e) {
-            return false;
-        }
+        $cr = $this->find($id);
+        if (!$cr) { return false; }
+        return $this->removable($id) ? $cr->delete() : false;
         
     }
     

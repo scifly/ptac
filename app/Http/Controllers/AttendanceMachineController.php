@@ -51,7 +51,8 @@ class AttendanceMachineController extends Controller {
      */
     public function store(AttendanceMachineRequest $request) {
         
-        return $this->am->create($request->all()) ? $this->succeed() : $this->fail();
+        return $this->am->create($request->all())
+            ? $this->succeed() : $this->fail();
         
     }
     
@@ -64,9 +65,7 @@ class AttendanceMachineController extends Controller {
     public function show($id) {
         
         $am = $this->am->find($id);
-        if (!$am) {
-            return $this->notFound();
-        }
+        if (!$am) { return $this->notFound(); }
         
         return $this->output(__METHOD__, ['am' => $am]);
         
@@ -81,9 +80,7 @@ class AttendanceMachineController extends Controller {
     public function edit($id) {
         
         $am = $this->am->find($id);
-        if (!$am) {
-            return $this->notFound();
-        }
+        if (!$am) { return $this->notFound(); }
         
         return $this->output(__METHOD__, ['am' => $am]);
         
@@ -99,11 +96,10 @@ class AttendanceMachineController extends Controller {
     public function update(AttendanceMachineRequest $request, $id) {
         
         $am = $this->am->find($id);
-        if (!$am) {
-            return $this->notFound();
-        }
+        if (!$am) { return $this->notFound(); }
         
-        return $am->update($request->all()) ? $this->succeed() : $this->fail();
+        return $am->update($request->all())
+            ? $this->succeed() : $this->fail();
         
     }
     
@@ -116,9 +112,7 @@ class AttendanceMachineController extends Controller {
     public function destroy($id) {
         
         $am = $this->am->find($id);
-        if (!$am) {
-            return $this->notFound();
-        }
+        if (!$am) { return $this->notFound(); }
         
         return $am->delete() ? $this->succeed() : $this->fail();
         

@@ -4,8 +4,8 @@
     </div>
     <div class="box-body">
         <div class="form-horizontal">
-            @if (!empty($conferenceQueue['id']))
-                {{ Form::hidden('id', $conferenceQueue['id'], ['id' => 'id']) }}
+            @if (!empty($cq['id']))
+                {{ Form::hidden('id', $cq['id'], ['id' => 'id']) }}
             @endif
             <div class="form-group">
                 {!! Form::label('name', '名称', [
@@ -27,7 +27,7 @@
                 <div class="col-sm-6">
                     {!! Form::text('start', null, [
                         'class' => 'form-control',
-                        'placeholder' => '(请输入会议名称)',
+                        'placeholder' => '(请输入会议开始时间)',
                         'required' => 'true',
                         'type' => 'date'
                     ]) !!}
@@ -40,7 +40,7 @@
                 <div class="col-sm-6">
                     {!! Form::text('end', null, [
                         'class' => 'form-control',
-                        'placeholder' => '(请输入会议名称)',
+                        'placeholder' => '(请输入会议结束时间)',
                         'required' => 'true',
                         'type' => 'date'
                     ]) !!}

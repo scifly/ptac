@@ -176,11 +176,11 @@ HTML;
         $name = 'n/a';
         preg_match_all("#\/\*\*\n\s{1}\*[^\*]*\*#", $comment, $matches);
         if (isset($matches[0][0])) {
-            $name = str_replace(str_split("\n/* "), '', $matches[0][0]);
+            $name = str_replace(str_split("\r\n/* "), '', $matches[0][0]);
         } else {
             preg_match_all("#\/\*\*\r\n\s{1}\*[^\*]*\*#", $comment, $matches);
             if (isset($matches[0][0])) {
-                $name = str_replace(str_split("\n/* "), '', $matches[0][0]);
+                $name = str_replace(str_split("\r\n/* "), '', $matches[0][0]);
             }
         }
         

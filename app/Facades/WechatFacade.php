@@ -141,12 +141,15 @@ class Wechat extends Facade {
         $app = App::whereAgentid($agentid)->where('corp_id', $corpId)->first();
         if ($app['expire_at'] < time() || !isset($app['expire_at'])) {
             $result = json_decode(
-                self::curlGet(sprintf(self::URL_GET_ACCESSTOKEN, Corp::find($corpId)->corpid, $secret)), true
+                self::curlGet(sprintf(
+                    self::URL_GET_ACCESSTOKEN,
+                    Corp::find($corpId)->corpid, $secret
+                )), true
             );
             if ($result) {
                 $accessToken = $result['access_token'];
                 $app->update([
-                    'expire_at' => date('Y-m-d H:i:s', time()+7000),
+                    'expire_at' => date('Y-m-d H:i:s', time() + 7000),
                     'access_token' => $accessToken
                 ]);
             } else {

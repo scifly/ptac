@@ -58,7 +58,8 @@ use Mockery\Exception;
  * @method static Builder|Message whereSUserId($value)
  * @method static Builder|Message whereSent($value)
  * @property-read \App\Models\CommType $commType
- * @property-read \App\Models\messageSendingLogs $messageSendinglogs
+ * @property-read \App\Models\MessageSendingLog $messageSendinglog
+ * @property-read \App\Models\MessageSendingLog $messageSendinglogs
  */
 class Message extends Model {
     
@@ -96,7 +97,7 @@ class Message extends Model {
     }
     
     public function messageSendinglogs() {
-        return $this->belongsTo('App\Models\MessageSendingLogs');
+        return $this->belongsTo('App\Models\MessageSendingLog');
     }
     
     public function commType() {
@@ -105,7 +106,7 @@ class Message extends Model {
     
     public function store(MessageRequest $request) {
         $input = $request->all();
-        $messageSendingLog = new MessageSendingLogs();
+        $messageSendingLog = new MessageSendingLog();
         #新增一条日志记录（指定批次）
         $logId = $messageSendingLog->addMessageSendingLog(count($input['r_user_id']));
         $input['msl_id'] = $logId;

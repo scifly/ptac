@@ -13,21 +13,11 @@ var renderSwitcher = function () {
                 var e = green;
                 if ($(this).attr("data-theme")) {
                     switch ($(this).attr("data-theme")) {
-                        case "red":
-                            e = red;
-                            break;
-                        case "blue":
-                            e = blue;
-                            break;
-                        case "purple":
-                            e = purple;
-                            break;
-                        case "orange":
-                            e = orange;
-                            break;
-                        case "black":
-                            e = black;
-                            break
+                        case "red": e = red; break;
+                        case "blue": e = blue; break;
+                        case "purple": e = purple; break;
+                        case "orange": e = orange; break;
+                        case "black": e = black; break
                     }
                 }
                 var t = {};
@@ -48,9 +38,5 @@ var renderSwitcher = function () {
 
 var Switcher = function () {
     "use strict";
-    return {
-        init: function () {
-            renderSwitcher();
-        }
-    }
+    return { init: function () {renderSwitcher(); } }
 }();

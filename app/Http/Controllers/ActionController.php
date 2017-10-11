@@ -53,10 +53,7 @@ class ActionController extends Controller {
         if (Request::get('draw')) {
             return response()->json($this->action->datatable());
         }
-
-        if (!$this->action->scan()) {
-            return parent::notFound();
-        }
+        if (!$this->action->scan()) { return $this->notFound(); }
 
         return parent::output(__METHOD__);
 
@@ -71,27 +68,9 @@ class ActionController extends Controller {
     public function edit($id) {
 
         $action = $this->action->find($id);
-        if (!$action) {
-            return parent::notFound();
-        }
-        $ids = $action->where('id', $id)
-            ->get(['action_type_ids'])
-            ->toArray()[0]['action_type_ids'];
-        $actionTypeIds = explode(',', $ids);
-        $selectedActionTypes = [];
-        if (empty($actionTypeIds[0])) {
-            $selectedActionTypes = null;
-        } else {
-            foreach ($actionTypeIds as $actionTypeId) {
-                $actionType = ActionType::whereId($actionTypeId)->first()->toArray();
-                $selectedActionTypes[$actionTypeId] = $actionType['name'];
-            }
-        }
+        if (!$action) { return parent::notFound(); }
 
-        return parent::output(__METHOD__, [
-            'action'              => $action,
-            'selectedActionTypes' => $selectedActionTypes,
-        ]);
+        return parent::output(__METHOD__, ['action' => $action]);
 
     }
 
@@ -105,11 +84,10 @@ class ActionController extends Controller {
     public function update(ActionRequest $request, $id) {
 
         $action = $this->action->find($id);
-        if (!$action) {
-            return parent::notFound();
-        }
+        if (!$action) { return parent::notFound(); }
 
-        return $action->update($request->all()) ? parent::succeed() : parent::fail();
+        return $action->update($request->all())
+            ? parent::succeed() : parent::fail();
 
     }
 

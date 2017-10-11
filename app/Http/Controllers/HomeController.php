@@ -2,13 +2,16 @@
 namespace App\Http\Controllers;
 
 use App\Models\Action;
+use App\Models\Corp;
 use App\Models\Department;
 use App\Models\DepartmentType;
+use App\Models\Group;
 use App\Models\GroupMenu;
 use App\Models\GroupTab;
 use App\Models\Menu;
 use App\Models\MenuTab;
 use App\Models\MenuType;
+use App\Models\School;
 use App\Models\Tab;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
@@ -33,6 +36,7 @@ class HomeController extends Controller {
         Tab $tab,
         Department $department
     ) {
+        
         $this->middleware(['auth']);
         $this->menu = $menu;
         $this->action = $action;
@@ -43,8 +47,6 @@ class HomeController extends Controller {
 
     public function index() {
 
-        // $this->action->scan();
-        // $this->tab->scan();
         $rootMenu = $this->menu->find(1);
         $menu = null;
         if (!$rootMenu) {
@@ -64,7 +66,7 @@ class HomeController extends Controller {
         }
         $rootDepartment = $this->department->find(1);
         if (!$rootDepartment) {
-            $department = $this->department->create([
+            $this->department->create([
                 'name'               => '部门',
                 'department_type_id' => DepartmentType::whereName('根')->first()->id,
                 'enabled'            => 1,
@@ -79,40 +81,20 @@ class HomeController extends Controller {
 
         if (!session('menuId') || session('menuId') !== $id) {
             session(['menuId' => $id]);
-            session(['menuName' => Menu::whereId($id)->first()->name]);
+            session(['menuName' => Menu::find($id)->name]);
             session(['pageUrl' => Request::fullUrl()]);
             session(['menuChanged' => true]);
         } else {
             Session::forget('menuChanged');
         }
-        # 获取session中用户信息
-        $user = Auth::user();
-        $departmentIds = [];
-
-        foreach ($user->departments as $d)
-        {
-            $departmentIds[] = $d->id;
-        }
-        sort($departmentIds);
-
-        $rootId = $departmentIds[0];
-        if($rootId == 1)
-        {
-            $menuId = 1;
-        }else{
-            $rootName = Department::whereId($rootId)->first()->name;
-            # 获取根菜单Id
-            $menuId = Menu::whereName($rootName)->first()->id;
-        }
-
+        # 获取菜单列表
+        $menu = $this->menu->getMenuHtml($this->menu->rootMenuId());
+        
         # 获取卡片列表
         $tabArray = [];
         $isTabLegit = true;
         $tabRanks = MenuTab::whereMenuId($id)->get()->sortBy('tab_order')->toArray();
-
-        if (empty($tabRanks)) {
-            $isTabLegit = false;
-        };
+        if (empty($tabRanks)) { $isTabLegit = false; };
         foreach ($tabRanks as $rank) {
             $tab = Tab::whereId($rank['tab_id'])->first();
             if (!empty($tab->action->route)) {
@@ -158,16 +140,14 @@ class HomeController extends Controller {
                 'url'    => $tab->action->route,
             ];
         }
-        # 获取菜单列表
-
-        $menu = $this->menu->getMenuHtml($menuId);
+        
 
         return view('home.page', [
             'menu'   => $menu,
             'tabs'   => $tabArray,
             'menuId' => $id,
             'js'     => 'js/home/page.js',
-            'user'   => $user,
+            'user'   => Auth::user(),
         ]);
 
     }

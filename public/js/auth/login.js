@@ -14,7 +14,11 @@ $('#signin').on('click', function (e) {
             if (result.statusCode === 200) {
                 window.location = result['url'];
             } else {
-                alert('用户名或者密码错误!');
+                $.gritter.add({
+                    title: '登录',
+                    text: '用户名/密码错误',
+                    image: 'img/error.png'
+                });
             }
         }
     })

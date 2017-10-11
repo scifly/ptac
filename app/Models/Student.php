@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Mockery\Exception;
 
-
 /**
  * App\Models\Student
  *
@@ -45,16 +44,16 @@ use Mockery\Exception;
  * @property-read Collection|Custodian[] $custodians
  * @property-read Collection|ScoreTotal[] $scoreTotals
  * @property-read Collection|Score[] $scores
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\CustodianStudent[] $custodianStudents
+ * @property-read Collection|CustodianStudent[] $custodianStudents
  */
 class Student extends Model {
-
+    
     protected $fillable = [
         'user_id', 'class_id', 'student_number',
         'card_number', 'oncampus', 'birthday',
-        'remark', 'enabled'
+        'remark', 'enabled',
     ];
-
+    
     /**
      * 返回指定学生所属的班级对象
      *
@@ -73,10 +72,6 @@ class Student extends Model {
         
     }
     
-    public function custodianStudents() {
-        return $this->hasMany('App\Models\CustodianStudent');
-    }
-
     /**
      * 获取指定学生对应的用户对象
      *
@@ -105,7 +100,7 @@ class Student extends Model {
      * @return array
      */
     public function students(array $classIds = []) {
-
+        
         $studentList = [];
         if (empty($classIds)) {
             $students = $this->all();
@@ -115,13 +110,11 @@ class Student extends Model {
         foreach ($students as $student) {
             $studentList[$student->id] = $student->user->realname;
         }
-
-
+        
         return $studentList;
-
+        
     }
-
-
+    
     /**
      * 保存新创建的监护人记录
      * @param StudentRequest $request
@@ -140,7 +133,6 @@ class Student extends Model {
                     # 监护人ID和监护人关系对应的数组
                     $custodianId_relationship[$studentId] = $relationships[$key];
                 }
-                
                 $user = $request->input('user');
                 $userData = [
                     'username'     => uniqid('custodian_'),
@@ -159,7 +151,6 @@ class Student extends Model {
                 ];
                 $user = new User();
                 $u = $user->create($userData);
-
                 $student = $request->input('student');
                 $studentData = [
                     'user_id'        => $u->id,
@@ -185,23 +176,18 @@ class Student extends Model {
                     }
                     unset($mobileModel);
                 }
-                
                 # 向student表添加数据
                 $Student = new Student();
                 $s = $Student->create($studentData);
                 unset($Student);
-                
-                
                 # 向部门用户表添加数据
                 $departmentUser = new DepartmentUser();
                 $departmentIds = $request->input('selectedDepartments');
                 $departmentUser->storeByUserId($u->id, $departmentIds);
                 unset($departmentUser);
-                
                 # 向监护人学生表中添加数据
                 $custodianStudent = new CustodianStudent();
-                
-                if ($custodianId_relationship != null) {
+                if (isset($custodianId_relationship)) {
                     $custodianStudent->storeByStudentId($s->id, $custodianId_relationship);
                 }
                 unset($custodianStudent);
@@ -209,13 +195,14 @@ class Student extends Model {
                 $user->createWechatUser($u->id);
                 unset($user);
             });
+            
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
             return false;
         }
         
     }
-
+    
     /**
      * 返回学生学号姓名列表
      *
@@ -229,11 +216,11 @@ class Student extends Model {
         foreach ($students as $student) {
             $studentList[] = [$student->student_number, $student->user->realname];
         }
-
+        
         return $studentList;
         
     }
-
+    
     /**
      * 更新指定的学生记录
      *
@@ -242,7 +229,7 @@ class Student extends Model {
      * @return bool|mixed
      */
     public function modify(StudentRequest $request, $studentId) {
-
+        
         $student = $this->find($studentId);
         if (!isset($student)) {
             return false;
@@ -253,7 +240,6 @@ class Student extends Model {
                 $custodianIds = $request->input('custodian_ids');
                 # 获取与监护人的关系
                 $relationships = $request->input('relationship');
-                
                 foreach ($custodianIds as $key => $studentId) {
                     # 监护人ID和监护人关系对应的数组
                     $custodianId_relationship[$studentId] = $relationships[$key];
@@ -263,16 +249,15 @@ class Student extends Model {
                 $user = new User();
                 $user->where('id', $userId)
                     ->update([
-                        'group_id' => $userData['group_id'],
-                        'email' => $userData['email'],
-                        'realname' => $userData['realname'],
-                        'gender' => $userData['gender'],
-                        'isleader' => 0,
+                        'group_id'     => $userData['group_id'],
+                        'email'        => $userData['email'],
+                        'realname'     => $userData['realname'],
+                        'gender'       => $userData['gender'],
+                        'isleader'     => 0,
                         'english_name' => $userData['english_name'],
-                        'telephone' => $userData['telephone'],
-                        'enabled' => $userData['enabled']
+                        'telephone'    => $userData['telephone'],
+                        'enabled'      => $userData['enabled'],
                     ]);
-
                 $studentData = $request->input('student');
                 $student->update([
                     'user_id'        => $userId,
@@ -353,9 +338,9 @@ class Student extends Model {
             return false;
         }
     }
-
+    
     public function datatable() {
-
+        
         $columns = [
             ['db' => 'Student.id', 'dt' => 0],
             ['db' => 'User.realname as realname', 'dt' => 1],
@@ -372,36 +357,26 @@ class Student extends Model {
                 'db'        => 'Student.oncampus', 'dt' => 6,
                 'formatter' => function ($d) {
                     $student = Student::whereId($d)->first();
-
                     return $student->oncampus == 1 ? '是' : '否';
                 },
             ],
-            ['db'        => 'Student.id as mobile', 'dt' => 7,
-             'formatter' => function ($d) {
-                 $student = $this->find($d);
-                 $mobiles = $student->user->mobiles;
-                 $mobile = [];
-                 foreach ($mobiles as $key => $value) {
-                     $mobile[] = $value->mobile;
-                 }
-
-                 return implode(',', $mobile);
-             },
-            ['db'        => 'Student.id as mobile', 'dt' => 7,
-             'formatter' => function ($d) {
-                 $student = $this->find($d);
-                 $mobiles = $student->user->mobiles;
-                 $mobile = [];
-                 foreach ($mobiles as $key => $value) {
-                     $mobile[] = $value->mobile;
-                 }
-                 return implode(',', $mobile);
-             },
+            [
+                'db'        => 'Student.id as mobile', 'dt' => 7,
+                'formatter' => function ($d) {
+                     $student = $this->find($d);
+                     $mobiles = $student->user->mobiles;
+                     $mobile = [];
+                     foreach ($mobiles as $key => $value) {
+                         $mobile[] = $value->mobile;
+                     }
+                     return implode(',', $mobile);
+                },
             ],
-            ['db'        => 'Student.birthday', 'dt' => 8,
-             'formatter' => function ($d) {
-                 return substr($d, 0, -8);
-             },
+            [
+                 'db'        => 'Student.birthday', 'dt' => 8,
+                 'formatter' => function ($d) {
+                     return substr($d, 0, -8);
+                 },
             ],
             ['db' => 'Student.remark', 'dt' => 9],
             ['db' => 'Student.created_at', 'dt' => 10],
@@ -412,9 +387,7 @@ class Student extends Model {
                     return Datatable::dtOps($this, $d, $row);
                 },
             ],
-        ],
-  ];
-
+        ];
         $joins = [
             [
                 'table'      => 'users',
@@ -433,9 +406,9 @@ class Student extends Model {
                 ],
             ],
         ];
-
+        
         return Datatable::simple($this, $columns, $joins);
-
+        
     }
-
+    
 }
