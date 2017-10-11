@@ -121,25 +121,9 @@ class AppController extends Controller {
         $accessToken = Wechat::getAccessToken($app->corp_id, $app->secret, $app->agentid);
     
         $menu = json_decode(Wechat::getMenu($accessToken, $app->agentid));
-        $a = $app->update(['menu' => json_encode($menu->button)]);
-        
-        return $this->output(__METHOD__, ['menu' => $menu]);
-    }
-    /**
-     * 删除指定的微信应用记录
-     *
-     * @param $id
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function destroy($id) {
-        
-        $app = $this->app->find($id);
-        if (!$app) {
-            return $this->notFound();
-        }
-        
-        return $app->delete() ? $this->succeed() : $this->fail();
-        
+        $a = $app->update(['menu' => json_encode($menu)->button]);
+        $menus = $this->app->object_to_array($menu->button);
+        return $this->output(__METHOD__, ['menu' => $menus]);
     }
     
 }
