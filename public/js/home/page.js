@@ -4,11 +4,7 @@ var page = {
     inform: function(title, text, image) {
         $.gritter.add({title: title, text: text, image: page.siteRoot() + image});
     },
-    siteRoot: function() {
-        var path = window.location.pathname;
-        var paths = path.split('/');
-        return '/' + paths[1] + '/' + paths[2] + '/';
-    },
+    siteRoot: function() { return '../'; },
     ajaxLoader: function() {
         return "<img id='ajaxLoader' alt='' src='" + page.siteRoot() + "/img/throbber.gif' " +
         "style='vertical-align: middle;'/>"
@@ -27,11 +23,15 @@ var page = {
             url: page.siteRoot() + url,
             data: { tabId: tabId },
             success: function(result) {
-                // $tabPane.html(result.html);
-                $('#ajaxLoader').after(result.html);
-                $.getScript(page.siteRoot() + result.js, function() {
-                    $('#ajaxLoader').remove();
-                });
+                if (result.statusCode === 200) {
+                    // $tabPane.html(result.html);
+                    $('#ajaxLoader').after(result.html);
+                    $.getScript(page.siteRoot() + result.js, function() {
+                        setTimeout(function() {$('#ajaxLoader').remove();}, 1000)
+                    });
+                } else {
+                    window.location = 'login';
+                }
             },
             error: function(e) {
                 var obj = JSON.parse(e.responseText);

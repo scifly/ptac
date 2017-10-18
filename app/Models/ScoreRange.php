@@ -1,10 +1,8 @@
 <?php
-
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
-use App\Http\Requests\ScoreRangeRequest;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -36,13 +34,13 @@ use Illuminate\Support\Facades\DB;
 class ScoreRange extends Model {
     
     use ModelTrait;
-
+    
     protected $table = 'score_ranges';
-
+    
     protected $fillable = [
         'name', 'subject_ids', 'school_id',
         'start_score', 'end_score', 'created_at',
-        'updated_at', 'enabled'
+        'updated_at', 'enabled',
     ];
     
     /**
@@ -61,6 +59,7 @@ class ScoreRange extends Model {
     public function store(array $data) {
         
         $scoreRange = $this->create($data);
+        
         return $scoreRange ? true : false;
         
     }
@@ -105,22 +104,23 @@ class ScoreRange extends Model {
             ['db' => 'ScoreRange.created_at', 'dt' => 5],
             ['db' => 'ScoreRange.updated_at', 'dt' => 6],
             [
-                'db' => 'ScoreRange.enabled', 'dt' => 7,
+                'db'        => 'ScoreRange.enabled', 'dt' => 7,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
-                }
-            ]
+                },
+            ],
         ];
         $joins = [
             [
-                'table' => 'schools',
-                'alias' => 'School',
-                'type' => 'LEFT',
+                'table'      => 'schools',
+                'alias'      => 'School',
+                'type'       => 'LEFT',
                 'conditions' => [
-                    'School.id = ScoreRange.school_id'
-                ]
-            ]
+                    'School.id = ScoreRange.school_id',
+                ],
+            ],
         ];
+        
         return Datatable::simple($this, $columns, $joins);
         
     }
@@ -147,8 +147,8 @@ class ScoreRange extends Model {
             ->get();
         //查找所有成绩统计项
         $score_range = $this->select([
-                'id', 'name', 'subject_ids', 'start_score', 'end_score'
-            ])->get()->toArray();
+            'id', 'name', 'subject_ids', 'start_score', 'end_score',
+        ])->get()->toArray();
         //循环成绩项
         foreach ($score_range as $v) {
             $v->number = 0;
@@ -177,6 +177,7 @@ class ScoreRange extends Model {
             }
             
         }
+        
         return response()->json($score_range);
     }
     

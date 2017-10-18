@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProcedureStepRequest;
@@ -28,6 +27,7 @@ class ProcedureStepController extends Controller {
         if (Request::get('draw')) {
             return response()->json($this->procedureStep->datatable());
         }
+        
         return $this->output(__METHOD__);
         
     }

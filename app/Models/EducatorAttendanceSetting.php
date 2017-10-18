@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
@@ -30,6 +29,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read School $schools
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\EducatorAttendance[] $educatorAttendances
  * @property-read \App\Models\School $school
+ * @property int $enabled
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\EducatorAttendanceSetting whereEnabled($value)
  */
 class EducatorAttendanceSetting extends Model {
     
@@ -37,7 +38,7 @@ class EducatorAttendanceSetting extends Model {
     
     protected $fillable = [
         'name', 'school_id', 'start',
-        'end', 'inorout'
+        'end', 'inorout',
     ];
     
     /**
@@ -63,31 +64,32 @@ class EducatorAttendanceSetting extends Model {
             ['db' => 'EducatorAttendanceSetting.start', 'dt' => 3],
             ['db' => 'EducatorAttendanceSetting.end', 'dt' => 4],
             [
-                'db' => 'EducatorAttendanceSetting.inorout', 'dt' => 5,
+                'db'        => 'EducatorAttendanceSetting.inorout', 'dt' => 5,
                 'formatter' => function ($d) {
                     return $d ? '进' : '出';
-                }
+                },
             ],
             ['db' => 'EducatorAttendanceSetting.created_at', 'dt' => 6],
             ['db' => 'EducatorAttendanceSetting.updated_at', 'dt' => 7],
             ['db' => 'EducatorAttendanceSetting.updated_at', 'dt' => 7],
             [
-                'db' => 'EducatorAttendanceSetting.enabled', 'dt' => 7,
+                'db'        => 'EducatorAttendanceSetting.enabled', 'dt' => 7,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
-                }
+                },
             ],
         ];
         $joins = [
             [
-                'table' => 'schools',
-                'alias' => 'School',
-                'type' => 'INNER',
+                'table'      => 'schools',
+                'alias'      => 'School',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'School.id = EducatorAttendanceSetting.school_id'
-                ]
+                    'School.id = EducatorAttendanceSetting.school_id',
+                ],
             ],
         ];
+        
         return Datatable::simple($this, $columns, $joins);
         
     }

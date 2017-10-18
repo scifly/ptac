@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\OrderRequest;
@@ -32,6 +31,7 @@ class OrderController extends Controller {
         if (Request::get('draw')) {
             return response()->json($this->order->datatable());
         }
+        
         return $this->output(__METHOD__);
         
     }
@@ -60,6 +60,7 @@ class OrderController extends Controller {
         if (!$order) {
             return $this->notFound();
         }
+        
         return $this->output(__METHOD__, ['order' => $order]);
         
     }
@@ -77,6 +78,7 @@ class OrderController extends Controller {
         if (!$order) {
             return $this->notFound();
         }
+        
         return $order->update($request->all());
         
     }
@@ -93,6 +95,7 @@ class OrderController extends Controller {
         if (!$order) {
             return $this->notFound();
         }
+        
         return $order->delete() ? $this->succeed() : $this->fail();
         
     }

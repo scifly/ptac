@@ -167,7 +167,7 @@
                                         </select>
                                     </td>
                                     <td>
-                                        <input type="text" name="relationship[]" class="form-control" required="true"
+                                        <input type="text" name="relationship[]" class="form-control"
                                                placeholder="">
                                     </td>
                                     <td style="text-align: center">

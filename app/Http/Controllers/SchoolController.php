@@ -1,8 +1,8 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\SchoolRequest;
+use App\Jobs\CreateWechatDepartment;
 use App\Models\School as School;
 use Illuminate\Support\Facades\Request;
 
@@ -28,6 +28,7 @@ class SchoolController extends Controller {
         if (Request::get('draw')) {
             return response()->json($this->school->datatable());
         }
+        
         return parent::output(__METHOD__);
         
     }
@@ -65,9 +66,7 @@ class SchoolController extends Controller {
     public function show($id) {
         
         $school = $this->school->find($id);
-        if (!$school) {
-            return parent::notFound();
-        }
+        if (!$school) { return parent::notFound(); }
         return parent::output(__METHOD__, ['school' => $school]);
         
     }
@@ -84,6 +83,7 @@ class SchoolController extends Controller {
         if (!$school) {
             return parent::notFound();
         }
+        
         return parent::output(__METHOD__, ['school' => $school]);
         
     }
@@ -97,9 +97,7 @@ class SchoolController extends Controller {
      */
     public function update(SchoolRequest $request, $id) {
         
-        if (!$this->school->find($id)) {
-            return parent::notFound();
-        }
+        if (!$this->school->find($id)) { return parent::notFound(); }
         return $this->school->modify($request->all(), $id, true)
             ? parent::succeed() : parent::fail();
         
@@ -116,6 +114,7 @@ class SchoolController extends Controller {
         if (!$this->school->find($id)) {
             return parent::notFound();
         }
+        
         return $this->school->remove($id, true)
             ? parent::succeed() : parent::fail();
         

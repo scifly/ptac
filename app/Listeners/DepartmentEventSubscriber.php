@@ -1,7 +1,7 @@
 <?php
-
 namespace App\Listeners;
 
+use App\Jobs\ManageWechatDepartment;
 use App\Models\Company;
 use App\Models\Corp;
 use App\Models\Department;
@@ -9,9 +9,11 @@ use App\Models\DepartmentType;
 use App\Models\Menu;
 use App\Models\School;
 use Illuminate\Events\Dispatcher;
+use Illuminate\Foundation\Bus\DispatchesJobs;
 
 class DepartmentEventSubscriber {
     
+    use DispatchesJobs;
     protected $department, $departmentType;
     
     function __construct(Department $department, DepartmentType $departmentType) {
@@ -42,21 +44,23 @@ class DepartmentEventSubscriber {
      * @param string|null $belongsTo 从属的模型名称
      * @return bool
      */
-    private function createDepartment($event, $type, $model, $belongsTo = NULL) {
-        
+    private function createDepartment($event, $type, $model, $belongsTo = null) {
         
         $$model = $event->{$model};
         $data = [
-            'parent_id' => isset($belongsTo) ?
+            'parent_id'          => isset($belongsTo) ?
                 $$model->{$belongsTo}->department_id :
-                $this->department->where('parent_id', NULL)->first()->id,
-            'name' => $$model->name,
-            'remark' => $$model->remark,
+                $this->department->where('parent_id', null)->first()->id,
+            'name'               => $$model->name,
+            'remark'             => $$model->remark,
             'department_type_id' => $this->typeId($type),
-            'order' => $this->department->all()->max('order') + 1,
-            'enabled' => $$model->enabled
+            'order'              => $this->department->all()->max('order') + 1,
+            'enabled'            => $$model->enabled,
         ];
-        return $this->department->store($data, true);
+        $department = $this->department->store($data, true);
+        ManageWechatDepartment::dispatch($department, 'create');
+        
+        return $department ? true : false;
         
     }
     
@@ -97,13 +101,18 @@ class DepartmentEventSubscriber {
         $$model = $event->{$model};
         $department = $event->{$model}->department;
         $data = [
-            'parent_id' => $department->parent_id,
-            'name' => $$model->name,
-            'remark' => $$model->remark,
+            'parent_id'          => $department->parent_id,
+            'name'               => $$model->name,
+            'remark'             => $$model->remark,
             'department_type_id' => $this->typeId($type),
-            'enabled' => $$model->enabled
+            'enabled'            => $$model->enabled,
         ];
-        return $this->department->modify($data, $$model->department_id);
+        $departments = $this->department->modify($data, $$model->department_id);
+        $job = new ManageWechatDepartment($departments, 'update');
+        $this->dispatch($job);
+
+//        ManageWechatDepartment::dispatch($departments, 'update');
+        return $departments ? true : false;
         
     }
     
@@ -127,8 +136,11 @@ class DepartmentEventSubscriber {
      * @return bool|null
      */
     private function deleteDepartment($event, $model) {
+        $department = $this->department->find($event->{$model}->department_id);
+        $result = $this->department->remove($event->{$model}->department_id);
+        ManageWechatDepartment::dispatch($department, 'delete');
         
-        return $this->department->remove($event->{$model}->department_id);
+        return $result;
         
     }
     
@@ -305,6 +317,7 @@ class DepartmentEventSubscriber {
                 return $department->modify(['parent_id' => $parentDepartment->id], $department->id);
             }
         }
+        
         return true;
         
     }
@@ -321,23 +334,18 @@ class DepartmentEventSubscriber {
         $events->listen($e . 'CompanyCreated', $l . 'onCompanyCreated');
         $events->listen($e . 'CompanyUpdated', $l . 'onCompanyUpdated');
         $events->listen($e . 'CompanyDeleted', $l . 'onCompanyDeleted');
-        
         $events->listen($e . 'CorpCreated', $l . 'onCorpCreated');
         $events->listen($e . 'CorpUpdated', $l . 'onCorpUpdated');
         $events->listen($e . 'CorpDeleted', $l . 'onCorpDeleted');
-        
         $events->listen($e . 'SchoolCreated', $l . 'onSchoolCreated');
         $events->listen($e . 'SchoolUpdated', $l . 'onSchoolUpdated');
         $events->listen($e . 'SchoolDeleted', $l . 'onSchoolDeleted');
-        
         $events->listen($e . 'GradeCreated', $l . 'onGradeCreated');
         $events->listen($e . 'GradeUpdated', $l . 'onGradeUpdated');
         $events->listen($e . 'GradeDeleted', $l . 'onGradeDeleted');
-        
         $events->listen($e . 'ClassCreated', $l . 'onClassCreated');
         $events->listen($e . 'ClassUpdated', $l . 'onClassUpdated');
         $events->listen($e . 'ClassDeleted', $l . 'onClassDeleted');
-        
         $events->listen($e . 'MenuMoved', $l . 'onMenuMoved');
         
     }

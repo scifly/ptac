@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
@@ -49,7 +48,7 @@ class ScoreTotal extends Model {
         'na_subject_ids',
         'class_rank',
         'grade_rank',
-        'enabled'
+        'enabled',
     ];
     
     public function student() {
@@ -76,43 +75,43 @@ class ScoreTotal extends Model {
             ['db' => 'ScoreTotal.grade_rank', 'dt' => 6],
             ['db' => 'ScoreTotal.created_at', 'dt' => 7],
             [
-                'db' => 'ScoreTotal.updated_at', 'dt' => 8,
+                'db'        => 'ScoreTotal.updated_at', 'dt' => 8,
                 'formatter' => function ($d, $row) {
                     
                     $id = $row['id'];
                     $showLink = $d . sprintf(Datatable::DT_LINK_SHOW, $id);
-                    
                     return Datatable::DT_SPACE . $showLink;
                     
-                }
-            ]
+                },
+            ],
         ];
         $joins = [
             [
-                'table' => 'students',
-                'alias' => 'Student',
-                'type' => 'INNER',
+                'table'      => 'students',
+                'alias'      => 'Student',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'Student.id = ScoreTotal.student_id'
-                ]
+                    'Student.id = ScoreTotal.student_id',
+                ],
             ],
             [
-                'table' => 'exams',
-                'alias' => 'Exam',
-                'type' => 'INNER',
+                'table'      => 'exams',
+                'alias'      => 'Exam',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'Exam.id = ScoreTotal.exam_id'
-                ]
+                    'Exam.id = ScoreTotal.exam_id',
+                ],
             ],
             [
-                'table' => 'users',
-                'alias' => 'User',
-                'type' => 'INNER',
+                'table'      => 'users',
+                'alias'      => 'User',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'User.id = Student.user_id'
-                ]
-            ]
+                    'User.id = Student.user_id',
+                ],
+            ],
         ];
+        
         return Datatable::simple($this, $columns, $joins);
     }
     
@@ -121,7 +120,6 @@ class ScoreTotal extends Model {
         $this->where('exam_id', $exam_id)->delete();
         //查询参与这场考试的所有班级和科目
         $exam = DB::table('exams')->where('id', $exam_id)->select('class_ids', 'subject_ids')->first();
-        
         $class = DB::table('classes')
             ->whereIn('id', explode(',', $exam->class_ids))
             ->select('id', 'grade_id')
@@ -157,23 +155,21 @@ class ScoreTotal extends Model {
                 }
                 //建立写入数据库的数组数据
                 $insert = [
-                    'student_id' => $student,
-                    'class_id' => $class_id,
-                    'exam_id' => intval($exam_id),
-                    'score' => $score,
-                    'subject_ids' => empty($subject_ids) ? '' : substr($subject_ids, 1),
-                    'na_subject_ids' => empty($na_subject_ids) ? '' : substr($na_subject_ids, 1)
+                    'student_id'     => $student,
+                    'class_id'       => $class_id,
+                    'exam_id'        => intval($exam_id),
+                    'score'          => $score,
+                    'subject_ids'    => empty($subject_ids) ? '' : substr($subject_ids, 1),
+                    'na_subject_ids' => empty($na_subject_ids) ? '' : substr($na_subject_ids, 1),
                 ];
                 $data [] = $insert;
             }
-            
             //根据总成绩排序
             $score_sore = [];
             foreach ($data as $key => $row) {
                 $score_sore[$key] = $row['score'];
             }
             array_multisort($score_sore, SORT_DESC, $data);
-            
             //计算年级排名
             $grade_ranks = [];
             foreach ($data as $grade_k => $grade_v) {
@@ -185,7 +181,6 @@ class ScoreTotal extends Model {
                 }
                 $grade_ranks [] = $grade_v;
             }
-            
             //通过班级分组
             $classes = [];
             foreach ($grade_ranks as $item) {
@@ -208,6 +203,7 @@ class ScoreTotal extends Model {
                 $this->insert($inserts);
             }
         }
+        
         return true;
     }
 }

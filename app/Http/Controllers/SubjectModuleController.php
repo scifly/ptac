@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\SubjectModuleRequest;
@@ -32,6 +31,7 @@ class SubjectModuleController extends Controller {
         if (Request::get('draw')) {
             return response()->json($this->subjectModule->datatable());
         }
+        
         return $this->output(__METHOD__);
         
     }
@@ -71,6 +71,7 @@ class SubjectModuleController extends Controller {
         if (!$subjectModule) {
             return $this->notFound();
         }
+        
         return $this->output(__METHOD__, ['subjectModule' => $subjectModule]);
         
     }
@@ -87,6 +88,7 @@ class SubjectModuleController extends Controller {
         if (!$subjectModule) {
             return $this->notFound();
         }
+        
         return $this->output(__METHOD__, ['subjectModules' => $subjectModule]);
         
     }
@@ -101,11 +103,9 @@ class SubjectModuleController extends Controller {
     public function update(SubjectModuleRequest $request, $id) {
         
         $subjectModule = $this->subjectModule->find($id);
-        
         if (!$subjectModule) {
             return $this->notFound();
         }
-        
         return $subjectModule->update($request->all()) ? $this->succeed() : $this->fail();
         
     }
@@ -122,6 +122,7 @@ class SubjectModuleController extends Controller {
         if (!$subjectModule) {
             return $this->notFound();
         }
+        
         return $subjectModule->delete() ? $this->succeed() : $this->fail();
         
     }

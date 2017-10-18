@@ -16,11 +16,7 @@
                                 <!-- 轮播（Carousel）指标 -->
                                 <ol class="carousel-indicators">
                                     @foreach($medias as $k => $v)
-                                        @if($k==0)
-                                            <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
-                                        @else
-                                            <li data-target="#myCarousel" data-slide-to="{{$k}}"></li>
-                                        @endif
+                                            <li data-target="#myCarousel" data-slide-to="{{$k}}" @if($k==0) class="active" @endif></li>
                                     @endforeach
                                 </ol>
                                 <!-- 轮播（Carousel）项目 -->
@@ -59,12 +55,12 @@
                             <div class="item-list">
                                 <div class="row">
                                     <div class="col-xs-12">
-                                        @foreach($wapsite->wapsitemodule as $v)
+                                        @foreach($wapsite->wapSiteModules as $v)
                                             <a href="javascript:" class="col-xs-4">
                                                 <div class="item-icon">
                                                     <img src="../../{{$v->media->path}}" alt="">
                                                 </div>
-                                                <p class="item-label">通讯录</p>
+                                                <p class="item-label">{{$v->name}}</p>
                                             </a>
                                         @endforeach
 

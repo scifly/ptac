@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ConferenceQueueRequest;
@@ -14,11 +13,11 @@ use Illuminate\Support\Facades\Request;
  */
 class ConferenceQueueController extends Controller {
     
-    protected $conferenceQueue;
+    protected $cq;
     
-    function __construct(ConferenceQueue $conferenceQueue) {
+    function __construct(ConferenceQueue $cq) {
         
-        $this->conferenceQueue = $conferenceQueue;
+        $this->cq = $cq;
         
     }
     
@@ -30,8 +29,9 @@ class ConferenceQueueController extends Controller {
     public function index() {
         
         if (Request::get('draw')) {
-            return response()->json($this->conferenceQueue->datatable());
+            return response()->json($this->cq->datatable());
         }
+        
         return $this->output(__METHOD__);
         
     }
@@ -55,7 +55,8 @@ class ConferenceQueueController extends Controller {
      */
     public function store(ConferenceQueueRequest $request) {
         
-        return $this->conferenceQueue->store($request) ? $this->succeed() : $this->fail();
+        return $this->cq->store($request->all())
+            ? $this->succeed() : $this->fail();
         
     }
     
@@ -67,11 +68,10 @@ class ConferenceQueueController extends Controller {
      */
     public function show($id) {
         
-        $conferenceQueue = $this->conferenceQueue->find($id);
-        if (!$conferenceQueue) {
-            $this->notFound();
-        }
-        return $this->output(__METHOD__, ['conferenceQueue' => $conferenceQueue]);
+        $cq = $this->cq->find($id);
+        if (!$cq) { $this->notFound(); }
+        
+        return $this->output(__METHOD__, ['cq' => $cq]);
         
     }
     
@@ -83,11 +83,11 @@ class ConferenceQueueController extends Controller {
      */
     public function edit($id) {
         
-        $conferenceQueue = $this->conferenceQueue->find($id);
-        if (!$conferenceQueue) {
-            $this->notFound();
-        }
-        return $this->output(__METHOD__, ['conferenceQueue' => $conferenceQueue]);
+        $cq = $this->cq->find($id);
+        if (!$cq) { $this->notFound(); }
+        
+        return $this->output(__METHOD__, ['cq' => $cq]);
+        
     }
     
     /**
@@ -99,11 +99,11 @@ class ConferenceQueueController extends Controller {
      */
     public function update(ConferenceQueueRequest $request, $id) {
         
-        $conferenceQueue = $this->conferenceQueue->find($id);
-        if (!$conferenceQueue) {
-            $this->notFound();
-        }
-        return $this->conferenceQueue->modify($request, $id) ? $this->succeed() : $this->fail();
+        $cq = $this->cq->find($id);
+        if (!$cq) { $this->notFound(); }
+        
+        return $this->cq->modify($request->all(), $id)
+            ? $this->succeed() : $this->fail();
         
     }
     
@@ -115,11 +115,11 @@ class ConferenceQueueController extends Controller {
      */
     public function destroy($id) {
         
-        $conferenceQueue = $this->conferenceQueue->find($id);
-        if (!$conferenceQueue) {
-            $this->notFound();
-        }
-        return $this->conferenceQueue->remove($id) ? $this->succeed() : $this->fail();
+        $cq = $this->cq->find($id);
+        if (!$cq) { $this->notFound(); }
+        
+        return $this->cq->remove($id)
+            ? $this->succeed() : $this->fail();
         
     }
     

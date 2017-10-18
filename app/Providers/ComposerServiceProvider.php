@@ -1,19 +1,18 @@
 <?php
-
 namespace App\Providers;
 
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
 class ComposerServiceProvider extends ServiceProvider {
-
+    
     /**
      * Bootstrap the application services.
      *
      * @return void
      */
     public function boot() {
-        
+
         View::composer('school.create_edit', 'App\Http\ViewComposers\SchoolComposer');
         View::composer('corp.create_edit', 'App\Http\ViewComposers\CorpComposer');
         View::composer('grade.create_edit', 'App\Http\ViewComposers\GradeComposer');
@@ -28,8 +27,10 @@ class ComposerServiceProvider extends ServiceProvider {
         View::composer('department.create_edit', 'App\Http\ViewComposers\DepartmentComposer');
         View::composer('score.create_edit', 'App\Http\ViewComposers\ScoreComposer');
         View::composer('subject.create_edit', 'App\Http\ViewComposers\SubjectComposer');
+        View::composer('group.create_edit', 'App\Http\ViewComposers\GroupComposer');
+        View::composer('group.create', 'App\Http\ViewComposers\GroupCreateComposer');
+        View::composer('group.edit', 'App\Http\ViewComposers\GroupEditComposer');
         View::composer('subject_module.create_edit', 'App\Http\ViewComposers\SubjectModuleComposer');
-        View::composer('educator.create_edit', 'App\Http\ViewComposers\EducatorComposer');
         View::composer('attendance_machine.create_edit', 'App\Http\ViewComposers\AttendanceMachineComposer');
         View::composer('semester.create_edit', 'App\Http\ViewComposers\SemesterComposer');
         View::composer('procedure.create_edit', 'App\Http\ViewComposers\ProcedureComposer');
@@ -54,26 +55,28 @@ class ComposerServiceProvider extends ServiceProvider {
         View::composer('exam.create_edit', 'App\Http\ViewComposers\ExamComposer');
         View::composer('exam_type.create_edit', 'App\Http\ViewComposers\ExamTypeComposer');
         View::composer('major.create_edit', 'App\Http\ViewComposers\MajorComposer');
-        // View::composer('department.create_edit', 'App\Http\ViewComposers\DepartmentComposer');
+        View::composer('department.create_edit', 'App\Http\ViewComposers\DepartmentComposer');
         View::composer('message.create_edit', 'App\Http\ViewComposers\MessageComposer');
         View::composer('team.create_edit', 'App\Http\ViewComposers\TeamComposer');
-        View::composer('operator.create_edit', 'App\Http\ViewComposers\OperatorComposer');
+        View::composer('operator.create', 'App\Http\ViewComposers\OperatorCreateComposer');
+        View::composer('operator.edit', 'App\Http\ViewComposers\OperatorEditComposer');
         View::composer('conference_room.create_edit', 'App\Http\ViewComposers\ConferenceRoomComposer');
         View::composer('conference_queue.create_edit', 'App\Http\ViewComposers\ConferenceQueueComposer');
+        View::composer('conference_queue.edit', 'App\Http\ViewComposers\ConferenceQueueEditComposer');
         View::composer('conference_participant.create_edit', 'App\Http\ViewComposers\ConferenceParticipantComposer');
         View::composer('combo_type.create_edit', 'App\Http\ViewComposers\ComboTypeComposer');
-
+        View::composer('app.index', 'App\Http\ViewComposers\AppIndexComposer');
+        
     }
-
+    
     /**
      * Register the application services.
      *
      * @return void
      */
     public function register() {
-
+        
         //
-
     }
-
+    
 }

@@ -35,36 +35,36 @@
                     ]) !!}
                 </div>
             </div>
-            <div class="form-group">
-                {!! Form::label('serviceid', '业务id',[
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
-                <div class="col-sm-6">
-                    {!! Form::text('serviceid', null, [
-                        'class' => 'form-control'
-                    ]) !!}
-                </div>
-            </div>
-            <div class="form-group">
-                {!! Form::label('message_id', '关联消息id', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
-                <div class="col-sm-6">
-                    {!! Form::text('message_id', null, [
-                        'class' => 'form-control'
-                    ]) !!}
-                </div>
-            </div>
-            <div class="form-group">
-                {!! Form::label('url', '页面地址', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
-                <div class="col-sm-6">
-                    {!! Form::text('url', null, [
-                        'class' => 'form-control'
-                    ]) !!}
-                </div>
-            </div>
+            {{--<div class="form-group">--}}
+                {{--{!! Form::label('serviceid', '业务id',[--}}
+                    {{--'class' => 'col-sm-3 control-label'--}}
+                {{--]) !!}--}}
+                {{--<div class="col-sm-6">--}}
+                    {{--{!! Form::text('serviceid', null, [--}}
+                        {{--'class' => 'form-control'--}}
+                    {{--]) !!}--}}
+                {{--</div>--}}
+            {{--</div>--}}
+            {{--<div class="form-group">--}}
+                {{--{!! Form::label('message_id', '关联消息id', [--}}
+                    {{--'class' => 'col-sm-3 control-label'--}}
+                {{--]) !!}--}}
+                {{--<div class="col-sm-6">--}}
+                    {{--{!! Form::text('message_id', null, [--}}
+                        {{--'class' => 'form-control'--}}
+                    {{--]) !!}--}}
+                {{--</div>--}}
+            {{--</div>--}}
+            {{--<div class="form-group">--}}
+                {{--{!! Form::label('url', '页面地址', [--}}
+                    {{--'class' => 'col-sm-3 control-label'--}}
+                {{--]) !!}--}}
+                {{--<div class="col-sm-6">--}}
+                    {{--{!! Form::text('url', null, [--}}
+                        {{--'class' => 'form-control'--}}
+                    {{--]) !!}--}}
+                {{--</div>--}}
+            {{--</div>--}}
             <div class="form-group">
                 {!! Form::label('media_ids', '多媒体', [
                     'class' => 'col-sm-3 control-label'

@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
@@ -45,14 +44,14 @@ class Procedure extends Model {
     
     /**
      * 返回指定流程所属的学校对象
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function school() { return $this->belongsTo('App\Models\School'); }
     
     /**
      * 返回指定流程所属的流程类型对象
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function procedureType() { return $this->belongsTo('App\Models\ProcedureType'); }
@@ -80,6 +79,7 @@ class Procedure extends Model {
     public function store(array $data) {
         
         $procedure = $this->create($data);
+        
         return $procedure ? true : false;
         
     }
@@ -124,30 +124,29 @@ class Procedure extends Model {
             ['db' => 'Procedures.created_at', 'dt' => 5],
             ['db' => 'Procedures.updated_at', 'dt' => 6],
             [
-                'db' => 'Procedures.enabled', 'dt' => 7,
+                'db'        => 'Procedures.enabled', 'dt' => 7,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
-                }
+                },
             ],
         ];
-        
         $joins = [
             [
-                'table' => 'schools',
-                'alias' => 'School',
-                'type' => 'INNER',
+                'table'      => 'schools',
+                'alias'      => 'School',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'School.id = Procedures.school_id'
-                ]
+                    'School.id = Procedures.school_id',
+                ],
             ],
             [
-                'table' => 'procedure_types',
-                'alias' => 'ProcedureType',
-                'type' => 'INNER',
+                'table'      => 'procedure_types',
+                'alias'      => 'ProcedureType',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'ProcedureType.id = Procedures.procedure_type_id'
-                ]
-            ]
+                    'ProcedureType.id = Procedures.procedure_type_id',
+                ],
+            ],
         ];
         
         return Datatable::simple($this, $columns, $joins);

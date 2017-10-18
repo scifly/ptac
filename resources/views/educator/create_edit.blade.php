@@ -101,11 +101,11 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    {!! Form::label('user[password_confirm]', '确认密码', [
+                    {!! Form::label('user[password_confirmation]', '确认密码', [
                         'class' => 'col-sm-3 control-label'
                     ]) !!}
                     <div class="col-sm-6">
-                        {!! Form::password('user[password_confirm]', [
+                        {!! Form::password('user[password_confirmation]', [
                             'class' => 'form-control',
                             'placeholder' => '(请确认密码)',
                             'required' => 'true',

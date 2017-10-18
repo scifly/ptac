@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ConferenceRoomRequest;
@@ -14,11 +13,11 @@ use Illuminate\Support\Facades\Request;
  */
 class ConferenceRoomController extends Controller {
     
-    protected $conferenceRoom;
+    protected $cr;
     
-    function __construct(ConferenceRoom $conferenceRoom) {
+    function __construct(ConferenceRoom $cr) {
         
-        $this->conferenceRoom = $conferenceRoom;
+        $this->cr = $cr;
         
     }
     
@@ -30,8 +29,9 @@ class ConferenceRoomController extends Controller {
     public function index() {
         
         if (Request::get('draw')) {
-            return response()->json($this->conferenceRoom->datatable());
+            return response()->json($this->cr->datatable());
         }
+        
         return $this->output(__METHOD__);
         
     }
@@ -55,7 +55,8 @@ class ConferenceRoomController extends Controller {
      */
     public function store(ConferenceRoomRequest $request) {
         
-        return $this->conferenceRoom->create($request->all()) ? $this->succeed() : $this->fail();
+        return $this->cr->store($request->all())
+            ? $this->succeed() : $this->fail();
         
     }
     
@@ -67,11 +68,10 @@ class ConferenceRoomController extends Controller {
      */
     public function show($id) {
         
-        $conferenceRoom = $this->conferenceRoom->find($id);
-        if (!$conferenceRoom) {
-            return $this->notFound();
-        }
-        return $this->output(__METHOD__, ['conferenceRoom' => $conferenceRoom]);
+        $cr = $this->cr->find($id);
+        if (!$cr) { return $this->notFound(); }
+        
+        return $this->output(__METHOD__, ['cr' => $cr]);
         
     }
     
@@ -83,11 +83,10 @@ class ConferenceRoomController extends Controller {
      */
     public function edit($id) {
         
-        $conferenceRoom = $this->conferenceRoom->find($id);
-        if (!$conferenceRoom) {
-            return $this->notFound();
-        }
-        return $this->output(__METHOD__, ['conferenceRoom' => $conferenceRoom]);
+        $cr = $this->cr->find($id);
+        if (!$cr) { return $this->notFound(); }
+        
+        return $this->output(__METHOD__, ['cr' => $cr]);
         
     }
     
@@ -100,11 +99,11 @@ class ConferenceRoomController extends Controller {
      */
     public function update(ConferenceRoomRequest $request, $id) {
         
-        $conferenceRoom = $this->conferenceRoom->find($id);
-        if (!$conferenceRoom) {
-            return $this->notFound();
-        }
-        return $conferenceRoom->update($request->all()) ? $this->succeed() : $this->fail();
+        $cr = $this->cr->find($id);
+        if (!$cr) { return $this->notFound(); }
+        
+        return $cr->modify($request->all(), $id)
+            ? $this->succeed() : $this->fail();
         
     }
     
@@ -116,11 +115,11 @@ class ConferenceRoomController extends Controller {
      */
     public function destroy($id) {
         
-        $conferenceRoom = $this->conferenceRoom->find($id);
-        if (!$conferenceRoom) {
-            return $this->notFound();
-        }
-        return $this->conferenceRoom->remove($id) ? $this->succeed() : $this->fail();
+        $cr = $this->cr->find($id);
+        if (!$cr) { return $this->notFound(); }
+        
+        return $cr->remove($id)
+            ? $this->succeed() : $this->fail();
         
     }
     

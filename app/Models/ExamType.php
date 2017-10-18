@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
@@ -26,6 +25,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read Exam $Exam
  * @property-read Exam[] $exams
  * @property-read \App\Models\School $school
+ * @property int $school_id
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ExamType whereSchoolId($value)
  */
 class ExamType extends Model {
     
@@ -101,22 +102,23 @@ class ExamType extends Model {
             ['db' => 'ExamType.created_at', 'dt' => 4],
             ['db' => 'ExamType.updated_at', 'dt' => 5],
             [
-                'db' => 'ExamType.enabled', 'dt' => 6,
+                'db'        => 'ExamType.enabled', 'dt' => 6,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
-                }
-            ]
+                },
+            ],
         ];
         $joins = [
             [
-                'table' => 'schools',
-                'alias' => 'School',
-                'type' => 'INNER',
+                'table'      => 'schools',
+                'alias'      => 'School',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'School.id = ExamType.school_id'
-                ]
-            ]
+                    'School.id = ExamType.school_id',
+                ],
+            ],
         ];
+        
         return Datatable::simple($this, $columns, $joins);
     }
     

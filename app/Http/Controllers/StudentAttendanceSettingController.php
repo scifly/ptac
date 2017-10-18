@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StudentAttendanceSettingRequest;
@@ -32,6 +31,7 @@ class StudentAttendanceSettingController extends Controller {
         if (Request::get('draw')) {
             return response()->json($this->sas->datatable());
         }
+        
         return parent::output(__METHOD__);
         
     }
@@ -71,6 +71,7 @@ class StudentAttendanceSettingController extends Controller {
         if (!$sas) {
             return $this->notFound();
         }
+        
         return $this->output(__METHOD__, [
             'studentAttendanceSetting' => $sas,
         ]);
@@ -89,6 +90,7 @@ class StudentAttendanceSettingController extends Controller {
         if (!$sas) {
             return $this->notFound();
         }
+        
         return $this->output(__METHOD__, [
             'studentAttendanceSetting' => $sas,
         ]);
@@ -102,14 +104,13 @@ class StudentAttendanceSettingController extends Controller {
      * @param $id
      * @return \Illuminate\Http\JsonResponse
      */
-    
-    
     public function update(StudentAttendanceSettingRequest $request, $id) {
         
         $sas = $this->sas->find($id);
         if (!$sas) {
             return $this->notFound();
         }
+        
         return $sas->update($request->all()) ? $this->succeed() : $this->fail();
         
     }
@@ -126,6 +127,7 @@ class StudentAttendanceSettingController extends Controller {
         if (!$sas) {
             return $this->notFound();
         }
+        
         return $sas->delete() ? $this->succeed() : $this->fail();
         
     }

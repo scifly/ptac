@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\PqRequest;
@@ -13,6 +12,7 @@ use Illuminate\Support\Facades\Request;
  * @package App\Http\Controllers
  */
 class PollQuestionnaireController extends Controller {
+    
     protected $pollQuestionnaire;
     
     function __construct(PollQuestionnaire $pollQuestionnaire) {
@@ -30,6 +30,7 @@ class PollQuestionnaireController extends Controller {
         if (Request::get('draw')) {
             return response()->json($this->pollQuestionnaire->dataTable());
         }
+        
         return $this->output(__METHOD__);
         
     }
@@ -54,6 +55,7 @@ class PollQuestionnaireController extends Controller {
     public function store(PqRequest $request) {
         $data = $request->all();
         $data['user_id'] = 6;
+        
         return $this->pollQuestionnaire->create($data) ? $this->succeed() : $this->fail();
         
     }
@@ -70,6 +72,7 @@ class PollQuestionnaireController extends Controller {
         if (!$pollQuestionnaire) {
             return $this->notFound();
         }
+        
         return $this->output(__METHOD__, [
             'pollQuestionnaire' => $pollQuestionnaire,
         ]);
@@ -87,6 +90,7 @@ class PollQuestionnaireController extends Controller {
         if (!$pollQuestionnaire) {
             return $this->notFound();
         }
+        
         return $this->output(__METHOD__, ['pollQuestionnaire' => $pollQuestionnaire,]);
         
     }
@@ -104,6 +108,7 @@ class PollQuestionnaireController extends Controller {
         if (!$pollQuestionnaire) {
             return $this->notFound();
         }
+        
         return $pollQuestionnaire->update($request->all()) ? $this->succeed() : $this->fail();
     }
     
@@ -119,6 +124,7 @@ class PollQuestionnaireController extends Controller {
         if (!$pollQuestionnaire) {
             return $this->notFound();
         }
+        
         return $pollQuestionnaire->remove($id) ? $this->succeed() : $this->fail('失败：该问卷存在有效关联数据，不能删除');
         
     }

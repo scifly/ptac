@@ -1,18 +1,17 @@
 <?php
-
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
 class ConferenceParticipantRequest extends FormRequest {
-    
+
     /**
      * Determine if the user is authorized to make this request.
      *
      * @return bool
      */
     public function authorize() { return true; }
-    
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -20,11 +19,11 @@ class ConferenceParticipantRequest extends FormRequest {
      */
     public function rules() {
         return [
-            'educator_id' => 'required|integer',
-            'attendance_time' => 'required|date_format:"Y-m-d H:i:s"',
+            'educator_id'         => 'required|integer',
+            'attendance_time'     => 'required|date_format:"Y-m-d H:i:s"',
             'conference_queue_id' => 'required|integer',
-            'status' => 'required|boolean'
+            'status'              => 'required|boolean',
         ];
     }
-    
+
 }

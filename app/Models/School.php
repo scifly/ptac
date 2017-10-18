@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Events\SchoolCreated;
@@ -66,7 +65,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $menu_id 对应的菜单ID
  * @property-read \App\Models\Menu $menu
  * @method static Builder|School whereMenuId($value)
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\ExamType[] $examTypes
+ * @property-read Collection|ExamType[] $examTypes
+ * @property-read Collection|Group[] $groups
  */
 class School extends Model {
     
@@ -74,7 +74,7 @@ class School extends Model {
     
     protected $fillable = [
         'name', 'address', 'school_type_id', 'menu_id',
-        'corp_id', 'department_id', 'enabled'
+        'corp_id', 'department_id', 'enabled',
     ];
     
     /**
@@ -230,6 +230,7 @@ class School extends Model {
     public function operatorSchools($operatorId) {
         
         $schoolIds = Operator::whereId($operatorId)->where('enabled', 1)->first()->school_ids;
+        
         return $this->whereIn('id', explode(',', $schoolIds))->whereEnabled(1)->get();
         
     }
@@ -246,8 +247,10 @@ class School extends Model {
         $school = $this->create($data);
         if ($school && $fireEvent) {
             event(new SchoolCreated($school));
+            
             return true;
         }
+        
         return false;
         
     }
@@ -266,8 +269,10 @@ class School extends Model {
         $updated = $school->update($data);
         if ($updated && $fireEvent) {
             event(new SchoolUpdated($this->find($id)));
+            
             return true;
         }
+        
         return $updated ? true : false;
         
     }
@@ -286,8 +291,10 @@ class School extends Model {
         $removed = $this->removable($school) ? $school->delete() : false;
         if ($removed && $fireEvent) {
             event(new SchoolDeleted($school));
+            
             return true;
         }
+        
         return $removed ? true : false;
         
     }
@@ -303,46 +310,47 @@ class School extends Model {
             ['db' => 'School.created_at', 'dt' => 5],
             ['db' => 'School.updated_at', 'dt' => 6],
             [
-                'db' => 'School.enabled', 'dt' => 7,
+                'db'        => 'School.enabled', 'dt' => 7,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
-                }
-            ]
+                },
+            ],
         ];
         $joins = [
             [
-                'table' => 'school_types',
-                'alias' => 'SchoolType',
-                'type' => 'INNER',
+                'table'      => 'school_types',
+                'alias'      => 'SchoolType',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'SchoolType.id = School.school_type_id'
-                ]
+                    'SchoolType.id = School.school_type_id',
+                ],
             ],
             [
-                'table' => 'corps',
-                'alias' => 'Corp',
-                'type' => 'INNER',
+                'table'      => 'corps',
+                'alias'      => 'Corp',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'Corp.id = School.corp_id'
-                ]
-            ]
+                    'Corp.id = School.corp_id',
+                ],
+            ],
         ];
+        
         return Datatable::simple($this, $columns, $joins);
         
     }
-
+    
     public function schools($schoolIds) {
-
+        
         $schoolList = [];
         if (!empty($schoolIds)) {
-            $schools = $this->whereIn('id', explode(',',$schoolIds))->get()->toArray();
+            $schools = $this->whereIn('id', explode(',', $schoolIds))->get()->toArray();
             foreach ($schools as $school) {
                 $schoolList[$school['id']] = $school['name'];
             }
         }
 
         return $schoolList;
-
+        
     }
-
+    
 }

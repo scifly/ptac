@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Events;
 
 use App\Models\Squad;
@@ -10,11 +9,11 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
 class ClassDeleted {
-    
+
     use Dispatchable, InteractsWithSockets, SerializesModels;
-    
+
     public $class;
-    
+
     /**
      * Create a new event instance.
      *
@@ -22,11 +21,11 @@ class ClassDeleted {
      * @param Squad $class
      */
     public function __construct(Squad $class) {
-        
+
         $this->class = $class;
-        
+
     }
-    
+
     /**
      * Get the channels the event should broadcast on.
      *

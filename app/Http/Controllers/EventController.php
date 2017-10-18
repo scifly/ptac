@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\EventRequest;
@@ -13,6 +12,7 @@ use Illuminate\Support\Facades\Request;
  * @package App\Http\Controllers
  */
 class EventController extends Controller {
+    
     protected $event;
     
     function __construct(Event $event) {
@@ -32,10 +32,11 @@ class EventController extends Controller {
             ->where('User_id', $userId)
             ->where('enabled', '0')
             ->get()->toArray();
+        
         return $this->output(__METHOD__, [
-            'events' => $events,
-            'userId' => $userId,
-            'isAdmin' => $isAdmin
+            'events'  => $events,
+            'userId'  => $userId,
+            'isAdmin' => $isAdmin,
         ]);
         
     }
@@ -62,6 +63,7 @@ class EventController extends Controller {
     public function store(EventRequest $request) {
         $inputEvent = $request->all();
         $listDate = $this->event->create($inputEvent);
+        
         return $listDate ? $this->succeed($listDate) : $this->fail();
     }
     
@@ -81,6 +83,7 @@ class EventController extends Controller {
             }
         }
         $data = view('event.show', ['events' => $this->event->find($id)])->render();
+        
         return !empty($data) ? $this->succeed($data) : $this->fail();
     }
     
@@ -107,6 +110,7 @@ class EventController extends Controller {
         if (!$event) {
             return $this->notFound();
         }
+        
         return $event->update($input) ? $this->succeed() : $this->fail();
     }
     
@@ -122,6 +126,7 @@ class EventController extends Controller {
         if (!$event) {
             return $this->notFound();
         }
+        
         return $event->delete() ? $this->succeed() : $this->fail();
     }
     
@@ -141,6 +146,7 @@ class EventController extends Controller {
         if ($this->event->isValidateTime($event['user_id'], $event['educator_id'], $event['start'], $event['end'])) {
             return $this->fail('时间有冲突！');
         }
+        
         return $this->event->create($event) ? $this->succeed() : $this->fail();
     }
     
@@ -163,6 +169,7 @@ class EventController extends Controller {
         if ($this->event->isValidateTime($event->user_id, $event->educator_id, $event->start, $event->end, $event->id)) {
             return $this->fail('时间有冲突！');
         }
+        
         return $event->save() ? $this->succeed() : $this->fail();
     }
     

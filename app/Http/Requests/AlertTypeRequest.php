@@ -1,10 +1,10 @@
 <?php
-
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
 class AlertTypeRequest extends FormRequest {
+    
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -20,10 +20,10 @@ class AlertTypeRequest extends FormRequest {
     public function rules() {
         
         return [
-            'name' => 'required|string|between:2,60|unique:alert_types,name,' .
+            'name'         => 'required|string|between:2,60|unique:alert_types,name,' .
                 $this->input('id') . ',id',
             'english_name' => 'required|string',
-            'enabled' => 'required|boolean'
+            'enabled'      => 'required|boolean',
         ];
         
     }

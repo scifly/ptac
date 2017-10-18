@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Helpers\ModelTrait;
@@ -28,6 +27,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read WapSiteModule $wapsitemoudle
  * @property-read WsmArticle $wasmarticle
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Menu[] $menus
+ * @property-read \App\Models\WapSiteModule $wapSiteModule
+ * @property-read \App\Models\WsmArticle $wsmArticle
  */
 class Media extends Model {
     
@@ -36,7 +37,7 @@ class Media extends Model {
     protected $table = 'medias';
     
     protected $fillable = [
-        'path', 'remark', 'media_type_id', 'enabled'
+        'path', 'remark', 'media_type_id', 'enabled',
     ];
     
     /**
@@ -45,6 +46,10 @@ class Media extends Model {
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function mediaType() { return $this->belongsTo('App\Models\MediaType'); }
+    
+    public function wapSiteModule() { return $this->hasOne('App\Models\WapSiteModule'); }
+    
+    public function wsmArticle() { return $this->hasOne('App\Models\WsmArticle'); }
     
     /**
      * 获取指定媒体所包含的所有菜单对象
@@ -66,6 +71,7 @@ class Media extends Model {
         foreach ($ids as $mediaId) {
             $medias[] = $this->find($mediaId);
         }
+        
         return $medias;
         
     }
@@ -79,6 +85,7 @@ class Media extends Model {
     public function store(array $data) {
         
         $media = $this->create($data);
+        
         return $media ? true : false;
         
     }
@@ -96,6 +103,7 @@ class Media extends Model {
         if (!$media) {
             return false;
         }
+        
         return $media->update($data) ? true : false;
         
     }

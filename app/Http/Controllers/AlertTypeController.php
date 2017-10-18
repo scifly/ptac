@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\AlertTypeRequest;
@@ -32,6 +31,7 @@ class AlertTypeController extends Controller {
         if (Request::get('draw')) {
             return response()->json($this->alertType->datatable());
         }
+        
         return $this->output(__METHOD__);
         
     }
@@ -55,7 +55,8 @@ class AlertTypeController extends Controller {
      */
     public function store(AlertTypeRequest $request) {
         
-        return $this->alertType->create($request->all()) ? $this->succeed() : $this->fail();
+        return $this->alertType->create($request->all())
+            ? $this->succeed() : $this->fail();
         
     }
     
@@ -68,9 +69,8 @@ class AlertTypeController extends Controller {
     public function show($id) {
         
         $alertType = $this->alertType->find($id);
-        if (!$alertType) {
-            return $this->notFound();
-        }
+        if (!$alertType) { return $this->notFound();}
+        
         return $this->output(__METHOD__, ['alertType' => $alertType]);
         
     }
@@ -87,6 +87,7 @@ class AlertTypeController extends Controller {
         if (!$alertType) {
             return $this->notFound();
         }
+        
         return $this->output(__METHOD__, ['alertType' => $alertType]);
         
     }
@@ -101,9 +102,8 @@ class AlertTypeController extends Controller {
     public function update(AlertTypeRequest $request, $id) {
         
         $alertType = $this->alertType->find($id);
-        if (!$alertType) {
-            return $this->notFound();
-        }
+        if (!$alertType) { return $this->notFound(); }
+        
         return $alertType->update($request->all());
         
     }
@@ -117,9 +117,8 @@ class AlertTypeController extends Controller {
     public function destroy($id) {
         
         $alertType = $this->alertType->find($id);
-        if (!$alertType) {
-            return $this->notFound();
-        }
+        if (!$alertType) { return $this->notFound(); }
+        
         return $alertType->delete() ? $this->succeed() : $this->fail();
         
     }

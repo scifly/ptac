@@ -1,12 +1,10 @@
 <?php
-
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Helpers\ModelTrait;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
-use Mockery\Exception;
 
 /**
  * App\Models\ConferenceRoom 会议室
@@ -34,9 +32,11 @@ use Mockery\Exception;
  */
 class ConferenceRoom extends Model {
     
+    use ModelTrait;
+    
     protected $fillable = [
         'name', 'school_id', 'capacity',
-        'remark', 'enabled'
+        'remark', 'enabled',
     ];
     
     /**
@@ -61,24 +61,45 @@ class ConferenceRoom extends Model {
         
     }
     
-    public function remove($conferenceRoomId) {
+    /**
+     * 保存会议室
+     *
+     * @param array $data
+     * @return bool
+     */
+    public function store(array $data) {
         
-        $conferenceRoom = $this->find($conferenceRoomId);
-        if (!$conferenceRoom) {
-            return false;
-        }
-        try {
-            $exception = DB::transaction(function () use ($conferenceRoom, $conferenceRoomId) {
-                $conferenceRoom->delete();
-                $conferenceQueues = ConferenceQueue::whereConferenceRoomId($conferenceRoomId)->get();
-                foreach ($conferenceQueues as $queue) {
-                    $queue->delete();
-                }
-            });
-            return is_null($exception) ? true : false;
-        } catch (Exception $e) {
-            return false;
-        }
+        $cr = $this->create($data);
+        return $cr ? true : false;
+        
+    }
+    
+    /**
+     * 更新会议室
+     *
+     * @param array $data
+     * @param $id
+     * @return bool
+     */
+    public function modify(array $data, $id) {
+        
+        $cr = $this->find($id);
+        if (!$cr) { return false; }
+        return $cr->update($data) ? true : false;
+        
+    }
+    
+    /**
+     * 删除会议室
+     *
+     * @param $id
+     * @return bool
+     */
+    public function remove($id) {
+        
+        $cr = $this->find($id);
+        if (!$cr) { return false; }
+        return $this->removable($id) ? $cr->delete() : false;
         
     }
     
@@ -93,22 +114,23 @@ class ConferenceRoom extends Model {
             ['db' => 'ConferenceRoom.created_at', 'dt' => 5],
             ['db' => 'ConferenceRoom.updated_at', 'dt' => 6],
             [
-                'db' => 'ConferenceRoom.created_at', 'dt' => 7,
+                'db'        => 'ConferenceRoom.created_at', 'dt' => 7,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
-                }
+                },
             ],
         ];
         $joins = [
             [
-                'table' => 'schools',
-                'alias' => 'School',
-                'type' => 'INNER',
+                'table'      => 'schools',
+                'alias'      => 'School',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'School.id = ConferenceRoom.school_id'
-                ]
-            ]
+                    'School.id = ConferenceRoom.school_id',
+                ],
+            ],
         ];
+        
         return Datatable::simple($this, $columns, $joins);
         
     }

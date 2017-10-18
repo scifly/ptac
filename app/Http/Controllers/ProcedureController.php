@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProcedureRequest;
@@ -28,6 +27,7 @@ class ProcedureController extends Controller {
         if (Request::get('draw')) {
             return response()->json($this->procedure->datatable());
         }
+        
         return $this->output(__METHOD__);
         
     }

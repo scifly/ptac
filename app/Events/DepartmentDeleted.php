@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Events;
 
 use App\Models\Department;
@@ -10,11 +9,11 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
 class DepartmentDeleted {
-    
+
     use Dispatchable, InteractsWithSockets, SerializesModels;
-    
+
     public $department;
-    
+
     /**
      * Create a new event instance.
      *
@@ -22,11 +21,11 @@ class DepartmentDeleted {
      * @param Department $department
      */
     public function __construct(Department $department) {
-        
+
         $this->department = $department;
-        
+
     }
-    
+
     /**
      * Get the channels the event should broadcast on.
      *

@@ -4,10 +4,10 @@
     <div class="weui-panel__bd">
 
         @foreach($articles as $v)
-            <a href="../../wsm_articles/detail/{{$v->id}}" class="weui-media-box weui-media-box_appmsg">
+            <a href="/wsm_articles/detail/{{$v->id}}" class="weui-media-box weui-media-box_appmsg">
                 <div class="weui-media-box__hd">
                     <img class="weui-media-box__thumb"
-                         src="../../../{{$v->thumbnailmedia->path}}"
+                         src="../../{{$v->thumbnailmedia->path}}"
                          alt="">
                 </div>
                 <div class="weui-media-box__bd">

@@ -1,11 +1,12 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\GroupRequest;
 use App\Models\Action;
+use App\Models\Corp;
 use App\Models\Group;
 use App\Models\Menu;
+use App\Models\School;
 use App\Models\Tab;
 use Illuminate\Support\Facades\Request;
 
@@ -17,14 +18,16 @@ use Illuminate\Support\Facades\Request;
  */
 class GroupController extends Controller {
     
-    protected $group, $menu, $tab, $action;
+    protected $group, $menu, $tab, $action, $corp, $school;
     
-    function __construct(Group $group, Menu $menu, Tab $tab, Action $action) {
+    function __construct(Group $group, Menu $menu, Tab $tab, Action $action, Corp $corp, School $school) {
         
         $this->group = $group;
         $this->menu = $menu;
         $this->tab = $tab;
         $this->action = $action;
+        $this->corp = $corp;
+        $this->school = $school;
         
     }
     
@@ -38,6 +41,7 @@ class GroupController extends Controller {
         if (Request::get('draw')) {
             return response()->json($this->group->datatable());
         }
+
         return $this->output(__METHOD__);
         
     }
@@ -48,24 +52,14 @@ class GroupController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function create() {
-        
+
         if (Request::method() === 'POST') {
-            return $this->menu->tree();
+            $schoolId = Request::query('schoolId');
+            $menuId = School::whereId($schoolId)->first()->menu_id;
+            return $this->menu->getTreeByMenuId($menuId);
         }
-        $tabActions = [];
-        $tabs = $this->tab->all();
-        foreach ($tabs as $tab) {
-            $actions = $this->action->where('controller', $tab->controller)->get(['id', 'name']);
-            $actionList = [];
-            foreach ($actions as $action) {
-                $actionList[] = ['id' => $action->id, 'name' => $action->name];
-            }
-            $tabActions[] = [
-                'tab' => ['id' => $tab->id, 'name' => $tab->name],
-                'actions' => $actionList
-            ];
-        }
-        return $this->output(__METHOD__, ['tabActions' => $tabActions]);
+
+        return $this->output(__METHOD__);
         
     }
     
@@ -105,9 +99,13 @@ class GroupController extends Controller {
     public function edit($id) {
         
         $group = $this->group->find($id);
-        if (!$group) {
-            return $this->notFound();
+        if (!$group) { return $this->notFound(); }
+        if (Request::method() === 'POST') {
+            $schoolId = Request::query('schoolId');
+            $menuId = School::whereId($schoolId)->first()->menu_id;
+            return $this->menu->getTreeByMenuId($menuId);
         }
+        
         return $this->output(__METHOD__, ['group' => $group]);
         
     }
@@ -122,9 +120,7 @@ class GroupController extends Controller {
     public function update(GroupRequest $request, $id) {
         
         $group = $this->group->find($id);
-        if (!$group) {
-            return $this->notFound();
-        }
+        if (!$group) { return $this->notFound(); }
         return $group->modify($request->all(), $id)
             ? $this->succeed() : $this->fail();
         

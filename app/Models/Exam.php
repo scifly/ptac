@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
@@ -49,7 +48,7 @@ class Exam extends Model {
         'name', 'remark', 'exam_type_id',
         'class_ids', 'subject_ids', 'max_scores',
         'pass_scores', 'start_date', 'end_date',
-        'enabled'
+        'enabled',
     ];
     
     /**
@@ -73,7 +72,6 @@ class Exam extends Model {
             $class = Squad::whereId($classId)->first();
             $selectedClasses[$classId] = $class['name'];
         }
-        
         return $selectedClasses;
         
     }
@@ -90,7 +88,6 @@ class Exam extends Model {
         foreach ($subjectIds as $subjectId) {
             $selectedSubjects[$subjectId] = Subject::whereId($subjectId)->value('name');
         }
-        
         return $selectedSubjects;
         
     }
@@ -123,7 +120,6 @@ class Exam extends Model {
                 $_exams[] = $exam;
             }
         }
-        
         return $_exams;
         
     }
@@ -143,7 +139,6 @@ class Exam extends Model {
         foreach ($subject_ids as $subject_id) {
             $subjects[] = Subject::whereId($subject_id)->first(['id', 'name']);
         }
-        
         return $subjects;
         
     }
@@ -207,24 +202,22 @@ class Exam extends Model {
             ['db' => 'Exam.updated_at', 'dt' => 9],
             
             [
-                'db' => 'Exam.enabled', 'dt' => 10,
+                'db'        => 'Exam.enabled', 'dt' => 10,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
-                }
-            ]
+                },
+            ],
         ];
         $joins = [
             [
-                'table' => 'exam_types',
-                'alias' => 'ExamType',
-                'type' => 'INNER',
+                'table'      => 'exam_types',
+                'alias'      => 'ExamType',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'ExamType.id = Exam.exam_type_id'
-                ]
-            
-            ]
+                    'ExamType.id = Exam.exam_type_id',
+                ],
+            ],
         ];
-        
         return Datatable::simple($this, $columns, $joins);
         
     }

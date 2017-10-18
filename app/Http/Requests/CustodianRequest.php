@@ -1,9 +1,8 @@
 <?php
-
 namespace App\Http\Requests;
 
+use App\Rules\Mobiles;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class CustodianRequest extends FormRequest {
     
@@ -20,39 +19,39 @@ class CustodianRequest extends FormRequest {
      * @return array
      */
     public function rules() {
-        $input = $this->all();
         $rules = [
 //            'user.realname' => 'required|string|between:2,255|unique:users,realname,' .
 //                $this->input('user_id') . ',id,'.
 //                'gender,' . $this->input('user.gender') ,
             'user.realname' => 'required|string',
-            'user.gender' => 'required|boolean',
+            'user.gender'   => 'required|boolean',
             'user.group_id' => 'required|integer',
-            'user.email' => 'nullable|email|unique:users,email,' .
+            'user.email'    => 'nullable|email|unique:users,email,' .
                 $this->input('user_id') . ',id',
 //            'mobile.mobile' => 'required|string|unique:mobiles,mobile,'
 //                . $this->input('user_id') . ',user_id',
+            'mobile.*'      => [
+                'required', new Mobiles(),
+            ],
         ];
-        $validateRules=[];
-        foreach ($input['mobile'] as $index => $mobile) {
-            $rule =[
-                'mobile.'.$index.'.mobile' => 'required|string|size:11|regex:/^1[34578][0-9]{9}$/|' .
-                    'unique:mobiles,mobile,' . $this->input('mobile.' . $index . '.id') . ',id',
-                'mobile.'.$index.'.isdefault' => 'required|boolean',
-                'mobile.'.$index.'.enabled' => 'required|boolean'
-            ];
-            $validateRules =array_merge($rules,$rule,$validateRules);
-            unset($rule);
-        }
-        return $validateRules;
-
+        
+        return $rules;
+//        $validateRules=[];
+//        foreach ($input['mobile'] as $index => $mobile) {
+//            $rule =[
+//                'mobile.'.$index.'.mobile' => 'required|string|size:11|regex:/^1[34578][0-9]{9}$/|' .
+//                    'unique:mobiles,mobile,' . $this->input('mobile.' . $index . '.id') . ',id',
+//                'mobile.'.$index.'.isdefault' => 'required|boolean',
+//                'mobile.'.$index.'.enabled' => 'required|boolean'
+//            ];
+//            $validateRules =array_merge($rules,$rule,$validateRules);
+//            unset($rule);
+//        }
+//        return $validateRules;
     }
-
-
-
-
+    
     protected function prepareForValidation() {
-
+        
         $input = $this->all();
         if (isset($input['user']['enabled']) && $input['user']['enabled'] === 'on') {
             $input['user']['enabled'] = 1;
@@ -66,17 +65,16 @@ class CustodianRequest extends FormRequest {
             foreach ($input['mobile'] as $index => $mobile) {
                 if ($index == $defaultIndex) {
                     $input['mobile'][$index]['isdefault'] = 1;
-                }else{
+                } else {
                     $input['mobile'][$index]['isdefault'] = 0;
                 }
                 if (!isset($mobile['enabled'])) {
                     $input['mobile'][$index]['enabled'] = 0;
-                }else{
+                } else {
                     $input['mobile'][$index]['enabled'] = 1;
                 }
             }
         }
-
         $this->replace($input);
     }
     

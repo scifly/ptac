@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
@@ -33,6 +32,9 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read PollQuestionnaireParticipant $pollquestionnairePartcipant
  * @property-read School $school
  * @property-read User $user
+ * @property-read \App\Models\PollQuestionnaireAnswer $poll_questionnaire_answer
+ * @property-read \App\Models\PollQuestionnaireParticipant $poll_questionnaire_partcipant
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\PollQuestionnaireSubject[] $poll_questionnaire_subject
  */
 class PollQuestionnaire extends Model {
     
@@ -102,35 +104,31 @@ class PollQuestionnaire extends Model {
             ['db' => 'PollQuestionnaire.end', 'dt' => 5],
             ['db' => 'PollQuestionnaire.created_at', 'dt' => 6],
             ['db' => 'PollQuestionnaire.updated_at', 'dt' => 7],
-            
             [
-                'db' => 'PollQuestionnaire.enabled', 'dt' => 8,
+                'db'        => 'PollQuestionnaire.enabled', 'dt' => 8,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
-                }
-            ]
+                },
+            ],
         ];
         $joins = [
             [
-                'table' => 'schools',
-                'alias' => 'School',
-                'type' => 'INNER',
+                'table'      => 'schools',
+                'alias'      => 'School',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'School.id = PollQuestionnaire.school_id'
-                ]
-            
+                    'School.id = PollQuestionnaire.school_id',
+                ],
             ],
             [
-                'table' => 'users',
-                'alias' => 'User',
-                'type' => 'INNER',
+                'table'      => 'users',
+                'alias'      => 'User',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'User.id = PollQuestionnaire.user_id'
-                ]
-            
-            ]
+                    'User.id = PollQuestionnaire.user_id',
+                ],
+            ],
         ];
-        
         return Datatable::simple($this, $columns, $joins);
     }
 }

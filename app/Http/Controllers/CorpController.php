@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CorpRequest;
@@ -28,6 +27,7 @@ class CorpController extends Controller {
         if (Request::get('draw')) {
             return response()->json($this->corp->datatable());
         }
+        
         return $this->output(__METHOD__);
         
     }
@@ -79,9 +79,8 @@ class CorpController extends Controller {
     public function edit($id) {
         
         $corp = $this->corp->find($id);
-        if (!$corp) {
-            return $this->notFound();
-        }
+        if (!$corp) { return $this->notFound(); }
+        
         return $this->output(__METHOD__, ['corp' => $corp]);
         
     }

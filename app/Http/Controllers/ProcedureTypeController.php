@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProcedureTypeRequest;
@@ -32,6 +31,7 @@ class ProcedureTypeController extends Controller {
         if (Request::get('draw')) {
             return response()->json($this->procedureType->datatable());
         }
+        
         return $this->output(__METHOD__);
         
     }
@@ -71,6 +71,7 @@ class ProcedureTypeController extends Controller {
         if (!$procedureType) {
             return $this->notFound();
         }
+        
         return $this->output(__METHOD__, ['procedureType' => $procedureType]);
         
     }
@@ -87,6 +88,7 @@ class ProcedureTypeController extends Controller {
         if (!$procedureType) {
             return $this->notFound();
         }
+        
         return $this->output(__METHOD__, ['procedureType' => $procedureType]);
         
     }
@@ -104,6 +106,7 @@ class ProcedureTypeController extends Controller {
         if (!$procedureType) {
             return $this->notFound();
         }
+        
         return $procedureType->update($request->all()) ? $this->succeed() : $this->fail();
         
     }
@@ -120,6 +123,7 @@ class ProcedureTypeController extends Controller {
         if (!$procedureType) {
             return $this->notFound();
         }
+        
         return $procedureType->delete() ? $this->succeed() : $this->fail();
         
     }

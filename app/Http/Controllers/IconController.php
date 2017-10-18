@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\IconRequest;
@@ -28,6 +27,7 @@ class IconController extends Controller {
         if (Request::get('draw')) {
             return response()->json($this->icon->datatable());
         }
+        
         return $this->output(__METHOD__);
         
     }
@@ -68,6 +68,7 @@ class IconController extends Controller {
         if (!$icon) {
             return $this->notFound();
         }
+        
         return $this->output(__METHOD__, ['icon' => $icon]);
         
     }
@@ -84,6 +85,7 @@ class IconController extends Controller {
         if (!$icon) {
             return $this->notFound();
         }
+        
         return $this->output(__METHOD__, ['icon' => $icon]);
         
     }
@@ -101,6 +103,7 @@ class IconController extends Controller {
         if (!$icon) {
             return $this->notFound();
         }
+        
         return $icon->modify($request->all(), $id)
             ? $this->succeed() : $this->fail();
         
@@ -118,6 +121,7 @@ class IconController extends Controller {
         if (!$icon) {
             return $this->notFound();
         }
+        
         return $icon->remove($id)
             ? $this->succeed() : $this->fail();
         

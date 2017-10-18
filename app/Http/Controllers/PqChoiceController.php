@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\PqChoiceRequest;
@@ -13,6 +12,7 @@ use Illuminate\Support\Facades\Request;
  * @package App\Http\Controllers
  */
 class PqChoiceController extends Controller {
+    
     protected $pqChoice;
     
     /**
@@ -34,6 +34,7 @@ class PqChoiceController extends Controller {
         if (Request::get('draw')) {
             return response()->json($this->pqChoice->datatable());
         }
+        
         return $this->output(__METHOD__);
         
     }
@@ -73,6 +74,7 @@ class PqChoiceController extends Controller {
         if (!$pqChoice) {
             return $this->notFound();
         }
+        
         return $this->output(__METHOD__, [
             'pqChoice' => $pqChoice,
         ]);
@@ -90,7 +92,6 @@ class PqChoiceController extends Controller {
         if (!$pqChoice) {
             return $this->notFound();
         }
-        
         return $this->output(__METHOD__, [
             'pqChoice' => $pqChoice,
         ]);
@@ -110,6 +111,7 @@ class PqChoiceController extends Controller {
         if (!$pqChoice) {
             return $this->notFound();
         }
+        
         return $pqChoice->update($request->all()) ? $this->succeed() : $this->fail();
     }
     
@@ -125,6 +127,7 @@ class PqChoiceController extends Controller {
         if (!$pqChoice) {
             return $this->notFound();
         }
+        
         return $pqChoice->delete() ? $this->succeed() : $this->fail();
         
     }

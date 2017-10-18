@@ -13,11 +13,9 @@
             @if (!empty($student['id']))
                 {{ Form::hidden('id', $student['id'], ['id' => 'id']) }}
             @endif
-
             @if (!empty($student['user_id']))
                 {{ Form::hidden('user_id', $student['user_id'], ['id' => 'user_id']) }}
             @endif
-
             <div class="form-group">
                 {{ Form::label('user[realname]', '姓名', [
                     'class' => 'col-sm-3 control-label'

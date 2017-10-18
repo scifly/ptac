@@ -1,11 +1,11 @@
 <?php
-
 namespace App\Providers;
 
 use App\Services\Test;
 use Illuminate\Support\ServiceProvider;
 
 class TestServiceProvider extends ServiceProvider {
+    
     /**
      * Bootstrap the application services.
      *

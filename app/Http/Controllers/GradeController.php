@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\GradeRequest;
@@ -75,8 +74,8 @@ class GradeController extends Controller {
             return $this->notFound();
         }
         return $this->output(__METHOD__, [
-            'grade' => $grade,
-            'educators' => $this->educator->educators($grade->educator_ids)
+            'grade'     => $grade,
+            'educators' => $this->educator->educators($grade->educator_ids),
         ]);
         
     }
@@ -94,10 +93,9 @@ class GradeController extends Controller {
             return $this->notFound();
         }
         $gradeIds = explode(",", $grade->educator_ids);
-        
         return $this->output(__METHOD__, [
-            'grade' => $grade,
-            'selectedEducators' => $this->educator->educators($gradeIds)
+            'grade'             => $grade,
+            'selectedEducators' => $this->educator->educators($gradeIds),
         ]);
         
     }

@@ -4,8 +4,8 @@
     </div>
     <div class="box-body">
         <div class="form-horizontal">
-            @if (!empty($conferenceRoom['id']))
-                {{ Form::hidden('id', $conferenceRoom['id'], ['id' => 'id']) }}
+            @if (!empty($cr['id']))
+                {{ Form::hidden('id', $cr['id'], ['id' => 'id']) }}
             @endif
             <div class="form-group">
                 {!! Form::label('name', '名称', [
@@ -20,11 +20,7 @@
                     ]) !!}
                 </div>
             </div>
-            @include('partials.single_select', [
-                'label' => '所属学校',
-                'id' => 'school_id',
-                'items' => $schools
-            ])
+            {!! Form::hidden('school_id', $schoolId, ['id' => 'school_id']) !!}
             <div class="form-group">
                 {!! Form::label('capacity', '容量', [
                     'class' => 'col-sm-3 control-label'
@@ -54,7 +50,7 @@
             @include('partials.enabled', [
                 'label' => '是否启用',
                 'id' => 'enabled',
-                'value' => isset($conferenceRoom['enabled']) ? $conferenceRoom['enabled'] : NULL
+                'value' => isset($cr['enabled']) ? $cr['enabled'] : NULL
             ])
         </div>
     </div>

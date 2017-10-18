@@ -1,7 +1,5 @@
 <?php
-
 return [
-
     /*
     |--------------------------------------------------------------------------
     | Default Filesystem Disk
@@ -12,9 +10,7 @@ return [
     | based disks are available to your application. Just store away!
     |
     */
-
     'default' => env('FILESYSTEM_DRIVER', 'local'),
-
     /*
     |--------------------------------------------------------------------------
     | Default Cloud Filesystem Disk
@@ -25,9 +21,7 @@ return [
     | will be bound as the Cloud disk implementation in the container.
     |
     */
-
-    'cloud' => env('FILESYSTEM_CLOUD', 's3'),
-
+    'cloud'   => env('FILESYSTEM_CLOUD', 's3'),
     /*
     |--------------------------------------------------------------------------
     | Filesystem Disks
@@ -40,32 +34,29 @@ return [
     | Supported Drivers: "local", "ftp", "s3", "rackspace"
     |
     */
-
-    'disks' => [
-
-        'local' => [
+    'disks'   => [
+        'local'   => [
             'driver' => 'local',
-            'root' => storage_path('app'),
+            'root'   => storage_path('app'),
         ],
-
-        'public' => [
-            'driver' => 'local',
-            'root' => storage_path('app/public'),
-            'url' => env('APP_URL').'/storage',
+        'public'  => [
+            'driver'     => 'local',
+            'root'       => storage_path('app/public/' . date('Y') . '/' . date('m') . '/' . date('d')),
+            'url'        => env('APP_URL') . '/storage',
             'visibility' => 'public',
         ],
-
-        's3' => [
+        's3'      => [
             'driver' => 's3',
-            'key' => env('AWS_KEY'),
+            'key'    => env('AWS_KEY'),
             'secret' => env('AWS_SECRET'),
             'region' => env('AWS_REGION'),
             'bucket' => env('AWS_BUCKET'),
         ],
         'uploads' => [
             'driver' => 'local',
-            'root' => storage_path('app/uploads/'. date('Y') . '/' . date('m') . '/'. date('d')),
+            'root'   => storage_path('app/uploads/' . date('Y') . '/' . date('m') . '/' . date('d')),
+            'visibility' => 'public',
+
         ],
     ],
-
 ];

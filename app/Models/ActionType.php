@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
@@ -23,8 +22,8 @@ use Illuminate\Database\Eloquent\Model;
  * @mixin \Eloquent
  */
 class ActionType extends Model {
-    
+
     protected $fillable = ['name', 'remark', 'enabled'];
-    
+
 }
 

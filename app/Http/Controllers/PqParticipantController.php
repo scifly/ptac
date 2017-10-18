@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Models\PollQuestionnaire;
@@ -61,6 +60,7 @@ class PqParticipantController extends Controller {
             #这里获取用户ID
             ->where('A.user_id', 1)
             ->get(['poll_questionnaires.id', 'poll_questionnaires.name']);
+        
         return view('poll_questionnaire_particpation.index', ['js' => 'js/poll_questionnaire_particpation/index.js', 'form' => 0, 'pqs' => $result]);
         
     }
@@ -69,7 +69,6 @@ class PqParticipantController extends Controller {
         
         #先获取项和题转换数组操作
         $json = json_decode($this->show($q->get('pollQuestion')));
-        
         foreach ($json as $item) {
             $var = '';
             switch ($item->subject_type) {
@@ -105,7 +104,6 @@ class PqParticipantController extends Controller {
                 $hasObject = false;
             #如果不存在创建新Model
             if (!$hasObject) $Answer = new PollQuestionnaireAnswer();
-            
             $Answer->pq_id = $item->pq_id;
             $Answer->pqs_id = $item->id;
             #这里获取Session用户ID
@@ -114,6 +112,7 @@ class PqParticipantController extends Controller {
             if (!$hasObject) $Answer->save();
             else $Answer->update();
         }
+        
         return response()->json(['msg' => '提交成功', '' => self::HTTP_STATUSCODE_OK]);
         
     }
@@ -187,10 +186,10 @@ class PqParticipantController extends Controller {
                     $temp['subject_type'] = $subject->subject_type;
                     #选项题
                     $temp['choices'] = $this->tempChoice;
-                    
                     $this->result[] = $temp;
                 }
             );
+        
         return json_encode($this->result);
         #获取投票问卷下选项
     }

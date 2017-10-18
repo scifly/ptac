@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\PersonalInfoRequest;
@@ -15,7 +14,7 @@ use Illuminate\Support\Facades\Request;
  */
 class PersonalInfoController extends Controller {
     
-    public $imgPath = array();
+    public $imgPath = [];
     protected $user;
     
     function __construct(User $user) {
@@ -36,6 +35,7 @@ class PersonalInfoController extends Controller {
         $id = 1;
         $personalInfo = $this->user->find($id);
         $group = $personalInfo->group()->whereId($personalInfo->group_id)->first();
+        
         return $this->output(__METHOD__, ['personalInfo' => $personalInfo, 'group' => $group]);
         
     }
@@ -56,6 +56,7 @@ class PersonalInfoController extends Controller {
         if (!$personInfo) {
             return $this->notFound();
         }
+        
         return $personInfo->update($input) ? $this->succeed() : $this->fail('更新个人信息失败');
         
     }
@@ -88,6 +89,7 @@ class PersonalInfoController extends Controller {
         if (!$file->move($path, $fileName)) {
             return $this->fail('头像保存失败');
         }
+        
         return $this->saveImg($id, $fileName);
         
     }
@@ -106,6 +108,7 @@ class PersonalInfoController extends Controller {
         if ($file->getClientSize() > $file->getMaxFilesize()) {
             return ['status' => false, 'msg' => '图片过大'];
         }
+        
         return ['status' => true];
         
     }
@@ -128,6 +131,7 @@ class PersonalInfoController extends Controller {
             }
         }
         $personalImg->avatar_url = $imgName;
+        
         return $personalImg->save() ? $this->succeed($imgName) : $this->fail('头像保存失败');
         
     }

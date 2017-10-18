@@ -1,8 +1,8 @@
 <?php
-
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Helpers\ModelTrait;
 use App\Http\Requests\ConferenceQueueRequest;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -43,11 +43,14 @@ use Illuminate\Database\Eloquent\Model;
  */
 class ConferenceQueue extends Model {
     
+    use ModelTrait;
+    
     protected $table = 'conference_queues';
+    
     protected $fillable = [
         'name', 'remark', 'start', 'end',
         'educator_id', 'educator_ids', 'attended_educator_ids',
-        'conference_room_id', 'attendance_qrcode_url', 'event_id'
+        'conference_room_id', 'attendance_qrcode_url', 'event_id',
     ];
     
     /**
@@ -67,25 +70,28 @@ class ConferenceQueue extends Model {
     /**
      * 保存会议
      *
-     * @param ConferenceQueueRequest $request
+     * @param array $data
      * @return bool
      */
-    public function store(ConferenceQueueRequest $request) {
+    public function store(array $data) {
         
-        return true;
+        $cq = $this->create($data);
+        return $cq ? true : false;
         
     }
     
     /**
      * 更新会议
      *
-     * @param ConferenceQueueRequest $request
+     * @param array $data
      * @param $id
      * @return bool
      */
-    public function modify(ConferenceQueueRequest $request, $id) {
-        
-        return true;
+    public function modify(array $data, $id) {
+
+        $cq = $this->find($id);
+        if (!$cq) { return false; }
+        return $cq->update($data) ? true : false;
         
     }
     
@@ -96,8 +102,10 @@ class ConferenceQueue extends Model {
      * @return bool
      */
     public function remove($id) {
-        
-        return true;
+      
+        $cq = $this->find($id);
+        if (!$cq) { return false; }
+        return $cq->removable($id) ? $cq->delete() : false;
         
     }
     
@@ -112,38 +120,39 @@ class ConferenceQueue extends Model {
             ['db' => 'User.realname', 'dt' => 5],
             ['db' => 'ConferenceRoom.name as conferenceroomname', 'dt' => 6],
             [
-                'db' => 'ConferenceQueue.end', 'dt' => 7,
+                'db'        => 'ConferenceQueue.end', 'dt' => 7,
                 'formatter' => function ($d, $row) {
                     // 进行中, 已结束, 已取消; 查看, 编辑, 删除
-                }
+                },
             ],
         ];
         $joins = [
             [
-                'table' => 'conference_rooms',
-                'alias' => 'ConferenceRoom',
-                'type' => 'INNER',
+                'table'      => 'conference_rooms',
+                'alias'      => 'ConferenceRoom',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'ConferenceRoom.id = ConferenceQueue.conference_room_id'
-                ]
+                    'ConferenceRoom.id = ConferenceQueue.conference_room_id',
+                ],
             ],
             [
-                'table' => 'educators',
-                'alias' => 'Educator',
-                'type' => 'INNER',
+                'table'      => 'educators',
+                'alias'      => 'Educator',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'Educator.id = ConferenceQueue.educator_id'
-                ]
+                    'Educator.id = ConferenceQueue.educator_id',
+                ],
             ],
             [
-                'table' => 'users',
-                'alias' => 'User',
-                'type' => 'INNER',
+                'table'      => 'users',
+                'alias'      => 'User',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'User.id = Educator.user_id'
-                ]
-            ]
+                    'User.id = Educator.user_id',
+                ],
+            ],
         ];
+        
         return Datatable::simple($this, $columns, $joins);
         
     }
