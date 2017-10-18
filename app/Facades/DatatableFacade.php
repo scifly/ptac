@@ -286,6 +286,11 @@ HTML;
             }
             $out[] = $row;
         }
+<<<<<<< HEAD
+=======
+        
+        return $out;
+>>>>>>> refs/remotes/origin/master
         
         return $out;
     }
