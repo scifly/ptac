@@ -48,7 +48,7 @@ class Corp extends Model {
     
     protected $fillable = [
         'name', 'company_id', 'corpid', 'menu_id',
-        'corpsecret', 'department_id', 'enabled',
+        'department_id', 'enabled',
     ];
     
     /**

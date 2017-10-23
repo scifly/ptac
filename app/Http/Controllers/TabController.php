@@ -32,6 +32,7 @@ class TabController extends Controller {
      */
     public function index() {
         
+        
         if (Request::get('draw')) {
             return response()->json($this->tab->datatable());
         }

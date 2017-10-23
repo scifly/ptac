@@ -11,7 +11,6 @@
     <link rel="stylesheet" href="{{ URL::asset('css/font-awesome.min.css') }}">
     <link rel="stylesheet" href="{{ URL::asset('css/ionicons.min.css') }}">
     <link rel="stylesheet" href="{{ URL::asset('js/plugins/gritter/css/jquery.gritter.css') }}">
-    <link rel="stylesheet" href="{{ URL::asset('css/AdminLTE.min.css') }}">
     <link rel="stylesheet" href="{{ URL::asset('css/skins/_all-skins.min.css') }}">
     <link rel="stylesheet" href="{{ URL::asset('js/plugins/icheck/all.css') }}">
     <link rel="stylesheet" href="{{ URL::asset('js/plugins/jstree/dist/themes/default/style.min.css') }}">
@@ -30,6 +29,8 @@
     <!-- fileinput-->   
     <link rel="stylesheet" href="{{ URL::asset('js/plugins/fileinput/css/fileinput.min.css') }}">
     <link rel="stylesheet" href="{{ URL::asset('js/plugins/fileinput/themes/explorer/theme.css') }}">
+    <link rel="stylesheet" href="{{ URL::asset('css/AdminLTE.min.css') }}">
+    <link rel="stylesheet" href="{{ URL::asset('css/skins/_all-skins.min.css') }}">
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -45,8 +46,8 @@
     <header class="main-header">
         <!-- Logo -->
         <a href="#" class="logo">
-            <span class="logo-mini"><b>A</b>LT</span>
-            <span class="logo-lg"><b>Admin</b>LTE</span>
+            <span class="logo-mini"><b>PTAC</b></span>
+            <span class="logo-lg"><b>家校通 - PTAC</b></span>
         </a>
         <nav class="navbar navbar-static-top">
             <a href="#" class="sidebar-toggle" data-toggle="push-menu">
@@ -253,10 +254,9 @@
     </div>
     <footer class="main-footer">
         <div class="pull-right hidden-xs">
-            <b>Version</b> 2.4.0
+            <b>Version</b> 1.0.1
         </div>
-        <strong>Copyright &copy; 2014-2016 <a href="#">Almsaeed Studio</a>.</strong> All rights
-        reserved.
+        <strong>Copyright &copy; 2017-2020 <a href="#">LinkSoft</a>.</strong> All rights reserved.
     </footer>
     <!--右侧设置面板-->
     <aside class="control-sidebar control-sidebar-dark">
@@ -440,7 +440,7 @@
 <script src="{{ URL::asset('js/plugins/parsley/parsley.min.js') }}"></script>
 <script src="{{ URL::asset('js/plugins/parsley/i18n/zh_cn.js') }}"></script>
 <script src="{{ URL::asset('js/plugins/parsley/i18n/zh_cn.extra.js') }}"></script>
-<script src="{{ URL::asset('js/plugins/select2/js/select2.min.js') }}"></script>
+<script src="{{ URL::asset('js/plugins/select2/js/select2.full.min.js') }}"></script>
 <script src="{{ URL::asset('js/plugins/switchery/switchery.min.js') }}"></script>
 <script src="{{ URL::asset('js/switcher.init.js') }}"></script>
 <script src="{{ URL::asset('js/plugins/datatables/datatables.min.js') }}"></script>

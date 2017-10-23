@@ -82,7 +82,7 @@
                                                @if(isset($selectedTabs) && in_array($tabAction['tab']['id'], $selectedTabs))
                                                    checked
                                                @endif
-                                        >&nbsp;{{ $tabAction['tab']['name'] }}
+                                        >&nbsp;<span style="margin-left: 5px;">{{ $tabAction['tab']['name'] }}</span>
                                     </label>
                                     <div class="box-tools pull-right">
                                         <button type="button" class="btn btn-box-tool" data-widget="collapse">

@@ -50,44 +50,48 @@ class Controller extends BaseController {
      */
     protected function output($method, array $params = []) {
         
-        # 获取功能名称
-        $arr = explode('::', $method);
-        $m = $arr[1];
-        # 获取控制器名称
-        $c = explode('\\', $arr[0]);
-        $c = $c[sizeof($c) - 1];
-        # 获取功能对象
-        $action = Action::whereMethod($m)->where('controller', $c)->first();
-        if (!$action) {
-            return $this->fail($method . '不存在');
-        }
-        # 获取功能对应的View
-        $view = $action->view;
-        if (!$view) {
-            return $this->fail($method . '配置错误');
-        }
-        $menu = Menu::whereId(session('menuId'))->first();
-        $tab = Tab::whereId(Request::get('tabId'))->first();
-        # 保存状态为active的卡片ID
-        if (!session('tabId') || session('tabId') !== $tab->id) {
-            session(['tabId' => $tab->id]);
-            session(['tabChanged' => 1]);
-        } else {
-            Session::forget('tabChanged');
-        }
-        session(['tabUrl' => Request::path()]);
-        if ($menu) {
-            $params['breadcrumb'] = $menu->name . ' / ' . $tab->name . ' / ' . $action->name;
-        } else {
-            return response()->json(['statusCode' => self::HTTP_STATUSCODE_UNAUTHORIZED]);
+        if (Request::ajax()) {
+            # 获取功能名称
+            $arr = explode('::', $method);
+            $m = $arr[1];
+            # 获取控制器名称
+            $c = explode('\\', $arr[0]);
+            $c = $c[sizeof($c) - 1];
+            # 获取功能对象
+            $action = Action::whereMethod($m)->where('controller', $c)->first();
+            if (!$action) {
+                return $this->fail($method . '不存在');
+            }
+            # 获取功能对应的View
+            $view = $action->view;
+            if (!$view) {
+                return $this->fail($method . '配置错误');
+            }
+            $menu = Menu::whereId(session('menuId'))->first();
+            $tab = Tab::whereId(Request::get('tabId'))->first();
+            # 保存状态为active的卡片ID
+            if (!session('tabId') || session('tabId') !== $tab->id) {
+                session(['tabId' => $tab->id]);
+                session(['tabChanged' => 1]);
+            } else {
+                Session::forget('tabChanged');
+            }
+            session(['tabUrl' => Request::path()]);
+            if ($menu) {
+                $params['breadcrumb'] = $menu->name . ' / ' . $tab->name . ' / ' . $action->name;
+            } else {
+                return response()->json(['statusCode' => self::HTTP_STATUSCODE_UNAUTHORIZED]);
+            }
+    
+            return response()->json([
+                'statusCode' => 200,
+                'html'       => view($view, $params)->render(),
+                'js'         => $action->js,
+                'breadcrumb' => $params['breadcrumb'],
+            ]);
         }
         
-        return response()->json([
-            'statusCode' => 200,
-            'html'       => view($view, $params)->render(),
-            'js'         => $action->js,
-            'breadcrumb' => $params['breadcrumb'],
-        ]);
+        return Response()->redirectTo('pages/' . session('menuId'));
         
     }
     
@@ -124,12 +128,10 @@ class Controller extends BaseController {
     public function getUserInfo() {
         
         $code = Request::query('code');
-        $url = 'http://weixin.028lk.com/wap_sites/webindex?code='.$code;
-        dd("---------------");
-        if($code) {
-            return \redirect($url);
-        }else{
-            return 'no code !';
-        }
+        $url = 'http://weixin.028lk.com/wap_sites/webindex?code=' . $code;
+    
+        return $code ? \redirect($url) : 'no code !';
     }
+    
+    
 }
