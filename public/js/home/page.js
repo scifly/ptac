@@ -5,7 +5,7 @@ var oPage = {
 var updateHistory = true;
 var replaceState = true;
 var docTitle = '家校通';
-var rootDir = '';
+var rootDir = 'ptac/public/';
 var page = {
     success: 'img/confirm.png',
     failure: 'img/error.png',
