@@ -204,4 +204,23 @@ class App extends Model {
         
     }
     
+    /**
+     *  将对象转换为数组
+     *
+     * @param $obj
+     * @return array|void
+     */
+    public function object_to_array($obj) {
+        $obj = (array)$obj;
+        foreach ($obj as $k => $v) {
+            if (gettype($v) == 'resource') {
+                return;
+            }
+            if (gettype($v) == 'object' || gettype($v) == 'array') {
+                $obj[$k] = (array)$this->object_to_array($v);
+            }
+        }
+        
+        return $obj;
+    }
 }
