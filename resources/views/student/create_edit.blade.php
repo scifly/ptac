@@ -4,7 +4,7 @@
     'class' => 'form-horizontal form-bordered',
     'data-parsley-validate' => 'true'
 ]) !!}
-<div class="box">
+<div class="box box-default box-solid">
     <div class="box-header with-border">
         @include('partials.form_header')
     </div>
