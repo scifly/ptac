@@ -5,8 +5,7 @@ var oPage = {
 var updateHistory = true;
 var replaceState = true;
 var docTitle = '家校通';
-// var rootDir = 'ptac/public/';
-var rootDir = '';
+var $cip = $('#cip');
 var page = {
     success: 'img/confirm.png',
     failure: 'img/error.png',
@@ -75,7 +74,10 @@ var page = {
         var siteRoot =  window.location.origin
             ? window.location.origin + '/'
             : window.location.protocol + '/' + window.location.host + '/';
-        return siteRoot + rootDir;
+        if (window.location.href.indexOf('public')) {
+            return siteRoot + 'ptac/public/';
+        }
+        return siteRoot;
     },
     ajaxLoader: function () {
         return "<img id='ajaxLoader' alt='' src='" + page.siteRoot() + "/img/throbber.gif' " +
@@ -92,6 +94,7 @@ var page = {
         var tabId = page.getActiveTabId();
         $('a[href="#tab_' + tabId + '"]').attr('data-uri', url);
         $tabPane.html(page.ajaxLoader);
+        $('.overlay').show();
         $.ajax({
             type: 'GET',
             dataType: 'json',
@@ -99,10 +102,12 @@ var page = {
             data: {tabId: tabId},
             success: function (result) {
                 if (result.statusCode === 200) {
-                    // $tabPane.html(result.html);
-                    $('#ajaxLoader').after(result.html);
+                    $tabPane.html(result.html);
+                    $('.overlay').show();
+                    // $('#ajaxLoader').after(result.html);
                     $.getScript(page.siteRoot() + result.js, function () {
                         $('#ajaxLoader').remove();
+                        $('.overlay').hide();
                     });
                     var breadcrumb = $('#breadcrumb').html();
                     document.title = docTitle + ' - ' + breadcrumb;
@@ -156,7 +161,6 @@ var page = {
         });
     },
     initDatatable: function (table, options) {
-
         if (typeof options === 'undefined') {
             options = [];
         }
@@ -180,15 +184,18 @@ var page = {
                 rel: "stylesheet", type: "text/css",
                 href: page.siteRoot() + page.plugins.datatable.css
             }));
+            $('.overlay').show();
             $('#data-table').dataTable(params).on('init.dt', function () {
                 $('.dt-buttons').addClass('pull-right');
                 $('.buttons-pdf').addClass('btn-sm');
                 $('.buttons-csv').addClass('btn-sm');
                 // $('.paginate_button').each(function() { $(this).addClass('btn-sm'); })
+                $('.overlay').hide();
             });
         };
         if (!($.fn.dataTable)) {
-            $.getMultiScripts([page.plugins.datatable.js], page.siteRoot()).done(function() { showTable(); });
+            $.getMultiScripts([page.plugins.datatable.js], page.siteRoot())
+                .done(function() { showTable(); });
         } else { showTable(); }
     },
     index: function (table, options) {
@@ -245,42 +252,34 @@ var page = {
         var id = $('#id').val();
         page.initForm(table, formId, table + '/rechargeStore/' + id, 'PUT');
     },
-    initForm: function (table, formId, url, requestType) {
-        this.unbindEvents();
-        var $form = $('#' + formId);
-        var $cip = $('#cip');
-        // Cancel button
-        $('#cancel, #record-list').on('click', function() {
-            page.backToList(table);
-        });
-        var initPlugins = function() {
-            $cip.after($("<link/>", {
-                rel: "stylesheet", type: "text/css",
-                href: page.siteRoot() + page.plugins.select2.css
-            })).after($("<link/>", {
-                rel: "stylesheet", type: "text/css",
-                href: page.siteRoot() + page.plugins.icheck.css
-            }));
+    loadCss: function(css) {
+        $cip.after($("<link/>", {
+            rel: "stylesheet", type: "text/css",
+            href: page.siteRoot() + css
+        }));
+    },
+    initSelect2: function() {
+        if (!($.fn.select2)) {
+            page.loadCss(page.plugins.select2.css);
+            $.getMultiScripts([page.plugins.select2.js], page.siteRoot())
+                .done(function() { $('select').select2(); });
+        } else {
             $('select').select2();
-            page.initICheck();
-            page.initParsley($form, requestType, url);
-            return false;
-        };
-
-        if (!($.fn.select2) || !($.fn.iCheck)) {
-            var scripts = [
-                page.plugins.select2.js,
-                page.plugins.icheck.js
-            ];
-            $.getMultiScripts(scripts, page.siteRoot()).done(function() { initPlugins(); });
-        } else { initPlugins(); }
+        }
     },
     initICheck: function (object) {
-        if (typeof object === 'undefined') {
-            $(page.plugins.icheck.selector).iCheck(page.plugins.icheck.params);
-        } else {
-            object.find(page.plugins.icheck.selector).iCheck(page.plugins.icheck.params);
-        }
+        var init = function(object) {
+            if (typeof object === 'undefined') {
+                $(page.plugins.icheck.selector).iCheck(page.plugins.icheck.params);
+            } else {
+                object.find(page.plugins.icheck.selector).iCheck(page.plugins.icheck.params);
+            }
+        };
+        if (!($.fn.iCheck)) {
+            page.loadCss(page.plugins.icheck.css);
+            $.getMultiScripts([page.plugins.icheck.js], page.siteRoot())
+                .done(function() { init(object); });
+        } else { init(object); }
     },
     initParsley: function ($form, requestType, url) {
         $form.parsley().on('form:validated', function () {
@@ -291,6 +290,17 @@ var page = {
             return false;
         });
     },
+    initBackBtn: function(table) {
+        $('#cancel, #record-list').on('click', function() { page.backToList(table); })
+    },
+    initForm: function (table, formId, url, requestType) {
+        this.unbindEvents();
+        var $form = $('#' + formId);
+        page.initBackBtn(table);
+        page.initSelect2();
+        page.initICheck();
+        page.initParsley($form, requestType, url);
+    },
     unbindEvents: function () {
         $('#add-record').unbind('click');
         $(document).off('click', '.fa-edit');
@@ -298,6 +308,7 @@ var page = {
         $(document).off('click', '.fa-trash');
         $(document).off('click', '.fa-money');
         $('#confirm-delete').unbind('click');
+        $('#cancel, #record-list').unbind('click');
     },
     getUrlVars: function () {
         var vars = [], hash;

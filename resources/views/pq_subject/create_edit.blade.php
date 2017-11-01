@@ -1,4 +1,4 @@
-<div class="box box-widget">
+<div class="box">
     <div class="box-header with-border">
         @include('partials.form_header')
     </div>

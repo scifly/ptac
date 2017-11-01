@@ -1,4 +1,4 @@
-<div class="box box-widget">
+<div class="box">
     <div class="box-header with-border">
         @include('partials.form_header')
     </div>
@@ -46,7 +46,7 @@
                 {!! Form::hidden('menu_id', $corp['menu_id']) !!}
             @endif
             @include('partials.enabled', [
-                'label' => '是否启用',
+                'label' => '状态',
                 'id' => 'enabled',
                 'value' => isset($corp['enabled']) ? $corp['enabled'] : NULL
             ])

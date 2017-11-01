@@ -1,4 +1,4 @@
-<div class="box box-widget">
+<div class="box">
     <div class="box-header with-border">
         @include('partials.form_header')
     </div>
@@ -33,7 +33,7 @@
                 </div>
             </div>
             @include('partials.enabled', [
-                'label' => '是否启用',
+                'label' => '状态',
                 'id' => 'enabled',
                 'value' => isset($schoolType['enabled']) ? $schoolType['enabled'] : NULL
             ])

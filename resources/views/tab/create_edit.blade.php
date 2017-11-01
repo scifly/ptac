@@ -1,4 +1,4 @@
-<div class="box box-widget">
+<div class="box">
     <div class="box-header with-border">
         @include('partials.form_header')
     </div>
@@ -73,7 +73,7 @@
                 'selectedItems' => isset($selectedMenus) ? $selectedMenus : NULL
             ])
             @include('partials.enabled', [
-                'label' => '是否启用',
+                'label' => '状态',
                 'id' => 'enabled',
                 'value' => isset($tab['enabled']) ? $tab['enabled'] : NULL
             ])

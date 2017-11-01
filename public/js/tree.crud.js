@@ -19,20 +19,11 @@ var tree = {
     urlMove: function (table) { return page.siteRoot() + table + '/move/'; },
     urlDelete: function (table) { return page.siteRoot() + table + '/delete/'; },
     urlRankTabs: function (table) { return page.siteRoot() + table + '/ranktabs/'; },
-    unbindEvents: function() {
-        $('#confirm-delete').off('click');
-        $(document).off('click', '#save-rank');
-        $('#record-list').off('click');
-    },
     index: function (table) {
-        this.unbindEvents();
+        page.unbindEvents();
+        $(document).off('click', '#save-rank');
         var $tree = $('#tree');
         var buildTree = function() {
-            var $cip = $('#cip');
-            $cip.after($("<link/>", {
-                rel: "stylesheet", type: "text/css",
-                href: page.siteRoot() + page.plugins.jstree.css
-            }));
             $tree.jstree({
                 core: {
                     themes: {
@@ -73,10 +64,7 @@ var tree = {
                 return tree.move(table, e, data);
             });
         };
-        if (!($.fn.jstree)) {
-            $.getMultiScripts([page.plugins.jstree.js], page.siteRoot())
-                .done(function() { buildTree(); })
-        } else { buildTree(); }
+        this.initJsTree(buildTree);
         $('#confirm-delete').on('click', function () {
             $.ajax({
                 type: 'DELETE',
@@ -94,7 +82,8 @@ var tree = {
         });
     },
     rank: function (table) {
-        this.unbindEvents();
+        page.unbindEvents();
+        $(document).off('click', '#save-rank');
         var $tabList = $('.todo-list');
         $tabList.sortable({
             placeholder: 'sort-highlight',
@@ -167,6 +156,13 @@ var tree = {
                 }
             }
         });
+    },
+    initJsTree: function(callback) {
+        if (!($.fn.jstree)) {
+            page.loadCss(page.plugins.jstree.css);
+            $.getMultiScripts([page.plugins.jstree.js], page.siteRoot())
+                .done(function () { callback(); })
+        } else { callback(); }
     },
     checkCallback: function (o, n, p, i, m, t, table) {
         // o - operation, n - node, p - node_parent, i - node_position, m - more, t - this
