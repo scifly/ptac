@@ -1,1 +1,1 @@
-$(crud.index('icon_types'));
+page.index('icon_types');

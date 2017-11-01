@@ -1,1 +1,1 @@
-$(crud.create('formDepartmentType', 'department_types'));
+page.create('formDepartmentType', 'department_types');

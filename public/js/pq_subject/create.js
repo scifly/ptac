@@ -1,4 +1,1 @@
-/**
- * Created by Administrator on 2017-07-21 0021.
- */
-$(crud.create('formPqSubject', 'pq_subjects'));
+page.create('formPqSubject', 'pq_subjects');

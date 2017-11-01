@@ -5,18 +5,18 @@
  * This file is for demo purposes only.
  */
 $(function () {
-    'use strict'
+    'use strict';
 
     /**
      * Get access to plugins
      */
 
-    $('[data-toggle="control-sidebar"]').controlSidebar()
-    $('[data-toggle="push-menu"]').pushMenu()
+    $('[data-toggle="control-sidebar"]').controlSidebar();
+    $('[data-toggle="push-menu"]').pushMenu();
 
-    var $pushMenu = $('[data-toggle="push-menu"]').data('lte.pushmenu')
-    var $controlSidebar = $('[data-toggle="control-sidebar"]').data('lte.controlsidebar')
-    var $layout = $('body').data('lte.layout')
+    var $pushMenu = $('[data-toggle="push-menu"]').data('lte.pushmenu');
+    var $controlSidebar = $('[data-toggle="control-sidebar"]').data('lte.controlsidebar');
+    var $layout = $('body').data('lte.layout');
 
     /**
      * List of all the available skins
@@ -36,7 +36,7 @@ $(function () {
         'skin-yellow-light',
         'skin-purple-light',
         'skin-green-light'
-    ]
+    ];
 
     /**
      * Get a prestored setting
@@ -55,9 +55,9 @@ $(function () {
     /**
      * Store a new settings in the browser
      *
-     * @param String name Name of the setting
-     * @param String val Value of the setting
-     * @returns void
+     * @param val
+     * @param name
+     * @param val
      */
     function store(name, val) {
         if (typeof (Storage) !== 'undefined') {
@@ -91,10 +91,10 @@ $(function () {
     function changeSkin(cls) {
         $.each(mySkins, function (i) {
             $('body').removeClass(mySkins[i])
-        })
+        });
 
-        $('body').addClass(cls)
-        store('skin', cls)
+        $('body').addClass(cls);
+        store('skin', cls);
         return false
     }
 
@@ -165,13 +165,13 @@ $(function () {
     var $tabPane = $('<div />', {
         'id': 'control-sidebar-theme-demo-options-tab',
         'class': 'tab-pane active'
-    })
+    });
 
     // Create the tab button
     var $tabButton = $('<li />', {'class': 'active'})
         .html('<a href=\'#control-sidebar-theme-demo-options-tab\' data-toggle=\'tab\'>'
             + '<i class="fa fa-wrench"></i>'
-            + '</a>')
+            + '</a>');
 
     // Add the tab button to the right sidebar tabs
     $('[href="#control-sidebar-home-tab"]')
@@ -337,13 +337,13 @@ $(function () {
                 + '<p class="text-center no-margin" style="font-size: 12px">Yellow Light</p>')
     $skinsList.append($skinYellowLight)
 
-    $demoSettings.append('<h4 class="control-sidebar-heading">皮肤</h4>')
-    $demoSettings.append($skinsList)
+    $demoSettings.append('<h4 class="control-sidebar-heading">皮肤</h4>');
+    $demoSettings.append($skinsList);
 
-    $tabPane.append($demoSettings)
-    $('#control-sidebar-home-tab').after($tabPane)
+    $tabPane.append($demoSettings);
+    $('#control-sidebar-home-tab').after($tabPane);
 
-    setup()
+    setup();
 
     $('[data-toggle="tooltip"]').tooltip()
-})
+});

@@ -1,1 +1,1 @@
-$(crud.index('combo_types'));
+page.index('combo_types');

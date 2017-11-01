@@ -1,1 +1,1 @@
-$(crud.index('department_types'));
+page.index('department_types');

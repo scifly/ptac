@@ -1,1 +1,1 @@
-$(crud.index('attendance_machines'));
+page.index('attendance_machines');

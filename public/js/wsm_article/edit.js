@@ -1,4 +1,4 @@
-$(crud.edit('formWsmArticle', 'wsm_articles'));
+page.edit('formWsmArticle', 'wsm_articles');
 $(function () {
     // var editor = UE.getEditor('container').render('container');//初始化富文本编辑器
     UE.delEditor('container');

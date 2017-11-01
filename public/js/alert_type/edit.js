@@ -1,1 +1,1 @@
-$(crud.edit('formAlertType', 'alert_types'));
+page.edit('formAlertType', 'alert_types');

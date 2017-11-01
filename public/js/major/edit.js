@@ -1,1 +1,1 @@
-c$(crud.edit('formMajor', 'majors'));
+page.edit('formMajor', 'majors');

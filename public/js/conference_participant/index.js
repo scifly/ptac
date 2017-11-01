@@ -1,1 +1,1 @@
-$(crud.index('conference_participants'));
+page.index('conference_participants');

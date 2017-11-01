@@ -1,1 +1,1 @@
-$(crud.index('alert_types'));
+page.index('alert_types');

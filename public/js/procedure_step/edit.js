@@ -1,4 +1,4 @@
-$(crud.edit('formProcedureStep', 'procedure_steps'));
+page.edit('formProcedureStep', 'procedure_steps');
 
 /**
  *初始化多选框内容

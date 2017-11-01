@@ -1,4 +1,5 @@
-$(crud.edit('formCustodian','custodians'));
+page.edit('formCustodian','custodians');
+
 $(".expiry-date").datetimepicker({
     dateFormat: 'yy-mm-dd'
 });
@@ -7,7 +8,6 @@ var $tbody = $("#mobileTable").find("tbody");
 var n = 0;
 
 var id = $('#id').val();
-var $formEducator = $('#formCustodian');
 var $mobileSize = $('#mobile-size').val();
 $(document).off('click','.btn-mobile-add');
 
@@ -40,7 +40,6 @@ $(document).on('click', '.btn-mobile-add', function (e) {
     // $mobile.attr('required', 'true');
     // $formEducator.parsley();
 }).on('click', '.btn-mobile-remove', function (e) {
-
     $(this).parents('tr:first').remove();
     e.preventDefault();
     var $defaults = $('input[name="mobile[isdefault]"]');
@@ -56,33 +55,6 @@ $(document).on('click', '.btn-mobile-add', function (e) {
     }
     return false;
 });
-
-// $(function () {
-//     $(document).off('click','.btn-add2');
-//     $(document).on('click', '.btn-add2', function (e) {
-// //            样式
-//         e.preventDefault();
-//         var controlForm = $('.addInput');
-//         var html = '<div class="entry input-group col-sm-6 col-sm-offset-3">' +
-//             '<input type="text" class="form-control" name="relationship[]">' +
-//             '<span class="input-group-btn">' +
-//             '<button class="btn btn-add2 btn-success" type="button">' +
-//             '<span class="glyphicon glyphicon-plus"></span>' +
-//             '</button>' +
-//             '</span>' +
-//             '</div>';
-//         controlForm.append(html);
-//         controlForm.find('.entry:not(:last) .btn-add2')
-//             .removeClass('btn-add2').addClass('btn-remove')
-//             .removeClass('btn-success').addClass('btn-danger')
-//             .html('<span class="glyphicon glyphicon-minus"></span>');
-//     }).on('click', '.btn-remove', function (e) {
-//         $(this).parents('.entry:first').remove();
-//         e.preventDefault();
-//         return false;
-//     });
-// });
-
 // 学生、关系
 var $tbody2 = $("#classTable").find("tbody");
 $(document).off('click','.btn-class-add');
@@ -104,7 +76,9 @@ $(document).on('click', '.btn-class-add', function (e) {
     e.preventDefault();
     return false;
 });
-
 //部门
 // 初始化部门树 相关事件
-dept.init('custodians/edit/' + id);
+if (typeof dept === 'undefined') {
+    $.getMultiScripts(['js/department.tree.js'], page.siteRoot())
+        .done(function() { dept.init('custodians/edit/' + id); })
+} else { dept.init('custodians/edit/' + id); }

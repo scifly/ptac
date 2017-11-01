@@ -1,1 +1,1 @@
-$(tree.create('formDepartment', 'departments'));
+page.create('formDepartment', 'departments');

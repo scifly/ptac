@@ -1,4 +1,4 @@
-$(crud.create('formOperator', 'operators'));
+page.create('formOperator', 'operators');
 $(crud.mobile('formOperator', 0, 'POST', 'operators/store'));
 var n = 0;
 var id = $('#id').val();

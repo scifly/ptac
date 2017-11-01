@@ -1,1 +1,1 @@
-$(crud.index('pq_subjects'));
+page.index('pq_subjects');

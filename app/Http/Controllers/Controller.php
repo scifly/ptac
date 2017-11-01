@@ -90,8 +90,10 @@ class Controller extends BaseController {
                 'breadcrumb' => $params['breadcrumb'],
             ]);
         }
-        
-        return Response()->redirectTo('pages/' . session('menuId'));
+        if (session('menuId')) {
+            return Response()->redirectTo('pages/' . session('menuId'));
+        }
+        return Response()->redirectToRoute('login');
         
     }
     

@@ -1,1 +1,1 @@
-$(crud.index('wsm_articles'));
+page.index('wsm_articles');

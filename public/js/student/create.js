@@ -1,4 +1,4 @@
-$(crud.create('formStudent','students'));
+page.create('formStudent','students');
 
 var n = 0;
 // 手机号码列表容器

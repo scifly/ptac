@@ -1,1 +1,1 @@
-$(crud.index('school_types'));
+page.index('school_types');

@@ -1,20 +1,15 @@
-// Select2
-// $('select').select2();
 var data;
 var $menuTree = $('#menu_tree');
-// Switchery
-Switcher.init();
 // iCheck
-crud.initICheck();
+page.initICheck();
 // Cancel button
 $('#cancel, #record-list').on('click', function () {
     var $activeTabPane = $('#tab_' + page.getActiveTabId());
     page.getTabContent($activeTabPane, 'groups/index');
-    crud.unbindEvents();
+    page.unbindEvents();
 });
 // Parsley
 var $form = $('#formGroup');
-// crud.formParsley($form, requestType, ajaxUrl);
 $form.parsley().on('form:validated', function () {
     if ($('.parsley-error').length === 0) {
         var url =  page.siteRoot() + 'groups/store';

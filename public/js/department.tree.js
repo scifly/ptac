@@ -1,22 +1,28 @@
 var dept = {
     to: 0,
     $tree: function () {
-        return $('#department-tree');//树形图 jstree 左边
+        // 树形图 jstree 左边
+        return $('#department-tree');
     },
     $form: function () {
-        return $('.form-horizontal');//教职员工 编辑表单
+        // 教职员工 编辑表单
+        return $('.form-horizontal');
     },
     $footer: function () {
-        return $('.box-footer');//教职员工 编辑表单 保存取消按钮
+        //教职员工 编辑表单 保存取消按钮
+        return $('.box-footer');
     },
     $treeBox: function () {
-        return $('.tree-box');//整个 部门选择的页面
+        //整个 部门选择的页面
+        return $('.tree-box');
     },
     $todoList: function () {
-        return $('.todo-list');//部门选择-选择好的右边节点列表
+        //部门选择-选择好的右边节点列表
+        return $('.todo-list');
     },
     $checkedTreeNodes: function () {
-        return $('#department-nodes-checked');//教职员工 编辑表单 选择好的部门列表
+        //教职员工 编辑表单 选择好的部门列表
+        return $('#department-nodes-checked');
     },
     unbindEvents: function() {
         $(document).off('click', '.remove-node');
@@ -187,21 +193,45 @@ var dept = {
     init: function (uri) {
         // 取消所有事件绑定
         dept.unbindEvents();
+        // 部门树页面 的取消按钮
+        dept.cancel();
+        // 点击 教职员工编辑表单中的 删除部门
+        dept.purge();
         // 点击表单中的部门修改按钮
         dept.$tree().empty();
         dept.$todoList().empty();
-        // 初始化“修改按钮”
-        console.log(uri);
-        dept.modify(uri);
-        // 初始化节点搜索功能
-        dept.search();
-        // 右侧选中节点中的 删除图标 点击后移除本身并且将左侧取消选中
-        dept.remove();
-        // 初始化保存选中节点的功能
-        dept.save();
-        // 点击 教职员工编辑表单中的 删除部门
-        dept.purge();
-        //部门树页面 的取消按钮
-        dept.cancel();
+        var init = function() {
+            // 初始化“修改按钮”
+            dept.modify(uri);
+            // 初始化节点搜索功能
+            dept.search();
+            // 右侧选中节点中的 删除图标 点击后移除本身并且将左侧取消选中
+            dept.remove();
+            // 初始化保存选中节点的功能
+            dept.save();
+        };
+        if (!($.fn.jstree) || !($.fn.select2) || !($.fn.iCheck)) {
+            var scripts = [
+                page.jstree.js,
+                page.select2.js,
+                page.icheck.js,
+                page.todolist.js
+            ];
+            $.getMultiScripts(scripts, page.siteRoot())
+                .done(function() {
+                    var $cip = $('#cip');
+                    $cip.after($("<link/>", {
+                        rel: "stylesheet", type: "text/css",
+                        href: page.siteRoot() + page.jstree.css
+                    })).after($("<link/>", {
+                        rel: "stylesheet", type: "text/css",
+                        href: page.siteRoot() + page.select2.css
+                    })).after($("<link/>", {
+                        rel: "stylesheet", type: "text/css",
+                        href: page.siteRoot() + page.icheck.css
+                    }));
+                    init(uri);
+                });
+        } else { init(uri); }
     }
 };

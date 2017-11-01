@@ -1,1 +1,1 @@
-$(crud.create('formAction'));
+page.create('formAction', 'actions');
