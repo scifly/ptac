@@ -161,10 +161,15 @@ var page = {
         });
     },
     initDatatable: function (table, options) {
-        if (typeof options === 'undefined') {
-            options = [];
-        }
         var showTable = function() {
+            var $datatable = $('#data-table');
+            var columns = $datatable.find('thead tr th').length;
+            var statusCol = {className: 'text-right', targets: [columns - 1]};
+            if (typeof options === 'undefined') {
+                options = [statusCol];
+            } else {
+                options.push(statusCol);
+            }
             var $cip = $('#cip');
             var params = {
                 processing: true,
@@ -176,21 +181,25 @@ var page = {
                 columnDefs: options,
                 scrollX: true,
                 language: {url: '../files/ch.json'},
-                lengthMenu: [[15, 25, 50, -1], [15, 25, 50, '所有']],
-                dom: '<"row"<"col-md-6"l><"col-sm-4"f><"col-sm-2"B>>rt<"row"<"col-sm-6"i><"col-sm-6"p>>',
-                buttons: ['pdf', 'csv']
+                lengthMenu: [[15, 25, 50, -1], [15, 25, 50, '所有']]
+                // dom: '<"row"<"col-md-6"l><"col-sm-4"f><"col-sm-2"B>>rt<"row"<"col-sm-6"i><"col-sm-6"p>>',
+                // buttons: ['pdf', 'csv']
             };
             $cip.after($("<link/>", {
                 rel: "stylesheet", type: "text/css",
                 href: page.siteRoot() + page.plugins.datatable.css
             }));
             $('.overlay').show();
-            $('#data-table').dataTable(params).on('init.dt', function () {
-                $('.dt-buttons').addClass('pull-right');
-                $('.buttons-pdf').addClass('btn-sm');
-                $('.buttons-csv').addClass('btn-sm');
+            var dt = $datatable.DataTable(params).on('init.dt', function () {
+                // $('.dt-buttons').addClass('pull-right');
+                // $('.buttons-pdf').addClass('btn-sm');
+                // $('.buttons-csv').addClass('btn-sm');
                 // $('.paginate_button').each(function() { $(this).addClass('btn-sm'); })
+                $('input[type="search"]').attr('placeholder', '多关键词请用空格分隔');
                 $('.overlay').hide();
+            });
+            $('input[type="search"]').on('keyup', function() {
+                dt.search(this.value, true).draw();
             });
         };
         if (!($.fn.dataTable)) {
@@ -284,7 +293,7 @@ var page = {
     initParsley: function ($form, requestType, url) {
         $form.parsley().on('form:validated', function () {
             if ($('.parsley-error').length === 0) {
-                this.ajaxRequest(requestType, page.siteRoot() + url, $form.serialize(), $form[0]);
+                page.ajaxRequest(requestType, page.siteRoot() + url, $form.serialize(), $form[0]);
             }
         }).on('form:submit', function () {
             return false;

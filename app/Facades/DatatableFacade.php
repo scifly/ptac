@@ -214,17 +214,20 @@ HTML;
         $requestColumns = Request::get('columns');
         if (isset($requestSearch) && $requestSearch['value'] != '') {
             $str = $requestSearch['value'];
-            for ($i = 0, $ien = count($requestColumns); $i < $ien; $i++) {
-                $requestColumn = $requestColumns[$i];
-                $columnIdx = array_search($requestColumn['data'], $dtColumns);
-                $column = $columns[$columnIdx];
-                if ($requestColumn['searchable'] == 'true') {
-                    # $binding = self::bind($bindings, '%' . $str . '%', PDO::PARAM_STR);
-                    $pos = stripos($column['db'], ' as ');
-                    if ($pos) {
-                        $column['db'] = substr($column['db'], 0, $pos);
+            $keys = explode(' ', $str);
+            for ($j = 0; $j < count($keys); $j++) {
+                for ($i = 0, $ien = count($requestColumns); $i < $ien; $i++) {
+                    $requestColumn = $requestColumns[$i];
+                    $columnIdx = array_search($requestColumn['data'], $dtColumns);
+                    $column = $columns[$columnIdx];
+                    if ($requestColumn['searchable'] == 'true') {
+                        # $binding = self::bind($bindings, '%' . $str . '%', PDO::PARAM_STR);
+                        $pos = stripos($column['db'], ' as ');
+                        if ($pos) {
+                            $column['db'] = substr($column['db'], 0, $pos);
+                        }
+                        $globalSearch[$j][] = $column['db'] . " LIKE BINARY '%" . $keys[$j] . "%'";
                     }
-                    $globalSearch[] = $column['db'] . " LIKE BINARY '%" . $str . "%'";
                 }
             }
         }
@@ -241,8 +244,12 @@ HTML;
         }
         // Combine the filters into a single string
         $where = '';
+        $filters = [];
         if (count($globalSearch)) {
-            $where = '(' . implode(' OR ', $globalSearch) . ')';
+            for ($i = 0; $i < count($globalSearch); $i++) {
+                $filters[$i] = '(' . implode(' OR ', $globalSearch[$i]) . ')';
+            }
+            $where = '(' . implode(' AND ', $filters) . ')';
         }
         if (count($columnSearch)) {
             $where = $where === '' ?
@@ -353,10 +360,7 @@ HTML;
         $resTotalLength = DB::select("SELECT COUNT(*) AS cnt FROM " . $table . $whereAllSql);
         $recordsTotal = $resTotalLength[0]->cnt;
         
-        /*
-         * Output
-         */
-        
+        /* Output */
         return [
             "draw"            => intval(Request::get('draw')),
             "recordsTotal"    => intval($recordsTotal),
