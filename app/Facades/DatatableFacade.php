@@ -387,7 +387,6 @@ HTML;
             $out[] = $row;
         }
         return $out;
-        
     }
     
 }
