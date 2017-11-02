@@ -1,12 +1,9 @@
-$(crud.create('formEducator', 'educators'));
+page.create('formEducator', 'educators');
+
 $(crud.mobile('formEducator', 0, 'POST', 'educators/store'));
-var $tbody = $("#mobileTable").find("tbody");
 var n = 0;
 var id = $('#id').val();
-var $formEducator = $('#formEducator');
-
 // 手机号
-
 // 班级、科目
 var $tbody2 = $("#classTable").find("tbody");
 $(document).on('click', '.btn-class-add', function (e) {

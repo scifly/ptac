@@ -1,1 +1,1 @@
-$(crud.index('pq_choices'));
+page.index('pq_choices');

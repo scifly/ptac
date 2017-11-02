@@ -1,1 +1,1 @@
-$(crud.index('score_totals'));
+page.index('score_totals');

@@ -1,1 +1,1 @@
-$(crud.index('wap_site_modules'));
+page.index('wap_site_modules');

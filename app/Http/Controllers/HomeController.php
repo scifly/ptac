@@ -2,16 +2,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Action;
-use App\Models\Corp;
 use App\Models\Department;
 use App\Models\DepartmentType;
-use App\Models\Group;
-use App\Models\GroupMenu;
-use App\Models\GroupTab;
 use App\Models\Menu;
 use App\Models\MenuTab;
 use App\Models\MenuType;
-use App\Models\School;
 use App\Models\Tab;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
@@ -140,7 +135,6 @@ class HomeController extends Controller {
                 'url'    => $tab->action->route,
             ];
         }
-        
 
         return view('home.page', [
             'menu'   => $menu,

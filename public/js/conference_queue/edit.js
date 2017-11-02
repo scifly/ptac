@@ -1,1 +1,1 @@
-$(crud.edit('formConferenceQueue', 'conference_queues'));
+page.edit('formConferenceQueue', 'conference_queues');

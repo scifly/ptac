@@ -1,25 +1,27 @@
-$('#signin').on('click', function (e) {
-    e.preventDefault();
-    $.ajax({
-        type: 'POST',
-        dataType: 'json',
-        url: 'login',
-        data: {
-            input: $('#input').val(),
-            password: $('#password').val(),
-            rememberMe: $('#remember').val(),
-            _token: $('input[name="_token"]').val()
-        },
-        success: function (result) {
-            if (result.statusCode === 200) {
-                window.location = result['url'];
-            } else {
-                $.gritter.add({
-                    title: '登录',
-                    text: '用户名/密码错误',
-                    image: 'img/error.png'
-                });
+$(function() {
+    $('#signin').on('click', function (e) {
+        e.preventDefault();
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            url: 'login',
+            data: {
+                input: $('#input').val(),
+                password: $('#password').val(),
+                rememberMe: $('#remember').val(),
+                _token: $('input[name="_token"]').val()
+            },
+            success: function (result) {
+                if (result.statusCode === 200) {
+                    window.location = result['url'];
+                } else {
+                    $.gritter.add({
+                        title: '登录',
+                        text: '用户名/密码错误',
+                        image: 'img/error.png'
+                    });
+                }
             }
-        }
-    })
+        })
+    });
 });

@@ -1,6 +1,4 @@
-$(crud.edit('formStudent','students'));
-
-
+page.edit('formStudent','students');
 var $tbody = $("#mobileTable").find("tbody");
 var n = 0;
 var id = $('#id').val();

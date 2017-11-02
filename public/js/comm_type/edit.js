@@ -1,1 +1,1 @@
-$(crud.edit('formCommType', 'comm_types'));
+page.edit('formCommType', 'comm_types');

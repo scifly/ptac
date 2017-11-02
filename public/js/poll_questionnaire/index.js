@@ -1,1 +1,1 @@
-$(crud.index('poll_questionnaires'));
+page.index('poll_questionnaires');

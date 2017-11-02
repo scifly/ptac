@@ -1,6 +1,8 @@
 <?php
 namespace App\Facades;
 
+use Carbon\Carbon;
+use DateTime;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Facade;
@@ -271,11 +273,11 @@ HTML;
             $_data = (array)$data[$i];
             $j = 0;
             foreach ($_data as $name => $value) {
-                /*if (in_array($name, ['created_at', 'updated_at'])) {
+                if (isset($value) && self::validateDate($value)) {
+                    Carbon::setLocale('zh');
                     $dt = Carbon::createFromFormat('Y-m-d H:i:s', $value);
-                    
                     $value = $dt->diffForhumans();
-                }*/
+                }
                 $column = $columns[$j];
                 if (isset($column['formatter'])) {
                     $row[$column['dt']] = $column['formatter']($value, $_data);
@@ -404,6 +406,13 @@ HTML;
         $delLink = sprintf(self::DT_LINK_DEL, $id);
         return $status . self::DT_SPACE . $showLink . self::DT_SPACE .
             $editLink . ($del ? self::DT_SPACE . $delLink : '');
+        
+    }
+    
+    private static function validateDate($date, $format = 'Y-m-d H:i:s') {
+        
+        $d = DateTime::createFromFormat($format, $date);
+        return $d && $d->format($format) == $date;
         
     }
     

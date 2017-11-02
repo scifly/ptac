@@ -1,5 +1,5 @@
 // 初始化编辑相关事件
-$(crud.edit('formOperator', 'operators'));
+page.edit('formOperator', 'operators');
 
 var size = $('#mobile-size').val();
 var id = $('#id').val();

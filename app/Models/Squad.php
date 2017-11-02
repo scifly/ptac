@@ -148,17 +148,20 @@ class Squad extends Model {
             ['db' => 'Squad.name', 'dt' => 1],
             ['db' => 'Grade.name as gradename', 'dt' => 2],
             ['db' => 'School.name as schoolname', 'dt' => 3],
-            ['db' => 'Squad.educator_ids', 'dt' => 4,
-             'formatter' => function ($d) {
-                 $educatorId = explode(',',$d);
-                 foreach ($educatorId as $id)
-                 {
-                     $educator[] = Educator::whereId($id)->first()->user->realname;
-                 }
-                 $userName = implode('&nbsp;,&nbsp;',$educator);
-                 return $userName;
-             },
-        ],
+            [
+                'db' => 'Squad.educator_ids', 'dt' => 4,
+                'formatter' => function ($d) {
+                    $educatorIds = explode(',', $d);
+                    $educators = [];
+                    foreach ($educatorIds as $id) {
+                        $educator = Educator::whereId($id)->first();
+                        if ($educator->user) {
+                            $educators[] = $educator->user->realname;
+                        }
+                    }
+                    return implode(', ',$educators);
+                },
+            ],
             ['db' => 'Squad.created_at', 'dt' => 5],
             ['db' => 'Squad.updated_at', 'dt' => 6],
             [

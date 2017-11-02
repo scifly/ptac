@@ -1,1 +1,1 @@
-$(crud.create('formTab', 'tabs'));
+page.create('formTab', 'tabs');

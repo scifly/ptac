@@ -1,7 +1,4 @@
-/**
- * Created by Administrator on 2017-07-21 0021.
- */
-$(crud.create('formWapSiteModule', 'wap_site_modules'));
+page.create('formWapSiteModule', 'wap_site_modules');
 $(function () {
     var $pre = $('.preview');
     var $uploadFile = $('#uploadFile');
