@@ -3,6 +3,7 @@
 use Illuminate\Database\Seeder;
 
 class IconSeeder extends Seeder {
+
     /**
      * Run the database seeds.
      *
@@ -30,7 +31,7 @@ class IconSeeder extends Seeder {
             ['id' => 18, 'name' => 'fa fa-heart', 'icon_type_id' => 1, 'enabled' => 1],
             ['id' => 19, 'name' => 'fa fa-exclamation-circle', 'icon_type_id' => 1, 'enabled' => 1],
             ['id' => 20, 'name' => 'fa fa-book', 'icon_type_id' => 1, 'enabled' => 1],
-            ['id' => 21, 'name' => 'fa fa-picture-o', 'icon_type_id' => 1, 'enabled' => 1],
+            ['id' => 21, 'name' => 'fa fa-Picture-o', 'icon_type_id' => 1, 'enabled' => 1],
             ['id' => 22, 'name' => 'fa fa-plus', 'icon_type_id' => 1, 'enabled' => 1],
             ['id' => 23, 'name' => 'fa fa-minus', 'icon_type_id' => 1, 'enabled' => 1],
             ['id' => 24, 'name' => 'fa fa-print', 'icon_type_id' => 1, 'enabled' => 1],
@@ -39,7 +40,7 @@ class IconSeeder extends Seeder {
             ['id' => 27, 'name' => 'fa fa-bell-slash', 'icon_type_id' => 1, 'enabled' => 1],
             ['id' => 28, 'name' => 'fa fa-bell', 'icon_type_id' => 1, 'enabled' => 1],
             ['id' => 29, 'name' => 'fa fa-download', 'icon_type_id' => 1, 'enabled' => 1],
-            ['id' => 30, 'name' => 'fa fa-upload', 'icon_type_id' => 1, 'enabled' => 1]
+            ['id' => 30, 'name' => 'fa fa-upload', 'icon_type_id' => 1, 'enabled' => 1],
         ]);
     }
 }

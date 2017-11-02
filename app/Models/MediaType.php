@@ -1,12 +1,12 @@
 <?php
-
 namespace App\Models;
 
+use App\Helpers\ModelTrait;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * App\Models\MediaType
+ * App\Models\MediaType 媒体类型
  *
  * @property int $id
  * @property string $name 媒体类型名称
@@ -21,15 +21,72 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|MediaType whereRemark($value)
  * @method static Builder|MediaType whereUpdatedAt($value)
  * @mixin \Eloquent
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Media[] $media
+ * @property-read Media[] $medias
  */
 class MediaType extends Model {
-    //
+    
+    use ModelTrait;
+    
     protected $table = 'media_types';
     
-    protected $fillable = ['name', 'remark', 'created_at', 'updated_at', 'enabled'];
+    protected $fillable = ['name', 'remark', 'enabled'];
     
-    public function media() {
+    /**
+     * 获取指定媒体类型所包含的所有媒体对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function medias() {
+        
         return $this->hasMany('App\Models\Media');
+        
     }
+    
+    /**
+     * 保存媒体类型
+     *
+     * @param array $data
+     * @return bool
+     */
+    public function store(array $data) {
+        
+        $mediaType = $this->create($data);
+        
+        return $mediaType ? true : false;
+        
+    }
+    
+    /**
+     * 更新媒体类型
+     *
+     * @param array $data
+     * @param $id
+     * @return bool
+     */
+    public function modify(array $data, $id) {
+        
+        $mediaType = $this->find($id);
+        if (!$mediaType) {
+            return false;
+        }
+        
+        return $mediaType->update($data) ? true : false;
+        
+    }
+    
+    /**
+     * 删除媒体类型
+     *
+     * @param $id
+     * @return bool|null
+     */
+    public function remove($id) {
+        
+        $mediaType = $this->find($id);
+        if (!$mediaType) { return false; }
+        return $mediaType->removable($mediaType)
+            ? $mediaType->delete() : false;
+        
+    }
+    
 }

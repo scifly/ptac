@@ -1,9 +1,14 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StudentRequest;
+use App\Models\Custodian;
+use App\Models\CustodianStudent;
+use App\Models\Department;
+use App\Models\DepartmentUser;
+use App\Models\Group;
 use App\Models\Student;
+use App\Models\User;
 use Illuminate\Support\Facades\Request;
 
 /**
@@ -14,9 +19,25 @@ use Illuminate\Support\Facades\Request;
  */
 class StudentController extends Controller {
     
-    protected $student;
+    protected $custodian, $department, $group, $user;
+    protected $departmentUser, $student, $custodianStudent;
     
-    function __construct(Student $student) { $this->student = $student; }
+    function __construct(
+        Custodian $custodian, Department $department,
+        Group $group, User $user,
+        DepartmentUser $departmentUser, Student $student,
+        CustodianStudent $custodianStudent
+    ) {
+        
+        $this->custodian = $custodian;
+        $this->department = $department;
+        $this->group = $group;
+        $this->user = $user;
+        $this->departmentUser = $departmentUser;
+        $this->student = $student;
+        $this->custodianStudent = $custodianStudent;
+        
+    }
     
     /**
      * 学生记录列表
@@ -28,6 +49,7 @@ class StudentController extends Controller {
         if (Request::get('draw')) {
             return response()->json($this->student->datatable());
         }
+        
         return $this->output(__METHOD__);
         
     }
@@ -38,6 +60,10 @@ class StudentController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function create() {
+        
+        if (Request::method() === 'POST') {
+            return $this->department->tree();
+        }
         
         return $this->output(__METHOD__);
         
@@ -51,13 +77,11 @@ class StudentController extends Controller {
      */
     public function store(StudentRequest $request) {
         
-        if ($this->student->existed($request)) {
-            return $this->fail('已经有此记录');
-        }
-        return $this->student->create($request->all()) ? $this->succeed() : $this->fail();
+        return $this->student->store($request)
+            ? $this->succeed() : $this->fail();
         
     }
-
+    
     /**
      * 学生记录详情
      *
@@ -79,10 +103,26 @@ class StudentController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function edit($id) {
-    
+        
+        if (Request::method() === 'POST') {
+            return $this->department->tree();
+        }
         $student = $this->student->find($id);
+        $student['student'] = $this->student->find($id);
+        $selectedDepartmentIds = [];
+        foreach ($student->user->departments as $department) {
+            $selectedDepartmentIds[] = $department->id;
+        }
+        $selectedDepartments = $this->department->selectedNodes($selectedDepartmentIds);
+        # 查询学生信息
         if (!$student) { return $this->notFound(); }
-        return $this->output(__METHOD__, ['student' => $student]);
+
+        return $this->output(__METHOD__, [
+            'mobiles'               => $student->user->mobiles,
+            'student'               => $student,
+            'selectedDepartmentIds' => implode(',', $selectedDepartmentIds),
+            'selectedDepartments'   => $selectedDepartments,
+        ]);
         
     }
     
@@ -95,12 +135,8 @@ class StudentController extends Controller {
      */
     public function update(StudentRequest $request, $id) {
         
-        $student = $this->student->find($id);
-        if (!$student) { return $this->notFound(); }
-        if ($this->student->existed($request, $id)) {
-            return $this->fail('已经有此记录');
-        }
-        return $student->update($request->all()) ? $this->succeed() : $this->fail();
+        return $this->student->modify($request, $id)
+            ? $this->succeed() : $this->fail();
         
     }
     
@@ -111,10 +147,9 @@ class StudentController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
-
-        $student = $this->student->find($id);
-        if (!$student) { return $this->notFound(); }
-        return $student->delete() ? $this->succeed() : $this->fail();
+        
+        return $this->custodian->remove($id)
+            ? $this->succeed() : $this->fail();
         
     }
     

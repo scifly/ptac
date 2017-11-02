@@ -1,13 +1,10 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\PersonalInfoRequest;
 use App\Models\User;
-use Illuminate\Http\File;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Request;
-use Illuminate\Support\Facades\Session;
 
 /**
  * 个人信息
@@ -17,15 +14,15 @@ use Illuminate\Support\Facades\Session;
  */
 class PersonalInfoController extends Controller {
     
+    public $imgPath = [];
     protected $user;
-    public $imgPath = array();
-
+    
     function __construct(User $user) {
         
         $this->user = $user;
         
     }
-
+    
     /**
      * 修改个人信息
      * @return \Illuminate\Http\Response
@@ -38,10 +35,11 @@ class PersonalInfoController extends Controller {
         $id = 1;
         $personalInfo = $this->user->find($id);
         $group = $personalInfo->group()->whereId($personalInfo->group_id)->first();
+        
         return $this->output(__METHOD__, ['personalInfo' => $personalInfo, 'group' => $group]);
-
+        
     }
-
+    
     /**
      * 更新个人信息
      *
@@ -58,10 +56,11 @@ class PersonalInfoController extends Controller {
         if (!$personInfo) {
             return $this->notFound();
         }
+        
         return $personInfo->update($input) ? $this->succeed() : $this->fail('更新个人信息失败');
         
     }
-
+    
     /**
      * 上传个人信息头像
      *
@@ -90,10 +89,30 @@ class PersonalInfoController extends Controller {
         if (!$file->move($path, $fileName)) {
             return $this->fail('头像保存失败');
         }
+        
         return $this->saveImg($id, $fileName);
         
     }
-
+    
+    /**
+     * 验证文件是否上传成功
+     *
+     * @param $file
+     * @return array
+     */
+    private function checkFile(UploadedFile $file) {
+        
+        if (!$file->isValid()) {
+            return ['status' => false, 'msg' => '文件上传失败'];
+        }
+        if ($file->getClientSize() > $file->getMaxFilesize()) {
+            return ['status' => false, 'msg' => '图片过大'];
+        }
+        
+        return ['status' => true];
+        
+    }
+    
     /**
      * 将图片路径存入数据库
      *
@@ -111,26 +130,9 @@ class PersonalInfoController extends Controller {
                 unlink($removeOldImg);
             }
         }
-            $personalImg->avatar_url = $imgName;
+        $personalImg->avatar_url = $imgName;
+        
         return $personalImg->save() ? $this->succeed($imgName) : $this->fail('头像保存失败');
-        
-    }
-
-    /**
-     * 验证文件是否上传成功
-     *
-     * @param $file
-     * @return array
-     */
-    private function checkFile(UploadedFile $file) {
-        
-        if (!$file->isValid()) {
-            return ['status' => false, 'msg' => '文件上传失败'];
-        }
-        if ($file->getClientSize() > $file->getMaxFilesize()) {
-            return ['status' => false, 'msg' => '图片过大'];
-        }
-        return ['status' => true];
         
     }
     

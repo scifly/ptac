@@ -1,9 +1,11 @@
 <?php
-
 namespace App\Models;
 
+use App\Events\ClassCreated;
+use App\Events\ClassDeleted;
+use App\Events\ClassUpdated;
 use App\Facades\DatatableFacade as Datatable;
-use App\Http\Requests\SquadRequest;
+use App\Helpers\ModelTrait;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -26,19 +28,31 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|Squad whereName($value)
  * @method static Builder|Squad whereUpdatedAt($value)
  * @mixin \Eloquent
- * @property-read \App\Models\Grade $grade
+ * @property-read Grade $grade
  * @property-read Collection|Student[] $students
  * @property-read Collection|EducatorClass[] $educatorClass
  * @property-read Collection|Educator[] $educators
+ * @property int $department_id 对应的部门ID
+ * @property-read Department $department
+ * @method static Builder|Squad whereDepartmentId($value)
  */
 class Squad extends Model {
+    
+    use ModelTrait;
     
     protected $table = 'classes';
     
     protected $fillable = [
-        'id', 'grade_id', 'name',
+        'id', 'grade_id', 'name', 'department_id',
         'educator_ids', 'enabled',
     ];
+    
+    /**
+     * 返回对应的部门对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function department() { return $this->belongsTo('App\Models\Department'); }
     
     /**
      * 返回指定班级所属的年级对象
@@ -59,9 +73,71 @@ class Squad extends Model {
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function educators() {
+    public function educators() { return $this->belongsToMany('App\Models\Educator', 'educators_classes'); }
+    
+    /**
+     * 保存班级
+     *
+     * @param array $data
+     * @param bool $fireEvent
+     * @return bool
+     */
+    public function store(array $data, $fireEvent = false) {
         
-        return $this->belongsToMany('App\Models\Educator', 'educators_classes');
+        $class = $this->create($data);
+        if ($class && $fireEvent) {
+            event(new ClassCreated($class));
+            
+            return true;
+        }
+        
+        return $class ? true : false;
+        
+    }
+    
+    /**
+     * 更新班级
+     *
+     * @param array $data
+     * @param $id
+     * @param bool $fireEvent
+     * @return bool
+     */
+    public function modify(array $data, $id, $fireEvent = false) {
+        
+        $class = $this->find($id);
+        $updated = $class->update($data);
+        if ($updated && $fireEvent) {
+            event(new ClassUpdated($class));
+            
+            return true;
+        }
+        
+        return $updated ? true : false;
+        
+    }
+    
+    /**
+     * 删除班级
+     *
+     * @param $id
+     * @param bool $fireEvent
+     * @return bool
+     */
+    public function remove($id, $fireEvent = false) {
+        
+        $class = $this->find($id);
+        if (!$class) {
+            return false;
+        }
+        $removed = $this->removable($class) ? $class->delete() : false;
+        if ($removed && $fireEvent) {
+            event(new ClassDeleted($class));
+            
+            return true;
+        }
+        
+        return $removed ? true : false;
         
     }
     
@@ -71,29 +147,50 @@ class Squad extends Model {
             ['db' => 'Squad.id', 'dt' => 0],
             ['db' => 'Squad.name', 'dt' => 1],
             ['db' => 'Grade.name as gradename', 'dt' => 2],
-            ['db' => 'Squad.educator_ids', 'dt' => 3],
-            ['db' => 'Squad.created_at', 'dt' => 4],
-            ['db' => 'Squad.updated_at', 'dt' => 5],
-            
+            ['db' => 'School.name as schoolname', 'dt' => 3],
             [
-                'db' => 'Squad.enabled', 'dt' => 6,
+                'db' => 'Squad.educator_ids', 'dt' => 4,
+                'formatter' => function ($d) {
+                    $educatorIds = explode(',', $d);
+                    $educators = [];
+                    foreach ($educatorIds as $id) {
+                        $educator = Educator::whereId($id)->first();
+                        if ($educator->user) {
+                            $educators[] = $educator->user->realname;
+                        }
+                    }
+                    return implode(', ',$educators);
+                },
+            ],
+            ['db' => 'Squad.created_at', 'dt' => 5],
+            ['db' => 'Squad.updated_at', 'dt' => 6],
+            [
+                'db'        => 'Squad.enabled', 'dt' => 7,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
-                }
-            ]
+                },
+            ],
         ];
         $joins = [
             [
-                'table' => 'grades',
-                'alias' => 'Grade',
-                'type' => 'INNER',
+                'table'      => 'grades',
+                'alias'      => 'Grade',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'Grade.id = Squad.grade_id'
-                ]
-            ]
+                    'Grade.id = Squad.grade_id',
+                ],
+            ],
+            [
+                'table'      => 'schools',
+                'alias'      => 'School',
+                'type'       => 'INNER',
+                'conditions' => [
+                    'School.id = Grade.school_id',
+                ],
+            ],
         ];
-        
         return Datatable::simple($this, $columns, $joins);
+        
     }
     
 }

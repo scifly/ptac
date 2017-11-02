@@ -1,13 +1,16 @@
 <?php
-
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
-use App\Models\User;
+use App\Helpers\ModelTrait;
+use App\Http\Requests\GroupRequest;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
-use App\Http\Requests\GroupRequest;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Mockery\Exception;
+use Symfony\Component\VarDumper\Cloner\Data;
 
 /**
  * App\Models\Group
@@ -24,41 +27,141 @@ use App\Http\Requests\GroupRequest;
  * @method static Builder|Group whereName($value)
  * @method static Builder|Group whereRemark($value)
  * @method static Builder|Group whereUpdatedAt($value)
+ * @method static Builder|Group whereSchoolId($value)
  * @mixin \Eloquent
  * @property-read Collection|User[] $users
+ * @property-read Collection|Menu[] $menus
+ * @property-read Collection|Tab[] $tabs
+ * @property-read Collection|Action[] $actions
+ * @property int|null $school_id
+ * @property-read \App\Models\GroupType $groupType
+ * @property-read \App\Models\School|null $school
  */
 class Group extends Model {
+    
+    use ModelTrait;
     
     protected $table = 'groups';
     
     protected $fillable = [
-        'name', 'remark', 'enabled'
+        'name', 'school_id', 'remark', 'enabled',
     ];
     
+    /**
+     * 获取指定角色下的所有用户对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function users() { return $this->hasMany('App\Models\User'); }
+    
+    /**
+     * 返回指定角色所属的学校对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function school() { return $this->belongsTo('App\Models\School'); }
+    
+    public function menus() { return $this->belongsToMany('App\Models\Menu', 'groups_menus'); }
+    
+    public function actions() { return $this->belongsToMany('App\Models\Action', 'actions_groups'); }
+    
+    public function tabs() { return $this->belongsToMany('App\Models\Tab', 'groups_tabs'); }
 
-    public function existed(GroupRequest $request, $id = NULL) {
+    public function groupType(){ return $this->belongsTo('App\Models\GroupType'); }
+    
+    /**
+     * 保存角色
+     *
+     * @param array $data
+     * @return bool
+     */
+    public function store(array $data) {
+        
+        try {
+            $exception = DB::transaction(function() use ($data) {
 
-        if (!$id) {
-            $group = $this->where('name', $request->input('name'))
-                ->first();
-        } else {
-            $group = $this->where('name', $request->input('name'))
-                ->where('id', '<>' , $id)
-                ->first();
+                $groupData = [
+                    'name'    => $data['name'],
+                    'remark'  => $data['remark'],
+                    'enabled' => $data['enabled'],
+                    'school_id' => $data['school_id'],
+                ];
+                $g = $this->create($groupData);
+                # 功能与角色的对应关系
+                $actionIds = $data['acitonId'];
+                $actionGroup = new ActionGroup();
+                $actionGroup->storeByGroupId($g->id, $actionIds);
+                # 功能与菜单的对应关系
+                $menuIds = explode(',', $data['menu_ids']);
+                $groupMenu = new GroupMenu();
+                $groupMenu->storeByGroupId($g->id, $menuIds);
+                # 功能与卡片的对应关系
+                $tabIds = $data['tabId'];
+                $groupTab = new GroupTab();
+                $groupTab->storeByGroupId($g->id, $tabIds);
+                
+            });
+            return is_null($exception) ? true : $exception;
+        } catch (Exception $e) {
+            return false;
         }
-        return $group ? true : false;
-
+        
     }
     
     /**
-     * 根据角色名称获取角色对象
-     * @param $groupName
-     * @return Model|null|static
+     * 更新角色
+     *
+     * @param array $data
+     * @param $id
+     * @return bool
      */
-    public function group($groupName) {
+    public function modify(array $data, $id) {
         
-        return $this->where('name', $groupName)->first();
+        $group = $this->find($id);
+        if (!$group) {
+            return false;
+        }
+        try {
+            $exception = DB::transaction(function () use ($data, $group, $id) {
+                
+                $groupData = [
+                    'name'    => $data['name'],
+                    'remark'  => $data['remark'],
+                    'enabled' => $data['enabled'],
+                ];
+                $group->update($groupData);
+                # 功能与角色的对应关系
+                $actionIds = $data['acitonId'];
+                $actionGroup = new ActionGroup();
+                $actionGroup->storeByGroupId($id, $actionIds);
+                # 功能与菜单的对应关系
+                $menuIds = explode(',', $data['menu_ids']);
+                $groupMenu = new GroupMenu();
+                $groupMenu->storeByGroupId($id, $menuIds);
+                # 功能与卡片的对应关系
+                $tabIds = $data['tabId'];
+                $groupTab = new GroupTab();
+                $groupTab->storeByGroupId($id, $tabIds);
+                
+            });
+            return is_null($exception) ? true : $exception;
+        } catch (Exception $e) {
+            return false;
+        }
+        
+    }
+    
+    /**
+     * 删除角色
+     *
+     * @param $id
+     * @return bool
+     */
+    public function remove($id) {
+        
+        $group = $this->find($id);
+        if (!$group) { return false; }
+        return $this->removable($group) ? $group->delete() : false;
         
     }
     
@@ -67,19 +170,55 @@ class Group extends Model {
         $columns = [
             ['db' => 'Groups.id', 'dt' => 0],
             ['db' => 'Groups.name', 'dt' => 1],
-            ['db' => 'Groups.remark', 'dt' => 2],
-            ['db' => 'Groups.created_at', 'dt' => 3],
-            ['db' => 'Groups.updated_at', 'dt' => 4],
+            ['db' => 'School.name as schoolname', 'dt' => 2],
+            ['db' => 'Groups.remark', 'dt' => 3],
+            ['db' => 'Groups.created_at', 'dt' => 4],
+            ['db' => 'Groups.updated_at', 'dt' => 5],
             [
-                'db' => 'Groups.enabled', 'dt' => 5,
+                'db'        => 'Groups.enabled', 'dt' => 6,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
-                }
-            ]
-        
+                },
+            ],
         ];
-        
-        return Datatable::simple($this, $columns);
+        $joins = [
+            [
+                'table' => 'schools',
+                'alias' => 'School',
+                'type' => 'INNER',
+                'conditions' => [
+                    'School.id = Groups.school_id'
+                ]
+            ]
+        ];
+        $condition = '';
+        $user = Auth::user();
+        switch ($user->group->name) {
+            case '运营': break;
+            case '企业':
+                $corpId = Corp::whereDepartmentId($user->topDeptId($user))
+                    ->first()->id;
+                $joins[] = [
+                    'table' => 'corps',
+                    'alias' => 'Corp',
+                    'type' => 'INNER',
+                    'conditions' => [
+                        'Corp.id = School.corp_id'
+                    ]
+                ];
+                $condition = 'Corp.id = ' . $corpId;
+                break;
+            case '学校':
+                $schoolId = School::whereDepartmentId($user->topDeptId($user))
+                    ->first()->id;
+                $condition = 'School.id = ' . $schoolId;
+                break;
+        }
+        if (empty($condition)) {
+            return Datatable::simple($this, $columns, $joins);
+        }
+        return Datatable::simple($this, $columns, $joins, $condition);
         
     }
+    
 }

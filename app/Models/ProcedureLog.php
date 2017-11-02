@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
@@ -34,38 +33,40 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|ProcedureLog whereStepStatus($value)
  * @method static Builder|ProcedureLog whereUpdatedAt($value)
  * @mixin \Eloquent
- * @property-read \App\Models\Procedure $procedure
- * @property-read \App\Models\ProcedureStep $procedureStep
- * @property-read \App\Models\User $user
+ * @property-read Procedure $procedure
+ * @property-read ProcedureStep $procedureStep
+ * @property-read User $user
  * @property int $first_log_id 该申请第一条记录的id
- * @property-read \App\Models\User $initiator_user
- * @property-read \App\Models\User $operator_user
- * @property-read \App\Models\ProcedureStep $procedure_step
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ProcedureLog whereFirstLogId($value)
+ * @property-read User $initiator_user
+ * @property-read User $operator_user
+ * @property-read ProcedureStep $procedure_step
+ * @method static Builder|ProcedureLog whereFirstLogId($value)
+ * @property-read \App\Models\User $initiatorUser
+ * @property-read \App\Models\User $operatorUser
  */
 class ProcedureLog extends Model {
     
     const DT_PEND = '<span class="badge bg-orange">%s</span>';
     
     protected $table = 'procedure_logs';
-
+    
     protected $joins = [
         [
-            'table' => 'procedures',
-            'alias' => 'Procedures',
-            'type' => 'INNER',
+            'table'      => 'procedures',
+            'alias'      => 'Procedures',
+            'type'       => 'INNER',
             'conditions' => [
-                'Procedures.id = ProcedureLog.procedure_id'
-            ]
+                'Procedures.id = ProcedureLog.procedure_id',
+            ],
         ],
         [
-            'table' => 'procedure_steps',
-            'alias' => 'ProcedureStep',
-            'type' => 'INNER',
+            'table'      => 'procedure_steps',
+            'alias'      => 'ProcedureStep',
+            'type'       => 'INNER',
             'conditions' => [
-                'ProcedureStep.id = ProcedureLog.procedure_step_id'
-            ]
-        ]
+                'ProcedureStep.id = ProcedureLog.procedure_step_id',
+            ],
+        ],
     ];
     
     protected $fillable = [
@@ -83,33 +84,43 @@ class ProcedureLog extends Model {
     ];
     
     /**
-     * 流程日志发起人
+     * 返回审批流程发起者对应的用户对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function initiator_user() {
-        return $this->belongsTo('App\Models\User')->select('id', 'realname');
+    public function initiatorUser() {
+        
+        return $this->belongsTo('App\Models\User', 'initiator_user_id');
+        
     }
     
     /**
-     * 流程日志操作者
+     * 返回审批流程操作者对应的用户对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function operator_user() {
-        return $this->belongsTo('App\Models\User')->select('id', 'realname');
+    public function operatorUser() {
+        return $this->belongsTo('App\Models\User', 'operator_user_id');
     }
-
+    
     /**
-     * 流程日志与流程
+     * 返回指定流程日志所属的流程对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function procedure() {
         return $this->belongsTo('App\Models\Procedure');
     }
     
     /**
-     * 流程日志与流程步骤
+     * 返回指定流程日志所属的流程步骤对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function procedure_step() {
-        return $this->belongsTo('App\Models\ProcedureStep');
+    public function procedureStep() {
+        return $this->belongsTo('App\Models\ProcedureStep', 'procedure_step_id');
     }
-
+    
     /**
      * 拆分initiator_media_ids、operator_media_ids,
      * @param $media_ids
@@ -118,65 +129,57 @@ class ProcedureLog extends Model {
     public function operate_ids($media_ids) {
         
         $ids = explode(',', $media_ids);
-        
-        $medias = array();
+        $medias = [];
         foreach ($ids as $mid) {
             $media = Media::find($mid);
             $medias[$mid] = $media;
         }
-        
         return $medias;
     }
     
     public function datatable($where) {
-
+        
         $columns = [
             ['db' => 'ProcedureLog.first_log_id', 'dt' => 0],
             [
-                'db' => 'ProcedureLog.initiator_user_id', 'dt' => 1,
-                'formatter' => function ($d, $row) {
+                'db'        => 'ProcedureLog.initiator_user_id', 'dt' => 1,
+                'formatter' => function ($d) {
                     return $this->get_user($d)->realname;
-                }
+                },
             ],
-            ['db' => 'Procedures.name as procedurename', 'dt' => 2],
-            ['db' => 'ProcedureStep.name procedurestepname', 'dt' => 3],
+            ['db' => 'Procedures.name as procedure_name', 'dt' => 2],
+            ['db' => 'ProcedureStep.name procedure_step_name', 'dt' => 3],
             ['db' => 'ProcedureLog.initiator_msg', 'dt' => 4],
             ['db' => 'ProcedureLog.updated_at', 'dt' => 5],
             [
-                'db' => 'ProcedureLog.step_status', 'dt' => 6,
+                'db'        => 'ProcedureLog.step_status', 'dt' => 6,
                 'formatter' => function ($d, $row) {
-
+                    
                     switch ($d) {
-
+                        
                         case 0:
                             $status = sprintf(Datatable::DT_ON, '通过');
                             break;
-
                         case 1:
                             $status = sprintf(Datatable::DT_OFF, '拒绝');
                             break;
-
                         case 2:
                             $status = sprintf(self::DT_PEND, '待定');
                             break;
-
                         default:
                             $status = sprintf(Datatable::DT_OFF, '错误');
                             break;
                     }
-
                     $id = $row['first_log_id'];
-                    $showLink = '<a id = '. $id .' href="show/'.$id.'" class="btn btn-primary btn-icon btn-circle btn-xs" data-toggle="modal"><i class="fa fa-eye"></i></a>';
-
+                    $showLink = '<a id = ' . $id . ' href="show/' . $id . '" class="btn btn-primary btn-icon btn-circle btn-xs" data-toggle="modal"><i class="fa fa-eye"></i></a>';
                     return $status . Datatable::DT_SPACE . $showLink;
-
-                }
+                    
+                },
             ],
         ];
-
         return Datatable::simple($this, $columns, $this->joins, $where);
     }
-
+    
     /**
      * 获取用户信息
      * @param $userId

@@ -1,9 +1,8 @@
 <?php
-
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
-use App\Http\Requests\ProcedureStepRequest;
+use App\Helpers\ModelTrait;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
@@ -29,44 +28,91 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|ProcedureStep whereRemark($value)
  * @method static Builder|ProcedureStep whereUpdatedAt($value)
  * @mixin \Eloquent
- * @property-read \App\Models\Procedure $procedure
+ * @property-read Procedure $procedure
  */
 class ProcedureStep extends Model {
-    //
+    
+    use ModelTrait;
+    
     protected $table = 'procedure_steps';
     
     protected $fillable = [
-        'procedure_id',
-        'name',
-        'approver_user_ids',
-        'related_user_ids',
-        'remark',
-        'created_at',
-        'updated_at',
-        'enabled'
+        'procedure_id', 'name', 'approver_user_ids',
+        'related_user_ids', 'remark', 'enabled',
     ];
     
-    public function procedure() {
-        
-        return $this->belongsTo('App\Models\Procedure');
+    /**
+     * 返回指定审批流程步骤所属的审批流程对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function procedure() { return $this->belongsTo('App\Models\Procedure'); }
+    
+    /**
+     * 返回审批者用户列表
+     *
+     * @param $id
+     * @return string
+     */
+    public function approverUsers($id) {
+    
+        return $this->getUserList($id, 'approver_user_ids');
         
     }
     
-    public function existed(ProcedureStepRequest $request, $id = NULL) {
+    /**
+     * 返回相关人用户列表
+     *
+     * @param $id
+     * @return string
+     */
+    public function relatedUsers($id) {
     
-        if (!$id) {
-            $procedureStep = $this->where('procedure_id', $request->input('procedure_id'))
-                ->where('name', $request->input('name'))
-                ->where('approver_user_ids', $request->input('approver_user_ids'))
-                ->first();
-        } else {
-            $procedureStep = $this->where('procedure_id', $request->input('procedure_id'))
-                ->where('id', '<>', $id)
-                ->where('name', $request->input('name'))
-                ->where('approver_user_ids', $request->input('approver_user_ids'))
-                ->first();
-        }
-        return $procedureStep ? true : false;
+        return $this->getUserList($id, 'related_user_ids');
+    
+    }
+    
+    /**
+     * 保存审批流程步骤
+     *
+     * @param array $data
+     * @return bool
+     */
+    public function store(array $data) {
+        
+        $ps = $this->create($data);
+        
+        return $ps ? true : false;
+        
+    }
+    
+    /**
+     * 更新审批流程步骤
+     *
+     * @param array $data
+     * @param $id
+     * @return bool
+     */
+    public function modify(array $data, $id) {
+        
+        $ps = $this->find($id);
+        if (!$ps) { return false; }
+        
+        return $ps->update($data) ? true : false;
+        
+    }
+    
+    /**
+     * 删除审批流程步骤
+     *
+     * @param $id
+     * @return bool|null
+     */
+    public function remove($id) {
+        
+        $ps = $this->find($id);
+        if (!$ps) { return false; }
+        return $ps->removable($ps) ? $ps->delete() : false;
         
     }
     
@@ -76,88 +122,58 @@ class ProcedureStep extends Model {
             ['db' => 'ProcedureStep.id', 'dt' => 0],
             ['db' => 'Procedures.name as procedurename', 'dt' => 1],
             [
-                'db' => 'ProcedureStep.approver_user_ids', 'dt' => 2,
-                'formatter' => function ($d, $row) {
-                    return $this->user_names($d);
-                }
+                'db'        => 'ProcedureStep.approver_user_ids', 'dt' => 2,
+                'formatter' => function ($row) {
+                    return $this->approverUsers($row['id']);
+                },
             ],
             [
-                'db' => 'ProcedureStep.related_user_ids', 'dt' => 3,
-                'formatter' => function ($d, $row) {
-                    return $this->user_names($d);
-                }
+                'db'        => 'ProcedureStep.related_user_ids', 'dt' => 3,
+                'formatter' => function ($row) {
+                    return $this->relatedUsers($row['id']);
+                },
             ],
             ['db' => 'ProcedureStep.name', 'dt' => 4],
             ['db' => 'ProcedureStep.remark', 'dt' => 5],
             ['db' => 'ProcedureStep.created_at', 'dt' => 6],
             ['db' => 'ProcedureStep.updated_at', 'dt' => 7],
             [
-                'db' => 'ProcedureStep.enabled', 'dt' => 8,
+                'db'        => 'ProcedureStep.enabled', 'dt' => 8,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
-                }
+                },
             ],
         ];
-        
         $joins = [
             [
-                'table' => 'procedures',
-                'alias' => 'Procedures',
-                'type' => 'INNER',
+                'table'      => 'procedures',
+                'alias'      => 'Procedures',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'Procedures.id = ProcedureStep.procedure_id'
-                ]
-            ]
+                    'Procedures.id = ProcedureStep.procedure_id',
+                ],
+            ],
         ];
         
         return Datatable::simple($this, $columns, $joins);
     }
     
     /**
-     * 拆分appover_user_ids、related_user_ids,
-     * @param $user_ids ','符号拼接的教职工id字符串
-     * @return array 处理后字典 key=>user.id,value => user.realname
-     */
-    public function operate_ids($user_ids) {
-        
-        $user_ids = explode(',', $user_ids);
-        
-        $educators = array();
-        foreach ($user_ids as $auid) {
-            $user = User::find($auid);
-            $educators[$auid] = $user->realname;
-        }
-        
-        return $educators;
-    }
-
-    /**
-     * 用户姓名字符串拼接
-     * @param $user_ids ','符号拼接的用户id字符串
-     * @return bool|string
-     */
-    public function user_names($user_ids){
-
-        $users = $this->operate_ids($user_ids);
-        $data = '';
-        foreach (array_keys($users) as $uid) {
-            $data .= $users[$uid] . ', ';
-        }
-
-        $data = trim($data);
-        $len = strlen($data);
-        $len = $len - 1;
-
-        $data = substr($data, 0, $len);
-        return $data;
-    }
-
-    /**
-     * 使用',', 拼接教职工id
-     * @param $arry_id
+     * 根据流程步骤ID获取审批者/相关人用户列表
+     *
+     * @param $id integer 流程步骤ID
+     * @param $field string (用户ID)字段名称
      * @return string
      */
-    public function join_ids($arry_id) {
-        return implode(',', $arry_id);
+    private function getUserList($id, $field): string {
+        
+        $ps = $this->find($id);
+        $user = new User();
+        $userIds = $user->users(explode(',', $ps->{$field}));
+        $userList = collect($userIds)->flatten()->toArray();
+        
+        return implode(',', $userList);
+        
     }
+    
 }

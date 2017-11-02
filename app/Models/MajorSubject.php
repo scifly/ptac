@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
@@ -23,39 +22,31 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read Subject $subject
  */
 class MajorSubject extends Model {
-    
+
     protected $table = 'majors_subjects';
-    
-    protected $fillable = ['id', 'major_id', 'subject_id', 'created_at', 'updated_id'];
-    
-    public function major() {
-        return $this->belongsTo('App\Models\Major');
-    }
-    
-    public function subject() {
-        return $this->belongsTo('App\Models\Subject');
-    }
-    
+
+    protected $fillable = ['major_id', 'subject_id'];
+
     public function storeByMajorId($majorId, array $subjectIds) {
-        
+
         foreach ($subjectIds as $subjectId) {
             $this->create([
-                'major_id' => $majorId,
-                'subject_id' => $subjectId
+                'major_id'   => $majorId,
+                'subject_id' => $subjectId,
             ]);
         }
-        
+
     }
-    
+
     public function storeBySubjectId($subjectId, $majorIds) {
-        
+
         foreach ($majorIds as $majorId) {
             $this->create([
-                'major_id' => $majorId,
-                'subject_id' => $subjectId
+                'major_id'   => $majorId,
+                'subject_id' => $subjectId,
             ]);
         }
-        
+
     }
-    
+
 }

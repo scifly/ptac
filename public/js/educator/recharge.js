@@ -1,0 +1,1 @@
+page.recharge('formEducator', 'educators');

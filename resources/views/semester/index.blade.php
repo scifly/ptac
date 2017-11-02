@@ -1,9 +1,10 @@
-<div class="box box-widget">
+<div class="box box-default box-solid">
     <div class="box-header with-border">
         @include('partials.list_header')
     </div>
     <div class="box-body">
-        <table id="data-table" style="width: 100%" class="display nowrap dataTable table table-striped table-hover table-bordered">
+        <table id="data-table" style="width: 100%"
+               class="display nowrap dataTable table table-striped table-hover table-bordered">
             <thead>
             <tr>
                 <th>#</th>
@@ -19,4 +20,5 @@
             <tbody></tbody>
         </table>
     </div>
+    @include('partials.form_overlay')
 </div>

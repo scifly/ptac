@@ -1,11 +1,9 @@
 <?php
-
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use App\Http\Requests\StudentAttendanceSettingRequest;
 
 /**
  * App\Models\StudentAttendanceSetting
@@ -35,8 +33,11 @@ use App\Http\Requests\StudentAttendanceSettingRequest;
  * @method static Builder|StudentAttendanceSetting whereStart($value)
  * @method static Builder|StudentAttendanceSetting whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property-read \App\Models\Grade $grade
+ * @property-read \App\Models\Semester $semester
  */
 class StudentAttendanceSetting extends Model {
+    
     //
     protected $table = 'student_attendance_settings';
     protected $fillable = [
@@ -50,68 +51,63 @@ class StudentAttendanceSetting extends Model {
         'inorout',
         'msg_template',
     ];
-
-    public function grade()
-    {
+    
+    public function grade() {
         return $this->belongsTo('App\Models\Grade');
     }
-
-    public function semester()
-    {
-        return $this->belongsTo('App\Models\Semester','semester_id','id');
+    
+    public function semester() {
+        return $this->belongsTo('App\Models\Semester', 'semester_id', 'id');
     }
-
-
+    
     public function datatable() {
-
+        
         $columns = [
             ['db' => 'StudentAttendanceSetting.id', 'dt' => 0],
             ['db' => 'StudentAttendanceSetting.name', 'dt' => 1],
             ['db' => 'Grade.name as gradename', 'dt' => 2],
             ['db' => 'Semester.name as semestername', 'dt' => 3],
             [
-                'db' => 'StudentAttendanceSetting.ispublic', 'dt' => 4,
+                'db'        => 'StudentAttendanceSetting.ispublic', 'dt' => 4,
                 'formatter' => function ($d) {
-                     return $d == 1 ? '是' : '否';
-                }
+                    return $d == 1 ? '是' : '否';
+                },
             ],
             ['db' => 'StudentAttendanceSetting.start', 'dt' => 5],
             ['db' => 'StudentAttendanceSetting.end', 'dt' => 6],
             ['db' => 'StudentAttendanceSetting.day', 'dt' => 7],
-            ['db' => 'StudentAttendanceSetting.inorout', 'dt' => 8,
-                'formatter' => function ($d) {
-                    return $d == 1 ? '进' : '出';
-                }
+            ['db'        => 'StudentAttendanceSetting.inorout', 'dt' => 8,
+             'formatter' => function ($d) {
+                 return $d == 1 ? '进' : '出';
+             },
             ],
             ['db' => 'StudentAttendanceSetting.msg_template', 'dt' => 9],
             [
-                'db' => 'StudentAttendanceSetting.updated_at', 'dt' => 10,
+                'db'        => 'StudentAttendanceSetting.updated_at', 'dt' => 10,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
-                }
+                },
             ],
         ];
         $joins = [
             [
-                'table' => 'grades',
-                'alias' => 'Grade',
-                'type' => 'INNER',
+                'table'      => 'grades',
+                'alias'      => 'Grade',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'Grade.id = StudentAttendanceSetting.grade_id'
-                ]
+                    'Grade.id = StudentAttendanceSetting.grade_id',
+                ],
             ],
-
             [
-                'table' => 'semesters',
-                'alias' => 'Semester',
-                'type' => 'INNER',
+                'table'      => 'semesters',
+                'alias'      => 'Semester',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'Semester.id = StudentAttendanceSetting.semester_id'
-                ]
+                    'Semester.id = StudentAttendanceSetting.semester_id',
+                ],
             ],
         ];
-
         return Datatable::simple($this, $columns, $joins);
-
+        
     }
 }

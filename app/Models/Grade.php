@@ -1,9 +1,11 @@
 <?php
-
 namespace App\Models;
 
+use App\Events\GradeCreated;
+use App\Events\GradeDeleted;
+use App\Events\GradeUpdated;
 use App\Facades\DatatableFacade as Datatable;
-use App\Http\Requests\GradeRequest;
+use App\Helpers\ModelTrait;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -31,13 +33,26 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read Collection|Subject[] $subject
  * @property-read Collection|Squad[] $classes
  * @property-read Collection|Student[] $students
+ * @property int $department_id 对应的部门ID
+ * @property-read Department $department
+ * @property-read StudentAttendanceSetting $studentAttendanceSetting
+ * @method static Builder|Grade whereDepartmentId($value)
  */
 class Grade extends Model {
     
+    use ModelTrait;
+    
     protected $fillable = [
-        'name', 'school_id',
+        'name', 'school_id', 'department_id',
         'educator_ids', 'enabled',
     ];
+    
+    /**
+     * 返回对应的部门对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function department() { return $this->belongsTo('App\Models\Department'); }
     
     /**
      * 返回指定年级所属的学校对象
@@ -52,11 +67,13 @@ class Grade extends Model {
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function classes() { return $this->hasMany('App\Models\Squad'); }
-
-    public function studentAttendanceSetting()
-    {
-        return $this->hasOne('App\Models\StudentAttendanceSetting');
-    }
+    
+    /**
+     * 获取指定年级包含的学生考勤设置对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function studentAttendanceSetting() { return $this->hasOne('App\Models\StudentAttendanceSetting'); }
     
     /**
      * 通过Squad中间对象获取指定年级包含的所有学生对象
@@ -83,11 +100,13 @@ class Grade extends Model {
         # 获取所有年级对象
         if (empty($schoolIds)) {
             $grades = $this->whereEnabled(1)->get(['id', 'name', 'school_id']);
+            
             return $this->getGradesList($grades, $schools);
         }
         # 获取指定学校的所有年级列表
         $grades = $this->whereIn('school_id', $schoolIds)
             ->where('enabled', 1)->get();
+        
         return $this->getGradesList($grades, $schools);
         
     }
@@ -98,28 +117,74 @@ class Grade extends Model {
         foreach ($grades as $grade) {
             $gradesList[$schools[$grade['school_id']]][$grade['id']] = $grade['name'];
         }
+        
         return $gradesList;
         
     }
-
+    
     /**
-     * 判断年级记录是否存在
+     * 保存年级
      *
-     * @param GradeRequest $request
-     * @param null $id
+     * @param array $data
+     * @param bool $fireEvent
      * @return bool
      */
-    public function existed(GradeRequest $request, $id = NULL) {
+    public function store(array $data, $fireEvent = false) {
         
-        if (!$id) {
-            $grade = $this->where('school_id', $request->input('school_id'))
-                ->where('name', $request->input('name'))->first();
-        } else {
-            $grade = $this->where('school_id', $request->input('school_id'))
-                ->where('id', '<>', $id)
-                ->where('name', $request->input('name'))->first();
+        $grade = $this->create($data);
+        if ($grade && $fireEvent) {
+            event(new GradeCreated($grade));
+            
+            return true;
         }
+        
         return $grade ? true : false;
+        
+    }
+    
+    /**
+     * 更新年级
+     *
+     * @param array $data
+     * @param $id
+     * @param bool $fireEvent
+     * @return bool
+     */
+    public function modify(array $data, $id, $fireEvent = false) {
+        
+        $grade = $this->find($id);
+        $updated = $grade->update($data);
+        if ($updated && $fireEvent) {
+            event(new GradeUpdated($grade));
+            
+            return true;
+        }
+        
+        return $updated ? true : false;
+        
+    }
+    
+    /**
+     * 删除年级
+     *
+     * @param $id
+     * @param bool $fireEvent
+     * @return bool
+     */
+    public function remove($id, $fireEvent = false) {
+        
+        $grade = $this->find($id);
+        if (!$grade) {
+            return false;
+        }
+        $removed = $this->removable($grade) ? $grade->delete() : false;
+        if ($removed && $fireEvent) {
+            event(new GradeDeleted($grade));
+            
+            return true;
+        }
+        
+        return $removed ? true : false;
         
     }
     
@@ -129,30 +194,42 @@ class Grade extends Model {
             ['db' => 'Grade.id', 'dt' => 0],
             ['db' => 'Grade.name', 'dt' => 1],
             ['db' => 'School.name as schoolname', 'dt' => 2],
-            ['db' => 'Grade.educator_ids', 'dt' => 3],
+            [
+                'db'        => 'Grade.educator_ids', 'dt' => 3,
+                'formatter' => function ($d) {
+                    $educatorIds = explode(',', $d);
+                    $educators = [];
+                    foreach ($educatorIds as $id) {
+                        $educator = Educator::whereId($id)->first();
+                        if ($educator->user) {
+                            $educators[] = $educator->user->realname;
+                        }
+                    }
+                    return implode(', ', $educators);
+                },
+            ],
             ['db' => 'Grade.created_at', 'dt' => 4],
             ['db' => 'Grade.updated_at', 'dt' => 5],
-            
             [
-                'db' => 'Grade.enabled', 'dt' => 6,
+                'db'        => 'Grade.enabled', 'dt' => 6,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
-                }
-            ]
+                },
+            ],
         ];
         $joins = [
             [
-                'table' => 'schools',
-                'alias' => 'School',
-                'type' => 'INNER',
+                'table'      => 'schools',
+                'alias'      => 'School',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'School.id = Grade.school_id'
-                ]
-            
-            ]
+                    'School.id = Grade.school_id',
+                ],
+            ],
         ];
         
         return Datatable::simple($this, $columns, $joins);
+        
     }
-
+    
 }

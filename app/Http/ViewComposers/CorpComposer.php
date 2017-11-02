@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\ViewComposers;
 
 use App\Models\Company;
@@ -14,7 +13,7 @@ class CorpComposer {
     public function compose(View $view) {
 
         $view->with(['companies' => $this->company->pluck('name', 'id')]);
-        
+
     }
 
 }

@@ -1,1 +1,1 @@
-$(crud.create('formCorp','corps'));
+page.create('formCorp', 'corps');

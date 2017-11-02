@@ -2,17 +2,16 @@
 
 use Illuminate\Database\Seeder;
 
-class UserSeeder extends Seeder
-{
+class UserSeeder extends Seeder {
+
     /**
      * Run the database seeds.
      *
      * @return void
      */
-    public function run()
-    {
+    public function run() {
         //
-        factory(App\Models\User::class, 15)->create()->each(function ($user) {
+        factory(App\Models\User::class, 20)->create()->each(function ($user) {
             $user->save();
         });
     }

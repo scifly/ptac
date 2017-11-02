@@ -1,0 +1,1 @@
+page.index('alert_types');

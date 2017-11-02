@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ScoreRequest;
@@ -22,7 +21,7 @@ class ScoreController extends Controller {
     protected $exam;
     protected $student;
     protected $subject;
-
+    
     function __construct(Score $score, Exam $exam, Student $student, Subject $subject) {
         $this->score = $score;
         $this->exam = $exam;
@@ -31,7 +30,7 @@ class ScoreController extends Controller {
     }
     
     /**
-     * 显示成绩列表
+     * 成绩列表
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
@@ -40,6 +39,7 @@ class ScoreController extends Controller {
         if (Request::get('draw')) {
             return response()->json($this->score->datatable());
         }
+        
         return $this->output(__METHOD__);
         
     }
@@ -76,10 +76,13 @@ class ScoreController extends Controller {
     public function show($id) {
         
         $score = $this->score->find($id);
-        if (!$score) { return $this->notFound(); }
+        if (!$score) {
+            return $this->notFound();
+        }
+        
         return $this->output(__METHOD__, [
-            'score' => $score,
-            'studentName' => $score->student->user->realname
+            'score'       => $score,
+            'studentName' => $score->student->user->realname,
         ]);
         
     }
@@ -93,10 +96,13 @@ class ScoreController extends Controller {
     public function edit($id) {
         
         $score = $this->score->find($id);
-        if (!$score) { return $this->notFound(); }
+        if (!$score) {
+            return $this->notFound();
+        }
+        
         return $this->output(__METHOD__, [
-            'score' => $score,
-            'studentName' => $score->student->user->realname
+            'score'       => $score,
+            'studentName' => $score->student->user->realname,
         ]);
         
     }
@@ -111,7 +117,10 @@ class ScoreController extends Controller {
     public function update(ScoreRequest $request, $id) {
         
         $score = $this->score->find($id);
-        if (!$score) { return $this->notFound(); }
+        if (!$score) {
+            return $this->notFound();
+        }
+        
         return $score->update($request->all()) ? $this->succeed() : $this->fail();
         
     }
@@ -125,11 +134,14 @@ class ScoreController extends Controller {
     public function destroy($id) {
         
         $score = $this->score->find($id);
-        if (!$score) { return $this->notFound(); }
+        if (!$score) {
+            return $this->notFound();
+        }
+        
         return $score->delete() ? $this->succeed() : $this->fail();
-    
+        
     }
-
+    
     /**
      * 统计成绩排名
      *
@@ -141,73 +153,62 @@ class ScoreController extends Controller {
         return $this->score->statistics($examId) ? $this->succeed() : $this->fail();
         
     }
-
-
+    
     /**
      * Excel模板生成
      * @param $examId
      */
-    public function export($examId){
+    public function export($examId) {
         $exam = $this->exam->find($examId);
         $subject = $this->exam->subjects($exam->subject_ids);
-        $heading = ['学号','姓名'];
-        foreach ($subject as $value){
+        $heading = ['学号', '姓名'];
+        foreach ($subject as $value) {
             $heading[] = $value;
         }
         $cellData = $this->student->studentsNum($exam->class_ids);
-        array_unshift($cellData,$heading);
-
-        Excel::create('score',function($excel) use ($cellData,$examId){
-            $excel->sheet('score', function($sheet) use ($cellData){
+        array_unshift($cellData, $heading);
+        Excel::create('score', function ($excel) use ($cellData, $examId) {
+            $excel->sheet('score', function ($sheet) use ($cellData) {
                 $sheet->rows($cellData);
             });
             $excel->setTitle($examId);
         })->store('xls')->export('xls');
     }
-
-
+    
     /**
      * 成绩导入
      */
-    public function import(){
+    public function import() {
         $filePath = 'storage/exports/score.xls';
         $insert = [];
-        Excel::load($filePath,function($reader) use (&$insert){
+        Excel::load($filePath, function ($reader) use (&$insert) {
             $exam_id = $reader->getTitle();
-            $subjects = $this->subject->getId(array_slice(array_keys($reader->toArray()[0]),2));
-            $reader->each(function($sheet) use ($exam_id, $subjects, &$insert) {
+            $subjects = $this->subject->getId(array_slice(array_keys($reader->toArray()[0]), 2));
+            $reader->each(function ($sheet) use ($exam_id, $subjects, &$insert) {
                 $studentNum = '';
-                foreach($sheet as $key=>$row) {
-                    switch ($key)
-                    {
+                foreach ($sheet as $key => $row) {
+                    switch ($key) {
                         case '学号':
                             $studentNum = $this->student->whereStudentNumber($row)->value('id');
                             break;
                         case '姓名':
                             break;
                         default:
-                            if (!is_null($row) && isset($subjects[$key])){
-                                $insert []= [
+                            if (!is_null($row) && isset($subjects[$key])) {
+                                $insert [] = [
                                     'student_id' => $studentNum,
                                     'subject_id' => $subjects[$key],
-                                    'exam_id' => $exam_id,
-                                    'score' => $row,
-                                    'enabled' => 1,
+                                    'exam_id'    => $exam_id,
+                                    'score'      => $row,
+                                    'enabled'    => 1,
                                 ];
                             }
                     }
                 }
             });
         });
+        
         return $this->score->insert($insert) ? $this->succeed() : $this->fail();
     }
-
-    /**
-     * 在线编辑成绩
-     */
-    public function editor(){
-
-    }
-    
 }
 

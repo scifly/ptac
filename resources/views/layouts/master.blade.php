@@ -29,11 +29,11 @@
         <link rel="stylesheet" href="{{ URL::asset('js/plugins/datatables/datatables.min.css') }}">
     @endisset
     @isset($ws)
-        {{--<link rel="stylesheet" href="{{ URL::asset('css/wapSite.css') }}">--}}
+        {{--<link rel="stylesheet" href="{{ URL::asset('Css/wapSite.Css') }}">--}}
     @endisset
     @isset($fullcalendar)
-    <link rel="stylesheet" href="{{ URL::asset('js/plugins/fullcalendar/css/fullcalendar.min.css') }}">
-    <link rel="stylesheet" href="{{ URL::asset('js/plugins/fullcalendar/css/jquery-ui.min.css') }}">
+        <link rel="stylesheet" href="{{ URL::asset('js/plugins/fullcalendar/css/fullcalendar.min.css') }}">
+        <link rel="stylesheet" href="{{ URL::asset('js/plugins/fullcalendar/css/jquery-ui.min.css') }}">
     @endisset
     {{--审核详情--}}
     <link rel="stylesheet" href="{{ URL::asset('css/procedure_info.css') }}">
@@ -42,6 +42,8 @@
     <link rel="stylesheet" href="{{ URL::asset('js/plugins/fileinput/themes/explorer/theme.css') }}">
     {{--图片上传--}}
     <link rel="stylesheet" href="{{ URL::asset('css/imgInput.css') }}">
+    <!--微网站应用菜单管理-->
+    <link rel="stylesheet" href="{{ URL::asset('css/showEditMenu.css') }}">
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -434,16 +436,16 @@
 @endisset
 @isset($map)
     <script src="{{ URL::asset('js/jquery-jvectormap-1.2.2.min.js') }}"></script>
-    <script src="{{ URL::asset('js/jquery-jvectormap-world-mill-en.js') }}"></script>
+    <script src="{{ URL::asset('Scripts') }}"></script>
 @endisset
 @isset($chart)
     <script src="{{ URL::asset('js/Chart.min.js') }}"></script>
 @endisset
 @isset($fullcalendar)
-<script src="{{ URL::asset('js/plugins/fullcalendar/js/jquery-ui.min.js') }}"></script>
-<script src="{{ URL::asset('js/plugins/fullcalendar/js/jquery-ui-timepicker-addon.js') }}"></script>
-<script src="{{ URL::asset('js/plugins/fullcalendar/js/moment.min.js') }}"></script>
-<script src="{{ URL::asset('js/plugins/fullcalendar/js/fullcalendar.min.js') }}"></script>
+    <script src="{{ URL::asset('js/plugins/fullcalendar/js/jquery-ui.min.js') }}"></script>
+    <script src="{{ URL::asset('js/plugins/fullcalendar/js/jquery-ui-timepicker-addon.js') }}"></script>
+    <script src="{{ URL::asset('js/plugins/fullcalendar/js/moment.min.js') }}"></script>
+    <script src="{{ URL::asset('js/plugins/fullcalendar/js/fullcalendar.min.js') }}"></script>
 @endisset
 <script src="{{ URL::asset('js/admin.crud.js') }}"></script>
 <script src="{{ URL::asset('js/demo.js') }}"></script>
@@ -458,16 +460,5 @@
 <script src="{{ URL::asset('js/plugins/fileinput/themes/explorer/theme.js') }}"></script>
 <!-- AdminLTE for demo purposes -->
 <script src="{{ URL::asset('js/demo.js') }}"></script>
-
-@isset($ueditor)
-<script type="text/javascript" src="{{ URL::asset('js/plugins/UEditor/ueditor.config.js') }}"></script>
-<!-- 编辑器源码文件 -->
-<script type="text/javascript" src="{{ URL::asset('js/plugins/UEditor/ueditor.all.js') }}"></script>
-<!-- 实例化编辑器 -->
-<script type="text/javascript">
-    var editor = UE.getEditor('container');
-</script>
-
-@endisset
 </body>
 </html>

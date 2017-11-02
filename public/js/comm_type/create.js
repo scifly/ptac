@@ -1,0 +1,1 @@
+page.create('formCommType', 'comm_types');

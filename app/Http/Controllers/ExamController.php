@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ExamRequest;
@@ -17,12 +16,12 @@ class ExamController extends Controller {
     
     protected $exam;
     protected $squad;
-
+    
     function __construct(Exam $exam, Squad $squad) {
-
+        
         $this->exam = $exam;
         $this->squad = $squad;
-
+        
     }
     
     /**
@@ -35,6 +34,7 @@ class ExamController extends Controller {
         if (Request::get('draw')) {
             return response()->json($this->exam->datatable());
         }
+        
         return $this->output(__METHOD__);
         
     }
@@ -71,11 +71,12 @@ class ExamController extends Controller {
     public function show($id) {
         
         $exam = $this->exam->find($id);
-        if (!$exam) { return $this->notFound(); }
-        
+        if (!$exam) {
+            return $this->notFound();
+        }
         return $this->output(__METHOD__, [
-            'exam' => $exam,
-            'classes' => $this->exam->classes($exam->class_ids),
+            'exam'     => $exam,
+            'classes'  => $this->exam->classes($exam->class_ids),
             'subjects' => $this->exam->subjects(),
         ]);
         
@@ -89,10 +90,13 @@ class ExamController extends Controller {
      */
     public function edit($id) {
         $exam = $this->exam->find($id);
-        if (!$exam) { return $this->notFound(); }
+        if (!$exam) {
+            return $this->notFound();
+        }
+        
         return $this->output(__METHOD__, [
-            'exam' => $exam,
-            'selectedClasses' => $this->exam->classes($exam->class_ids),
+            'exam'             => $exam,
+            'selectedClasses'  => $this->exam->classes($exam->class_ids),
             'selectedSubjects' => $this->exam->subjects($exam->subject_ids),
         ]);
     }
@@ -107,7 +111,10 @@ class ExamController extends Controller {
     public function update(ExamRequest $request, $id) {
         
         $exam = $this->exam->find($id);
-        if (!$exam) { return $this->notFound(); }
+        if (!$exam) {
+            return $this->notFound();
+        }
+        
         return $exam->update($request->all()) ? $this->succeed() : $this->fail();
         
     }
@@ -119,9 +126,12 @@ class ExamController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
-    
+        
         $exam = $this->exam->find($id);
-        if (!$exam) { return $this->notFound(); }
+        if (!$exam) {
+            return $this->notFound();
+        }
+        
         return $exam->delete() ? $this->succeed() : $this->fail();
         
     }

@@ -1,34 +1,40 @@
 <?php
-
 namespace App\Models;
 
+use App\Events\AppMenuCreated;
+use App\Events\AppMenuUpdated;
+use App\Events\AppUpdated;
 use App\Facades\DatatableFacade as Datatable;
-use App\Http\Requests\AppRequest;
+use App\Facades\Wechat;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Request;
 
 /**
- * App\Models\App
+ * App\Models\App 微信企业应用
  *
  * @property int $id
+ * @property string $corp_id 企业id
  * @property string $name 应用名称
  * @property string $description 应用备注
+ * @property string $secret 应用密匙
  * @property int $agentid 应用id
  * @property string $url 推送请求的访问协议和地址
  * @property string $token 用于生成签名
- * @property string $encodingaeskey 用于消息体的加密，是AES密钥的Base64编码
  * @property int $report_location_flag 企业应用是否打开地理位置上报 0：不上报；1：进入会话上报；2：持续上报
- * @property string $logo_mediaid 企业应用头像的mediaid，通过多媒体接口上传图片获得mediaid，上传后会自动裁剪成方形和圆形两个头像
+ * @property int square_logo_url 企业头像url
  * @property string $redirect_domain 企业应用可信域名
- * @property int $isreportuser 是否接收用户变更通知。0：不接收；1：接收。
  * @property int $isreportenter 是否上报用户进入应用事件。0：不接收；1：接收。
  * @property string $home_url 主页型应用url。url必须以http或者https开头。消息型应用无需该参数
- * @property string $chat_extension_url 关联会话url。设置该字段后，企业会话"+"号将出现该应用，点击应用可直接跳转到此url，支持jsapi向当前会话发送消息。
  * @property string $menu 应用菜单
+ * @property string $allow_userinfos 企业应用可见范围（人员），其中包括userid
+ * @property string $allow_partys 企业应用可见范围（部门）
+ * @property string $allow_tags 企业应用可见范围（标签）
  * @property \Carbon\Carbon|null $created_at
  * @property \Carbon\Carbon|null $updated_at
  * @property int $enabled
  * @method static Builder|App whereAgentid($value)
+ * @method static Builder|App whereCorpId($value)
  * @method static Builder|App whereChatExtensionUrl($value)
  * @method static Builder|App whereCreatedAt($value)
  * @method static Builder|App whereDescription($value)
@@ -47,45 +53,132 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|App whereUpdatedAt($value)
  * @method static Builder|App whereUrl($value)
  * @mixin \Eloquent
+ * @property string|null $access_token
+ * @property string|null $expire_at
+ * @method static Builder|App whereAccessToken($value)
+ * @method static Builder|App whereAllowPartys($value)
+ * @method static Builder|App whereAllowTags($value)
+ * @method static Builder|App whereAllowUserinfos($value)
+ * @method static Builder|App whereExpireAt($value)
+ * @method static Builder|App whereSecret($value)
+ * @method static Builder|App whereSquareLogoUrl($value)
  */
 class App extends Model {
     
     protected $fillable = [
-        'name',
-        'description',
-        'agentid',
-        'url',
+        'corp_id','name', 'description', 'agentid',
         'token',
-        'encodingaeskey',
+        'secret',
         'report_location_flag',
-        'logo_mediaid',
+        'square_logo_url',
+        'allow_userinfos',
+        'allow_partys',
+        'allow_tags',
         'redirect_domain',
-        'isreportuser',
-        'isreportenter',
-        'home_url',
-        'chat_extension_url',
+        'isreportenter', 'home_url',
         'menu',
-        'enabled'
+        'access_token',
+        'expire_at',
+        'enabled',
     ];
+    public function store() {
+        
+        $secret = Request::input('secret');
+        $agentid = Request::input('agentid');
+        $corp_id = Request::input('corp_id');
     
-    public function existed(AppRequest $request, $id = NULL) {
-        
-        if (!$id) {
-            $app = $this->where('agentid', $request->input('agentid'))
-                ->orWhere('url', $request->input('url'))
-                ->orWhere('token', $request->input('token'))
-                ->orWhere('encodingaeskey', $request->input('encodingaeskey'))
-                ->first();
+        $corp = new Corp();
+        $corps = $corp::whereName('万浪软件')->first();
+        $corpId = $corps->corpid;
+        $dir = dirname(__FILE__);
+        $path = substr($dir, 0, stripos($dir, 'app/Jobs'));
+        $tokenFile = $path . 'public/token.txt';
+        $token = Wechat::getAccessToken($tokenFile, $corpId, $secret);
+    
+        $corpApp = json_decode(Wechat::getApp($token, $agentid));
+        // dd($corp_id);
+        $app = $this::whereAgentid($agentid)->where('corp_id', $corp_id)->first();
+        if (!$app) {
+            $data = [
+                'corp_id' => intval($corp_id),
+                'name' => $corpApp->name,
+                'secret' => $secret,
+                'description' => $corpApp->description,
+                'agentid' => $agentid,
+                'report_location_flag' => $corpApp->report_location_flag,
+                'square_logo_url' => $corpApp->square_logo_url,
+                'redirect_domain' => $corpApp->redirect_domain,
+                'isreportenter' => $corpApp->isreportenter,
+                'home_url' => $corpApp->home_url,
+                'menu' => '',
+                'allow_userinfos' => json_encode($corpApp->allow_userinfos),
+                'allow_partys' => json_encode($corpApp->allow_partys),
+                'allow_tags' => isset($corpApp->allow_tags) ? json_encode($corpApp->allow_tags) : '',
+                'enabled' => $corpApp->close,
+            ];
+            $a = $this->create($data);
+            $response = response()->json(['app' => $a , 'action' => 'create']);
         } else {
-            $app = $this->where('agentid', $request->input('agentid'))
-                ->where('id', '<>', $id)
-                ->orWhere('url', $request->input('url'))
-                ->orWhere('token', $request->input('token'))
-                ->orWhere('encodingaeskey', $request->input('encodingaeskey'))
-                ->first();
+            $app->corp_id = intval($corp_id);
+            $app->name = $corpApp->name;
+            $app->secret = $secret;
+            $app->description = $corpApp->description;
+            $app->agentid = $agentid;
+            $app->report_location_flag = $corpApp->report_location_flag;
+            $app->square_logo_url = $corpApp->square_logo_url;
+            $app->redirect_domain = $corpApp->redirect_domain;
+            $app->isreportenter = $corpApp->isreportenter;
+            $app->home_url = $corpApp->home_url;
+            $app->menu = '';
+            $app->allow_userinfos = json_encode($corpApp->allow_userinfos);
+            $app->allow_partys = json_encode($corpApp->allow_partys);
+            $app->allow_tags = isset($corpApp->allow_tags) ? json_encode($corpApp->allow_tags) : '';
+            $app->enabled = $corpApp->close;
+            $app->save();
+            $response = response()->json(['app' => $app , 'action' => 'update']);
         }
-        return $app ? true : false;
         
+        return $response;
+        
+    }
+    /**
+     * 更新App
+     *
+     * @param array $data
+     * @param $id
+     * @return bool|\Illuminate\Database\Eloquent\Collection|Model|null|static|static[]
+     */
+    public function modify(array $data, $id) {
+        
+        $app = $this->find($id);
+        if (!$app) { return false; }
+        $updated = $this->update($data);
+        if ($updated) {
+            event(new AppUpdated($app));
+            return $app;
+        }
+        return $updated ? $app : false;
+        
+    }
+    
+    /**
+     * 同步菜单
+     *
+     * @param array $data
+     * @param $id
+     * @return bool|\Illuminate\Database\Eloquent\Collection|Model|null|static|static[]
+     */
+    public function storeMenu(array $data, $id) {
+    
+        $app = $this->find($id);
+        if (!$app) { return false; }
+        $updated = $this->update($data);
+        if ($updated) {
+            event(new AppMenuUpdated($app));
+            return $app;
+        }
+        return $updated ? $app : false;
+    
     }
     
     public function datatable() {
@@ -100,14 +193,34 @@ class App extends Model {
             ['db' => 'App.created_at', 'dt' => 6],
             ['db' => 'App.updated_at', 'dt' => 7],
             [
-                'db' => 'App.enabled', 'dt' => 8,
+                'db'        => 'App.enabled', 'dt' => 8,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
-                }
-            ]
+                },
+            ],
         ];
+        
         return Datatable::simple($this, $columns);
         
     }
     
+    /**
+     *  将对象转换为数组
+     *
+     * @param $obj
+     * @return array|void
+     */
+    public function object_to_array($obj) {
+        $obj = (array)$obj;
+        foreach ($obj as $k => $v) {
+            if (gettype($v) == 'resource') {
+                return;
+            }
+            if (gettype($v) == 'object' || gettype($v) == 'array') {
+                $obj[$k] = (array)$this->object_to_array($v);
+            }
+        }
+        
+        return $obj;
+    }
 }

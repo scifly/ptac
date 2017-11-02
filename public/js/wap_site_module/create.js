@@ -1,7 +1,4 @@
-/**
- * Created by Administrator on 2017-07-21 0021.
- */
-$(crud.create('formWapSiteModule', 'wap_site_modules'));
+page.create('formWapSiteModule', 'wap_site_modules');
 $(function () {
     var $pre = $('.preview');
     var $uploadFile = $('#uploadFile');
@@ -31,7 +28,7 @@ $(function () {
         // 填充数据
         var response = data.response.data;
         $.each(response, function (index, obj) {
-            $pre.append('<div class="img-item"><img src="../../' + obj.path + '" id="' + obj.id + '"><div class="del-mask"><i class="delete glyphicon glyphicon-trash"></i></div></div>');
+            $pre.append('<div class="img-item"><img src="../' + obj.path + '" id="' + obj.id + '"><div class="del-mask"><i class="delete glyphicon glyphicon-trash"></i></div></div>');
             $pre.append('<input type="hidden" name="media_id" value="' + obj.id + '">');
         });
         // 成功后关闭弹窗

@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
@@ -7,9 +6,9 @@ use App\Http\Requests\RegisterUser;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Auth\RegistersUsers;
-use Illuminate\Http\Request;
 
 class RegisterController extends Controller {
+    
     /*
     |--------------------------------------------------------------------------
     | Register Controller
@@ -20,7 +19,6 @@ class RegisterController extends Controller {
     | provide this functionality without requiring any additional code.
     |
     */
-    
     use RegistersUsers;
     
     /**
@@ -46,6 +44,7 @@ class RegisterController extends Controller {
         
         event(new Registered($user = $this->create($request->all())));
         $this->guard()->login($user);
+        
         return $this->registered($request, $user)
             ?: redirect($this->redirectPath());
         
@@ -58,12 +57,12 @@ class RegisterController extends Controller {
      * @return User
      */
     protected function create(array $data) {
-       
+        
         return $this->user->create([
             'realname' => $data['realname'],
             'username' => $data['username'],
-            'email' => $data['email'],
-            'mobile' => $data['mobile'],
+            'email'    => $data['email'],
+            'mobile'   => $data['mobile'],
             'password' => bcrypt($data['password']),
         ]);
         

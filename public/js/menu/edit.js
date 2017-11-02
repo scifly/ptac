@@ -1,1 +1,1 @@
-$(tree.edit('formMenu', 'menus'));
+page.edit('formMenu', 'menus');

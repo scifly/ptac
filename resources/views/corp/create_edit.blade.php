@@ -1,4 +1,4 @@
-<div class="box box-widget">
+<div class="box box-default box-solid">
     <div class="box-header with-border">
         @include('partials.form_header')
     </div>
@@ -32,14 +32,21 @@
                 <div class="col-sm-6">
                     {!! Form::text('corpid', null, [
                         'class' => 'form-control',
-                        'placeholder' => '(36个小写字母与阿拉伯数字)',
+                        'placeholder' => '(18个小写字母与阿拉伯数字)',
                         'required' => 'true',
-                        'data-parsley-type' => 'alphanum'
+                        'data-parsley-type' => 'alphanum',
+                        'data-parsley-length' => '[18, 18]'
                     ]) !!}
                 </div>
             </div>
+            @if (isset($corp['department_id']))
+                {!! Form::hidden('department_id', $corp['department_id']) !!}
+            @endif
+            @if (isset($corp['menu_id']))
+                {!! Form::hidden('menu_id', $corp['menu_id']) !!}
+            @endif
             @include('partials.enabled', [
-                'label' => '是否启用',
+                'label' => '状态',
                 'id' => 'enabled',
                 'value' => isset($corp['enabled']) ? $corp['enabled'] : NULL
             ])

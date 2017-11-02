@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProcedureRequest;
@@ -28,6 +27,7 @@ class ProcedureController extends Controller {
         if (Request::get('draw')) {
             return response()->json($this->procedure->datatable());
         }
+        
         return $this->output(__METHOD__);
         
     }
@@ -50,8 +50,9 @@ class ProcedureController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(ProcedureRequest $request) {
-
-        return $this->procedure->create($request->all()) ? $this->succeed() : $this->fail();
+        
+        return $this->procedure->store($request->all())
+            ? $this->succeed() : $this->fail();
         
     }
     
@@ -62,7 +63,7 @@ class ProcedureController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function show($id) {
-
+        
         $procedure = $this->procedure->find($id);
         if (!$procedure) { return $this->notFound(); }
         return $this->output(__METHOD__, ['procedure' => $procedure]);
@@ -91,23 +92,25 @@ class ProcedureController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(ProcedureRequest $request, $id) {
-    
+        
         $procedure = $this->procedure->find($id);
         if (!$procedure) { return $this->notFound(); }
-        return $procedure->update($request->all()) ? $this->succeed() : $this->fail();
+        return $procedure->modify($request->all(), $id)
+            ? $this->succeed() : $this->fail();
     }
     
     /**
      * 删除审批流程
-     *
+     *\
      * @param $id
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
-
+        
         $procedure = $this->procedure->find($id);
         if (!$procedure) { return $this->notFound(); }
-        return $procedure->delete() ? $this->succeed() : $this->fail();
+        return $procedure->remove($id)
+            ? $this->succeed() : $this->fail();
         
     }
     

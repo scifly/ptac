@@ -1,1 +1,1 @@
-$(crud.index('educators'));
+page.index('educators');

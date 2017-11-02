@@ -1,0 +1,1 @@
+page.create('formComboType', 'combo_types');

@@ -1,10 +1,10 @@
 <?php
-
 namespace App\Models;
 
+use App\Facades\DatatableFacade as Datatable;
+use App\Helpers\ModelTrait;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use App\Facades\DatatableFacade as Datatable;
 
 /**
  * App\Models\MessageType
@@ -22,37 +22,88 @@ use App\Facades\DatatableFacade as Datatable;
  * @method static Builder|MessageType whereRemark($value)
  * @method static Builder|MessageType whereUpdatedAt($value)
  * @mixin \Eloquent
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Message[] $message
+ * @property-read Message[] $message
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Message[] $messages
  */
 class MessageType extends Model {
-    //
+    
+    use ModelTrait;
+    
     protected $table = 'message_types';
     
     protected $fillable = ['name', 'remark', 'enabled'];
     
-    public function message() {
-        return $this->hasMany('App\Models\Message');
-    }
     /**
-     * @return array
+     * 获取指定消息类型包含的所有消息对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
+    public function messages() { return $this->hasMany('App\Models\Message'); }
+    
+    /**
+     * 保存消息类型
+     *
+     * @param array $data
+     * @return bool
+     */
+    public function store(array $data) {
+        
+        $messageType = $this->create($data);
+        
+        return $messageType ? true : false;
+        
+    }
+    
+    /**
+     * 更新消息类型
+     *
+     * @param array $data
+     * @param $id
+     * @return bool
+     */
+    public function modify(array $data, $id) {
+        
+        $messageType = $this->find($id);
+        if (!$messageType) {
+            return false;
+        }
+        
+        return $messageType->update($data) ? true : false;
+        
+    }
+    
+    /**
+     * 删除消息类型
+     *
+     * @param $id
+     * @return bool|null
+     */
+    public function remove($id) {
+        
+        $messageType = $this->find($id);
+        if (!$messageType) { return false; }
+        return $messageType->removable($messageType) ? $messageType->delete() : false;
+        
+    }
+    
     public function datatable() {
-
+        
         $columns = [
             ['db' => 'MessageType.id', 'dt' => 0],
             ['db' => 'MessageType.name', 'dt' => 1],
             ['db' => 'MessageType.remark', 'dt' => 2],
             ['db' => 'MessageType.created_at', 'dt' => 3],
             ['db' => 'MessageType.updated_at', 'dt' => 4],
-
             [
-                'db' => 'MessageType.enabled', 'dt' => 5,
+                'db'        => 'MessageType.enabled', 'dt' => 5,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
-                }
-            ]
+                },
+            ],
         ];
-
+        
         return Datatable::simple($this, $columns);
+        
     }
+    
 }

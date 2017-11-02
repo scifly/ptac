@@ -3,6 +3,7 @@
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder {
+
     /**
      * Run the database seeds.
      *
@@ -31,12 +32,16 @@ class DatabaseSeeder extends Seeder {
 //        $this->call(ExamSeeder::class);
 //        $this->call(SubjectModuleSeeder::class);
 //        $this->call(EducatorClassSeeder::class);
-//        $this->call(CustodianStudentSeeder::class);
+        $this->call(CustodianStudentSeeder::class);
 //        $this->call(TabSeeder::class);
 //        $this->call(IconSeeder::class);
 //        $this->call(IconTypeSeeder::class);
 //        $this->call(DepartmentSeeder::class);
-        $this->call(EaSettingSeeder::class);
-        $this->call(GroupSeeder::class);
+//        $this->call(EaSettingSeeder::class);
+//        $this->call(GroupSeeder::class);
+//        $this->call(MajorSeeder::class);
+//        $this->call(MajorSubjectSeeder::class);
+//        $this->call(MobileSeeder::class);
+//        $this->call(DepartmentUserSeeder::class);
     }
 }

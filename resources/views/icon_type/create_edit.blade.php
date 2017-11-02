@@ -1,9 +1,12 @@
-<div class="box box-widget">
+<div class="box box-default box-solid">
     <div class="box-header with-border">
         @include('partials.form_header')
     </div>
     <div class="box-body">
         <div class="form-horizontal">
+            @if (isset($iconType['id']))
+                {!! Form::hidden('id', $iconType['id'], ['id' => 'id']) !!}
+            @endif
             <div class="form-group">
                 {!! Form::label('name', 'Icon类型名称',[
                     'class' => 'col-sm-3 control-label'
@@ -32,7 +35,7 @@
                 </div>
             </div>
             @include('partials.enabled', [
-                'label' => '是否启用',
+                'label' => '状态',
                 'id' => 'enabled',
                 'value' => isset($iconType['enabled']) ? $iconType['enabled'] : NULL
             ])

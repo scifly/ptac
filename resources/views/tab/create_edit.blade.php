@@ -1,4 +1,4 @@
-<div class="box box-widget">
+<div class="box box-default box-solid">
     <div class="box-header with-border">
         @include('partials.form_header')
     </div>
@@ -13,7 +13,8 @@
                 ]) !!}
                 <div class="col-sm-6">
                     {!! Form::text('name', null, [
-                        'disabled' => true
+                        'readonly' => true,
+                        'class' => 'form-control'
                     ]) !!}
 
                 </div>
@@ -51,10 +52,10 @@
                                        value="{{ $key }}" class="minimal"
                                        @if(isset($tab) && $tab['icon_id'] == $key)
                                        checked
-                                       @endif
+                                        @endif
                                 >
                             </label>
-                            <i class="{{ $value }}" style="margin-left: 10px;">&nbsp; {{ $value }}</i><br />
+                            <i class="{{ $value }}" style="margin-left: 10px;">&nbsp; {{ $value }}</i><br/>
                         @endforeach
                     @endforeach
 
@@ -72,7 +73,7 @@
                 'selectedItems' => isset($selectedMenus) ? $selectedMenus : NULL
             ])
             @include('partials.enabled', [
-                'label' => '是否启用',
+                'label' => '状态',
                 'id' => 'enabled',
                 'value' => isset($tab['enabled']) ? $tab['enabled'] : NULL
             ])

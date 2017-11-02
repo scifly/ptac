@@ -1,4 +1,4 @@
-<div class="box box-widget">
+<div class="box box-default box-solid">
     <div class="box-header with-border">
         @include('partials.form_header')
     </div>
@@ -11,7 +11,7 @@
                 {!! Form::label('name', '名称', [
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
-                <div class="col-sm-2">
+                <div class="col-sm-6">
                     {!! Form::text('name', null, [
                         'class' => 'form-control',
                         'placeholder' => '(不超过40个汉字)',
@@ -31,8 +31,11 @@
                 'items' => $educators,
                 'selectedItems' => isset($selectedEducators) ? $selectedEducators : NULL
             ])
+            @if (isset($class['department_id']))
+                {!! Form::hidden('department_id', $class['department_id']) !!}
+            @endif
             @include('partials.enabled', [
-                'label' => '是否启用',
+                'label' => '状态',
                 'id' => 'enabled',
                 'value' => isset($class['enabled']) ? $class['enabled'] : NULL
             ])

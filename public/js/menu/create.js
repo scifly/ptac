@@ -1,1 +1,1 @@
-$(tree.create('formMenu', 'menus'));
+page.create('formMenu', 'menus');

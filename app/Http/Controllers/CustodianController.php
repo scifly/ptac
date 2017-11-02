@@ -7,8 +7,6 @@ use App\Models\Custodian;
 use App\Models\Department;
 use App\Models\DepartmentUser;
 use App\Models\Group;
-use App\Models\User;
-use App\Models\Mobile;
 use App\Models\Student;
 use App\Models\CustodianStudent;
 use Illuminate\Support\Facades\Request;
@@ -20,108 +18,105 @@ use Illuminate\Support\Facades\Request;
  * @package App\Http\Controllers
  */
 class CustodianController extends Controller {
-    
-    protected $custodian, $department, $group, $user,$mobile,$departmentUser,$student,$custodianStudent;
-    
-    function __construct(Custodian $custodian, Department $department, Group $group, User $user,Mobile $mobile,
-    DepartmentUser $departmentUser,Student $student,CustodianStudent $custodianStudent) {
-    
+
+    protected $custodian, $department, $group, $departmentUser, $student, $custodianStudent;
+
+    function __construct(
+        Custodian $custodian, Department $department, Group $group,
+        DepartmentUser $departmentUser, Student $student,
+        CustodianStudent $custodianStudent
+    ) {
+
         $this->custodian = $custodian;
         $this->department = $department;
         $this->group = $group;
-        $this->user = $user;
-        $this->mobile = $mobile;
         $this->departmentUser = $departmentUser;
-        $this->student =$student;
+        $this->student = $student;
         $this->custodianStudent = $custodianStudent;
-        
+
     }
+
     /**
-     * 显示监护人列表
+     * 监护人列表
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
+        
         if (Request::get('draw')) {
             return response()->json($this->custodian->datatable());
         }
+
         return parent::output(__METHOD__);
+        
     }
-    
+
     /**
-     * 显示创建监护人记录的表单
+     * 创建监护人
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function create() {
-        
-        return parent::output(__METHOD__, [
-//            'group' => $this->group->group('custodian'),
-            'departments' => $this->department->departments([1])
-        ]);
-        
+
+        if (Request::method() === 'POST') {
+            return $this->department->tree();
+        }
+
+        return parent::output(__METHOD__);
+
     }
-    
+
     /**
-     * 保存新创建的监护人记录
+     * 保存监护人
      *
      * @param CustodianRequest $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(CustodianRequest $request) {
 
-        return $this->custodian->store($request) ? $this->succeed() : $this->fail();
-        
+        return $this->custodian->store($request)
+            ? $this->succeed() : $this->fail();
+
     }
-    
+
     /**
-     * Display the specified resource.
+     * 监护人详情
+     *
      * @param  \App\Models\Custodian $custodian
-     * @return \Illuminate\Http\Response
      */
     public function show(Custodian $custodian) {
-    
+
     }
     
     /**
-     * 编辑监护人.
+     * 编辑监护人
+     *
      * @param $id
-     * @return \Illuminate\Http\Response
-     * @internal param Custodian $custodian
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function edit($id) {
+
+        if (Request::method() === 'POST') {
+            return $this->department->tree();
+        }
         $custodian = $this->custodian->find($id);
-        $user['user'] = $this->user->find($custodian->user_id);
-        $user['expiry'] = $custodian->expiry;
-        $user['mobile'] = $this->mobile->where('user_id',$custodian->user_id)->first();
-        $departmentIds = $this->departmentUser->where('user_id',$custodian->user_id)->get();
-        foreach ($departmentIds as $key=>$value)
-        {
-            $department = Department::whereId($value['department_id'])->first();
-            $selectedDepartments[$department['id']] = $department['name'];
+        $departments = $custodian->user->departments;
+        $selectedDepartmentIds = [];
+        foreach ($departments as $department) {
+            $selectedDepartmentIds[] = $department->id;
         }
+        $selectedDepartments = $this->department->selectedNodes($selectedDepartmentIds);
+        if (!$custodian) { return $this->notFound(); }
 
-        $custodianStudent = $this->custodianStudent->where('custodian_id',$custodian->id)->get();
-
-        foreach ($custodianStudent as $key=>$value)
-        {
-            $studentId = $this->student->find($value['student_id']);
-            $selectedStudents[$studentId->id] = $studentId->user->realname;
-        }
-
-        if (!$user) {
-            return $this->notFound();
-        }
         return $this->output(__METHOD__, [
-            'custodian' => $custodian,
-            'user' => $user,
-            'departments'=>$this->department->departments([1]),
-            'selectedDepartments' => $selectedDepartments,
-            'selectedStudents' => $selectedStudents,
+            'mobiles'               => $custodian->user->mobiles,
+            'custodian'             => $custodian,
+            'selectedDepartmentIds' => implode(',', $selectedDepartmentIds),
+            'selectedDepartments'   => $selectedDepartments,
         ]);
-        
+
     }
-    
+
     /**
      * 更新监护人.
      * @param CustodianRequest $request
@@ -129,12 +124,23 @@ class CustodianController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(CustodianRequest $request, $id) {
-        return $this->custodian->modify($request,$id) ? $this->succeed() : $this->fail();
-        
+
+        return $this->custodian->modify($request, $id)
+            ? $this->succeed() : $this->fail();
+
     }
 
+    /**
+     * 删除指定的监护人
+     *
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function destroy($id) {
-        dd($this->custodian->remove($id));
-        return $this->custodian->remove($id) ? $this->succeed() : $this->fail();
+        
+        return $this->custodian->remove($id)
+            ? $this->succeed() : $this->fail();
+        
     }
+    
 }

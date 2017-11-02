@@ -1,0 +1,1 @@
+page.edit('formCommType', 'comm_types');

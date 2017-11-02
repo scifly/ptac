@@ -1,0 +1,1 @@
+page.create('formConferenceRoom', 'conference_rooms');

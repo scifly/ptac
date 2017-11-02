@@ -1,4 +1,4 @@
-<div class="box box-widget">
+<div class="box box-default box-solid">
     <div class="box-header with-border">
         @include('partials.form_header')
     </div>
@@ -65,7 +65,7 @@
                 {!! Form::label('content', '文章内容', ['class' => 'control-label col-sm-3']) !!}
                 <div class="col-sm-6">
                     <div class="preview">
-                        <script id="container" name="content" type="text/plain">
+                        <script id="container" name="content" type="text/plain" >
                             @if(isset($article))
                                 {!! $article['content'] !!}
                             @endif
@@ -73,11 +73,11 @@
                     </div>
                 </div>
             </div>
-            @include('partials.enabled', [
-                'label' => '是否启用',
-                'id' => 'enabled',
-                'value' => isset($article['enabled']) ? $article['enabled'] : NULL
-            ])
+                @include('partials.enabled', [
+                    'label' => '状态',
+                    'id' => 'enabled',
+                    'value' => isset($article['enabled']) ? $article['enabled'] : NULL
+                ])
 
         </div>
     </div>

@@ -2,8 +2,8 @@
 namespace App\Http\ViewComposers;
 
 use App\Models\Custodian;
-use App\Models\User;
 use App\Models\Student;
+use App\Models\User;
 use Illuminate\Contracts\View\View;
 
 class CustodianStudentComposer {
@@ -19,31 +19,23 @@ class CustodianStudentComposer {
         $this->student = $student;
     }
 
-    public function compose(View $view)
-    {
-        $custodians =Custodian::with('user')->get()->toArray();
-
-        if(!empty($custodians))
-        {
-            foreach ($custodians as $k=>$v)
-            {
+    public function compose(View $view) {
+        $custodians = Custodian::with('user')->get()->toArray();
+        if (!empty($custodians)) {
+            foreach ($custodians as $k => $v) {
                 $custodianName[$v['id']] = $v['user']['realname'];
             }
         }
- 
         $students = Student::with('user')->get()->toArray();
-        if(!empty($students))
-        {
-            foreach ($students as $k=>$v)
-            {
+        if (!empty($students)) {
+            foreach ($students as $k => $v) {
                 $studentName[$v['id']] = $v['user']['realname'];
             }
         }
-
         $view->with([
-            'studentName' => $studentName,
-            'custodianName' => $custodianName
-            ]);
+            'studentName'   => $studentName,
+            'custodianName' => $custodianName,
+        ]);
     }
 
 }

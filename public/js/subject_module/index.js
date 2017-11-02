@@ -1,1 +1,1 @@
-$(crud.index('subject_modules'));
+page.index('subject_modules');

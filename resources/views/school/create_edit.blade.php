@@ -1,4 +1,4 @@
-<div class="box box-widget">
+<div class="box box-default box-solid">
     <div class="box-header with-border">
         @include('partials.form_header')
     </div>
@@ -41,8 +41,14 @@
                 'id' => 'corp_id',
                 'items' => $corps
             ])
+            @if (isset($school['department_id']))
+                {!! Form::hidden('department_id', $school['department_id']) !!}
+            @endif
+            @if (isset($school['menu_id']))
+                {!! Form::hidden('menu_id', $school['menu_id']) !!}
+            @endif
             @include('partials.enabled', [
-                'label' => '是否启用',
+                'label' => '状态',
                 'id' => 'enabled',
                 'value' => isset($school['enabled']) ? $school['enabled'] : NULL
             ])

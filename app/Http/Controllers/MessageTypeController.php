@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\MessageTypeRequest;
@@ -28,6 +27,7 @@ class MessageTypeController extends Controller {
         if (Request::get('draw')) {
             return response()->json($this->messageType->datatable());
         }
+        
         return $this->output(__METHOD__);
         
     }
@@ -64,7 +64,10 @@ class MessageTypeController extends Controller {
     public function show($id) {
         
         $messageType = $this->messageType->find($id);
-        if (!$messageType) { return $this->notFound(); }
+        if (!$messageType) {
+            return $this->notFound();
+        }
+        
         return $this->output(__METHOD__, ['messageType' => $messageType]);
         
     }
@@ -76,11 +79,14 @@ class MessageTypeController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function edit($id) {
-    
+        
         $messageType = $this->messageType->find($id);
-        if (!$messageType) { return $this->notFound(); }
+        if (!$messageType) {
+            return $this->notFound();
+        }
+        
         return $this->output(__METHOD__, ['messageType' => $messageType]);
-    
+        
     }
     
     /**
@@ -93,7 +99,10 @@ class MessageTypeController extends Controller {
     public function update(MessageTypeRequest $request, $id) {
         
         $messageType = $this->messageType->find($id);
-        if (!$messageType) { return $this->notFound(); }
+        if (!$messageType) {
+            return $this->notFound();
+        }
+        
         return $messageType->update($request->all()) ? $this->succeed() : $this->fail();
         
     }
@@ -107,7 +116,10 @@ class MessageTypeController extends Controller {
     public function destroy($id) {
         
         $messageType = $this->messageType->find($id);
-        if (!$messageType) { return $this->notFound(); }
+        if (!$messageType) {
+            return $this->notFound();
+        }
+        
         return $messageType->delete() ? $this->succeed() : $this->fail();
         
     }

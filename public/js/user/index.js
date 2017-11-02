@@ -1,1 +1,1 @@
-$(crud.index('modal-show-user'));
+page.index('users');

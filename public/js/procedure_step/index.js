@@ -1,1 +1,1 @@
-$(crud.index('procedure_steps'));
+page.index('procedure_steps');

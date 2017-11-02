@@ -5,21 +5,21 @@
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
                     &times;
                 </button>
-                        <h4 class="modal-title" id="myModalLabel">
-                            设置日程具体时间
-                        </h4>
+                <h4 class="modal-title" id="myModalLabel">
+                    设置日程具体时间
+                </h4>
             </div>
             <div class="modal-body">
                 <div class="form-horizontal">
                     <div class="form-group">
-                        {!! Form::label('start', '开始时间',['class' => 'col-sm-4 control-label ']) !!}
-                        <div class="col-sm-4">
+                        {!! Form::label('start', '开始时间',['class' => 'col-sm-3 control-label ']) !!}
+                        <div class="col-sm-6">
                             {!! Form::text('start', null, [ 'class' => 'form-control start-datepicker']) !!}
                         </div>
                     </div>
                     <div class="form-group">
-                        {!! Form::label('end', '结束时间',['class' => 'col-sm-4 control-label']) !!}
-                        <div class="col-sm-4">
+                        {!! Form::label('end', '结束时间',['class' => 'col-sm-3 control-label']) !!}
+                        <div class="col-sm-6">
                             {!! Form::text('end', null, ['class' => 'form-control end-datepicker']) !!}
                         </div>
                     </div>

@@ -1,1 +1,1 @@
-$(crud.index('teams'));
+page.index('teams');

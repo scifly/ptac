@@ -1,7 +1,7 @@
 <?php
-
 namespace App\Models;
 
+use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
@@ -29,72 +29,62 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|EducatorAppeal whereStatus($value)
  * @method static Builder|EducatorAppeal whereUpdatedAt($value)
  * @mixin \Eloquent
- * @property-read \App\Models\Educator $educator
- * @property-read \App\Models\Educator $educatorAttendance
- * @property-read \App\Models\ProcedureLog $procedureLog
+ * @property-read Educator $educator
+ * @property-read Educator $educatorAttendance
+ * @property-read ProcedureLog $procedureLog
  */
 class EducatorAppeal extends Model {
-    //
+    
     protected $table = 'educator_appeals';
+    
     protected $fillable = [
-        'educator_id',
-        'ea_ids',
-        'appeal_content',
-        'procedure_log_id',
-        'approver_educator_ids',
-        'reated_educator_ids',
-        'status'
+        'educator_id', 'ea_ids', 'appeal_content',
+        'procedure_log_id', 'approver_educator_ids',
+        'reated_educator_ids', 'status',
     ];
     
     /**
-     * 教职工申诉与教职工
+     * 获取对应的教职员工对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function educator() {
-        return $this->belongsTo('App\Models\Educator');
-    }
+    public function educator() { return $this->belongsTo('App\Models\Educator'); }
     
     /**
-     * 教职工申诉与考勤记录
+     * 获取对应的流程日志对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function educatorAttendance() {
-        return $this->belongsTo('App\Models\Educator', 'ea_ids');
-    }
-    
-    /**
-     * 教职工申诉与流程日志
-     */
-    public function procedureLog() {
-        return $this->belongsTo('App\Models\ProcedureLog', 'procedure_log_id');
-    }
+    public function procedureLog() { return $this->belongsTo('App\Models\ProcedureLog'); }
     
     public function datatable() {
+        
         $columns = [
             ['db' => 'EducatorAppeal.id', 'dt' => 0],
             ['db' => 'Educator.name as educatorname', 'dt' => 1],
-            ['db' => 'EducatorAppeal.appeal_content', 'dt' => 3],
-            ['db' => 'ProcedureLog.id', 'dt' => 4],
-            ['db' => 'EducatorAppeal.created_at', 'dt' => 7],
-            ['db' => 'EducatorAppeal.updated_at', 'dt' => 8],
+            ['db' => 'EducatorAppeal.appeal_content', 'dt' => 2],
+            ['db' => 'ProcedureLog.id', 'dt' => 3],
+            ['db' => 'EducatorAppeal.created_at', 'dt' => 4],
+            ['db' => 'EducatorAppeal.updated_at', 'dt' => 5],
             [
-                'db' => 'EducatorAppeal.status', 'dt' => 9,
+                'db'        => 'EducatorAppeal.status', 'dt' => 6,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
-                }
+                },
+            ],
+        ];
+        $joins = [
+            [
+                'table'      => 'educators',
+                'alias'      => 'Educator',
+                'type'       => 'INNER',
+                'conditions' => [
+                    'Educator.id = EducatorAppeal.educator_id',
+                ],
             ],
         ];
         
-        $joins = [
-            [
-                'table' => 'educators',
-                'alias' => 'Educator',
-                'type' => 'INNER',
-                'conditions' => [
-                    'Educator.id = EducatorAppeal.educator_id'
-                ]
-            ]
-        ];
         return Datatable::simple($this, $columns, $joins);
     }
-    
     
 }

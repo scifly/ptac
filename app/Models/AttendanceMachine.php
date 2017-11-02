@@ -1,14 +1,12 @@
 <?php
-
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
-use App\Http\Requests\AttendanceMachineRequest;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * App\Models\AttendanceMachine
+ * App\Models\AttendanceMachine 考勤机
  *
  * @property int $id
  * @property string $name 考勤机名称
@@ -27,15 +25,16 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|AttendanceMachine whereSchoolId($value)
  * @method static Builder|AttendanceMachine whereUpdatedAt($value)
  * @mixin \Eloquent
- * @property-read \App\Models\School $school
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\StudentAttendance[] $studentAttendances
+ * @property-read School $school
+ * @property-read StudentAttendance[] $studentAttendances
  */
 class AttendanceMachine extends Model {
     
     protected $table = 'attendance_machines';
+    
     protected $fillable = [
         'name', 'location', 'school_id',
-        'machineid', 'enabled'
+        'machineid', 'enabled',
     ];
     
     /**
@@ -63,22 +62,24 @@ class AttendanceMachine extends Model {
             ['db' => 'AttendanceMachine.created_at', 'dt' => 5],
             ['db' => 'AttendanceMachine.updated_at', 'dt' => 6],
             [
-                'db' => 'AttendanceMachine.enabled', 'dt' => 7,
+                'db'        => 'AttendanceMachine.enabled', 'dt' => 7,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
-                }
+                },
             ],
         ];
         $joins = [
             [
-                'table' => 'schools',
-                'alias' => 'School',
-                'type' => 'INNER',
+                'table'      => 'schools',
+                'alias'      => 'School',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'School.id = AttendanceMachine.school_id'
-                ]
-            ]
+                    'School.id = AttendanceMachine.school_id',
+                ],
+            ],
         ];
+        
         return Datatable::simple($this, $columns, $joins);
     }
+    
 }

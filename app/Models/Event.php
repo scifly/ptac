@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
@@ -47,8 +46,12 @@ use Illuminate\Database\Eloquent\Model;
  * @mixin \Eloquent
  * @property-read \App\Models\Educator $educator
  * @property-read \App\Models\Subject $subject
+ * @property-read \App\Models\User $user
+ * @property string $title 事件名称
+ * @method static Builder|Event whereTitle($value)
  */
 class Event extends Model {
+    
     protected $table = 'events';
     protected $fillable = [
         'title',
@@ -67,20 +70,34 @@ class Event extends Model {
         'user_id',
         'created_at',
         'updated_at',
-        'enabled'
+        'enabled',
     ];
-
-    public function educator() {
-        return $this->belongsTo('App\Models\Educator');
-    }
-
-    public function subject() {
-        return $this->belongsTo('APP\Models\Subject');
-    }
-
-
+    
+    /**
+     * 返回事件创建者的用户对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function user() { return $this->belongsTo('App\Models\User'); }
+    
+    /**
+     * 返回课程表事件对应的教职员工对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function educator() { return $this->belongsTo('App\Models\Educator'); }
+    
+    /**
+     * 返回课程表事件对应的科目对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function subject() { return $this->belongsTo('App\Models\Subject'); }
+    
     /**
      * 显示日历事件
+     * @param $userId
+     * @return \Illuminate\Http\JsonResponse
      */
     public function showCalendar($userId) {
         //通过userId找出educator_id
@@ -108,20 +125,51 @@ class Event extends Model {
         if ($this->getRole($userId)) {
             return response()->json(array_merge($pubEvents, $perEvents));
         }
+        
         //如果是用户
         return response()->json(array_merge($pubNoCourseEvents, $perEvents, $pubCourEvents));
     }
-
+    
     /**
      * 判断当前用户权限
+     * @param $userId
+     * @return bool
      */
     public function getRole($userId) {
         $role = User::find($userId)->group;
+        
         return $role->name == '管理员' ? true : false;
     }
-
+    
+    /**
+     * 根据角色验证时间冲突
+     *
+     * @param $userId
+     * @param $educator_id
+     * @param $start
+     * @param $end
+     * @param $id
+     * @return bool
+     */
+    public function isValidateTime($userId, $educator_id, $start, $end, $id = null) {
+        if (!$this->getRole($userId)) {
+            return $this->isRepeatTimeUser($userId, $start, $end, $id);
+        } else {
+            if ($educator_id != 0) {
+                return $this->isRepeatTimeAdmin($educator_id, $start, $end, $id);
+            }
+        }
+        
+        return false;
+    }
+    
     /**
      * 验证用户添加事件是否有重复
+     * @param $userId
+     * @param $start
+     * @param $end
+     * @param null $id
+     * @return bool
      */
     public function isRepeatTimeUser($userId, $start, $end, $id = null) {
         //通过userId 找到educator_id
@@ -173,28 +221,35 @@ class Event extends Model {
                 ->where('ispublic', 1)
                 ->where('iscourse', 0)
                 ->where('start', '>=', $start)
-                ->where('end', '<', $end)
+                ->where('start', '<', $end)
                 ->first();
         }
+        
         return !empty($event);
     }
-
+    
     /**
      * 验证管理员添加事件是否有重复
+     * 未判断管理员个人事件重复
+     * @param $educatorId
+     * @param $start
+     * @param $end
+     * @param null $id
+     * @return bool
      */
     public function isRepeatTimeAdmin($educatorId, $start, $end, $id = null) {
         $event = $this
             ->where('id', '<>', $id)
             ->where('educator_id', $educatorId)
             ->where('start', '<=', $start)
-            ->where('end', '>=', $start)
+            ->where('end', '>', $start)
             ->first();
         if (empty($event)) {
             $event = $this
                 ->where('id', '<>', $id)
                 ->where('educator_id', $educatorId)
                 ->where('start', '>=', $start)
-                ->where('start', '<=', $end)
+                ->where('start', '<', $end)
                 ->first();
         }
         if (empty($event)) {
@@ -203,7 +258,7 @@ class Event extends Model {
                 ->where('ispublic', 1)
                 ->where('iscourse', 0)
                 ->where('start', '<=', $start)
-                ->where('end', '>=', $start)
+                ->where('end', '>', $start)
                 ->first();
         }
         if (empty($event)) {
@@ -211,21 +266,27 @@ class Event extends Model {
                 ->where('id', '<>', $id)
                 ->where('ispublic', 1)
                 ->where('iscourse', 0)
-                ->where('start', '<=', $start)
-                ->where('end', '>=', $start)
+                ->where('start', '>=', $start)
+                ->where('start', '<', $start)
                 ->first();
         }
+        
         return !empty($event);
     }
-
+    
     /**
      * 计算拖动后的时间差
+     * @param $day
+     * @param $hour
+     * @param $minute
+     * @return int
      */
     public function timeDiff($day, $hour, $minute) {
         $days = $day * 24 * 60 * 60;
         $hours = $hour * 60 * 60;
         $minutes = $minute * 60;
+        
         return $diffTime = $days + $hours + $minutes;
     }
-
+    
 }

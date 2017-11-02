@@ -1,13 +1,10 @@
 <?php
-
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
-use App\Http\Requests\TabRequest;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Mockery\Exception;
 use ReflectionClass;
@@ -32,10 +29,12 @@ use ReflectionClass;
  * @property-read Collection|Menu[] $menus
  * @property int|null $icon_id 图标ID
  * @method static Builder|Tab whereIconId($value)
- * @property-read \App\Models\Icon|null $icon
+ * @property-read Icon|null $icon
  * @property int $action_id 默认加载的Action ID
- * @property-read \App\Models\Action $action
+ * @property-read Action $action
  * @method static Builder|Tab whereActionId($value)
+ * @property string $controller 控制器名称
+ * @method static Builder|Tab whereController($value)
  */
 class Tab extends Model {
     
@@ -53,14 +52,14 @@ HTML;
 HTML;
     protected $fillable = [
         'name', 'remark', 'icon_id',
-        'action_id', 'enabled', 'controller'
+        'action_id', 'enabled', 'controller',
     ];
     protected $excluded_controllers = [
         'ForgotPasswordController', 'Controller', 'RegisterController',
-        'LoginController', 'ResetPasswordController', 'TestController'
+        'LoginController', 'ResetPasswordController', 'TestController',
     ];
     
-    protected $dir = '/media/sf_sandbox/ptac/app/Http/Controllers';
+    protected $ctlrDir = 'app/Http/Controllers';
     
     /**
      * 返回指定卡片所属的菜单对象
@@ -98,7 +97,7 @@ HTML;
     public function scan() {
         
         $action = new Action();
-        $controllers = $action->scanDirectories($this->dir);
+        $controllers = $this->scanDirectories($action->getSiteRoot() . $this->ctlrDir);
         $action->getControllerNamespaces($controllers);
         $controllerNames = $action->getControllerNames($controllers);
         // remove nonexisting controllers
@@ -122,11 +121,11 @@ HTML;
             $ctlrName = $paths[sizeof($paths) - 1];
             if (in_array($ctlrName, $this->excluded_controllers)) continue;
             $record = [
-                'name' => $this->getControllerComment($obj),
+                'name'       => $this->getControllerComment($obj),
                 'controller' => $ctlrName,
-                'remark' => $controller,
-                'action_id' => $this->getIndexActionId($ctlrName),
-                'enabled' => 1
+                'remark'     => $controller,
+                'action_id'  => $this->getIndexActionId($ctlrName),
+                'enabled'    => 1,
             ];
             $tab = $this->where('controller', $record['controller'])->first();
             if ($tab) {
@@ -140,36 +139,66 @@ HTML;
             }
         }
         unset($action);
-        
         return true;
         
     }
-
-    private function getIndexActionId($ctlrName) {
+    
+    /**
+     * 移除指定的卡片
+     *
+     * @param $id
+     * @return bool|mixed
+     */
+    public function remove($id) {
         
-        $action = new Action();
-        $a = $actionId = $action::whereEnabled(1)->
-            where('controller', $ctlrName)->
-            where('method', 'index')->first();
-        if (!$a) { return 0; }
-        return $a->id;
+        $tab = $this->find($id);
+        if (!isset($tab)) {
+            return false;
+        }
+        try {
+            $exception = DB::transaction(function () use ($id, $tab) {
+                # 删除指定的卡片记录
+                $tab->delete();
+                # 删除与指定卡片绑定的菜单记录
+                MenuTab::whereTabId($id)->delete();
+            });
+            
+            return is_null($exception) ? true : $exception;
+        } catch (Exception $e) {
+            return false;
+        }
         
     }
     
     private function getControllerComment(ReflectionClass $controller) {
-    
+        
         $comment = $controller->getDocComment();
         $name = 'n/a';
         preg_match_all("#\/\*\*\n\s{1}\*[^\*]*\*#", $comment, $matches);
         if (isset($matches[0][0])) {
-            $name = str_replace(str_split("\n/* "), '', $matches[0][0]);
+            $name = str_replace(str_split("\r\n/* "), '', $matches[0][0]);
         } else {
             preg_match_all("#\/\*\*\r\n\s{1}\*[^\*]*\*#", $comment, $matches);
             if (isset($matches[0][0])) {
-                $name = str_replace(str_split("\n/* "), '', $matches[0][0]);
+                $name = str_replace(str_split("\r\n/* "), '', $matches[0][0]);
             }
         }
+        
         return $name;
+        
+    }
+    
+    private function getIndexActionId($ctlrName) {
+        
+        $action = new Action();
+        $a = $actionId = $action::whereEnabled(1)->
+        where('controller', $ctlrName)->
+        where('method', 'index')->first();
+        if (!$a) {
+            return 0;
+        }
+        
+        return $a->id;
         
     }
     
@@ -179,45 +208,43 @@ HTML;
             ['db' => 'Tab.id', 'dt' => 0],
             ['db' => 'Tab.name', 'dt' => 1],
             [
-                'db' => 'Icon.name as iconname', 'dt' => 2,
+                'db'        => 'Icon.name as iconname', 'dt' => 2,
                 'formatter' => function ($d) {
                     return isset($d) ? '<i class="' . $d . '"></i>&nbsp;' . $d : '[n/a]';
-                }
+                },
             ],
             ['db' => 'Action.name as actionname', 'dt' => 3],
             ['db' => 'Tab.created_at', 'dt' => 4],
             ['db' => 'Tab.updated_at', 'dt' => 5],
             [
-                'db' => 'Tab.enabled', 'dt' => 6,
+                'db'        => 'Tab.enabled', 'dt' => 6,
                 'formatter' => function ($d, $row) {
                     $id = $row['id'];
                     $status = $d ? sprintf(self::DT_ON, '已启用') : sprintf(self::DT_OFF, '已禁用');
                     $showLink = sprintf(self::DT_LINK_SHOW, 'show_' . $id);
                     $editLink = sprintf(self::DT_LINK_EDIT, 'edit_' . $id);
-            
                     return $status . '&nbsp;' . $showLink . '&nbsp;' . $editLink;
-                }
-            ]
+                },
+            ],
         ];
         $joins = [
             [
-                'table' => 'icons',
-                'alias' => 'Icon',
-                'type' => 'LEFT',
+                'table'      => 'icons',
+                'alias'      => 'Icon',
+                'type'       => 'LEFT',
                 'conditions' => [
-                    'Icon.id = Tab.icon_id'
-                ]
+                    'Icon.id = Tab.icon_id',
+                ],
             ],
             [
-                'table' => 'actions',
-                'alias' => 'Action',
-                'type' => 'LEFT',
+                'table'      => 'actions',
+                'alias'      => 'Action',
+                'type'       => 'LEFT',
                 'conditions' => [
-                    'Action.id = Tab.action_id'
-                ]
-            ]
+                    'Action.id = Tab.action_id',
+                ],
+            ],
         ];
-        
         return Datatable::simple($this, $columns, $joins);
         
     }
@@ -225,18 +252,19 @@ HTML;
     /**
      * 保存卡片
      *
-     * @param TabRequest $request
+     * @param array $data
      * @return bool|mixed
      */
-    public function store(TabRequest $request) {
+    public function store(array $data) {
         
         try {
-            $exception = DB::transaction(function() use ($request) {
-                $t = $this->create($request->all());
+            $exception = DB::transaction(function () use ($data) {
+                $t = $this->create($data);
                 $menuTab = new MenuTab();
-                $menuIds = $request->input('menu_ids', []);
+                $menuIds = $data['menu_ids'];
                 $menuTab->storeByTabId($t->id, $menuIds);
             });
+            
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
             return false;
@@ -247,48 +275,24 @@ HTML;
     /**
      * 更新指定的卡片
      *
-     * @param Request $request
-     * @param $tabId
+     * @param array $data
+     * @param $id
      * @return bool|mixed
      */
-    public function modify(Request $request, $tabId) {
+    public function modify(array $data, $id) {
         
-        $tab = $this->find($tabId);
-        if (!isset($tab)) { return false; }
-        try {
-            $exception = DB::transaction(function() use($request, $tabId, $tab) {
-                $tab->update($request->all());
-                $menuIds = $request->input('menu_ids', []);
-                $menuTab = new MenuTab();
-                $menuTab::whereTabId($tabId)->delete();
-                $menuTab->storeByTabId($tabId, $menuIds);
-            });
-            
-            return is_null($exception) ? true : $exception;
-        } catch (Exception $e) {
+        $tab = $this->find($id);
+        if (!isset($tab)) {
             return false;
         }
-        
-    }
-    
-    /**
-     * 移除指定的卡片
-     *
-     * @param $tabId
-     * @return bool|mixed
-     */
-    public function remove($tabId) {
-        
-        $tab = $this->find($tabId);
-        if (!isset($tab)) { return false; }
         try {
-            $exception = DB::transaction(function() use ($tabId, $tab) {
-                # 删除指定的卡片记录
-                $tab->delete();
-                # 删除与指定卡片绑定的菜单记录
-                MenuTab::whereTabId($tabId)->delete();
+            $exception = DB::transaction(function () use ($data, $id, $tab) {
+                $tab->update($data);
+                $menuIds = $data['menu_ids'];
+                $menuTab = new MenuTab();
+                $menuTab::whereTabId($id)->delete();
+                $menuTab->storeByTabId($id, $menuIds);
             });
-            
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
             return false;
@@ -303,10 +307,10 @@ HTML;
      * @param array $allData
      * @return array
      */
-    private function scanDirectories($rootDir, $allData = array()) {
+    private function scanDirectories($rootDir, $allData = []) {
         
         // set filenames invisible if you want
-        $invisibleFileNames = array(".", "..", ".htaccess", ".htpasswd");
+        $invisibleFileNames = [".", "..", ".htaccess", ".htpasswd"];
         // run through content of root directory
         $dirContent = scandir($rootDir);
         foreach ($dirContent as $key => $content) {
@@ -324,7 +328,6 @@ HTML;
                 }
             }
         }
-        
         return $allData;
         
     }

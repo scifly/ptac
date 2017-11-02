@@ -1,1 +1,0 @@
-$(crud.index('custodians_students'));

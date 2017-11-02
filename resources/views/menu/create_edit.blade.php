@@ -1,4 +1,4 @@
-<div class="box box-widget">
+<div class="box box-default box-solid">
     <div class="box-header with-border">
         @include('partials.form_header')
     </div>
@@ -6,6 +6,9 @@
         <div class="form-horizontal">
             @if (!empty($menu['id']))
                 {{ Form::hidden('id', $menu['id'], ['id' => 'id']) }}
+            @endif
+            @if (!empty($menu['position']))
+                {{ Form::hidden('position', $menu['position'], ['id' => 'position']) }}
             @endif
             {{ Form::hidden('parent_id', isset($parentId) ? $parentId : null, ['id' => 'parent_id']) }}
             <div class="form-group">
@@ -16,9 +19,9 @@
                     {!! Form::text('name', null, [
                         'id' => 'name',
                         'class' => 'form-control',
-                        'placeholder' => '(不超过40个汉字)',
+                        'placeholder' => '(不得超过8个汉字)',
                         'required' => 'true',
-                        'data-parsley-length' => '[2, 40]'
+                        'data-parsley-length' => '[2, 8]'
                     ]) !!}
                 </div>
             </div>
@@ -34,11 +37,7 @@
                     ]) !!}
                 </div>
             </div>
-            @include('partials.single_select', [
-                'label' => '所属学校',
-                'id' => 'school_id',
-                'items' => $schools
-            ])
+            {{ Form::hidden('menu_type_id', isset($menuTypeId) ? $menuTypeId : null, ['id' => 'menu_type_id']) }}
             <div class="form-group">
                 {!! Form::label('icon_id', '图标', [
                     'class' => 'col-sm-3 control-label'
@@ -67,7 +66,7 @@
                 'selectedItems' => isset($selectedTabs) ? $selectedTabs : NULL
             ])
             @include('partials.enabled', [
-                'label' => '是否启用',
+                'label' => '状态',
                 'id' => 'enabled',
                 'value' => isset($menu['enabled']) ? $menu['enabled'] : NULL
             ])
@@ -75,4 +74,3 @@
     </div>
     @include('partials.form_buttons')
 </div>
-

@@ -1,4 +1,4 @@
-$(crud.edit('formUser'));
+page.edit('formUser', 'users');
 
 $(function () {
     $('#avatar_upload').change(function () {

@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\IconTypeRequest;
@@ -28,6 +27,7 @@ class IconTypeController extends Controller {
         if (Request::get('draw')) {
             return response()->json($this->iconType->datatable());
         }
+        
         return $this->output(__METHOD__);
         
     }
@@ -51,7 +51,8 @@ class IconTypeController extends Controller {
      */
     public function store(IconTypeRequest $request) {
         
-        return $this->iconType->create($request->all()) ? $this->succeed() : $this->fail();
+        return $this->iconType->store($request->all())
+            ? $this->succeed() : $this->fail();
         
     }
     
@@ -64,7 +65,10 @@ class IconTypeController extends Controller {
     public function show($id) {
         
         $iconType = $this->iconType->find($id);
-        if (!$iconType) { return $this->notFound(); }
+        if (!$iconType) {
+            return $this->notFound();
+        }
+        
         return $this->output(__METHOD__, ['iconType' => $iconType]);
         
     }
@@ -76,9 +80,12 @@ class IconTypeController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function edit($id) {
-    
+        
         $iconType = $this->iconType->find($id);
-        if (!$iconType) { return $this->notFound(); }
+        if (!$iconType) {
+            return $this->notFound();
+        }
+        
         return $this->output(__METHOD__, ['iconType' => $iconType]);
         
     }
@@ -91,10 +98,14 @@ class IconTypeController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(IconTypeRequest $request, $id) {
-    
+        
         $iconType = $this->iconType->find($id);
-        if (!$iconType) { return $this->notFound(); }
-        return $iconType->update($request->all()) ? $this->succeed() : $this->fail();
+        if (!$iconType) {
+            return $this->notFound();
+        }
+        
+        return $iconType->modify($request->all(), $id)
+            ? $this->succeed() : $this->fail();
         
     }
     
@@ -105,11 +116,14 @@ class IconTypeController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
-    
+        
         $iconType = $this->iconType->find($id);
-        if (!$iconType) { return $this->notFound(); }
-        return $iconType->delete() ? $this->succeed() : $this->fail();
-    
+        if (!$iconType) {
+            return $this->notFound();
+        }
+        
+        return $iconType->remove($id) ? $this->succeed() : $this->fail();
+        
     }
     
 }

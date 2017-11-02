@@ -23,9 +23,9 @@ class ScoreRangeShowStatisticsComposer {
     public function compose(View $view) {
 
         $view->with([
-            'grades' => $this->grades->pluck('name', 'id'),
+            'grades'  => $this->grades->pluck('name', 'id'),
             'classes' => $this->classes->pluck('name', 'id'),
-            'exams' => $this->exams->pluck('name', 'id'),
+            'exams'   => $this->exams->pluck('name', 'id'),
         ]);
     }
 

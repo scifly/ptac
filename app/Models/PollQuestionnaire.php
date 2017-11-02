@@ -1,12 +1,13 @@
 <?php
-
 namespace App\Models;
 
+use App\Facades\DatatableFacade as Datatable;
+use App\Helpers\ModelTrait;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * App\Models\PollQuestionnaire
+ * App\Models\PollQuestionnaire 调查问卷
  *
  * @property int $id
  * @property int $school_id 所属学校ID
@@ -27,30 +28,107 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|PollQuestionnaire whereUpdatedAt($value)
  * @method static Builder|PollQuestionnaire whereUserId($value)
  * @mixin \Eloquent
- * @property-read \App\Models\PollQuestionnaireAnswer $pollquestionnaireAnswer
- * @property-read \App\Models\PollQuestionnaireParticipant $pollquestionnairePartcipant
- * @property-read \App\Models\School $school
- * @property-read \App\Models\User $user
+ * @property-read PollQuestionnaireAnswer $pollquestionnaireAnswer
+ * @property-read PollQuestionnaireParticipant $pollquestionnairePartcipant
+ * @property-read School $school
+ * @property-read User $user
+ * @property-read \App\Models\PollQuestionnaireAnswer $poll_questionnaire_answer
+ * @property-read \App\Models\PollQuestionnaireParticipant $poll_questionnaire_partcipant
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\PollQuestionnaireSubject[] $poll_questionnaire_subject
  */
 class PollQuestionnaire extends Model {
-    //
+    
+    use ModelTrait;
+    
     protected $table = 'poll_questionnaires';
     
-    protected $fillable = ['school_id', 'user_id', 'name', 'start', 'end',  'enabled'];
+    protected $fillable = ['school_id', 'user_id', 'name', 'start', 'end', 'enabled'];
     
-    public function school() {
-        return $this->belongsTo('App\Models\School');
+    /**
+     * 返回指定调查问卷所属的学校对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function school() { return $this->belongsTo('App\Models\School'); }
+    
+    /**
+     * 返回调查问卷发起者的用户对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function user() { return $this->belongsTo('App\Models\User'); }
+    
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function poll_questionnaire_answer() {
+        return $this->hasOne('App\Models\PollQuestionnaireAnswer', 'pq_id');
     }
     
-    public function user() {
-        return $this->belongsTo('App\Models\User');
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function poll_questionnaire_partcipant() {
+        return $this->hasOne('App\Models\PollQuestionnaireParticipant', 'pq_id');
     }
     
-    public function pollquestionnaireAnswer() {
-        return $this->hasOne('App\Models\PollQuestionnaireAnswer');
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function poll_questionnaire_subject() {
+        return $this->hasMany('App\Models\PollQuestionnaireSubject', 'pq_id');
     }
     
-    public function pollquestionnairePartcipant() {
-        return $this->hasOne('App\Models\PollQuestionnaireParticipant');
+    /**
+     * 删除问卷
+     *
+     * @param $id
+     * @return bool|null
+     */
+    public function remove($id) {
+        
+        $pollQuestionnaire = $this->find($id);
+        if (!$pollQuestionnaire) { return false; }
+        return $this->removable($pollQuestionnaire) ? $pollQuestionnaire->delete() : false;
+        
+    }
+    
+    public function dataTable() {
+        
+        $columns = [
+            ['db' => 'PollQuestionnaire.id', 'dt' => 0],
+            ['db' => 'PollQuestionnaire.name', 'dt' => 1],
+            ['db' => 'School.name as school_name', 'dt' => 2],
+            ['db' => 'User.realname', 'dt' => 3],
+            ['db' => 'PollQuestionnaire.start', 'dt' => 4],
+            ['db' => 'PollQuestionnaire.end', 'dt' => 5],
+            ['db' => 'PollQuestionnaire.created_at', 'dt' => 6],
+            ['db' => 'PollQuestionnaire.updated_at', 'dt' => 7],
+            [
+                'db'        => 'PollQuestionnaire.enabled', 'dt' => 8,
+                'formatter' => function ($d, $row) {
+                    return Datatable::dtOps($this, $d, $row);
+                },
+            ],
+        ];
+        $joins = [
+            [
+                'table'      => 'schools',
+                'alias'      => 'School',
+                'type'       => 'INNER',
+                'conditions' => [
+                    'School.id = PollQuestionnaire.school_id',
+                ],
+            ],
+            [
+                'table'      => 'users',
+                'alias'      => 'User',
+                'type'       => 'INNER',
+                'conditions' => [
+                    'User.id = PollQuestionnaire.user_id',
+                ],
+            ],
+        ];
+        return Datatable::simple($this, $columns, $joins);
     }
 }

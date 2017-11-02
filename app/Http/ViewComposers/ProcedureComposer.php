@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\ViewComposers;
 
 use App\Models\ProcedureType;
@@ -20,8 +19,8 @@ class ProcedureComposer {
     public function compose(View $view) {
 
         $view->with([
-            'schools' => $this->schools->pluck('name', 'id'),
-            'procedureTypes' => $this->procedureTypes->pluck('name', 'id')
+            'schools'        => $this->schools->pluck('name', 'id'),
+            'procedureTypes' => $this->procedureTypes->pluck('name', 'id'),
         ]);
     }
 

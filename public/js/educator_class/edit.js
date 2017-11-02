@@ -1,1 +1,0 @@
-$(crud.edit('formEducatorClass','educators_classes'));

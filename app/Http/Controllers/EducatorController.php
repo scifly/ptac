@@ -1,11 +1,12 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\EducatorRequest;
+use App\Models\Department;
 use App\Models\Educator;
+use App\Models\EducatorClass;
+use App\Models\Mobile;
 use App\Models\Team;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
 
 /**
@@ -17,12 +18,24 @@ use Illuminate\Support\Facades\Request;
 class EducatorController extends Controller {
     
     protected $educator;
+    protected $mobile;
+    protected $educatorClass;
     protected $team;
-
-    public function __construct(Educator $educator, Team $team) {
+    protected $department;
+    
+    public function __construct(
+        Educator $educator,
+        Mobile $mobile,
+        EducatorClass $educatorClass,
+        Team $team,
+        Department $department
+    ) {
         
         $this->educator = $educator;
+        $this->mobile = $mobile;
+        $this->educatorClass = $educatorClass;
         $this->team = $team;
+        $this->department = $department;
         
     }
     
@@ -32,7 +45,7 @@ class EducatorController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
-
+        
         if (Request::get('draw')) {
             return response()->json($this->educator->datatable());
         }
@@ -43,12 +56,17 @@ class EducatorController extends Controller {
     /**
      * 创建教职员工
      *
-     * @return \Illuminate\Http\Response
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function create() {
+        
+        if (Request::method() === 'POST') {
+            return $this->department->tree();
+        }
         return $this->output(__METHOD__);
+        
     }
-
+    
     /**
      * 保存教职员工
      *
@@ -56,11 +74,12 @@ class EducatorController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(EducatorRequest $request) {
-
-        return $this->educator->create($request->all()) ? $this->succeed() : $this->fail();
+        
+        return $this->educator->store($request)
+            ? $this->succeed() : $this->fail();
         
     }
-
+    
     /**
      * 教职员工详情
      *
@@ -72,12 +91,12 @@ class EducatorController extends Controller {
         $educator = $this->educator->find($id);
         if (!$educator) { return $this->notFound(); }
         return $this->output(__METHOD__, [
-            'educator' => $educator,
-            'educators' => $this->educator->teams()
+            'educator'  => $educator,
+            'educators' => $this->educator->teams(),
         ]);
         
     }
-
+    
     /**
      * 编辑教职员工
      *
@@ -86,16 +105,48 @@ class EducatorController extends Controller {
      */
     public function edit($id) {
         
+        if (Request::method() === 'POST') {
+            return $this->department->tree();
+        }
         $educator = $this->educator->find($id);
         if (!$educator) { return $this->notFound(); }
-        $teamIds = explode(",", $educator->team_ids);
+        $selectedTeams = [];
+        foreach ($educator->teams as $v) {
+            $selectedTeams[$v->id] = $v->name;
+        }
+        $selectedDepartmentIds = [];
+        foreach ($educator->user->departments as $department) {
+            $selectedDepartmentIds[] = $department->id;
+        }
+        $selectedDepartments = $this->department->selectedNodes($selectedDepartmentIds);
         return $this->output(__METHOD__, [
-            'educator' => $educator,
-            'selectedTeams' => $this->team->teams($teamIds)
+            'mobiles'               => $educator->user->mobiles,
+            'educator'              => $educator,
+            'selectedTeams'         => $selectedTeams,
+            'selectedDepartmentIds' => implode(',', $selectedDepartmentIds),
+            'selectedDepartments'   => $selectedDepartments,
         ]);
         
     }
-
+    
+    /**
+     * 教职员工充值
+     *
+     * @param $id
+     * @return bool|\Illuminate\Http\JsonResponse
+     */
+    public function recharge($id) {
+        
+        $educator = $this->educator->find($id);
+        if (!$educator) {
+            return $this->notFound();
+        }
+        return $this->output(__METHOD__, [
+            'educator' => $educator,
+        ]);
+        
+    }
+    
     /**
      * 更新教职员工
      *
@@ -106,11 +157,31 @@ class EducatorController extends Controller {
     public function update(EducatorRequest $request, $id) {
         
         $educator = $this->educator->find($id);
-        if (!$educator) { return $this->notFound(); }
-        return $educator->update($request->all()) ? $this->succeed() : $this->fail();
+        if (!$educator) {
+            return $this->notFound();
+        }
+        return $educator->modify($request) ? $this->succeed() : $this->fail();
         
     }
-
+    
+    /**
+     * 更新教职员工充值
+     *
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function rechargeStore($id) {
+        
+        $educator = $this->educator->find($id);
+        if (!$educator) {
+            return $this->notFound();
+        }
+        $recharge = Request::get('recharge');
+        $educator->sms_quote += $recharge;
+        return $educator->save() ? $this->succeed() : $this->fail();
+        
+    }
+    
     /**
      * 删除教职员工
      *
@@ -120,9 +191,12 @@ class EducatorController extends Controller {
     public function destroy($id) {
         
         $educator = $this->educator->find($id);
-        if (!$educator) { return $this->notFound(); }
-        return $educator->delete() ? $this->succeed() : $this->fail();
-
+        if (!$educator) {
+            return $this->notFound();
+        }
+        return $this->educator->remove($id, true)
+            ? parent::succeed() : parent::fail();
+        
     }
     
 }

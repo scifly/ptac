@@ -1,0 +1,1 @@
+page.index('combo_types');

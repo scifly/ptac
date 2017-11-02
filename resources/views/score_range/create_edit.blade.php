@@ -1,4 +1,4 @@
-<div class="box box-widget">
+<div class="box box-default box-solid">
     <div class="box-header with-border">
         @include('partials.form_header')
     </div>
@@ -55,11 +55,11 @@
             @include('partials.multiple_select', [
                 'label' => '统计科目',
                 'id' => 'subject_ids',
-                'items' => [],
+                'items' => $subjects
             ])
             {!! Form::hidden('subject_select_ids', $scoreRange['subject_ids'] or '') !!}
             @include('partials.enabled', [
-                'label' => '是否启用',
+                'label' => '状态',
                 'id' => 'enabled',
                 'value' => isset($subject['enabled']) ? $subject['enabled'] : NULL
             ])

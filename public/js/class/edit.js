@@ -1,1 +1,1 @@
-$(crud.edit('fromSquad', 'classes'))
+page.edit('fromSquad', 'classes');

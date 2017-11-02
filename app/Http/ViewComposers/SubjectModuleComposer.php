@@ -4,7 +4,6 @@ namespace App\Http\ViewComposers;
 use App\Models\Subject;
 use Illuminate\Contracts\View\View;
 
-
 class SubjectModuleComposer {
 
     protected $subject;
@@ -16,7 +15,7 @@ class SubjectModuleComposer {
         $view->with([
             'subjects' => $this->subject->pluck('name', 'id'),
         ]);
-        
+
     }
 
 }

@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
@@ -7,19 +6,20 @@ use Illuminate\Foundation\Http\FormRequest;
 class SquadRequest extends FormRequest {
     
     protected $strings_key = [
-        'name' => '班级名称',
-        'grade_id' => '所属年级',
-        'educator_ids' => '年级主任',
-        'enabled' => '是否启用'
+        'name'          => '班级名称',
+        'department_id' => '对应部门',
+        'grade_id'      => '所属年级',
+        'educator_ids'  => '年级主任',
+        'enabled'       => '是否启用',
     ];
     protected $strings_val = [
         'required' => '为必填项',
-        'string' => '为字符串',
-        'max' => '最大为:max',
-        'integer' => '必须为整数',
-        'boolean' => '为0或1',
-        'unique' => '不唯一',
-
+        'string'   => '为字符串',
+        'max'      => '最大为:max',
+        'integer'  => '必须为整数',
+        'boolean'  => '为0或1',
+        'unique'   => '不唯一',
+        'between'  => '88',
     ];
     
     /**
@@ -45,7 +45,6 @@ class SquadRequest extends FormRequest {
                 $array[$key . '.' . $v] = $k_array[$key] . $v_array[$v];
             }
         }
-        
         return $array;
         
     }
@@ -53,12 +52,13 @@ class SquadRequest extends FormRequest {
     public function rules() {
         
         return [
-            'name' => 'required|string|between:2,255|unique:classes,name,' .
+            'name'          => 'required|string|between:2,255|unique:classes,name,' .
                 $this->input('id') . ',id,' .
                 'grade_id,' . $this->input('grade_id'),
-            'grade_id' => 'required|integer',
-            'educator_ids' => 'required|string',
-            'enabled' => 'required|boolean'
+            'department_id' => 'required|integer',
+            'grade_id'      => 'required|integer',
+            'educator_ids'  => 'required|string',
+            'enabled'       => 'required|boolean',
         ];
         
     }
@@ -76,6 +76,12 @@ class SquadRequest extends FormRequest {
         }
         if (isset($input['educator_ids'])) {
             $input['educator_ids'] = implode(',', $input['educator_ids']);
+        }
+        if (!isset($input['educator_ids'])) {
+            $input['educator_ids'] = '1';
+        }
+        if (!isset($input['department_id'])) {
+            $input['department_id'] = 0;
         }
         $this->replace($input);
         

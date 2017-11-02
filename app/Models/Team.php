@@ -1,10 +1,7 @@
 <?php
-
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
-use App\Http\Requests\TeamRequest;
-use App\Models\School;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -56,14 +53,15 @@ class Team extends Model {
      * @return array
      */
     public function teams(array $teamIds) {
-
+        
         $teams = [];
         foreach ($teamIds as $id) {
             $team = $this->find($id);
             $teams[$team['id']] = $team['name'];
         }
+        
         return $teams;
-
+        
     }
     
     public function datatable() {
@@ -76,23 +74,22 @@ class Team extends Model {
             ['db' => 'Team.created_at', 'dt' => 4],
             ['db' => 'Team.updated_at', 'dt' => 5],
             [
-                'db' => 'Team.enabled', 'dt' => 6,
+                'db'        => 'Team.enabled', 'dt' => 6,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
-                }
-            ]
+                },
+            ],
         ];
         $joins = [
             [
-                'table' => 'schools',
-                'alias' => 'School',
-                'type' => 'INNER',
+                'table'      => 'schools',
+                'alias'      => 'School',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'School.id = Team.school_id'
-                ]
-            ]
+                    'School.id = Team.school_id',
+                ],
+            ],
         ];
-        
         return Datatable::simple($this, $columns, $joins);
         
     }

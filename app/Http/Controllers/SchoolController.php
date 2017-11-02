@@ -1,8 +1,8 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\SchoolRequest;
+use App\Jobs\CreateWechatDepartment;
 use App\Models\School as School;
 use Illuminate\Support\Facades\Request;
 
@@ -24,12 +24,13 @@ class SchoolController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
-    
+        
         if (Request::get('draw')) {
             return response()->json($this->school->datatable());
         }
+        
         return parent::output(__METHOD__);
-    
+        
     }
     
     /**
@@ -50,9 +51,10 @@ class SchoolController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function store(SchoolRequest $request) {
-    
-        return $this->school->create($request->all()) ? parent::succeed() : parent::fail();
-    
+        
+        return $this->school->store($request->all(), true)
+            ? parent::succeed() : parent::fail();
+        
     }
     
     /**
@@ -62,11 +64,11 @@ class SchoolController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function show($id) {
-    
+        
         $school = $this->school->find($id);
         if (!$school) { return parent::notFound(); }
-        return parent::output(__METHOD__);
-    
+        return parent::output(__METHOD__, ['school' => $school]);
+        
     }
     
     /**
@@ -78,7 +80,10 @@ class SchoolController extends Controller {
     public function edit($id) {
         
         $school = $this->school->find($id);
-        if (!$school) { return parent::notFound(); }
+        if (!$school) {
+            return parent::notFound();
+        }
+        
         return parent::output(__METHOD__, ['school' => $school]);
         
     }
@@ -92,9 +97,9 @@ class SchoolController extends Controller {
      */
     public function update(SchoolRequest $request, $id) {
         
-        $school = $this->school->find($id);
-        if (!$school) { return parent::notFound(); }
-        return $school->update($request->all()) ? parent::succeed() : parent::fail();
+        if (!$this->school->find($id)) { return parent::notFound(); }
+        return $this->school->modify($request->all(), $id, true)
+            ? parent::succeed() : parent::fail();
         
     }
     
@@ -106,9 +111,12 @@ class SchoolController extends Controller {
      */
     public function destroy($id) {
         
-        $school = $this->school->find($id);
-        if (!$school) { return parent::notFound(); }
-        return $school->delete() ? parent::succeed() : parent::fail();
+        if (!$this->school->find($id)) {
+            return parent::notFound();
+        }
+        
+        return $this->school->remove($id, true)
+            ? parent::succeed() : parent::fail();
         
     }
     

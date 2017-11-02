@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProcedureTypeRequest;
@@ -15,7 +14,7 @@ use Illuminate\Support\Facades\Request;
 class ProcedureTypeController extends Controller {
     
     protected $procedureType;
-
+    
     function __construct(ProcedureType $procedureType) {
         
         $this->procedureType = $procedureType;
@@ -32,6 +31,7 @@ class ProcedureTypeController extends Controller {
         if (Request::get('draw')) {
             return response()->json($this->procedureType->datatable());
         }
+        
         return $this->output(__METHOD__);
         
     }
@@ -68,7 +68,10 @@ class ProcedureTypeController extends Controller {
     public function show($id) {
         
         $procedureType = $this->procedureType->find($id);
-        if (!$procedureType) { return $this->notFound(); }
+        if (!$procedureType) {
+            return $this->notFound();
+        }
+        
         return $this->output(__METHOD__, ['procedureType' => $procedureType]);
         
     }
@@ -80,9 +83,12 @@ class ProcedureTypeController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function edit($id) {
-    
+        
         $procedureType = $this->procedureType->find($id);
-        if (!$procedureType) { return $this->notFound(); }
+        if (!$procedureType) {
+            return $this->notFound();
+        }
+        
         return $this->output(__METHOD__, ['procedureType' => $procedureType]);
         
     }
@@ -95,9 +101,12 @@ class ProcedureTypeController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(ProcedureTypeRequest $request, $id) {
-    
+        
         $procedureType = $this->procedureType->find($id);
-        if (!$procedureType) { return $this->notFound(); }
+        if (!$procedureType) {
+            return $this->notFound();
+        }
+        
         return $procedureType->update($request->all()) ? $this->succeed() : $this->fail();
         
     }
@@ -111,7 +120,10 @@ class ProcedureTypeController extends Controller {
     public function destroy($id) {
         
         $procedureType = $this->procedureType->find($id);
-        if (!$procedureType) { return $this->notFound(); }
+        if (!$procedureType) {
+            return $this->notFound();
+        }
+        
         return $procedureType->delete() ? $this->succeed() : $this->fail();
         
     }

@@ -18,7 +18,8 @@
 
 
     <dl class="dl-horizontal">
-        <dt>所属年级：</dt><dd>{{ $squad->grade->name }}</dd>
+        <dt>所属年级：</dt>
+        <dd>{{ $squad->grade->name }}</dd>
         <br/>
         <dt>教职员工组：</dt>
         @foreach($educators as $v)

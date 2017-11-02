@@ -1,4 +1,4 @@
-<div class="box box-widget">
+<div class="box box-default box-solid">
     <div class="box-header with-border">
         @include('partials.form_header')
     </div>
@@ -22,10 +22,13 @@
                         <img id="avatar_thumb_img"
                              src='{{asset("../storage/app/avauploads/{$personalInfo->avatar_url}")}}'
                              style="width:100px; height: 100px;max-width: 100px;max-height: 100px; border-radius:50%; overflow:hidden;"/>
-                        <input id="{{$personalInfo->id}}" type="text" size="50" name="avatar_url" class="hide" value="{{$personalInfo->avatar_url}}"/>
-                        <a class="btn btn-upload" style=" margin-left:50px; border:1px solid #3c8dbc; color:#3c8dbc !important; border-radius:40px; position: relative; overflow: hidden;">
+                        <input id="{{$personalInfo->id}}" type="text" size="50" name="avatar_url" class="hide"
+                               value="{{$personalInfo->avatar_url}}"/>
+                        <a class="btn btn-upload"
+                           style=" margin-left:50px; border:1px solid #3c8dbc; color:#3c8dbc !important; border-radius:40px; position: relative; overflow: hidden;">
                             <span>更改头像</span>
-                            <input id="avatar_upload" type="file" name="file" multiple="multiple" style="position: absolute; top: 0; right: 0; margin: 0; padding: 0; font-size: 20px; cursor: pointer; opacity: 0; filter: alpha(opacity=0);"/>
+                            <input id="avatar_upload" type="file" name="file" multiple="multiple"
+                                   style="position: absolute; top: 0; right: 0; margin: 0; padding: 0; font-size: 20px; cursor: pointer; opacity: 0; filter: alpha(opacity=0);"/>
                         </a>
                     </div>
                 </div>

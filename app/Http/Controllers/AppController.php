@@ -1,11 +1,12 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\AppRequest;
 use App\Models\App;
+use App\Models\Corp;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
-
+use App\Facades\Wechat;
 /**
  * 微信企业应用
  *
@@ -16,24 +17,28 @@ class AppController extends Controller {
     
     protected $app;
     
-    function __construct(App $app) { $this->app = $app; }
+    function __construct(App $app) {
+        $this->app = $app;
+        // $this->middleware('auth');
+    }
     
     /**
-     * 显示微信应用列表
+     * 微信应用列表
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
-        
-        if (Request::get('draw')) {
-            return response()->json($this->app->datatable());
+
+        if (Request::method() == 'POST') {
+            return $this->app->store();
         }
+        
         return $this->output(__METHOD__);
         
     }
     
     /**
-     * 显示创建微信应用记录的表单
+     * 创建微信应用
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
@@ -44,33 +49,35 @@ class AppController extends Controller {
     }
     
     /**
-     * 保存新创建的微信应用记录
+     * 保存微信应用
      *
      * @param AppRequest $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(AppRequest $request) {
         
-        return $this->app->create($request->all()) ? $this->succeed() : $this->fail();
-
+        return $this->app->create($request->all())
+            ? $this->succeed() : $this->fail();
+        
     }
     
     /**
-     * 显示指定的微信应用记录详情
+     * 微信应用详情
      *
      * @param $id
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function show($id) {
-
+        
         $app = $this->app->find($id);
         if (!$app) { return $this->notFound(); }
+        
         return $this->output(__METHOD__, ['app' => $app]);
         
     }
     
     /**
-     * 显示编辑指定微信应用记录的表单
+     * 编辑微信应用
      *
      * @param $id
      * @return bool|\Illuminate\Http\JsonResponse
@@ -79,12 +86,13 @@ class AppController extends Controller {
         
         $app = $this->app->find($id);
         if (!$app) { return $this->notFound(); }
+        
         return $this->output(__METHOD__, ['app' => $app]);
         
     }
     
     /**
-     * 更新指定的微信应用记录
+     * 更新微信应用
      *
      * @param AppRequest $request
      * @param $id
@@ -94,22 +102,29 @@ class AppController extends Controller {
         
         $app = $this->app->find($id);
         if (!$app) { return $this->notFound(); }
-        return $app->update($request->all()) ? $this->succeed() : $this->fail();
+        
+        return $app->update($request->all())
+            ? $this->succeed() : $this->fail();
         
     }
     
     /**
-     * 删除指定的微信应用记录
+     * 获取指定应用的menu
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return bool|\Illuminate\Http\JsonResponse
      */
-    public function destroy($id) {
-
+    public function menu($id) {
         $app = $this->app->find($id);
         if (!$app) { return $this->notFound(); }
-        return $app->delete() ? $this->succeed() : $this->fail();
-        
-    }
+        $accessToken = Wechat::getAccessToken($app->corp_id, $app->secret, $app->agentid);
     
+        $menu = json_decode(Wechat::getMenu($accessToken, $app->agentid));
+
+        $a = $app->update(['menu' => json_encode($menu)->button]);
+        $menus = $this->app->object_to_array($menu->button);
+        return $this->output(__METHOD__, ['menu' => $menus]);
+
+    }
+
 }

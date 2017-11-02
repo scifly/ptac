@@ -1,1 +1,1 @@
-$(crud.index('modal-show-attendancemachine'));
+page.index('attendance_machines');

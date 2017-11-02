@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\WsmArticleRequest;
@@ -34,6 +33,7 @@ class WsmArticleController extends Controller {
         if (Request::get('draw')) {
             return response()->json($this->article->datatable());
         }
+        
         return $this->output(__METHOD__);
     }
     
@@ -72,10 +72,9 @@ class WsmArticleController extends Controller {
         if (!$article) {
             return parent::notFound();
         }
-
         return parent::output(__METHOD__, [
             'article' => $article,
-            'medias' => $this->media->medias($article->media_ids),
+            'medias'  => $this->media->medias($article->media_ids),
         ]);
         
     }
@@ -87,12 +86,15 @@ class WsmArticleController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function edit($id) {
-
+        
         $article = $this->article->find($id);
-        if (!$article) { return parent::notFound(); }
+        if (!$article) {
+            return parent::notFound();
+        }
+        
         return parent::output(__METHOD__, [
             'article' => $article,
-            'medias' => $this->media->medias($article->media_ids),
+            'medias'  => $this->media->medias($article->media_ids),
         ]);
         
     }
@@ -121,20 +123,22 @@ class WsmArticleController extends Controller {
         if (!$article) {
             return parent::notFound();
         }
+        
         return $article->delete() ? parent::succeed() : parent::fail();
     }
     
     /**
-     * 显示微网站文章详情
+     * 微网站文章详情
      *
      * @param $id
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function detail($id) {
         $article = $this->article->find($id);
+        
         return view('frontend.wap_site.article', [
             'article' => $article,
-            'medias' => $this->media->medias($article->media_ids),
+            'medias'  => $this->media->medias($article->media_ids),
         ]);
     }
     

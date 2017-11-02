@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Models\PollQuestionnaire;
@@ -61,7 +60,60 @@ class PqParticipantController extends Controller {
             #这里获取用户ID
             ->where('A.user_id', 1)
             ->get(['poll_questionnaires.id', 'poll_questionnaires.name']);
+        
         return view('poll_questionnaire_particpation.index', ['js' => 'js/poll_questionnaire_particpation/index.js', 'form' => 0, 'pqs' => $result]);
+        
+    }
+    
+    public function update(Request $q) {
+        
+        #先获取项和题转换数组操作
+        $json = json_decode($this->show($q->get('pollQuestion')));
+        foreach ($json as $item) {
+            $var = '';
+            switch ($item->subject_type) {
+                #单选
+                case 0:
+                    #判断是否为数组
+                    if (is_array(Input::get('rd_' . $item->id)))
+                        $var = implode(',', Input::get('rd_' . $item->id));
+                    else
+                        $var = Input::get('rd_' . $item->id);
+                    break;
+                #多选
+                case 1:
+                    if (is_array(Input::get('ck_' . $item->id)))
+                        $var = implode(',', Input::get('ck_' . $item->id));
+                    else
+                        $var = Input::get('ck_' . $item->id);
+                    break;
+                #填空
+                case 2:
+                    if (is_array(Input::get('text_' . $item->id)))
+                        $var = implode(',', Input::get('text_' . $item->id));
+                    else
+                        $var = Input::get('text_' . $item->id);
+                    break;
+            }
+            #存储答案
+            $Answer = $this->pollQuestionnaireAnswer
+                ->where('pqs_id', $item->id)->first();
+            #判断是否存在，如果存在
+            $hasObject = true;
+            if (!isset($Answer))
+                $hasObject = false;
+            #如果不存在创建新Model
+            if (!$hasObject) $Answer = new PollQuestionnaireAnswer();
+            $Answer->pq_id = $item->pq_id;
+            $Answer->pqs_id = $item->id;
+            #这里获取Session用户ID
+            $Answer->user_id = 1;
+            $Answer->answer = $var;
+            if (!$hasObject) $Answer->save();
+            else $Answer->update();
+        }
+        
+        return response()->json(['msg' => '提交成功', '' => self::HTTP_STATUSCODE_OK]);
         
     }
     
@@ -134,65 +186,12 @@ class PqParticipantController extends Controller {
                     $temp['subject_type'] = $subject->subject_type;
                     #选项题
                     $temp['choices'] = $this->tempChoice;
-                    
                     $this->result[] = $temp;
                 }
             );
+        
         return json_encode($this->result);
         #获取投票问卷下选项
-    }
-    
-    public function update(Request $q) {
-        
-        #先获取项和题转换数组操作
-        $json = json_decode($this->show($q->get('pollQuestion')));
-        
-        foreach ($json as $item) {
-            $var = '';
-            switch ($item->subject_type) {
-                #单选
-                case 0:
-                    #判断是否为数组
-                    if (is_array(Input::get('rd_' . $item->id)))
-                        $var = implode(',', Input::get('rd_' . $item->id));
-                    else
-                        $var = Input::get('rd_' . $item->id);
-                    break;
-                #多选
-                case 1:
-                    if (is_array(Input::get('ck_' . $item->id)))
-                        $var = implode(',', Input::get('ck_' . $item->id));
-                    else
-                        $var = Input::get('ck_' . $item->id);
-                    break;
-                #填空
-                case 2:
-                    if (is_array(Input::get('text_' . $item->id)))
-                        $var = implode(',', Input::get('text_' . $item->id));
-                    else
-                        $var = Input::get('text_' . $item->id);
-                    break;
-            }
-            #存储答案
-            $Answer = $this->pollQuestionnaireAnswer
-                ->where('pqs_id', $item->id)->first();
-            #判断是否存在，如果存在
-            $hasObject = true;
-            if (!isset($Answer))
-                $hasObject = false;
-            #如果不存在创建新Model
-            if (!$hasObject) $Answer = new PollQuestionnaireAnswer();
-            
-            $Answer->pq_id = $item->pq_id;
-            $Answer->pqs_id = $item->id;
-            #这里获取Session用户ID
-            $Answer->user_id = 1;
-            $Answer->answer = $var;
-            if (!$hasObject) $Answer->save();
-            else $Answer->update();
-        }
-        return response()->json(['msg' => '提交成功', '' => self::HTTP_STATUSCODE_OK]);
-        
     }
     
 }

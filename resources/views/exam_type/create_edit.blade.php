@@ -1,4 +1,4 @@
-<div class="box box-widget">
+<div class="box box-default box-solid">
     <div class="box-header with-border">
         @include('partials.form_header')
     </div>
@@ -20,6 +20,11 @@
                     ]) !!}
                 </div>
             </div>
+            @include('partials.single_select', [
+                'label' => '所属学校',
+                'id' => 'school_id',
+                'items' => $schools
+            ])
             <div class="form-group">
                 {!! Form::label('remark', '备注', [
                     'class' => 'col-sm-3 control-label'
@@ -34,7 +39,7 @@
                 </div>
             </div>
             @include('partials.enabled', [
-                'label' => '是否启用',
+                'label' => '状态',
                 'id' => 'enabled',
                 'value' => isset($examType['enabled']) ? $examType['enabled'] : NULL
             ])
