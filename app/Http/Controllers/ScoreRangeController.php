@@ -19,7 +19,8 @@ class ScoreRangeController extends Controller {
     protected $subject;
     
     function __construct(ScoreRange $scoreRange, Subject $subject) {
-        
+    
+        $this->middleware(['auth']);
         $this->scoreRange = $scoreRange;
         $this->subject = $subject;
         

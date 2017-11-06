@@ -98,6 +98,9 @@ HTML;
         'TestController',
         'Score_SendController',
     ];
+    protected $traitMethodComments = [
+    
+    ];
     protected $routes;
     # 控制器相对路径
     protected $ctlrDir = 'app/Http/Controllers';
@@ -191,53 +194,52 @@ HTML;
             [
                 'db'        => 'Action.name', 'dt' => 1,
                 'formatter' => function ($d) {
-                    return empty($d) ? self::BADGE_GRAY : $d;
+                    return empty($d) ? '-' : $d;
                 },
             ],
             [
                 'db'        => 'Action.method', 'dt' => 2,
                 'formatter' => function ($d) {
-                    return !empty($d) ? sprintf(self::BADGE_GREEN, $d) : self::BADGE_GRAY;
+                    return !empty($d) ? sprintf(self::BADGE_GREEN, $d) : '-';
                 },
             ],
             [
                 'db'        => 'Action.route', 'dt' => 3,
                 'formatter' => function ($d) {
-                    return !empty($d) ? sprintf(self::BADGE_YELLOW, $d) : self::BADGE_GRAY;
+                    return !empty($d) ? sprintf(self::BADGE_YELLOW, $d) : '-';
                 },
             ],
             [
                 'db'        => 'Action.controller', 'dt' => 4,
                 'formatter' => function ($d) {
-                    return !empty($d) ? sprintf(self::BADGE_RED, $d) : self::BADGE_GRAY;
+                    return !empty($d) ? sprintf(self::BADGE_RED, $d) : '-';
                 },
             ],
             [
                 'db'        => 'Action.view', 'dt' => 5,
                 'formatter' => function ($d) {
-                    return !empty($d) ? sprintf(self::BADGE_LIGHT_BLUE, $d) : self::BADGE_GRAY;
+                    return !empty($d) ? sprintf(self::BADGE_LIGHT_BLUE, $d) : '-';
                 },
             ],
             [
                 'db'        => 'Action.js', 'dt' => 6,
                 'formatter' => function ($d) {
-                    return !empty($d) ? sprintf(self::BADGE_MAROON, $d) : self::BADGE_GRAY;
+                    return !empty($d) ? sprintf(self::BADGE_MAROON, $d) : '-';
                 },
             ],
             [
                 'db'        => 'Action.action_type_ids', 'dt' => 7,
                 'formatter' => function ($d) {
-                    return !empty($d) ? $this->actionTypes($d) : self::BADGE_GRAY;
+                    return !empty($d) ? $this->actionTypes($d) : '-';
                 },
             ],
             [
                 'db'        => 'Action.enabled', 'dt' => 8,
                 'formatter' => function ($d, $row) {
                     $id = $row['id'];
-                    $status = $d ? sprintf(self::DT_ON, '已启用') : sprintf(self::DT_OFF, '已禁用');
-                    $showLink = sprintf(self::DT_LINK_SHOW, 'show_' . $id);
+                    $status = $d ? sprintf(self::DT_ON, '已启用') : sprintf(self::DT_OFF, '未启用');
                     $editLink = sprintf(self::DT_LINK_EDIT, 'edit_' . $id);
-                    return $status . '&nbsp;' . $showLink . '&nbsp;' . $editLink;
+                    return $status . '&nbsp;' . $editLink;
                 },
             ],
         ];
@@ -529,11 +531,11 @@ HTML;
         $name = 'n/a';
         preg_match_all("#\/\*\*\n\s{5}\*[^\*]*\*#", $comment, $matches);
         if (isset($matches[0][0])) {
-            $name = str_replace(str_split("\r\n/* "), '', $matches[0][0]);
+            $name = str_replace(str_split("\r\n/*"), '', $matches[0][0]);
         } else {
             preg_match_all("#\/\*\*\r\n\s{5}\*[^\*]*\*#", $comment, $matches);
             if (isset($matches[0][0])) {
-                $name = str_replace(str_split("\r\n/* "), '', $matches[0][0]);
+                $name = str_replace(str_split("\r\n/*"), '', $matches[0][0]);
             }
         }
         
@@ -657,7 +659,9 @@ HTML;
         if (!in_array($ctlr, $this->excludedControllers)) {
             $prefix = str_singular($this->getTableName($ctlr));
             $prefix = ($prefix === 'corps') ? 'corp' : $prefix;
-            
+            if (in_array($action, ['destroy', 'store', 'update', 'sort', 'move', 'rankTabs', 'show'])) {
+                return null;
+            }
             return 'js/' . $prefix . '/' . $action . '.js';
         }
         

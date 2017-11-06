@@ -15,7 +15,12 @@ class CorpController extends Controller {
     
     protected $corp;
     
-    function __construct(Corp $corp) { $this->corp = $corp; }
+    function __construct(Corp $corp) {
+        
+        $this->middleware(['auth']);
+        $this->corp = $corp;
+        
+    }
     
     /**
      * 企业列表

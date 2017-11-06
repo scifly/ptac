@@ -133,6 +133,7 @@ var page = {
         });
     },
     ajaxRequest: function (requestType, url, data, obj) {
+        $('.overlay').show();
         $.ajax({
             type: requestType,
             dataType: 'json',
@@ -148,6 +149,7 @@ var page = {
                             break;
                     }
                 }
+                $('.overlay').hide();
                 page.inform(
                     '操作结果', result.message,
                     result.statusCode === 200 ? page.success : page.failure
@@ -156,6 +158,7 @@ var page = {
             },
             error: function (e) {
                 var obj = JSON.parse(e.responseText);
+                $('.overlay').hide();
                 page.inform('出现异常', obj['message'], page.failure);
             }
         });

@@ -18,7 +18,8 @@ class TabController extends Controller {
     protected $tab, $action, $menu;
     
     function __construct(Tab $tab, Menu $menu, Action $action) {
-        
+    
+        $this->middleware(['auth']);
         $this->tab = $tab;
         $this->menu = $menu;
         $this->action = $action;

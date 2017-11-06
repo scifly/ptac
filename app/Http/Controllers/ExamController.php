@@ -18,7 +18,8 @@ class ExamController extends Controller {
     protected $squad;
     
     function __construct(Exam $exam, Squad $squad) {
-        
+    
+        $this->middleware(['auth']);
         $this->exam = $exam;
         $this->squad = $squad;
         

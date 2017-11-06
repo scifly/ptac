@@ -15,7 +15,12 @@ class ExamTypeController extends Controller {
     
     protected $examType;
     
-    function __construct(ExamType $examType) { $this->examType = $examType; }
+    function __construct(ExamType $examType) {
+    
+        $this->middleware(['auth']);
+        $this->examType = $examType;
+        
+    }
     
     /**
      * 考试类型列表

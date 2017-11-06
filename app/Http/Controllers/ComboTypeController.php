@@ -16,7 +16,8 @@ class ComboTypeController extends Controller {
     protected $comboType;
     
     function __construct(ComboType $comboType) {
-        
+    
+        $this->middleware(['auth']);
         $this->comboType = $comboType;
         
     }

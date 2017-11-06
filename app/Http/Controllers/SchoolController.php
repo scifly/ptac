@@ -16,7 +16,12 @@ class SchoolController extends Controller {
     
     protected $school;
     
-    function __construct(School $school) { $this->school = $school; }
+    function __construct(School $school) {
+    
+        $this->middleware(['auth']);
+        $this->school = $school;
+    
+    }
     
     /**
      * 学校列表

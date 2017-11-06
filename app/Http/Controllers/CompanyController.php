@@ -16,7 +16,8 @@ class CompanyController extends Controller {
     protected $company;
     
     function __construct(Company $company) {
-        
+    
+        $this->middleware(['auth']);
         $this->company = $company;
         
     }

@@ -15,7 +15,12 @@ class AttendanceMachineController extends Controller {
     
     protected $am;
     
-    function __construct(AttendanceMachine $am) { $this->am = $am; }
+    function __construct(AttendanceMachine $am) {
+    
+        $this->middleware(['auth']);
+        $this->am = $am;
+    
+    }
     
     /**
      * 考勤机列表

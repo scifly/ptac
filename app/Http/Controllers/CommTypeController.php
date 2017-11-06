@@ -16,7 +16,8 @@ class CommTypeController extends Controller {
     protected $commType;
     
     function __construct(CommType $commType) {
-        
+    
+        $this->middleware(['auth']);
         $this->commType = $commType;
         
     }

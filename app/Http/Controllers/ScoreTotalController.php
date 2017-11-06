@@ -17,7 +17,8 @@ class ScoreTotalController extends Controller {
     protected $subject;
     
     function __construct(ScoreTotal $score_total, Subject $subject) {
-        
+    
+        $this->middleware(['auth']);
         $this->scoreTotal = $score_total;
         $this->subject = $subject;
         

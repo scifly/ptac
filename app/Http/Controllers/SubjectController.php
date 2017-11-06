@@ -20,6 +20,7 @@ class SubjectController extends Controller {
     
     function __construct(Subject $subject, Major $major, Grade $grade, MajorSubject $majorSubject) {
         
+        $this->middleware(['auth']);
         $this->subject = $subject;
         $this->major = $major;
         $this->grade = $grade;
@@ -122,7 +123,8 @@ class SubjectController extends Controller {
      */
     public function update(SubjectRequest $request, $id) {
         
-        return $this->subject->modify($request, $id) ? $this->succeed() : $this->fail();
+        return $this->subject->modify($request, $id)
+            ? $this->succeed() : $this->fail();
         
     }
     
@@ -133,7 +135,9 @@ class SubjectController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
-        return $this->subject->remove($id) ? $this->succeed() : $this->fail();
+        
+        return $this->subject->remove($id)
+            ? $this->succeed() : $this->fail();
         
     }
     

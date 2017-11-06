@@ -29,6 +29,7 @@ class StudentController extends Controller {
         CustodianStudent $custodianStudent
     ) {
         
+        $this->middleware(['auth']);
         $this->custodian = $custodian;
         $this->department = $department;
         $this->group = $group;

@@ -16,7 +16,12 @@ class UserController extends Controller {
     
     protected $user;
     
-    function __construct(User $user) { $this->user = $user; }
+    function __construct(User $user) {
+    
+        $this->middleware(['auth']);
+        $this->user = $user;
+    
+    }
     
     /**
      * 用户列表

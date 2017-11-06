@@ -17,7 +17,8 @@ class GradeController extends Controller {
     protected $grade, $educator;
     
     function __construct(Grade $grade, Educator $educator) {
-        
+    
+        $this->middleware(['auth']);
         $this->grade = $grade;
         $this->educator = $educator;
         

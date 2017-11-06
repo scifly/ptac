@@ -16,7 +16,8 @@ class ConferenceParticipantController extends Controller {
     protected $cp;
     
     function __construct(ConferenceParticipant $cp) {
-        
+    
+        $this->middleware(['auth']);
         $this->cp = $cp;
         
     }

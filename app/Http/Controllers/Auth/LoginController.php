@@ -40,6 +40,12 @@ class LoginController extends Controller {
         
     }
     
+    /**
+     * 登录
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function login(Request $request) {
         
         $input = $request->input('input');
