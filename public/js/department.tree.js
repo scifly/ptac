@@ -78,58 +78,64 @@ var dept = {
         //部门树形图中的保存取消按钮
         $('.tree-box .box-footer').show();
         dept.$tree().data('jstree', false).empty();
-        dept.$tree().jstree({
-            selectedNodes: selectedNodes,
-            core: {
-                themes: {
-                    variant: 'large',
-                    dots: true,
-                    icons: true,
-                    stripes: true
-                },
-                multiple: true,
-                animation: 0,
-                data: {
-                    url: page.siteRoot() + uri,
-                    type: 'POST',
-                    dataType: 'json',
-                    data: function (node) {
-                        return {id: node.id, _token: $('#csrf_token').attr('content')}
+        var loadTree = function() {
+            dept.$tree().jstree({
+                selectedNodes: selectedNodes,
+                core: {
+                    themes: {
+                        variant: 'large',
+                        dots: true,
+                        icons: true,
+                        stripes: true
+                    },
+                    multiple: true,
+                    animation: 0,
+                    data: {
+                        url: page.siteRoot() + uri,
+                        type: 'POST',
+                        dataType: 'json',
+                        data: function (node) {
+                            return {id: node.id, _token: $('#csrf_token').attr('content')}
+                        }
                     }
-                }
-            },
-            checkbox: {
-                keep_selected_style: false,
-                three_state: false
-            },
-            plugins: ['types', 'search', 'checkbox', 'wholerow'],
-            types: tree.nodeTypes
-        }).on('select_node.jstree', function (node, selected) {
-            //选中事件 将选中的节点增|加到右边列表
-            // console.log(selected);
-            var nodeHtml = '<li id="tree' + selected.node.id + '">' +
-                '<span class="handle ui-sortable-handle">' +
-                '<i class="' + selected.node.icon + '"></i>' +
-                '</span>' +
-                '<span class="text">' + selected.node.text + '</span>' +
-                '<div class="tools">' +
-                '<i class="fa fa-close remove-node"></i>' +
-                '<input type="hidden" value="' + selected.node.id + '"/>' +
-                '</div>' +
-                '</li>';
-            dept.$todoList().append(nodeHtml);
-        }).on('deselect_node.jstree', function (node, selected) {
-            //取消选中事件 将列表中的 节点 移除
-            var nodeId = '#tree' + selected.node.id;
-            var deselectNode = $(nodeId);
-            deselectNode.remove();
-        }).on('loaded.jstree', function () {
-            console.log(selectedDepartmentIds);
-            //展开所有节点
-            dept.$tree().jstree('open_all');
-            //初始化 根据后台数据节点数组 选中
-            dept.$tree().jstree().select_node(selectedDepartmentIds);
-        })
+                },
+                checkbox: {
+                    keep_selected_style: false,
+                    three_state: false
+                },
+                plugins: ['types', 'search', 'checkbox', 'wholerow'],
+                types: tree.nodeTypes
+            }).on('select_node.jstree', function (node, selected) {
+                //选中事件 将选中的节点增|加到右边列表
+                // console.log(selected);
+                var nodeHtml = '<li id="tree' + selected.node.id + '">' +
+                    '<span class="handle ui-sortable-handle">' +
+                    '<i class="' + selected.node.icon + '"></i>' +
+                    '</span>' +
+                    '<span class="text">' + selected.node.text + '</span>' +
+                    '<div class="tools">' +
+                    '<i class="fa fa-close remove-node"></i>' +
+                    '<input type="hidden" value="' + selected.node.id + '"/>' +
+                    '</div>' +
+                    '</li>';
+                dept.$todoList().append(nodeHtml);
+            }).on('deselect_node.jstree', function (node, selected) {
+                //取消选中事件 将列表中的 节点 移除
+                var nodeId = '#tree' + selected.node.id;
+                var deselectNode = $(nodeId);
+                deselectNode.remove();
+            }).on('loaded.jstree', function () {
+                console.log(selectedDepartmentIds);
+                //展开所有节点
+                dept.$tree().jstree('open_all');
+                //初始化 根据后台数据节点数组 选中
+                dept.$tree().jstree().select_node(selectedDepartmentIds);
+            })
+        };
+        if (typeof tree === 'undefined') {
+            $.getMultiScripts(['js/tree.crud.js'], page.siteRoot())
+                .done(function() { loadTree(); });
+        } else { loadTree(); }
     },
     modify: function (uri) {
         $('#add-department').on('click', function () {
@@ -212,23 +218,22 @@ var dept = {
         };
         if (!($.fn.jstree) || !($.fn.select2) || !($.fn.iCheck)) {
             var scripts = [
-                page.jstree.js,
-                page.select2.js,
-                page.icheck.js,
-                page.todolist.js
+                page.plugins.jstree.js,
+                page.plugins.select2.js,
+                page.plugins.icheck.js
             ];
             $.getMultiScripts(scripts, page.siteRoot())
                 .done(function() {
                     var $cip = $('#cip');
                     $cip.after($("<link/>", {
                         rel: "stylesheet", type: "text/css",
-                        href: page.siteRoot() + page.jstree.css
+                        href: page.siteRoot() + page.plugins.jstree.css
                     })).after($("<link/>", {
                         rel: "stylesheet", type: "text/css",
-                        href: page.siteRoot() + page.select2.css
+                        href: page.siteRoot() + page.plugins.select2.css
                     })).after($("<link/>", {
                         rel: "stylesheet", type: "text/css",
-                        href: page.siteRoot() + page.icheck.css
+                        href: page.siteRoot() + page.plugins.icheck.css
                     }));
                     init(uri);
                 });

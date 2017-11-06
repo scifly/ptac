@@ -123,7 +123,7 @@ var page = {
                     replaceState = false;
                     updateHistory = true;
                 } else {
-                    window.location = 'login';
+                    window.location = page.siteRoot() + 'login';
                 }
             },
             error: function (jqXHR, textStatus, errorThrown) {

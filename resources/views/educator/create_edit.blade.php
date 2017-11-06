@@ -185,7 +185,6 @@
 
            ])
             @include('partials.enabled', [
-                'label' => '状态',
                 'id' => 'user[enabled]',
                 'value' => isset($educator['enabled']) ? $educator['enabled'] : NULL
             ])

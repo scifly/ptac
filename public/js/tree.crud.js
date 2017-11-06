@@ -6,8 +6,8 @@ var tree = {
         'company': {"icon": 'fa fa-building'},
         'corp': {"icon": 'fa fa-weixin'},
         'school': {"icon": 'fa fa-university'},
-        'grade': {"icon": 'fa fa-users'},
-        'class': {"icon": 'fa fa-user'},
+        'grade': {"icon": 'fa fa-object-group'},
+        'class': {"icon": 'fa fa-users'},
         'other': {"icon": 'fa fa-list'}
     },
     csrfToken: function () { return $('#csrf_token').attr('content'); },

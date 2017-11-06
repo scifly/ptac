@@ -189,7 +189,6 @@
                 </div>
             </div>
             @include('partials.enabled', [
-                'label' => '状态',
                 'id' => 'user[enabled]',
                 'value' => isset($operator->user->enabled) ? $operator->user->enabled : NULL
             ])

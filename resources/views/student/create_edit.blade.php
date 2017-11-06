@@ -45,9 +45,9 @@
             <div class="form-group">
                 <label for="user[gender]" class="col-sm-3 control-label">性别</label>
                 <div class="col-sm-6">
-                    {!! Form::radio('user[gender]', '1', true) !!}
+                    {!! Form::radio('user[gender]', '1', true, ['class' => 'minimal']) !!}
                     {!! Form::label('user[gender]', '男') !!}
-                    {!! Form::radio('user[gender]', '0') !!}
+                    {!! Form::radio('user[gender]', '0', false, ['class' => 'minimal']) !!}
                     {!! Form::label('user[gender]', '女') !!}
                 </div>
             </div>
@@ -238,7 +238,6 @@
                 'value' => isset($student['oncampus']) ? $student['oncampus'] : NULL,
             ])
             @include('partials.enabled', [
-                'label' => '状态',
                 'id' => 'user[enabled]',
                 'value' => isset($student['enabled']) ? $student['enabled'] : NULL
             ])

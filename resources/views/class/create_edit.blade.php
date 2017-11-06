@@ -35,7 +35,6 @@
                 {!! Form::hidden('department_id', $class['department_id']) !!}
             @endif
             @include('partials.enabled', [
-                'label' => '状态',
                 'id' => 'enabled',
                 'value' => isset($class['enabled']) ? $class['enabled'] : NULL
             ])

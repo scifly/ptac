@@ -38,7 +38,6 @@
                 {!! Form::hidden('menu_id', $company['menu_id']) !!}
             @endif
             @include('partials.enabled', [
-                'label' => '状态',
                 'id' => 'enabled',
                 'value' => isset($company['enabled']) ? $company['enabled'] : NULL
             ])

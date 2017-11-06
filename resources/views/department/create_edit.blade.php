@@ -41,7 +41,6 @@
                 ['id' => 'department_type_id']
             ) !!}
             @include('partials.enabled', [
-                'label' => '状态',
                 'id' => 'enabled',
                 'value' => isset($department['enabled']) ? $department['enabled'] : NULL
             ])

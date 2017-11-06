@@ -44,8 +44,7 @@
                 </div>
             </div>
             @include('partials.enabled', [
-                'label' => '状态',
-                'id' => 'enabled', 
+                'id' => 'enabled',
                 'value' => isset($wapSiteModule['enabled']) ? $wapSiteModule['enabled'] : NULL
             ])
         </div>

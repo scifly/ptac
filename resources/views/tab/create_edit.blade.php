@@ -73,7 +73,6 @@
                 'selectedItems' => isset($selectedMenus) ? $selectedMenus : NULL
             ])
             @include('partials.enabled', [
-                'label' => '状态',
                 'id' => 'enabled',
                 'value' => isset($tab['enabled']) ? $tab['enabled'] : NULL
             ])

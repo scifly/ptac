@@ -102,7 +102,6 @@
                 'selectedItems' => isset($selectedActionTypes) ? $selectedActionTypes : NULL
             ])
             @include('partials.enabled', [
-                'label' => '状态',
                 'id' => 'enabled',
                 'value' => isset($action['enabled']) ? $action['enabled'] : NULL
             ])

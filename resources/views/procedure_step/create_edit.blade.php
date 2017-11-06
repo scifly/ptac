@@ -61,7 +61,6 @@
                 </div>
             </div>
             @include('partials.enabled', [
-                'label' => '状态',
                 'id' => 'enabled',
                 'value' => isset($procedureStep['enabled']) ? $procedureStep['enabled'] : NULL
             ])

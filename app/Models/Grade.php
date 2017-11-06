@@ -197,6 +197,7 @@ class Grade extends Model {
             [
                 'db'        => 'Grade.educator_ids', 'dt' => 3,
                 'formatter' => function ($d) {
+                    if (empty($d)) { return ''; }
                     $educatorIds = explode(',', $d);
                     $educators = [];
                     foreach ($educatorIds as $id) {

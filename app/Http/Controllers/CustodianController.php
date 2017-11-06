@@ -80,15 +80,6 @@ class CustodianController extends Controller {
     }
 
     /**
-     * 监护人详情
-     *
-     * @param  \App\Models\Custodian $custodian
-     */
-    public function show(Custodian $custodian) {
-
-    }
-    
-    /**
      * 编辑监护人
      *
      * @param $id
@@ -100,19 +91,13 @@ class CustodianController extends Controller {
             return $this->department->tree();
         }
         $custodian = $this->custodian->find($id);
-        $departments = $custodian->user->departments;
-        $selectedDepartmentIds = [];
-        foreach ($departments as $department) {
-            $selectedDepartmentIds[] = $department->id;
-        }
-        $selectedDepartments = $this->department->selectedNodes($selectedDepartmentIds);
         if (!$custodian) { return $this->notFound(); }
+        $pupils = $custodian->custodianStudents;
 
         return $this->output(__METHOD__, [
             'mobiles'               => $custodian->user->mobiles,
             'custodian'             => $custodian,
-            'selectedDepartmentIds' => implode(',', $selectedDepartmentIds),
-            'selectedDepartments'   => $selectedDepartments,
+            'pupils'                => $pupils,
         ]);
 
     }

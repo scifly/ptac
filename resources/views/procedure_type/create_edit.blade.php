@@ -34,7 +34,6 @@
                 </div>
             </div>
             @include('partials.enabled', [
-                'label' => '状态',
                 'id' => 'enabled',
                 'value' => isset($procedureType['enabled']) ? $procedureType['enabled'] : ''
             ])

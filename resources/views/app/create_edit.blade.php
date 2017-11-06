@@ -169,7 +169,6 @@
                 'value' => isset($app['isreportenter']) ? $app['isreportenter'] : NULL, 
             ])
             @include('partials.enabled', [
-                'label' => '状态',
                 'id' => 'enabled',
                 'value' => isset($app['enabled']) ? $app['enabled'] : NULL
             ])
