@@ -9,22 +9,22 @@ $(function () {
     var $mainMenuContainer = $(".main_menu_container");
     var $subMenuContainer = $(".subMenu_container");
     var $delSubMenu = $(".del_subMenu");
-//        添加主菜单
+    // 添加主菜单
     $addMenu.click(function () {
         $editMenuContainer.show();
         $showList.hide();
     });
-//        取消添加主菜单
+    // 取消添加主菜单
     $btnEditMenuCancel.click(function () {
         $editMenuContainer.hide();
         $showList.show();
     });
-//        保存添加的主菜单
+    // 保存添加的主菜单
     $btnEditMenuSave.click(function () {
         $editMenuContainer.hide();
         $showList.show();
     });
-//        添加子菜单
+    // 添加子菜单
     var subMenuHtml = '<div class="subMenu_container">' +
         '<div class="menuInfoPanel">' +
         '<div class="editMenu_header">' +
@@ -58,7 +58,7 @@ $(function () {
             $(this).css('display','none');
         }
     });
-//        删除子菜单
+    // 删除子菜单
     $(document).on('click', '.del_subMenu', function () {
         $(this).parents('.subMenu_container').remove();
         $btnAddSubMenu.css('display','');

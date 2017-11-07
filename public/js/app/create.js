@@ -1,1 +1,1 @@
-$(crud.create('formApp', 'apps'));
+page.create('formApp', 'apps');

@@ -1,1 +1,1 @@
-$(crud.index('custodians'));
+page.index('custodians');

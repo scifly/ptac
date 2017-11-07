@@ -1,1 +1,1 @@
-$(crud.create('formCommType', 'comm_types'));
+page.create('formCommType', 'comm_types');

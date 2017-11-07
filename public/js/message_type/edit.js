@@ -1,1 +1,1 @@
-$(crud.edit('formMessageType', 'message_types'));
+page.edit('formMessageType', 'message_types');

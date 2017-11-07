@@ -1,4 +1,4 @@
-<div class="box box-widget">
+<div class="box box-default box-solid">
     <div class="box-header with-border">
         @include('partials.list_header')
     </div>
@@ -44,5 +44,6 @@
             </table>
         </div>
     </div>
+    @include('partials.form_overlay')
 </div>
 

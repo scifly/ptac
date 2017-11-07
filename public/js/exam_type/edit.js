@@ -1,1 +1,1 @@
-$(crud.edit('formExamType', 'exam_types'));
+page.edit('formExamType', 'exam_types');

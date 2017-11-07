@@ -1,1 +1,1 @@
-$(crud.index('actions'));
+page.index('actions');

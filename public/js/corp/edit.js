@@ -1,1 +1,1 @@
-$(crud.edit('formCorp','corps'));
+page.edit('formCorp','corps');

@@ -1,1 +1,1 @@
-$(crud.index('semesters'));
+page.index('semesters');

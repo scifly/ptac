@@ -55,13 +55,13 @@ use Illuminate\Support\Facades\Request;
  * @mixin \Eloquent
  * @property string|null $access_token
  * @property string|null $expire_at
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\App whereAccessToken($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\App whereAllowPartys($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\App whereAllowTags($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\App whereAllowUserinfos($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\App whereExpireAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\App whereSecret($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\App whereSquareLogoUrl($value)
+ * @method static Builder|App whereAccessToken($value)
+ * @method static Builder|App whereAllowPartys($value)
+ * @method static Builder|App whereAllowTags($value)
+ * @method static Builder|App whereAllowUserinfos($value)
+ * @method static Builder|App whereExpireAt($value)
+ * @method static Builder|App whereSecret($value)
+ * @method static Builder|App whereSquareLogoUrl($value)
  */
 class App extends Model {
     

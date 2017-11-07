@@ -925,7 +925,6 @@ class Wechat extends Facade {
     static function getResponse($corpId, $pwd) {
         
         return self::curlGet(sprintf(self::URL_GET_RESPONSE_SMS, $corpId, $pwd));
-        
     }
     
     protected static function getFacadeAccessor() { return 'Wechat'; }

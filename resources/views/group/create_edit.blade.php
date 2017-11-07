@@ -1,4 +1,4 @@
-<div class="box box-widget">
+<div class="box box-default box-solid">
     <div class="box-header with-border">
         @include('partials.form_header')
     </div>
@@ -61,7 +61,6 @@
                             </div>
                         </div>
                         @include('partials.enabled', [
-                            'label' => '是否启用',
                             'id' => 'enabled',
                             'value' => isset($group['enabled']) ? $group['enabled'] : NULL
                         ])
@@ -82,7 +81,7 @@
                                                @if(isset($selectedTabs) && in_array($tabAction['tab']['id'], $selectedTabs))
                                                    checked
                                                @endif
-                                        >&nbsp;{{ $tabAction['tab']['name'] }}
+                                        >&nbsp;<span style="margin-left: 5px;">{{ $tabAction['tab']['name'] }}</span>
                                     </label>
                                     <div class="box-tools pull-right">
                                         <button type="button" class="btn btn-box-tool" data-widget="collapse">

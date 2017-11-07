@@ -1,1 +1,1 @@
-$(crud.index('comm_types'));
+page.index('comm_types');

@@ -6,151 +6,66 @@ var tree = {
         'company': {"icon": 'fa fa-building'},
         'corp': {"icon": 'fa fa-weixin'},
         'school': {"icon": 'fa fa-university'},
-        'grade': {"icon": 'fa fa-users'},
-        'class': {"icon": 'fa fa-user'},
+        'grade': {"icon": 'fa fa-object-group'},
+        'class': {"icon": 'fa fa-users'},
         'other': {"icon": 'fa fa-list'}
     },
-    csrfToken: function () {
-        return $('#csrf_token').attr('content');
-    },
-    urlIndex: function (table) {
-        return table + '/index';
-    },
-    urlCreate: function (table) {
-        return table + '/create';
-    },
-    urlEdit: function (table) {
-        return table + '/edit/';
-    },
-    urlMenuTabs: function (table) {
-        return table + '/menutabs/';
-    },
-    urlSort: function (table) {
-        return page.siteRoot() + table + '/sort';
-    },
-    urlStore: function (table) {
-        return page.siteRoot() + table + '/store';
-    },
-    urlUpdate: function (table) {
-        return page.siteRoot() + table + '/update/';
-    },
-    urlMove: function (table) {
-        return page.siteRoot() + table + '/move/';
-    },
-    urlDelete: function (table) {
-        return page.siteRoot() + table + '/delete/';
-    },
-    urlRankTabs: function (table) {
-        return page.siteRoot() + table + '/ranktabs/';
-    },
-    ajaxRequest: function (requestType, ajaxUrl, data, obj) {
-        $.ajax({
-            type: requestType,
-            dataType: 'json',
-            url: ajaxUrl,
-            data: data,
-            success: function (result) {
-                if (result.statusCode === 200) {
-                    switch (requestType) {
-                        case 'POST':        // create
-                            obj.reset();    // reset create form
-                            $('input[data-render="switchery"]').each(function () {
-                                $(this).click();
-                                $(this).click();
-                            });
-                            break;
-                        default:
-                            break;
-                    }
-                }
-                page.inform(
-                    '操作结果', result.message,
-                    result.statusCode === 200 ? page.success : page.failure
-                );
-                return false;
-            },
-            error: function (e) {
-                var obj = JSON.parse(e.responseText);
-                page.inform('出现异常', obj['message'], page.failure);
-            }
-        });
-    },
-    backToHome: function (table) {
-        var $activeTabPane = $('#tab_' + page.getActiveTabId());
-        page.getTabContent($activeTabPane, tree.urlIndex(table));
-    },
-    init: function (table, formId, ajaxUrl, requestType) {
-        // Select2
-        $('select').select2();
-        // Switchery
-        Switcher.init();
-        // iCheck
-        $('input[type="checkbox"].minimal, input[type="radio"].minimal').iCheck({
-            checkboxClass: 'icheckbox_minimal-blue',
-            radioClass: 'iradio_minimal-blue'
-        });
-        // Save button
-        $('#save').on('click', function () {
-            $form.trigger('form:validate');
-        });
-        // Cancel button
-        $('#cancel, #record-list').on('click', function () {
-            tree.backToHome(table);
-        });
-        // Parsley
-        var $form = $('#' + formId);
-        $form.parsley().on("form:validated", function () {
-            if ($('.parsley-error').length === 0) {
-                tree.ajaxRequest(requestType, ajaxUrl, $form.serialize(), $form[0]);
-            }
-        }).on('form:submit', function () {
-            return false;
-        });
-        $('#confirm-delete').unbind('click');
-    },
+    csrfToken: function () { return $('#csrf_token').attr('content'); },
+    urlIndex: function (table) { return table + '/index'; },
+    urlCreate: function (table) { return table + '/create'; },
+    urlEdit: function (table) { return table + '/edit/'; },
+    urlMenuTabs: function (table) { return table + '/menutabs/'; },
+    urlSort: function (table) { return page.siteRoot() + table + '/sort'; },
+    urlMove: function (table) { return page.siteRoot() + table + '/move/'; },
+    urlDelete: function (table) { return page.siteRoot() + table + '/delete/'; },
+    urlRankTabs: function (table) { return page.siteRoot() + table + '/ranktabs/'; },
     index: function (table) {
+        page.unbindEvents();
+        $(document).off('click', '#save-rank');
         var $tree = $('#tree');
-        $tree.jstree({
-            core: {
-                themes: {
-                    variant: 'large',
-                    dots: true,      // this setting is conflict with 'wholerow' plugin
-                    icons: table !== 'menus',
-                    stripes: true
+        var buildTree = function() {
+            $tree.jstree({
+                core: {
+                    themes: {
+                        variant: 'large',
+                        dots: true,      // this setting is conflict with 'wholerow' plugin
+                        icons: table !== 'menus',
+                        stripes: true
+                    },
+                    expand_selected_onload: true,
+                    check_callback: function (o, n, p, i, m) {
+                        return tree.checkCallback(o, n, p, i, m, this, table);
+                    },
+                    multiple: false,
+                    animation: 0,
+                    data: {
+                        url: page.siteRoot() + tree.urlIndex(table),
+                        type: 'POST',
+                        dataType: 'json',
+                        data: function (node) {
+                            return {id: node.id, _token: tree.csrfToken()};
+                        }
+                    }
                 },
-                expand_selected_onload: true,
-                check_callback: function (o, n, p, i, m) {
-                    return tree.checkCallback(o, n, p, i, m, this, table);
-                },
-                multiple: false,
-                animation: 0,
-                data: {
-                    url: page.siteRoot() + tree.urlIndex(table),
-                    type: 'POST',
-                    dataType: 'json',
-                    data: function (node) {
-                        return {id: node.id, _token: tree.csrfToken()};
+                plugins: ['contextmenu', 'dnd', 'wholerow', 'unique', 'types'],
+                types: tree.nodeTypes,
+                contextmenu: {
+                    items: function (node) {
+                        return tree.customMenu(
+                            node, table, $('#modal-dialog'),
+                            $('#tab_' + page.getActiveTabId())
+                        );
                     }
                 }
-            },
-            plugins: ['contextmenu', 'dnd', 'wholerow', 'unique', 'types'],
-            types: tree.nodeTypes,
-            contextmenu: {
-                items: function (node) {
-                    return tree.customMenu(
-                        node, table, $('#modal-dialog'),
-                        $('#tab_' + page.getActiveTabId())
-                    );
-                }
-            }
-        }).on('loaded.jstree', function () {
-            $tree.jstree('open_all');
-            tree.sort(table);
-        }).on('move_node.jstree', function (e, data) {
-            return tree.move(table, e, data);
-        });
-        var $delete = $('#confirm-delete');
-        $delete.on('click', function () {
+            }).on('loaded.jstree', function () {
+                $tree.jstree('open_all');
+                tree.sort(table);
+            }).on('move_node.jstree', function (e, data) {
+                return tree.move(table, e, data);
+            });
+        };
+        this.initJsTree(buildTree);
+        $('#confirm-delete').on('click', function () {
             $.ajax({
                 type: 'DELETE',
                 dataType: 'json',
@@ -166,25 +81,24 @@ var tree = {
             });
         });
     },
-    create: function (formId, table) {
-        this.init(table, formId, tree.urlStore(table), 'POST');
-    },
-    edit: function (formId, table) {
-        var id = $('#id').val();
-        this.init(table, formId, tree.urlUpdate(table) + id, 'PUT');
-    },
     rank: function (table) {
+        page.unbindEvents();
+        $(document).off('click', '#save-rank');
         var $tabList = $('.todo-list');
         $tabList.sortable({
             placeholder: 'sort-highlight',
             handle: '.handle',
             forcePlaceholderSize: true,
             zIndex: 999999
-        }).todoList();
+        }); // .todoList();
         $(document).on('click', '#save-rank', function () {
             var $tabs = $('.text');
-
             var ranks = {};
+            var $cip = $('#cip');
+            $cip.after('<link/>', {
+                rel: 'stylesheet', type: 'type/css',
+                href: page.siteRoot() + page.plugins.jqueryui.css
+            });
             for (var i = 0; i < $tabs.length; i++) {
                 ranks[$tabs[i].id] = i;
             }
@@ -202,9 +116,8 @@ var tree = {
             });
         });
         $('#record-list').on('click', function () {
-            tree.backToHome(table);
+            page.backToList(table);
         });
-        $('#confirm-delete').unbind('click');
     },
     sort: function (table) {
         var $tree = $('#tree');
@@ -243,6 +156,13 @@ var tree = {
                 }
             }
         });
+    },
+    initJsTree: function(callback) {
+        if (!($.fn.jstree)) {
+            page.loadCss(page.plugins.jstree.css);
+            $.getMultiScripts([page.plugins.jstree.js], page.siteRoot())
+                .done(function () { callback(); })
+        } else { callback(); }
     },
     checkCallback: function (o, n, p, i, m, t, table) {
         // o - operation, n - node, p - node_parent, i - node_position, m - more, t - this

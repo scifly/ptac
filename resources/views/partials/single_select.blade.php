@@ -4,7 +4,7 @@
     ]) !!}
     <div class="col-sm-6">
         {!! Form::select($id, $items, null, [
-            'class' => 'form-control',
+            'class' => 'form-control select2',
             'style' => 'width: 100%;'
         ]) !!}
     </div>

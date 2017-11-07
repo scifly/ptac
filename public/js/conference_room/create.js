@@ -1,1 +1,1 @@
-$(crud.create('formConferenceRoom', 'conference_rooms'));
+page.create('formConferenceRoom', 'conference_rooms');

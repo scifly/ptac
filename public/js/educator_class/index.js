@@ -1,1 +1,0 @@
-$(crud.index('educators_classes'));

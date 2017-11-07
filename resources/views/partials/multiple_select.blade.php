@@ -3,7 +3,7 @@
         {{ $label }}
     </label>
     <div class="col-sm-6">
-        <select multiple name="{{ $id }}[]" id="{{ $id }}" class='form-control' style="width: 100%;">
+        <select multiple="multiple" name="{{ $id }}[]" id="{{ $id }}" class='form-control select2' style="width: 100%;">
             @foreach ($items as $key => $value)
                 @if(isset($selectedItems))
                     <option value="{{ $key }}"

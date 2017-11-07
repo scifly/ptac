@@ -1,1 +1,1 @@
-$(crud.index('majors'));
+page.index('majors');

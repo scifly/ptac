@@ -56,7 +56,7 @@ class GroupController extends Controller {
         if (Request::method() === 'POST') {
             $schoolId = Request::query('schoolId');
             $menuId = School::whereId($schoolId)->first()->menu_id;
-            return $this->menu->getTreeByMenuId($menuId);
+            return $this->menu->getTree($menuId);
         }
 
         return $this->output(__METHOD__);
@@ -103,7 +103,7 @@ class GroupController extends Controller {
         if (Request::method() === 'POST') {
             $schoolId = Request::query('schoolId');
             $menuId = School::whereId($schoolId)->first()->menu_id;
-            return $this->menu->getTreeByMenuId($menuId);
+            return $this->menu->getTree($menuId);
         }
         
         return $this->output(__METHOD__, ['group' => $group]);

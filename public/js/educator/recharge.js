@@ -1,1 +1,1 @@
-$(crud.recharge('formEducator', 'educators'));
+page.recharge('formEducator', 'educators');

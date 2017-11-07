@@ -1,4 +1,4 @@
-<div class="box box-widget">
+<div class="box box-default box-solid">
     <div class="box-header with-border">
         @include('partials.list_header')
     </div>
@@ -103,7 +103,5 @@
             </tbody>
         </table>
     </div>
-    <div class="overlay" style="display: none;">
-        <i class="fa fa-refresh fa-spin"></i>
-    </div>
+    @include('partials.form_overlay')
 </div>

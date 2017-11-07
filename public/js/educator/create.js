@@ -1,12 +1,12 @@
-$(crud.create('formEducator', 'educators'));
-$(crud.mobile('formEducator', 0, 'POST', 'educators/store'));
-var $tbody = $("#mobileTable").find("tbody");
+page.create('formEducator', 'educators');
+
+if (typeof crud === 'undefined') {
+    $.getMultiScripts(['js/admin.crud.js'], page.siteRoot())
+        .done(function() { crud.mobile('formEducator', 0, 'POST', 'educators/store'); })
+} else { crud.mobile('formEducator', 0, 'POST', 'educators/store'); }
 var n = 0;
 var id = $('#id').val();
-var $formEducator = $('#formEducator');
-
 // 手机号
-
 // 班级、科目
 var $tbody2 = $("#classTable").find("tbody");
 $(document).on('click', '.btn-class-add', function (e) {
@@ -18,7 +18,7 @@ $(document).on('click', '.btn-class-add', function (e) {
     // 删除插件初始化增加的html
     $tbody2.append(html);
     // select2 init
-    $('select').select2();
+    page.initSelect2();
     // 加减切换
     $tbody2.find('tr:not(:last) .btn-class-add')
         .removeClass('btn-class-add').addClass('btn-class-remove')
@@ -31,4 +31,7 @@ $(document).on('click', '.btn-class-add', function (e) {
 });
 
 //部门
-dept.init('educators/create');
+if (typeof dept === 'undefined') {
+    $.getMultiScripts(['js/department.tree.js'], page.siteRoot())
+        .done(function() { dept.init('educators/create'); });
+} else { dept.init('educators/create'); }

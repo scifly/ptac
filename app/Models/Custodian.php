@@ -28,9 +28,9 @@ use Mockery\Exception;
  * @property-read Collection|CustodianStudent[] $custodianStudent
  * @property int $menu_id
  * @property int $department_id
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Custodian whereDepartmentId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Custodian whereMenuId($value)
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\CustodianStudent[] $custodianStudents
+ * @method static Builder|Custodian whereDepartmentId($value)
+ * @method static Builder|Custodian whereMenuId($value)
+ * @property-read Collection|CustodianStudent[] $custodianStudents
  */
 class Custodian extends Model {
 

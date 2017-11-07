@@ -1,1 +1,1 @@
-$(crud.create('formTeam', 'teams'));
+page.create('formTeam', 'teams');

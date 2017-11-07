@@ -1,1 +1,1 @@
-$(tree.edit('formDepartment', 'departments'));
+page.edit('formDepartment', 'departments');

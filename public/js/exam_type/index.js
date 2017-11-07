@@ -1,1 +1,1 @@
-$(crud.index('exam_types'));
+page.index('exam_types');

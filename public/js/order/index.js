@@ -1,1 +1,1 @@
-$(crud.index('orders'));
+page.index('orders');
