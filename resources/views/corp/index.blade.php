@@ -11,8 +11,8 @@
                 <th>名称</th>
                 <th>所属运营者</th>
                 <th>企业号ID</th>
-                <th>创建时间</th>
-                <th>更新时间</th>
+                <th>创建于</th>
+                <th>更新于</th>
                 <th>状态</th>
             </tr>
             </thead>

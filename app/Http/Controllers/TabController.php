@@ -99,7 +99,6 @@ class TabController extends Controller {
         foreach ($tabMenus as $menu) {
             $selectedMenus[$menu->id] = $menu->name;
         }
-        
         return parent::output(__METHOD__, [
             'tab'           => $tab,
             'menus'         => $this->menu->leaves(1),

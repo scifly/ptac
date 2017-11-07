@@ -9,10 +9,9 @@
             <tr>
                 <th>#</th>
                 <th>名称</th>
-                <th>图标</th>
-                <th>默认Action</th>
-                <th>创建时间</th>
-                <th>更新时间</th>
+                <th>默认功能</th>
+                <th>创建于</th>
+                <th>更新于</th>
                 <th>状态</th>
             </tr>
             </thead>

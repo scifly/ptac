@@ -375,6 +375,11 @@ $(function () {
         page.getTabContent($activeTabPane, oPage.url);
     };
     $(document).on('click', '.tab', function () {
+        var tabs = $('a.tab');
+        $.each(tabs, function() {
+            $(this).removeClass('text-blue').addClass('text-gray');
+        });
+        $(this).removeClass('text-gray').addClass('text-blue');
         // 获取被点击卡片的url
         var url = $(this).attr('data-uri');
         // 获取所有卡片
