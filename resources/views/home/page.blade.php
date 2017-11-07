@@ -14,7 +14,6 @@
     <link rel="stylesheet" href="{{ URL::asset('js/plugins/parsley/parsley.css') }}">
     <link rel="stylesheet" href="{{ URL::asset('css/AdminLTE.min.css') }}">
     <link rel="stylesheet" href="{{ URL::asset('css/skins/_all-skins.min.css') }}">
-<<<<<<< HEAD
     <link rel="stylesheet" href="{{ URL::asset('js/plugins/icheck/all.css') }}">
     <link rel="stylesheet" href="{{ URL::asset('js/plugins/jstree/dist/themes/default/style.min.css') }}">
     <link rel="stylesheet" href="{{ URL::asset('js/plugins/select2/css/select2.min.css') }}">
@@ -34,11 +33,9 @@
     <link rel="stylesheet" href="{{ URL::asset('js/plugins/fileinput/themes/explorer/theme.css') }}">
     <!--微网站应用菜单管理-->
     <link rel="stylesheet" href="{{ URL::asset('css/showEditMenu.css') }}">
-=======
     {{--<link rel="stylesheet" href="{{ URL::asset('css/wapSite.css') }}">--}}
     {{--<link rel="stylesheet" href="{{ URL::asset('css/procedure_info.css') }}">--}}
     {{--<link rel="stylesheet" href="{{ URL::asset('css/imgInput.css') }}">--}}
->>>>>>> origin/master
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
