@@ -129,11 +129,10 @@ class Icon extends Model {
                 },
             ],
             ['db' => 'IconType.name as icontypename', 'dt' => 2],
-            ['db' => 'Icon.remark', 'dt' => 3],
-            ['db' => 'Icon.created_at', 'dt' => 4],
-            ['db' => 'Icon.updated_at', 'dt' => 5],
+            ['db' => 'Icon.created_at', 'dt' => 3],
+            ['db' => 'Icon.updated_at', 'dt' => 4],
             [
-                'db'        => 'Icon.enabled', 'dt' => 6,
+                'db'        => 'Icon.enabled', 'dt' => 5,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
                 },

@@ -45,9 +45,8 @@
             <div class="row">
                 <div class="col-xs-8">
                     <div class="checkbox icheck">
-                        <label>
-                            <input type="checkbox" id="remember"> 记住我
-                        </label>
+                        <input type="checkbox" id="remember">
+                        <label for="remember" style="vertical-align: middle; margin-left: 5px;">记住我</label>
                     </div>
                 </div>
                 <!-- /.col -->

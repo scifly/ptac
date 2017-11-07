@@ -15,8 +15,8 @@
                 <th>消息类型</th>
                 <th>是否已读</th>
                 <th>是否发送</th>
-                <th>创建时间</th>
-                <th>更新时间</th>
+                <th>创建于</th>
+                <th>更新于</th>
             </tr>
             </thead>
             <tbody></tbody>

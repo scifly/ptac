@@ -30,7 +30,8 @@ class EducatorController extends Controller {
         Team $team,
         Department $department
     ) {
-        
+    
+        $this->middleware(['auth']);
         $this->educator = $educator;
         $this->mobile = $mobile;
         $this->educatorClass = $educatorClass;

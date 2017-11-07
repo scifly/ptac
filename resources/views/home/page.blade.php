@@ -14,30 +14,6 @@
     <link rel="stylesheet" href="{{ URL::asset('js/plugins/parsley/parsley.css') }}">
     <link rel="stylesheet" href="{{ URL::asset('css/AdminLTE.min.css') }}">
     <link rel="stylesheet" href="{{ URL::asset('css/skins/_all-skins.min.css') }}">
-    <link rel="stylesheet" href="{{ URL::asset('js/plugins/icheck/all.css') }}">
-    <link rel="stylesheet" href="{{ URL::asset('js/plugins/jstree/dist/themes/default/style.min.css') }}">
-    <link rel="stylesheet" href="{{ URL::asset('js/plugins/select2/css/select2.min.css') }}">
-    <link rel="stylesheet" href="{{ URL::asset('js/plugins/parsley/parsley.css') }}">
-    <link rel="stylesheet" href="{{ URL::asset('js/plugins/switchery/switchery.min.css') }}">
-    <link rel="stylesheet" href="{{ URL::asset('js/plugins/datatables/datatables.min.css') }}">
-    <link rel="stylesheet" href="{{ URL::asset('css/wapSite.css') }}">
-    {{--日历--}}
-    <link rel="stylesheet" href="{{ URL::asset('js/plugins/fullcalendar/css/fullcalendar.min.css') }}">
-    <link rel="stylesheet" href="{{ URL::asset('js/plugins/fullcalendar/css/jquery-ui.min.css') }}">
-    {{--审核详情--}}
-    <link rel="stylesheet" href="{{ URL::asset('css/procedure_info.css') }}">
-    {{--上传--}}
-    <link rel="stylesheet" href="{{ URL::asset('css/imgInput.css') }}">
-    <!-- fileinput-->   
-    <link rel="stylesheet" href="{{ URL::asset('js/plugins/fileinput/css/fileinput.min.css') }}">
-    <link rel="stylesheet" href="{{ URL::asset('js/plugins/fileinput/themes/explorer/theme.css') }}">
-    <!--微网站应用菜单管理-->
-    <link rel="stylesheet" href="{{ URL::asset('css/showEditMenu.css') }}">
-    {{--<link rel="stylesheet" href="{{ URL::asset('css/wapSite.css') }}">--}}
-    {{--<link rel="stylesheet" href="{{ URL::asset('css/procedure_info.css') }}">--}}
-    {{--<link rel="stylesheet" href="{{ URL::asset('css/imgInput.css') }}">--}}
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
     <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
     <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -239,8 +215,13 @@
                         <ul class="nav nav-tabs">
                             @foreach ($tabs as $tab)
                                 <li @if($tab['active']) class="active" @endif>
-                                    <a href="#{{ $tab['id'] }}" data-toggle="tab" data-uri="{{ $tab['url'] }}"
-                                       class="tab">
+                                    <a href="#{{ $tab['id'] }}"
+                                       data-toggle="tab"
+                                       data-uri="{{ $tab['url'] }}"
+                                       class="tab @if($tab['active']) text-blue @else text-gray @endif">
+                                        @if(isset($tab['icon']))
+                                            <i class="fa {{ $tab['icon'] }}"></i>
+                                        @endif
                                         {{ $tab['name'] }}
                                     </a>
                                 </li>

@@ -68,29 +68,3 @@ var $addPupil = $('#add-pupil');
 $addPupil.on('click', function () {
     $('#pupils').modal({backdrop: true});
 });
-// var $tbody2 = $("#classTable").find("tbody");
-// $(document).off('click','.btn-class-add');
-// $(document).on('click', '.btn-class-add', function (e) {
-//     e.preventDefault();
-//     var html = $tbody2.find('tr').last().clone();
-//     html.find('span.select2').remove();
-//     // 删除插件初始化增加的html
-//     $tbody2.append(html);
-//     // select2 init
-//     page.initSelect2();
-//     // 加减切换
-//     $tbody2.find('tr:not(:last) .btn-class-add')
-//         .removeClass('btn-class-add').addClass('btn-class-remove')
-//         .html('<i class="fa fa-minus text-blue"></i>');
-// }).on('click', '.btn-class-remove', function (e) {
-//     // 删除元素
-//     $(this).parents('tr:first').remove();
-//     e.preventDefault();
-//     return false;
-// });
-
-// /** 监护人所属部门管理 */
-// if (typeof dept === 'undefined') {
-//     $.getMultiScripts(['js/department.tree.js'], page.siteRoot())
-//         .done(function() { dept.init('custodians/create'); })
-// } else { dept.init('custodians/create'); }

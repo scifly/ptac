@@ -18,8 +18,10 @@ class AppController extends Controller {
     protected $app;
     
     function __construct(App $app) {
+    
+        $this->middleware(['auth']);
         $this->app = $app;
-        // $this->middleware('auth');
+
     }
     
     /**

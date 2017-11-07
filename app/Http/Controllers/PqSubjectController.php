@@ -16,8 +16,10 @@ class PqSubjectController extends Controller {
     protected $pqSubject;
     
     function __construct(PollQuestionnaireSubject $pqSubject) {
-        
+    
+        $this->middleware(['auth']);
         $this->pqSubject = $pqSubject;
+        
     }
     
     /**

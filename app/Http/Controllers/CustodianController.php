@@ -26,7 +26,8 @@ class CustodianController extends Controller {
         DepartmentUser $departmentUser, Student $student,
         CustodianStudent $custodianStudent
     ) {
-
+    
+        $this->middleware(['auth']);
         $this->custodian = $custodian;
         $this->department = $department;
         $this->group = $group;

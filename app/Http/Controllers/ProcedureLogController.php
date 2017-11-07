@@ -22,7 +22,10 @@ class ProcedureLogController extends Controller {
     protected $procedureLog;
     
     function __construct(ProcedureLog $procedureLog) {
+    
+        $this->middleware(['auth']);
         $this->procedureLog = $procedureLog;
+        
     }
     
     /**

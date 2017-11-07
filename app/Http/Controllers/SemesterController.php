@@ -15,7 +15,12 @@ class SemesterController extends Controller {
     
     protected $semester;
     
-    function __construct(Semester $semester) { $this->semester = $semester; }
+    function __construct(Semester $semester) {
+    
+        $this->middleware(['auth']);
+        $this->semester = $semester;
+    
+    }
     
     /**
      * 学期列表

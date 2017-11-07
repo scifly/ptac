@@ -12,8 +12,8 @@
                 <th>地址</th>
                 <th>类型</th>
                 <th>所属企业</th>
-                <th>创建时间</th>
-                <th>更新时间</th>
+                <th>创建于</th>
+                <th>更新于</th>
                 <th>状态</th>
             </tr>
             </thead>

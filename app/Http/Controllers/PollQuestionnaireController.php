@@ -17,7 +17,9 @@ class PollQuestionnaireController extends Controller {
     
     function __construct(PollQuestionnaire $pollQuestionnaire) {
         
+        $this->middleware(['auth']);
         $this->pollQuestionnaire = $pollQuestionnaire;
+        
     }
     
     /**

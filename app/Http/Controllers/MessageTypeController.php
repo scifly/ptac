@@ -15,7 +15,12 @@ class MessageTypeController extends Controller {
     
     protected $messageType;
     
-    function __construct(MessageType $messageType) { $this->messageType = $messageType; }
+    function __construct(MessageType $messageType) {
+    
+        $this->middleware(['auth']);
+        $this->messageType = $messageType;
+    
+    }
     
     /**
      * 消息类型
