@@ -105,8 +105,9 @@ $saveStudent.on('click', function () {
         '</button>';
     checkedStudents.append(checkedStudent);
     htm = '<tr>' +
-        '<td><input type="hidden" value="" name="">张三</td>' +
-        '<td><input type="hidden" value="" name="">' + student + '</td>' +
+        '<input type="hidden" value="" name="">' +
+        '<td>张三</td>' +
+        '<td>' + student + '</td>' +
         '<td><input type="text" name="" id="" readonly class="no-border" style="background: none" value="父女"></td>' +
         '<td>' +
         '<a href="javascript:" class="delete">' +
