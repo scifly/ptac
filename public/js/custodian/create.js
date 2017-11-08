@@ -184,3 +184,7 @@ $(document).on('change', '#classId', function() {
         }
     });
 });
+//删除监护人
+$(document).on('click','.delete',function () {
+    $(this).parents('tr').remove();
+});

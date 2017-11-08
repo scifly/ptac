@@ -5,14 +5,14 @@
     <div class="box-body">
         <div class="form-horizontal">
             <!-- 监护人ID -->
-            @if (!empty($custodian['id']))
-                {{ Form::hidden('id', $custodian['id'], ['id' => 'id']) }}
-            @endif
-            <!-- 监护人UserID -->
-            @if (!empty($custodian['user_id']))
-                {{ Form::hidden('user_id', $custodian['user_id'], ['id' => 'user_id']) }}
-            @endif
-            <!-- 监护人姓名 -->
+        @if (!empty($custodian['id']))
+            {{ Form::hidden('id', $custodian['id'], ['id' => 'id']) }}
+        @endif
+        <!-- 监护人UserID -->
+        @if (!empty($custodian['user_id']))
+            {{ Form::hidden('user_id', $custodian['user_id'], ['id' => 'user_id']) }}
+        @endif
+        <!-- 监护人姓名 -->
             <div class="form-group">
                 {{ Form::label('user[realname]', '姓名', [
                     'class' => 'col-sm-3 control-label'
@@ -51,15 +51,15 @@
                 </div>
             </div>
             <!-- 监护人性别 -->
-            @include('partials.enabled', [
-                'label' => '性别',
-                'id' => 'user[gender]',
-                'value' => isset($custodian->user->gender) ? $custodian->user->gender : NULL,
-                'options' => ['男', '女']
-            ])
-            <!-- 监护人手机列表 -->
-            @include('partials.mobile')
-            <!-- 监护人座机号码 -->
+        @include('partials.enabled', [
+            'label' => '性别',
+            'id' => 'user[gender]',
+            'value' => isset($custodian->user->gender) ? $custodian->user->gender : NULL,
+            'options' => ['男', '女']
+        ])
+        <!-- 监护人手机列表 -->
+        @include('partials.mobile')
+        <!-- 监护人座机号码 -->
             <div class="form-group">
                 {{ Form::label('user[telephone]', '座机', [
                     'class' => 'col-sm-3 control-label'
@@ -100,30 +100,49 @@
                 <label class="col-sm-3 control-label">被监护人</label>
                 <div class="col-sm-6" style="padding-top: 3px;">
                     {{--@if(!isset($pupils))--}}
-                        {{--<button id="add-pupil" class="btn btn-box-tool" type="button">--}}
-                            {{--<i class="fa fa-user-plus text-blue"> 添加</i>--}}
-                        {{--</button>--}}
+                    {{--<button id="add-pupil" class="btn btn-box-tool" type="button">--}}
+                    {{--<i class="fa fa-user-plus text-blue"> 添加</i>--}}
+                    {{--</button>--}}
                     {{--@else--}}
-                        {{--<div id="department-nodes-checked">--}}
-                            {{--<button type="button" class="btn btn-flat" style="margin-right: 5px;margin-bottom: 5px">--}}
-                                {{--<i class=""></i>--}}
-                                {{--张三--}}
-                                {{--<i class="fa fa-close close-selected"></i>--}}
-                                {{--<input type="hidden" name="selectedStudents[]" value="1"/>--}}
-                            {{--</button>--}}
-                        {{--</div>--}}
-                    <table class="table table-responsive">
-
+                    {{--<div id="department-nodes-checked">--}}
+                    {{--<button type="button" class="btn btn-flat" style="margin-right: 5px;margin-bottom: 5px">--}}
+                    {{--<i class=""></i>--}}
+                    {{--张三--}}
+                    {{--<i class="fa fa-close close-selected"></i>--}}
+                    {{--<input type="hidden" name="selectedStudents[]" value="1"/>--}}
+                    {{--</button>--}}
+                    {{--</div>--}}
+                    <table class="table table-striped table-bordered table-hover table-condensed">
+                        <thead>
+                        <tr>
+                            <th>学生</th>
+                            <th>学号</th>
+                            <th>监护人</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>张三</td>
+                            <td>007</td>
+                            <td>李四</td>
+                            <td>
+                                <a href="javascript:" class="delete">
+                                    <i class="fa fa-trash-o text-blue"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        </tbody>
                     </table>
                     <button id="add-pupil" class="btn btn-box-tool" type="button">
-                        <i class="fa fa-user-plus text-blue"> 添加</i>
+                        <i class="fa fa-user-plus text-blue"></i>
                     </button>
-                {{--@endif--}}
+                    {{--@endif--}}
                 </div>
             </div>
             <!-- 监护人角色 -->
-            {!! Form::hidden('user[group_id]', $groupId) !!}
-            <!-- 监护人状态 -->
+        {!! Form::hidden('user[group_id]', $groupId) !!}
+        <!-- 监护人状态 -->
             @include('partials.enabled', [
                 'id' => 'user[enabled]',
                 'value' => isset($custodian->user->enabled) ? $custodian->user->enabled : NULL
@@ -151,21 +170,21 @@
                                     'items' => $schools
                                 ])
                             {{--@if($schools->count() > 1)--}}
-                                {{--@include('partials.single_select', [--}}
-                                    {{--'id' => 'schoolId',--}}
-                                    {{--'label' => '所属学校',--}}
-                                    {{--'items' => $schools--}}
-                                {{--])--}}
+                            {{--@include('partials.single_select', [--}}
+                            {{--'id' => 'schoolId',--}}
+                            {{--'label' => '所属学校',--}}
+                            {{--'items' => $schools--}}
+                            {{--])--}}
                             {{--@else--}}
-                                {{--{{ Form::label('schoolId', '所属学校', [--}}
-                                    {{--'class' => 'control-label col-sm-3'--}}
-                                {{--]) }}--}}
-                                {{--<div class="col-sm-6" style="padding-top: 8px;">--}}
-                                    {{--{{ $grades->first() }}--}}
-                                    {{--{{ Form::hidden('schoolId', $grades->keys()->first(), [--}}
-                                        {{--'id' => 'schoolId'--}}
-                                    {{--]) }}--}}
-                                {{--</div>--}}
+                            {{--{{ Form::label('schoolId', '所属学校', [--}}
+                            {{--'class' => 'control-label col-sm-3'--}}
+                            {{--]) }}--}}
+                            {{--<div class="col-sm-6" style="padding-top: 8px;">--}}
+                            {{--{{ $grades->first() }}--}}
+                            {{--{{ Form::hidden('schoolId', $grades->keys()->first(), [--}}
+                            {{--'id' => 'schoolId'--}}
+                            {{--]) }}--}}
+                            {{--</div>--}}
                             {{--@endif--}}
                         @endif
                     </div>
@@ -178,21 +197,21 @@
                                     'items' => $grades
                                 ])
                             {{--@if($grades->count() > 1)--}}
-                                {{--@include('partials.single_select', [--}}
-                                    {{--'id' => 'gradeId',--}}
-                                    {{--'label' => '所属年级',--}}
-                                    {{--'items' => $grades--}}
-                                {{--])--}}
+                            {{--@include('partials.single_select', [--}}
+                            {{--'id' => 'gradeId',--}}
+                            {{--'label' => '所属年级',--}}
+                            {{--'items' => $grades--}}
+                            {{--])--}}
                             {{--@else--}}
-                                {{--{{ Form::label('gradeId', '所属班级', [--}}
-                                    {{--'class' => 'control-label col-sm-3'--}}
-                                {{--]) }}--}}
-                                {{--<div class="col-sm-6" style="padding-top: 8px;">--}}
-                                    {{--{{ $grades->first() }}--}}
-                                    {{--{{ Form::hidden('gradeId', $grades->keys()->first(), [--}}
-                                        {{--'id' => 'gradeId'--}}
-                                    {{--]) }}--}}
-                                {{--</div>--}}
+                            {{--{{ Form::label('gradeId', '所属班级', [--}}
+                            {{--'class' => 'control-label col-sm-3'--}}
+                            {{--]) }}--}}
+                            {{--<div class="col-sm-6" style="padding-top: 8px;">--}}
+                            {{--{{ $grades->first() }}--}}
+                            {{--{{ Form::hidden('gradeId', $grades->keys()->first(), [--}}
+                            {{--'id' => 'gradeId'--}}
+                            {{--]) }}--}}
+                            {{--</div>--}}
                             {{--@endif--}}
                         @endif
                     </div>
@@ -205,21 +224,21 @@
                                     'items' => $classes
                                 ])
                             {{--@if($classes->count() > 1)--}}
-                                {{--@include('partials.single_select', [--}}
-                                    {{--'id' => 'classId',--}}
-                                    {{--'label' => '所属班级',--}}
-                                    {{--'items' => $classes--}}
-                                {{--])--}}
+                            {{--@include('partials.single_select', [--}}
+                            {{--'id' => 'classId',--}}
+                            {{--'label' => '所属班级',--}}
+                            {{--'items' => $classes--}}
+                            {{--])--}}
                             {{--@else--}}
-                                {{--{{ Form::label('classId', '所属班级', [--}}
-                                    {{--'class' => 'control-label col-sm-3'--}}
-                                {{--]) }}--}}
-                                {{--<div class="col-sm-6" style="padding-top: 8px;">--}}
-                                    {{--{{ $classes->first() }}--}}
-                                    {{--{{ Form::hidden('classId', $classes->keys()->first(), [--}}
-                                        {{--'id' => 'classId'--}}
-                                    {{--]) }}--}}
-                                {{--</div>--}}
+                            {{--{{ Form::label('classId', '所属班级', [--}}
+                            {{--'class' => 'control-label col-sm-3'--}}
+                            {{--]) }}--}}
+                            {{--<div class="col-sm-6" style="padding-top: 8px;">--}}
+                            {{--{{ $classes->first() }}--}}
+                            {{--{{ Form::hidden('classId', $classes->keys()->first(), [--}}
+                            {{--'id' => 'classId'--}}
+                            {{--]) }}--}}
+                            {{--</div>--}}
                             {{--@endif--}}
                         @endif
                     </div>
@@ -232,21 +251,21 @@
                                     'items' => $students
                                 ])
                             {{--@if($students->count() > 1)--}}
-                                {{--@include('partials.single_select', [--}}
-                                    {{--'id' => 'studentId',--}}
-                                    {{--'label' => '被监护人',--}}
-                                    {{--'items' => $students--}}
-                                {{--])--}}
+                            {{--@include('partials.single_select', [--}}
+                            {{--'id' => 'studentId',--}}
+                            {{--'label' => '被监护人',--}}
+                            {{--'items' => $students--}}
+                            {{--])--}}
                             {{--@else--}}
-                                {{--{{ Form::label('studentId', '学生', [--}}
-                                    {{--'class' => 'control-label col-sm-3'--}}
-                                {{--]) }}--}}
-                                {{--<div class="col-sm-6" style="padding-top: 8px;">--}}
-                                    {{--{{ $students->first() }}--}}
-                                    {{--{{ Form::hidden('studentId', $students->keys()->first(), [--}}
-                                        {{--'id' => 'classId'--}}
-                                    {{--]) }}--}}
-                                {{--</div>--}}
+                            {{--{{ Form::label('studentId', '学生', [--}}
+                            {{--'class' => 'control-label col-sm-3'--}}
+                            {{--]) }}--}}
+                            {{--<div class="col-sm-6" style="padding-top: 8px;">--}}
+                            {{--{{ $students->first() }}--}}
+                            {{--{{ Form::hidden('studentId', $students->keys()->first(), [--}}
+                            {{--'id' => 'classId'--}}
+                            {{--]) }}--}}
+                            {{--</div>--}}
                             {{--@endif--}}
                         @endif
                     </div>
@@ -255,14 +274,14 @@
                         {{--@if(isset($students))--}}
 
                         {{--@endif--}}
-                            {{ Form::label('relationship', '监护关系', [
-                                    'class' => 'control-label col-sm-3'
-                                ]) }}
-                            <div class="col-sm-6">
-                                {{ Form::text('relationship', null, [
-                                    'id' => 'relationship'
-                                ]) }}
-                            </div>
+                        {{ Form::label('relationship', '监护关系', [
+                                'class' => 'control-label col-sm-3'
+                            ]) }}
+                        <div class="col-sm-6">
+                            {{ Form::text('relationship', null, [
+                                'id' => 'relationship'
+                            ]) }}
+                        </div>
                     </div>
                 </div>
             </div>
