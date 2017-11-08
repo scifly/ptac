@@ -117,15 +117,17 @@
                         <tr>
                             <th>学生</th>
                             <th>学号</th>
-                            <th>监护人</th>
+                            <th>监护人关系</th>
                             <th>操作</th>
                         </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="tBody">
                         <tr>
                             <td>张三</td>
                             <td>007</td>
-                            <td>李四</td>
+                            <td>
+                                <input type="text" name="" id="" readonly class="no-border" style="background: none" value="父女">
+                            </td>
                             <td>
                                 <a href="javascript:" class="delete">
                                     <i class="fa fa-trash-o text-blue"></i>

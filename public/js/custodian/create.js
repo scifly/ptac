@@ -14,25 +14,25 @@ $(document).on('click', '.btn-mobile-add', function (e) {
     // insert html for adding another mobile number
     $mobiles.append(
         '<tr>' +
-            '<td class="text-center">' +
-                '<div class="input-group">' +
-                    '<div class="input-group-addon">' +
-                        '<i class="fa fa-mobile"></i>' +
-                    '</div>' +
-                    '<input class="form-control" placeholder="（请输入手机号码）" name="mobile['+ n +'][mobile]" value="">' +
-                '</div>' +
-            '</td>' +
-            '<td class="text-center">' +
-                '<input type="radio" class="minimal" id="mobile[isdefault]" name="mobile[isdefault]" value="' + n + '">' +
-            '</td>' +
-            '<td class="text-center">' +
-                '<input type="checkbox" class="minimal" name="mobile['+ n +'][enabled]">' +
-            '</td>' +
-            '<td class="text-center">' +
-                '<button class="btn btn-box-tool btn-add btn-mobile-add">' +
-                    '<i class="fa fa-plus text-blue"></i>' +
-                '</button>' +
-            '</td>' +
+        '<td class="text-center">' +
+        '<div class="input-group">' +
+        '<div class="input-group-addon">' +
+        '<i class="fa fa-mobile"></i>' +
+        '</div>' +
+        '<input class="form-control" placeholder="（请输入手机号码）" name="mobile[' + n + '][mobile]" value="">' +
+        '</div>' +
+        '</td>' +
+        '<td class="text-center">' +
+        '<input type="radio" class="minimal" id="mobile[isdefault]" name="mobile[isdefault]" value="' + n + '">' +
+        '</td>' +
+        '<td class="text-center">' +
+        '<input type="checkbox" class="minimal" name="mobile[' + n + '][enabled]">' +
+        '</td>' +
+        '<td class="text-center">' +
+        '<button class="btn btn-box-tool btn-add btn-mobile-add">' +
+        '<i class="fa fa-plus text-blue"></i>' +
+        '</button>' +
+        '</td>' +
         '</tr>'
     );
     // init iCheck plugin
@@ -91,18 +91,32 @@ $addPupil.on('click', function () {
 var $saveStudent = $('#confirm-bind');
 var checkedStudents = $('#department-nodes-checked');
 var $studentId = $("#studentId");
+var $tBody = $("#tBody");
+
 $saveStudent.on('click', function () {
     var student = $studentId.find("option:selected").text();
     var studentId = $studentId.val();
     var item = checkedStudents.find('button[type=button]').length;
+    var htm = '';
     var checkedStudent = '<button type="button" class="btn btn-flat" style="margin-right: 5px;margin-bottom: 5px">' +
         '<i ></i>' + student +
         '<i class="fa fa-close close-selected"></i>' +
-        '<input type="hidden" name="selectedStudents[' + item +']" value="' + studentId + '"/>' +
+        '<input type="hidden" name="selectedStudents[' + item + ']" value="' + studentId + '"/>' +
         '</button>';
-    checkedStudents.append(checkedStudent)
+    checkedStudents.append(checkedStudent);
+    htm = '<tr>' +
+        '<td>张三</td>' +
+        '<td>' + student + '</td>' +
+        '<td><input type="text" name="" id="" readonly class="no-border" style="background: none" value="父女"></td>' +
+        '<td>' +
+        '<a href="javascript:" class="delete">' +
+        '<i class="fa fa-trash-o text-blue"></i>' +
+        '</a>' +
+        '</td>' +
+        '</tr>';
+    $tBody.append(htm);
 });
-$(document).on('change', '#schoolId', function() {
+$(document).on('change', '#schoolId', function () {
     var schoolId = $('#schoolId').val();
 
     var $gradeId = $('#gradeId');
@@ -138,7 +152,7 @@ $(document).on('change', '#schoolId', function() {
         }
     });
 });
-$(document).on('change', '#gradeId', function() {
+$(document).on('change', '#gradeId', function () {
     var gradeId = $('#gradeId').val();
 
     var $classId = $('#classId');
@@ -166,7 +180,7 @@ $(document).on('change', '#gradeId', function() {
         }
     });
 });
-$(document).on('change', '#classId', function() {
+$(document).on('change', '#classId', function () {
     var classId = $('#classId').val();
     var $studentId = $('#studentId');
     var $next = $studentId.next();
@@ -185,6 +199,6 @@ $(document).on('change', '#classId', function() {
     });
 });
 //删除监护人
-$(document).on('click','.delete',function () {
+$(document).on('click', '.delete', function () {
     $(this).parents('tr').remove();
 });
