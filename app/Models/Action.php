@@ -565,6 +565,9 @@ HTML;
                 case 'menuTabs':
                     $viewPath = 'menu.menu_tabs';
                     break;
+                case 'relationship':
+                    $viewPath = 'custodian.relationship';
+                    break;
                 default:
                     $viewPath = '';
                     break;
