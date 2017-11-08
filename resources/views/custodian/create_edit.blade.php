@@ -123,8 +123,8 @@
                         </thead>
                         <tbody id="tBody">
                         <tr>
-                            <td>张三</td>
-                            <td>007</td>
+                            <td><input type="hidden" value="" name="">张三</td>
+                            <td><input type="hidden" value="" name="">007</td>
                             <td>
                                 <input type="text" name="" id="" readonly class="no-border" style="background: none" value="父女">
                             </td>
