@@ -92,18 +92,20 @@ var $saveStudent = $('#confirm-bind');
 var checkedStudents = $('#department-nodes-checked');
 var $studentId = $("#studentId");
 var $tBody = $("#tBody");
+var $relationship = $("#relationship");
 
 $saveStudent.on('click', function () {
     var student = $studentId.find("option:selected").text();
     var studentId = $studentId.val();
     var item = checkedStudents.find('button[type=button]').length;
     var htm = '';
-    var checkedStudent = '<button type="button" class="btn btn-flat" style="margin-right: 5px;margin-bottom: 5px">' +
-        '<i ></i>' + student +
-        '<i class="fa fa-close close-selected"></i>' +
-        '<input type="hidden" name="selectedStudents[' + item + ']" value="' + studentId + '"/>' +
-        '</button>';
-    checkedStudents.append(checkedStudent);
+    // var checkedStudent = '<button type="button" class="btn btn-flat" style="margin-right: 5px;margin-bottom: 5px">' +
+    //     '<i ></i>' + student +
+    //     '<i class="fa fa-close close-selected"></i>' +
+    //     '<input type="hidden" name="selectedStudents[' + item + ']" value="' + studentId + '"/>' +
+    //     '</button>';
+    // checkedStudents.append(checkedStudent);
+
     htm = '<tr>' +
         '<td>张三</td>' +
         '<td>' + student + '</td>' +

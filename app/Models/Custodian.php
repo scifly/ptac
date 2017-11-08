@@ -264,6 +264,7 @@ class Custodian extends Model {
      *
      * @param $field
      * @param $id
+     * @return array
      */
     public function getFieldList($field, $id) {
         
