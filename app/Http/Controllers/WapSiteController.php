@@ -5,8 +5,6 @@ use App\Facades\Wechat;
 use App\Http\Requests\WapSiteRequest;
 use App\Models\Corp;
 use App\Models\Department;
-use App\Models\DepartmentType;
-use App\Models\DepartmentUser;
 use App\Models\Media;
 use App\Models\User;
 use App\Models\WapSite;
@@ -26,8 +24,11 @@ class WapSiteController extends Controller {
     protected $media;
     
     public function __construct(WapSite $wapSite, Media $media) {
+        
+        $this->middleware(['auth']);
         $this->wapSite = $wapSite;
         $this->media = $media;
+        
     }
     
     /**
@@ -64,7 +65,8 @@ class WapSiteController extends Controller {
      */
     public function store(WapSiteRequest $request) {
         
-        return $this->wapSite->store($request) ? $this->succeed() : $this->fail();
+        return $this->wapSite->store($request)
+            ? $this->succeed() : $this->fail();
         
     }
     
@@ -81,6 +83,7 @@ class WapSiteController extends Controller {
             return parent::notFound();
         }
         $mediaIds = explode(",", $wapsite->media_ids);
+        
         return parent::output(__METHOD__, [
             'wapsite' => $wapsite,
             'medias'  => $this->media->medias($mediaIds),
@@ -115,7 +118,9 @@ class WapSiteController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(WapSiteRequest $request, $id) {
-        return $this->wapSite->modify($request, $id) ? $this->succeed() : $this->fail();
+        
+        return $this->wapSite->modify($request, $id)
+            ? $this->succeed() : $this->fail();
         
     }
     
@@ -181,7 +186,7 @@ class WapSiteController extends Controller {
             // 使用新建的uploads本地存储空间（目录）
             if (Storage::disk('public')->put($filename, file_get_contents($realPath))) {
                 // $filePath = 'storage/app/uploads/' . date('Y') . '/' . date('m') . '/' . date('d') . '/' . $filename;
-                $filePath = Storage::url('public/'. date('Y') . '/' . date('m') . '/' . date('d') . '/' . $filename);
+                $filePath = Storage::url('public/' . date('Y') . '/' . date('m') . '/' . date('d') . '/' . $filename);
                 $mediaId = Media::insertGetId([
                     'path'          => $filePath,
                     'remark'        => '微网站轮播图',
@@ -190,7 +195,7 @@ class WapSiteController extends Controller {
                 ]);
                 $filePaths[] = [
                     'id'   => $mediaId,
-                     'path' => $filePath,
+                    'path' => $filePath,
                 ];
             }
         }
@@ -205,6 +210,7 @@ class WapSiteController extends Controller {
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function wapHome(\Illuminate\Http\Request $request, $school_id) {
+        
         $corp = new Corp();
         $corps = $corp::whereName('万浪软件')->first();
         $corpId = $corps->corpid;
@@ -213,33 +219,32 @@ class WapSiteController extends Controller {
         $path = substr($dir, 0, stripos($dir, 'app/Jobs'));
         $tokenFile = $path . 'public/token.txt';
         $token = Wechat::getAccessToken($tokenFile, $corpId, $secret);
-        
         $code = $request->input('code');
-        if (empty($code)){
+        if (empty($code)) {
 //            $codeUrl = Wechat::getCodeUrl($corpId, '1000006', 'http://weixin.028lk.com/wap_sites/userInfo');
             $codeUrl = Wechat::getCodeUrl($corpId, '1000006', 'http://weixin.028lk.com/wap_sites/webindex');
-            $url = explode('https',$codeUrl);
-            return redirect('https'.$url[1]);
-        }else{
+            $url = explode('https', $codeUrl);
+            
+            return redirect('https' . $url[1]);
+        } else {
             # 从微信企业号后台获取userid
             $userInfo = Wechat::getUserInfo($token, $code);
             $wechatUserInfo = json_decode($userInfo);
             # 获取学校的部门类型
             // $departmentType = new DepartmentType();
             // $type = $departmentType::whereName('学校')->first();
-            
             # 通过微信企业后台返回的userid  获取数据库user数据
             $user = User::where('userid', $wechatUserInfo['UserId'])->first();
             $department = new Department();
             # 获取当前用户的最高顶级部门
             $level = $department->groupLevel($user->id);
             $group = User::whereId($user->id)->first()->group;
-            
             if ($level == 'school' || $school_id) {
-                $school_id = empty($school_id) ? $group->school_id : $school_id ;
+                $school_id = empty($school_id) ? $group->school_id : $school_id;
                 $wapSite = $this->wapSite
                     ->where('school_id', $school_id)
                     ->first();
+                
                 // dd($wapSite->wapSiteModules->media);
                 return view('frontend.wap_site.index', [
                     'wapsite' => $wapSite,
@@ -247,17 +252,10 @@ class WapSiteController extends Controller {
                     'medias'  => $this->media->medias($wapSite->media_ids),
                     'ws'      => true,
                 ]);
-            }else{
-        
-        
+            } else {
+            
             }
-            dd($level);die;
-            dd($userInfo);die;
         }
-        
-        
-        
-        
         
     }
     

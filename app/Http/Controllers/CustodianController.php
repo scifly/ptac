@@ -26,7 +26,8 @@ class CustodianController extends Controller {
         DepartmentUser $departmentUser, Student $student,
         CustodianStudent $custodianStudent
     ) {
-
+    
+        $this->middleware(['auth']);
         $this->custodian = $custodian;
         $this->department = $department;
         $this->group = $group;
@@ -59,7 +60,12 @@ class CustodianController extends Controller {
     public function create() {
 
         if (Request::method() === 'POST') {
-            return $this->department->tree();
+            
+            $field = Request::query('field');
+            $id = Request::query('id');
+            $this->result['html'] = $this->custodian->getFieldList($field, $id);
+            return response()->json($this->result);
+    
         }
 
         return parent::output(__METHOD__);
@@ -127,5 +133,5 @@ class CustodianController extends Controller {
             ? $this->succeed() : $this->fail();
         
     }
-    
+
 }

@@ -14,8 +14,8 @@
                 <th>总成绩</th>
                 <th>班级排名</th>
                 <th>年级排名</th>
-                <th>创建时间</th>
-                <th>更新时间</th>
+                <th>创建于</th>
+                <th>更新于</th>
             </tr>
             </thead>
             <tbody></tbody>

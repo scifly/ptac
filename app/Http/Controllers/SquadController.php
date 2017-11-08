@@ -17,7 +17,8 @@ class SquadController extends Controller {
     protected $class, $educator;
     
     public function __construct(Squad $class, Educator $educator) {
-        
+    
+        $this->middleware(['auth']);
         $this->class = $class;
         $this->educator = $educator;
         

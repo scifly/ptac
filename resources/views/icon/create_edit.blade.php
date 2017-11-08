@@ -14,7 +14,7 @@
                 <div class="col-sm-6">
                     {!! Form::text('name', null, [
                         'class' => 'form-control',
-                        'placeholder' => '(请输入功能名称)',
+                        'placeholder' => '(请输入图标CSS类名称)',
                         'required' => 'true',
                         'maxlength' => '80'
                     ]) !!}

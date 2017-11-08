@@ -15,7 +15,12 @@ class IconController extends Controller {
     
     protected $icon;
     
-    function __construct(Icon $icon) { $this->icon = $icon; }
+    function __construct(Icon $icon) {
+    
+        $this->middleware(['auth']);
+        $this->icon = $icon;
+    
+    }
     
     /**
      * 图标列表

@@ -65,32 +65,122 @@ $(document).on('click', '.btn-mobile-add', function (e) {
 
 /** 监护人学生关系管理 */
 var $addPupil = $('#add-pupil');
+var $pupils = $('#pupils');
 $addPupil.on('click', function () {
     $('#pupils').modal({backdrop: true});
-});
-// var $tbody2 = $("#classTable").find("tbody");
-// $(document).off('click','.btn-class-add');
-// $(document).on('click', '.btn-class-add', function (e) {
-//     e.preventDefault();
-//     var html = $tbody2.find('tr').last().clone();
-//     html.find('span.select2').remove();
-//     // 删除插件初始化增加的html
-//     $tbody2.append(html);
-//     // select2 init
-//     page.initSelect2();
-//     // 加减切换
-//     $tbody2.find('tr:not(:last) .btn-class-add')
-//         .removeClass('btn-class-add').addClass('btn-class-remove')
-//         .html('<i class="fa fa-minus text-blue"></i>');
-// }).on('click', '.btn-class-remove', function (e) {
-//     // 删除元素
-//     $(this).parents('tr:first').remove();
-//     e.preventDefault();
-//     return false;
-// });
 
-// /** 监护人所属部门管理 */
-// if (typeof dept === 'undefined') {
-//     $.getMultiScripts(['js/department.tree.js'], page.siteRoot())
-//         .done(function() { dept.init('custodians/create'); })
-// } else { dept.init('custodians/create'); }
+    // $.ajax({
+    //     type: 'GET',
+    //     dataType: 'json',
+    //     url: page.siteRoot() + 'custodians/create?tabId=' + page.getActiveTabId(),
+    //     success: function (result) {
+    //         // $pupils.html(result.html);
+    //         // console.log(result.js);
+    //         // $.getScript(result.js);
+    //
+    //     },
+    //     error: function () {
+    //
+    //     }
+    // });
+});
+
+/**
+ * 保存选中的学生
+ */
+var $saveStudent = $('#confirm-bind');
+var checkedStudents = $('#department-nodes-checked');
+var $studentId = $("#studentId");
+$saveStudent.on('click', function () {
+    var student = $studentId.find("option:selected").text();
+    var studentId = $studentId.val();
+    var item = checkedStudents.find('button[type=button]').length;
+    var checkedStudent = '<button type="button" class="btn btn-flat" style="margin-right: 5px;margin-bottom: 5px">' +
+        '<i ></i>' + student +
+        '<i class="fa fa-close close-selected"></i>' +
+        '<input type="hidden" name="selectedStudents[' + item +']" value="' + studentId + '"/>' +
+        '</button>';
+    checkedStudents.append(checkedStudent)
+});
+$(document).on('change', '#schoolId', function() {
+    var schoolId = $('#schoolId').val();
+
+    var $gradeId = $('#gradeId');
+    var $next = $gradeId.next();
+    var $prev = $gradeId.prev();
+
+    var $classId = $('#classId');
+    var $classNext = $classId.next();
+    var $classPrev = $classId.prev();
+
+    var $studentId = $('#studentId');
+    var $studentNext = $studentId.next();
+    var $studentPrev = $studentId.prev();
+    var token = $('#csrf_token').attr('content');
+    $.ajax({
+        type: 'POST',
+        dataType: 'json',
+        url: page.siteRoot() + 'custodians/create?field=school' + '&id=' + schoolId + '&_token=' + token,
+        success: function (result) {
+            $next.remove();
+            $gradeId.remove();
+            $prev.after(result['html']['grades']);
+
+            $classNext.remove();
+            $classId.remove();
+            $classPrev.after(result['html']['classes']);
+
+            $studentNext.remove();
+            $studentId.remove();
+            $studentPrev.after(result['html']['students']);
+
+            page.initSelect2();
+        }
+    });
+});
+$(document).on('change', '#gradeId', function() {
+    var gradeId = $('#gradeId').val();
+
+    var $classId = $('#classId');
+    var $next = $classId.next();
+    var $prev = $classId.prev();
+
+    var $studentId = $('#studentId');
+    var $studentNext = $studentId.next();
+    var $studentPrev = $studentId.prev();
+
+    var token = $('#csrf_token').attr('content');
+    $.ajax({
+        type: 'POST',
+        dataType: 'json',
+        url: page.siteRoot() + 'custodians/create?field=grade' + '&id=' + gradeId + '&_token=' + token,
+        success: function (result) {
+            $next.remove();
+            $classId.remove();
+            $prev.after(result['html']['classes']);
+
+            $studentNext.remove();
+            $studentId.remove();
+            $studentPrev.after(result['html']['students']);
+            page.initSelect2();
+        }
+    });
+});
+$(document).on('change', '#classId', function() {
+    var classId = $('#classId').val();
+    var $studentId = $('#studentId');
+    var $next = $studentId.next();
+    var $prev = $studentId.prev();
+    var token = $('#csrf_token').attr('content');
+    $.ajax({
+        type: 'POST',
+        dataType: 'json',
+        url: page.siteRoot() + 'custodians/create?field=class' + '&id=' + classId + '&_token=' + token,
+        success: function (result) {
+            $next.remove();
+            $studentId.remove();
+            $prev.after(result['html']['students']);
+            page.initSelect2();
+        }
+    });
+});

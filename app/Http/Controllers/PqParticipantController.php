@@ -34,6 +34,7 @@ class PqParticipantController extends Controller {
         User $user
     ) {
         
+        $this->middleware(['auth']);
         #投票问卷
         $this->pollQuestionnaires = $pollQuestionnaires;
         #投票问卷参与者

@@ -23,10 +23,13 @@ class MessageController extends Controller {
     protected $department;
     
     public function __construct(Message $message, User $user, Media $media, Department $department) {
+    
+        $this->middleware(['auth']);
         $this->message = $message;
         $this->user = $user;
         $this->media = $media;
         $this->department = $department;
+        
     }
     
     /**

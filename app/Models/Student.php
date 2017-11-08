@@ -347,10 +347,15 @@ class Student extends Model {
             [
                 'db'        => 'User.gender as gender', 'dt' => 2,
                 'formatter' => function ($d) {
-                    return $d == 1 ? '男' : '女';
+                    return $d == 1 ? '<i class="fa fa-mars"></i>' : '<i class="fa fa-venus"></i>';
                 },
             ],
-            ['db' => 'Squad.name as classname', 'dt' => 3],
+            [
+                'db' => 'Squad.name as classname', 'dt' => 3,
+                'formatter' => function($d) {
+                    return '<i class="fa fa-users"></i>&nbsp;' . $d;
+                }
+            ],
             ['db' => 'Student.student_number', 'dt' => 4],
             ['db' => 'Student.card_number', 'dt' => 5],
             [
@@ -378,11 +383,10 @@ class Student extends Model {
                      return substr($d, 0, -8);
                  },
             ],
-            ['db' => 'Student.remark', 'dt' => 9],
-            ['db' => 'Student.created_at', 'dt' => 10],
-            ['db' => 'Student.updated_at', 'dt' => 11],
+            ['db' => 'Student.created_at', 'dt' => 9],
+            ['db' => 'Student.updated_at', 'dt' => 10],
             [
-                'db'        => 'Student.enabled', 'dt' => 12,
+                'db'        => 'Student.enabled', 'dt' => 11,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
                 },

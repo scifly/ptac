@@ -13,7 +13,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
-class CustodianComposer {
+class CustodianRelationshipComposer {
     
     protected $user;
     
@@ -69,17 +69,17 @@ class CustodianComposer {
                 ->pluck('name', 'id');
         }
         if ($classes) {
-            $students = Student::where('class_id', $classes->keys()->first())
+            $students = Student::with('users:realname')
+                ->where('class_id', $classes->keys()->first())
                 ->where('enabled', 1)
-                ->pluck('student_number', 'id');
+                ->get()
+                ->pluck('realname', 'id');
         }
-        // dd($students);die;
         $view->with([
             'schools'  => $schools,
             'grades'   => $grades,
             'classes'  => $classes,
             'students' => $students,
-            'groupId'  => Group::whereName('监护人')->first()->id
         ]);
     }
     

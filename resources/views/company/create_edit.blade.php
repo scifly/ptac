@@ -12,12 +12,17 @@
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
-                    {!! Form::text('name', null, [
-                        'class' => 'form-control',
-                        'placeholder' => '(不超过40个汉字)',
-                        'required' => 'true',
-                        'data-parsley-length' => '[4, 40]'
-                    ]) !!}
+                    <div class="input-group">
+                        <div class="input-group-addon">
+                            <i class="fa fa-building"></i>
+                        </div>
+                        {!! Form::text('name', null, [
+                            'class' => 'form-control',
+                            'placeholder' => '(不超过40个汉字)',
+                            'required' => 'true',
+                            'data-parsley-length' => '[4, 40]'
+                        ]) !!}
+                    </div>
                 </div>
             </div>
             <div class="form-group">
@@ -25,10 +30,15 @@
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
-                    {!! Form::text('remark', null, [
-                        'class' => 'form-control',
-                        'required' => 'true'
-                    ]) !!}
+                    <div class="input-group">
+                        <div class="input-group-addon">
+                            <i class="fa fa-commenting-o"></i>
+                        </div>
+                        {!! Form::text('remark', null, [
+                            'class' => 'form-control',
+                            'required' => 'true'
+                        ]) !!}
+                    </div>
                 </div>
             </div>
             @if (isset($company['department_id']))
