@@ -14,25 +14,25 @@ $(document).on('click', '.btn-mobile-add', function (e) {
     // insert html for adding another mobile number
     $mobiles.append(
         '<tr>' +
-            '<td class="text-center">' +
-                '<div class="input-group">' +
-                    '<div class="input-group-addon">' +
-                        '<i class="fa fa-mobile"></i>' +
-                    '</div>' +
-                    '<input class="form-control" placeholder="（请输入手机号码）" name="mobile['+ n +'][mobile]" value="">' +
-                '</div>' +
-            '</td>' +
-            '<td class="text-center">' +
-                '<input type="radio" class="minimal" id="mobile[isdefault]" name="mobile[isdefault]" value="' + n + '">' +
-            '</td>' +
-            '<td class="text-center">' +
-                '<input type="checkbox" class="minimal" name="mobile['+ n +'][enabled]">' +
-            '</td>' +
-            '<td class="text-center">' +
-                '<button class="btn btn-box-tool btn-add btn-mobile-add">' +
-                    '<i class="fa fa-plus text-blue"></i>' +
-                '</button>' +
-            '</td>' +
+        '<td class="text-center">' +
+        '<div class="input-group">' +
+        '<div class="input-group-addon">' +
+        '<i class="fa fa-mobile"></i>' +
+        '</div>' +
+        '<input class="form-control" placeholder="（请输入手机号码）" name="mobile[' + n + '][mobile]" value="">' +
+        '</div>' +
+        '</td>' +
+        '<td class="text-center">' +
+        '<input type="radio" class="minimal" id="mobile[isdefault]" name="mobile[isdefault]" value="' + n + '">' +
+        '</td>' +
+        '<td class="text-center">' +
+        '<input type="checkbox" class="minimal" name="mobile[' + n + '][enabled]">' +
+        '</td>' +
+        '<td class="text-center">' +
+        '<button class="btn btn-box-tool btn-add btn-mobile-add">' +
+        '<i class="fa fa-plus text-blue"></i>' +
+        '</button>' +
+        '</td>' +
         '</tr>'
     );
     // init iCheck plugin
@@ -67,26 +67,37 @@ $(document).on('click', '.btn-mobile-add', function (e) {
 var $addPupil = $('#add-pupil');
 var $pupils = $('#pupils');
 $addPupil.on('click', function () {
+    $relationship.val("");
     $('#pupils').modal({backdrop: true});
-
-    // $.ajax({
-    //     type: 'GET',
-    //     dataType: 'json',
-    //     url: page.siteRoot() + 'custodians/create?tabId=' + page.getActiveTabId(),
-    //     success: function (result) {
-    //         // $pupils.html(result.html);
-    //         // console.log(result.js);
-    //         // $.getScript(result.js);
-    //
-    //     },
-    //     error: function () {
-    //
-    //     }
-    // });
 });
 
+/**
+ * 保存选中的学生
+ */
+var $saveStudent = $('#confirm-bind');
+var $studentId = $("#studentId");
+var $tBody = $("#tBody");
+var $relationship = $("#relationship");
+var item = 0;
+$saveStudent.on('click', function () {
+    var student = $studentId.find("option:selected").text().split('-');
+    var studentId = $studentId.val();
+    item++;
 
-$(document).on('change', '#schoolId', function() {
+    var htm = '<tr>' +
+        '<input type="hidden" value="' + studentId + '" name="student_ids[' + item + ']">' +
+        '<td>' + student[0] + '</td>' +
+        '<td>' + student[1] + '</td>' +
+        '<td><input type="text" name="relationships[' + item +  ']" id="" readonly class="no-border" style="background: none" value="' + $relationship.val() + '"></td>' +
+        '<td>' +
+        '<a href="javascript:" class="delete">' +
+        '<i class="fa fa-trash-o text-blue"></i>' +
+        '</a>' +
+        '</td>' +
+        '</tr>';
+    $tBody.append(htm);
+});
+$(document).on('change', '#schoolId', function () {
     var schoolId = $('#schoolId').val();
 
     var $gradeId = $('#gradeId');
@@ -122,7 +133,7 @@ $(document).on('change', '#schoolId', function() {
         }
     });
 });
-$(document).on('change', '#gradeId', function() {
+$(document).on('change', '#gradeId', function () {
     var gradeId = $('#gradeId').val();
 
     var $classId = $('#classId');
@@ -150,7 +161,7 @@ $(document).on('change', '#gradeId', function() {
         }
     });
 });
-$(document).on('change', '#classId', function() {
+$(document).on('change', '#classId', function () {
     var classId = $('#classId').val();
     var $studentId = $('#studentId');
     var $next = $studentId.next();
@@ -167,4 +178,8 @@ $(document).on('change', '#classId', function() {
             page.initSelect2();
         }
     });
+});
+//删除监护人
+$(document).on('click', '.delete', function () {
+    $(this).parents('tr').remove();
 });

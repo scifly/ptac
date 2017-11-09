@@ -122,18 +122,24 @@
                         </tr>
                         </thead>
                         <tbody id="tBody">
-                        <tr>
-                            <td><input type="hidden" value="" name="">张三</td>
-                            <td><input type="hidden" value="" name="">007</td>
-                            <td>
-                                <input type="text" name="" id="" readonly class="no-border" style="background: none" value="父女">
-                            </td>
-                            <td>
-                                <a href="javascript:" class="delete">
-                                    <i class="fa fa-trash-o text-blue"></i>
-                                </a>
-                            </td>
-                        </tr>
+                        @if(!empty($pupils))
+                            @foreach($pupils as $key => $pupil)
+                                <tr>
+                                    <input type="hidden" value="{{$pupil->student_id}}" name="student_ids[{{$key}}]" id="student_ids">
+                                    <td>{{$pupil->student->user->realname}}</td>
+                                    <td>{{$pupil->student->student_number}}</td>
+                                    <td>
+                                        <input type="text" name="relationships[{{$key}}]" id="" readonly class="no-border" style="background: none" value="{{$pupil->relationship}}">
+                                    </td>
+                                    <td>
+                                        <a href="javascript:" class="delete">
+                                            <i class="fa fa-trash-o text-blue"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        @endif
+
                         </tbody>
                     </table>
                     <button id="add-pupil" class="btn btn-box-tool" type="button">

@@ -69,9 +69,17 @@ class CustodianComposer {
                 ->pluck('name', 'id');
         }
         if ($classes) {
-            $students = Student::where('class_id', $classes->keys()->first())
+            // $students = Student::where('class_id', $classes->keys()->first())
+            //     ->where('enabled', 1)
+            //     ->pluck('student_number', 'id');
+            $list = Student::whereClassId($classes->keys()->first())
                 ->where('enabled', 1)
-                ->pluck('student_number', 'id');
+                ->get();
+            if (!empty($list)) {
+                foreach ($list as $s) {
+                    $students[$s->id] = $s->user->realname . "-" .$s->student_number;
+                }
+            }
         }
         // dd($students);die;
         $view->with([

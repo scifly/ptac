@@ -74,13 +74,13 @@ class Custodian extends Model {
 
         try {
             $exception = DB::transaction(function () use ($request) {
-
                 $user = $request->input('user');
                 # 包含学生的Id
-                $studentIds = $request->input('selectedStudents');
+                $studentIds = $request->input('student_ids');
                 # 与学生之间的关系
-                $relationships = $request->input('relationship');
+                $relationships = $request->input('relationships');
                 $studentId_relationship = [];
+    
                 foreach ($studentIds as $key => $studentId) {
                     $studentId_relationship[$studentId] = $relationships[$key];
                 }
@@ -122,10 +122,10 @@ class Custodian extends Model {
                 }
                 $c = $this->create($custodianData);
                 # 向部门用户表添加数据
-                $departmentUser = new DepartmentUser();
-                $departmentIds = $request->input('selectedDepartments');
-                $departmentUser->storeByUserId($u->id, $departmentIds);
-                unset($departmentUser);
+                // $departmentUser = new DepartmentUser();
+                // $departmentIds = $request->input('selectedDepartments');
+                // $departmentUser->storeByUserId($u->id, $departmentIds);
+                // unset($departmentUser);
                 # 向监护人学生表中添加数据
                 $custodianStudent = new CustodianStudent();
                 if ($studentId_relationship != null) {
@@ -165,7 +165,8 @@ class Custodian extends Model {
                 # 包含学生的Id
                 $studentIds = $request->input('student_ids');
                 # 与学生之间的关系
-                $relationships = $request->input('relationship');
+                $relationships = $request->input('relationships');
+                $studentId_Relationship = [];
                 foreach ($studentIds as $key => $studentId) {
                     $studentId_Relationship[$studentId] = $relationships[$key];
                 }
@@ -204,12 +205,12 @@ class Custodian extends Model {
                     unset($mobile);
                 }
                 # 向部门用户表添加数据
-                $departmentIds = $request->input('selectedDepartments');
-                sort($departmentIds);
-                $departmentUser = new DepartmentUser();
-                $departmentUser::where('user_id', $userId)->delete();
-                $departmentUser->storeByUserId($userId, $departmentIds);
-                unset($departmentUser);
+                // $departmentIds = $request->input('selectedDepartments');
+                // sort($departmentIds);
+                // $departmentUser = new DepartmentUser();
+                // $departmentUser::where('user_id', $userId)->delete();
+                // $departmentUser->storeByUserId($userId, $departmentIds);
+                // unset($departmentUser);
                 # 向监护人学生表中添加数据
                 $custodianStudent = new CustodianStudent();
 //                $custodianStudent::whereCustodianId($custodianId)->delete();
@@ -297,9 +298,18 @@ class Custodian extends Model {
                     ->pluck('student_number', 'id');
                 break;
             case 'class':
-                $students = Student::whereClassId($id)
+                $list = Student::whereClassId($id)
                     ->where('enabled', 1)
-                    ->pluck('student_number', 'id');
+                    ->get();
+                if (!empty($list)) {
+                    foreach ($list as $s) {
+                        $students[$s->id] = $s->user->realname . "-" .$s->student_number;
+                    }
+                }
+                
+                // $students = Student::whereClassId($id)
+                //     ->where('enabled', 1)
+                //     ->pluck('student_number', 'id');
                 break;
             default:
                 break;
