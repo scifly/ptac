@@ -6,11 +6,9 @@ var custodian = {
         return $('#add-pupil');
     },
     $tBody: function () {
-        // 教职员工 编辑表单
         return $('#tBody');
     },
     relationship: function () {
-        // 教职员工 编辑表单
         return $('#relationship');
     },
     saveStudent: function(item) {
