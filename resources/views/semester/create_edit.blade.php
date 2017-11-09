@@ -26,18 +26,6 @@
                 'items' => $schools
             ])
             <div class="form-group">
-                {!! Form::label('remark', '备注', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
-                <div class="col-sm-6">
-                    {!! Form::text('remark', null, [
-                        'class' => 'form-control',
-                        'placeholder' => '(不得超过80个汉字)',
-                        'max' => '255'
-                    ]) !!}
-                </div>
-            </div>
-            <div class="form-group">
                 {!! Form::label('start_date', '起始日期', [
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
@@ -70,6 +58,7 @@
                     </div>
                 </div>
             </div>
+            @include('partials.remark')
             @include('partials.enabled', [
                 'id' => 'enabled',
                 'value' => isset($semester['enabled']) ? $semester['enabled'] : NULL
