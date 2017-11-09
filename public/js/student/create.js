@@ -76,7 +76,7 @@ $(document).on('click', '.btn-class-add', function (e) {
     e.preventDefault();
     return false;
 });
-
+alert(typeof dept === 'undefined');
 //部门
 if (typeof dept === 'undefined') {
     $.getMultiScripts(['js/department.tree.js'], page.siteRoot())

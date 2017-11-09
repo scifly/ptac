@@ -125,14 +125,14 @@ class Student extends Model {
         try {
             $exception = DB::transaction(function () use ($request) {
                 
-                # 获取监护人的ID
-                $custodianIds = $request->input('custodian_ids');
-                # 获取与监护人的关系
-                $relationships = $request->input('relationship');
-                foreach ($custodianIds as $key => $studentId) {
-                    # 监护人ID和监护人关系对应的数组
-                    $custodianId_relationship[$studentId] = $relationships[$key];
-                }
+                // # 获取监护人的ID
+                // $custodianIds = $request->input('custodian_ids');
+                // # 获取与监护人的关系
+                // $relationships = $request->input('relationship');
+                // foreach ($custodianIds as $key => $studentId) {
+                //     # 监护人ID和监护人关系对应的数组
+                //     $custodianId_relationship[$studentId] = $relationships[$key];
+                // }
                 $user = $request->input('user');
                 $userData = [
                     'username'     => uniqid('custodian_'),
@@ -236,14 +236,14 @@ class Student extends Model {
         }
         try {
             $exception = DB::transaction(function () use ($request, $studentId, $student) {
-                # 获取监护人的ID
-                $custodianIds = $request->input('custodian_ids');
-                # 获取与监护人的关系
-                $relationships = $request->input('relationship');
-                foreach ($custodianIds as $key => $studentId) {
-                    # 监护人ID和监护人关系对应的数组
-                    $custodianId_relationship[$studentId] = $relationships[$key];
-                }
+                // # 获取监护人的ID
+                // $custodianIds = $request->input('custodian_ids');
+                // # 获取与监护人的关系
+                // $relationships = $request->input('relationship');
+                // foreach ($custodianIds as $key => $studentId) {
+                //     # 监护人ID和监护人关系对应的数组
+                //     $custodianId_relationship[$studentId] = $relationships[$key];
+                // }
                 $userId = $request->input('user_id');
                 $userData = $request->input('user');
                 $user = new User();

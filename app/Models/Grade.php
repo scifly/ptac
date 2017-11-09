@@ -212,7 +212,7 @@ class Grade extends Model {
                     $educators = [];
                     foreach ($educatorIds as $id) {
                         $educator = Educator::whereId($id)->first();
-                        if ($educator->user) {
+                        if (!empty($educator) && $educator->user) {
                             $educators[] = $educator->user->realname;
                         }
                     }
