@@ -167,9 +167,12 @@ class Custodian extends Model {
                 # 与学生之间的关系
                 $relationships = $request->input('relationships');
                 $studentId_Relationship = [];
-                foreach ($studentIds as $key => $studentId) {
-                    $studentId_Relationship[$studentId] = $relationships[$key];
+                if (!empty($studentIds)){
+                    foreach ($studentIds as $key => $studentId) {
+                        $studentId_Relationship[$studentId] = $relationships[$key];
+                    }
                 }
+                
                 $user = new User();
                 $user->where('id', $userId)
                     ->update([

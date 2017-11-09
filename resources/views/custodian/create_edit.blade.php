@@ -287,7 +287,8 @@
                             ]) }}
                         <div class="col-sm-6">
                             {{ Form::text('relationship', null, [
-                                'id' => 'relationship'
+                                'id' => 'relationship',
+                                'require' => 'true'
                             ]) }}
                         </div>
                     </div>
