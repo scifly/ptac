@@ -36,6 +36,8 @@ var custodian = {
                 '</td>' +
                 '</tr>';
             custodian.$tBody().append(htm);
+            // $("#pupils").hide();
+            $("#pupils").modal('hide');
         });
     },
     schoolChange: function() {
