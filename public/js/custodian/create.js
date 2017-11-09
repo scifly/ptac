@@ -62,6 +62,8 @@ $(document).on('click', '.btn-mobile-add', function (e) {
     }
     return false;
 });
+
+/** 监护人学生关系管理 */
 var item = 0;
 if (typeof custodian === 'undefined') {
 
@@ -70,7 +72,6 @@ if (typeof custodian === 'undefined') {
 } else { custodian.init(item); }
 
 
-/** 监护人学生关系管理 */
 // var $addPupil = $('#add-pupil');
 // var $pupils = $('#pupils');
 // $addPupil.on('click', function () {
