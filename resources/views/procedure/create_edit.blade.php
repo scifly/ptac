@@ -30,19 +30,7 @@
                     ]) !!}
                 </div>
             </div>
-            <div class="form-group">
-                {!! Form::label('remark', '备注',[
-                    'class' => 'col-sm-3 control-label',
-                ]) !!}
-                <div class="col-sm-3">
-                    {!! Form::text('remark', null, [
-                        'class' => 'form-control',
-                         'placeholder' => '(不得超过80个汉字)',
-                         'required' => 'true',
-                         'maxlength' => '255'
-                    ]) !!}
-                </div>
-            </div>
+            @include('partials.remark')
             @include('partials.enabled', [
                 'id' => 'enabled',
                 'value' => isset($procedure['enabled']) ? $procedure['enabled'] : NULL

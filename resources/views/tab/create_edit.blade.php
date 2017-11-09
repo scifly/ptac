@@ -16,49 +16,22 @@
                         'readonly' => true,
                         'class' => 'form-control'
                     ]) !!}
-
                 </div>
             </div>
             <div class="form-group">
-                {!! Form::label('remark', '备注', [
+                {!! Form::label('icon_id', '图标', [
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
-                    {!! Form::text('remark', null, [
-                        'class' => 'form-control',
-                        'placeholder' => '(请输入备注)',
-                        'required' => 'true',
-                        'maxlength' => '255'
-                    ]) !!}
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="icon_id" class="col-sm-3 control-label">
-                    图标
-                </label>
-                <div class="col-sm-6"
-                     style="
-                        overflow-y: scroll;
-                        height: 200px;
-                        border: 1px solid gray;
-                        margin-left: 15px;
-                        width: 393px;
-                    "
-                >
-                    @foreach($icons as $group => $_icons)
-                        @foreach ($_icons as $key => $value)
-                            <label for="icon_id">
-                                <input id="icon_id" type="radio" name="icon_id"
-                                       value="{{ $key }}" class="minimal"
-                                       @if(isset($tab) && $tab['icon_id'] == $key)
-                                       checked
-                                        @endif
-                                >
-                            </label>
-                            <i class="{{ $value }}" style="margin-left: 10px;">&nbsp; {{ $value }}</i><br/>
-                        @endforeach
-                    @endforeach
-
+                    <div class="input-group">
+                        <div class="input-group-addon">
+                            <i class="fa fa-fonticons"></i>
+                        </div>
+                        {{ Form::select('icon_id', $icons, null, [
+                            'id' => 'icon_id',
+                            'style' => 'width: 100%;'
+                        ]) }}
+                    </div>
                 </div>
             </div>
             @include('partials.single_select', [
@@ -72,6 +45,7 @@
                 'items' => $menus,
                 'selectedItems' => isset($selectedMenus) ? $selectedMenus : NULL
             ])
+            @include('partials.remark')
             @include('partials.enabled', [
                 'id' => 'enabled',
                 'value' => isset($tab['enabled']) ? $tab['enabled'] : NULL

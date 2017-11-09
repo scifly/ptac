@@ -274,7 +274,6 @@ class Student extends Model {
                     $mobileModel = new Mobile();
                     $delMobile = $mobileModel->where('user_id', $userId)->delete();
                     if ($delMobile) {
-//                        dd($mobiles);
                         foreach ($mobiles as $k => $mobile) {
                             $mobileData = [
                                 'user_id'   => $request->input('user_id'),

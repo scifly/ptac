@@ -25,28 +25,13 @@
                     </div>
                 </div>
             </div>
-            <div class="form-group">
-                {!! Form::label('remark', '备注', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
-                <div class="col-sm-6">
-                    <div class="input-group">
-                        <div class="input-group-addon">
-                            <i class="fa fa-commenting-o"></i>
-                        </div>
-                        {!! Form::text('remark', null, [
-                            'class' => 'form-control',
-                            'required' => 'true'
-                        ]) !!}
-                    </div>
-                </div>
-            </div>
             @if (isset($company['department_id']))
                 {!! Form::hidden('department_id', $company['department_id']) !!}
             @endif
             @if (isset($company['menu_id']))
                 {!! Form::hidden('menu_id', $company['menu_id']) !!}
             @endif
+            @include('partials.remark')
             @include('partials.enabled', [
                 'id' => 'enabled',
                 'value' => isset($company['enabled']) ? $company['enabled'] : NULL

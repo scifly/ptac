@@ -13,13 +13,13 @@ var sync = function () {
             if(result['action'] === 'create') {
                 app = '<tr id="app"' + data['agentid'] + '">' +
                     '<td>' + data['id'] + '</td>' +
-                    '<td>' + data['agentid'] + '</td>' +
+                    '<td class="text-center">' + data['agentid'] + '</td>' +
                     '<td>' + data['name'] + '</td>' +
-                    '<td><img style="width: 16px; height: 16px;" src="' + data['square_logo_url'] + '"/></td>' +
+                    '<td class="text-center"><img style="width: 16px; height: 16px;" src="' + data['square_logo_url'] + '"/></td>' +
                     '<td>' + data['description'] + '</td>' +
-                    '<td>' + data['created_at'] + '</td>' +
-                    '<td>' + data['updated_at'] + '</td>' +
-                    '<td>' + data['enabled'] + '</td>' +
+                    '<td class="text-center">' + data['created_at'] + '</td>' +
+                    '<td class="text-center">' + data['updated_at'] + '</td>' +
+                    '<td class="text-right">' + data['enabled'] + '</td>' +
                     '</tr>';
                 var $na = $('#na');
                 if(typeof $na !== 'undefined') {
@@ -27,16 +27,15 @@ var sync = function () {
                 }
                 $('table tbody').append(app);
             } else {
-                console.log(result["app"]);
                 var $tr = $('#app' + data['agentid']);
                 app = '<td>' + data['id'] + '</td>' +
-                    '<td>' + data['agentid'] + '</td>' +
-                    '<td>' + data['name'] + '</td>' +
-                    '<td><img style="width: 16px; height: 16px;" src="' + data['square_logo_url'] + '"/></td>' +
+                    '<td class="text-center">' + data['agentid'] + '</td>' +
+                    '<td class="text-center">' + data['name'] + '</td>' +
+                    '<td class="text-center"><img style="width: 16px; height: 16px;" src="' + data['square_logo_url'] + '"/></td>' +
                     '<td>' + data['description'] + '</td>' +
-                    '<td>' + data['created_at'] + '</td>' +
-                    '<td>' + data['updated_at'] + '</td>' +
-                    '<td>' + data['enabled'] + '</td>';
+                    '<td class="text-center">' + data['created_at'] + '</td>' +
+                    '<td class="text-center">' + data['updated_at'] + '</td>' +
+                    '<td class="text-right">' + data['enabled'] + '</td>';
                 $tr.html(app);
             }
             $sync.html('同步应用');
