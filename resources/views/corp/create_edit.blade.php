@@ -12,18 +12,24 @@
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
-                    {!! Form::text('name', null, [
-                        'class' => 'form-control',
-                        'placeholder' => '(不超过60个汉字)',
-                        'required' => 'true',
-                        'minlength' => '3',
-                    ]) !!}
+                    <div class="input-group">
+                        <div class="input-group-addon">
+                            <i class="fa fa-weixin"></i>
+                        </div>
+                        {!! Form::text('name', null, [
+                            'class' => 'form-control',
+                            'placeholder' => '(不超过60个汉字)',
+                            'required' => 'true',
+                            'minlength' => '3',
+                        ]) !!}
+                    </div>
                 </div>
             </div>
             @include('partials.single_select', [
                 'label' => '所属运营者',
                 'id' => 'company_id',
-                'items' => $companies
+                'items' => $companies,
+                'icon' => 'fa fa-building'
             ])
             <div class="form-group">
                 {!! Form::label('corpid', '企业号ID', [
@@ -46,7 +52,6 @@
                 {!! Form::hidden('menu_id', $corp['menu_id']) !!}
             @endif
             @include('partials.enabled', [
-                'label' => '状态',
                 'id' => 'enabled',
                 'value' => isset($corp['enabled']) ? $corp['enabled'] : NULL
             ])

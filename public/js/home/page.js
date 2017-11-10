@@ -83,6 +83,10 @@ var page = {
         return "<img id='ajaxLoader' alt='' src='" + page.siteRoot() + "/img/throbber.gif' " +
             "style='vertical-align: middle;'/>"
     },
+    formatState: function(state) {
+        if (!state.id) { return state.text; }
+        return $('<span><i class="' + state.text + '"> ' + state.text + '</span>');
+    },
     getActiveTabId: function () {
         var tabId = $('.nav-tabs .active a').attr('href').split('_');
         return tabId[tabId.length - 1];
@@ -123,7 +127,7 @@ var page = {
                     replaceState = false;
                     updateHistory = true;
                 } else {
-                    window.location = 'login';
+                    window.location = page.siteRoot() + 'login';
                 }
             },
             error: function (jqXHR, textStatus, errorThrown) {
@@ -133,6 +137,7 @@ var page = {
         });
     },
     ajaxRequest: function (requestType, url, data, obj) {
+        $('.overlay').show();
         $.ajax({
             type: requestType,
             dataType: 'json',
@@ -148,6 +153,7 @@ var page = {
                             break;
                     }
                 }
+                $('.overlay').hide();
                 page.inform(
                     '操作结果', result.message,
                     result.statusCode === 200 ? page.success : page.failure
@@ -156,6 +162,7 @@ var page = {
             },
             error: function (e) {
                 var obj = JSON.parse(e.responseText);
+                $('.overlay').hide();
                 page.inform('出现异常', obj['message'], page.failure);
             }
         });
@@ -250,12 +257,12 @@ var page = {
             );
         });
     },
-    create: function (formId, table) {
-        page.initForm(table, formId, table + '/store', 'POST');
+    create: function (formId, table, options) {
+        page.initForm(table, formId, table + '/store', 'POST', options);
     },
-    edit: function (formId, table) {
+    edit: function (formId, table, options) {
         var id = $('#id').val();
-        page.initForm(table, formId, table + '/update/' + id, 'PUT');
+        page.initForm(table, formId, table + '/update/' + id, 'PUT', options);
     },
     recharge: function (formId, table) {
         var id = $('#id').val();
@@ -267,13 +274,15 @@ var page = {
             href: page.siteRoot() + css
         }));
     },
-    initSelect2: function() {
+    initSelect2: function(options) {
         if (!($.fn.select2)) {
             page.loadCss(page.plugins.select2.css);
             $.getMultiScripts([page.plugins.select2.js], page.siteRoot())
-                .done(function() { $('select').select2(); });
+                .done(function() {
+                    $('select').select2(typeof options !== 'undefined' ? options : {});
+                });
         } else {
-            $('select').select2();
+            $('select').select2(typeof options !== 'undefined' ? options : {});
         }
     },
     initICheck: function (object) {
@@ -302,11 +311,11 @@ var page = {
     initBackBtn: function(table) {
         $('#cancel, #record-list').on('click', function() { page.backToList(table); })
     },
-    initForm: function (table, formId, url, requestType) {
+    initForm: function (table, formId, url, requestType, options) {
         this.unbindEvents();
         var $form = $('#' + formId);
         page.initBackBtn(table);
-        page.initSelect2();
+        page.initSelect2(options);
         page.initICheck();
         page.initParsley($form, requestType, url);
     },
@@ -372,6 +381,11 @@ $(function () {
         page.getTabContent($activeTabPane, oPage.url);
     };
     $(document).on('click', '.tab', function () {
+        var tabs = $('a.tab');
+        $.each(tabs, function() {
+            $(this).removeClass('text-blue').addClass('text-gray');
+        });
+        $(this).removeClass('text-gray').addClass('text-blue');
         // 获取被点击卡片的url
         var url = $(this).attr('data-uri');
         // 获取所有卡片

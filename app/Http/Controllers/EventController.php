@@ -16,7 +16,10 @@ class EventController extends Controller {
     protected $event;
     
     function __construct(Event $event) {
+    
+        $this->middleware(['auth']);
         $this->event = $event;
+        
     }
     
     /**

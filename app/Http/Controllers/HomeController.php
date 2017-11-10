@@ -96,6 +96,7 @@ class HomeController extends Controller {
                 $tabArray[] = [
                     'id'     => 'tab_' . $tab->id,
                     'name'   => $tab->name,
+                    'icon'   => isset($tab->icon_id) ? $tab->icon->name : null,
                     'active' => false,
                     'url'    => $tab->action->route,
                 ];
@@ -131,6 +132,7 @@ class HomeController extends Controller {
             $tabArray[] = [
                 'id'     => 'tab_' . $tab->id,
                 'name'   => $tab->name,
+                'icon'   => isset($tab->icon_id) ? $tab->icon->name : null,
                 'active' => true,
                 'url'    => $tab->action->route,
             ];

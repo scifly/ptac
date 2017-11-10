@@ -15,7 +15,12 @@ class ProcedureStepController extends Controller {
     
     protected $procedureStep;
     
-    function __construct(ProcedureStep $procedureStep) { $this->procedureStep = $procedureStep; }
+    function __construct(ProcedureStep $procedureStep) {
+    
+        $this->middleware(['auth']);
+        $this->procedureStep = $procedureStep;
+    
+    }
     
     /**
      * 审批流程步骤列表

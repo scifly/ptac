@@ -26,7 +26,8 @@ class CustodianController extends Controller {
         DepartmentUser $departmentUser, Student $student,
         CustodianStudent $custodianStudent
     ) {
-
+    
+        $this->middleware(['auth']);
         $this->custodian = $custodian;
         $this->department = $department;
         $this->group = $group;
@@ -59,7 +60,12 @@ class CustodianController extends Controller {
     public function create() {
 
         if (Request::method() === 'POST') {
-            return $this->department->tree();
+            
+            $field = Request::query('field');
+            $id = Request::query('id');
+            $this->result['html'] = $this->custodian->getFieldList($field, $id);
+            return response()->json($this->result);
+    
         }
 
         return parent::output(__METHOD__);
@@ -80,15 +86,6 @@ class CustodianController extends Controller {
     }
 
     /**
-     * 监护人详情
-     *
-     * @param  \App\Models\Custodian $custodian
-     */
-    public function show(Custodian $custodian) {
-
-    }
-    
-    /**
      * 编辑监护人
      *
      * @param $id
@@ -100,19 +97,13 @@ class CustodianController extends Controller {
             return $this->department->tree();
         }
         $custodian = $this->custodian->find($id);
-        $departments = $custodian->user->departments;
-        $selectedDepartmentIds = [];
-        foreach ($departments as $department) {
-            $selectedDepartmentIds[] = $department->id;
-        }
-        $selectedDepartments = $this->department->selectedNodes($selectedDepartmentIds);
         if (!$custodian) { return $this->notFound(); }
+        $pupils = $custodian->custodianStudents;
 
         return $this->output(__METHOD__, [
             'mobiles'               => $custodian->user->mobiles,
             'custodian'             => $custodian,
-            'selectedDepartmentIds' => implode(',', $selectedDepartmentIds),
-            'selectedDepartments'   => $selectedDepartments,
+            'pupils'                => $pupils,
         ]);
 
     }
@@ -142,5 +133,5 @@ class CustodianController extends Controller {
             ? $this->succeed() : $this->fail();
         
     }
-    
+
 }

@@ -17,7 +17,9 @@ class PollQuestionnaireController extends Controller {
     
     function __construct(PollQuestionnaire $pollQuestionnaire) {
         
+        $this->middleware(['auth']);
         $this->pollQuestionnaire = $pollQuestionnaire;
+        
     }
     
     /**
@@ -53,10 +55,12 @@ class PollQuestionnaireController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(PqRequest $request) {
+        
         $data = $request->all();
         $data['user_id'] = 6;
         
-        return $this->pollQuestionnaire->create($data) ? $this->succeed() : $this->fail();
+        return $this->pollQuestionnaire->create($data)
+            ? $this->succeed() : $this->fail();
         
     }
     
@@ -69,9 +73,7 @@ class PollQuestionnaireController extends Controller {
     public function show($id) {
         
         $pollQuestionnaire = $this->pollQuestionnaire->find($id);
-        if (!$pollQuestionnaire) {
-            return $this->notFound();
-        }
+        if (!$pollQuestionnaire) { return $this->notFound(); }
         
         return $this->output(__METHOD__, [
             'pollQuestionnaire' => $pollQuestionnaire,
@@ -87,11 +89,11 @@ class PollQuestionnaireController extends Controller {
     public function edit($id) {
         
         $pollQuestionnaire = $this->pollQuestionnaire->find($id);
-        if (!$pollQuestionnaire) {
-            return $this->notFound();
-        }
+        if (!$pollQuestionnaire) { return $this->notFound(); }
         
-        return $this->output(__METHOD__, ['pollQuestionnaire' => $pollQuestionnaire,]);
+        return $this->output(__METHOD__, [
+            'pollQuestionnaire' => $pollQuestionnaire
+        ]);
         
     }
     
@@ -105,11 +107,11 @@ class PollQuestionnaireController extends Controller {
     public function update(PqRequest $request, $id) {
         
         $pollQuestionnaire = $this->pollQuestionnaire->find($id);
-        if (!$pollQuestionnaire) {
-            return $this->notFound();
-        }
+        if (!$pollQuestionnaire) { return $this->notFound(); }
         
-        return $pollQuestionnaire->update($request->all()) ? $this->succeed() : $this->fail();
+        return $pollQuestionnaire->update($request->all())
+            ? $this->succeed() : $this->fail();
+        
     }
     
     /**
@@ -125,7 +127,8 @@ class PollQuestionnaireController extends Controller {
             return $this->notFound();
         }
         
-        return $pollQuestionnaire->remove($id) ? $this->succeed() : $this->fail('失败：该问卷存在有效关联数据，不能删除');
+        return $pollQuestionnaire->remove($id)
+            ? $this->succeed() : $this->fail('失败：该问卷存在有效关联数据，不能删除');
         
     }
 }

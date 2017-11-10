@@ -1,3 +1,4 @@
+
 page.create('formStudent','students');
 
 var n = 0;
@@ -62,7 +63,9 @@ $(document).on('click', '.btn-class-add', function (e) {
     // 删除插件初始化增加的html
     $tbody2.append(html);
     // select2 init
-    $('select').select2();
+    page.initSelect2();
+    // iCheck
+    page.initICheck();
     // 加减切换
     $tbody2.find('tr:not(:last) .btn-class-add')
         .removeClass('btn-class-add').addClass('btn-class-remove')
@@ -73,7 +76,9 @@ $(document).on('click', '.btn-class-add', function (e) {
     e.preventDefault();
     return false;
 });
-
-
+alert(typeof dept === 'undefined');
 //部门
-dept.init('students/create');
+if (typeof dept === 'undefined') {
+    $.getMultiScripts(['js/department.tree.js'], page.siteRoot())
+        .done(function() { dept.init('students/create'); });
+} else { dept.init('students/create'); }

@@ -51,25 +51,13 @@
                 'id' => 'conference_room_id',
                 'items' => $conferenceRooms
             ])
-            <div class="form-group">
-                {!! Form::label('remark', '备注', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
-                <div class="col-sm-6">
-                    {!! Form::text('remark', null, [
-                        'class' => 'form-control',
-                        'placeholder' => '(会议室可容纳的人数)',
-                        'required' => 'true',
-                        'type' => 'number'
-                    ]) !!}
-                </div>
-            </div>
             @include('partials.multiple_select', [
                 'label' => '与会者',
                 'id' => 'educator_ids[]',
                 'items' => $educators,
                 'selectedItems' => isset($selectedEducators) ? $selectedEducators : NULL
             ])
+            @include('partials.remark')
         </div>
     </div>
     @include('partials.form_buttons')

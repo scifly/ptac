@@ -383,8 +383,8 @@ class Department extends Model {
                 case '运营': $type = 'company'; $icon = 'fa fa-building'; break;
                 case '企业': $type = 'corp'; $icon = 'fa fa-weixin'; break;
                 case '学校': $type = 'school'; $icon = 'fa fa-university'; break;
-                case '年级': $type = 'grade'; $icon = 'fa fa-users'; break;
-                case '班级': $type = 'class'; $icon = 'fa fa-user'; break;
+                case '年级': $type = 'grade'; $icon = 'fa fa-object-group'; break;
+                case '班级': $type = 'class'; $icon = 'fa fa-users'; break;
                 default: $type = 'other'; $icon = 'fa fa-list'; break;
             }
             $data[] = [
@@ -433,8 +433,8 @@ class Department extends Model {
                 case '运营': $type = 'company'; $icon = 'fa fa-building'; break;
                 case '企业': $type = 'corp'; $icon = 'fa fa-weixin'; break;
                 case '学校': $type = 'school'; $icon = 'fa fa-university'; break;
-                case '年级': $type = 'grade'; $icon = 'fa fa-users'; break;
-                case '班级': $type = 'class'; $icon = 'fa fa-user'; break;
+                case '年级': $type = 'grade'; $icon = 'fa fa-object-group'; break;
+                case '班级': $type = 'class'; $icon = 'fa fa-users'; break;
                 default: $type = 'other'; $icon = 'fa fa-list'; break;
             }
             $data[] = [

@@ -51,7 +51,6 @@
                 'value' => isset($eas['inorout']) ? $eas['inorout'] : NULL
             ])
             @include('partials.enabled', [
-                'label' => '状态',
                 'id' => 'enabled',
                 'value' => isset($eas['enabled']) ? $eas['enabled'] : NULL
             ])

@@ -192,16 +192,27 @@ class Grade extends Model {
         
         $columns = [
             ['db' => 'Grade.id', 'dt' => 0],
-            ['db' => 'Grade.name', 'dt' => 1],
-            ['db' => 'School.name as schoolname', 'dt' => 2],
+            [
+                'db' => 'Grade.name', 'dt' => 1,
+                'formatter' => function($d) {
+                    return '<i class="fa fa-object-group"></i>&nbsp;' . $d;
+                }
+            ],
+            [
+                'db' => 'School.name as schoolname', 'dt' => 2,
+                'formatter' => function($d) {
+                    return '<i class="fa fa-university"></i>&nbsp;' . $d;
+                }
+            ],
             [
                 'db'        => 'Grade.educator_ids', 'dt' => 3,
                 'formatter' => function ($d) {
+                    if (empty($d)) { return ''; }
                     $educatorIds = explode(',', $d);
                     $educators = [];
                     foreach ($educatorIds as $id) {
                         $educator = Educator::whereId($id)->first();
-                        if ($educator->user) {
+                        if (!empty($educator) && $educator->user) {
                             $educators[] = $educator->user->realname;
                         }
                     }

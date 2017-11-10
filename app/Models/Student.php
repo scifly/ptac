@@ -125,14 +125,14 @@ class Student extends Model {
         try {
             $exception = DB::transaction(function () use ($request) {
                 
-                # 获取监护人的ID
-                $custodianIds = $request->input('custodian_ids');
-                # 获取与监护人的关系
-                $relationships = $request->input('relationship');
-                foreach ($custodianIds as $key => $studentId) {
-                    # 监护人ID和监护人关系对应的数组
-                    $custodianId_relationship[$studentId] = $relationships[$key];
-                }
+                // # 获取监护人的ID
+                // $custodianIds = $request->input('custodian_ids');
+                // # 获取与监护人的关系
+                // $relationships = $request->input('relationship');
+                // foreach ($custodianIds as $key => $studentId) {
+                //     # 监护人ID和监护人关系对应的数组
+                //     $custodianId_relationship[$studentId] = $relationships[$key];
+                // }
                 $user = $request->input('user');
                 $userData = [
                     'username'     => uniqid('custodian_'),
@@ -236,14 +236,14 @@ class Student extends Model {
         }
         try {
             $exception = DB::transaction(function () use ($request, $studentId, $student) {
-                # 获取监护人的ID
-                $custodianIds = $request->input('custodian_ids');
-                # 获取与监护人的关系
-                $relationships = $request->input('relationship');
-                foreach ($custodianIds as $key => $studentId) {
-                    # 监护人ID和监护人关系对应的数组
-                    $custodianId_relationship[$studentId] = $relationships[$key];
-                }
+                // # 获取监护人的ID
+                // $custodianIds = $request->input('custodian_ids');
+                // # 获取与监护人的关系
+                // $relationships = $request->input('relationship');
+                // foreach ($custodianIds as $key => $studentId) {
+                //     # 监护人ID和监护人关系对应的数组
+                //     $custodianId_relationship[$studentId] = $relationships[$key];
+                // }
                 $userId = $request->input('user_id');
                 $userData = $request->input('user');
                 $user = new User();
@@ -274,7 +274,6 @@ class Student extends Model {
                     $mobileModel = new Mobile();
                     $delMobile = $mobileModel->where('user_id', $userId)->delete();
                     if ($delMobile) {
-//                        dd($mobiles);
                         foreach ($mobiles as $k => $mobile) {
                             $mobileData = [
                                 'user_id'   => $request->input('user_id'),
@@ -347,10 +346,15 @@ class Student extends Model {
             [
                 'db'        => 'User.gender as gender', 'dt' => 2,
                 'formatter' => function ($d) {
-                    return $d == 1 ? '男' : '女';
+                    return $d == 1 ? '<i class="fa fa-mars"></i>' : '<i class="fa fa-venus"></i>';
                 },
             ],
-            ['db' => 'Squad.name as classname', 'dt' => 3],
+            [
+                'db' => 'Squad.name as classname', 'dt' => 3,
+                'formatter' => function($d) {
+                    return '<i class="fa fa-users"></i>&nbsp;' . $d;
+                }
+            ],
             ['db' => 'Student.student_number', 'dt' => 4],
             ['db' => 'Student.card_number', 'dt' => 5],
             [
@@ -378,11 +382,10 @@ class Student extends Model {
                      return substr($d, 0, -8);
                  },
             ],
-            ['db' => 'Student.remark', 'dt' => 9],
-            ['db' => 'Student.created_at', 'dt' => 10],
-            ['db' => 'Student.updated_at', 'dt' => 11],
+            ['db' => 'Student.created_at', 'dt' => 9],
+            ['db' => 'Student.updated_at', 'dt' => 10],
             [
-                'db'        => 'Student.enabled', 'dt' => 12,
+                'db'        => 'Student.enabled', 'dt' => 11,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
                 },

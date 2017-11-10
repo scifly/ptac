@@ -21,7 +21,9 @@ class PqChoiceController extends Controller {
      */
     function __construct(PollQuestionnaireChoice $pqChoice) {
         
+        $this->middleware(['auth']);
         $this->pqChoice = $pqChoice;
+        
     }
     
     /**

@@ -154,6 +154,17 @@ HTML;
     }
     
     /**
+     * 获取指定菜单的子菜单
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function children() {
+        
+        return $this->hasMany('App\Models\Menu', 'parent_id', 'id');
+        
+    }
+    
+    /**
      * 获取所有叶节点菜单
      *
      * @param null $rootMenuId
@@ -164,32 +175,20 @@ HTML;
         $leaves = [];
         $leafPath = [];
         if (isset($rootMenuId)) {
-            $root = $this->find($rootMenuId);
-            $nodes = $root->children();
+            $menuIds = $this->getSubMenuIds($rootMenuId);
         } else {
-            $nodes = $this->all();
+            $menuIds = $this->all()->pluck('id')->toArray();
         }
         /** @var Menu $node */
-        foreach ($nodes as $node) {
-            if (empty($node->children()->count())) {
-                $path = $this->leafPath($node->id, $leafPath);
-                $leaves[$node->id] = $path;
+        foreach ($menuIds as $id) {
+            if (empty($this->find($id)->children->count())) {
+                $path = $this->leafPath($id, $leafPath);
+                $leaves[$id] = $path;
                 $leafPath = [];
             }
         }
         
         return $leaves;
-        
-    }
-    
-    /**
-     * 获取指定菜单的子菜单
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function children() {
-        
-        return $this->hasMany('App\Models\Menu', 'parent_id', 'id');
         
     }
     
@@ -203,9 +202,7 @@ HTML;
     private function leafPath($id, array &$path) {
         
         $menu = $this->find($id);
-        if (!isset($menu)) {
-            return '';
-        }
+        if (!$menu) { return ''; }
         $path[] = $menu->name;
         if (isset($menu->parent_id)) {
             $this->leafPath($menu->parent_id, $path);
@@ -663,15 +660,25 @@ HTML;
         $menus = [];
         if ($disabled) {
             if ($rootId == 1) {
-                $data = $this->where('id', '<>', 1)->orderBy('position')->get();
+                $data = $this->where('id', '<>', 1)
+                    ->orderBy('position')
+                    ->get();
             } else {
-                $data = $this->whereIn('id', $childrenIds)->orderBy('position')->get();
+                $data = $this->whereIn('id', $childrenIds)
+                    ->orderBy('position')
+                    ->get();
             }
         } else {
             if ($rootId == 1) {
-                $data = $this::whereEnabled(1)->where('id', '<>', 1)->orderBy('position')->get();
+                $data = $this::whereEnabled(1)
+                    ->where('id', '<>', 1)
+                    ->orderBy('position')
+                    ->get();
             } else {
-                $data = $this::whereEnabled(1)->whereIn('id', $childrenIds)->orderBy('position')->get();
+                $data = $this::whereEnabled(1)
+                    ->whereIn('id', $childrenIds)
+                    ->orderBy('position')
+                    ->get();
             }
         }
         

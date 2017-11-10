@@ -37,7 +37,6 @@
                 </div>
             </div>
             @include('partials.enabled', [
-                'label' => '状态',
                 'id' => 'enabled',
                 'value' => isset($score['enabled']) ? $score['enabled'] : NULL
             ])

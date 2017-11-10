@@ -48,7 +48,6 @@
                 {!! Form::hidden('menu_id', $school['menu_id']) !!}
             @endif
             @include('partials.enabled', [
-                'label' => '状态',
                 'id' => 'enabled',
                 'value' => isset($school['enabled']) ? $school['enabled'] : NULL
             ])

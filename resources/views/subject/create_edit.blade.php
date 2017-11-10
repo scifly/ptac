@@ -71,7 +71,6 @@
                 'value' => isset($subject['isaux']) ? $subject['isaux'] : NULL
             ])
             @include('partials.enabled', [
-                'label' => '状态',
                 'id' => 'enabled',
                 'value' => isset($subject['enabled']) ? $subject['enabled'] : NULL
             ])

@@ -59,7 +59,6 @@
             ])
             {!! Form::hidden('subject_select_ids', $scoreRange['subject_ids'] or '') !!}
             @include('partials.enabled', [
-                'label' => '状态',
                 'id' => 'enabled',
                 'value' => isset($subject['enabled']) ? $subject['enabled'] : NULL
             ])

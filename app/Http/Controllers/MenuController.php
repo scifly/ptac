@@ -26,7 +26,7 @@ class MenuController extends Controller {
 
     function __construct(Menu $menu, MenuType $menuType, MenuTab $menuTab) {
 
-        $this->middleware('auth');
+        $this->middleware(['auth']);
         $this->menu = $menu;
         $this->menuType = $menuType;
         $this->menuTab = $menuTab;

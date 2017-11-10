@@ -16,7 +16,8 @@ class StudentAttendanceSettingController extends Controller {
     protected $sas;
     
     function __construct(StudentAttendanceSetting $studentAttendanceSetting) {
-        
+    
+        $this->middleware(['auth']);
         $this->sas = $studentAttendanceSetting;
         
     }
@@ -24,7 +25,7 @@ class StudentAttendanceSettingController extends Controller {
     /**
      * 学生考勤设置列表
      *
-     * @return \Illuminate\Http\Response
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
         
@@ -39,7 +40,7 @@ class StudentAttendanceSettingController extends Controller {
     /**
      * 创建学生考勤设置
      *
-     * @return \Illuminate\Http\Response
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function create() {
         
@@ -55,7 +56,8 @@ class StudentAttendanceSettingController extends Controller {
      */
     public function store(StudentAttendanceSettingRequest $request) {
         
-        return $this->sas->create($request->all()) ? $this->succeed() : $this->fail();
+        return $this->sas->create($request->all())
+            ? $this->succeed() : $this->fail();
         
     }
     
@@ -68,9 +70,7 @@ class StudentAttendanceSettingController extends Controller {
     public function show($id) {
         
         $sas = $this->sas->find($id);
-        if (!$sas) {
-            return $this->notFound();
-        }
+        if (!$sas) { return $this->notFound(); }
         
         return $this->output(__METHOD__, [
             'studentAttendanceSetting' => $sas,
@@ -82,14 +82,12 @@ class StudentAttendanceSettingController extends Controller {
      * 编辑学生考勤设置
      *
      * @param $id
-     * @return \Illuminate\Http\Response
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function edit($id) {
         
         $sas = $this->sas->find($id);
-        if (!$sas) {
-            return $this->notFound();
-        }
+        if (!$sas) { return $this->notFound(); }
         
         return $this->output(__METHOD__, [
             'studentAttendanceSetting' => $sas,
@@ -107,9 +105,7 @@ class StudentAttendanceSettingController extends Controller {
     public function update(StudentAttendanceSettingRequest $request, $id) {
         
         $sas = $this->sas->find($id);
-        if (!$sas) {
-            return $this->notFound();
-        }
+        if (!$sas) { return $this->notFound(); }
         
         return $sas->update($request->all()) ? $this->succeed() : $this->fail();
         
@@ -124,11 +120,10 @@ class StudentAttendanceSettingController extends Controller {
     public function destroy($id) {
         
         $sas = $this->sas->find($id);
-        if (!$sas) {
-            return $this->notFound();
-        }
+        if (!$sas) { return $this->notFound(); }
         
         return $sas->delete() ? $this->succeed() : $this->fail();
         
     }
+    
 }

@@ -65,7 +65,6 @@
                 'items' => $schools,
             ])
             @include('partials.enabled', [
-                'label' => '状态',
                 'id' => 'enabled',
                 'value' => isset($comboType['enabled']) ? $comboType['enabled'] : NULL
             ])

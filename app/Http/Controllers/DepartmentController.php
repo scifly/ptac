@@ -18,7 +18,8 @@ class DepartmentController extends Controller {
     protected $department, $departmentType;
     
     function __construct(Department $department, DepartmentType $departmentType) {
-        
+    
+        $this->middleware(['auth']);
         $this->department = $department;
         $this->departmentType = $departmentType;
         

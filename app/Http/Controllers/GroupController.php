@@ -21,7 +21,8 @@ class GroupController extends Controller {
     protected $group, $menu, $tab, $action, $corp, $school;
     
     function __construct(Group $group, Menu $menu, Tab $tab, Action $action, Corp $corp, School $school) {
-        
+    
+        $this->middleware(['auth']);
         $this->group = $group;
         $this->menu = $menu;
         $this->tab = $tab;

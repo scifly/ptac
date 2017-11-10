@@ -21,7 +21,8 @@ class OperatorController extends Controller {
     protected $school;
     
     function __construct(Operator $operator, Department $department, School $school) {
-        
+    
+        $this->middleware(['auth']);
         $this->operator = $operator;
         $this->department = $department;
         $this->school = $school;

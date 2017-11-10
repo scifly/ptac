@@ -16,7 +16,8 @@ class AlertTypeController extends Controller {
     protected $alertType;
     
     function __construct(AlertType $alertType) {
-        
+    
+        $this->middleware(['auth']);
         $this->alertType = $alertType;
         
     }

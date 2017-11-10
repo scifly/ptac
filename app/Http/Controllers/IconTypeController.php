@@ -15,7 +15,12 @@ class IconTypeController extends Controller {
     
     protected $iconType;
     
-    function __construct(IconType $iconType) { $this->iconType = $iconType; }
+    function __construct(IconType $iconType) {
+    
+        $this->middleware(['auth']);
+        $this->iconType = $iconType;
+    
+    }
     
     /**
      * 图标类型列表
