@@ -399,31 +399,6 @@ HTML;
      */
     static function dtOps(Model $model, $active, $row, $del = true) {
         
-<<<<<<< HEAD
-        $out = [];
-        $length = count($data);
-        for ($i = 0; $i < $length; $i++) {
-            $row = [];
-            $_data = (array)$data[$i];
-            $j = 0;
-            foreach ($_data as $name => $value) {
-                /*if (in_array($name, ['created_at', 'updated_at'])) {
-                    $dt = Carbon::createFromFormat('Y-m-d H:i:s', $value);
-                    
-                    $value = $dt->diffForhumans();
-                }*/
-                $column = $columns[$j];
-                if (isset($column['formatter'])) {
-                    $row[$column['dt']] = $column['formatter']($value, $_data);
-                } else {
-                    $row[$column['dt']] = $value;
-                }
-                $j++;
-            }
-            $out[] = $row;
-        }
-        return $out;
-=======
         $id = $row['id'];
         $status = $active ? sprintf(self::DT_ON, '已启用') : sprintf(self::DT_OFF, '未启用');
         $showLink = sprintf(self::DT_LINK_SHOW, 'show_' . $id);
@@ -439,7 +414,6 @@ HTML;
         $d = DateTime::createFromFormat($format, $date);
         return $d && $d->format($format) == $date;
         
->>>>>>> refs/remotes/origin/master
     }
     
     protected static function getFacadeAccessor() { return 'Datatable'; }
