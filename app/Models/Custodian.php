@@ -34,7 +34,7 @@ use Mockery\Exception;
  */
 class Custodian extends Model {
 
-    protected $fillable = ['user_id', 'expiry'];
+    protected $fillable = ['user_id'];
 
     /**
      * 返回对应的用户对象

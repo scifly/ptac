@@ -3,6 +3,7 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -21,7 +22,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|SchoolType whereRemark($value)
  * @method static Builder|SchoolType whereUpdatedAt($value)
  * @mixin \Eloquent
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\School[] $schools
+ * @property-read Collection|School[] $schools
  */
 class SchoolType extends Model {
     

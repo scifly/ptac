@@ -3,6 +3,7 @@ namespace App\Models;
 
 use App\Helpers\ModelTrait;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -26,9 +27,9 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|Media whereUpdatedAt($value)
  * @property-read WapSiteModule $wapsitemoudle
  * @property-read WsmArticle $wasmarticle
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Menu[] $menus
- * @property-read \App\Models\WapSiteModule $wapSiteModule
- * @property-read \App\Models\WsmArticle $wsmArticle
+ * @property-read Collection|Menu[] $menus
+ * @property-read WapSiteModule $wapSiteModule
+ * @property-read WsmArticle $wsmArticle
  */
 class Media extends Model {
     

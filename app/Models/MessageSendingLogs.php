@@ -10,6 +10,18 @@ use Mockery\Exception;
  *
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Message[] $messages
  * @mixin \Eloquent
+ * @property int $id
+ * @property int $read_count 已读数量
+ * @property int $received_count 消息发送成功数
+ * @property int $recipient_count 接收者数量
+ * @property \Carbon\Carbon|null $created_at
+ * @property \Carbon\Carbon|null $updated_at
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\messageSendingLogs whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\messageSendingLogs whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\messageSendingLogs whereReadCount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\messageSendingLogs whereReceivedCount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\messageSendingLogs whereRecipientCount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\messageSendingLogs whereUpdatedAt($value)
  */
 class messageSendingLogs extends Model {
     

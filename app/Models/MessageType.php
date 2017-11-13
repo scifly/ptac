@@ -4,6 +4,7 @@ namespace App\Models;
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -23,7 +24,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|MessageType whereUpdatedAt($value)
  * @mixin \Eloquent
  * @property-read Message[] $message
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Message[] $messages
+ * @property-read Collection|Message[] $messages
  */
 class MessageType extends Model {
     

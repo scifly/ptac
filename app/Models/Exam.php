@@ -36,7 +36,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|Exam whereSubjectIds($value)
  * @method static Builder|Exam whereUpdatedAt($value)
  * @mixin \Eloquent
- * @property-read \App\Models\ExamType $examType
+ * @property-read ExamType $examType
  */
 class Exam extends Model {
     

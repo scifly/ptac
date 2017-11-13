@@ -16,7 +16,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property \Carbon\Carbon|null $created_at
  * @property \Carbon\Carbon|null $updated_at
  * @property int $enabled
- * @property-read Collection|\App\Models\Department[] $departments
+ * @property-read Collection|Department[] $departments
  * @method static Builder|DepartmentType whereCreatedAt($value)
  * @method static Builder|DepartmentType whereEnabled($value)
  * @method static Builder|DepartmentType whereId($value)
