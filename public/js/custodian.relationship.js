@@ -6,15 +6,18 @@ var custodian = {
         return $('#add-pupil');
     },
     $tBody: function () {
-        // 教职员工 编辑表单
         return $('#tBody');
     },
     relationship: function () {
-        // 教职员工 编辑表单
         return $('#relationship');
     },
     saveStudent: function(item) {
         $(document).on('click', '#confirm-bind', function () {
+            var relationship = custodian.relationship().val();
+            if (relationship === '') {
+                alert('监护关系不能为空');
+                return false
+            }
             var student = custodian.$studentId().find("option:selected").text().split('-');
             var studentId = custodian.$studentId().val();
             item++;
@@ -23,7 +26,7 @@ var custodian = {
                 '<input type="hidden" value="' + studentId + '" name="student_ids[' + item + ']">' +
                 '<td>' + student[0] + '</td>' +
                 '<td>' + student[1] + '</td>' +
-                '<td><input type="text" name="relationships[' + item +  ']" id="" readonly class="no-border" style="background: none" value="' + custodian.relationship().val() + '"></td>' +
+                '<td><input type="text" name="relationships[' + item +  ']" id="" readonly class="no-border" style="background: none" value="' + relationship + '"></td>' +
                 '<td>' +
                 '<a href="javascript:" class="delete">' +
                 '<i class="fa fa-trash-o text-blue"></i>' +
@@ -31,6 +34,8 @@ var custodian = {
                 '</td>' +
                 '</tr>';
             custodian.$tBody().append(htm);
+            // $("#pupils").hide();
+            $("#pupils").modal('hide');
         });
     },
     schoolChange: function() {
