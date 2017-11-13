@@ -278,7 +278,12 @@ HTML;
         $controllers = $this->scanDirectories($this->getSiteRoot() . $this->ctlrDir);
         # 获取控制器的名字空间
         $this->getControllerNamespaces($controllers);
-        $controllerNames = $this->getControllerNames($controllers);
+        
+        # 移除excluded控制器
+        $controllerNames = array_diff(
+            $this->getControllerNames($controllers),
+            $this->excludedControllers
+        );
         $selfDefinedMethods = [];
         // remove actions of non-existing controllers
         $ctlrs = $this->groupBy('controller')->get(['controller'])->toArray();
@@ -286,8 +291,8 @@ HTML;
         foreach ($ctlrs as $ctlr) {
             $existingCtlrs[] = $ctlr['controller'];
         }
-        $ctlrDiff = array_diff($existingCtlrs, $controllerNames);
-        foreach ($ctlrDiff as $ctlr) {
+        $ctlrDiffs = array_diff($existingCtlrs, $controllerNames);
+        foreach ($ctlrDiffs as $ctlr) {
             $actions = $this->where('controller', $ctlr)->get();
             foreach ($actions as $a) {
                 if (!$this->remove($a->id)) { return false; };
@@ -295,34 +300,38 @@ HTML;
             # $this->where('controller', $ctlr)->delete();
         }
         foreach ($controllers as $controller) {
-            $obj = new ReflectionClass(ucfirst($controller));
-            $className = $obj->getName();
-            $methods = $obj->getMethods();
-            // remove non-existing methods of current controller
-            if (!$this->delNonExistingMethods($methods, $className)) {
-                return false;
-            }
-            foreach ($methods as $method) {
-                $action = $method->getName();
-                if (
-                    $method->class === $className &&
-                    !($method->isConstructor()) &&
-                    $method->isUserDefined() &&
-                    $method->isPublic()
-                ) {
-                    $ctlr = $this->getControllerName($className);
-                    $selfDefinedMethods[$className][$action] = [
-                        'name'            => $this->getMethodComment($obj, $method),
-                        'method'          => $action,
-                        'remark'          => '',
-                        'controller'      => $ctlr,
-                        'view'            => $this->getViewPath($ctlr, $action),
-                        'route'           => $this->getRoute($ctlr, $action),
-                        'action_type_ids' => $this->getActionTypeIds($ctlr, $action),
-                        'js'              => $this->getJsPath($ctlr, $action),
-                    ];
+            $paths = explode('\\', $controller);
+            if (!in_array($paths[sizeof($paths) - 1], $this->excludedControllers)) {
+                $obj = new ReflectionClass(ucfirst($controller));
+                $className = $obj->getName();
+                $methods = $obj->getMethods();
+                // remove non-existing methods of current controller
+                if (!$this->delNonExistingMethods($methods, $className)) {
+                    return false;
+                }
+                foreach ($methods as $method) {
+                    $action = $method->getName();
+                    if (
+                        $method->class === $className &&
+                        !($method->isConstructor()) &&
+                        $method->isUserDefined() &&
+                        $method->isPublic()
+                    ) {
+                        $ctlr = $this->getControllerName($className);
+                        $selfDefinedMethods[$className][$action] = [
+                            'name'            => $this->getMethodComment($obj, $method),
+                            'method'          => $action,
+                            'remark'          => '',
+                            'controller'      => $ctlr,
+                            'view'            => $this->getViewPath($ctlr, $action),
+                            'route'           => $this->getRoute($ctlr, $action),
+                            'action_type_ids' => $this->getActionTypeIds($ctlr, $action),
+                            'js'              => $this->getJsPath($ctlr, $action),
+                        ];
+                    }
                 }
             }
+            
         }
         foreach ($selfDefinedMethods as $actions) {
             foreach ($actions as $action) {

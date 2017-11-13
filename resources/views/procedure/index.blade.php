@@ -6,7 +6,8 @@
         <table id="data-table" style="width: 100%"
                class="display nowrap table table-striped table-bordered table-hover table-condensed">
             <thead>
-            <tr>
+
+			<tr class="bg-info">
                 <th>#</th>
                 <th>流程类型</th>
                 <th>所属学校</th>

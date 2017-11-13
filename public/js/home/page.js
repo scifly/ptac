@@ -130,7 +130,7 @@ var page = {
                     window.location = page.siteRoot() + 'login';
                 }
             },
-            error: function (jqXHR, textStatus, errorThrown) {
+            error: function (jqXHR) {
                 var obj = JSON.parse(jqXHR.responseText);
                 page.inform('出现异常', obj['message'], page.failure);
             }
@@ -162,6 +162,7 @@ var page = {
             },
             error: function (e) {
                 var obj = JSON.parse(e.responseText);
+                console.log(e.responseJSON);
                 $('.overlay').hide();
                 page.inform('出现异常', obj['message'], page.failure);
             }

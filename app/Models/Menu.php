@@ -360,7 +360,9 @@ HTML;
                 if (!empty($tabIds)) {
                     $menuTab = new MenuTab();
                     $menuTab::whereMenuId($menuId)->delete();
-                    $menuTab->storeByMenuId($menuId, $tabIds);
+                    if (!$menu->children) {
+                        $menuTab->storeByMenuId($menuId, $tabIds);
+                    }
                 } else {
                     $menu->update(['enabled' => 0]);
                 }
@@ -384,9 +386,7 @@ HTML;
     public function move($id, $parentId, $fireEvent = false) {
         
         $menu = $this->find($id);
-        if (!isset($menu)) {
-            return false;
-        }
+        if (!isset($menu)) { return false; }
         $menu->parent_id = $parentId === '#' ? null : intval($parentId);
         $moved = $menu->save();
         if ($moved && $fireEvent) {
@@ -488,31 +488,12 @@ HTML;
         
     }
     
-    private function menus($id, &$menus = []) {
-        
-        $htmlDefaultIcon = '<i class="fa fa-circle-o"></i>';
-        $htmlIcon = '<i class="%s"></i>';
-        $children = $this->find($id)->children;
-        foreach ($children as $child) {
-            $name = $child['name'];
-            if (isset($child['parent_id'])) {
-                $icon = $this->find($child['id'])->icon;
-                $iconHtml = $icon ? sprintf($htmlIcon, $icon->name) : $htmlDefaultIcon;
-                $name = $iconHtml . '&nbsp;&nbsp;' . $name;
-            }
-            $menus[] = [
-                'id'     => $child->id,
-                'parent' => $child->parent_id,
-                'text'   => $name,
-                'type'   => 'other',
-            ];
-            $this->menus($child->id, $menus);
-        }
-        
-        return $menus;
-        
-    }
-    
+    /**
+     * 获取根节点类型为"学校"的菜单树
+     *
+     * @param integer $id 指定学校的菜单ID
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function getTree($id) {
         
         $data = [];
@@ -528,6 +509,13 @@ HTML;
         
     }
     
+    /**
+     * 判断当前节点是否可以移动
+     *
+     * @param $id
+     * @param $parentId
+     * @return bool
+     */
     public function movable($id, $parentId) {
         
         if (!isset($parentId)) {
@@ -566,6 +554,38 @@ HTML;
     }
     
     /**
+     * 获取指定学校的所有子菜单
+     *
+     * @param integer $id
+     * @param array $menus
+     * @return array
+     */
+    private function menus($id, &$menus = []) {
+        
+        $htmlDefaultIcon = '<i class="fa fa-circle-o"></i>';
+        $htmlIcon = '<i class="%s"></i>';
+        $children = $this->find($id)->children;
+        foreach ($children as $child) {
+            $name = $child['name'];
+            if (isset($child['parent_id'])) {
+                $icon = $this->find($child['id'])->icon;
+                $iconHtml = $icon ? sprintf($htmlIcon, $icon->name) : $htmlDefaultIcon;
+                $name = $iconHtml . '&nbsp;&nbsp;' . $name;
+            }
+            $menus[] = [
+                'id'     => $child->id,
+                'parent' => $child->parent_id,
+                'text'   => $name,
+                'type'   => 'other',
+            ];
+            $this->menus($child->id, $menus);
+        }
+        
+        return $menus;
+        
+    }
+    
+    /**
      * 获取指定菜单所有的子菜单Id
      *
      * @param $menuId
@@ -574,7 +594,9 @@ HTML;
     private function getSubMenuIds($menuId) {
         
         static $childrenIds;
-        $firstIds = Menu::where('parent_id', $menuId)->get(['id'])->toArray();
+        $firstIds = Menu::where('parent_id', $menuId)
+            ->get(['id'])
+            ->toArray();
         if ($firstIds) {
             foreach ($firstIds as $firstId) {
                 $childrenIds[] = $firstId['id'];
@@ -583,21 +605,6 @@ HTML;
         }
         
         return $childrenIds;
-    }
-    
-    /**
-     * 计算指定菜单所处的level
-     *
-     * @param Menu $m
-     * @param $lvl
-     */
-    private function getMenuLevel(Menu $m, &$lvl) {
-        
-        if ($m->parent) {
-            $lvl += 1;
-            $this->getMenuLevel($m->parent, $lvl);
-        }
-        
     }
     
     /**
@@ -698,6 +705,15 @@ HTML;
         return $menus;
     }
     
+    /**
+     * 生成后台菜单Html
+     *
+     * @param $menus
+     * @param $currentParent
+     * @param int $currLevel
+     * @param int $prevLevel
+     * @return string
+     */
     private function buildTree($menus, $currentParent, $currLevel = 0, $prevLevel = -1) {
         
         static $menuHtml;
@@ -710,9 +726,15 @@ HTML;
             $mUrl = '../pages/' . $mId;
             if ($currentParent == $menu['parent_id']) {
                 if ($hasChildren) {
-                    $menuHtml .= sprintf(self::TREE, $mId == $activeId ? ' active' : '', $mIcon, $mName);
+                    $menuHtml .= sprintf(
+                        self::TREE,
+                        $mId == $activeId ? ' active' : '', $mIcon, $mName
+                    );
                 } else {
-                    $menuHtml .= sprintf(self::SIMPLE, $mId == $activeId ? ' class="active"' : '', $mId, $mUrl, $mIcon, $mName);
+                    $menuHtml .= sprintf(
+                        self::SIMPLE,
+                        $mId == $activeId ? ' class="active"' : '', $mId, $mUrl, $mIcon, $mName
+                    );
                 }
                 if ($currLevel > $prevLevel) {
                     $prevLevel = $currLevel;

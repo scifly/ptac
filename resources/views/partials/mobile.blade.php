@@ -3,7 +3,8 @@
     <div class="col-sm-6">
         <table id="mobiles" class="table-bordered table-responsive" style="width: 100%;">
             <thead>
-            <tr class="bg-info">
+
+			<tr class="bg-info">
                 <td class="text-center">号码</td>
                 <td class="text-center">默认</td>
                 <td class="text-center">启用</td>

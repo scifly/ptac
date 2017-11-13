@@ -16,6 +16,9 @@
 | loading any of our classes later on. It feels great to relax.
 |
 */
+
+use Illuminate\Contracts\Http\Kernel;
+
 require __DIR__ . '/../bootstrap/autoload.php';
 /*
 |--------------------------------------------------------------------------
@@ -40,6 +43,7 @@ $app = require_once __DIR__ . '/../bootstrap/app.php';
 | and wonderful application we have prepared for them.
 |
 */
+/** @var Kernel $kernel */
 $kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
 $response = $kernel->handle(
     $request = Illuminate\Http\Request::capture()
