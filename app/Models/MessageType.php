@@ -6,6 +6,7 @@ use App\Helpers\ModelTrait;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Symfony\Component\VarDumper\Cloner\Data;
 
 /**
  * App\Models\MessageType
@@ -98,7 +99,13 @@ class MessageType extends Model {
             [
                 'db'        => 'MessageType.enabled', 'dt' => 5,
                 'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($this, $d, $row);
+                    $id = $row['id'];
+                    $status = $d ? sprintf(Datatable::DT_ON, '已启用')
+                        : sprintf(Datatable::DT_OFF, '未启用');
+                    $editLink = sprintf(Datatable::DT_LINK_EDIT, 'edit_' . $id);
+                    $delLink = sprintf(Datatable::DT_LINK_DEL, $id);
+                    return $status . Datatable::DT_SPACE .
+                        $editLink . Datatable::DT_SPACE . $delLink;
                 },
             ],
         ];

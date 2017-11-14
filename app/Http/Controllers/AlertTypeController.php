@@ -62,21 +62,6 @@ class AlertTypeController extends Controller {
     }
     
     /**
-     * 警告类型详情
-     *
-     * @param $id
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function show($id) {
-        
-        $alertType = $this->alertType->find($id);
-        if (!$alertType) { return $this->notFound();}
-        
-        return $this->output(__METHOD__, ['alertType' => $alertType]);
-        
-    }
-    
-    /**
      * 编辑警告类型
      *
      * @param $id

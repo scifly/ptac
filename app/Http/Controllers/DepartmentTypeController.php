@@ -56,7 +56,8 @@ class DepartmentTypeController extends Controller {
      */
     public function store(DepartmentTypeRequest $request) {
 
-        return $this->departmentType->store($request->all()) ? $this->succeed() : $this->fail();
+        return $this->departmentType->store($request->all())
+            ? $this->succeed() : $this->fail();
 
     }
 
@@ -69,11 +70,11 @@ class DepartmentTypeController extends Controller {
     public function edit($id) {
 
         $departmentType = $this->departmentType->find($id);
-        if (!$departmentType) {
-            return $this->notFound();
-        }
+        if (!$departmentType) { return $this->notFound(); }
 
-        return $this->output(__METHOD__, ['departmentType' => $departmentType]);
+        return $this->output(__METHOD__, [
+            'departmentType' => $departmentType
+        ]);
 
     }
 
@@ -86,11 +87,10 @@ class DepartmentTypeController extends Controller {
      */
     public function update(DepartmentTypeRequest $request, $id) {
 
-        if (!$this->departmentType->find($id)) {
-            return $this->notFound();
-        }
+        if (!$this->departmentType->find($id)) { return $this->notFound(); }
 
-        return $this->departmentType->modify($request->all(), $id) ? $this->succeed() : $this->fail();
+        return $this->departmentType->modify($request->all(), $id)
+            ? $this->succeed() : $this->fail();
 
     }
 
@@ -106,7 +106,8 @@ class DepartmentTypeController extends Controller {
             return $this->notFound();
         }
 
-        return $this->departmentType->remove($id) ? $this->succeed() : $this->fail();
+        return $this->departmentType->remove($id)
+            ? $this->succeed() : $this->fail();
 
     }
 

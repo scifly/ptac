@@ -62,23 +62,6 @@ class IconTypeController extends Controller {
     }
     
     /**
-     * 图标类型详情
-     *
-     * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
-     */
-    public function show($id) {
-        
-        $iconType = $this->iconType->find($id);
-        if (!$iconType) {
-            return $this->notFound();
-        }
-        
-        return $this->output(__METHOD__, ['iconType' => $iconType]);
-        
-    }
-    
-    /**
      * 编辑图标类型
      *
      * @param $id
@@ -87,9 +70,7 @@ class IconTypeController extends Controller {
     public function edit($id) {
         
         $iconType = $this->iconType->find($id);
-        if (!$iconType) {
-            return $this->notFound();
-        }
+        if (!$iconType) { return $this->notFound(); }
         
         return $this->output(__METHOD__, ['iconType' => $iconType]);
         
@@ -105,9 +86,7 @@ class IconTypeController extends Controller {
     public function update(IconTypeRequest $request, $id) {
         
         $iconType = $this->iconType->find($id);
-        if (!$iconType) {
-            return $this->notFound();
-        }
+        if (!$iconType) { return $this->notFound(); }
         
         return $iconType->modify($request->all(), $id)
             ? $this->succeed() : $this->fail();
@@ -123,9 +102,7 @@ class IconTypeController extends Controller {
     public function destroy($id) {
         
         $iconType = $this->iconType->find($id);
-        if (!$iconType) {
-            return $this->notFound();
-        }
+        if (!$iconType) { return $this->notFound(); }
         
         return $iconType->remove($id) ? $this->succeed() : $this->fail();
         
