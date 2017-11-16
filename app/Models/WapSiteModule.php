@@ -4,6 +4,7 @@ namespace App\Models;
 use App\Facades\DatatableFacade as Datatable;
 use App\Http\Requests\WapSiteModuleRequest;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -27,15 +28,14 @@ use Illuminate\Support\Facades\Storage;
  * @method static Builder|WapSiteModule whereWapSiteId($value)
  * @mixin \Eloquent
  * 网站类型
- * @property-read \App\Models\WapSite $belongsToWs
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\WsmArticle[] $hasManyArticle
- * @property-read \App\Models\WapSite $wapsite
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\WsmArticle[] $wsmarticles
- * @property-read \App\Models\Media $media
+ * @property-read WapSite $belongsToWs
+ * @property-read Collection|WsmArticle[] $hasManyArticle
+ * @property-read WapSite $wapsite
+ * @property-read Collection|WsmArticle[] $wsmarticles
+ * @property-read Media $media
  */
 class WapSiteModule extends Model {
     
-    //
     protected $table = 'wap_site_modules';
     protected $fillable = [
         'id',

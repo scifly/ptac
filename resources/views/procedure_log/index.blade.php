@@ -30,7 +30,7 @@
             <table id="data-table-pending" style="width: 100%"
                    class="display nowrap table table-striped table-bordered table-hover table-condensed">
                 <thead>
-			<tr class="bg-info">
+			    <tr class="bg-info">
                     <th>#</th>
                     <th>发起人</th>
                     <th>流程</th>

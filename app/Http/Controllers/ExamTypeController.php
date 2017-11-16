@@ -62,25 +62,6 @@ class ExamTypeController extends Controller {
     }
     
     /**
-     * 考试类型详情
-     *
-     * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
-     */
-    public function show($id) {
-        
-        $examType = $this->examType->find($id);
-        if (!$examType) {
-            return $this->notFound();
-        }
-        
-        return $this->output(__METHOD__, [
-            'examType' => $examType,
-        ]);
-        
-    }
-    
-    /**
      * 编辑考试类型
      *
      * @param $id
@@ -89,11 +70,11 @@ class ExamTypeController extends Controller {
     public function edit($id) {
         
         $examType = $this->examType->find($id);
-        if (!$examType) {
-            return $this->notFound();
-        }
+        if (!$examType) { return $this->notFound(); }
         
-        return $this->output(__METHOD__, ['examType' => $examType]);
+        return $this->output(__METHOD__, [
+            'examType' => $examType
+        ]);
         
     }
     
@@ -107,9 +88,7 @@ class ExamTypeController extends Controller {
     public function update(ExamTypeRequest $request, $id) {
         
         $examType = $this->examType->find($id);
-        if (!$examType) {
-            return $this->notFound();
-        }
+        if (!$examType) { return $this->notFound(); }
         
         return $examType->modify($request->all(), $id)
             ? $this->succeed() : $this->fail();
@@ -125,9 +104,7 @@ class ExamTypeController extends Controller {
     public function destroy($id) {
         
         $examType = $this->examType->find($id);
-        if (!$examType) {
-            return $this->notFound();
-        }
+        if (!$examType) { return $this->notFound(); }
         
         return $examType->remove($id)
             ? $this->succeed() : $this->fail();

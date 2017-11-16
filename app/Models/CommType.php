@@ -2,6 +2,7 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use Doctrine\Common\Collections\Collection;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
@@ -21,7 +22,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|CommType whereRemark($value)
  * @method static Builder|CommType whereUpdatedAt($value)
  * @mixin \Eloquent
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Message[] $messages
+ * @property-read Collection|Message[] $messages
  */
 class CommType extends Model {
     
@@ -29,9 +30,7 @@ class CommType extends Model {
     
     protected $fillable = ['name', 'remark', 'enabled'];
     
-    public function messages() {
-        return $this->hasMany('App\Models\Message');
-    }
+    public function messages() { return $this->hasMany('App\Models\Message'); }
     
     public function datatable() {
         

@@ -9,6 +9,7 @@
             'data-parsley-validate' => 'true'
         ]) !!}
         <div class="form-inline">
+            <!-- 所属企业 -->
             <div class="form-group" style="margin-right: 10px">
                 {!! Form::label('corp_id', '所属企业：', [
                     'class' => 'control-label',
@@ -18,13 +19,13 @@
                         'class' => 'form-control input-sm'
                     ]) !!}
                 @else
-
                     {!! Form::label('name', $corp->name, [
                         'class' => 'control-label',
                         'style' => 'font-weight: normal;'
                     ]) !!}
                 @endif
             </div>
+            <!-- 企业应用ID -->
             <div class="form-group" style="margin-right: 10px">
                 {!! Form::label('agentid', '企业应用id：', [
                     'class' => 'control-label'
@@ -35,6 +36,7 @@
                     'required' => 'true',
                 ]) !!}
             </div>
+            <!-- 应用Secret -->
             <div class="form-group" style="margin-right: 10px">
                 {!! Form::label('secret', '应用Secret：', [
                     'class' => 'control-label'
@@ -52,6 +54,7 @@
             ]) !!}
         </div>
         {!! Form::close() !!}
+        <!-- 企业应用列表 -->
         <div style="display: block; overflow-x: auto; clear: both; width: 100%;">
             <table class="table-striped table-bordered table-hover table-condensed"
                style="white-space: nowrap; width: 100%;">

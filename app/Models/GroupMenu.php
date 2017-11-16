@@ -1,6 +1,7 @@
 <?php
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Mockery\Exception;
@@ -15,12 +16,12 @@ use Mockery\Exception;
  * @property \Carbon\Carbon|null $created_at
  * @property \Carbon\Carbon|null $updated_at
  * @property int|null $enabled
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\GroupMenu whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\GroupMenu whereEnabled($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\GroupMenu whereGroupId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\GroupMenu whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\GroupMenu whereMenuId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\GroupMenu whereUpdatedAt($value)
+ * @method static Builder|GroupMenu whereCreatedAt($value)
+ * @method static Builder|GroupMenu whereEnabled($value)
+ * @method static Builder|GroupMenu whereGroupId($value)
+ * @method static Builder|GroupMenu whereId($value)
+ * @method static Builder|GroupMenu whereMenuId($value)
+ * @method static Builder|GroupMenu whereUpdatedAt($value)
  */
 class GroupMenu extends Model {
     

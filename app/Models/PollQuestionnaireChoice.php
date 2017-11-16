@@ -15,7 +15,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $seq_no 选项排序编号
  * @property \Carbon\Carbon|null $created_at
  * @property \Carbon\Carbon|null $updated_at
- * @property-read \App\Models\PollQuestionnaireSubject $pollquestionnaireSubject
+ * @property-read PollQuestionnaireSubject $pollquestionnaireSubject
  * @method static Builder|PollQuestionnaireChoice whereChoice($value)
  * @method static Builder|PollQuestionnaireChoice whereCreatedAt($value)
  * @method static Builder|PollQuestionnaireChoice whereId($value)

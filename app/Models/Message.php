@@ -112,6 +112,7 @@ class Message extends Model {
         $input['msl_id'] = $logId;
         $updateUrl = [];
         try {
+            $exception = null;
             foreach ($input['r_user_id'] as $receiveUser) {
                 $input['r_user_id'] = $receiveUser;
                 $exception = DB::transaction(function () use ($request, $input, $updateUrl) {
@@ -163,20 +164,7 @@ class Message extends Model {
             return false;
         }
     }
-//    private function addMessageSendingLog($recipientCount) {
-//        $input = Array();
-//        $input['read_count'] = 0;
-//        $input['received_count'] = 0;
-//        $input['recipient_count'] = $recipientCount;
-//        try {
-//            $exception = DB::transaction(function () use ($input) {
-//                $this->create($input);
-//            });
-//            return is_null($exception) ? true : $exception;
-//        } catch (Exception $e) {
-//            return false;
-//        }
-//    }
+
     public function datatable() {
         
         $columns = [

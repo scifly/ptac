@@ -30,8 +30,8 @@ class CustodianStudent extends Model {
     protected $table = 'custodians_students';
     
     protected $fillable = [
-        'custodian_id', 'student_id',
-        'relationship', 'enabled',
+        'custodian_id', 'student_id', 'relationship',
+        'expiration', 'enabled',
     ];
     
     public function custodian() { return $this->belongsTo('App\Models\Custodian'); }

@@ -3,6 +3,7 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -27,10 +28,10 @@ use Illuminate\Database\Eloquent\Model;
  * @mixin \Eloquent
  * @property-read EducatorAttendance[] $educatorAttendance
  * @property-read School $schools
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\EducatorAttendance[] $educatorAttendances
+ * @property-read Collection|EducatorAttendance[] $educatorAttendances
  * @property-read \App\Models\School $school
  * @property int $enabled
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\EducatorAttendanceSetting whereEnabled($value)
+ * @method static Builder|EducatorAttendanceSetting whereEnabled($value)
  */
 class EducatorAttendanceSetting extends Model {
     

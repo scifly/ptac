@@ -72,9 +72,9 @@ class AppController extends Controller {
     public function show($id) {
         
         $app = $this->app->find($id);
-        if (!$app) { return $this->notFound(); }
-        
-        return $this->output(__METHOD__, ['app' => $app]);
+        return $app
+            ? $this->output(__METHOD__, ['app' => $app])
+            : $this->notFound();
         
     }
     
@@ -87,9 +87,9 @@ class AppController extends Controller {
     public function edit($id) {
         
         $app = $this->app->find($id);
-        if (!$app) { return $this->notFound(); }
-        
-        return $this->output(__METHOD__, ['app' => $app]);
+        return $app
+            ? $this->output(__METHOD__, ['app' => $app])
+            : $this->notFound();
         
     }
     
@@ -127,58 +127,58 @@ class AppController extends Controller {
         //
         
         $menu = "[
-    {
-        \"name\": \"\u6d4b\u8bd5\",
-        \"sub_button\": [
             {
-                \"type\": \"view\",
-                \"name\": \"\u968f\u4fbf\",
-                \"key\": \"https:\/\/www.baidu.com\",
+                \"name\": \"\u6d4b\u8bd5\",
                 \"sub_button\": [
-                
-                ],
-                \"url\": \"https:\/\/www.baidu.com\"
+                    {
+                        \"type\": \"view\",
+                        \"name\": \"\u968f\u4fbf\",
+                        \"key\": \"https:\/\/www.baidu.com\",
+                        \"sub_button\": [
+                        
+                        ],
+                        \"url\": \"https:\/\/www.baidu.com\"
+                    },
+                    {
+                        \"type\": \"view\",
+                        \"name\": \"\u6d4b\u8bd5\",
+                        \"key\": \"https:\/\/www.baidu.com\",
+                        \"sub_button\": [
+                        
+                        ],
+                        \"url\": \"https:\/\/www.baidu.com\"
+                    }
+                ]
             },
             {
-                \"type\": \"view\",
                 \"name\": \"\u6d4b\u8bd5\",
-                \"key\": \"https:\/\/www.baidu.com\",
                 \"sub_button\": [
-                
-                ],
-                \"url\": \"https:\/\/www.baidu.com\"
-            }
-        ]
-    },
-    {
-        \"name\": \"\u6d4b\u8bd5\",
-        \"sub_button\": [
+                    {
+                        \"type\": \"view\",
+                        \"name\": \"\u767e\u5ea6\",
+                        \"key\": \"http:\/\/www.baidu.com\",
+                        \"sub_button\": [
+                        
+                        ],
+                        \"url\": \"http:\/\/www.baidu.com\"
+                    }
+                ]
+            },
             {
-                \"type\": \"view\",
-                \"name\": \"\u767e\u5ea6\",
-                \"key\": \"http:\/\/www.baidu.com\",
+                \"name\": \"\u6d4b\u8bd5\",
                 \"sub_button\": [
-                
-                ],
-                \"url\": \"http:\/\/www.baidu.com\"
+                    {
+                        \"type\": \"view\",
+                        \"name\": \"\u767e\u5ea6\",
+                        \"key\": \"http:\/\/www.baidu.com\",
+                        \"sub_button\": [
+                        
+                        ],
+                        \"url\": \"http:\/\/www.baidu.com\"
+                    }
+                ]
             }
-        ]
-    },
-    {
-        \"name\": \"\u6d4b\u8bd5\",
-        \"sub_button\": [
-            {
-                \"type\": \"view\",
-                \"name\": \"\u767e\u5ea6\",
-                \"key\": \"http:\/\/www.baidu.com\",
-                \"sub_button\": [
-                
-                ],
-                \"url\": \"http:\/\/www.baidu.com\"
-            }
-        ]
-    }
-]";
+        ]";
         // $menus = $this->app->object_to_array($menu->button);
         return $this->output(__METHOD__, ['menu' => json_decode($menu)]);
 

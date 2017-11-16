@@ -22,10 +22,10 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|PollQuestionnaireAnswer whereUpdatedAt($value)
  * @method static Builder|PollQuestionnaireAnswer whereUserId($value)
  * @mixin \Eloquent
- * @property-read \App\Models\PollQuestionnaire $pollquestionnaire
- * @property-read \App\Models\PollQuestionnaireChoice $pollquestionnaireChoice
- * @property-read \App\Models\PollQuestionnaireSubject $pollquestionnaireSubject
- * @property-read \App\Models\User $user
+ * @property-read PollQuestionnaire $pollquestionnaire
+ * @property-read PollQuestionnaireChoice $pollquestionnaireChoice
+ * @property-read PollQuestionnaireSubject $pollquestionnaireSubject
+ * @property-read User $user
  */
 class PollQuestionnaireAnswer extends Model {
     

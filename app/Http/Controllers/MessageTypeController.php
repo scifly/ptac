@@ -61,23 +61,6 @@ class MessageTypeController extends Controller {
     }
     
     /**
-     * 消息类型详情
-     *
-     * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
-     */
-    public function show($id) {
-        
-        $messageType = $this->messageType->find($id);
-        if (!$messageType) {
-            return $this->notFound();
-        }
-        
-        return $this->output(__METHOD__, ['messageType' => $messageType]);
-        
-    }
-    
-    /**
      * 编辑消息类型
      *
      * @param $id
