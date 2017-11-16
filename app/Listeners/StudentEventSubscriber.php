@@ -12,7 +12,6 @@ use Illuminate\Support\Facades\Log;
 class StudentEventSubscriber {
     
     public function onStudentImported($event) {
-        Log::debug('12345');
         ManageImportStudent::dispatch($event->data)->onQueue('import');
     
     }

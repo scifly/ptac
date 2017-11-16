@@ -23,7 +23,6 @@ class StudentImported {
      * @internal param App $app
      */
     public function __construct(array $data) {
-        Log::debug('www');
 
         $this->data = $data;
 

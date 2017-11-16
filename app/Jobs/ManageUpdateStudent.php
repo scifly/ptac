@@ -31,6 +31,8 @@ class ManageUpdateStudent implements ShouldQueue {
     }
     
     public function handle() {
+        Log::debug('update');
+    
         $rows = $this->data;
         try {
             
