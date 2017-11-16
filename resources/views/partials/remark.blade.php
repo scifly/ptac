@@ -9,7 +9,7 @@
             </div>
             {!! Form::textarea(!isset($field) ? 'remark' : $field, null, [
                 'id' => 'remark',
-                'class' => 'form-control'
+                'class' => 'form-control',
             ]) !!}
         </div>
     </div>

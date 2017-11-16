@@ -114,8 +114,7 @@
                     {{--</div>--}}
                     <table class="table table-striped table-bordered table-hover table-condensed">
                         <thead>
-
-			<tr class="bg-info">
+                        <tr class="bg-info">
                             <th>学生</th>
                             <th>学号</th>
                             <th>监护人关系</th>

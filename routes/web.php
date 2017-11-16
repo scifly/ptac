@@ -47,6 +47,7 @@ Route::group(['prefix' => 'students'], function () {
     $ctlr = 'StudentController';
     Route::post('edit/{id}', $ctlr . '@edit');
     Route::post('create', $ctlr . '@create');
+    Route::post('import', $ctlr . '@import');
 });
 // 用户
 Route::group(['prefix' => 'users'], routes('UserController'));

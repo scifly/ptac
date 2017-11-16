@@ -61,6 +61,11 @@ class Handler extends ExceptionHandler {
                $response['exception'] = get_class($exception);
                $response['file'] = $exception->getFile();
                $response['line'] = $exception->getLine();
+               if (stripos($response['exception'], 'ValidationException')) {
+                   /** @var ValidationException $ve */
+                   $ve = $exception;
+                   $response['errors'] = $ve->errors();
+               }
             }
             $status = 400;
             if ($this->isHttpException($exception)) {

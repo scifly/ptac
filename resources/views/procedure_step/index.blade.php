@@ -6,7 +6,6 @@
         <table id="data-table" style="width: 100%"
                class="display nowrap table table-striped table-bordered table-hover table-condensed">
             <thead>
-
 			<tr class="bg-info">
                 <th>#</th>
                 <th>流程</th>

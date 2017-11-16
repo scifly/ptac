@@ -103,7 +103,6 @@ class Custodian extends Model {
                 $u = $user->create($userData);
                 $custodianData = [
                     'user_id' => $u->id,
-                    'expiry'  => '1970-01-01 00:00:00',
                 ];
                 # 向mobile表中添加工具
                 $mobiles = $request->input('mobile');
@@ -187,7 +186,6 @@ class Custodian extends Model {
                     ]);
                 $custodian->update([
                     'user_id' => $userId,
-                    'expiry'  => '1970-01-01 00:00:00',
                 ]);
                 $mobiles = $request->input('mobile');
                 if ($mobiles) {
@@ -355,6 +353,7 @@ class Custodian extends Model {
              'formatter' => function ($d) {
                  $custodian = Custodian::whereId($d)->first();
                  $mobiles = Mobile::where('user_id', $custodian->user_id)->get();
+                 $mobile = [];
                  foreach ($mobiles as $key => $value) {
                      $mobile[] = $value->mobile;
                  }
@@ -362,11 +361,10 @@ class Custodian extends Model {
                  return implode(',', $mobile);
              },
             ],
-            ['db' => 'Custodian.expiry', 'dt' => 5,],
-            ['db' => 'Custodian.created_at', 'dt' => 6],
-            ['db' => 'Custodian.updated_at', 'dt' => 7],
+            ['db' => 'Custodian.created_at', 'dt' => 5],
+            ['db' => 'Custodian.updated_at', 'dt' => 6],
             [
-                'db'        => 'User.enabled', 'dt' => 8,
+                'db'        => 'User.enabled', 'dt' => 7,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
                 },

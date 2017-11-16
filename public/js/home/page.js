@@ -132,6 +132,7 @@ var page = {
             },
             error: function (jqXHR) {
                 var obj = JSON.parse(jqXHR.responseText);
+                console.log(jqXHR.responseJSON);
                 page.inform('出现异常', obj['message'], page.failure);
             }
         });
