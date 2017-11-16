@@ -72,9 +72,9 @@ class AppController extends Controller {
     public function show($id) {
         
         $app = $this->app->find($id);
-        if (!$app) { return $this->notFound(); }
-        
-        return $this->output(__METHOD__, ['app' => $app]);
+        return $app
+            ? $this->output(__METHOD__, ['app' => $app])
+            : $this->notFound();
         
     }
     
@@ -87,9 +87,9 @@ class AppController extends Controller {
     public function edit($id) {
         
         $app = $this->app->find($id);
-        if (!$app) { return $this->notFound(); }
-        
-        return $this->output(__METHOD__, ['app' => $app]);
+        return $app
+            ? $this->output(__METHOD__, ['app' => $app])
+            : $this->notFound();
         
     }
     

@@ -26,7 +26,6 @@ class GradeEventSubscriber {
      */
     public function onDepartmentCreated($event) {
         
-        $abc = 'abc';
         $department = $event->department;
         # 判断已创建或更新的部门的类型是否为"年级"
         if ($department->department_type_id == $this->departmentTypeId) {
