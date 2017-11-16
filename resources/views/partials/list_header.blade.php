@@ -4,5 +4,14 @@
         <button id="add-record" type="button" class="btn btn-box-tool">
             <i class="fa fa-plus text-blue"> 新增</i>
         </button>
+        @if(isset($buttons))
+            @foreach($buttons as $button)
+                <button id="{{$button['id']}}" type="button" class="btn btn-box-tool">
+                    <i class="{{$button['icon']}} text-blue"> {{$button['label']}}</i>
+                </button>
+            @endforeach
+        @endif
     </div>
 @endif
+
+

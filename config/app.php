@@ -148,7 +148,7 @@ return [
          */
         App\Providers\AppServiceProvider::class,
         App\Providers\AuthServiceProvider::class,
-        // App\Providers\BroadcastServiceProvider::class,
+        App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
@@ -157,7 +157,7 @@ return [
         App\Providers\DatatableServiceProvider::class,
         App\Providers\ComposerServiceProvider::class,
         //Excel
-//        Maatwebsite\Excel\ExcelServiceProvider::class,
+       Maatwebsite\Excel\ExcelServiceProvider::class,
     ],
     /*
     |--------------------------------------------------------------------------
@@ -208,6 +208,6 @@ return [
         'Test'         => App\Services\Test::class,
         'Form'         => Collective\Html\FormFacade::class,
         'Html'         => Collective\Html\HtmlFacade::class,
-//        'Excel' => Maatwebsite\Excel\Facades\Excel::class,
+       'Excel' => Maatwebsite\Excel\Facades\Excel::class,
     ],
 ];

@@ -56,7 +56,7 @@
             <table class="table-striped table-bordered table-hover table-condensed"
                style="white-space: nowrap; width: 100%;">
             <thead>
-            <tr>
+			<tr class="bg-info">
                 <th>#</th>
                 <th class="text-center">应用id</th>
                 <th class="text-center">应用名称</th>

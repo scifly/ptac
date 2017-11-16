@@ -96,7 +96,7 @@
             <table id="table" class="table table-striped table-bordered table-hover table-condensed" cellspacing="0"
                    width="100%">
                 <thead>
-                <tr>
+			<tr class="bg-info">
                     <th></th>
                     <th>姓名</th>
                     <th>内容</th>

@@ -3,7 +3,7 @@
     <div class="col-sm-6">
         <table id="classTable" class="table-bordered table-responsive" style="width: 100%;">
             <thead>
-            <tr>
+			<tr class="bg-info">
                 <th>班级</th>
                 <th>科目</th>
                 <th></th>
