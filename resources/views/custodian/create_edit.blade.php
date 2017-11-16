@@ -296,7 +296,7 @@
             </div>
             <div class="modal-footer">
                 <a href="#" class="btn btn-sm btn-white" data-dismiss="modal">取消</a>
-                <a id="confirm-bind" href="#" class="btn btn-sm btn-success" data-dismiss="modal">确定</a>
+                <a id="confirm-bind" href="javascript:" class="btn btn-sm btn-success">确定</a>
             </div>
         </div>
     </div>
