@@ -405,6 +405,10 @@ $(function () {
             page.getTabContent($activeTabPane, url);
         }
     });
+    $('.tab').hover(
+        function() { $(this).removeClass('text-gray').addClass('text-blue'); },
+        function() { $(this).removeClass('text-blue').addClass('text-gray'); }
+    );
     // 获取状态为active的卡片的url
     url = $('.nav-tabs .active a').attr('data-uri');
     // 获取状态为active的卡片内容
