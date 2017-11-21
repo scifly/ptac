@@ -86,7 +86,7 @@ class PqChoiceController extends Controller {
     /**
      * 编辑选项
      * @param $id
-     * @return \Illuminate\Http\Response
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function edit($id) {
         

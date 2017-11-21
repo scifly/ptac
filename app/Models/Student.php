@@ -321,6 +321,7 @@ class Student extends Model {
      * @return array
      */
     public function upload(UploadedFile $file) {
+        
         $ext = $file->getClientOriginalExtension();     // 扩展名//xls
         $realPath = $file->getRealPath();   //临时文件的绝对路径
         // 上传文件

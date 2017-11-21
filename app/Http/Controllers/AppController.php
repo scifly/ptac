@@ -3,10 +3,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\AppRequest;
 use App\Models\App;
-use App\Models\Corp;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
-use App\Facades\Wechat;
+
 /**
  * 微信企业应用
  *

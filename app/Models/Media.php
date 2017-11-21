@@ -62,12 +62,11 @@ class Media extends Model {
     /**
      * 根据媒体ID返回媒体对象
      *
-     * @param string $ids
+     * @param array $ids
      * @return array
      */
-    public function medias($ids) {
+    public function medias(array $ids) {
         
-        $ids = explode(',', $ids);
         $medias = [];
         foreach ($ids as $mediaId) {
             $medias[] = $this->find($mediaId);

@@ -48,7 +48,7 @@ class EventController extends Controller {
      * 显示日历事件
      *
      * @param $userId
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function calendarEvents($userId) {
         

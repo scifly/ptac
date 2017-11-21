@@ -9,10 +9,7 @@ use App\Models\DepartmentUser;
 use App\Models\Group;
 use App\Models\Student;
 use App\Models\User;
-use function foo\func;
 use Illuminate\Support\Facades\Request;
-use Illuminate\Support\Facades\Storage;
-use Maatwebsite\Excel\Facades\Excel;
 
 /**
  * 学生
@@ -158,7 +155,7 @@ class StudentController extends Controller {
     }
     
     public function import() {
-        $result = [];
+
         if (Request::isMethod('post')) {
             $file = Request::file('file');
             if (empty($file)) {
@@ -166,7 +163,7 @@ class StudentController extends Controller {
                     'statusCode' => 500,
                     'message' => '您还没选择文件！',
                 ];
-                // return response()->json($result);
+                return response()->json($result);
             }
             // 文件是否上传成功
             if ($file->isValid()) {

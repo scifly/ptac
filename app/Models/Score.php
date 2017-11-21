@@ -2,7 +2,6 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
-use App\Http\Requests\ScoreRequest;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -133,7 +132,7 @@ class Score extends Model {
                 ->join('students', 'students.id', '=', 'scores.student_id')
                 ->whereIn('students.class_id', $class_ids_arr)
                 ->where('scores.exam_id', $exam_id)
-                ->select('scores.id', 'scores.student_id', 'scores.subject_id', 'scores.score', 'students.class_id')
+                ->select(['scores.id', 'scores.student_id', 'scores.subject_id', 'scores.score', 'students.class_id'])
                 ->orderBy('scores.score', 'desc')
                 ->get();
             //通过科目分组
