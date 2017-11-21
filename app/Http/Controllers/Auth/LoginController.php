@@ -50,6 +50,7 @@ class LoginController extends Controller {
         
         $input = $request->input('input');
         $password = $request->input('password');
+        $rememberMe = $request->input('rememberMe') == 'true' ? true : false;
         if (User::whereUsername($input)->first()) {
             $user = User::whereUsername($input)->first();
             $field = 'username';
@@ -67,7 +68,7 @@ class LoginController extends Controller {
             if (
             Auth::attempt(
                 ['username' => $username, 'password' => $password],
-                $request->input('remember')
+                $rememberMe
             )
             ) {
                 Session::put('user', $user);
@@ -79,7 +80,10 @@ class LoginController extends Controller {
                 return response()->json(['statusCode' => 500]);
             }
         }
-        if (Auth::attempt([$field => $input, 'password' => $password])) {
+        if (Auth::attempt(
+            [$field => $input, 'password' => $password],
+            $rememberMe
+        )) {
             Session::put('user', $user);
             return response()->json([
                 'statusCode' => 200,

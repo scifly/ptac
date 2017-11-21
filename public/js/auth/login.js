@@ -8,7 +8,7 @@ $(function() {
             data: {
                 input: $('#input').val(),
                 password: $('#password').val(),
-                rememberMe: $('#remember').val(),
+                rememberMe: $('#remember').iCheck('update')[0].checked,
                 _token: $('input[name="_token"]').val()
             },
             success: function (result) {

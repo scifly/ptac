@@ -115,6 +115,7 @@ class AppController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function menu($id) {
+        
         $app = $this->app->find($id);
         if (!$app) { return $this->notFound(); }
         // $accessToken = Wechat::getAccessToken($app->corp_id, $app->secret, $app->agentid);
