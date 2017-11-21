@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 Route::auth();
+# 关闭注册功能
+Route::any('register', function() { return redirect('login'); });
 Route::get('logout', 'Auth\LoginController@logout');
 // Route::get('/', function() { return 'Dashboard'; });
 Route::get('/', 'HomeController@index');
