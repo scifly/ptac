@@ -24,6 +24,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read \App\Models\Custodian $custodian
  * @property-read \App\Models\Student $student
  * @method static Builder|CustodianStudent whereEnabled($value)
+ * @property string|null $expiration
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\CustodianStudent whereExpiration($value)
  */
 class CustodianStudent extends Model {
     
