@@ -31,7 +31,8 @@ class ManageUpdateStudent implements ShouldQueue {
     }
     
     public function handle() {
-        Log::debug('123');
+        Log::debug('update');
+    
         $rows = $this->data;
         try {
             
@@ -83,46 +84,83 @@ class ManageUpdateStudent implements ShouldQueue {
                                         'enabled'    => 1,
                                     ];
                                     // $u = new User();
-                                    $u = User::create($user);
+                                    $userData = User::create($user);
                                     # 创建监护人
                                     $custodian = [
-                                        'user_id' => $u['id'],
+                                        'user_id' => $userData['id'],
                                     ];
                                     // $c = new Custodian();
                                     $c = Custodian::create($custodian);
                                     # 创建 监护关系
                                     $custodianStudent = [
                                         'custodian_id' => $c['id'],
-                                        'student_id'   => $s['id'],
+                                        'student_id'   => $studentData->id,
                                         'relationship' => $item[0],
                                         'enabled'      => 1,
                                     ];
                                     // $cs = new CustodianStudent();
-                                    $cs = CustodianStudent::create($custodianStudent);
+                                    CustodianStudent::create($custodianStudent);
                                     # 创建监护人用户手机号码
                                     $mobile = [
-                                        'user_id'   => $u['id'],
+                                        'user_id'   => $userData['id'],
                                         'mobile'    => $item[3],
                                         'isdefault' => 1,
                                         'enabled'   => 1,
                                     ];
-                                    $m = Mobile::create($mobile);
-                                    $user = new User();
-                                    $user->createWechatUser($u['id']);
-                                    unset($user);
+                                    Mobile::create($mobile);
+                                    $userModel = new User();
+                                    $userModel->createWechatUser($userData['id']);
+                                    unset($userModel);
                                 } else {
+                                    # 手机号码存在 反查用户表
                                     $user = User::whereId($m->user_id)->first();
+                                    # 用户存在时更新数据
                                     if (!empty($user)) {
                                         $user->realname = $item[1];
                                         $user->gender = $item[2] == '男' ? '0' : '1';
                                         $user->save();
                                     }
+                                    $c = Custodian::where('user_id', $m->user_id)->first();
+                                    # 监护人不存在时
+                                    if (empty($c)) {
+                                        # 创建监护人
+                                        $custodian = [
+                                            'user_id' => $m->user_id,
+                                        ];
+                                        $custodianData = Custodian::create($custodian);
+                                        # 创建 监护关系
+                                        $custodianStudent = [
+                                            'custodian_id' => $custodianData['id'],
+                                            'student_id'   => $studentData->id,
+                                            'relationship' => $item[0],
+                                            'enabled'      => 1,
+                                        ];
+                                        CustodianStudent::create($custodianStudent);
+                                    }else{
+                                        # 监护人存在 监护关系不存在时
+                                        $csData = CustodianStudent::where('custodian_id',$c['id'])->where('student_id', $s['id'])->first();
+                                        if (empty($csData)) {
+                                            # 创建 监护关系
+                                            $custodianStudent = [
+                                                'custodian_id' => $csData->id,
+                                                'student_id'   => $studentData->id,
+                                                'relationship' => $item[0],
+                                                'enabled'      => 1,
+                                            ];
+                                            CustodianStudent::create($custodianStudent);
+                                        }
+                                    }
+                                    $userModel = new User();
+                                    $userModel->updateWechatUser($m->user_id);
+                                    unset($userModel);
                                 }
                             }
                             
                         }
                     }
-                    
+                    $userModel = new User();
+                    $userModel->updateWechatUser($studentData->user_id);
+                    unset($userModel);
                 }
                 
             });
