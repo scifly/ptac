@@ -8,6 +8,7 @@ use App\Models\EducatorClass;
 use App\Models\Mobile;
 use App\Models\Team;
 use Illuminate\Support\Facades\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 /**
  * 教职员工
@@ -200,4 +201,20 @@ class EducatorController extends Controller {
         
     }
     
+    /**
+     * 导出数据
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function export() {
+        $id = Request::query('id');
+        if ($id) {
+            $data = $this->educator->export($id);
+            Excel::create(iconv('UTF-8', 'GBK', '教职员工列表'), function ($excel) use ($data) {
+                $excel->sheet('score', function($sheet) use ($data) {
+                    $sheet->rows($data);
+                });
+                
+            },'UTF-8')->export('xls');
+        }
+    }
 }

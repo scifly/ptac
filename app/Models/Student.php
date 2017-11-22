@@ -69,6 +69,12 @@ class Student extends Model {
         '学号', '卡号', '住校',
         '备注', '监护关系',
     ];
+    const EXCEL_EXPORT_TITLE = [
+        '姓名', '性别', '班级', '学号',
+        '卡号', '住校', '手机',
+        '生日', '创建于', '更新于',
+        '状态',
+    ];
     
     /**
      * 返回指定学生所属的班级对象
@@ -568,6 +574,36 @@ class Student extends Model {
             unset($u);
         }
         
+    }
+    
+    public function export($id) {
+        $students = $this->where('class_id', $id)->get();
+        $data = array(self::EXCEL_EXPORT_TITLE);
+        foreach ($students as $student) {
+            $m = $student->user->mobiles;
+            $mobile = [];
+            foreach ($m as $key => $value) {
+                $mobile[] = $value->mobile;
+            }
+            $mobiles = implode(',', $mobile);
+            $item = [
+                $student->user->realname,
+                $student->user->gender == 1 ? '男' : '女',
+                $student->squad->name,
+                $student->student_number,
+                $student->card_number,
+                $student->oncampus == 1 ? '是' : '否',
+                $mobiles,
+                substr($student->birthday, 0, -8),
+                $student->created_at,
+                $student->updated_at,
+                $student->enabled == 1 ? '启用' : '禁用',
+            ];
+            $data[] = $item;
+            unset($item);
+        }
+        
+        return $data;
     }
     
     public function datatable() {

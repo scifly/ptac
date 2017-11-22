@@ -157,6 +157,9 @@ class StudentController extends Controller {
         
     }
     
+    /**
+     * 导入数据
+     */
     public function import() {
         $result = [];
         if (Request::isMethod('post')) {
@@ -172,6 +175,24 @@ class StudentController extends Controller {
             if ($file->isValid()) {
                 $this->student->upload($file);
             }
+        }
+    }
+    
+    /**
+     * 导出数据
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function export() {
+        $id = Request::query('id');
+        if ($id) {
+            $data = $this->student->export($id);
+            Excel::create(iconv('UTF-8', 'GBK', '学生列表'), function ($excel) use ($data) {
+                $excel->sheet('score', function($sheet) use ($data) {
+                    $sheet->rows($data);
+                    
+                });
+
+            },'UTF-8')->export('xls');
         }
     }
     

@@ -30,7 +30,8 @@ return [
             'secret'  => env('PUSHER_APP_SECRET'),
             'app_id'  => env('PUSHER_APP_ID'),
             'options' => [
-                //
+                'cluster' => 'ap1',
+                'encrypted' => true
             ],
         ],
         'redis'  => [
@@ -43,5 +44,6 @@ return [
         'null'   => [
             'driver' => 'null',
         ],
+        
     ],
 ];

@@ -1,5 +1,6 @@
 <?php
 
+use App\Events\eventTrigger;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -12,6 +13,10 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
+Route::get('/fireEvent', function() {
+    event(new eventTrigger());
+});
+
 Route::auth();
 Route::get('logout', 'Auth\LoginController@logout');
 // Route::get('/', function() { return 'Dashboard'; });
@@ -32,6 +37,8 @@ Route::group(['prefix' => 'educators'], function () {
     Route::put('rechargeStore/{id}', $ctlr . '@rechargeStore');
     Route::post('edit/{id}', $ctlr . '@edit');
     Route::post('create', $ctlr . '@create');
+    Route::get('export', $ctlr . '@export');
+    
 });
 // 监护人
 Route::group(['prefix' => 'custodians'], routes('CustodianController'));
@@ -48,6 +55,7 @@ Route::group(['prefix' => 'students'], function () {
     Route::post('edit/{id}', $ctlr . '@edit');
     Route::post('create', $ctlr . '@create');
     Route::post('import', $ctlr . '@import');
+    Route::get('export', $ctlr . '@export');
 });
 // 用户
 Route::group(['prefix' => 'users'], routes('UserController'));

@@ -40,7 +40,11 @@ use Mockery\Exception;
 class Educator extends Model {
     
     use ModelTrait;
-    
+    const EXCEL_EXPORT_TITLE = [
+        '教职工名称', '所属学校', '可用短信条数',
+        '创建于', '更新于',
+        '状态',
+    ];
     protected $fillable = [
         'user_id', 'team_ids', 'school_id',
         'sms_quote', 'enabled',
@@ -465,6 +469,25 @@ class Educator extends Model {
         }
         return $removed ? true : false;
         
+    }
+    
+    public function export($id) {
+        $educators = $this->where('school_id', $id)->get();
+        $data = array(self::EXCEL_EXPORT_TITLE);
+        foreach ($educators as $educator) {
+            $item = [
+                $educator->user->realname,
+                $educator->school->name,
+                $educator->sms_quote,
+                $educator->created_at,
+                $educator->updated_at,
+                $educator->enabled == 1 ? '启用' : '禁用',
+            ];
+            $data[] = $item;
+            unset($item);
+        }
+        
+        return $data;
     }
 }
 

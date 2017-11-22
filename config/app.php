@@ -157,7 +157,7 @@ return [
         App\Providers\DatatableServiceProvider::class,
         App\Providers\ComposerServiceProvider::class,
         //Excel
-       Maatwebsite\Excel\ExcelServiceProvider::class,
+        Maatwebsite\Excel\ExcelServiceProvider::class,
     ],
     /*
     |--------------------------------------------------------------------------

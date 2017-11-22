@@ -5,11 +5,13 @@ use App\Models\App;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
-class StudentImported {
+class StudentImported implements ShouldBroadcast {
 
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -34,7 +36,7 @@ class StudentImported {
      * @return Channel|array
      */
     public function broadcastOn() {
-        return new PrivateChannel('channel-name');
+        return new PrivateChannel('student.'. Auth::id());
     }
     
     public function broadcastWith()
