@@ -4,7 +4,6 @@ namespace App\Jobs;
 use App\Facades\Wechat;
 use App\Helpers\ControllerTrait;
 use App\Models\App;
-use App\Models\Corp;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;

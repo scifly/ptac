@@ -82,7 +82,8 @@ class Exam extends Model {
      * @param $subjectIds
      * @return array
      */
-    public function subjects($subjectIds) {
+    public function subjects($subjectIds = null) {
+        
         $subjectIds = explode(",", $subjectIds);
         $selectedSubjects = [];
         foreach ($subjectIds as $subjectId) {

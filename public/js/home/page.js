@@ -91,6 +91,16 @@ var page = {
         var tabId = $('.nav-tabs .active a').attr('href').split('_');
         return tabId[tabId.length - 1];
     },
+    errorHandler: function (e) {
+        var obj = JSON.parse(e.responseText);
+        console.log(e.responseJSON);
+        $('.overlay').hide();
+        if (obj['message'] !== 'Unauthenticated.') {
+            page.inform('出现异常', obj['message'], page.failure);
+        } else {
+            window.location = page.siteRoot() + 'login';
+        }
+    },
     getTabContent: function ($tabPane, url) {
         if (url.indexOf('http://') > -1) {
             url = url.replace(page.siteRoot(), '');
@@ -130,11 +140,7 @@ var page = {
                     window.location = page.siteRoot() + 'login';
                 }
             },
-            error: function (jqXHR) {
-                var obj = JSON.parse(jqXHR.responseText);
-                console.log(jqXHR.responseJSON);
-                page.inform('出现异常', obj['message'], page.failure);
-            }
+            error: function (e) { page.errorHandler(e); }
         });
     },
     ajaxRequest: function (requestType, url, data, obj) {
@@ -161,12 +167,7 @@ var page = {
                 );
                 return false;
             },
-            error: function (e) {
-                var obj = JSON.parse(e.responseText);
-                console.log(e.responseJSON);
-                $('.overlay').hide();
-                page.inform('出现异常', obj['message'], page.failure);
-            }
+            error: function (e) { page.errorHandler(e); }
         });
     },
     initDatatable: function (table, options) {
@@ -404,6 +405,10 @@ $(function () {
             page.getTabContent($activeTabPane, url);
         }
     });
+    $('.tab').hover(
+        function() { $(this).removeClass('text-gray').addClass('text-blue'); },
+        function() { $(this).removeClass('text-blue').addClass('text-gray'); }
+    );
     // 获取状态为active的卡片的url
     url = $('.nav-tabs .active a').attr('data-uri');
     // 获取状态为active的卡片内容

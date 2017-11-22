@@ -4,14 +4,12 @@ namespace App\Http\ViewComposers;
 use App\Models\Corp;
 use App\Models\Department;
 use App\Models\Grade;
-use App\Models\Group;
 use App\Models\School;
 use App\Models\Squad;
 use App\Models\Student;
 use App\Models\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 
 class CustodianRelationshipComposer {
     

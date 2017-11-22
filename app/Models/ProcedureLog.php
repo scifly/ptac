@@ -144,7 +144,7 @@ class ProcedureLog extends Model {
             [
                 'db'        => 'ProcedureLog.initiator_user_id', 'dt' => 1,
                 'formatter' => function ($d) {
-                    return $this->get_user($d)->realname;
+                    return User::find($d)->realname;
                 },
             ],
             ['db' => 'Procedures.name as procedure_name', 'dt' => 2],

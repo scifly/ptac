@@ -6,7 +6,7 @@ use Illuminate\Contracts\View\View;
 
 class PqChoiceComposer {
 
-    protected $pq;
+    protected $pqs;
 
     public function __construct(PollQuestionnaireSubject $pqs) {
 

@@ -3,7 +3,6 @@ namespace App\Http\ViewComposers;
 
 use App\Models\Corp;
 use App\Models\School;
-use App\Models\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 

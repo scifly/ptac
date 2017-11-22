@@ -3,9 +3,6 @@ namespace App\Listeners;
 
 use App\Jobs\ManageImportStudent;
 use App\Jobs\ManageUpdateStudent;
-use App\Jobs\ManageWechatApp;
-use App\Jobs\ManageWechatAppMenu;
-use App\Models\App;
 use Illuminate\Events\Dispatcher;
 use Illuminate\Support\Facades\Log;
 

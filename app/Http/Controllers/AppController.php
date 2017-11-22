@@ -3,10 +3,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\AppRequest;
 use App\Models\App;
-use App\Models\Corp;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
-use App\Facades\Wechat;
+
 /**
  * 微信企业应用
  *
@@ -117,6 +115,7 @@ class AppController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function menu($id) {
+        
         $app = $this->app->find($id);
         if (!$app) { return $this->notFound(); }
         // $accessToken = Wechat::getAccessToken($app->corp_id, $app->secret, $app->agentid);

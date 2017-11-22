@@ -36,7 +36,7 @@
             {!! csrf_field() !!}
             <div class="form-group has-feedback">
                 <input  class="form-control" placeholder="(用户名/邮箱/手机号码)" name="input" id="input">
-                <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+                <span class="glyphicon glyphicon-user form-control-feedback"></span>
             </div>
             <div class="form-group has-feedback">
                 <input type="password" class="form-control" placeholder="密码" name="password" id="password">
