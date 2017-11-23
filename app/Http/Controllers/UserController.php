@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\UserRequest;
@@ -25,10 +24,10 @@ class UserController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
-        
         if (Request::get('draw')) {
             return response()->json($this->user->datatable());
         }
+        
         return $this->output(__METHOD__);
         
     }
@@ -39,7 +38,6 @@ class UserController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function create() {
-        
         return $this->output(__METHOD__);
         
     }
@@ -51,10 +49,10 @@ class UserController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(UserRequest $request) {
-        
         if ($this->user->existed($request)) {
             return $this->fail('已经有此记录');
         }
+        
         return $this->user->create($request->all()) ? $this->succeed() : $this->fail();
         
     }
@@ -66,9 +64,11 @@ class UserController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function show($id) {
-        
         $user = $this->user->find($id);
-        if (!$user) { return $this->notFound(); }
+        if (!$user) {
+            return $this->notFound();
+        }
+        
         return $this->output(__METHOD__, ['user' => $user]);
         
     }
@@ -80,9 +80,11 @@ class UserController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function edit($id) {
-        
         $user = $this->user->find($id);
-        if (!$user) { return $this->notFound(); }
+        if (!$user) {
+            return $this->notFound();
+        }
+        
         return $this->output(__METHOD__, ['user' => $user]);
         
     }
@@ -95,12 +97,14 @@ class UserController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(UserRequest $request, $id) {
-        
         $user = $this->user->find($id);
-        if (!$user) { return $this->notFound(); }
+        if (!$user) {
+            return $this->notFound();
+        }
         if ($this->user->existed($request, $id)) {
             return $this->fail('已经有此记录');
         }
+        
         return $user->update($request->all()) ? $this->succeed() : $this->fail();
         
     }
@@ -112,11 +116,11 @@ class UserController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
-        
         $user = $this->user->find($id);
         if (!$user) {
             return $this->notFound();
         }
+        
         return $user->delete() ? $this->succeed() : $this->fail();
         
     }
@@ -128,7 +132,6 @@ class UserController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function uploadAvatar($id) {
-        
         $file = Request::file('avatar');
         $check = $this->checkFile($file);
         if (!$check['status']) {
@@ -149,14 +152,15 @@ class UserController extends Controller {
         if (!$file->move($path, $fileName)) {
             return $this->fail('头像保存失败');
         }
-        
         //如果是create操作，图片路径不能直接存储数据库
         //TODO:需要处理默认头像、图片缓存问题
         if ($id < 1) {
             $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
             $this->result['fileName'] = $fileName;
+            
             return response()->json($this->result);
         }
+        
         return $this->saveImg($id, $fileName);
         
     }
@@ -168,13 +172,13 @@ class UserController extends Controller {
      * @return array
      */
     private function checkFile(UploadedFile $file) {
-        
         if (!$file->isValid()) {
             return ['status' => false, 'msg' => '文件上传失败'];
         }
         if ($file->getClientSize() > $file->getMaxFilesize()) {
             return ['status' => false, 'msg' => '图片过大'];
         }
+        
         return ['status' => true];
         
     }
@@ -187,7 +191,6 @@ class UserController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     private function saveImg($id, $imgName) {
-        
         $user = $this->user->find($id);
         //判断数据库头像是否相同
         if ($imgName !== $user->avatar_url) {
@@ -200,7 +203,6 @@ class UserController extends Controller {
             }
             $user->avatar_url = $imgName;
             if ($user->save()) {
-                
                 $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
                 $this->result['fileName'] = $imgName;
             } else {
@@ -208,6 +210,7 @@ class UserController extends Controller {
                 $this->result['message'] = '头像保存失败';
             }
         }
+        
         return response()->json($this->result);
         
     }

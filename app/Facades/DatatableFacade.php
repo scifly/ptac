@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Facades;
 
 use Illuminate\Database\Eloquent\Model;
@@ -52,8 +51,7 @@ HTML;
      * @internal param string $table SQL table to query
      * @internal param string $primaryKey Primary key of the table
      */
-    static function simple(Model $model, array $columns, array $joins = NULL, $condition = NULL) {
-        
+    static function simple(Model $model, array $columns, array $joins = null, $condition = null) {
         $modelName = class_basename($model);
         $tableName = $model->getTable();
         switch ($modelName) {
@@ -82,7 +80,6 @@ HTML;
                     ' ON ' . implode(' AND ', $join['conditions']);
             }
         }
-        
         // Build the SQL query string from the request
         $limit = self::limit();
         $order = self::order($columns);
@@ -90,27 +87,24 @@ HTML;
         if (isset($condition)) {
             $where = empty($where) ? ' WHERE ' . $condition : $where . ' AND ' . $condition;
         }
-        
         // Main query to actually get the data
         $query = "SELECT SQL_CALC_FOUND_ROWS " .
             implode(", ", self::pluck($columns, 'db')) .
             " FROM " . $from . $where . $order . $limit;
         $data = DB::select($query);
-        
         // Data set length after filtering
         $resFilterLength = DB::select("SELECT FOUND_ROWS() AS t");
         $recordsFiltered = $resFilterLength[0]->t;
-        
         // Total data set length
         $resTotalLength = DB::select("SELECT COUNT(*) AS t FROM " . $tableName)[0]->t;
         $recordsTotal = $resTotalLength;
         
         // Output
         return [
-            "draw" => intval(Request::get('draw')),
-            "recordsTotal" => intval($recordsTotal),
+            "draw"            => intval(Request::get('draw')),
+            "recordsTotal"    => intval($recordsTotal),
             "recordsFiltered" => intval($recordsFiltered),
-            "data" => self::data_output($columns, $data)
+            "data"            => self::data_output($columns, $data),
         ];
         
     }
@@ -124,13 +118,13 @@ HTML;
      * @internal param array $columns Column information array
      */
     private static function limit() {
-        
         $limit = '';
         $start = Request::get('start');
         $length = Request::get('length');
         if (isset($start) && $length != -1) {
             $limit = "LIMIT " . intval($start) . ", " . intval($length);
         }
+        
         return $limit;
         
     }
@@ -145,10 +139,8 @@ HTML;
      * @internal param Request $request Data sent to server by DataTables
      */
     private static function order(array $columns) {
-        
         $orderBy = '';
         $order = Request::get('order');
-        
         if (isset($order) && count($order)) {
             $orderBy = [];
             $dtColumns = self::pluck($columns, 'dt');
@@ -170,6 +162,7 @@ HTML;
             }
             $orderBy = ' ORDER BY ' . implode(', ', $orderBy);
         }
+        
         return $orderBy;
         
     }
@@ -183,11 +176,11 @@ HTML;
      * @return array        Array of property values
      */
     private static function pluck(array $a, $prop) {
-        
         $out = [];
         for ($i = 0, $len = count($a); $i < $len; $i++) {
             $out[] = $a[$i][$prop];
         }
+        
         return $out;
         
     }
@@ -208,7 +201,6 @@ HTML;
      *    sql_exec() function
      */
     private static function filter(array $columns) {
-        
         $globalSearch = [];
         $columnSearch = [];
         $dtColumns = self::pluck($columns, 'dt');
@@ -254,6 +246,7 @@ HTML;
         if ($where !== '') {
             $where = ' WHERE ' . $where;
         }
+        
         return $where;
         
     }
@@ -266,7 +259,6 @@ HTML;
      * @return array Formatted data in a row based format
      */
     static function data_output(array $columns, array $data) {
-        
         $out = [];
         $length = count($data);
         for ($i = 0; $i < $length; $i++) {
@@ -289,6 +281,7 @@ HTML;
             }
             $out[] = $row;
         }
+        
         return $out;
         
     }
@@ -318,7 +311,6 @@ HTML;
      * @internal param string $primaryKey Primary key of the table
      */
     static function complex(Model $model, $columns, $whereResult = null, $whereAll = null) {
-        
         # $localWhereResult = [];
         # $localWhereAll = [];
         $whereAllSql = '';
@@ -352,14 +344,16 @@ HTML;
         // Total data set length
         $resTotalLength = DB::select("SELECT COUNT(*) AS cnt FROM " . $table . $whereAllSql);
         $recordsTotal = $resTotalLength[0]->cnt;
+        
         /*
          * Output
          */
+        
         return [
-            "draw" => intval(Request::get('draw')),
-            "recordsTotal" => intval($recordsTotal),
+            "draw"            => intval(Request::get('draw')),
+            "recordsTotal"    => intval($recordsTotal),
             "recordsFiltered" => intval($recordsFiltered),
-            "data" => self::data_output($columns, $data)
+            "data"            => self::data_output($columns, $data),
         ];
     }
     
@@ -371,12 +365,12 @@ HTML;
      * @return string Joined string
      */
     static function _flatten($a, $join = ' AND ') {
-        
         if (!$a) {
             return '';
         } else if ($a && is_array($a)) {
             return implode($join, $a);
         }
+        
         return $a;
         
     }
@@ -391,7 +385,6 @@ HTML;
      * @return string
      */
     static function dtOps(Model $model, $active, $row, $del = true) {
-        
         $id = $row['id'];
         $status = $active ? sprintf(self::DT_ON, '已启用') : sprintf(self::DT_OFF, '未启用');
         $showLink = sprintf(self::DT_LINK_SHOW, 'show_' . $id);

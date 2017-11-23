@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Events\CorpCreated;
@@ -49,7 +48,7 @@ class Corp extends Model {
     
     protected $fillable = [
         'name', 'company_id', 'corpid', 'menu_id',
-        'corpsecret', 'department_id', 'enabled'
+        'corpsecret', 'department_id', 'enabled',
     ];
     
     /**
@@ -86,7 +85,6 @@ class Corp extends Model {
      * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
      */
     public function grades() {
-        
         return $this->hasManyThrough('App\Models\Grade', 'App\Models\School');
         
     }
@@ -97,7 +95,6 @@ class Corp extends Model {
      * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
      */
     public function departments() {
-        
         return $this->hasManyThrough('App\Models\Department', 'App\Models\School');
         
     }
@@ -108,7 +105,6 @@ class Corp extends Model {
      * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
      */
     public function teams() {
-        
         return $this->hasManyThrough('App\Models\Team', 'App\Models\School');
         
     }
@@ -121,12 +117,13 @@ class Corp extends Model {
      * @return bool
      */
     public function store(array $data, $fireEvent = false) {
-        
         $corp = $this->create($data);
         if ($corp && $fireEvent) {
             event(new CorpCreated($corp));
+            
             return true;
         }
+        
         return $corp ? true : false;
         
     }
@@ -140,13 +137,14 @@ class Corp extends Model {
      * @return bool
      */
     public function modify(array $data, $id, $fireEvent = false) {
-        
         $corp = $this->find($id);
         $updated = $corp->update($data);
         if ($updated && $fireEvent) {
             event(new CorpUpdated($corp));
+            
             return true;
         }
+        
         return $updated ? true : false;
         
     }
@@ -159,14 +157,17 @@ class Corp extends Model {
      * @return bool
      */
     public function remove($id, $fireEvent = false) {
-        
         $corp = $this->find($id);
-        if (!$corp) { return false; }
+        if (!$corp) {
+            return false;
+        }
         $removed = $this->removable($corp) ? $corp->delete() : false;
         if ($removed && $fireEvent) {
             event(new CorpDeleted($corp));
+            
             return true;
         }
+        
         return $removed ? true : false;
         
     }
@@ -175,7 +176,6 @@ class Corp extends Model {
      * @return mixed
      */
     public function datatable() {
-        
         $columns = [
             ['db' => 'Corp.id', 'dt' => 0],
             ['db' => 'Corp.name', 'dt' => 1],
@@ -184,22 +184,23 @@ class Corp extends Model {
             ['db' => 'Corp.created_at', 'dt' => 4],
             ['db' => 'Corp.updated_at', 'dt' => 5],
             [
-                'db' => 'Corp.enabled', 'dt' => 6,
+                'db'        => 'Corp.enabled', 'dt' => 6,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
-                }
-            ]
+                },
+            ],
         ];
         $joins = [
             [
-                'table' => 'companies',
-                'alias' => 'Company',
-                'type' => 'INNER',
+                'table'      => 'companies',
+                'alias'      => 'Company',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'Company.id = Corp.company_id'
-                ]
-            ]
+                    'Company.id = Corp.company_id',
+                ],
+            ],
         ];
+        
         return Datatable::simple($this, $columns, $joins);
     }
     

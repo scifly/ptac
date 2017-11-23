@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\IconRequest;
@@ -24,10 +23,10 @@ class IconController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
-        
         if (Request::get('draw')) {
             return response()->json($this->icon->datatable());
         }
+        
         return $this->output(__METHOD__);
         
     }
@@ -38,7 +37,6 @@ class IconController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function create() {
-        
         return $this->output(__METHOD__);
         
     }
@@ -50,7 +48,6 @@ class IconController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(IconRequest $request) {
-        
         return $this->icon->store($request->all())
             ? $this->succeed() : $this->fail();
         
@@ -63,11 +60,11 @@ class IconController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function show($id) {
-        
         $icon = $this->icon->find($id);
         if (!$icon) {
             return $this->notFound();
         }
+        
         return $this->output(__METHOD__, ['icon' => $icon]);
         
     }
@@ -79,11 +76,11 @@ class IconController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function edit($id) {
-        
         $icon = $this->icon->find($id);
         if (!$icon) {
             return $this->notFound();
         }
+        
         return $this->output(__METHOD__, ['icon' => $icon]);
         
     }
@@ -96,11 +93,11 @@ class IconController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(IconRequest $request, $id) {
-        
         $icon = $this->icon->find($id);
         if (!$icon) {
             return $this->notFound();
         }
+        
         return $icon->modify($request->all(), $id)
             ? $this->succeed() : $this->fail();
         
@@ -113,11 +110,11 @@ class IconController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
-        
         $icon = $this->icon->find($id);
         if (!$icon) {
             return $this->notFound();
         }
+        
         return $icon->remove($id)
             ? $this->succeed() : $this->fail();
         

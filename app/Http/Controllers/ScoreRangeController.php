@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ScoreRangeRequest;
@@ -20,7 +19,6 @@ class ScoreRangeController extends Controller {
     protected $subject;
     
     function __construct(ScoreRange $scoreRange, Subject $subject) {
-        
         $this->scoreRange = $scoreRange;
         $this->subject = $subject;
         
@@ -32,10 +30,10 @@ class ScoreRangeController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
-        
         if (Request::get('draw')) {
             return response()->json($this->scoreRange->datatable());
         }
+        
         return $this->output(__METHOD__);
         
     }
@@ -46,9 +44,8 @@ class ScoreRangeController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function create() {
-        
         return $this->output(__METHOD__, [
-            'subjects' => $this->subject->subjects(1)
+            'subjects' => $this->subject->subjects(1),
         ]);
         
     }
@@ -61,7 +58,6 @@ class ScoreRangeController extends Controller {
      * @internal param \Illuminate\Http\Request|Request $request
      */
     public function store(ScoreRangeRequest $request) {
-        
         //添加新数据
         return $this->scoreRange->store($request->all())
             ? $this->succeed() : $this->fail();
@@ -75,9 +71,10 @@ class ScoreRangeController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function show($id) {
-        
         $scoreRange = $this->scoreRange->find($id);
-        if (!$scoreRange) { return $this->notFound(); }
+        if (!$scoreRange) {
+            return $this->notFound();
+        }
         $subjectsArr = explode(',', $scoreRange['subject_ids']);
         $str = '';
         foreach ($subjectsArr as $val) {
@@ -96,13 +93,15 @@ class ScoreRangeController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function edit($id) {
-        
         $scoreRange = $this->scoreRange->find($id);
-        if (!$scoreRange) { return $this->notFound(); }
+        if (!$scoreRange) {
+            return $this->notFound();
+        }
+        
         return $this->output(__METHOD__, [
-            'scoreRange' => $scoreRange,
-            'subjects' => $this->subject->subjects(1),
-            'selectedSubjects' => $this->subject->selectedSubjects($scoreRange->subject_ids)
+            'scoreRange'       => $scoreRange,
+            'subjects'         => $this->subject->subjects(1),
+            'selectedSubjects' => $this->subject->selectedSubjects($scoreRange->subject_ids),
         ]);
         
     }
@@ -115,11 +114,13 @@ class ScoreRangeController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(ScoreRangeRequest $request, $id) {
-        
         $scoreRange = $this->scoreRange->find($id);
-        if (!$scoreRange) { return $this->notFound(); }
+        if (!$scoreRange) {
+            return $this->notFound();
+        }
         $score_range = $request->all();
         $score_range['subject_ids'] = implode(',', $score_range['subject_ids']);
+        
         return $scoreRange->update($score_range) ? $this->succeed() : $this->fail();
         
     }
@@ -131,11 +132,11 @@ class ScoreRangeController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
-        
         $scoreRange = $this->scoreRange->find($id);
         if (!$scoreRange) {
             return $this->notFound();
         }
+        
         return $scoreRange->delete() ? $this->succeed() : $this->fail();
         
     }
@@ -146,11 +147,9 @@ class ScoreRangeController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function showStatistics() {
-        
         return $this->output(__METHOD__);
         
     }
-    
     
     /**
      * 按统计项进行统计
@@ -158,9 +157,7 @@ class ScoreRangeController extends Controller {
      * @param HttpRequest $request
      * @return \Illuminate\Http\JsonResponse
      */
-    
     public function statistics(HttpRequest $request) {
-        
         return $this->scoreRange->statistics($request->all());
         
     }

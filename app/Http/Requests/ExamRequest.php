@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
@@ -7,26 +6,25 @@ use Illuminate\Foundation\Http\FormRequest;
 class ExamRequest extends FormRequest {
     
     protected $strings_key = [
-        'name' => '考试名称',
-        'remark' => '备注',
+        'name'         => '考试名称',
+        'remark'       => '备注',
         'exam_type_id' => '考试类型',
-        'class_ids' => '班级',
-        'subject_ids' => '科目',
-        'max_scores' => '科目满分',
-        'pass_scores' => '科目及格分数',
-        'start_date' => '考试开始日期',
-        'end_date' => '考试结束日期',
-        'enabled' => '是否启用',
+        'class_ids'    => '班级',
+        'subject_ids'  => '科目',
+        'max_scores'   => '科目满分',
+        'pass_scores'  => '科目及格分数',
+        'start_date'   => '考试开始日期',
+        'end_date'     => '考试结束日期',
+        'enabled'      => '是否启用',
     ];
     protected $strings_val = [
         'required' => '为必填项',
-        'string' => '为字符串',
-        'max' => '最大为:max',
-        'integer' => '必须为整数',
-        'date' => '必须为日期',
-        'boolean' => '为0或1',
-        'unique' => '不唯一',
-    
+        'string'   => '为字符串',
+        'max'      => '最大为:max',
+        'integer'  => '必须为整数',
+        'date'     => '必须为日期',
+        'boolean'  => '为0或1',
+        'unique'   => '不唯一',
     ];
     
     /**
@@ -60,17 +58,17 @@ class ExamRequest extends FormRequest {
     public function rules() {
         
         return [
-            'name' => 'required|string|max:255|unique:exams,name,' .
+            'name'         => 'required|string|max:255|unique:exams,name,' .
                 $this->input('id') . ',id',
-            'remark' => 'required|string|max:255',
+            'remark'       => 'required|string|max:255',
             'exam_type_id' => 'required|integer',
-            'class_ids' => 'required|string',
-            'subject_ids' => 'required|string',
-            'max_scores' => 'required|string|max:20',
-            'pass_scores' => 'required|string|max:20',
-            'start_date' => 'required|date',
-            'end_date' => 'required|date',
-            'enabled' => 'required|boolean'
+            'class_ids'    => 'required|string',
+            'subject_ids'  => 'required|string',
+            'max_scores'   => 'required|string|max:20',
+            'pass_scores'  => 'required|string|max:20',
+            'start_date'   => 'required|date',
+            'end_date'     => 'required|date',
+            'enabled'      => 'required|boolean',
         ];
         
     }

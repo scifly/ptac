@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\SubjectRequest;
@@ -20,7 +19,6 @@ class SubjectController extends Controller {
     protected $subject, $major, $grade, $majorSubject;
     
     function __construct(Subject $subject, Major $major, Grade $grade, MajorSubject $majorSubject) {
-        
         $this->subject = $subject;
         $this->major = $major;
         $this->grade = $grade;
@@ -34,10 +32,10 @@ class SubjectController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
-        
         if (Request::get('draw')) {
             return response()->json($this->subject->datatable());
         }
+        
         return parent::output(__METHOD__);
         
     }
@@ -48,10 +46,9 @@ class SubjectController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function create() {
-        
         return parent::output(__METHOD__, [
             'majors' => $this->major->majors(1),
-            'grades' => $this->grade->grades([1])
+            'grades' => $this->grade->grades([1]),
         ]);
         
     }
@@ -63,7 +60,6 @@ class SubjectController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(SubjectRequest $request) {
-        
         return $this->subject->store($request)
             ? $this->succeed() : $this->fail();
         
@@ -76,9 +72,11 @@ class SubjectController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function show($id) {
-        
         $subject = $this->subject->find($id);
-        if (!$subject) { return $this->notFound(); }
+        if (!$subject) {
+            return $this->notFound();
+        }
+        
         return $this->output(__METHOD__, ['subject' => $subject]);
         
     }
@@ -90,10 +88,10 @@ class SubjectController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function edit($id) {
-        
         $subject = $this->subject->find($id);
-        if (!$subject) { return $this->notFound(); }
-        
+        if (!$subject) {
+            return $this->notFound();
+        }
         $gradeIds = explode(',', $subject['grade_ids']);
         $selectedGrades = [];
         foreach ($gradeIds as $gradeId) {
@@ -106,11 +104,11 @@ class SubjectController extends Controller {
         }
         
         return parent::output(__METHOD__, [
-            'subject' => $subject,
+            'subject'        => $subject,
             'selectedGrades' => $selectedGrades,
             'selectedMajors' => $selectedMajors,
-            'majors' => $this->major->majors(1),
-            'grades' => $this->grade->grades([1])
+            'majors'         => $this->major->majors(1),
+            'grades'         => $this->grade->grades([1]),
         ]);
         
     }
@@ -123,7 +121,6 @@ class SubjectController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(SubjectRequest $request, $id) {
-        
         return $this->subject->modify($request, $id) ? $this->succeed() : $this->fail();
         
     }

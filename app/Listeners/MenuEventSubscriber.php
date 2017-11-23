@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Listeners;
 
 use App\Models\Company;
@@ -21,8 +20,8 @@ class MenuEventSubscriber {
         $this->menuType = $menuType;
         $this->icons = [
             'company' => Icon::whereName('fa fa-building')->first()->id,
-            'corp' => Icon::whereName('fa fa-weixin')->first()->id,
-            'school' => Icon::whereName('fa fa-university')->first()->id
+            'corp'    => Icon::whereName('fa fa-weixin')->first()->id,
+            'school'  => Icon::whereName('fa fa-university')->first()->id,
         ];
         
     }
@@ -48,20 +47,21 @@ class MenuEventSubscriber {
      * @param null $belongsTo
      * @return bool|mixed
      */
-    private function createMenu($event, $type, $model, $belongsTo = NULL) {
+    private function createMenu($event, $type, $model, $belongsTo = null) {
         
         $$model = $event->{$model};
         $data = [
-            'parent_id' => isset($belongsTo) ?
+            'parent_id'    => isset($belongsTo) ?
                 $$model->{$belongsTo}->menu_id :
-                $this->menu->where('parent_id', NULL)->first()->id,
-            'name' => $$model->name,
-            'remark' => $$model->remark,
+                $this->menu->where('parent_id', null)->first()->id,
+            'name'         => $$model->name,
+            'remark'       => $$model->remark,
             'menu_type_id' => $this->typeId($type),
-            'icon_id' => $this->icons[$model],
-            'position' => $this->menu->all()->max('position') + 1,
-            'enabled' => $$model->enabled
+            'icon_id'      => $this->icons[$model],
+            'position'     => $this->menu->all()->max('position') + 1,
+            'enabled'      => $$model->enabled,
         ];
+        
         return $this->menu->preserve($data, true);
         
     }
@@ -98,13 +98,14 @@ class MenuEventSubscriber {
         /** @var Menu $menu */
         $menu = $event->{$model}->menu;
         $data = [
-            'parent_id' => $menu->parent_id,
-            'name' => $$model->name,
-            'remark' => $$model->remark,
+            'parent_id'    => $menu->parent_id,
+            'name'         => $$model->name,
+            'remark'       => $$model->remark,
             'menu_type_id' => $this->typeId($type),
-            'icon_id' => $this->icons[$model],
-            'enabled' => $$model->enabled
+            'icon_id'      => $this->icons[$model],
+            'enabled'      => $$model->enabled,
         ];
+        
         return $this->menu->alter($data, $$model->menu_id);
         
     }
@@ -241,6 +242,7 @@ class MenuEventSubscriber {
                 return $menu->alter(['parent_id' => $parentMenu->id], $menu->id);
             }
         }
+        
         return true;
         
     }
@@ -252,15 +254,12 @@ class MenuEventSubscriber {
         $events->listen($e . 'CompanyCreated', $l . 'onCompanyCreated');
         $events->listen($e . 'CompanyUpdated', $l . 'onCompanyUpdated');
         $events->listen($e . 'CompanyDeleted', $l . 'onCompanyDeleted');
-        
         $events->listen($e . 'CorpCreated', $l . 'onCorpCreated');
         $events->listen($e . 'CorpUpdated', $l . 'onCorpUpdated');
         $events->listen($e . 'CorpDeleted', $l . 'onCorpDeleted');
-        
         $events->listen($e . 'SchoolCreated', $l . 'onSchoolCreated');
         $events->listen($e . 'SchoolUpdated', $l . 'onSchoolUpdated');
         $events->listen($e . 'SchoolDeleted', $l . 'onSchoolDeleted');
-        
         $events->listen($e . 'DepartmentMoved', $l . 'onDepartmentMoved');
         
     }

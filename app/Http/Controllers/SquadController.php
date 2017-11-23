@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\SquadRequest;
@@ -18,7 +17,6 @@ class SquadController extends Controller {
     protected $class, $educator;
     
     public function __construct(Squad $class, Educator $educator) {
-        
         $this->class = $class;
         $this->educator = $educator;
         
@@ -30,10 +28,10 @@ class SquadController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
-        
         if (Request::get('draw')) {
             return response()->json($this->class->datatable());
         }
+        
         return $this->output(__METHOD__);
         
     }
@@ -44,7 +42,6 @@ class SquadController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function create() {
-        
         return $this->output(__METHOD__);
         
     }
@@ -56,7 +53,6 @@ class SquadController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(SquadRequest $request) {
-        
         return $this->class->store($request->all(), true)
             ? $this->succeed() : $this->fail();
         
@@ -69,7 +65,6 @@ class SquadController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function show($id) {
-        
         $class = $this->class->find($id);
         if (!$class) {
             return $this->notFound();
@@ -77,8 +72,8 @@ class SquadController extends Controller {
         $educatorIds = explode(",", $class->educator_ids);
         
         return $this->output(__METHOD__, [
-            'class' => $class,
-            'educators' => $this->educator->educators($educatorIds)
+            'class'     => $class,
+            'educators' => $this->educator->educators($educatorIds),
         ]);
         
     }
@@ -90,7 +85,6 @@ class SquadController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function edit($id) {
-        
         $class = $this->class->find($id);
         if (!$class) {
             return $this->notFound();
@@ -98,8 +92,8 @@ class SquadController extends Controller {
         $educatorIds = explode(",", $class->educator_ids);
         
         return $this->output(__METHOD__, [
-            'class' => $class,
-            'selectedEducators' => $this->educator->educators($educatorIds)
+            'class'             => $class,
+            'selectedEducators' => $this->educator->educators($educatorIds),
         ]);
         
     }
@@ -112,10 +106,10 @@ class SquadController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(SquadRequest $request, $id) {
-        
         if (!$this->class->find($id)) {
             return $this->notFound();
         }
+        
         return $this->class->modify($request->all(), $id, true)
             ? $this->succeed() : $this->fail();
         
@@ -128,10 +122,10 @@ class SquadController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
-        
         if (!$this->class->find($id)) {
             return $this->notFound();
         }
+        
         return $this->class->remove($id, true)
             ? $this->succeed() : $this->fail();
         

@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
@@ -67,15 +66,53 @@ class PollQuestionnaireSubject extends Model {
      * @return bool|null
      */
     public function remove($id) {
-        
         $pqSubject = $this->find($id);
-        if (!$pqSubject) { return false; }
+        if (!$pqSubject) {
+            return false;
+        }
+        
         return $this->removable($pqSubject) ? $pqSubject->delete() : false;
         
     }
     
-    public function getType($type) {
+    public function dataTable() {
+        $columns = [
+            ['db' => 'PollQuestionnaireSubject.id', 'dt' => 0],
+            ['db' => 'PollQuestionnaireSubject.subject', 'dt' => 1],
+            ['db' => 'PollQuestionnaire.name as pq_name', 'dt' => 2],
+            [
+                'db'        => 'PollQuestionnaireSubject.subject_type', 'dt' => 3,
+                'formatter' => function ($d) {
+                    return $this->getType($d);
+                },
+            ],
+            [
+                'db'        => 'PollQuestionnaireSubject.id as subject_id', 'dt' => 4,
+                'formatter' => function ($d) {
+                    $showLink = sprintf(Datatable::DT_LINK_SHOW, 'show_' . $d);
+                    $editLink = sprintf(Datatable::DT_LINK_EDIT, 'edit_' . $d);
+                    $delLink = sprintf(Datatable::DT_LINK_DEL, $d);
+                    
+                    return $showLink . Datatable::DT_SPACE .
+                        $editLink . Datatable::DT_SPACE . $delLink;
+                },
+            ],
+        ];
+        $joins = [
+            [
+                'table'      => 'poll_questionnaires',
+                'alias'      => 'PollQuestionnaire',
+                'type'       => 'left',
+                'conditions' => [
+                    'PollQuestionnaire.id = PollQuestionnaireSubject.pq_id',
+                ],
+            ],
+        ];
         
+        return Datatable::simple($this, $columns, $joins);
+    }
+    
+    public function getType($type) {
         switch ($type) {
             case 0:
                 return '单选';
@@ -87,43 +124,5 @@ class PollQuestionnaireSubject extends Model {
                 return '错误';
         }
         
-    }
-    
-    public function dataTable() {
-        
-        $columns = [
-            ['db' => 'PollQuestionnaireSubject.id', 'dt' => 0],
-            ['db' => 'PollQuestionnaireSubject.subject', 'dt' => 1],
-            ['db' => 'PollQuestionnaire.name as pq_name', 'dt' => 2],
-            [
-                'db' => 'PollQuestionnaireSubject.subject_type', 'dt' => 3,
-                'formatter' => function ($d) {
-                    return $this->getType($d);
-                }
-            ],
-            [
-                'db' => 'PollQuestionnaireSubject.id as subject_id', 'dt' => 4,
-                'formatter' => function ($d) {
-                    $showLink = sprintf(Datatable::DT_LINK_SHOW, 'show_' . $d);
-                    $editLink = sprintf(Datatable::DT_LINK_EDIT, 'edit_' . $d);
-                    $delLink = sprintf(Datatable::DT_LINK_DEL, $d);
-                    return $showLink . Datatable::DT_SPACE .
-                        $editLink . Datatable::DT_SPACE . $delLink;
-                }
-            ]
-        ];
-        $joins = [
-            [
-                'table' => 'poll_questionnaires',
-                'alias' => 'PollQuestionnaire',
-                'type' => 'left',
-                'conditions' => [
-                    'PollQuestionnaire.id = PollQuestionnaireSubject.pq_id'
-                ]
-            
-            ]
-        ];
-        
-        return Datatable::simple($this, $columns, $joins);
     }
 }

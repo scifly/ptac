@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Events;
 
 use App\Models\Department;
@@ -21,7 +20,6 @@ class DepartmentCreated {
      * @param Department $department
      */
     public function __construct(Department $department) {
-        
         $this->department = $department;
         
     }

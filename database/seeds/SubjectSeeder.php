@@ -2,15 +2,14 @@
 
 use Illuminate\Database\Seeder;
 
-class SubjectSeeder extends Seeder
-{
+class SubjectSeeder extends Seeder {
+    
     /**
      * Run the database seeds.
      *
      * @return void
      */
-    public function run()
-    {
+    public function run() {
         factory(App\Models\Subject::class, 20)->create()->each(function ($subject) {
             $subject->save();
         });

@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Events\SchoolCreated;
@@ -74,7 +73,7 @@ class School extends Model {
     
     protected $fillable = [
         'name', 'address', 'school_type_id', 'menu_id',
-        'corp_id', 'department_id', 'enabled'
+        'corp_id', 'department_id', 'enabled',
     ];
     
     /**
@@ -202,7 +201,6 @@ class School extends Model {
      * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
      */
     public function wapSiteModules() {
-        
         return $this->hasManyThrough('App\Models\WapSiteModule', 'App\Models\WapSite');
         
     }
@@ -213,7 +211,6 @@ class School extends Model {
      * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
      */
     public function classes() {
-        
         return $this->hasManyThrough(
             'App\Models\Squad', 'App\Models\Grade',
             'school_id', 'grade_id'
@@ -228,8 +225,8 @@ class School extends Model {
      * @return Collection|static[]
      */
     public function operatorSchools($operatorId) {
-        
         $schoolIds = Operator::whereId($operatorId)->where('enabled', 1)->first()->school_ids;
+        
         return $this->whereIn('id', explode(',', $schoolIds))->whereEnabled(1)->get();
         
     }
@@ -242,12 +239,13 @@ class School extends Model {
      * @return bool
      */
     public function store(array $data, $fireEvent = false) {
-        
         $school = $this->create($data);
         if ($school && $fireEvent) {
             event(new SchoolCreated($school));
+            
             return true;
         }
+        
         return false;
         
     }
@@ -261,13 +259,14 @@ class School extends Model {
      * @return bool
      */
     public function modify(array $data, $id, $fireEvent = false) {
-        
         $school = $this->find($id);
         $updated = $school->update($data);
         if ($updated && $fireEvent) {
             event(new SchoolUpdated($this->find($id)));
+            
             return true;
         }
+        
         return $updated ? true : false;
         
     }
@@ -280,20 +279,22 @@ class School extends Model {
      * @return bool|null
      */
     public function remove($id, $fireEvent = false) {
-        
         $school = $this->find($id);
-        if (!$school) { return false; }
+        if (!$school) {
+            return false;
+        }
         $removed = $this->removable($school) ? $school->delete() : false;
         if ($removed && $fireEvent) {
             event(new SchoolDeleted($school));
+            
             return true;
         }
+        
         return $removed ? true : false;
         
     }
     
     public function datatable() {
-        
         $columns = [
             ['db' => 'School.id', 'dt' => 0],
             ['db' => 'School.name as schoolname', 'dt' => 1],
@@ -303,46 +304,46 @@ class School extends Model {
             ['db' => 'School.created_at', 'dt' => 5],
             ['db' => 'School.updated_at', 'dt' => 6],
             [
-                'db' => 'School.enabled', 'dt' => 7,
+                'db'        => 'School.enabled', 'dt' => 7,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
-                }
-            ]
+                },
+            ],
         ];
         $joins = [
             [
-                'table' => 'school_types',
-                'alias' => 'SchoolType',
-                'type' => 'INNER',
+                'table'      => 'school_types',
+                'alias'      => 'SchoolType',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'SchoolType.id = School.school_type_id'
-                ]
+                    'SchoolType.id = School.school_type_id',
+                ],
             ],
             [
-                'table' => 'corps',
-                'alias' => 'Corp',
-                'type' => 'INNER',
+                'table'      => 'corps',
+                'alias'      => 'Corp',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'Corp.id = School.corp_id'
-                ]
-            ]
+                    'Corp.id = School.corp_id',
+                ],
+            ],
         ];
+        
         return Datatable::simple($this, $columns, $joins);
         
     }
-
+    
     public function schools($schoolIds) {
-
         $schoolList = [];
         if (!empty($schoolIds)) {
-            $schools = $this->whereIn('id', explode(',',$schoolIds))->get()->toArray();
+            $schools = $this->whereIn('id', explode(',', $schoolIds))->get()->toArray();
             foreach ($schools as $school) {
                 $schoolList[$school['id']] = $school['name'];
             }
         }
-
+        
         return $schoolList;
-
+        
     }
-
+    
 }

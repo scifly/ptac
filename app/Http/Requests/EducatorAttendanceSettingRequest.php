@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
@@ -20,23 +19,22 @@ class EducatorAttendanceSettingRequest extends FormRequest {
      */
     public function rules() {
         return [
-            'name' => 'required|string|between:2,60|unique:educator_attendance_settings,name,' .
+            'name'  => 'required|string|between:2,60|unique:educator_attendance_settings,name,' .
                 $this->input('id') . ',id,' .
                 'school_id,' . $this->input('school_id'),
             'start' => 'required',
-            'end' => 'required',
+            'end'   => 'required',
         ];
     }
     
     public function messages() {
         
         return [
-            'name.required' => '名称不能为空',
-            'name.between' => '名称应该在2~60个字符之间',
-            'name.unique' => '已有该记录',
+            'name.required'  => '名称不能为空',
+            'name.between'   => '名称应该在2~60个字符之间',
+            'name.unique'    => '已有该记录',
             'start.required' => '起始时间不能为空',
-            'end.required' => '结束时间不能为空',
-        
+            'end.required'   => '结束时间不能为空',
         ];
         
     }
@@ -52,7 +50,6 @@ class EducatorAttendanceSettingRequest extends FormRequest {
         if (!isset($input['inorout'])) {
             $input['inorout'] = 0;
         }
-        
         $this->replace($input);
         
     }

@@ -1,12 +1,11 @@
 <?php
-
 namespace App\Providers;
 
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
 class ComposerServiceProvider extends ServiceProvider {
-
+    
     /**
      * Bootstrap the application services.
      *
@@ -63,18 +62,17 @@ class ComposerServiceProvider extends ServiceProvider {
         View::composer('conference_queue.create_edit', 'App\Http\ViewComposers\ConferenceQueueComposer');
         View::composer('conference_participant.create_edit', 'App\Http\ViewComposers\ConferenceParticipantComposer');
         View::composer('combo_type.create_edit', 'App\Http\ViewComposers\ComboTypeComposer');
-
+        
     }
-
+    
     /**
      * Register the application services.
      *
      * @return void
      */
     public function register() {
-
+        
         //
-
     }
-
+    
 }

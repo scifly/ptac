@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
@@ -7,29 +6,28 @@ use Illuminate\Foundation\Http\FormRequest;
 class WsmArticleRequest extends FormRequest {
     
     protected $rules = [
-        'wsm_id' => 'required|integer',
-        'name' => 'required|string|max:120',
-        'summary' => 'required|string|max:255',
-        'content' => 'required|string',
+        'wsm_id'    => 'required|integer',
+        'name'      => 'required|string|max:120',
+        'summary'   => 'required|string|max:255',
+        'content'   => 'required|string',
         'media_ids' => 'required|string',
-        'enabled' => 'required|boolean'
+        'enabled'   => 'required|boolean',
     ];
     protected $strings_key = [
-        'wsm_id' => '所属网站模块',
-        'name' => '名称',
-        'summary' => '文章摘要',
-        'content' => '文章内容',
+        'wsm_id'    => '所属网站模块',
+        'name'      => '名称',
+        'summary'   => '文章摘要',
+        'content'   => '文章内容',
         'media_ids' => '轮播图',
-        'enabled' => '是否启用'
+        'enabled'   => '是否启用',
     ];
     protected $strings_val = [
         'required' => '为必填项',
-        'string' => '为字符串',
-        'max' => '最大为:max',
-        'integer' => '必须为整数',
-        'boolean' => '为0或1',
+        'string'   => '为字符串',
+        'max'      => '最大为:max',
+        'integer'  => '必须为整数',
+        'boolean'  => '为0或1',
     ];
-    
     
     /**
      * Determine if the user is authorized to make this request.

@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CommTypeRequest;
@@ -17,7 +16,6 @@ class CommTypeController extends Controller {
     protected $commType;
     
     function __construct(CommType $commType) {
-        
         $this->commType = $commType;
         
     }
@@ -28,10 +26,10 @@ class CommTypeController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function index() {
-        
         if (Request::get('draw')) {
             return response()->json($this->commType->datatable());
         }
+        
         return $this->output(__METHOD__);
         
     }
@@ -42,7 +40,6 @@ class CommTypeController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function create() {
-        
         return $this->output(__METHOD__);
         
     }
@@ -54,7 +51,6 @@ class CommTypeController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(CommTypeRequest $request) {
-        
         return $this->commType->create($request->all()) ? $this->succeed() : $this->fail();
         
     }
@@ -66,11 +62,11 @@ class CommTypeController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function edit($id) {
-        
         $commType = $this->commType->find($id);
         if (!$commType) {
             return $this->notFound();
         }
+        
         return $this->output(__METHOD__, ['commType' => $commType]);
         
     }
@@ -83,11 +79,11 @@ class CommTypeController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(CommTypeRequest $request, $id) {
-        
         $commType = $this->commType->find($id);
         if (!$commType) {
             return $this->notFound();
         }
+        
         return $commType->update($request->all()) ? $this->succeed() : $this->fail();
         
     }
@@ -99,11 +95,11 @@ class CommTypeController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
-        
         $commType = $this->commType->find($id);
         if (!$commType) {
             return $this->notFound();
         }
+        
         return $commType->delete() ? $this->succeed() : $this->fail();
         
     }

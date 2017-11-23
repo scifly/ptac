@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ConferenceParticipantRequest;
@@ -17,7 +16,6 @@ class ConferenceParticipantController extends Controller {
     protected $conferenceParticipant;
     
     function __construct(ConferenceParticipant $conferenceParticipant) {
-        
         $this->conferenceParticipant = $conferenceParticipant;
         
     }
@@ -28,10 +26,10 @@ class ConferenceParticipantController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function index() {
-        
         if (Request::get('draw')) {
             return response()->json($this->conferenceParticipant->datatable());
         }
+        
         return $this->output(__METHOD__);
         
     }
@@ -43,7 +41,6 @@ class ConferenceParticipantController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(ConferenceParticipantRequest $request) {
-        
         return $this->conferenceParticipant->create($request->all()) ? $this->succeed() : $this->fail();
         
     }
@@ -55,11 +52,11 @@ class ConferenceParticipantController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function show($id) {
-        
         $conferenceParticipant = $this->conferenceParticipant->find($id);
         if (!$conferenceParticipant) {
             return $this->notFound();
         }
+        
         return $this->output(__METHOD__, ['conferenceParticipant' => $conferenceParticipant]);
         
     }

@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
@@ -35,7 +34,7 @@ class AttendanceMachine extends Model {
     
     protected $fillable = [
         'name', 'location', 'school_id',
-        'machineid', 'enabled'
+        'machineid', 'enabled',
     ];
     
     /**
@@ -53,7 +52,6 @@ class AttendanceMachine extends Model {
     public function studentAttendances() { return $this->hasMany('App\Models\StudentAttendance'); }
     
     public function datatable() {
-        
         $columns = [
             ['db' => 'AttendanceMachine.id', 'dt' => 0],
             ['db' => 'AttendanceMachine.name', 'dt' => 1],
@@ -63,22 +61,23 @@ class AttendanceMachine extends Model {
             ['db' => 'AttendanceMachine.created_at', 'dt' => 5],
             ['db' => 'AttendanceMachine.updated_at', 'dt' => 6],
             [
-                'db' => 'AttendanceMachine.enabled', 'dt' => 7,
+                'db'        => 'AttendanceMachine.enabled', 'dt' => 7,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
-                }
+                },
             ],
         ];
         $joins = [
             [
-                'table' => 'schools',
-                'alias' => 'School',
-                'type' => 'INNER',
+                'table'      => 'schools',
+                'alias'      => 'School',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'School.id = AttendanceMachine.school_id'
-                ]
-            ]
+                    'School.id = AttendanceMachine.school_id',
+                ],
+            ],
         ];
+        
         return Datatable::simple($this, $columns, $joins);
     }
     

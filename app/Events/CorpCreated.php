@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Events;
 
 use App\Models\Corp;
@@ -21,7 +20,6 @@ class CorpCreated {
      * @param Corp $corp
      */
     public function __construct(Corp $corp) {
-        
         $this->corp = $corp;
         
     }

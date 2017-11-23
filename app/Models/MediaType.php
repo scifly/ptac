@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Helpers\ModelTrait;
@@ -38,7 +37,6 @@ class MediaType extends Model {
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function medias() {
-        
         return $this->hasMany('App\Models\Media');
         
     }
@@ -50,8 +48,8 @@ class MediaType extends Model {
      * @return bool
      */
     public function store(array $data) {
-        
         $mediaType = $this->create($data);
+        
         return $mediaType ? true : false;
         
     }
@@ -64,11 +62,11 @@ class MediaType extends Model {
      * @return bool
      */
     public function modify(array $data, $id) {
-        
         $mediaType = $this->find($id);
         if (!$mediaType) {
             return false;
         }
+        
         return $mediaType->update($data) ? true : false;
         
     }
@@ -80,9 +78,11 @@ class MediaType extends Model {
      * @return bool|null
      */
     public function remove($id) {
-        
         $mediaType = $this->find($id);
-        if (!$mediaType) { return false; }
+        if (!$mediaType) {
+            return false;
+        }
+        
         return $mediaType->removable($mediaType)
             ? $mediaType->delete() : false;
         

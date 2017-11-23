@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
@@ -29,22 +28,20 @@ class MajorSubject extends Model {
     protected $fillable = ['major_id', 'subject_id'];
     
     public function storeByMajorId($majorId, array $subjectIds) {
-        
         foreach ($subjectIds as $subjectId) {
             $this->create([
-                'major_id' => $majorId,
-                'subject_id' => $subjectId
+                'major_id'   => $majorId,
+                'subject_id' => $subjectId,
             ]);
         }
         
     }
     
     public function storeBySubjectId($subjectId, $majorIds) {
-        
         foreach ($majorIds as $majorId) {
             $this->create([
-                'major_id' => $majorId,
-                'subject_id' => $subjectId
+                'major_id'   => $majorId,
+                'subject_id' => $subjectId,
             ]);
         }
         

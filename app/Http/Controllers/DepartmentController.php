@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\DepartmentRequest;
@@ -18,7 +17,6 @@ class DepartmentController extends Controller {
     protected $department, $departmentType;
     
     function __construct(Department $department, DepartmentType $departmentType) {
-        
         $this->department = $department;
         $this->departmentType = $departmentType;
         
@@ -30,10 +28,10 @@ class DepartmentController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
-        
         if (Request::method() === 'POST') {
             return $this->department->tree();
         }
+        
         return parent::output(__METHOD__);
         
     }
@@ -45,11 +43,11 @@ class DepartmentController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function create($id) {
-        
         $departmentTypeId = DepartmentType::whereName('其他')->first()->id;
+        
         return $this->output(__METHOD__, [
-            'parentId' => $id,
-            'departmentTypeId' => $departmentTypeId
+            'parentId'         => $id,
+            'departmentTypeId' => $departmentTypeId,
         ]);
         
     }
@@ -61,7 +59,6 @@ class DepartmentController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(DepartmentRequest $request) {
-        
         return $this->department->store($request->all(), true)
             ? $this->succeed() : $this->fail();
         
@@ -74,11 +71,11 @@ class DepartmentController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function show($id) {
-        
         $department = $this->department->find($id);
         if (!$department) {
             return $this->notFound();
         }
+        
         return $this->output(__METHOD__, [
             'department' => $department,
         ]);
@@ -92,11 +89,11 @@ class DepartmentController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function edit($id) {
-        
         $department = $this->department->find($id);
         if (!$department) {
             return $this->notFound();
         }
+        
         return $this->output(__METHOD__, [
             'department' => $department,
         ]);
@@ -111,10 +108,10 @@ class DepartmentController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(DepartmentRequest $request, $id) {
-        
         if (!$this->department->find($id)) {
             return $this->notFound();
         }
+        
         return $this->department->modify($request->all(), $id, true)
             ? $this->succeed() : $this->fail();
         
@@ -127,10 +124,10 @@ class DepartmentController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
-        
         if (!$this->department->find($id)) {
             return $this->notFound();
         }
+        
         return $this->department->remove($id) ? $this->succeed() : $this->fail();
         
     }
@@ -142,8 +139,7 @@ class DepartmentController extends Controller {
      * @param $parentId
      * @return \Illuminate\Http\JsonResponse
      */
-    public function move($id, $parentId = NULL) {
-        
+    public function move($id, $parentId = null) {
         if (!$parentId) {
             return $this->fail('非法操作');
         }
@@ -156,6 +152,7 @@ class DepartmentController extends Controller {
             return $this->department->move($id, $parentId, true)
                 ? parent::succeed() : parent::fail();
         }
+        
         return $this->fail('非法操作');
         
     }
@@ -164,7 +161,6 @@ class DepartmentController extends Controller {
      * 保存部门的排列顺序
      */
     public function sort() {
-        
         $orders = Request::get('data');
         foreach ($orders as $id => $order) {
             $department = $this->department->find($id);

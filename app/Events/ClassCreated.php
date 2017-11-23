@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Events;
 
 use App\Models\Squad;
@@ -22,7 +21,6 @@ class ClassCreated {
      * @param Squad $class
      */
     public function __construct(Squad $class) {
-        
         $this->class = $class;
         
     }

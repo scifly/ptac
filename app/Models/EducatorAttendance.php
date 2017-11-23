@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
@@ -37,7 +36,7 @@ class EducatorAttendance extends Model {
     
     protected $fillable = [
         'educator_id', 'punch_time', 'longitude',
-        'latitude', 'inorout', 'eas_id'
+        'latitude', 'inorout', 'eas_id',
     ];
     
     /**
@@ -53,7 +52,6 @@ class EducatorAttendance extends Model {
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function educatorAttendanceSetting() {
-        
         return $this->belongsTo('App\Models\EducatorAttendanceSetting', 'eas_id');
         
     }

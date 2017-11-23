@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\WsmArticleRequest;
@@ -19,7 +18,6 @@ class WsmArticleController extends Controller {
     protected $media;
     
     public function __construct(WsmArticle $article, Media $media) {
-        
         $this->article = $article;
         $this->media = $media;
         
@@ -34,6 +32,7 @@ class WsmArticleController extends Controller {
         if (Request::get('draw')) {
             return response()->json($this->article->datatable());
         }
+        
         return $this->output(__METHOD__);
     }
     
@@ -43,7 +42,6 @@ class WsmArticleController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function create() {
-        
         return $this->output(__METHOD__);
         
     }
@@ -55,7 +53,6 @@ class WsmArticleController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(WsmArticleRequest $request) {
-        
         return $this->article->store($request) ? $this->succeed() : $this->fail();
         
     }
@@ -67,7 +64,6 @@ class WsmArticleController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function show($id) {
-        
         $article = $this->article->find($id);
         if (!$article) {
             return parent::notFound();
@@ -75,7 +71,7 @@ class WsmArticleController extends Controller {
         
         return parent::output(__METHOD__, [
             'article' => $article,
-            'medias' => $this->media->medias($article->media_ids),
+            'medias'  => $this->media->medias($article->media_ids),
         ]);
         
     }
@@ -87,14 +83,14 @@ class WsmArticleController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function edit($id) {
-        
         $article = $this->article->find($id);
         if (!$article) {
             return parent::notFound();
         }
+        
         return parent::output(__METHOD__, [
             'article' => $article,
-            'medias' => $this->media->medias($article->media_ids),
+            'medias'  => $this->media->medias($article->media_ids),
         ]);
         
     }
@@ -107,7 +103,6 @@ class WsmArticleController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(WsmArticleRequest $request, $id) {
-        
         return $this->article->modify($request, $id) ? $this->succeed() : $this->fail();
         
     }
@@ -123,6 +118,7 @@ class WsmArticleController extends Controller {
         if (!$article) {
             return parent::notFound();
         }
+        
         return $article->delete() ? parent::succeed() : parent::fail();
     }
     
@@ -134,9 +130,10 @@ class WsmArticleController extends Controller {
      */
     public function detail($id) {
         $article = $this->article->find($id);
+        
         return view('frontend.wap_site.article', [
             'article' => $article,
-            'medias' => $this->media->medias($article->media_ids),
+            'medias'  => $this->media->medias($article->media_ids),
         ]);
     }
     

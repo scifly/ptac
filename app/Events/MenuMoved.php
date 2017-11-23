@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Events;
 
 use App\Models\Menu;
@@ -21,7 +20,6 @@ class MenuMoved {
      * @param Menu $menu
      */
     public function __construct(Menu $menu) {
-        
         $this->menu = $menu;
         
     }

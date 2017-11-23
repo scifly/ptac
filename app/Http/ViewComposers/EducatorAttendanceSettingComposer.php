@@ -1,12 +1,10 @@
 <?php
-
 namespace App\Http\ViewComposers;
 
 use App\Models\School;
 use Illuminate\Contracts\View\View;
 
 class EducatorAttendanceSettingComposer {
-    
     
     protected $school;
     

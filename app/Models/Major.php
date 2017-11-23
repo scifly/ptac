@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
@@ -37,7 +36,7 @@ class Major extends Model {
     protected $table = 'majors';
     
     protected $fillable = [
-        'name', 'remark', 'school_id', 'enabled'
+        'name', 'remark', 'school_id', 'enabled',
     ];
     
     /**
@@ -53,7 +52,6 @@ class Major extends Model {
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function subjects() {
-        
         return $this->belongsToMany(
             'App\Models\Subject',
             'majors_subjects',
@@ -69,11 +67,11 @@ class Major extends Model {
      * @param null $schoolId
      * @return \Illuminate\Support\Collection
      */
-    public function majors($schoolId = NULL) {
-        
+    public function majors($schoolId = null) {
         if (isset($schoolId)) {
             return $this->where('school_id', $schoolId)->get()->pluck('id', 'name');
         }
+        
         return $this->pluck('id', 'name');
         
     }
@@ -85,7 +83,6 @@ class Major extends Model {
      * @return bool|mixed
      */
     public function store(MajorRequest $request) {
-        
         try {
             $exception = DB::transaction(function () use ($request) {
                 $m = $this->create($request->all());
@@ -93,6 +90,7 @@ class Major extends Model {
                 $subjectIds = $request->input('subject_ids', []);
                 $majorSubject->storeByMajorId($m->id, $subjectIds);
             });
+            
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
             return false;
@@ -108,7 +106,6 @@ class Major extends Model {
      * @return bool|mixed
      */
     public function modify(MajorRequest $request, $id) {
-        
         $major = $this->find($id);
         if (!isset($major)) {
             return false;
@@ -136,7 +133,6 @@ class Major extends Model {
      * @return bool|mixed
      */
     public function remove($id) {
-        
         $major = $this->find($id);
         if (!isset($major)) {
             return false;
@@ -148,6 +144,7 @@ class Major extends Model {
                 # 删除与指定专业绑定的科目记录
                 MajorSubject::whereMajorId($id)->delete();
             });
+            
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
             return false;
@@ -156,7 +153,6 @@ class Major extends Model {
     }
     
     public function datatable() {
-        
         $columns = [
             ['db' => 'Major.id', 'dt' => 0],
             ['db' => 'Major.name', 'dt' => 1],
@@ -164,22 +160,23 @@ class Major extends Model {
             ['db' => 'Major.remark', 'dt' => 3],
             ['db' => 'Major.created_at', 'dt' => 4],
             [
-                'db' => 'Major.updated_at', 'dt' => 5,
+                'db'        => 'Major.updated_at', 'dt' => 5,
                 'formatter' => function ($d, $row) {
                     return DataTable::dtOps($this, $d, $row);
-                }
+                },
             ],
         ];
         $joins = [
             [
-                'table' => 'schools',
-                'alias' => 'School',
-                'type' => 'INNER',
+                'table'      => 'schools',
+                'alias'      => 'School',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'School.id = Major.school_id'
-                ]
-            ]
+                    'School.id = Major.school_id',
+                ],
+            ],
         ];
+        
         return DataTable::simple($this, $columns, $joins);
         
     }

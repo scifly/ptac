@@ -1,23 +1,33 @@
-var green="#00acac",
-    red="#ff5b57",
-    blue="#348fe2",
-    purple="#727cb6",
-    orange="#f59c1a",
-    black="#2d353c";
+var green = "#00acac",
+    red = "#ff5b57",
+    blue = "#348fe2",
+    purple = "#727cb6",
+    orange = "#f59c1a",
+    black = "#2d353c";
 
-var renderSwitcher = function() {
+var renderSwitcher = function () {
     var $switchery = $("[data-render=switchery]");
     if ($switchery.length !== 0) {
         $switchery.each(
-            function() {
+            function () {
                 var e = green;
                 if ($(this).attr("data-theme")) {
-                    switch($(this).attr("data-theme")) {
-                        case "red": e = red; break;
-                        case "blue": e = blue; break;
-                        case "purple": e = purple; break;
-                        case "orange": e = orange; break;
-                        case "black": e = black; break
+                    switch ($(this).attr("data-theme")) {
+                        case "red":
+                            e = red;
+                            break;
+                        case "blue":
+                            e = blue;
+                            break;
+                        case "purple":
+                            e = purple;
+                            break;
+                        case "orange":
+                            e = orange;
+                            break;
+                        case "black":
+                            e = black;
+                            break
                     }
                 }
                 var t = {};
@@ -36,11 +46,11 @@ var renderSwitcher = function() {
     }
 };
 
-var Switcher = function() {
+var Switcher = function () {
     "use strict";
     return {
-        init:function() {
+        init: function () {
             renderSwitcher();
         }
     }
-} ();
+}();

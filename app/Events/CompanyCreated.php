@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Events;
 
 use App\Models\Company;
@@ -21,7 +20,6 @@ class CompanyCreated {
      * @param Company $company
      */
     public function __construct(Company $company) {
-        
         $this->company = $company;
         
     }

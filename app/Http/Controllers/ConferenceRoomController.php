@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ConferenceRoomRequest;
@@ -17,7 +16,6 @@ class ConferenceRoomController extends Controller {
     protected $conferenceRoom;
     
     function __construct(ConferenceRoom $conferenceRoom) {
-        
         $this->conferenceRoom = $conferenceRoom;
         
     }
@@ -28,10 +26,10 @@ class ConferenceRoomController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function index() {
-        
         if (Request::get('draw')) {
             return response()->json($this->conferenceRoom->datatable());
         }
+        
         return $this->output(__METHOD__);
         
     }
@@ -42,7 +40,6 @@ class ConferenceRoomController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function create() {
-        
         return $this->output(__METHOD__);
         
     }
@@ -54,7 +51,6 @@ class ConferenceRoomController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(ConferenceRoomRequest $request) {
-        
         return $this->conferenceRoom->create($request->all()) ? $this->succeed() : $this->fail();
         
     }
@@ -66,11 +62,11 @@ class ConferenceRoomController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function show($id) {
-        
         $conferenceRoom = $this->conferenceRoom->find($id);
         if (!$conferenceRoom) {
             return $this->notFound();
         }
+        
         return $this->output(__METHOD__, ['conferenceRoom' => $conferenceRoom]);
         
     }
@@ -82,11 +78,11 @@ class ConferenceRoomController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function edit($id) {
-        
         $conferenceRoom = $this->conferenceRoom->find($id);
         if (!$conferenceRoom) {
             return $this->notFound();
         }
+        
         return $this->output(__METHOD__, ['conferenceRoom' => $conferenceRoom]);
         
     }
@@ -99,11 +95,11 @@ class ConferenceRoomController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(ConferenceRoomRequest $request, $id) {
-        
         $conferenceRoom = $this->conferenceRoom->find($id);
         if (!$conferenceRoom) {
             return $this->notFound();
         }
+        
         return $conferenceRoom->update($request->all()) ? $this->succeed() : $this->fail();
         
     }
@@ -115,11 +111,11 @@ class ConferenceRoomController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
-        
         $conferenceRoom = $this->conferenceRoom->find($id);
         if (!$conferenceRoom) {
             return $this->notFound();
         }
+        
         return $this->conferenceRoom->remove($id) ? $this->succeed() : $this->fail();
         
     }

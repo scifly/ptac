@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Events;
 
 use App\Models\School;
@@ -21,7 +20,6 @@ class SchoolDeleted {
      * @param School $school
      */
     public function __construct(School $school) {
-        
         $this->school = $school;
         
     }

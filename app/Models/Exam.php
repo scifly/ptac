@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
@@ -49,7 +48,7 @@ class Exam extends Model {
         'name', 'remark', 'exam_type_id',
         'class_ids', 'subject_ids', 'max_scores',
         'pass_scores', 'start_date', 'end_date',
-        'enabled'
+        'enabled',
     ];
     
     /**
@@ -66,7 +65,6 @@ class Exam extends Model {
      * @return array
      */
     public function classes($classIds) {
-        
         $classIds = explode(",", $classIds);
         $selectedClasses = [];
         foreach ($classIds as $classId) {
@@ -97,12 +95,12 @@ class Exam extends Model {
     
     //获取当前考试班级
     public function examClasses($classIds) {
-        
         $class_ids = explode(',', $classIds);
         $classes = [];
         foreach ($class_ids as $class_id) {
             $classes[] = Squad::whereId($class_id)->first();
         }
+        
         return $classes;
         
     }
@@ -114,7 +112,6 @@ class Exam extends Model {
      * @return array
      */
     public function examsByClassId($class_id) {
-        
         $exams = $this::all();
         $_exams = [];
         foreach ($exams as $exam) {
@@ -136,7 +133,6 @@ class Exam extends Model {
      * @internal param $subjectIds
      */
     public function subjectsByExamId($examId) {
-        
         $subjectIds = self::whereid($examId)->first(["subject_ids"])->toArray();
         $subject_ids = explode(',', $subjectIds['subject_ids']);
         $subjects = [];
@@ -155,8 +151,8 @@ class Exam extends Model {
      * @return bool
      */
     public function store(array $data) {
-        
         $exam = $this->create($data);
+        
         return $exam ? true : false;
         
     }
@@ -169,11 +165,11 @@ class Exam extends Model {
      * @return bool
      */
     public function modify(array $data, $id) {
-        
         $exam = $this->find($id);
         if (!$exam) {
             return false;
         }
+        
         return $exam->update($data) ? true : false;
         
     }
@@ -185,15 +181,16 @@ class Exam extends Model {
      * @return bool
      */
     public function remove($id) {
-        
         $exam = $this->find($id);
-        if (!$exam) { return false; }
+        if (!$exam) {
+            return false;
+        }
+        
         return $exam->removable($exam) ? true : false;
         
     }
     
     public function datatable() {
-        
         $columns = [
             ['db' => 'Exam.id', 'dt' => 0],
             ['db' => 'Exam.name', 'dt' => 1],
@@ -205,24 +202,22 @@ class Exam extends Model {
             ['db' => 'Exam.end_date', 'dt' => 7],
             ['db' => 'Exam.created_at', 'dt' => 8],
             ['db' => 'Exam.updated_at', 'dt' => 9],
-            
             [
-                'db' => 'Exam.enabled', 'dt' => 10,
+                'db'        => 'Exam.enabled', 'dt' => 10,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
-                }
-            ]
+                },
+            ],
         ];
         $joins = [
             [
-                'table' => 'exam_types',
-                'alias' => 'ExamType',
-                'type' => 'INNER',
+                'table'      => 'exam_types',
+                'alias'      => 'ExamType',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'ExamType.id = Exam.exam_type_id'
-                ]
-            
-            ]
+                    'ExamType.id = Exam.exam_type_id',
+                ],
+            ],
         ];
         
         return Datatable::simple($this, $columns, $joins);

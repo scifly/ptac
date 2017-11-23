@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
@@ -193,12 +192,12 @@ class User extends Authenticatable {
      * @return array
      */
     public function users(array $userIds) {
-        
         $users = [];
         foreach ($userIds as $id) {
             $user = $this->find($id);
             $users[$user->id] = $user->realname;
         }
+        
         return $users;
         
     }
@@ -210,8 +209,7 @@ class User extends Authenticatable {
      * @param null $id
      * @return bool
      */
-    public function existed(UserRequest $request, $id = NULL) {
-        
+    public function existed(UserRequest $request, $id = null) {
         if (!$id) {
             $user = $this->where('username', $request->input('username'))
                 ->orWhere('email', $request->input('email'))
@@ -226,12 +224,12 @@ class User extends Authenticatable {
                 ->orWhere('mobile', $request->input('mobile'))
                 ->first();
         }
+        
         return $user ? true : false;
         
     }
     
     public function datatable() {
-        
         $columns = [
             ['db' => 'User.id', 'dt' => 0],
             ['db' => 'User.username', 'dt' => 2],
@@ -239,31 +237,30 @@ class User extends Authenticatable {
             ['db' => 'User.avatar_url', 'dt' => 3],
             ['db' => 'User.realname', 'dt' => 4],
             [
-                'db' => 'User.gender', 'dt' => 5,
+                'db'        => 'User.gender', 'dt' => 5,
                 'formatter' => function ($d) {
                     return $d ? '男' : '女';
-                }
+                },
             ],
             ['db' => 'User.email', 'dt' => 6],
             ['db' => 'User.created_at', 'dt' => 7],
             ['db' => 'User.updated_at', 'dt' => 8],
             [
-                'db' => 'User.enabled', 'dt' => 9,
+                'db'        => 'User.enabled', 'dt' => 9,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
-                }
+                },
             ],
         ];
-        
         $joins = [
             [
-                'table' => 'groups',
-                'alias' => 'Groups',
-                'type' => 'INNER',
+                'table'      => 'groups',
+                'alias'      => 'Groups',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'Groups.id = User.group_id'
-                ]
-            ]
+                    'Groups.id = User.group_id',
+                ],
+            ],
         ];
         
         return Datatable::simple($this, $columns, $joins);

@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
@@ -31,17 +30,17 @@ class DepartmentUser extends Model {
     protected $fillable = ['department_id', 'user_id', 'enabled'];
     
     public function storeByUserId($userId, array $departmentIds) {
-        
         try {
             $exception = DB::transaction(function () use ($userId, $departmentIds) {
                 foreach ($departmentIds as $departmentId) {
                     $this->create([
-                        'user_id' => $userId,
+                        'user_id'       => $userId,
                         'department_id' => $departmentId,
-                        'enabled' => 1,
+                        'enabled'       => 1,
                     ]);
                 }
             });
+            
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
             return false;
@@ -50,17 +49,17 @@ class DepartmentUser extends Model {
     }
     
     public function storeByDepartmentId($departmentId, array $userIds) {
-        
         try {
             $exception = DB::transaction(function () use ($departmentId, $userIds) {
                 foreach ($userIds as $userId) {
                     $this->create([
-                        'user_id' => $userId,
+                        'user_id'       => $userId,
                         'department_id' => $departmentId,
-                        'enabled' => 1,
+                        'enabled'       => 1,
                     ]);
                 }
             });
+            
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
             return false;

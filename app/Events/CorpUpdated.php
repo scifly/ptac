@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Events;
 
 use App\Models\Corp;
@@ -23,7 +22,6 @@ class CorpUpdated {
      * @internal param Company $company
      */
     public function __construct(Corp $corp) {
-        
         $this->corp = $corp;
         
     }

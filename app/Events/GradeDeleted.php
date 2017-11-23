@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Events;
 
 use App\Models\Grade;
@@ -22,7 +21,6 @@ class GradeDeleted {
      * @param Grade $grade
      */
     public function __construct(Grade $grade) {
-        
         $this->grade = $grade;
         
     }

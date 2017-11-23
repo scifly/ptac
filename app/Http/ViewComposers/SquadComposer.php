@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\ViewComposers;
 
 use App\Models\Educator;
@@ -22,15 +21,14 @@ class SquadComposer {
         
         
         $data = Educator::with('user')->get()->toArray();
-        $educators = array();
+        $educators = [];
         if (!empty($data)) {
             foreach ($data as $v) {
                 $educators[$v['id']] = $v['user']['username'];
             }
         }
-        
         $view->with([
-            'grades' => $this->grades->pluck('name', 'id'),
+            'grades'    => $this->grades->pluck('name', 'id'),
             'educators' => $educators,
         ]);
     }

@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
@@ -35,6 +34,7 @@ use Mockery\Exception;
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\WapSiteModule[] $wapSiteModules
  */
 class WapSite extends Model {
+    
     //
     protected $fillable = [
         'id',
@@ -46,15 +46,12 @@ class WapSite extends Model {
         'enabled',
     ];
     
-    
     public function wapSiteModules() {
-        
         return $this->hasMany('App\Models\WapSiteModule');
         
     }
     
     public function school() {
-        
         return $this->belongsTo('App\Models\School');
         
     }
@@ -66,6 +63,7 @@ class WapSite extends Model {
                 $this->removeMedias($request);
                 $this->create($request->all());
             });
+            
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
             return false;
@@ -97,8 +95,10 @@ class WapSite extends Model {
         try {
             $exception = DB::transaction(function () use ($request, $id) {
                 $this->removeMedias($request);
+                
                 return $this->where('id', $id)->update($request->except('_method', '_token'));
             });
+            
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
             return false;
@@ -109,30 +109,28 @@ class WapSite extends Model {
      * @return array
      */
     public function datatable() {
-        
         $columns = [
             ['db' => 'WapSite.id', 'dt' => 0],
             ['db' => 'School.name', 'dt' => 1],
             ['db' => 'WapSite.site_title', 'dt' => 2],
             ['db' => 'WapSite.created_at', 'dt' => 3],
             ['db' => 'WapSite.updated_at', 'dt' => 4],
-            
             [
-                'db' => 'WapSite.enabled', 'dt' => 5,
+                'db'        => 'WapSite.enabled', 'dt' => 5,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
-                }
-            ]
+                },
+            ],
         ];
         $joins = [
             [
-                'table' => 'schools',
-                'alias' => 'School',
-                'type' => 'INNER',
+                'table'      => 'schools',
+                'alias'      => 'School',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'School.id = WapSite.school_id'
-                ]
-            ]
+                    'School.id = WapSite.school_id',
+                ],
+            ],
         ];
         
         return Datatable::simple($this, $columns, $joins);

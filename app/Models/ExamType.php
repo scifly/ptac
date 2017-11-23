@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
@@ -54,8 +53,8 @@ class ExamType extends Model {
      * @return bool
      */
     public function store(array $data) {
-        
         $examType = $this->create($data);
+        
         return $examType ? true : false;
         
     }
@@ -68,11 +67,11 @@ class ExamType extends Model {
      * @return bool
      */
     public function modify(array $data, $id) {
-        
         $examType = $this->find($id);
         if (!$examType) {
             return false;
         }
+        
         return $examType->update($data) ? true : false;
         
     }
@@ -84,15 +83,16 @@ class ExamType extends Model {
      * @return bool
      */
     public function remove($id) {
-        
         $examType = $this->find($id);
-        if (!$examType) { return false; }
+        if (!$examType) {
+            return false;
+        }
+        
         return $this->removable($examType) ? $examType->delete() : false;
         
     }
     
     public function datatable() {
-        
         $columns = [
             ['db' => 'ExamType.id', 'dt' => 0],
             ['db' => 'ExamType.name', 'dt' => 1],
@@ -101,22 +101,23 @@ class ExamType extends Model {
             ['db' => 'ExamType.created_at', 'dt' => 4],
             ['db' => 'ExamType.updated_at', 'dt' => 5],
             [
-                'db' => 'ExamType.enabled', 'dt' => 6,
+                'db'        => 'ExamType.enabled', 'dt' => 6,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
-                }
-            ]
+                },
+            ],
         ];
         $joins = [
             [
-                'table' => 'schools',
-                'alias' => 'School',
-                'type' => 'INNER',
+                'table'      => 'schools',
+                'alias'      => 'School',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'School.id = ExamType.school_id'
-                ]
-            ]
+                    'School.id = ExamType.school_id',
+                ],
+            ],
         ];
+        
         return Datatable::simple($this, $columns, $joins);
     }
     

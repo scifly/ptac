@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
@@ -37,7 +36,7 @@ class ComboType extends Model {
     
     protected $fillable = [
         'name', 'amount', 'discount',
-        'school_id', 'months', 'enabled'
+        'school_id', 'months', 'enabled',
     ];
     
     /**
@@ -48,7 +47,6 @@ class ComboType extends Model {
     public function school() { return $this->belongsTo('App\Models\school'); }
     
     public function datatable() {
-        
         $columns = [
             ['db' => 'ComboType.id', 'dt' => 0],
             ['db' => 'ComboType.name', 'dt' => 1],
@@ -59,22 +57,23 @@ class ComboType extends Model {
             ['db' => 'ComboType.created_at', 'dt' => 6],
             ['db' => 'ComboType.updated_at', 'dt' => 7],
             [
-                'db' => 'ComboType.updated_at', 'dt' => 8,
+                'db'        => 'ComboType.updated_at', 'dt' => 8,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
-                }
+                },
             ],
         ];
         $joins = [
             [
-                'table' => 'schools',
-                'alias' => 'School',
-                'type' => 'INNER',
+                'table'      => 'schools',
+                'alias'      => 'School',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'School.id = ComboType.school_id'
-                ]
-            ]
+                    'School.id = ComboType.school_id',
+                ],
+            ],
         ];
+        
         return Datatable::simple($this, $columns, $joins);
         
     }

@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\SchoolTypeRequest;
@@ -17,7 +16,6 @@ class SchoolTypeController extends Controller {
     protected $schoolType;
     
     function __construct(SchoolType $schoolType) {
-        
         // $this->middleware(['auth', 'checkRole']);
         $this->schoolType = $schoolType;
         
@@ -29,10 +27,10 @@ class SchoolTypeController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
-        
         if (Request::get('draw')) {
             return response()->json($this->schoolType->datatable());
         }
+        
         return parent::output(__METHOD__);
         
     }
@@ -43,7 +41,6 @@ class SchoolTypeController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function create() {
-        
         return parent::output(__METHOD__);
         
     }
@@ -55,7 +52,6 @@ class SchoolTypeController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function store(SchoolTypeRequest $request) {
-        
         return $this->schoolType->create($request->all())
             ? parent::succeed() : parent::fail();
         
@@ -69,11 +65,11 @@ class SchoolTypeController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function show($id) {
-        
         $schoolType = $this->schoolType->find($id);
         if (!$schoolType) {
             return parent::notFound();
         }
+        
         return parent::output(__METHOD__, ['schoolType' => $schoolType]);
         
     }
@@ -85,11 +81,11 @@ class SchoolTypeController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function edit($id) {
-        
         $schoolType = $this->schoolType->find($id);
         if (!$schoolType) {
             return parent::notFound();
         }
+        
         return parent::output(__METHOD__, ['schoolType' => $schoolType]);
         
     }
@@ -102,11 +98,11 @@ class SchoolTypeController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(SchoolTypeRequest $request, $id) {
-        
         $schoolType = $this->schoolType->find($id);
         if (!$schoolType) {
             return parent::notFound();
         }
+        
         return $schoolType->update($request->all()) ? parent::succeed() : parent::fail();
         
     }
@@ -118,11 +114,11 @@ class SchoolTypeController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
-        
         $schoolType = $this->schoolType->find($id);
         if (!$schoolType) {
             return parent::notFound();
         }
+        
         return $schoolType->delete() ? parent::succeed() : parent::fail();
         
     }

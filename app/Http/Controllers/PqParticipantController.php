@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Models\PollQuestionnaire;
@@ -34,7 +33,6 @@ class PqParticipantController extends Controller {
         PollQuestionnaireParticipant $pollQuestionnaireParticipant,
         User $user
     ) {
-        
         #投票问卷
         $this->pollQuestionnaires = $pollQuestionnaires;
         #投票问卷参与者
@@ -54,22 +52,20 @@ class PqParticipantController extends Controller {
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function index() {
-        
         #根据登录的角色ID筛选参与的调查问卷
         $result = $this->pollQuestionnaires
             ->join('poll_questionnaire_participants as A', 'poll_questionnaires.id', 'A.pq_id')
             #这里获取用户ID
             ->where('A.user_id', 1)
             ->get(['poll_questionnaires.id', 'poll_questionnaires.name']);
+        
         return view('poll_questionnaire_particpation.index', ['js' => 'js/poll_questionnaire_particpation/index.js', 'form' => 0, 'pqs' => $result]);
         
     }
     
     public function update(Request $q) {
-        
         #先获取项和题转换数组操作
         $json = json_decode($this->show($q->get('pollQuestion')));
-        
         foreach ($json as $item) {
             $var = '';
             switch ($item->subject_type) {
@@ -105,7 +101,6 @@ class PqParticipantController extends Controller {
                 $hasObject = false;
             #如果不存在创建新Model
             if (!$hasObject) $Answer = new PollQuestionnaireAnswer();
-            
             $Answer->pq_id = $item->pq_id;
             $Answer->pqs_id = $item->id;
             #这里获取Session用户ID
@@ -114,6 +109,7 @@ class PqParticipantController extends Controller {
             if (!$hasObject) $Answer->save();
             else $Answer->update();
         }
+        
         return response()->json(['msg' => '提交成功', '' => self::HTTP_STATUSCODE_OK]);
         
     }
@@ -123,7 +119,6 @@ class PqParticipantController extends Controller {
      * @return string
      */
     public function show($id) {
-        
         #先获取投票问卷列
         $this->pollQuestionnaireSubject
             ->where('pq_id', $id)
@@ -152,13 +147,15 @@ class PqParticipantController extends Controller {
                                 #如果有答案
                                 if ($choice
                                     ->pollquestionnaireSubject
-                                    ->pollquestionnaireAnswer) {
+                                    ->pollquestionnaireAnswer
+                                ) {
                                     $answer = explode(',', $choice
                                         ->pollquestionnaireSubject
                                         ->pollquestionnaireAnswer->answer);
                                     #如果是填空
                                     if ($choice->pollquestionnaireSubject
-                                            ->subject_type == 2) {
+                                            ->subject_type == 2
+                                    ) {
                                         #如果有空数据处理
                                         if (count($answer) > $this->count)
                                             $tempC["answer"] = $answer[$this->count];
@@ -187,10 +184,10 @@ class PqParticipantController extends Controller {
                     $temp['subject_type'] = $subject->subject_type;
                     #选项题
                     $temp['choices'] = $this->tempChoice;
-                    
                     $this->result[] = $temp;
                 }
             );
+        
         return json_encode($this->result);
         #获取投票问卷下选项
     }

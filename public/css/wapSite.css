@@ -21,9 +21,11 @@
     padding-top: 15px;
     padding-bottom: 15px;
 }
-.item-list a:hover{
+
+.item-list a:hover {
     background-color: #ddd;
 }
+
 .m-web-content footer {
     text-align: center;
     color: #999;

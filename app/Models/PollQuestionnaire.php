@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
@@ -84,15 +83,16 @@ class PollQuestionnaire extends Model {
      * @return bool|null
      */
     public function remove($id) {
-        
         $pollQuestionnaire = $this->find($id);
-        if (!$pollQuestionnaire) { return false; }
+        if (!$pollQuestionnaire) {
+            return false;
+        }
+        
         return $this->removable($pollQuestionnaire) ? $pollQuestionnaire->delete() : false;
         
     }
     
     public function dataTable() {
-        
         $columns = [
             ['db' => 'PollQuestionnaire.id', 'dt' => 0],
             ['db' => 'PollQuestionnaire.name', 'dt' => 1],
@@ -102,33 +102,30 @@ class PollQuestionnaire extends Model {
             ['db' => 'PollQuestionnaire.end', 'dt' => 5],
             ['db' => 'PollQuestionnaire.created_at', 'dt' => 6],
             ['db' => 'PollQuestionnaire.updated_at', 'dt' => 7],
-            
             [
-                'db' => 'PollQuestionnaire.enabled', 'dt' => 8,
+                'db'        => 'PollQuestionnaire.enabled', 'dt' => 8,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
-                }
-            ]
+                },
+            ],
         ];
         $joins = [
             [
-                'table' => 'schools',
-                'alias' => 'School',
-                'type' => 'INNER',
+                'table'      => 'schools',
+                'alias'      => 'School',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'School.id = PollQuestionnaire.school_id'
-                ]
-            
+                    'School.id = PollQuestionnaire.school_id',
+                ],
             ],
             [
-                'table' => 'users',
-                'alias' => 'User',
-                'type' => 'INNER',
+                'table'      => 'users',
+                'alias'      => 'User',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'User.id = PollQuestionnaire.user_id'
-                ]
-            
-            ]
+                    'User.id = PollQuestionnaire.user_id',
+                ],
+            ],
         ];
         
         return Datatable::simple($this, $columns, $joins);

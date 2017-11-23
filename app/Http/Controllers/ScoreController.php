@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ScoreRequest;
@@ -36,10 +35,10 @@ class ScoreController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
-        
         if (Request::get('draw')) {
             return response()->json($this->score->datatable());
         }
+        
         return $this->output(__METHOD__);
         
     }
@@ -50,7 +49,6 @@ class ScoreController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function create() {
-        
         return $this->output(__METHOD__);
         
     }
@@ -62,7 +60,6 @@ class ScoreController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(ScoreRequest $request) {
-        
         return $this->score->create($request->all()) ? $this->succeed() : $this->fail();
         
     }
@@ -74,14 +71,14 @@ class ScoreController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function show($id) {
-        
         $score = $this->score->find($id);
         if (!$score) {
             return $this->notFound();
         }
+        
         return $this->output(__METHOD__, [
-            'score' => $score,
-            'studentName' => $score->student->user->realname
+            'score'       => $score,
+            'studentName' => $score->student->user->realname,
         ]);
         
     }
@@ -93,14 +90,14 @@ class ScoreController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function edit($id) {
-        
         $score = $this->score->find($id);
         if (!$score) {
             return $this->notFound();
         }
+        
         return $this->output(__METHOD__, [
-            'score' => $score,
-            'studentName' => $score->student->user->realname
+            'score'       => $score,
+            'studentName' => $score->student->user->realname,
         ]);
         
     }
@@ -113,11 +110,11 @@ class ScoreController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(ScoreRequest $request, $id) {
-        
         $score = $this->score->find($id);
         if (!$score) {
             return $this->notFound();
         }
+        
         return $score->update($request->all()) ? $this->succeed() : $this->fail();
         
     }
@@ -129,11 +126,11 @@ class ScoreController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
-        
         $score = $this->score->find($id);
         if (!$score) {
             return $this->notFound();
         }
+        
         return $score->delete() ? $this->succeed() : $this->fail();
         
     }
@@ -145,11 +142,9 @@ class ScoreController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function statistics($examId) {
-        
         return $this->score->statistics($examId) ? $this->succeed() : $this->fail();
         
     }
-    
     
     /**
      * Excel模板生成
@@ -164,7 +159,6 @@ class ScoreController extends Controller {
         }
         $cellData = $this->student->studentsNum($exam->class_ids);
         array_unshift($cellData, $heading);
-        
         Excel::create('score', function ($excel) use ($cellData, $examId) {
             $excel->sheet('score', function ($sheet) use ($cellData) {
                 $sheet->rows($cellData);
@@ -172,7 +166,6 @@ class ScoreController extends Controller {
             $excel->setTitle($examId);
         })->store('xls')->export('xls');
     }
-    
     
     /**
      * 成绩导入
@@ -197,15 +190,16 @@ class ScoreController extends Controller {
                                 $insert [] = [
                                     'student_id' => $studentNum,
                                     'subject_id' => $subjects[$key],
-                                    'exam_id' => $exam_id,
-                                    'score' => $row,
-                                    'enabled' => 1,
+                                    'exam_id'    => $exam_id,
+                                    'score'      => $row,
+                                    'enabled'    => 1,
                                 ];
                             }
                     }
                 }
             });
         });
+        
         return $this->score->insert($insert) ? $this->succeed() : $this->fail();
     }
 }

@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
@@ -25,6 +24,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|PollQuestionnaireChoice whereUpdatedAt($value)
  */
 class PollQuestionnaireChoice extends Model {
+    
     //
     protected $table = 'poll_questionnaire_subject_choices';
     
@@ -37,33 +37,32 @@ class PollQuestionnaireChoice extends Model {
     }
     
     public function datatable() {
-        
         $columns = [
             ['db' => 'PollQuestionnaireChoice.id', 'dt' => 0],
             ['db' => 'PqSubject.subject', 'dt' => 1],
             ['db' => 'PollQuestionnaireChoice.choice', 'dt' => 2],
             ['db' => 'PollQuestionnaireChoice.seq_no', 'dt' => 3],
             [
-                'db' => 'PollQuestionnaireChoice.id as choice_id', 'dt' => 4,
+                'db'        => 'PollQuestionnaireChoice.id as choice_id', 'dt' => 4,
                 'formatter' => function ($d) {
                     $showLink = sprintf(Datatable::DT_LINK_SHOW, 'show_' . $d);
                     $editLink = sprintf(Datatable::DT_LINK_EDIT, 'edit_' . $d);
                     $delLink = sprintf(Datatable::DT_LINK_DEL, $d);
+                    
                     return $showLink . Datatable::DT_SPACE .
                         $editLink . Datatable::DT_SPACE . $delLink;
-                }
-            ]
+                },
+            ],
         ];
         $joins = [
             [
-                'table' => 'poll_questionnaire_subjects',
-                'alias' => 'PqSubject',
-                'type' => 'INNER',
+                'table'      => 'poll_questionnaire_subjects',
+                'alias'      => 'PqSubject',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'PqSubject.id = PollQuestionnaireChoice.pqs_id'
-                ]
-            
-            ]
+                    'PqSubject.id = PollQuestionnaireChoice.pqs_id',
+                ],
+            ],
         ];
         
         return Datatable::simple($this, $columns, $joins);

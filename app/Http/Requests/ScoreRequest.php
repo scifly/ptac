@@ -1,10 +1,10 @@
 <?php
-
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
 class ScoreRequest extends FormRequest {
+    
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -25,16 +25,16 @@ class ScoreRequest extends FormRequest {
                 $this->input('id') . ',id,' .
                 'subject_id,' . $this->input('subject_id') . ',' .
                 'exam_id,' . $this->input('exam_id'),
-            'score' => 'required|numeric'
+            'score'      => 'required|numeric',
         ];
     }
     
     public function messages() {
         return [
             'score.required' => '分数不能为空',
-            'score.unique' => '已有该条记录',
-            'score.max' => '分数不能超过3位数字',
-            'score.numeric' => '分数不能超过5位数字'
+            'score.unique'   => '已有该条记录',
+            'score.max'      => '分数不能超过3位数字',
+            'score.numeric'  => '分数不能超过5位数字',
         ];
     }
     

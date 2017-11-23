@@ -2,15 +2,14 @@
 
 use Illuminate\Database\Seeder;
 
-class SchoolSeeder extends Seeder
-{
+class SchoolSeeder extends Seeder {
+    
     /**
      * Run the database seeds.
      *
      * @return void
      */
-    public function run()
-    {
+    public function run() {
         factory(App\Models\School::class, 20)->create()->each(function ($school) {
             $school->save();
         });

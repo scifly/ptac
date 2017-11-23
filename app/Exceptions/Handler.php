@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Exceptions;
 
 use Exception;
@@ -12,6 +11,7 @@ use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class Handler extends ExceptionHandler {
+    
     /**
      * A list of the exception types that should not be reported.
      *
@@ -37,7 +37,7 @@ class Handler extends ExceptionHandler {
     public function report(Exception $exception) {
         parent::report($exception);
     }
-
+    
     /**
      * Render an exception into an HTTP response.
      *
@@ -46,7 +46,7 @@ class Handler extends ExceptionHandler {
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function render($request, Exception $exception) {
-        
+
 //        if ($request->ajax() || $request->wantsJson()) {
 //            $response = [
 //                'errors' => '对不起，好像出了点儿问题'
@@ -63,7 +63,7 @@ class Handler extends ExceptionHandler {
 //            return response()->json($response, $status);
 //        }
         return parent::render($request, $exception);
-
+        
     }
     
     /**

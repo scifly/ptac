@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
@@ -23,14 +22,14 @@ class MenuRequest extends FormRequest {
     public function rules() {
         
         return [
-            'name' => 'required|string|max:30',
-            'remark' => 'string|max:255',
+            'name'         => 'required|string|max:30',
+            'remark'       => 'string|max:255',
             'menu_type_id' => 'required|integer',
-            'media_id' => 'integer',
-            'action_id' => 'integer',
-            'icon_id' => 'integer',
-            'position' => 'integer',
-            'enabled' => 'required|boolean'
+            'media_id'     => 'integer',
+            'action_id'    => 'integer',
+            'icon_id'      => 'integer',
+            'position'     => 'integer',
+            'enabled'      => 'required|boolean',
         ];
         
     }

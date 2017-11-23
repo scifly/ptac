@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\ViewComposers;
 
 use App\Models\Action;
@@ -21,8 +20,8 @@ class MenuComposer {
     public function compose(View $view) {
         
         $view->with([
-            'tabs' => $this->tab->pluck('name', 'id'),
-            'icons' => $this->icon->icons()
+            'tabs'  => $this->tab->pluck('name', 'id'),
+            'icons' => $this->icon->icons(),
         ]);
         
     }

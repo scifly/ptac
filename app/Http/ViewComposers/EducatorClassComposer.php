@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\ViewComposers;
 
 use App\Models\Educator;
@@ -30,10 +29,9 @@ class EducatorClassComposer {
             }
         }
         $view->with([
-            'squad' => $this->squad->pluck('name', 'id'),
+            'squad'   => $this->squad->pluck('name', 'id'),
             'subject' => $this->subject->pluck('name', 'id'),
         ]);
-        
         
     }
     

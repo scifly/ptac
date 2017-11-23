@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\MessageTypeRequest;
@@ -24,10 +23,10 @@ class MessageTypeController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
-        
         if (Request::get('draw')) {
             return response()->json($this->messageType->datatable());
         }
+        
         return $this->output(__METHOD__);
         
     }
@@ -38,7 +37,6 @@ class MessageTypeController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function create() {
-        
         return $this->output(__METHOD__);
         
     }
@@ -50,7 +48,6 @@ class MessageTypeController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(MessageTypeRequest $request) {
-        
         return $this->messageType->create($request->all()) ? $this->succeed() : $this->fail();
         
     }
@@ -62,11 +59,11 @@ class MessageTypeController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function show($id) {
-        
         $messageType = $this->messageType->find($id);
         if (!$messageType) {
             return $this->notFound();
         }
+        
         return $this->output(__METHOD__, ['messageType' => $messageType]);
         
     }
@@ -78,11 +75,11 @@ class MessageTypeController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function edit($id) {
-        
         $messageType = $this->messageType->find($id);
         if (!$messageType) {
             return $this->notFound();
         }
+        
         return $this->output(__METHOD__, ['messageType' => $messageType]);
         
     }
@@ -95,11 +92,11 @@ class MessageTypeController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(MessageTypeRequest $request, $id) {
-        
         $messageType = $this->messageType->find($id);
         if (!$messageType) {
             return $this->notFound();
         }
+        
         return $messageType->update($request->all()) ? $this->succeed() : $this->fail();
         
     }
@@ -111,11 +108,11 @@ class MessageTypeController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
-        
         $messageType = $this->messageType->find($id);
         if (!$messageType) {
             return $this->notFound();
         }
+        
         return $messageType->delete() ? $this->succeed() : $this->fail();
         
     }

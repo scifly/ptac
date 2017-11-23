@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Events;
 
 use App\Models\Corp;
@@ -20,7 +19,6 @@ class CorpDeleted {
      * @param Corp $corp
      */
     public function __construct(Corp $corp) {
-        
         $this->corp = $corp;
         
     }

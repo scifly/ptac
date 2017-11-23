@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
@@ -53,11 +52,11 @@ HTML;
 HTML;
     protected $fillable = [
         'name', 'remark', 'icon_id',
-        'action_id', 'enabled', 'controller'
+        'action_id', 'enabled', 'controller',
     ];
     protected $excluded_controllers = [
         'ForgotPasswordController', 'Controller', 'RegisterController',
-        'LoginController', 'ResetPasswordController', 'TestController'
+        'LoginController', 'ResetPasswordController', 'TestController',
     ];
     
     protected $dir = '/media/sf_sandbox/ptac/app/Http/Controllers';
@@ -68,7 +67,6 @@ HTML;
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function menus() {
-        
         return $this->belongsToMany('App\Models\Menu', 'menus_tabs');
         
     }
@@ -79,7 +77,6 @@ HTML;
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function icon() {
-        
         return $this->belongsTo('App\Models\Icon');
         
     }
@@ -90,13 +87,11 @@ HTML;
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function action() {
-        
         return $this->belongsTo('App\Models\Action');
         
     }
     
     public function scan() {
-        
         $action = new Action();
         $controllers = $action->scanDirectories($this->dir);
         $action->getControllerNamespaces($controllers);
@@ -124,11 +119,11 @@ HTML;
             $ctlrName = $paths[sizeof($paths) - 1];
             if (in_array($ctlrName, $this->excluded_controllers)) continue;
             $record = [
-                'name' => $this->getControllerComment($obj),
+                'name'       => $this->getControllerComment($obj),
                 'controller' => $ctlrName,
-                'remark' => $controller,
-                'action_id' => $this->getIndexActionId($ctlrName),
-                'enabled' => 1
+                'remark'     => $controller,
+                'action_id'  => $this->getIndexActionId($ctlrName),
+                'enabled'    => 1,
             ];
             $tab = $this->where('controller', $record['controller'])->first();
             if ($tab) {
@@ -154,7 +149,6 @@ HTML;
      * @return bool|mixed
      */
     public function remove($id) {
-        
         $tab = $this->find($id);
         if (!isset($tab)) {
             return false;
@@ -166,6 +160,7 @@ HTML;
                 # 删除与指定卡片绑定的菜单记录
                 MenuTab::whereTabId($id)->delete();
             });
+            
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
             return false;
@@ -174,7 +169,6 @@ HTML;
     }
     
     private function getControllerComment(ReflectionClass $controller) {
-        
         $comment = $controller->getDocComment();
         $name = 'n/a';
         preg_match_all("#\/\*\*\n\s{1}\*[^\*]*\*#", $comment, $matches);
@@ -186,12 +180,12 @@ HTML;
                 $name = str_replace(str_split("\n/* "), '', $matches[0][0]);
             }
         }
+        
         return $name;
         
     }
     
     private function getIndexActionId($ctlrName) {
-        
         $action = new Action();
         $a = $actionId = $action::whereEnabled(1)->
         where('controller', $ctlrName)->
@@ -199,26 +193,26 @@ HTML;
         if (!$a) {
             return 0;
         }
+        
         return $a->id;
         
     }
     
     public function datatable() {
-        
         $columns = [
             ['db' => 'Tab.id', 'dt' => 0],
             ['db' => 'Tab.name', 'dt' => 1],
             [
-                'db' => 'Icon.name as iconname', 'dt' => 2,
+                'db'        => 'Icon.name as iconname', 'dt' => 2,
                 'formatter' => function ($d) {
                     return isset($d) ? '<i class="' . $d . '"></i>&nbsp;' . $d : '[n/a]';
-                }
+                },
             ],
             ['db' => 'Action.name as actionname', 'dt' => 3],
             ['db' => 'Tab.created_at', 'dt' => 4],
             ['db' => 'Tab.updated_at', 'dt' => 5],
             [
-                'db' => 'Tab.enabled', 'dt' => 6,
+                'db'        => 'Tab.enabled', 'dt' => 6,
                 'formatter' => function ($d, $row) {
                     $id = $row['id'];
                     $status = $d ? sprintf(self::DT_ON, '已启用') : sprintf(self::DT_OFF, '已禁用');
@@ -226,26 +220,26 @@ HTML;
                     $editLink = sprintf(self::DT_LINK_EDIT, 'edit_' . $id);
                     
                     return $status . '&nbsp;' . $showLink . '&nbsp;' . $editLink;
-                }
-            ]
+                },
+            ],
         ];
         $joins = [
             [
-                'table' => 'icons',
-                'alias' => 'Icon',
-                'type' => 'LEFT',
+                'table'      => 'icons',
+                'alias'      => 'Icon',
+                'type'       => 'LEFT',
                 'conditions' => [
-                    'Icon.id = Tab.icon_id'
-                ]
+                    'Icon.id = Tab.icon_id',
+                ],
             ],
             [
-                'table' => 'actions',
-                'alias' => 'Action',
-                'type' => 'LEFT',
+                'table'      => 'actions',
+                'alias'      => 'Action',
+                'type'       => 'LEFT',
                 'conditions' => [
-                    'Action.id = Tab.action_id'
-                ]
-            ]
+                    'Action.id = Tab.action_id',
+                ],
+            ],
         ];
         
         return Datatable::simple($this, $columns, $joins);
@@ -259,7 +253,6 @@ HTML;
      * @return bool|mixed
      */
     public function store(array $data) {
-        
         try {
             $exception = DB::transaction(function () use ($data) {
                 $t = $this->create($data);
@@ -267,6 +260,7 @@ HTML;
                 $menuIds = $data['menu_ids'];
                 $menuTab->storeByTabId($t->id, $menuIds);
             });
+            
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
             return false;
@@ -282,7 +276,6 @@ HTML;
      * @return bool|mixed
      */
     public function modify(array $data, $id) {
-        
         $tab = $this->find($id);
         if (!isset($tab)) {
             return false;
@@ -310,10 +303,9 @@ HTML;
      * @param array $allData
      * @return array
      */
-    private function scanDirectories($rootDir, $allData = array()) {
-        
+    private function scanDirectories($rootDir, $allData = []) {
         // set filenames invisible if you want
-        $invisibleFileNames = array(".", "..", ".htaccess", ".htpasswd");
+        $invisibleFileNames = [".", "..", ".htaccess", ".htpasswd"];
         // run through content of root directory
         $dirContent = scandir($rootDir);
         foreach ($dirContent as $key => $content) {

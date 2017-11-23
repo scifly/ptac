@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\ViewComposers;
 
 use App\Models\Company;
@@ -23,8 +22,8 @@ class OperatorComposer {
         
         $view->with([
             'companies' => $this->company->pluck('name', 'id'),
-            'schools' => $this->school->pluck('name', 'id'),
-            'groups' => $this->group->pluck('name', 'id')
+            'schools'   => $this->school->pluck('name', 'id'),
+            'groups'    => $this->group->pluck('name', 'id'),
         ]);
         
     }

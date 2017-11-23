@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\AppRequest;
@@ -24,11 +23,11 @@ class AppController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
-        
         $this->authorize('index');
         if (Request::get('draw')) {
             return response()->json($this->app->datatable());
         }
+        
         return $this->output(__METHOD__);
         
     }
@@ -39,7 +38,6 @@ class AppController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function create() {
-        
         return $this->output(__METHOD__);
         
     }
@@ -51,7 +49,6 @@ class AppController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(AppRequest $request) {
-        
         return $this->app->create($request->all()) ? $this->succeed() : $this->fail();
         
     }
@@ -63,11 +60,11 @@ class AppController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function show($id) {
-        
         $app = $this->app->find($id);
         if (!$app) {
             return $this->notFound();
         }
+        
         return $this->output(__METHOD__, ['app' => $app]);
         
     }
@@ -79,11 +76,11 @@ class AppController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function edit($id) {
-        
         $app = $this->app->find($id);
         if (!$app) {
             return $this->notFound();
         }
+        
         return $this->output(__METHOD__, ['app' => $app]);
         
     }
@@ -96,11 +93,11 @@ class AppController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(AppRequest $request, $id) {
-        
         $app = $this->app->find($id);
         if (!$app) {
             return $this->notFound();
         }
+        
         return $app->update($request->all()) ? $this->succeed() : $this->fail();
         
     }
@@ -112,11 +109,11 @@ class AppController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
-        
         $app = $this->app->find($id);
         if (!$app) {
             return $this->notFound();
         }
+        
         return $app->delete() ? $this->succeed() : $this->fail();
         
     }

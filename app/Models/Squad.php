@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Events\ClassCreated;
@@ -84,12 +83,13 @@ class Squad extends Model {
      * @return bool
      */
     public function store(array $data, $fireEvent = false) {
-        
         $class = $this->create($data);
         if ($class && $fireEvent) {
             event(new ClassCreated($class));
+            
             return true;
         }
+        
         return $class ? true : false;
         
     }
@@ -103,13 +103,14 @@ class Squad extends Model {
      * @return bool
      */
     public function modify(array $data, $id, $fireEvent = false) {
-        
         $class = $this->find($id);
         $updated = $class->update($data);
         if ($updated && $fireEvent) {
             event(new ClassUpdated($class));
+            
             return true;
         }
+        
         return $updated ? true : false;
         
     }
@@ -122,20 +123,22 @@ class Squad extends Model {
      * @return bool
      */
     public function remove($id, $fireEvent = false) {
-        
         $class = $this->find($id);
-        if (!$class) { return false; }
+        if (!$class) {
+            return false;
+        }
         $removed = $this->removable($class) ? $class->delete() : false;
         if ($removed && $fireEvent) {
             event(new ClassDeleted($class));
+            
             return true;
         }
+        
         return $removed ? true : false;
         
     }
     
     public function datatable() {
-        
         $columns = [
             ['db' => 'Squad.id', 'dt' => 0],
             ['db' => 'Squad.name', 'dt' => 1],
@@ -144,31 +147,30 @@ class Squad extends Model {
             ['db' => 'Squad.educator_ids', 'dt' => 4],
             ['db' => 'Squad.created_at', 'dt' => 5],
             ['db' => 'Squad.updated_at', 'dt' => 6],
-            
             [
-                'db' => 'Squad.enabled', 'dt' => 7,
+                'db'        => 'Squad.enabled', 'dt' => 7,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
-                }
-            ]
+                },
+            ],
         ];
         $joins = [
             [
-                'table' => 'grades',
-                'alias' => 'Grade',
-                'type' => 'INNER',
+                'table'      => 'grades',
+                'alias'      => 'Grade',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'Grade.id = Squad.grade_id'
-                ]
+                    'Grade.id = Squad.grade_id',
+                ],
             ],
             [
-                'table' => 'schools',
-                'alias' => 'School',
-                'type' => 'INNER',
+                'table'      => 'schools',
+                'alias'      => 'School',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'School.id = Grade.school_id'
-                ]
-            ]
+                    'School.id = Grade.school_id',
+                ],
+            ],
         ];
         
         return Datatable::simple($this, $columns, $joins);
