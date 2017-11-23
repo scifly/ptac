@@ -3,11 +3,16 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
+use App\Http\Requests\CustodianRequest;
 use App\Http\Requests\EducatorRequest;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Maatwebsite\Excel\Facades\Excel;
+use Maatwebsite\Excel\Readers\LaravelExcelReader;
 use Mockery\Exception;
 
 /**
@@ -35,12 +40,20 @@ use Mockery\Exception;
  * @property-read Squad[] $classes
  * @property-read EducatorClass $educatorClass
  * @property-read Team[] $teams
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\EducatorClass[] $educatorClasses
+ * @property-read Collection|EducatorClass[] $educatorClasses
  */
 class Educator extends Model {
     
     use ModelTrait;
-    
+    const EXCEL_FILE_TITLE = [
+        '姓名', '性别', '生日', '学校',
+        '年级', '班级', '手机号码',
+    ];
+    const EXCEL_EXPORT_TITLE = [
+        '教职工名称', '所属学校', '可用短信条数',
+        '创建于', '更新于',
+        '状态',
+    ];
     protected $fillable = [
         'user_id', 'team_ids', 'school_id',
         'sms_quote', 'enabled',
@@ -174,7 +187,7 @@ class Educator extends Model {
                 'db'        => 'Educator.enabled', 'dt' => 6,
                 'formatter' => function ($d, $row) {
                     $id = $row['id'];
-                    $status = $d ? sprintf(Datatable::DT_ON, '已启用') : sprintf(Datatable::DT_OFF, '未启用');
+                    $status = $d ? Datatable::DT_ON : Datatable::DT_OFF;
                     $showLink = sprintf(Datatable::DT_LINK_SHOW, 'show_' . $id);
                     $editLink = sprintf(Datatable::DT_LINK_EDIT, 'edit_' . $id);
                     $delLink = sprintf(Datatable::DT_LINK_DEL, $id);
@@ -465,6 +478,78 @@ class Educator extends Model {
         }
         return $removed ? true : false;
         
+    }
+    /**
+     * 导入
+     *
+     * @param UploadedFile $file
+     * @return array
+     */
+    public function upload(UploadedFile $file) {
+        
+        $ext = $file->getClientOriginalExtension();     // 扩展名//xls
+        $realPath = $file->getRealPath();   //临时文件的绝对路径
+        // 上传文件
+        $filename = date('His') . uniqid() . '.' . $ext;
+        $bool = Storage::disk('uploads')->put($filename, file_get_contents($realPath));
+        if ($bool) {
+            $filePath = 'storage/app/uploads/' . date('Y') . '/' . date('m') . '/' . date('d') . '/' . $filename;
+            // var_dump($filePath);die;
+            /** @var LaravelExcelReader $reader */
+            $reader = Excel::load($filePath);
+            $sheet = $reader->getExcel()->getSheet(0);
+            $educators = $sheet->toArray();
+            if ($this->checkFileFormat($educators[0])) {
+                return [
+                    'error'   => 1,
+                    'message' => '文件格式错误',
+                ];
+            }
+            unset($educators[0]);
+            $educators = array_values($educators);
+            if (count($educators) != 0) {
+                # 去除表格的空数据
+                foreach ($educators as $key => $v) {
+                    if ((array_filter($v)) == null) {
+                        unset($educators[$key]);
+                    }
+                }
+                // $this->checkData($educators);
+            }
+            Storage::disk('uploads')->delete($filename);
+    
+        }
+        
+    }
+    /**
+     * 检查表头是否合法
+     * @param array $fileTitle
+     * @return bool
+     */
+    private function checkFileFormat(array $fileTitle) {
+        
+        return count(array_diff(self::EXCEL_FILE_TITLE, $fileTitle)) != 0;
+        
+    }
+    public function export($id) {
+        $educators = $this->where('school_id', $id)->get();
+        $data = array(self::EXCEL_EXPORT_TITLE);
+        foreach ($educators as $educator) {
+            if (!empty($educator)) {
+                $item = [
+                    $educator->user->realname,
+                    $educator->school->name,
+                    $educator->sms_quote,
+                    $educator->created_at,
+                    $educator->updated_at,
+                    $educator->enabled == 1 ? '启用' : '禁用',
+                ];
+                $data[] = $item;
+                unset($item);
+            }
+        }
+        
+        return $data;
     }
 }
 

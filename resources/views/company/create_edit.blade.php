@@ -1,4 +1,4 @@
-<div class="box box-widget">
+<div class="box box-default box-solid">
     <div class="box-header with-border">
         @include('partials.form_header')
     </div>
@@ -12,23 +12,17 @@
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
-                    {!! Form::text('name', null, [
-                        'class' => 'form-control',
-                        'placeholder' => '(不超过40个汉字)',
-                        'required' => 'true',
-                        'data-parsley-length' => '[4, 40]'
-                    ]) !!}
-                </div>
-            </div>
-            <div class="form-group">
-                {!! Form::label('remark', '备注', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
-                <div class="col-sm-6">
-                    {!! Form::text('remark', null, [
-                        'class' => 'form-control',
-                        'required' => 'true'
-                    ]) !!}
+                    <div class="input-group">
+                        <div class="input-group-addon">
+                            <i class="fa fa-building"></i>
+                        </div>
+                        {!! Form::text('name', null, [
+                            'class' => 'form-control',
+                            'placeholder' => '(不超过40个汉字)',
+                            'required' => 'true',
+                            'data-parsley-length' => '[4, 40]'
+                        ]) !!}
+                    </div>
                 </div>
             </div>
             @if (isset($company['department_id']))
@@ -37,8 +31,8 @@
             @if (isset($company['menu_id']))
                 {!! Form::hidden('menu_id', $company['menu_id']) !!}
             @endif
+            @include('partials.remark')
             @include('partials.enabled', [
-                'label' => '是否启用',
                 'id' => 'enabled',
                 'value' => isset($company['enabled']) ? $company['enabled'] : NULL
             ])

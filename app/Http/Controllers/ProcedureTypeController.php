@@ -16,7 +16,8 @@ class ProcedureTypeController extends Controller {
     protected $procedureType;
     
     function __construct(ProcedureType $procedureType) {
-        
+    
+        $this->middleware(['auth']);
         $this->procedureType = $procedureType;
         
     }

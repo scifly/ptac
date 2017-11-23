@@ -1,4 +1,4 @@
-<div class="box box-widget">
+<div class="box box-default box-solid">
     <div class="box-header with-border">
         @include('partials.form_header')
     </div>
@@ -14,7 +14,7 @@
                 <div class="col-sm-6">
                     {!! Form::text('name', null, [
                         'class' => 'form-control',
-                        'placeholder' => '(请输入功能名称)',
+                        'placeholder' => '(请输入图标CSS类名称)',
                         'required' => 'true',
                         'maxlength' => '80'
                     ]) !!}
@@ -26,21 +26,8 @@
                 'id' => 'icon_type_id',
                 'items' => $iconTypes
             ])
-            <div class="form-group">
-                {!! Form::label('remark', '备注', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
-                <div class="col-sm-6">
-                    {!! Form::text('remark', null, [
-                        'class' => 'form-control',
-                        'placeholder' => '(请输入备注)',
-                        'required' => 'true',
-                        'maxlength' => '255'
-                    ]) !!}
-                </div>
-            </div>
+            @include('partials.remark')
             @include('partials.enabled', [
-                'label' => '是否启用',
                 'id' => 'enabled',
                 'value' => isset($icon['enabled']) ? $icon['enabled'] : NULL
             ])

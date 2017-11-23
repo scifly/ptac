@@ -1,4 +1,4 @@
-<div class="box box-widget">
+<div class="box box-default box-solid">
     <div class="box-header with-border">
         @include('partials.form_header')
     </div>
@@ -169,7 +169,6 @@
                 'value' => isset($app['isreportenter']) ? $app['isreportenter'] : NULL, 
             ])
             @include('partials.enabled', [
-                'label' => '是否启用',
                 'id' => 'enabled',
                 'value' => isset($app['enabled']) ? $app['enabled'] : NULL
             ])

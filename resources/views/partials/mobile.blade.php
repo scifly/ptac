@@ -1,34 +1,40 @@
 <div class="form-group">
-    <label for="mobile" class="col-sm-3 control-label">手机号码</label>
+    <label for="mobile" class="col-sm-3 control-label">手机</label>
     <div class="col-sm-6">
-        <table id="mobileTable" class="table-bordered table-responsive" style="width: 100%;">
+        <table id="mobiles" class="table-bordered table-responsive" style="width: 100%;">
             <thead>
-            <tr>
-                <td>手机号码</td>
-                <td style="text-align: center;">默认</td>
-                <td style="text-align: center;">启用</td>
-                <td></td>
+
+			<tr class="bg-info">
+                <td class="text-center">号码</td>
+                <td class="text-center">默认</td>
+                <td class="text-center">启用</td>
+                <td class="text-center">+/-</td>
             </tr>
             </thead>
             <tbody>
             @if(!empty($mobiles))
                 @foreach($mobiles as $key => $mobile)
                     <tr>
-                        <td>
-                            <input class="form-control"
-                                   name="mobile[{{ $key }}][mobile]"
-                                   placeholder="（请输入手机号码）"
-                                   value='{{ $mobile->mobile }}'
-                                   required
-                                   pattern="/^1[0-9]{10}$/"
-                            />
-                            <input class="form-control"
-                                   name="mobile[{{ $key }}][id]"
-                                   type="hidden"
-                                   value='{{ $mobile->id }}'
-                            />
+                        <td class="text-center">
+                            <div class="input-group">
+                                <div class="input-group-addon">
+                                    <i class="fa fa-mobile"></i>
+                                </div>
+                                <input class="form-control"
+                                       name="mobile[{{ $key }}][mobile]"
+                                       placeholder="（请输入手机号码）"
+                                       value='{{ $mobile->mobile }}'
+                                       required
+                                       pattern="/^1[0-9]{10}$/"
+                                />
+                                <input class="form-control"
+                                       name="mobile[{{ $key }}][id]"
+                                       type="hidden"
+                                       value='{{ $mobile->id }}'
+                                />
+                            </div>
                         </td>
-                        <td style="text-align: center;">
+                        <td class="text-center">
                             <label for="mobile[isdefault]"></label>
                             <input name="mobile[isdefault]"
                                    value="{{ $key }}"
@@ -39,7 +45,7 @@
                                    @if($mobile->isdefault) checked @endif
                             />
                         </td>
-                        <td style="text-align: center;">
+                        <td class="text-center">
                             <label for="mobile[{{ $key }}][enabled]"></label>
                             <input name="mobile[{{ $key }}][enabled]"
                                    value="{{ $mobile->enabled }}"
@@ -49,7 +55,7 @@
                                    @if($mobile->enabled) checked @endif
                             />
                         </td>
-                        <td style="text-align: center;">
+                        <td class="text-center">
                             @if($key == sizeof($mobiles) - 1)
                                 <span class="input-group-btn">
                                     <button class="btn btn-box-tool btn-add btn-mobile-add" type="button">
@@ -66,30 +72,33 @@
                         </td>
                     </tr>
                 @endforeach
-                <input class="form-control"
-                       type="hidden"
-                       id="mobile-size"
-                       value={{ sizeof($mobiles) }}>
+                <!-- 手机号码数量 -->
+                <input class="form-control" type="hidden" id="count" value={{ sizeof($mobiles) }}>
             @else
                 <tr>
-                    <td>
-                        <input class="form-control"
-                               name="mobile[0][mobile]"
-                               placeholder="（请输入手机号码）"
-                               value=''
-                               required
-                               pattern="/^1[0-9]{10}$/"
-                        />
+                    <td class="text-center">
+                        <div class="input-group">
+                            <div class="input-group-addon">
+                                <i class="fa fa-mobile"></i>
+                            </div>
+                            <input class="form-control"
+                                   name="mobile[0][mobile]"
+                                   placeholder="（请输入手机号码）"
+                                   value=''
+                                   required
+                                   pattern="/^1[0-9]{10}$/"
+                            />
+                        </div>
                     </td>
-                    <td style="text-align: center;">
+                    <td class="text-center">
                         <label for="mobile[isdefault]"></label>
                         <input id="mobile[isdefault]" name="mobile[isdefault]" value="0" checked type="radio" class="minimal">
                     </td>
-                    <td style="text-align: center;">
+                    <td class="text-center">
                         <label for="mobile[0][enabled]"></label>
                         <input id="mobile[0][enabled]" name="mobile[0][enabled]"  checked type="checkbox" class="minimal">
                     </td>
-                    <td style="text-align: center;">
+                    <td class="text-center">
                         <span class="input-group-btn">
                             <button class="btn btn-box-tool btn-add btn-mobile-add" type="button">
                                 <i class="fa fa-plus text-blue"></i>

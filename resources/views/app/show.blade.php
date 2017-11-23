@@ -27,7 +27,7 @@
                             <dt>主页型应用url：{{ $app->home_url }}</dt>
                             <dt>关联会话url：{{ $app->chat_extension_url }}</dt>
                             <dt>应用菜单：{{ $app->menu }}</dt>
-                            <dt>是否启用：{{ $app->enabled==1 ? '是' : '否' }}</dt>
+                            <dt>状态：{{ $app->enabled==1 ? '启用' : '禁用' }}</dt>
                             <dt>Last edited: {{ $app->updated_at->diffForHumans() }}</dt>
                         </dl>
                     </div>

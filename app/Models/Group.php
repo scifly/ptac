@@ -3,14 +3,12 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
-use App\Http\Requests\GroupRequest;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Mockery\Exception;
-use Symfony\Component\VarDumper\Cloner\Data;
 
 /**
  * App\Models\Group
@@ -169,8 +167,18 @@ class Group extends Model {
         
         $columns = [
             ['db' => 'Groups.id', 'dt' => 0],
-            ['db' => 'Groups.name', 'dt' => 1],
-            ['db' => 'School.name as schoolname', 'dt' => 2],
+            [
+                'db' => 'Groups.name', 'dt' => 1,
+                'formatter' => function($d) {
+                    return '<i class="fa fa-meh-o"></i>&nbsp;' . $d;
+                }
+            ],
+            [
+                'db' => 'School.name as schoolname', 'dt' => 2,
+                'formatter' => function($d) {
+                    return '<i class="fa fa-university"></i>&nbsp;' . $d;
+                }
+            ],
             ['db' => 'Groups.remark', 'dt' => 3],
             ['db' => 'Groups.created_at', 'dt' => 4],
             ['db' => 'Groups.updated_at', 'dt' => 5],

@@ -1,1 +1,1 @@
-$(crud.index('conference_queues'));
+page.index('conference_queues');

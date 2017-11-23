@@ -3,6 +3,7 @@ namespace App\Models;
 
 use App\Helpers\ModelTrait;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -26,9 +27,9 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|Media whereUpdatedAt($value)
  * @property-read WapSiteModule $wapsitemoudle
  * @property-read WsmArticle $wasmarticle
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Menu[] $menus
- * @property-read \App\Models\WapSiteModule $wapSiteModule
- * @property-read \App\Models\WsmArticle $wsmArticle
+ * @property-read Collection|Menu[] $menus
+ * @property-read WapSiteModule $wapSiteModule
+ * @property-read WsmArticle $wsmArticle
  */
 class Media extends Model {
     
@@ -61,12 +62,11 @@ class Media extends Model {
     /**
      * 根据媒体ID返回媒体对象
      *
-     * @param string $ids
+     * @param array $ids
      * @return array
      */
-    public function medias($ids) {
+    public function medias(array $ids) {
         
-        $ids = explode(',', $ids);
         $medias = [];
         foreach ($ids as $mediaId) {
             $medias[] = $this->find($mediaId);

@@ -1,4 +1,4 @@
-<div class="box box-widget">
+<div class="box box-default box-solid">
     <div class="box-header with-border">
         @include('partials.form_header')
     </div>
@@ -22,26 +22,13 @@
 
                 </div>
             </div>
-            <div class="form-group">
-                {!! Form::label('remark', '备注', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
-                <div class="col-sm-6">
-                    {!! Form::text('remark', null, [
-                        'class' => 'form-control',
-                        'placeholder' => '(请输入备注)',
-                        'required' => 'true',
-                        'maxlength' => '255'
-                    ]) !!}
-                </div>
-            </div>
             {!! Form::hidden(
                 'department_type_id',
                 isset($departmentTypeId) ? $departmentTypeId : null,
                 ['id' => 'department_type_id']
             ) !!}
+            @include('partials.remark')
             @include('partials.enabled', [
-                'label' => '是否启用',
                 'id' => 'enabled',
                 'value' => isset($department['enabled']) ? $department['enabled'] : NULL
             ])

@@ -54,23 +54,12 @@ class Event extends Model {
     
     protected $table = 'events';
     protected $fillable = [
-        'title',
-        'remark',
-        'location',
-        'contact',
-        'url',
-        'start',
-        'end',
-        'ispublic',
-        'iscourse',
-        'educator_id',
-        'subject_id',
-        'alertable',
-        'alert_mins',
-        'user_id',
-        'created_at',
-        'updated_at',
-        'enabled',
+        'title', 'remark', 'location',
+        'contact', 'url', 'start',
+        'end', 'ispublic', 'iscourse',
+        'educator_id', 'subject_id', 'alertable',
+        'alert_mins', 'user_id', 'created_at',
+        'updated_at', 'enabled',
     ];
     
     /**

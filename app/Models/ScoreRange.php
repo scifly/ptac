@@ -29,7 +29,7 @@ use Illuminate\Support\Facades\DB;
  * @method static Builder|ScoreRange whereSubjectIds($value)
  * @method static Builder|ScoreRange whereUpdatedAt($value)
  * @mixin \Eloquent
- * @property-read \App\Models\School $school
+ * @property-read School $school
  */
 class ScoreRange extends Model {
     

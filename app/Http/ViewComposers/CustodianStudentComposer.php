@@ -8,9 +8,7 @@ use Illuminate\Contracts\View\View;
 
 class CustodianStudentComposer {
 
-    protected $custodian;
-
-    protected $user;
+    protected $custodian, $user, $student;
 
     public function __construct(Custodian $custodian, User $user, Student $student) {
 

@@ -1,4 +1,4 @@
-<div class="box box-widget">
+<div class="box box-default box-solid">
     <div class="box-header with-border">
         @include('partials.form_header')
     </div>
@@ -35,7 +35,6 @@
                 {!! Form::hidden('department_id', $class['department_id']) !!}
             @endif
             @include('partials.enabled', [
-                'label' => '是否启用',
                 'id' => 'enabled',
                 'value' => isset($class['enabled']) ? $class['enabled'] : NULL
             ])

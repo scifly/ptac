@@ -1,4 +1,4 @@
-<div class="box box-widget">
+<div class="box box-default box-solid">
     <div class="box-header with-border">
         @include('partials.form_header')
     </div>
@@ -47,21 +47,8 @@
                                 @endif
                             </div>
                         </div>
-                        <div class="form-group">
-                            {!! Form::label('remark', '备注', [
-                                'class' => 'col-sm-3 control-label'
-                            ]) !!}
-                            <div class="col-sm-6">
-                                {!! Form::text('remark', null, [
-                                    'class' => 'form-control',
-                                    'placeholder' => '(不得超过255个汉字)',
-                                    'required' => 'true',
-                                    'data-parsley-length' => '[2, 255]'
-                                ]) !!}
-                            </div>
-                        </div>
+                        @include('partials.remark')
                         @include('partials.enabled', [
-                            'label' => '是否启用',
                             'id' => 'enabled',
                             'value' => isset($group['enabled']) ? $group['enabled'] : NULL
                         ])
@@ -82,7 +69,7 @@
                                                @if(isset($selectedTabs) && in_array($tabAction['tab']['id'], $selectedTabs))
                                                    checked
                                                @endif
-                                        >&nbsp;{{ $tabAction['tab']['name'] }}
+                                        >&nbsp;<span style="margin-left: 5px;">{{ $tabAction['tab']['name'] }}</span>
                                     </label>
                                     <div class="box-tools pull-right">
                                         <button type="button" class="btn btn-box-tool" data-widget="collapse">

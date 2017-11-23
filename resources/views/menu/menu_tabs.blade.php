@@ -1,4 +1,4 @@
-<div class="box box-widget">
+<div class="box box-default box-solid">
     <div class="box-header with-border">
         @include('partials.form_header', ['buttons' => [
             ['html' => '<button id="save-rank" type="button" class="btn btn-box-tool"><i class="fa fa-save text-blue"> 保存排序</i></button>']

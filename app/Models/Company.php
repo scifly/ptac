@@ -153,7 +153,12 @@ class Company extends Model {
         
         $columns = [
             ['db' => 'Company.id', 'dt' => 0],
-            ['db' => 'Company.name', 'dt' => 1],
+            [
+                'db' => 'Company.name', 'dt' => 1,
+                'formatter' => function($d) {
+                    return '<i class="fa fa-building"></i>&nbsp;' . $d;
+                }
+            ],
             ['db' => 'Company.remark', 'dt' => 2],
             ['db' => 'Company.created_at', 'dt' => 3],
             ['db' => 'Company.updated_at', 'dt' => 4],

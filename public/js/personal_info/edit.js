@@ -1,4 +1,4 @@
-$(crud.edit('formPersonalInfo','personal_infos'));
+page.edit('formPersonalInfo', 'personal_infos');
 
 $(function () {
     $('#avatar_upload').change(function () {
@@ -27,7 +27,7 @@ $(function () {
             error: function (XMLHttpRequest, textStatus, errorThrown) {
                 var number = XMLHttpRequest.status;
                 var info = "错误号" + number + "文件上传失败!";
-                crud.inform('出现异常', info, crud.failure);
+                page.inform('出现异常', info, page.failure);
             }
         })
     })

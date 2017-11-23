@@ -15,7 +15,12 @@ class IconController extends Controller {
     
     protected $icon;
     
-    function __construct(Icon $icon) { $this->icon = $icon; }
+    function __construct(Icon $icon) {
+    
+        $this->middleware(['auth']);
+        $this->icon = $icon;
+    
+    }
     
     /**
      * 图标列表
@@ -65,9 +70,7 @@ class IconController extends Controller {
     public function show($id) {
         
         $icon = $this->icon->find($id);
-        if (!$icon) {
-            return $this->notFound();
-        }
+        if (!$icon) { return $this->notFound(); }
         
         return $this->output(__METHOD__, ['icon' => $icon]);
         
@@ -82,9 +85,7 @@ class IconController extends Controller {
     public function edit($id) {
         
         $icon = $this->icon->find($id);
-        if (!$icon) {
-            return $this->notFound();
-        }
+        if (!$icon) { return $this->notFound(); }
         
         return $this->output(__METHOD__, ['icon' => $icon]);
         
@@ -100,9 +101,7 @@ class IconController extends Controller {
     public function update(IconRequest $request, $id) {
         
         $icon = $this->icon->find($id);
-        if (!$icon) {
-            return $this->notFound();
-        }
+        if (!$icon) { return $this->notFound(); }
         
         return $icon->modify($request->all(), $id)
             ? $this->succeed() : $this->fail();
@@ -118,9 +117,7 @@ class IconController extends Controller {
     public function destroy($id) {
         
         $icon = $this->icon->find($id);
-        if (!$icon) {
-            return $this->notFound();
-        }
+        if (!$icon) { return $this->notFound(); }
         
         return $icon->remove($id)
             ? $this->succeed() : $this->fail();

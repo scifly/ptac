@@ -145,20 +145,42 @@ class Squad extends Model {
         
         $columns = [
             ['db' => 'Squad.id', 'dt' => 0],
-            ['db' => 'Squad.name', 'dt' => 1],
-            ['db' => 'Grade.name as gradename', 'dt' => 2],
-            ['db' => 'School.name as schoolname', 'dt' => 3],
-            ['db' => 'Squad.educator_ids', 'dt' => 4,
-             'formatter' => function ($d) {
-                 $educatorId = explode(',',$d);
-                 foreach ($educatorId as $id)
-                 {
-                     $educator[] = Educator::whereId($id)->first()->user->realname;
-                 }
-                 $userName = implode('&nbsp;,&nbsp;',$educator);
-                 return $userName;
-             },
-        ],
+            [
+                'db' => 'Squad.name', 'dt' => 1,
+                'formatter' => function($d) {
+                    return '<i class="fa fa-users"></i>&nbsp;' . $d;
+                }
+            ],
+            [
+                'db' => 'Grade.name as gradename', 'dt' => 2,
+                'formatter' => function($d) {
+                    return '<i class="fa fa-object-group"></i>&nbsp;' . $d;
+                }
+            ],
+            [
+                'db' => 'School.name as schoolname', 'dt' => 3,
+                'formatter' => function($d) {
+                    return '<i class="fa fa-university"></i>&nbsp;' . $d;
+                }
+            ],
+            [
+                'db' => 'Squad.educator_ids', 'dt' => 4,
+                'formatter' => function ($d) {
+                    if (empty($d)) { return ''; }
+                    $educatorIds = explode(',', $d);
+                    $educators = [];
+                    foreach ($educatorIds as $id) {
+                        $educator = Educator::whereId($id)->first();
+                        if ($educator) {
+                            if ($educator->user) {
+                                $educators[] = $educator->user->realname;
+                            }
+                        }
+                        
+                    }
+                    return implode(', ',$educators);
+                },
+            ],
             ['db' => 'Squad.created_at', 'dt' => 5],
             ['db' => 'Squad.updated_at', 'dt' => 6],
             [

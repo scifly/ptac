@@ -1,43 +1,51 @@
-$(crud.create('formCustodian','custodians'))
+page.create('formCustodian', 'custodians');
 
-$(".expiry-date").datetimepicker({
-    dateFormat: 'yy-mm-dd'
-});
-
-var n = 0;
-var $tbody = $("#mobileTable").find("tbody");
+var n = 0;  // 监护人手机号码数量
+var $mobiles = $("#mobiles").find("tbody");
 var id = $('#id').val();
-var $formEducator = $('#formCustodian');
+var $formCustodian = $('#formCustodian');
 $(document).off('click', '.btn-mobile-add');
 $(document).off('click', '.btn-remove');
-// 手机号
+
+/** 监护人手机号管理 */
 $(document).on('click', '.btn-mobile-add', function (e) {
     e.preventDefault();
     n++;
-    // add mobile html
-    $tbody.append(
-        '<tr><td><input class="form-control" placeholder="（请输入手机号码）" name="mobile['+ n +'][mobile]" value="" ></td>' +
-        '<td style="text-align: center"><input type="radio" class="minimal" id="mobile[isdefault]" name="mobile[isdefault]" value="' + n + '"></td>' +
-        '<td style="text-align: center"><input type="checkbox" class="minimal" name="mobile['+ n +'][enabled]"></td>' +
-        '<td style="text-align: center"><button class="btn btn-box-tool btn-add btn-mobile-add" type="button"><i class="fa fa-plus text-blue"></i></button></td></tr>'
+    // insert html for adding another mobile number
+    $mobiles.append(
+        '<tr>' +
+        '<td class="text-center">' +
+        '<div class="input-group">' +
+        '<div class="input-group-addon">' +
+        '<i class="fa fa-mobile"></i>' +
+        '</div>' +
+        '<input class="form-control" placeholder="（请输入手机号码）" name="mobile[' + n + '][mobile]" value="">' +
+        '</div>' +
+        '</td>' +
+        '<td class="text-center">' +
+        '<input type="radio" class="minimal" id="mobile[isdefault]" name="mobile[isdefault]" value="' + n + '">' +
+        '</td>' +
+        '<td class="text-center">' +
+        '<input type="checkbox" class="minimal" name="mobile[' + n + '][enabled]">' +
+        '</td>' +
+        '<td class="text-center">' +
+        '<button class="btn btn-box-tool btn-add btn-mobile-add">' +
+        '<i class="fa fa-plus text-blue"></i>' +
+        '</button>' +
+        '</td>' +
+        '</tr>'
     );
-    // icheck init
-    $tbody.find('input[type="radio"]').iCheck({
-        checkboxClass: 'icheckbox_minimal-blue',
-        radioClass: 'iradio_minimal-blue'
-    });
-    $tbody.find('input[type="checkbox"]').iCheck({
-        checkboxClass: 'icheckbox_minimal-blue',
-        radioClass: 'iradio_minimal-blue'
-    });
-    $tbody.find('tr:not(:last) .btn-mobile-add')
+    // init iCheck plugin
+    page.initICheck();
+    $mobiles.find('tr:not(:last) .btn-mobile-add')
         .removeClass('btn-mobile-add').addClass('btn-mobile-remove')
         .html('<i class="fa fa-minus text-blue"></i>');
-    var $mobile = $tbody.find('tr:last input[class="form-control"]');
-    $formEducator.parsley().destroy();
+    var $mobile = $mobiles.find('tr:last input[class="form-control"]');
+    // reinitialize parsley plugin
+    $formCustodian.parsley().destroy();
     $mobile.attr('pattern', '/^1[0-9]{10}$/');
     $mobile.attr('required', 'true');
-    $formEducator.parsley();
+    $formCustodian.parsley();
 }).on('click', '.btn-mobile-remove', function (e) {
     $(this).parents('tr:first').remove();
     e.preventDefault();
@@ -55,55 +63,131 @@ $(document).on('click', '.btn-mobile-add', function (e) {
     return false;
 });
 
+/** 监护人学生关系管理 */
+var item = 0;
+if (typeof custodian === 'undefined') {
 
-// $(function () {
-//     $(document).off('click','.btn-add2');
-//     $(document).on('click', '.btn-add2', function (e) {
-// //            样式
-//         e.preventDefault();
-//         var controlForm = $('.addInput');
-//         var html = '<div class="entry input-group col-sm-6 col-sm-offset-3">' +
-//             '<input type="text" class="form-control" name="relationship[]">' +
-//             '<span class="input-group-btn">' +
-//             '<button class="btn btn-add2 btn-success" type="button">' +
-//             '<span class="glyphicon glyphicon-plus"></span>' +
-//             '</button>' +
-//             '</span>' +
-//             '</div>';
-//         controlForm.append(html);
-//         controlForm.find('.entry:not(:last) .btn-add2')
-//             .removeClass('btn-add2').addClass('btn-remove')
-//             .removeClass('btn-success').addClass('btn-danger')
-//             .html('<span class="glyphicon glyphicon-minus"></span>');
-//     }).on('click', '.btn-remove', function (e) {
-//         $(this).parents('.entry:first').remove();
-//         e.preventDefault();
-//         return false;
+    $.getMultiScripts(['js/custodian.relationship.js'], page.siteRoot())
+    .done(function() { custodian.init(item); });
+} else { custodian.init(item); }
+
+
+// var $addPupil = $('#add-pupil');
+// var $pupils = $('#pupils');
+// $addPupil.on('click', function () {
+//     $relationship.val("");
+//     $('#pupils').modal({backdrop: true});
+// });
+//
+// /**
+//  * 保存选中的学生
+//  */
+// var $saveStudent = $('#confirm-bind');
+// var $studentId = $("#studentId");
+// var $tBody = $("#tBody");
+// var $relationship = $("#relationship");
+// var item = 0;
+// $saveStudent.on('click', function () {
+//     var student = $studentId.find("option:selected").text().split('-');
+//     var studentId = $studentId.val();
+//     item++;
+//
+//     var htm = '<tr>' +
+//         '<input type="hidden" value="' + studentId + '" name="student_ids[' + item + ']">' +
+//         '<td>' + student[0] + '</td>' +
+//         '<td>' + student[1] + '</td>' +
+//         '<td><input type="text" name="relationships[' + item +  ']" id="" readonly class="no-border" style="background: none" value="' + $relationship.val() + '"></td>' +
+//         '<td>' +
+//         '<a href="javascript:" class="delete">' +
+//         '<i class="fa fa-trash-o text-blue"></i>' +
+//         '</a>' +
+//         '</td>' +
+//         '</tr>';
+//     $tBody.append(htm);
+// });
+// $(document).on('change', '#schoolId', function () {
+//     var schoolId = $('#schoolId').val();
+//
+//     var $gradeId = $('#gradeId');
+//     var $next = $gradeId.next();
+//     var $prev = $gradeId.prev();
+//
+//     var $classId = $('#classId');
+//     var $classNext = $classId.next();
+//     var $classPrev = $classId.prev();
+//
+//     var $studentId = $('#studentId');
+//     var $studentNext = $studentId.next();
+//     var $studentPrev = $studentId.prev();
+//     var token = $('#csrf_token').attr('content');
+//     $.ajax({
+//         type: 'POST',
+//         dataType: 'json',
+//         url: page.siteRoot() + 'custodians/create?field=school' + '&id=' + schoolId + '&_token=' + token,
+//         success: function (result) {
+//             $next.remove();
+//             $gradeId.remove();
+//             $prev.after(result['html']['grades']);
+//
+//             $classNext.remove();
+//             $classId.remove();
+//             $classPrev.after(result['html']['classes']);
+//
+//             $studentNext.remove();
+//             $studentId.remove();
+//             $studentPrev.after(result['html']['students']);
+//
+//             page.initSelect2();
+//         }
 //     });
 // });
-
-// 学生、关系
-var $tbody2 = $("#classTable").find("tbody");
-$(document).off('click','.btn-class-add');
-$(document).on('click', '.btn-class-add', function (e) {
-    e.preventDefault();
-    var html = $tbody2.find('tr').last().clone();
-    html.find('span.select2').remove();
-    // 删除插件初始化增加的html
-    $tbody2.append(html);
-    // select2 init
-    $('select').select2();
-    // 加减切换
-    $tbody2.find('tr:not(:last) .btn-class-add')
-        .removeClass('btn-class-add').addClass('btn-class-remove')
-        .html('<i class="fa fa-minus text-blue"></i>');
-}).on('click', '.btn-class-remove', function (e) {
-    // 删除元素
-    $(this).parents('tr:first').remove();
-    e.preventDefault();
-    return false;
-});
-
-
-//部门
-dept.init('custodians/create');
+// $(document).on('change', '#gradeId', function () {
+//     var gradeId = $('#gradeId').val();
+//
+//     var $classId = $('#classId');
+//     var $next = $classId.next();
+//     var $prev = $classId.prev();
+//
+//     var $studentId = $('#studentId');
+//     var $studentNext = $studentId.next();
+//     var $studentPrev = $studentId.prev();
+//
+//     var token = $('#csrf_token').attr('content');
+//     $.ajax({
+//         type: 'POST',
+//         dataType: 'json',
+//         url: page.siteRoot() + 'custodians/create?field=grade' + '&id=' + gradeId + '&_token=' + token,
+//         success: function (result) {
+//             $next.remove();
+//             $classId.remove();
+//             $prev.after(result['html']['classes']);
+//
+//             $studentNext.remove();
+//             $studentId.remove();
+//             $studentPrev.after(result['html']['students']);
+//             page.initSelect2();
+//         }
+//     });
+// });
+// $(document).on('change', '#classId', function () {
+//     var classId = $('#classId').val();
+//     var $studentId = $('#studentId');
+//     var $next = $studentId.next();
+//     var $prev = $studentId.prev();
+//     var token = $('#csrf_token').attr('content');
+//     $.ajax({
+//         type: 'POST',
+//         dataType: 'json',
+//         url: page.siteRoot() + 'custodians/create?field=class' + '&id=' + classId + '&_token=' + token,
+//         success: function (result) {
+//             $next.remove();
+//             $studentId.remove();
+//             $prev.after(result['html']['students']);
+//             page.initSelect2();
+//         }
+//     });
+// });
+// //删除监护人
+// $(document).on('click', '.delete', function () {
+//     $(this).parents('tr').remove();
+// });

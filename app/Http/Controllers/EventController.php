@@ -16,7 +16,10 @@ class EventController extends Controller {
     protected $event;
     
     function __construct(Event $event) {
+    
+        $this->middleware(['auth']);
         $this->event = $event;
+        
     }
     
     /**
@@ -45,7 +48,7 @@ class EventController extends Controller {
      * 显示日历事件
      *
      * @param $userId
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function calendarEvents($userId) {
         

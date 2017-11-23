@@ -17,7 +17,8 @@ class MajorController extends Controller {
     protected $major, $subject;
     
     function __construct(Major $major, Subject $subject) {
-        
+    
+        $this->middleware(['auth']);
         $this->major = $major;
         $this->subject = $subject;
         

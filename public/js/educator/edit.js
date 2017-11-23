@@ -1,13 +1,11 @@
 // 初始化编辑相关事件
-$(crud.edit('formEducator', 'educators'));
+page.edit('formEducator', 'educators');
+
 var size = $('#mobile-size').val();
 var id = $('#id').val();
 
 $(crud.mobile('formEducator',size, 'PUT', 'educators/update/'+id));
 var $tbody2 = $("#classTable").find("tbody");
-var $formEducator = $('#formEducator');
-
-
 // 手机号
 // $(crud.mobileMgmt('formEducator'));
 // 班级、科目

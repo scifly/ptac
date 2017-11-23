@@ -1,1 +1,1 @@
-$(crud.create('formMajor', 'majors'));
+page.create('formMajor', 'majors'c);

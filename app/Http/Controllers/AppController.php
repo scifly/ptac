@@ -3,10 +3,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\AppRequest;
 use App\Models\App;
-use App\Models\Corp;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
-use App\Facades\Wechat;
+
 /**
  * 微信企业应用
  *
@@ -18,8 +16,10 @@ class AppController extends Controller {
     protected $app;
     
     function __construct(App $app) {
+    
+        $this->middleware(['auth']);
         $this->app = $app;
-        // $this->middleware('auth');
+
     }
     
     /**
@@ -70,9 +70,9 @@ class AppController extends Controller {
     public function show($id) {
         
         $app = $this->app->find($id);
-        if (!$app) { return $this->notFound(); }
-        
-        return $this->output(__METHOD__, ['app' => $app]);
+        return $app
+            ? $this->output(__METHOD__, ['app' => $app])
+            : $this->notFound();
         
     }
     
@@ -85,9 +85,9 @@ class AppController extends Controller {
     public function edit($id) {
         
         $app = $this->app->find($id);
-        if (!$app) { return $this->notFound(); }
-        
-        return $this->output(__METHOD__, ['app' => $app]);
+        return $app
+            ? $this->output(__METHOD__, ['app' => $app])
+            : $this->notFound();
         
     }
     
@@ -115,29 +115,72 @@ class AppController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function menu($id) {
-        $app = $this->app->find($id);
-        if (!$app) { return $this->notFound(); }
-        $accessToken = Wechat::getAccessToken($app->corp_id, $app->secret, $app->agentid);
-    
-        $menu = json_decode(Wechat::getMenu($accessToken, $app->agentid));
-        $a = $app->update(['menu' => json_encode($menu->button)]);
-        
-        return $this->output(__METHOD__, ['menu' => $menu]);
-    }
-    /**
-     * 删除微信应用
-     *
-     * @param $id
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function destroy($id) {
         
         $app = $this->app->find($id);
         if (!$app) { return $this->notFound(); }
+        // $accessToken = Wechat::getAccessToken($app->corp_id, $app->secret, $app->agentid);
+        //
+        // $menu = json_decode(Wechat::getMenu($accessToken, $app->agentid));
+        //
+        // $a = $app->update(['menu' => json_encode($menu->button)]);
+        //
         
-        return $app->delete()
-            ? $this->succeed() : $this->fail();
-        
+        $menu = "[
+            {
+                \"name\": \"\u6d4b\u8bd5\",
+                \"sub_button\": [
+                    {
+                        \"type\": \"view\",
+                        \"name\": \"\u968f\u4fbf\",
+                        \"key\": \"https:\/\/www.baidu.com\",
+                        \"sub_button\": [
+                        
+                        ],
+                        \"url\": \"https:\/\/www.baidu.com\"
+                    },
+                    {
+                        \"type\": \"view\",
+                        \"name\": \"\u6d4b\u8bd5\",
+                        \"key\": \"https:\/\/www.baidu.com\",
+                        \"sub_button\": [
+                        
+                        ],
+                        \"url\": \"https:\/\/www.baidu.com\"
+                    }
+                ]
+            },
+            {
+                \"name\": \"\u6d4b\u8bd5\",
+                \"sub_button\": [
+                    {
+                        \"type\": \"view\",
+                        \"name\": \"\u767e\u5ea6\",
+                        \"key\": \"http:\/\/www.baidu.com\",
+                        \"sub_button\": [
+                        
+                        ],
+                        \"url\": \"http:\/\/www.baidu.com\"
+                    }
+                ]
+            },
+            {
+                \"name\": \"\u6d4b\u8bd5\",
+                \"sub_button\": [
+                    {
+                        \"type\": \"view\",
+                        \"name\": \"\u767e\u5ea6\",
+                        \"key\": \"http:\/\/www.baidu.com\",
+                        \"sub_button\": [
+                        
+                        ],
+                        \"url\": \"http:\/\/www.baidu.com\"
+                    }
+                ]
+            }
+        ]";
+        // $menus = $this->app->object_to_array($menu->button);
+        return $this->output(__METHOD__, ['menu' => json_decode($menu)]);
+
     }
-    
+
 }

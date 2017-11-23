@@ -4,6 +4,7 @@ namespace App\Models;
 use App\Facades\DatatableFacade as Datatable;
 use App\Http\Requests\WapSiteRequest;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -28,10 +29,10 @@ use Mockery\Exception;
  * @method static Builder|WapSite whereUpdatedAt($value)
  * @mixin \Eloquent
  * 网站
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\WapSiteModule[] $hasManyWsm
- * @property-read \App\Models\School $school
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\WapSiteModule[] $wapsiteModules
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\WapSiteModule[] $wapSiteModules
+ * @property-read Collection|WapSiteModule[] $hasManyWsm
+ * @property-read School $school
+ * @property-read Collection|WapSiteModule[] $wapsiteModules
+ * @property-read Collection|WapSiteModule[] $wapSiteModules
  */
 class WapSite extends Model {
     

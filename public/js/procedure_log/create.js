@@ -1,4 +1,4 @@
-$(crud.create('formProcedureLogCreate'));
+page.create('formProcedureLogCreate');
 $(function () {
     var $pre = $('.preview');
     var $uploadFile = $('#uploadFile');

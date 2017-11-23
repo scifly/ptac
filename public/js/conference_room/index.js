@@ -1,1 +1,1 @@
-$(crud.index('conference_rooms'));
+page.index('conference_rooms');

@@ -229,19 +229,24 @@ class User extends Authenticatable {
         
         $user = $this->find($id);
         $mobile = Mobile::whereUserId($id)->where('isdefault', 1)->first()->mobile;
-        $data = [
-            'userid'       => $user->userid,
-            'name'         => $user->realname,
-            'english_name' => $user->english_name,
-            'mobile'       => $mobile,
-            'department'   => $user->departments->pluck('id')->toArray(),
-            'gender'       => $user->gender,
-            'enable'       => $user->enabled,
-        ];
-        event(new UserCreated($data));
-        
-    }
+        // if ($user && $mobile) {
+            $data = [
+                'userid'       => $user->userid,
+                'name'         => $user->realname,
+                'english_name' => $user->english_name,
+                'mobile'       => $mobile,
+                'department'   => $user->departments->pluck('id')->toArray(),
+                'gender'       => $user->gender,
+                'enable'       => $user->enabled,
+            ];
+            event(new UserCreated($data));
+        // }
     
+    }
+    public function importData(&$data) {
+        $u = $this->create($data);
+        $data['id'] = $u->id;
+    }
     /**
      * 更新企业号会员
      *

@@ -21,7 +21,8 @@ class GroupController extends Controller {
     protected $group, $menu, $tab, $action, $corp, $school;
     
     function __construct(Group $group, Menu $menu, Tab $tab, Action $action, Corp $corp, School $school) {
-        
+    
+        $this->middleware(['auth']);
         $this->group = $group;
         $this->menu = $menu;
         $this->tab = $tab;
@@ -56,7 +57,7 @@ class GroupController extends Controller {
         if (Request::method() === 'POST') {
             $schoolId = Request::query('schoolId');
             $menuId = School::whereId($schoolId)->first()->menu_id;
-            return $this->menu->getTreeByMenuId($menuId);
+            return $this->menu->getTree($menuId);
         }
 
         return $this->output(__METHOD__);
@@ -103,7 +104,7 @@ class GroupController extends Controller {
         if (Request::method() === 'POST') {
             $schoolId = Request::query('schoolId');
             $menuId = School::whereId($schoolId)->first()->menu_id;
-            return $this->menu->getTreeByMenuId($menuId);
+            return $this->menu->getTree($menuId);
         }
         
         return $this->output(__METHOD__, ['group' => $group]);

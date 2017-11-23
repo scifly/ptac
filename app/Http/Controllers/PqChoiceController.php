@@ -21,7 +21,9 @@ class PqChoiceController extends Controller {
      */
     function __construct(PollQuestionnaireChoice $pqChoice) {
         
+        $this->middleware(['auth']);
         $this->pqChoice = $pqChoice;
+        
     }
     
     /**
@@ -84,7 +86,7 @@ class PqChoiceController extends Controller {
     /**
      * 编辑选项
      * @param $id
-     * @return \Illuminate\Http\Response
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function edit($id) {
         

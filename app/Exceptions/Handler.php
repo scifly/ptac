@@ -7,6 +7,7 @@ use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Session\TokenMismatchException;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
@@ -36,6 +37,13 @@ class Handler extends ExceptionHandler {
      */
     public function report(Exception $exception) {
         parent::report($exception);
+        // Log::error(
+        //     get_class($exception) .
+        //     '(code: ' . $exception->getCode() . '): ' .
+        //     $exception->getMessage() . ' at ' .
+        //     $exception->getFile() . ' on line ' .
+        //     $exception->getLine()
+        // );
     }
     
     /**
@@ -47,21 +55,24 @@ class Handler extends ExceptionHandler {
      */
     public function render($request, Exception $exception) {
 
-       // if ($request->ajax() || $request->wantsJson()) {
-       //     $response = [
-       //         'errors' => '对不起，好像出了点儿问题'
-       //     ];
-       //     if (env('APP_DEBUG')) {
-       //         $response['exception'] = get_class($exception);
-       //         $response['message'] = $exception->getMessage();
-       //         $response['trace'] = $exception->getTrace();
-       //     }
-       //     $status = 400;
-       //     if ($this->isHttpException($exception)) {
-       //         $status = $exception->getCode();
-       //     }
-       //     return response()->json($response, $status);
-       // }
+        if ($request->ajax() || $request->wantsJson()) {
+            $response = ['message' => $exception->getMessage()];
+            if (env('APP_DEBUG')) {
+               $response['exception'] = get_class($exception);
+               $response['file'] = $exception->getFile();
+               $response['line'] = $exception->getLine();
+               if (stripos($response['exception'], 'ValidationException')) {
+                   /** @var ValidationException $ve */
+                   $ve = $exception;
+                   $response['errors'] = $ve->errors();
+               }
+            }
+            $status = 400;
+            if ($this->isHttpException($exception)) {
+               $status = $exception->getCode();
+            }
+            return response()->json($response, $status);
+        }
         return parent::render($request, $exception);
         
     }
@@ -74,9 +85,13 @@ class Handler extends ExceptionHandler {
      * @return \Illuminate\Http\Response
      */
     protected function unauthenticated($request, AuthenticationException $exception) {
+        
         if ($request->expectsJson()) {
             return response()->json(['error' => 'Unauthenticated.'], 401);
         }
+        
         return redirect()->guest(route('login'));
+        
     }
+    
 }

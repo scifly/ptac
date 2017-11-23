@@ -22,9 +22,9 @@
                             <dd>Zachariah Kozey</dd>
                             <dt>所属企业：</dt>
                             <dd>成都凌凯通信技术</dd>
-                            <dt>创建时间：</dt>
+                            <dt>创建于：</dt>
                             <dd>2 days ago</dd>
-                            <dt>更新时间：</dt>
+                            <dt>更新于：</dt>
                             <dd>2 days ago</dd>
                             <dt>状态：</dt>
                             <dd><span class="badge bg-green">已启用</span></dd>
@@ -78,9 +78,9 @@
 {{--<dd>成都外国语学校</dd>--}}
 {{--<dt>可用短信条数</dt>--}}
 {{--<dd>20</dd>--}}
-{{--<dt>创建时间：</dt>--}}
+{{--<dt>创建于：</dt>--}}
 {{--<dd>2 days ago</dd>--}}
-{{--<dt>更新时间：</dt>--}}
+{{--<dt>更新于：</dt>--}}
 {{--<dd>2 days ago</dd>--}}
 {{--<dt>状态：</dt>--}}
 {{--<dd><span class="badge bg-green">已启用</span></dd>--}}

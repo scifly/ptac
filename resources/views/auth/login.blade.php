@@ -36,7 +36,7 @@
             {!! csrf_field() !!}
             <div class="form-group has-feedback">
                 <input  class="form-control" placeholder="(用户名/邮箱/手机号码)" name="input" id="input">
-                <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+                <span class="glyphicon glyphicon-user form-control-feedback"></span>
             </div>
             <div class="form-group has-feedback">
                 <input type="password" class="form-control" placeholder="密码" name="password" id="password">
@@ -45,9 +45,8 @@
             <div class="row">
                 <div class="col-xs-8">
                     <div class="checkbox icheck">
-                        <label>
-                            <input type="checkbox" id="remember"> 记住我
-                        </label>
+                        <input type="checkbox" id="remember">
+                        <label for="remember" style="vertical-align: middle; margin-left: 5px;">记住我</label>
                     </div>
                 </div>
                 <!-- /.col -->

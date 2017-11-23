@@ -16,8 +16,8 @@ class SchoolTypeController extends Controller {
     protected $schoolType;
     
     function __construct(SchoolType $schoolType) {
-        
-        // $this->middleware(['auth', 'checkRole']);
+    
+        $this->middleware(['auth']);
         $this->schoolType = $schoolType;
         
     }

@@ -1,1 +1,5 @@
-$(crud.edit('formTab', 'tabs'));
+var options = {
+    templateResult: page.formatState,
+    templateSelection: page.formatState
+};
+page.edit('formTab', 'tabs', options);

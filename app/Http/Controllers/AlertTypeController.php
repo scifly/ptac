@@ -16,7 +16,8 @@ class AlertTypeController extends Controller {
     protected $alertType;
     
     function __construct(AlertType $alertType) {
-        
+    
+        $this->middleware(['auth']);
         $this->alertType = $alertType;
         
     }
@@ -57,21 +58,6 @@ class AlertTypeController extends Controller {
         
         return $this->alertType->create($request->all())
             ? $this->succeed() : $this->fail();
-        
-    }
-    
-    /**
-     * 警告类型详情
-     *
-     * @param $id
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function show($id) {
-        
-        $alertType = $this->alertType->find($id);
-        if (!$alertType) { return $this->notFound();}
-        
-        return $this->output(__METHOD__, ['alertType' => $alertType]);
         
     }
     

@@ -8,6 +8,7 @@ use App\Models\EducatorClass;
 use App\Models\Mobile;
 use App\Models\Team;
 use Illuminate\Support\Facades\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 /**
  * 教职员工
@@ -30,7 +31,8 @@ class EducatorController extends Controller {
         Team $team,
         Department $department
     ) {
-        
+    
+        $this->middleware(['auth']);
         $this->educator = $educator;
         $this->mobile = $mobile;
         $this->educatorClass = $educatorClass;
@@ -198,5 +200,49 @@ class EducatorController extends Controller {
             ? parent::succeed() : parent::fail();
         
     }
+    /**
+     * 导入数据
+     */
+    public function import() {
+        
+        if (Request::isMethod('post')) {
+            $file = Request::file('file');
+            if (empty($file)) {
+                $result = [
+                    'statusCode' => 500,
+                    'message' => '您还没选择文件！',
+                ];
+                return response()->json($result);
+            }
+            // 文件是否上传成功
+            if ($file->isValid()) {
+                $this->educator->upload($file);
+            }
+        }
+    }
     
+    /**
+     * 导出数据
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function export() {
+        $id = Request::query('id');
+        if ($id) {
+            $data = $this->educator->export($id);
+            Excel::create(iconv('UTF-8', 'GBK', '教职员工列表'), function ($excel) use ($data) {
+                $excel->sheet('score', function($sheet) use ($data) {
+                    $sheet->rows($data);
+                    $sheet->setWidth(array(
+                        'A'     =>  30,
+                        'B'     =>  30,
+                        'C'     =>  30,
+                        'D'     =>  30,
+                        'E'     =>  30,
+                        'F'     =>  30,
+                    ));
+                });
+                
+            },'UTF-8')->export('xls');
+        }
+    }
 }

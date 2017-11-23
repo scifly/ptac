@@ -1,1 +1,4 @@
-$(crud.index('message_types'));
+var options = [
+    { className: 'text-center', targets: [0, 1, 3, 4]}
+];
+page.index('message_types', options);

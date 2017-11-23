@@ -144,7 +144,7 @@ class ProcedureLog extends Model {
             [
                 'db'        => 'ProcedureLog.initiator_user_id', 'dt' => 1,
                 'formatter' => function ($d) {
-                    return $this->get_user($d)->realname;
+                    return User::find($d)->realname;
                 },
             ],
             ['db' => 'Procedures.name as procedure_name', 'dt' => 2],
@@ -158,16 +158,16 @@ class ProcedureLog extends Model {
                     switch ($d) {
                         
                         case 0:
-                            $status = sprintf(Datatable::DT_ON, '通过');
+                            $status = Datatable::DT_ON;
                             break;
                         case 1:
-                            $status = sprintf(Datatable::DT_OFF, '拒绝');
+                            $status = Datatable::DT_OFF;
                             break;
                         case 2:
                             $status = sprintf(self::DT_PEND, '待定');
                             break;
                         default:
-                            $status = sprintf(Datatable::DT_OFF, '错误');
+                            $status = Datatable::DT_OFF;
                             break;
                     }
                     $id = $row['first_log_id'];

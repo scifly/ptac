@@ -15,7 +15,12 @@ class MessageTypeController extends Controller {
     
     protected $messageType;
     
-    function __construct(MessageType $messageType) { $this->messageType = $messageType; }
+    function __construct(MessageType $messageType) {
+    
+        $this->middleware(['auth']);
+        $this->messageType = $messageType;
+    
+    }
     
     /**
      * 消息类型
@@ -52,23 +57,6 @@ class MessageTypeController extends Controller {
     public function store(MessageTypeRequest $request) {
         
         return $this->messageType->create($request->all()) ? $this->succeed() : $this->fail();
-        
-    }
-    
-    /**
-     * 消息类型详情
-     *
-     * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
-     */
-    public function show($id) {
-        
-        $messageType = $this->messageType->find($id);
-        if (!$messageType) {
-            return $this->notFound();
-        }
-        
-        return $this->output(__METHOD__, ['messageType' => $messageType]);
         
     }
     

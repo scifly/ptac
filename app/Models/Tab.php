@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Mockery\Exception;
 use ReflectionClass;
+use Symfony\Component\VarDumper\Cloner\Data;
 
 /**
  * App\Models\Tab
@@ -38,18 +39,6 @@ use ReflectionClass;
  */
 class Tab extends Model {
     
-    const DT_ON = '<span class="badge bg-green">%s</span>';
-    const DT_OFF = '<span class="badge bg-gray">%s</span>';
-    const DT_LINK_EDIT = <<<HTML
-        <a id="%s" href="javascript:void(0)" class="btn btn-success btn-icon btn-circle btn-xs">
-            <i class="fa fa-edit"></i>
-        </a>
-HTML;
-    const DT_LINK_SHOW = <<<HTML
-        <a id="%s" href="javascript:void(0)" class="btn btn-primary btn-icon btn-circle btn-xs"  data-toggle="modal">
-            <i class="fa fa-eye"></i>
-        </a>
-HTML;
     protected $fillable = [
         'name', 'remark', 'icon_id',
         'action_id', 'enabled', 'controller',
@@ -191,12 +180,11 @@ HTML;
     private function getIndexActionId($ctlrName) {
         
         $action = new Action();
-        $a = $actionId = $action::whereEnabled(1)->
-        where('controller', $ctlrName)->
-        where('method', 'index')->first();
-        if (!$a) {
-            return 0;
-        }
+        $a = $actionId = $action::whereEnabled(1)
+            ->where('controller', $ctlrName)
+            ->where('method', 'index')
+            ->first();
+        if (!$a) { return 0; }
         
         return $a->id;
         
@@ -206,36 +194,38 @@ HTML;
         
         $columns = [
             ['db' => 'Tab.id', 'dt' => 0],
-            ['db' => 'Tab.name', 'dt' => 1],
             [
-                'db'        => 'Icon.name as iconname', 'dt' => 2,
-                'formatter' => function ($d) {
-                    return isset($d) ? '<i class="' . $d . '"></i>&nbsp;' . $d : '[n/a]';
-                },
+                'db' => 'Tab.name', 'dt' => 1,
+                'formatter' => function($d, $row) {
+                    $iconId = $this->find($row['id'])->icon_id;
+                    if ($iconId) {
+                        return '<i class="fa ' . Icon::find($iconId)->name .  '">&nbsp;' . $d;
+                    }
+                    return $d;
+                }
             ],
-            ['db' => 'Action.name as actionname', 'dt' => 3],
-            ['db' => 'Tab.created_at', 'dt' => 4],
-            ['db' => 'Tab.updated_at', 'dt' => 5],
             [
-                'db'        => 'Tab.enabled', 'dt' => 6,
+                'db' => 'Action.name as actionname', 'dt' => 2,
+                'formatter' => function($d) {
+                    return '<i class="fa fa-gears"></i>&nbsp;' . $d;
+                }
+            ],
+            ['db' => 'Tab.created_at', 'dt' => 3],
+            ['db' => 'Tab.updated_at', 'dt' => 4],
+            [
+                'db'        => 'Tab.enabled', 'dt' => 5,
                 'formatter' => function ($d, $row) {
                     $id = $row['id'];
-                    $status = $d ? sprintf(self::DT_ON, '已启用') : sprintf(self::DT_OFF, '已禁用');
-                    $showLink = sprintf(self::DT_LINK_SHOW, 'show_' . $id);
-                    $editLink = sprintf(self::DT_LINK_EDIT, 'edit_' . $id);
-                    return $status . '&nbsp;' . $showLink . '&nbsp;' . $editLink;
+                    $status = $d ? Datatable::DT_ON : Datatable::DT_OFF;
+                    $showLink = sprintf(Datatable::DT_LINK_SHOW, 'show_' . $id);
+                    $editLink = sprintf(Datatable::DT_LINK_EDIT, 'edit_' . $id);
+                    return $status . str_repeat('&nbsp;', 3) .
+                        $showLink . str_repeat('&nbsp;', 3) .
+                        $editLink;
                 },
             ],
         ];
         $joins = [
-            [
-                'table'      => 'icons',
-                'alias'      => 'Icon',
-                'type'       => 'LEFT',
-                'conditions' => [
-                    'Icon.id = Tab.icon_id',
-                ],
-            ],
             [
                 'table'      => 'actions',
                 'alias'      => 'Action',
@@ -282,9 +272,7 @@ HTML;
     public function modify(array $data, $id) {
         
         $tab = $this->find($id);
-        if (!isset($tab)) {
-            return false;
-        }
+        if (!isset($tab)) { return false; }
         try {
             $exception = DB::transaction(function () use ($data, $id, $tab) {
                 $tab->update($data);

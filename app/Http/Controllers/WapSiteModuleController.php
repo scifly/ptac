@@ -20,6 +20,7 @@ class WapSiteModuleController extends Controller {
     
     public function __construct(WapSiteModule $wapSiteModule, Media $media) {
         
+        $this->middleware(['auth']);
         $this->wapSiteModule = $wapSiteModule;
         $this->media = $media;
         
@@ -69,9 +70,7 @@ class WapSiteModuleController extends Controller {
     public function show($id) {
         
         $module = $this->wapSiteModule->find($id);
-        if (!$module) {
-            return parent::notFound();
-        }
+        if (!$module) { return parent::notFound(); }
         
         return parent::output(__METHOD__, [
             '$module' => $module,
@@ -87,10 +86,9 @@ class WapSiteModuleController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function edit($id) {
+        
         $wapSiteModule = $this->wapSiteModule->find($id);
-        if (!$wapSiteModule) {
-            return parent::notFound();
-        }
+        if (!$wapSiteModule) { return parent::notFound(); }
         return parent::output(__METHOD__, [
             'wapSiteModule' => $wapSiteModule,
             'media'         => $this->media->find($wapSiteModule->media_id),
@@ -107,7 +105,8 @@ class WapSiteModuleController extends Controller {
      */
     public function update(WapSiteModuleRequest $request, $id) {
         
-        return $this->wapSiteModule->modify($request, $id) ? $this->succeed() : $this->fail();
+        return $this->wapSiteModule->modify($request, $id)
+            ? $this->succeed() : $this->fail();
         
     }
     
@@ -120,9 +119,7 @@ class WapSiteModuleController extends Controller {
     public function destroy($id) {
         
         $wapSiteModule = $this->wapSiteModule->find($id);
-        if (!$wapSiteModule) {
-            return parent::notFound();
-        }
+        if (!$wapSiteModule) { return parent::notFound(); }
         
         return $wapSiteModule->delete() ? parent::succeed() : parent::fail();
         
@@ -137,14 +134,12 @@ class WapSiteModuleController extends Controller {
     public function wapSiteModuleHome($id) {
         
         $articles = WsmArticle::whereWsmId($id)->get();
-        // foreach ($articles as $v) {
-        //     dd($v->thumbnailmedia);
-        //
-        // }
+
         return view('frontend.wap_site.module', [
             'articles' => $articles,
             'ws'       => true,
         ]);
         
     }
+    
 }

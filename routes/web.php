@@ -1,5 +1,6 @@
 <?php
 
+use App\Events\eventTrigger;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -12,7 +13,13 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
+Route::get('/fireEvent', function() {
+    event(new eventTrigger());
+});
+
 Route::auth();
+# 关闭注册功能
+Route::any('register', function() { return redirect('login'); });
 Route::get('logout', 'Auth\LoginController@logout');
 // Route::get('/', function() { return 'Dashboard'; });
 Route::get('/', 'HomeController@index');
@@ -32,6 +39,9 @@ Route::group(['prefix' => 'educators'], function () {
     Route::put('rechargeStore/{id}', $ctlr . '@rechargeStore');
     Route::post('edit/{id}', $ctlr . '@edit');
     Route::post('create', $ctlr . '@create');
+    Route::get('export', $ctlr . '@export');
+    Route::post('import', $ctlr . '@import');
+    
 });
 // 监护人
 Route::group(['prefix' => 'custodians'], routes('CustodianController'));
@@ -39,6 +49,9 @@ Route::group(['prefix' => 'custodians'], function () {
     $ctlr = 'CustodianController';
     Route::post('edit/{id}', $ctlr . '@edit');
     Route::post('create', $ctlr . '@create');
+    Route::get('export', $ctlr . '@export');
+    
+    // Route::any('relationship', $ctlr . '@relationship');
 });
 // 学生
 Route::group(['prefix' => 'students'], routes('StudentController'));
@@ -46,6 +59,8 @@ Route::group(['prefix' => 'students'], function () {
     $ctlr = 'StudentController';
     Route::post('edit/{id}', $ctlr . '@edit');
     Route::post('create', $ctlr . '@create');
+    Route::post('import', $ctlr . '@import');
+    Route::get('export', $ctlr . '@export');
 });
 // 用户
 Route::group(['prefix' => 'users'], routes('UserController'));

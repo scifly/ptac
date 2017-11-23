@@ -10,28 +10,10 @@
     <link rel="stylesheet" href="{{ URL::asset('css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ URL::asset('css/font-awesome.min.css') }}">
     <link rel="stylesheet" href="{{ URL::asset('css/ionicons.min.css') }}">
-    <link rel="stylesheet" href="{{ URL::asset('js/plugins/gritter/css/jquery.gritter.css') }}">
+    <link rel="stylesheet" href="{{ URL::asset('js/plugins/gritter/css/jquery.gritter.css') }}" id="cip">
+    <link rel="stylesheet" href="{{ URL::asset('js/plugins/parsley/parsley.css') }}">
     <link rel="stylesheet" href="{{ URL::asset('css/AdminLTE.min.css') }}">
     <link rel="stylesheet" href="{{ URL::asset('css/skins/_all-skins.min.css') }}">
-    <link rel="stylesheet" href="{{ URL::asset('js/plugins/icheck/all.css') }}">
-    <link rel="stylesheet" href="{{ URL::asset('js/plugins/jstree/dist/themes/default/style.min.css') }}">
-    <link rel="stylesheet" href="{{ URL::asset('js/plugins/select2/css/select2.min.css') }}">
-    <link rel="stylesheet" href="{{ URL::asset('js/plugins/parsley/parsley.css') }}">
-    <link rel="stylesheet" href="{{ URL::asset('js/plugins/switchery/switchery.min.css') }}">
-    <link rel="stylesheet" href="{{ URL::asset('js/plugins/datatables/datatables.min.css') }}">
-    <link rel="stylesheet" href="{{ URL::asset('css/wapSite.css') }}">
-    {{--日历--}}
-    <link rel="stylesheet" href="{{ URL::asset('js/plugins/fullcalendar/css/fullcalendar.min.css') }}">
-    <link rel="stylesheet" href="{{ URL::asset('js/plugins/fullcalendar/css/jquery-ui.min.css') }}">
-    {{--审核详情--}}
-    <link rel="stylesheet" href="{{ URL::asset('css/procedure_info.css') }}">
-    {{--上传--}}
-    <link rel="stylesheet" href="{{ URL::asset('css/imgInput.css') }}">
-    <!-- fileinput-->   
-    <link rel="stylesheet" href="{{ URL::asset('js/plugins/fileinput/css/fileinput.min.css') }}">
-    <link rel="stylesheet" href="{{ URL::asset('js/plugins/fileinput/themes/explorer/theme.css') }}">
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
     <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
     <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -39,14 +21,18 @@
     <!-- Google Font -->
     <link rel="stylesheet"
           href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
+    <style>
+        .box.box-solid.box-default>.box-header { background-color: #f4f4f4; }
+        .box.box-solid.box-default { border: 1px solid #f4f4f4; }
+    </style>
 </head>
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
     <header class="main-header">
         <!-- Logo -->
         <a href="#" class="logo">
-            <span class="logo-mini"><b>A</b>LT</span>
-            <span class="logo-lg"><b>Admin</b>LTE</span>
+            <span class="logo-mini"><b>PTAC</b></span>
+            <span class="logo-lg"><b>家校通 - PTAC</b></span>
         </a>
         <nav class="navbar navbar-static-top">
             <a href="#" class="sidebar-toggle" data-toggle="push-menu">
@@ -184,11 +170,9 @@
                     <img src="{{ URL::asset('img/user2-160x160.jpg') }}" class="img-circle" alt="User Image">
                 </div>
                 <div class="pull-left info">
-                    <p>
-                        {{$user->realname}}
-                    </p>
+                    <p>{{ $user->realname }}</p>
                     <a href="#"><i class="fa fa-circle text-success"></i>
-                        {{isset($user->group->name)?$user->group->name:null}}
+                        {{isset($user->group->name) ? $user->group->name : null}}
                     </a>
                 </div>
             </div>
@@ -231,8 +215,13 @@
                         <ul class="nav nav-tabs">
                             @foreach ($tabs as $tab)
                                 <li @if($tab['active']) class="active" @endif>
-                                    <a href="#{{ $tab['id'] }}" data-toggle="tab" data-uri="{{ $tab['url'] }}"
-                                       class="tab">
+                                    <a href="#{{ $tab['id'] }}"
+                                       data-toggle="tab"
+                                       data-uri="{{ $tab['url'] }}"
+                                       class="tab @if($tab['active']) text-blue @else text-gray @endif">
+                                        @if(isset($tab['icon']))
+                                            <i class="fa {{ $tab['icon'] }}"></i>
+                                        @endif
                                         {{ $tab['name'] }}
                                     </a>
                                 </li>
@@ -253,10 +242,9 @@
     </div>
     <footer class="main-footer">
         <div class="pull-right hidden-xs">
-            <b>Version</b> 2.4.0
+            <b>Version</b> 1.0.1
         </div>
-        <strong>Copyright &copy; 2014-2016 <a href="#">Almsaeed Studio</a>.</strong> All rights
-        reserved.
+        <strong>Copyright &copy; 2017-2020 <a href="#">LinkSoft</a>.</strong> All rights reserved.
     </footer>
     <!--右侧设置面板-->
     <aside class="control-sidebar control-sidebar-dark">
@@ -426,45 +414,17 @@
     <!-- 添加侧边栏的背景。 这个div必须紧接着侧边栏 -->
     <div class="control-sidebar-bg"></div>
 </div>
-<!-- jQuery 3 / Bootstrap 3.3.7 / AdminLTE App / Gritter / Admin.CRUD / Demo -->
 <script src="{{ URL::asset('js/jquery.min.js') }}"></script>
 <script src="{{ URL::asset('js/jquery-ui.min.js') }}"></script>
 <script src="{{ URL::asset('js/bootstrap.min.js') }}"></script>
 <script src="{{ URL::asset('js/adminlte.min.js') }}"></script>
 <script src="{{ URL::asset('js/plugins/gritter/js/jquery.gritter.min.js') }}"></script>
-<script src="{{ URL::asset('js/plugins/icheck/icheck.min.js') }}"></script>
-<script src="{{ URL::asset('js/plugins/jstree/dist/jstree.min.js') }}"></script>
-<script src="{{ URL::asset('js/plugins/todolist/todolist.js') }}"></script>
-
-<!-- Parsley / Select2 / Switchery -->
 <script src="{{ URL::asset('js/plugins/parsley/parsley.min.js') }}"></script>
 <script src="{{ URL::asset('js/plugins/parsley/i18n/zh_cn.js') }}"></script>
 <script src="{{ URL::asset('js/plugins/parsley/i18n/zh_cn.extra.js') }}"></script>
-<script src="{{ URL::asset('js/plugins/select2/js/select2.min.js') }}"></script>
-<script src="{{ URL::asset('js/plugins/switchery/switchery.min.js') }}"></script>
-<script src="{{ URL::asset('js/switcher.init.js') }}"></script>
-<script src="{{ URL::asset('js/plugins/datatables/datatables.min.js') }}"></script>
-<script src="{{ URL::asset('js/plugins/datatables/dataTables.checkboxes.min.js') }}"></script>
-<script src="{{ URL::asset('js/admin.crud.js') }}"></script>
-<script src="{{ URL::asset('js/tree.crud.js') }}"></script>
-<script src="{{ URL::asset('js/department.tree.js') }}"></script>
-<!-- fileinput-->
-<script src="{{ URL::asset('js/plugins/fileinput/js/fileinput.min.js') }}"></script>
-<script src="{{ URL::asset('js/plugins/fileinput/js/locales/zh.js') }}"></script>
-<script src="{{ URL::asset('js/plugins/fileinput/themes/explorer/theme.js') }}"></script>
-{{--日历--}}
-<script src="{{ URL::asset('js/plugins/fullcalendar/js/jquery-ui.min.js') }}"></script>
-<script src="{{ URL::asset('js/plugins/fullcalendar/js/jquery-ui-timepicker-addon.js') }}"></script>
-<script src="{{ URL::asset('js/plugins/fullcalendar/js/datepicker-zh-CN.js') }}"></script>
-<script src="{{ URL::asset('js/plugins/fullcalendar/js/moment.min.js') }}"></script>
-<script src="{{ URL::asset('js/plugins/fullcalendar/js/fullcalendar.min.js') }}"></script>
-<!-- AdminLTE for demo purposes -->
-<script src="{{ URL::asset('js/demo.js') }}"></script>
-{{--@isset($ued)--}}
-{{--<script type="text/javascript" src="{{ URL::asset('js/plugins/ckeditor/ckeditor.js') }}"></script>--}}
-<script type="text/javascript" src="{{ URL::asset('js/plugins/UEditor/ueditor.config.js') }}"></script>
-<script type="text/javascript" src="{{ URL::asset('js/plugins/UEditor/ueditor.all.js') }}"></script>
-{{--@endisset--}}
+<script src="{{ Request::getHost() }}:6001/socket.io/socket.io.js"></script>
 <script src="{{ URL::asset($js) }}"></script>
+
+
 </body>
 </html>

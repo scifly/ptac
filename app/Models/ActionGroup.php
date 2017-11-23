@@ -1,6 +1,7 @@
 <?php
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Mockery\Exception;
@@ -15,12 +16,12 @@ use Mockery\Exception;
  * @property \Carbon\Carbon|null $created_at
  * @property \Carbon\Carbon|null $updated_at
  * @property int $enabled
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ActionGroup whereActionId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ActionGroup whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ActionGroup whereEnabled($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ActionGroup whereGroupId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ActionGroup whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ActionGroup whereUpdatedAt($value)
+ * @method static Builder|ActionGroup whereActionId($value)
+ * @method static Builder|ActionGroup whereCreatedAt($value)
+ * @method static Builder|ActionGroup whereEnabled($value)
+ * @method static Builder|ActionGroup whereGroupId($value)
+ * @method static Builder|ActionGroup whereId($value)
+ * @method static Builder|ActionGroup whereUpdatedAt($value)
  */
 class ActionGroup extends Model {
 

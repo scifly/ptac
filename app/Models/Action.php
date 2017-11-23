@@ -57,29 +57,7 @@ use ReflectionMethod;
  */
 class Action extends Model {
     
-    const BADGE_GRAY = '<span class="badge bg-black">[n/a]</span>';
-    const BADGE_GREEN = '<span class="badge bg-green">%s</span>';
-    const BADGE_YELLOW = '<span class="badge bg-yellow">%s</span>';
-    const BADGE_RED = '<span class="badge bg-red">%s</span>';
-    const BADGE_LIGHT_BLUE = '<span class="badge bg-light-blue">%s</span>';
-    const BADGE_MAROON = '<span class="badge bg-maroon">%s</span>';
-    const DT_ON = '<span class="badge bg-green">%s</span>';
-    const DT_OFF = '<span class="badge bg-gray">%s</span>';
-    const DT_LINK_EDIT = <<<HTML
-        <a id="%s" href="javascript:void(0)" class="btn btn-success btn-icon btn-circle btn-xs">
-            <i class="fa fa-edit"></i>
-        </a>
-HTML;
-    const DT_LINK_DEL = <<<HTML
-        <a id="%s" href="javascript:void(0)" class="btn btn-danger btn-icon btn-circle btn-xs" data-toggle="modal">
-            <i class="fa fa-trash"></i>
-        </a>
-HTML;
-    const DT_LINK_SHOW = <<<HTML
-        <a id="%s" href="javascript:void(0)" class="btn btn-primary btn-icon btn-circle btn-xs"  data-toggle="modal">
-            <i class="fa fa-eye"></i>
-        </a>
-HTML;
+    
     
     protected $fillable = [
         'name', 'method', 'remark',
@@ -191,53 +169,52 @@ HTML;
             [
                 'db'        => 'Action.name', 'dt' => 1,
                 'formatter' => function ($d) {
-                    return empty($d) ? self::BADGE_GRAY : $d;
+                    return empty($d) ? '-' : $d;
                 },
             ],
             [
                 'db'        => 'Action.method', 'dt' => 2,
                 'formatter' => function ($d) {
-                    return !empty($d) ? sprintf(self::BADGE_GREEN, $d) : self::BADGE_GRAY;
+                    return !empty($d) ? sprintf(Datatable::BADGE_GREEN, $d) : '-';
                 },
             ],
             [
                 'db'        => 'Action.route', 'dt' => 3,
                 'formatter' => function ($d) {
-                    return !empty($d) ? sprintf(self::BADGE_YELLOW, $d) : self::BADGE_GRAY;
+                    return !empty($d) ? sprintf(Datatable::BADGE_YELLOW, $d) : '-';
                 },
             ],
             [
                 'db'        => 'Action.controller', 'dt' => 4,
                 'formatter' => function ($d) {
-                    return !empty($d) ? sprintf(self::BADGE_RED, $d) : self::BADGE_GRAY;
+                    return !empty($d) ? sprintf(Datatable::BADGE_RED, $d) : '-';
                 },
             ],
             [
                 'db'        => 'Action.view', 'dt' => 5,
                 'formatter' => function ($d) {
-                    return !empty($d) ? sprintf(self::BADGE_LIGHT_BLUE, $d) : self::BADGE_GRAY;
+                    return !empty($d) ? sprintf(Datatable::BADGE_LIGHT_BLUE, $d) : '-';
                 },
             ],
             [
                 'db'        => 'Action.js', 'dt' => 6,
                 'formatter' => function ($d) {
-                    return !empty($d) ? sprintf(self::BADGE_MAROON, $d) : self::BADGE_GRAY;
+                    return !empty($d) ? sprintf(Datatable::BADGE_MAROON, $d) : '-';
                 },
             ],
             [
                 'db'        => 'Action.action_type_ids', 'dt' => 7,
                 'formatter' => function ($d) {
-                    return !empty($d) ? $this->actionTypes($d) : self::BADGE_GRAY;
+                    return !empty($d) ? $this->actionTypes($d) : '-';
                 },
             ],
             [
                 'db'        => 'Action.enabled', 'dt' => 8,
                 'formatter' => function ($d, $row) {
                     $id = $row['id'];
-                    $status = $d ? sprintf(self::DT_ON, '已启用') : sprintf(self::DT_OFF, '已禁用');
-                    $showLink = sprintf(self::DT_LINK_SHOW, 'show_' . $id);
-                    $editLink = sprintf(self::DT_LINK_EDIT, 'edit_' . $id);
-                    return $status . '&nbsp;' . $showLink . '&nbsp;' . $editLink;
+                    $status = $d ? Datatable::DT_ON : Datatable::DT_OFF;
+                    $editLink = sprintf(Datatable::DT_LINK_EDIT, 'edit_' . $id);
+                    return $status . str_repeat('&nbsp;', 3) . $editLink;
                 },
             ],
         ];
@@ -276,7 +253,12 @@ HTML;
         $controllers = $this->scanDirectories($this->getSiteRoot() . $this->ctlrDir);
         # 获取控制器的名字空间
         $this->getControllerNamespaces($controllers);
-        $controllerNames = $this->getControllerNames($controllers);
+        
+        # 移除excluded控制器
+        $controllerNames = array_diff(
+            $this->getControllerNames($controllers),
+            $this->excludedControllers
+        );
         $selfDefinedMethods = [];
         // remove actions of non-existing controllers
         $ctlrs = $this->groupBy('controller')->get(['controller'])->toArray();
@@ -284,8 +266,8 @@ HTML;
         foreach ($ctlrs as $ctlr) {
             $existingCtlrs[] = $ctlr['controller'];
         }
-        $ctlrDiff = array_diff($existingCtlrs, $controllerNames);
-        foreach ($ctlrDiff as $ctlr) {
+        $ctlrDiffs = array_diff($existingCtlrs, $controllerNames);
+        foreach ($ctlrDiffs as $ctlr) {
             $actions = $this->where('controller', $ctlr)->get();
             foreach ($actions as $a) {
                 if (!$this->remove($a->id)) { return false; };
@@ -293,34 +275,38 @@ HTML;
             # $this->where('controller', $ctlr)->delete();
         }
         foreach ($controllers as $controller) {
-            $obj = new ReflectionClass(ucfirst($controller));
-            $className = $obj->getName();
-            $methods = $obj->getMethods();
-            // remove non-existing methods of current controller
-            if (!$this->delNonExistingMethods($methods, $className)) {
-                return false;
-            }
-            foreach ($methods as $method) {
-                $action = $method->getName();
-                if (
-                    $method->class === $className &&
-                    !($method->isConstructor()) &&
-                    $method->isUserDefined() &&
-                    $method->isPublic()
-                ) {
-                    $ctlr = $this->getControllerName($className);
-                    $selfDefinedMethods[$className][$action] = [
-                        'name'            => $this->getMethodComment($obj, $method),
-                        'method'          => $action,
-                        'remark'          => '',
-                        'controller'      => $ctlr,
-                        'view'            => $this->getViewPath($ctlr, $action),
-                        'route'           => $this->getRoute($ctlr, $action),
-                        'action_type_ids' => $this->getActionTypeIds($ctlr, $action),
-                        'js'              => $this->getJsPath($ctlr, $action),
-                    ];
+            $paths = explode('\\', $controller);
+            if (!in_array($paths[sizeof($paths) - 1], $this->excludedControllers)) {
+                $obj = new ReflectionClass(ucfirst($controller));
+                $className = $obj->getName();
+                $methods = $obj->getMethods();
+                // remove non-existing methods of current controller
+                if (!$this->delNonExistingMethods($methods, $className)) {
+                    return false;
+                }
+                foreach ($methods as $method) {
+                    $action = $method->getName();
+                    if (
+                        $method->class === $className &&
+                        !($method->isConstructor()) &&
+                        $method->isUserDefined() &&
+                        $method->isPublic()
+                    ) {
+                        $ctlr = $this->getControllerName($className);
+                        $selfDefinedMethods[$className][$action] = [
+                            'name'            => $this->getMethodComment($obj, $method),
+                            'method'          => $action,
+                            'remark'          => '',
+                            'controller'      => $ctlr,
+                            'view'            => $this->getViewPath($ctlr, $action),
+                            'route'           => $this->getRoute($ctlr, $action),
+                            'action_type_ids' => $this->getActionTypeIds($ctlr, $action),
+                            'js'              => $this->getJsPath($ctlr, $action),
+                        ];
+                    }
                 }
             }
+            
         }
         foreach ($selfDefinedMethods as $actions) {
             foreach ($actions as $action) {
@@ -529,11 +515,11 @@ HTML;
         $name = 'n/a';
         preg_match_all("#\/\*\*\n\s{5}\*[^\*]*\*#", $comment, $matches);
         if (isset($matches[0][0])) {
-            $name = str_replace(str_split("\r\n/* "), '', $matches[0][0]);
+            $name = str_replace(str_split("\r\n/*"), '', $matches[0][0]);
         } else {
             preg_match_all("#\/\*\*\r\n\s{5}\*[^\*]*\*#", $comment, $matches);
             if (isset($matches[0][0])) {
-                $name = str_replace(str_split("\r\n/* "), '', $matches[0][0]);
+                $name = str_replace(str_split("\r\n/*"), '', $matches[0][0]);
             }
         }
         
@@ -562,6 +548,9 @@ HTML;
                     break;
                 case 'menuTabs':
                     $viewPath = 'menu.menu_tabs';
+                    break;
+                case 'relationship':
+                    $viewPath = 'custodian.relationship';
                     break;
                 default:
                     $viewPath = '';
@@ -657,7 +646,9 @@ HTML;
         if (!in_array($ctlr, $this->excludedControllers)) {
             $prefix = str_singular($this->getTableName($ctlr));
             $prefix = ($prefix === 'corps') ? 'corp' : $prefix;
-            
+            if (in_array($action, ['destroy', 'store', 'update', 'sort', 'move', 'rankTabs', 'show'])) {
+                return null;
+            }
             return 'js/' . $prefix . '/' . $action . '.js';
         }
         

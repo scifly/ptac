@@ -10,6 +10,7 @@ use App\Models\Group;
 use App\Models\Student;
 use App\Models\User;
 use Illuminate\Support\Facades\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 /**
  * 学生
@@ -29,6 +30,7 @@ class StudentController extends Controller {
         CustodianStudent $custodianStudent
     ) {
         
+        $this->middleware(['auth']);
         $this->custodian = $custodian;
         $this->department = $department;
         $this->group = $group;
@@ -151,6 +153,63 @@ class StudentController extends Controller {
         return $this->custodian->remove($id)
             ? $this->succeed() : $this->fail();
         
+    }
+    
+    /**
+     * 导入数据
+     */
+    public function import() {
+
+        if (Request::isMethod('post')) {
+            $file = Request::file('file');
+            if (empty($file)) {
+                $result = [
+                    'statusCode' => 500,
+                    'message' => '您还没选择文件！',
+                ];
+                return response()->json($result);
+            }
+            // 文件是否上传成功
+            if ($file->isValid()) {
+                $this->student->upload($file);
+            }
+        }
+    }
+    
+    /**
+     * 导出数据
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function export() {
+        $id = Request::query('id');
+        if ($id) {
+            $data = $this->student->export($id);
+            Excel::create(iconv('UTF-8', 'GBK', '学生列表'), function ($excel) use ($data) {
+                $excel->sheet('score', function($sheet) use ($data) {
+                    $sheet->rows($data);
+                    $sheet->setColumnFormat(array(
+                        'E' => '@',//文本
+                        'H' => 'yyyy-mm-dd',
+                    ));
+                    $sheet->setWidth(array(
+                        'A'     =>  20,
+                        'B'     =>  10,
+                        'C'     =>  25,
+                        'D'     =>  30,
+                        'E'     =>  30,
+                        'F'     =>  30,
+                        'G'     =>  20,
+                        'H'     =>  15,
+                        'I'     =>  30,
+                        'J'     =>  30,
+                        'K'     =>  15,
+                        'L'     =>  30,
+                    ));
+                    
+                });
+
+            },'UTF-8')->export('xls');
+        }
     }
     
 }

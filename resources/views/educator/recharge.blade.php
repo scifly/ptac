@@ -1,5 +1,5 @@
 {!! Form::model($educator, ['url' => '/educators/' . $educator->id, 'method' => 'put', 'id' => 'formEducator', 'data-parsley-validate' => 'true']) !!}
-<div class="box box-widget">
+<div class="box box-default box-solid">
     <div class="box-header with-border">
         @include('partials.form_header')
     </div>

@@ -25,7 +25,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read Squad $squad
  * @property-read Subject $subject
  * @method static Builder|EducatorClass whereEnabled($value)
- * @property-read \App\Models\Educator $classes
+ * @property-read Educator $classes
  */
 class EducatorClass extends Model {
 

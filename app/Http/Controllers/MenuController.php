@@ -2,15 +2,10 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\MenuRequest;
-use App\Models\Corp;
-use App\Models\Department;
-use App\Models\Group;
 use App\Models\Menu;
 use App\Models\MenuTab;
 use App\Models\MenuType;
-use App\Models\School;
 use App\Models\Tab;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 
 
@@ -26,7 +21,7 @@ class MenuController extends Controller {
 
     function __construct(Menu $menu, MenuType $menuType, MenuTab $menuTab) {
 
-        $this->middleware('auth');
+        $this->middleware(['auth']);
         $this->menu = $menu;
         $this->menuType = $menuType;
         $this->menuTab = $menuTab;
@@ -44,7 +39,7 @@ class MenuController extends Controller {
             return $this->menu->tree($this->menu->rootMenuId());
         }
 
-        return parent::output(__METHOD__);
+        return $this->output(__METHOD__);
 
     }
 
@@ -56,7 +51,7 @@ class MenuController extends Controller {
      */
     public function create($id) {
 
-        return parent::output(__METHOD__, [
+        return $this->output(__METHOD__, [
             'parentId'   => $id,
             'menuTypeId' => MenuType::whereName('其他')->first()->id,
         ]);
@@ -71,7 +66,8 @@ class MenuController extends Controller {
      */
     public function store(MenuRequest $request) {
 
-        return $this->menu->store($request) ? parent::succeed() : parent::fail();
+        return $this->menu->store($request)
+            ? $this->succeed() : $this->fail();
 
     }
 
@@ -84,11 +80,9 @@ class MenuController extends Controller {
     public function show($id) {
 
         $menu = $this->menu->find($id);
-        if (!$menu) {
-            return parent::notFound();
-        }
+        if (!$menu) { return $this->notFound(); }
 
-        return parent::output(__METHOD__, ['menu' => $menu]);
+        return $this->output(__METHOD__, ['menu' => $menu]);
 
     }
 
@@ -101,9 +95,7 @@ class MenuController extends Controller {
     public function edit($id) {
 
         $menu = $this->menu->find($id);
-        if (!$menu) {
-            return parent::notFound();
-        }
+        if (!$menu) { return $this->notFound(); }
         # 获取已选定的卡片
         $menuTabs = $menu->tabs;
         $selectedTabs = [];
@@ -111,7 +103,7 @@ class MenuController extends Controller {
             $selectedTabs[$tab->id] = $tab->name;
         }
 
-        return parent::output(__METHOD__, [
+        return $this->output(__METHOD__, [
             'menu'         => $menu,
             'selectedTabs' => $selectedTabs,
         ]);
@@ -128,11 +120,10 @@ class MenuController extends Controller {
     public function update(MenuRequest $request, $id) {
 
         $menu = $this->menu->find($id);
-        if (!$menu) {
-            return parent::notFound();
-        }
+        if (!$menu) { return $this->notFound(); }
 
-        return $this->menu->modify($request, $id) ? parent::succeed() : parent::fail();
+        return $this->menu->modify($request, $id)
+            ? $this->succeed() : $this->fail();
 
     }
 
@@ -151,11 +142,11 @@ class MenuController extends Controller {
         $menu = $this->menu->find($id);
         $parentMenu = $this->menu->find($parentId);
         if (!$menu || !$parentMenu) {
-            return parent::notFound();
+            return $this->notFound();
         }
         if ($this->menu->movable($id, $parentId)) {
             return $this->menu->move($id, $parentId, true)
-                ? parent::succeed() : parent::fail();
+                ? $this->succeed() : $this->fail();
         }
 
         return $this->fail('非法操作');
@@ -171,11 +162,9 @@ class MenuController extends Controller {
     public function destroy($id) {
 
         $menu = $this->menu->find($id);
-        if (!$menu) {
-            return parent::notFound();
-        }
+        if (!$menu) { return $this->notFound(); }
 
-        return $this->menu->remove($id) ? parent::succeed() : parent::fail();
+        return $this->menu->remove($id) ? $this->succeed() : $this->fail();
 
     }
 
@@ -233,26 +222,9 @@ class MenuController extends Controller {
         }
         $ranks = Request::get('data');
 
-        return $this->menuTab->storeTabRanks($id, $ranks) ? $this->succeed() : $this->fail();
+        return $this->menuTab->storeTabRanks($id, $ranks)
+            ? $this->succeed() : $this->fail();
 
-    }
-
-    /**
-     * 获取该菜单下所有部门id
-     * @param $id
-     * @return array
-     */
-    private function menuChildIds($id) {
-        static $childIds = [];
-        $firstIds = Department::where('parent_id', $id)->get(['id'])->toArray();
-        if ($firstIds) {
-            foreach ($firstIds as $firstId) {
-                $childIds[] = $firstId['id'];
-                $this->menuChildIds($firstId['id']);
-            }
-        }
-
-        return $childIds;
     }
 
 }

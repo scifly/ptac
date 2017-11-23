@@ -1,1 +1,1 @@
-$(crud.index('operators'));
+page.index('operators');

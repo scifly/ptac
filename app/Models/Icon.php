@@ -27,7 +27,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|Icon whereUpdatedAt($value)
  * @mixin \Eloquent
  * @property-read Collection|Menu[] $menus
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tab[] $tabs
+ * @property-read Collection|Tab[] $tabs
  */
 class Icon extends Model {
     
@@ -129,11 +129,10 @@ class Icon extends Model {
                 },
             ],
             ['db' => 'IconType.name as icontypename', 'dt' => 2],
-            ['db' => 'Icon.remark', 'dt' => 3],
-            ['db' => 'Icon.created_at', 'dt' => 4],
-            ['db' => 'Icon.updated_at', 'dt' => 5],
+            ['db' => 'Icon.created_at', 'dt' => 3],
+            ['db' => 'Icon.updated_at', 'dt' => 4],
             [
-                'db'        => 'Icon.enabled', 'dt' => 6,
+                'db'        => 'Icon.enabled', 'dt' => 5,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
                 },

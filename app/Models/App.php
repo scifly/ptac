@@ -6,6 +6,7 @@ use App\Events\AppMenuUpdated;
 use App\Events\AppUpdated;
 use App\Facades\DatatableFacade as Datatable;
 use App\Facades\Wechat;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Request;
@@ -55,31 +56,24 @@ use Illuminate\Support\Facades\Request;
  * @mixin \Eloquent
  * @property string|null $access_token
  * @property string|null $expire_at
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\App whereAccessToken($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\App whereAllowPartys($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\App whereAllowTags($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\App whereAllowUserinfos($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\App whereExpireAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\App whereSecret($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\App whereSquareLogoUrl($value)
+ * @method static Builder|App whereAccessToken($value)
+ * @method static Builder|App whereAllowPartys($value)
+ * @method static Builder|App whereAllowTags($value)
+ * @method static Builder|App whereAllowUserinfos($value)
+ * @method static Builder|App whereExpireAt($value)
+ * @method static Builder|App whereSecret($value)
+ * @method static Builder|App whereSquareLogoUrl($value)
+ * @property string $square_logo_url 企业应用方形头像
  */
 class App extends Model {
     
     protected $fillable = [
         'corp_id','name', 'description', 'agentid',
-        'token',
-        'secret',
-        'report_location_flag',
-        'square_logo_url',
-        'allow_userinfos',
-        'allow_partys',
-        'allow_tags',
-        'redirect_domain',
-        'isreportenter', 'home_url',
-        'menu',
-        'access_token',
-        'expire_at',
-        'enabled',
+        'token', 'secret', 'report_location_flag',
+        'square_logo_url', 'allow_userinfos',
+        'allow_partys', 'allow_tags', 'redirect_domain',
+        'isreportenter', 'home_url', 'menu',
+        'access_token', 'expire_at', 'enabled',
     ];
     public function store() {
         
@@ -117,7 +111,8 @@ class App extends Model {
                 'enabled' => $corpApp->close,
             ];
             $a = $this->create($data);
-            $response = response()->json(['app' => $a , 'action' => 'create']);
+            
+            $response = response()->json(['app' => $this->formatDateTime($a->toArray()) , 'action' => 'create']);
         } else {
             $app->corp_id = intval($corp_id);
             $app->name = $corpApp->name;
@@ -135,7 +130,7 @@ class App extends Model {
             $app->allow_tags = isset($corpApp->allow_tags) ? json_encode($corpApp->allow_tags) : '';
             $app->enabled = $corpApp->close;
             $app->save();
-            $response = response()->json(['app' => $app , 'action' => 'update']);
+            $response = response()->json(['app' => $this->formatDateTime($app->toArray()) , 'action' => 'update']);
         }
         
         return $response;
@@ -201,6 +196,42 @@ class App extends Model {
         ];
         
         return Datatable::simple($this, $columns);
+        
+    }
+    
+    /**
+     *  将对象转换为数组
+     *
+     * @param $obj
+     * @return array|void
+     */
+    public function object_to_array($obj) {
+        
+        $obj = (array)$obj;
+        foreach ($obj as $k => $v) {
+            if (gettype($v) == 'resource') {
+                return;
+            }
+            if (gettype($v) == 'object' || gettype($v) == 'array') {
+                $obj[$k] = (array)$this->object_to_array($v);
+            }
+        }
+    
+        return $obj;
+        
+    }
+    
+    private function formatDateTime(&$app) {
+        
+        Carbon::setLocale('zh');
+        if ($app['created_at']) {
+            $dt = Carbon::createFromFormat('Y-m-d H:i:s', $app['created_at']);
+            $app['created_at'] = $dt->diffForHumans();
+        }
+        if ($app['updated_at']) {
+            $dt = Carbon::createFromFormat('Y-m-d H:i:s', $app['updated_at']);
+            $app['updated_at'] = $dt->diffForHumans();
+        }
         
     }
     
