@@ -70,8 +70,6 @@ class EducatorAttendanceSetting extends Model {
                 },
             ],
             ['db' => 'EducatorAttendanceSetting.created_at', 'dt' => 6],
-            ['db' => 'EducatorAttendanceSetting.updated_at', 'dt' => 7],
-            ['db' => 'EducatorAttendanceSetting.updated_at', 'dt' => 7],
             [
                 'db'        => 'EducatorAttendanceSetting.enabled', 'dt' => 7,
                 'formatter' => function ($d, $row) {
