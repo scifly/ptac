@@ -231,7 +231,7 @@ var page = {
             page.getTabContent($activeTabPane, table + '/create');
         });
         // 编辑记录
-        $(document).on('click', '.fa-edit', function () {
+        $(document).on('click', '.fa-pencil', function () {
             var url = $(this).parents().eq(0).attr('id');
             url = url.replace('_', '/');
             page.getTabContent($activeTabPane, table + '/' + url);
@@ -243,13 +243,13 @@ var page = {
             page.getTabContent($activeTabPane, table + '/' + url);
         });
         // 查看记录详情
-        $(document).on('click', '.fa-eye', function () {
+        $(document).on('click', '.fa-bars', function () {
             var url = $(this).parents().eq(0).attr('id');
             url = url.replace('_', '/');
         });
         // 删除记录
         var id;
-        $(document).on('click', '.fa-trash', function () {
+        $(document).on('click', '.fa-remove', function () {
             id = $(this).parents().eq(0).attr('id');
             $('#modal-dialog').modal({backdrop: true});
         });
