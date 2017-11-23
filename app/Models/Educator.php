@@ -187,7 +187,7 @@ class Educator extends Model {
                 'db'        => 'Educator.enabled', 'dt' => 6,
                 'formatter' => function ($d, $row) {
                     $id = $row['id'];
-                    $status = $d ? sprintf(Datatable::DT_ON, '已启用') : sprintf(Datatable::DT_OFF, '未启用');
+                    $status = $d ? Datatable::DT_ON : Datatable::DT_OFF;
                     $showLink = sprintf(Datatable::DT_LINK_SHOW, 'show_' . $id);
                     $editLink = sprintf(Datatable::DT_LINK_EDIT, 'edit_' . $id);
                     $delLink = sprintf(Datatable::DT_LINK_DEL, $id);

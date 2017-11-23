@@ -57,29 +57,7 @@ use ReflectionMethod;
  */
 class Action extends Model {
     
-    const BADGE_GRAY = '<span class="badge bg-black">[n/a]</span>';
-    const BADGE_GREEN = '<span class="badge bg-green">%s</span>';
-    const BADGE_YELLOW = '<span class="badge bg-yellow">%s</span>';
-    const BADGE_RED = '<span class="badge bg-red">%s</span>';
-    const BADGE_LIGHT_BLUE = '<span class="badge bg-light-blue">%s</span>';
-    const BADGE_MAROON = '<span class="badge bg-maroon">%s</span>';
-    const DT_ON = '<span class="badge bg-green">%s</span>';
-    const DT_OFF = '<span class="badge bg-gray">%s</span>';
-    const DT_LINK_EDIT = <<<HTML
-        <a id="%s" href="javascript:void(0)" class="btn btn-success btn-icon btn-circle btn-xs">
-            <i class="fa fa-edit"></i>
-        </a>
-HTML;
-    const DT_LINK_DEL = <<<HTML
-        <a id="%s" href="javascript:void(0)" class="btn btn-danger btn-icon btn-circle btn-xs" data-toggle="modal">
-            <i class="fa fa-trash"></i>
-        </a>
-HTML;
-    const DT_LINK_SHOW = <<<HTML
-        <a id="%s" href="javascript:void(0)" class="btn btn-primary btn-icon btn-circle btn-xs"  data-toggle="modal">
-            <i class="fa fa-eye"></i>
-        </a>
-HTML;
+    
     
     protected $fillable = [
         'name', 'method', 'remark',
@@ -97,9 +75,6 @@ HTML;
         'HomeController',
         'TestController',
         'Score_SendController',
-    ];
-    protected $traitMethodComments = [
-    
     ];
     protected $routes;
     # 控制器相对路径
@@ -200,31 +175,31 @@ HTML;
             [
                 'db'        => 'Action.method', 'dt' => 2,
                 'formatter' => function ($d) {
-                    return !empty($d) ? sprintf(self::BADGE_GREEN, $d) : '-';
+                    return !empty($d) ? sprintf(Datatable::BADGE_GREEN, $d) : '-';
                 },
             ],
             [
                 'db'        => 'Action.route', 'dt' => 3,
                 'formatter' => function ($d) {
-                    return !empty($d) ? sprintf(self::BADGE_YELLOW, $d) : '-';
+                    return !empty($d) ? sprintf(Datatable::BADGE_YELLOW, $d) : '-';
                 },
             ],
             [
                 'db'        => 'Action.controller', 'dt' => 4,
                 'formatter' => function ($d) {
-                    return !empty($d) ? sprintf(self::BADGE_RED, $d) : '-';
+                    return !empty($d) ? sprintf(Datatable::BADGE_RED, $d) : '-';
                 },
             ],
             [
                 'db'        => 'Action.view', 'dt' => 5,
                 'formatter' => function ($d) {
-                    return !empty($d) ? sprintf(self::BADGE_LIGHT_BLUE, $d) : '-';
+                    return !empty($d) ? sprintf(Datatable::BADGE_LIGHT_BLUE, $d) : '-';
                 },
             ],
             [
                 'db'        => 'Action.js', 'dt' => 6,
                 'formatter' => function ($d) {
-                    return !empty($d) ? sprintf(self::BADGE_MAROON, $d) : '-';
+                    return !empty($d) ? sprintf(Datatable::BADGE_MAROON, $d) : '-';
                 },
             ],
             [
@@ -237,9 +212,9 @@ HTML;
                 'db'        => 'Action.enabled', 'dt' => 8,
                 'formatter' => function ($d, $row) {
                     $id = $row['id'];
-                    $status = $d ? sprintf(self::DT_ON, '已启用') : sprintf(self::DT_OFF, '未启用');
-                    $editLink = sprintf(self::DT_LINK_EDIT, 'edit_' . $id);
-                    return $status . '&nbsp;' . $editLink;
+                    $status = $d ? Datatable::DT_ON : Datatable::DT_OFF;
+                    $editLink = sprintf(Datatable::DT_LINK_EDIT, 'edit_' . $id);
+                    return $status . str_repeat('&nbsp;', 3) . $editLink;
                 },
             ],
         ];
