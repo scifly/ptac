@@ -43,30 +43,24 @@ var sync = function () {
         error: function() {}
     });
 };
-
 $form.parsley().on('form:validated', function () {
     if($('.parsley-error').length === 0) { sync(); }
 }).on('form:submit', function () {
     return false;
 });
-
-$(document).on('click', '.btn-primary', function() {
+$(document).off('click', '.fa-pencil');
+$(document).on('click', '.fa-pencil', function() {
     var $this = $(this);
-    var $tr = $this.parents().eq(1);
+    var $tr = $this.parentsUntil('tbody').eq(2);
     var id = $tr.children('td').eq(0).html();
-    console.log(id);
-
     var $activeTabPane = $('#tab_' + page.getActiveTabId());
     page.getTabContent($activeTabPane, 'apps/edit/' + id);
     $(document).off('click', '.btn-primary');
 });
-$(document).on('click', '.bg-purple', function() {
-    // $('.overlay').show();
+$(document).on('click', '.fa-exchange', function() {
     var $this = $(this);
-    var $tr = $this.parents().eq(1);
+    var $tr = $this.parentsUntil('tbody').eq(2);
     var id = $tr.children('td').eq(0).html();
-    console.log(id);
-
     var $activeTabPane = $('#tab_' + page.getActiveTabId());
     page.getTabContent($activeTabPane, 'apps/menu/' + id);
     $(document).off('click', '.bg-purple');
