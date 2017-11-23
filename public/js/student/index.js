@@ -5,7 +5,6 @@ page.index('students', options);
 
 
 var $import = $('#import');
-var $export = $('#export');
 var $importPupils = $('#import-pupils');
 var $file = $('#confirm-import');
 $import.on('click', function () {

@@ -40,6 +40,7 @@ Route::group(['prefix' => 'educators'], function () {
     Route::post('edit/{id}', $ctlr . '@edit');
     Route::post('create', $ctlr . '@create');
     Route::get('export', $ctlr . '@export');
+    Route::post('import', $ctlr . '@import');
     
 });
 // 监护人
@@ -48,6 +49,8 @@ Route::group(['prefix' => 'custodians'], function () {
     $ctlr = 'CustodianController';
     Route::post('edit/{id}', $ctlr . '@edit');
     Route::post('create', $ctlr . '@create');
+    Route::get('export', $ctlr . '@export');
+    
     // Route::any('relationship', $ctlr . '@relationship');
 });
 // 学生

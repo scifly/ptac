@@ -581,27 +581,30 @@ class Student extends Model {
         $students = $this->where('class_id', $id)->get();
         $data = array(self::EXCEL_EXPORT_TITLE);
         foreach ($students as $student) {
-            $m = $student->user->mobiles;
-            $mobile = [];
-            foreach ($m as $key => $value) {
-                $mobile[] = $value->mobile;
+            if (!empty($student)) {
+                $m = $student->user->mobiles;
+                $mobile = [];
+                foreach ($m as $key => $value) {
+                    $mobile[] = $value->mobile;
+                }
+                $mobiles = implode(',', $mobile);
+                $item = [
+                    $student->user->realname,
+                    $student->user->gender == 1 ? '男' : '女',
+                    $student->squad->name,
+                    $student->student_number,
+                    $student->card_number,
+                    $student->oncampus == 1 ? '是' : '否',
+                    $mobiles,
+                    substr($student->birthday, 0, -8),
+                    $student->created_at,
+                    $student->updated_at,
+                    $student->enabled == 1 ? '启用' : '禁用',
+                ];
+                $data[] = $item;
+                unset($item);
             }
-            $mobiles = implode(',', $mobile);
-            $item = [
-                $student->user->realname,
-                $student->user->gender == 1 ? '男' : '女',
-                $student->squad->name,
-                $student->student_number,
-                $student->card_number,
-                $student->oncampus == 1 ? '是' : '否',
-                $mobiles,
-                substr($student->birthday, 0, -8),
-                $student->created_at,
-                $student->updated_at,
-                $student->enabled == 1 ? '启用' : '禁用',
-            ];
-            $data[] = $item;
-            unset($item);
+            
         }
         
         return $data;

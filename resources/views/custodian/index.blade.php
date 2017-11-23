@@ -1,6 +1,14 @@
 <div class="box box-default box-solid">
     <div class="box-header with-border">
-        @include('partials.list_header')
+        @include('partials.list_header', [
+            'buttons' => [
+                'export' => [
+                    'id' => 'export-custodian',
+                    'label' => '批量导出',
+                    'icon' => 'fa fa-arrow-circle-down'
+                ]
+            ]
+        ])
     </div>
     <div class="box-body">
         <table id="data-table" style="width: 100%"

@@ -35,7 +35,10 @@ use Mockery\Exception;
 class Custodian extends Model {
 
     protected $fillable = ['user_id'];
-
+    const EXCEL_EXPORT_TITLE = [
+        '监护人姓名', '性别', '电子邮箱',
+        '手机号码', '创建于', '更新于',
+    ];
     /**
      * 返回对应的用户对象
      *
@@ -333,6 +336,35 @@ class Custodian extends Model {
             'students' => sprintf($htmls[2], 'studentId', 'studentId')
         ];
     }
+    
+    public function export() {
+        $custodians = $this::all();
+        $data = array(self::EXCEL_EXPORT_TITLE);
+        foreach ($custodians as $custodian) {
+            if (!empty($custodian->user)) {
+                $m = $custodian->user->mobiles;
+                $mobile = [];
+                foreach ($m as $key => $value) {
+                    $mobile[] = $value->mobile;
+                }
+                $mobiles = implode(',', $mobile);
+                $item = [
+                    $custodian->user->realname,
+                    $custodian->user->gender == 1 ? '男' : '女',
+                    $custodian->user->email,
+                    $mobiles,
+                    $custodian->created_at,
+                    $custodian->updated_at,
+                ];
+                $data[] = $item;
+                unset($item);
+            }
+            
+        }
+        
+        return $data;
+    }
+    
     /**
      * 返回监护人记录列表
      *

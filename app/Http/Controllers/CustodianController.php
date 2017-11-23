@@ -10,6 +10,7 @@ use App\Models\Group;
 use App\Models\Student;
 use App\Models\CustodianStudent;
 use Illuminate\Support\Facades\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 /**
  * 监护人
@@ -133,5 +134,26 @@ class CustodianController extends Controller {
             ? $this->succeed() : $this->fail();
         
     }
-
+    /**
+     * 导出数据
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function export() {
+        $data = $this->custodian->export();
+        Excel::create(iconv('UTF-8', 'GBK', '监护人列表'), function ($excel) use ($data) {
+            $excel->sheet('score', function($sheet) use ($data) {
+                $sheet->rows($data);
+                $sheet->setWidth(array(
+                    'A'     =>  30,
+                    'B'     =>  30,
+                    'C'     =>  30,
+                    'D'     =>  30,
+                    'E'     =>  30,
+                    'F'     =>  30,
+                ));
+                
+            });
+            
+        },'UTF-8')->export('xls');
+    }
 }

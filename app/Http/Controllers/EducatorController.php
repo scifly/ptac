@@ -200,6 +200,26 @@ class EducatorController extends Controller {
             ? parent::succeed() : parent::fail();
         
     }
+    /**
+     * 导入数据
+     */
+    public function import() {
+        
+        if (Request::isMethod('post')) {
+            $file = Request::file('file');
+            if (empty($file)) {
+                $result = [
+                    'statusCode' => 500,
+                    'message' => '您还没选择文件！',
+                ];
+                return response()->json($result);
+            }
+            // 文件是否上传成功
+            if ($file->isValid()) {
+                $this->educator->upload($file);
+            }
+        }
+    }
     
     /**
      * 导出数据
@@ -212,6 +232,14 @@ class EducatorController extends Controller {
             Excel::create(iconv('UTF-8', 'GBK', '教职员工列表'), function ($excel) use ($data) {
                 $excel->sheet('score', function($sheet) use ($data) {
                     $sheet->rows($data);
+                    $sheet->setWidth(array(
+                        'A'     =>  30,
+                        'B'     =>  30,
+                        'C'     =>  30,
+                        'D'     =>  30,
+                        'E'     =>  30,
+                        'F'     =>  30,
+                    ));
                 });
                 
             },'UTF-8')->export('xls');
