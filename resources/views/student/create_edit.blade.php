@@ -16,70 +16,98 @@
             @if (!empty($student['user_id']))
                 {{ Form::hidden('user_id', $student['user_id'], ['id' => 'user_id']) }}
             @endif
+            <!-- 学生姓名 -->
             <div class="form-group">
                 {{ Form::label('user[realname]', '姓名', [
                     'class' => 'col-sm-3 control-label'
                 ]) }}
                 <div class="col-sm-6">
-                    {{ Form::text('user[realname]', null, [
-                        'class' => 'form-control',
-                        'required' => 'true',
-                        'placeholder' => '(请填写真实姓名)',
-                        'data-parsley-length' => '[2, 30]'
-                    ]) }}
+                    <div class="input-group">
+                        <div class="input-group-addon">
+                            <i class="fa fa-child"></i>
+                        </div>
+                        {{ Form::text('user[realname]', null, [
+                            'class' => 'form-control',
+                            'required' => 'true',
+                            'placeholder' => '(请填写真实姓名)',
+                            'data-parsley-length' => '[2, 30]'
+                        ]) }}
+                    </div>
                 </div>
             </div>
+            <!-- 英文名称 -->
             <div class="form-group">
                 {{ Form::label('user[english_name]', '英文名', [
                     'class' => 'col-sm-3 control-label'
                 ]) }}
                 <div class="col-sm-6">
-                    {{ Form::text('user[english_name]', null, [
-                        'class' => 'form-control',
-                        'placeholder' => '请填写英文名(可选)',
-                        'type' => 'string',
-                        'data-parsley-length' => '[2, 255]'
-                    ]) }}
+                    <div class="input-group">
+                        <div class="input-group-addon">
+                            <i class="fa fa-language"></i>
+                        </div>
+                        {{ Form::text('user[english_name]', null, [
+                            'class' => 'form-control',
+                            'placeholder' => '请填写英文名(可选)',
+                            'type' => 'string',
+                            'data-parsley-length' => '[2, 255]'
+                        ]) }}
+                    </div>
                 </div>
             </div>
+            <!-- 性别 -->
             @include('partials.enabled', [
                 'id' => 'user[gender]',
                 'label' => '性别',
                 'value' => isset($user['gender']) ? $user['gender'] : null,
                 'options' => ['男', '女']
             ])
+            <!-- 手机号码 -->
             @include('partials.mobile')
+            <!-- 座机号码 -->
             <div class="form-group">
                 {{ Form::label('user[telephone]', '座机', [
                     'class' => 'col-sm-3 control-label'
                 ]) }}
                 <div class="col-sm-6">
-                    {{ Form::text('user[telephone]', null, [
-                        'class' => 'form-control',
-                        'placeholder' => '请输入座机号码(可选}',
-                    ]) }}
+                    <div class="input-group">
+                        <div class="input-group-addon">
+                            <i class="fa fa-phone"></i>
+                        </div>
+                        {{ Form::text('user[telephone]', null, [
+                            'class' => 'form-control',
+                            'placeholder' => '请输入座机号码(可选}',
+                        ]) }}
+                    </div>
                 </div>
             </div>
+            <!-- 电子邮件 -->
             <div class="form-group">
                 {{ Form::label('user[email]', '邮箱', [
                     'class' => 'col-sm-3 control-label'
                 ]) }}
                 <div class="col-sm-6">
-                    {{ Form::text('user[email]', null, [
-                        'class' => 'form-control',
-                        'placeholder' => '(请输入电子邮件地址)',
-                        'required' => 'true',
-                        'type' => 'email',
-                        'maxlength' => '255',
-                        'data-parsley-type'=>"email"
-                    ]) }}
+                    <div class="input-group">
+                        <div class="input-group-addon">
+                            <i class="fa fa-envelope-o"></i>
+                        </div>
+                        {{ Form::text('user[email]', null, [
+                            'class' => 'form-control',
+                            'placeholder' => '(请输入电子邮件地址)',
+                            'required' => 'true',
+                            'type' => 'email',
+                            'maxlength' => '255',
+                            'data-parsley-type'=>"email"
+                        ]) }}
+                    </div>
                 </div>
             </div>
+            <!-- 所属班级 -->
             @include('partials.single_select', [
-                'label' => '班级名称',
+                'label' => '所属班级',
                 'id' => 'student[class_id]',
                 'items' => $class
             ])
+            <!-- 学号 -->
             <div class="form-group">
                 {!! Form::label('student[student_number]', '学号', [
                     'class' => 'col-sm-3 control-label'
@@ -94,6 +122,7 @@
                     ]) !!}
                 </div>
             </div>
+            <!-- 卡号 -->
             <div class="form-group">
                 {!! Form::label('student[card_number]', '卡号', [
                     'class' => 'col-sm-3 control-label'
@@ -108,6 +137,7 @@
                     ]) !!}
                 </div>
             </div>
+            <!-- 生日 -->
             <div class="form-group">
                 {!! Form::label('student[birthday]', '生日', [
                     'class' => 'col-sm-3 control-label'
@@ -121,13 +151,16 @@
 
                 </div>
             </div>
+            <!-- 是否住校 -->
             @include('partials.enabled', [
                 'label' => '是否住校',
                 'id' => 'student[oncampus]',
                 'value' => isset($student['oncampus']) ? $student['oncampus'] : NULL,
                 'options' => ['住校', '走读']
             ])
+            <!-- 备注 -->
             @include('partials.remark')
+            <!-- 状态 -->
             @include('partials.enabled', [
                 'id' => 'user[enabled]',
                 'value' => isset($student['enabled']) ? $student['enabled'] : NULL

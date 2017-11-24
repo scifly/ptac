@@ -11,14 +11,17 @@
                 <li class="pull-left header"><i class="fa fa-th"></i>角色</li>
             </ul>
             <div class="tab-content">
+                <!-- 角色基本信息 -->
                 <div class="tab-pane active" id="tab01">
                     <div class="form-horizontal">
+                        <!-- 角色ID -->
                         @if (!empty($group['id']))
                             {{ Form::hidden('id', $group['id'], ['id' => 'id']) }}
                         @endif
                         {{ Form::hidden('menu_ids', isset($selectedMenuIds) ? $selectedMenuIds : null, [
                             'id' => 'menu_ids'
                         ]) }}
+                        <!-- 角色名称 -->
                         <div class="form-group">
                             {!! Form::label('name', '角色名称', [
                                 'class' => 'col-sm-3 control-label'
@@ -32,31 +35,36 @@
                                 ]) !!}
                             </div>
                         </div>
+                        <!-- 角色所属学校 -->
                         <div class="form-group">
                             <label for="school_id" class="col-sm-3 control-label">所属学校</label>
                             <div class="col-sm-6">
                                 @if(!isset($group))
-                                <select name="school_id" class="form-control menu" id="school_id" style="width: 100%">
-                                    @foreach($schools as $key => $value)
-                                        <option value="{{ $value }}" >{{ $key }}</option>
-                                    @endforeach
-                                </select>
+                                    <select name="school_id" class="form-control menu" id="school_id" style="width: 100%">
+                                        @foreach($schools as $key => $value)
+                                            <option value="{{ $value }}" >{{ $key }}</option>
+                                        @endforeach
+                                    </select>
                                 @else
                                     {!! Form::hidden('school_id', $group['school_id'], ['id' => 'school_id']) !!}
                                     <label class="control-label" style="font-weight: normal;">{!! $group->school->name !!}</label>
                                 @endif
                             </div>
                         </div>
+                        <!-- 角色备注 -->
                         @include('partials.remark')
+                        <!-- 状态 -->
                         @include('partials.enabled', [
                             'id' => 'enabled',
                             'value' => isset($group['enabled']) ? $group['enabled'] : NULL
                         ])
                     </div>
                 </div>
+                <!-- 角色菜单权限 -->
                 <div class="tab-pane" id="tab02">
                     <div id="menu_tree" class="form-inline"></div>
                 </div>
+                <!-- 角色卡片/功能权限 -->
                 <div class="tab-pane" id="tab03">
                     <div class="row">
                     @foreach ($tabActions as $tabAction)
