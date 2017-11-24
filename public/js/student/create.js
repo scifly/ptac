@@ -3,7 +3,7 @@ page.create('formStudent','students');
 
 var n = 0;
 // 手机号码列表容器
-var $mContainer = $("#mobileTable").find("tbody");
+var $mContainer = $("#mobiles").find("tbody");
 var id = $('#id').val();
 var $formEducator = $('#formStudent');
 $(document).off('click', '.btn-mobile-add');
@@ -14,10 +14,27 @@ $(document).on('click', '.btn-mobile-add', function (e) {
     n++;
     // add mobile html
     $mContainer.append(
-        '<tr><td><input class="form-control" placeholder="（请输入手机号码）" name="mobile['+ n +'][mobile]" value="" ></td>' +
-        '<td style="text-align: center"><input type="radio" class="minimal" id="mobile[isdefault]" name="mobile[isdefault]" value="' + n + '"></td>' +
-        '<td style="text-align: center"><input type="checkbox" class="minimal" name="mobile['+ n +'][enabled]"></td>' +
-        '<td style="text-align: center"><button class="btn btn-box-tool btn-add btn-mobile-add" type="button"><i class="fa fa-plus text-blue"></i></button></td></tr>'
+        '<tr>' +
+        '<td>' +
+            '<div class="input-group">' +
+                '<div class="input-group-addon">' +
+                    '<i class="fa fa-mobile"></i>' +
+                '</div>' +
+                '<input class="form-control" placeholder="（请输入手机号码）" name="mobile[\'+ n +\'][mobile]" value="" >' +
+            '</div>' +
+        '</td>' +
+        '<td style="text-align: center">' +
+            '<input type="radio" class="minimal" id="mobile[isdefault]" name="mobile[isdefault]" value="' + n + '">' +
+        '</td>' +
+        '<td style="text-align: center">' +
+            '<input type="checkbox" class="minimal" name="mobile['+ n +'][enabled]">' +
+        '</td>' +
+        '<td style="text-align: center">' +
+            '<button class="btn btn-box-tool btn-add btn-mobile-add" type="button">' +
+                '<i class="fa fa-plus text-blue" title="新增"></i>' +
+            '</button>' +
+        '</td>' +
+        '</tr>'
     );
     // icheck init
     $mContainer.find('input[type="radio"]').iCheck({
@@ -30,7 +47,7 @@ $(document).on('click', '.btn-mobile-add', function (e) {
     });
     $mContainer.find('tr:not(:last) .btn-mobile-add')
         .removeClass('btn-mobile-add').addClass('btn-mobile-remove')
-        .html('<i class="fa fa-minus text-blue"></i>');
+        .html('<i class="fa fa-minus text-blue" title="删除"></i>');
     var $mobile = $mContainer.find('tr:last input[class="form-control"]');
     $formEducator.parsley().destroy();
     $mobile.attr('pattern', '/^1[0-9]{10}$/');

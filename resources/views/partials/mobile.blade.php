@@ -59,13 +59,13 @@
                             @if($key == sizeof($mobiles) - 1)
                                 <span class="input-group-btn">
                                     <button class="btn btn-box-tool btn-add btn-mobile-add" type="button">
-                                        <i class="fa fa-plus text-blue"></i>
+                                        <i class="fa fa-plus text-blue" title="新增"></i>
                                     </button>
                                 </span>
                             @else
                                 <span class="input-group-btn">
                                     <button class="btn btn-box-tool btn-remove btn-mobile-remove" type="button">
-                                        <i class="fa fa-minus text-blue"></i>
+                                        <i class="fa fa-minus text-blue" title="删除"></i>
                                     </button>
                                 </span>
                             @endif
@@ -101,7 +101,7 @@
                     <td class="text-center">
                         <span class="input-group-btn">
                             <button class="btn btn-box-tool btn-add btn-mobile-add" type="button">
-                                <i class="fa fa-plus text-blue"></i>
+                                <i class="fa fa-plus text-blue" title="新增"></i>
                             </button>
                         </span>
                     </td>
