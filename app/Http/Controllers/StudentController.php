@@ -10,6 +10,7 @@ use App\Models\Group;
 use App\Models\Student;
 use App\Models\User;
 use Illuminate\Support\Facades\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 /**
  * 学生
@@ -19,10 +20,17 @@ use Illuminate\Support\Facades\Request;
  */
 class StudentController extends Controller {
     
-    protected $custodian, $department, $group, $user, $departmentUser, $student, $custodianStudent;
+    protected $custodian, $department, $group, $user;
+    protected $departmentUser, $student, $custodianStudent;
     
-    function __construct(Custodian $custodian, Department $department, Group $group, User $user,
-                         DepartmentUser $departmentUser, Student $student, CustodianStudent $custodianStudent) {
+    function __construct(
+        Custodian $custodian, Department $department,
+        Group $group, User $user,
+        DepartmentUser $departmentUser, Student $student,
+        CustodianStudent $custodianStudent
+    ) {
+        
+        $this->middleware(['auth']);
         $this->custodian = $custodian;
         $this->department = $department;
         $this->group = $group;
@@ -39,6 +47,7 @@ class StudentController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
+        
         if (Request::get('draw')) {
             return response()->json($this->student->datatable());
         }
@@ -53,6 +62,7 @@ class StudentController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function create() {
+        
         if (Request::method() === 'POST') {
             return $this->department->tree();
         }
@@ -68,7 +78,9 @@ class StudentController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(StudentRequest $request) {
-        return $this->student->store($request) ? $this->succeed() : $this->fail();
+        
+        return $this->student->store($request)
+            ? $this->succeed() : $this->fail();
         
     }
     
@@ -79,11 +91,9 @@ class StudentController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function show($id) {
-        $student = $this->student->find($id);
-        if (!$student) {
-            return $this->notFound();
-        }
         
+        $student = $this->student->find($id);
+        if (!$student) { return $this->notFound(); }
         return $this->output(__METHOD__, ['student' => $student]);
         
     }
@@ -95,6 +105,7 @@ class StudentController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function edit($id) {
+        
         if (Request::method() === 'POST') {
             return $this->department->tree();
         }
@@ -106,10 +117,8 @@ class StudentController extends Controller {
         }
         $selectedDepartments = $this->department->selectedNodes($selectedDepartmentIds);
         # 查询学生信息
-        if (!$student) {
-            return $this->notFound();
-        }
-        
+        if (!$student) { return $this->notFound(); }
+
         return $this->output(__METHOD__, [
             'mobiles'               => $student->user->mobiles,
             'student'               => $student,
@@ -127,7 +136,9 @@ class StudentController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(StudentRequest $request, $id) {
-        return $this->student->modify($request, $id) ? $this->succeed() : $this->fail();
+        
+        return $this->student->modify($request, $id)
+            ? $this->succeed() : $this->fail();
         
     }
     
@@ -138,8 +149,67 @@ class StudentController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
-        return $this->custodian->remove($id) ? $this->succeed() : $this->fail();
         
+        return $this->custodian->remove($id)
+            ? $this->succeed() : $this->fail();
+        
+    }
+    
+    /**
+     * 导入数据
+     */
+    public function import() {
+
+        if (Request::isMethod('post')) {
+            $file = Request::file('file');
+            if (empty($file)) {
+                $result = [
+                    'statusCode' => 500,
+                    'message' => '您还没选择文件！',
+                ];
+                return response()->json($result);
+            }
+            // 文件是否上传成功
+            if ($file->isValid()) {
+                $this->student->upload($file);
+            }
+        }
+    }
+    
+    /**
+     * 导出数据
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function export() {
+        $id = Request::query('id');
+        if ($id) {
+            $data = $this->student->export($id);
+            Excel::create(iconv('UTF-8', 'GBK', '学生列表'), function ($excel) use ($data) {
+                $excel->sheet('score', function($sheet) use ($data) {
+                    $sheet->rows($data);
+                    $sheet->setColumnFormat(array(
+                        'E' => '@',//文本
+                        'H' => 'yyyy-mm-dd',
+                    ));
+                    $sheet->setWidth(array(
+                        'A'     =>  20,
+                        'B'     =>  10,
+                        'C'     =>  25,
+                        'D'     =>  30,
+                        'E'     =>  30,
+                        'F'     =>  30,
+                        'G'     =>  20,
+                        'H'     =>  15,
+                        'I'     =>  30,
+                        'J'     =>  30,
+                        'K'     =>  15,
+                        'L'     =>  30,
+                    ));
+                    
+                });
+
+            },'UTF-8')->export('xls');
+        }
     }
     
 }

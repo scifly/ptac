@@ -16,7 +16,10 @@ class PqSubjectController extends Controller {
     protected $pqSubject;
     
     function __construct(PollQuestionnaireSubject $pqSubject) {
+    
+        $this->middleware(['auth']);
         $this->pqSubject = $pqSubject;
+        
     }
     
     /**
@@ -25,6 +28,7 @@ class PqSubjectController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
+        
         if (Request::get('draw')) {
             return response()->json($this->pqSubject->dataTable());
         }
@@ -39,6 +43,7 @@ class PqSubjectController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function create() {
+        
         return $this->output(__METHOD__);
         
     }
@@ -50,6 +55,7 @@ class PqSubjectController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(PqSubjectRequest $request) {
+        
         return $this->pqSubject->create($request->all()) ? $this->succeed() : $this->fail();
         
     }
@@ -61,11 +67,9 @@ class PqSubjectController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function show($id) {
-        $pqSubject = $this->pqSubject->find($id);
-        if (!$pqSubject) {
-            return $this->notFound();
-        }
         
+        $pqSubject = $this->pqSubject->find($id);
+        if (!$pqSubject) { return $this->notFound(); }
         return $this->output(__METHOD__, [
             'pqSubject' => $pqSubject,
         ]);
@@ -78,11 +82,9 @@ class PqSubjectController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function edit($id) {
-        $pqSubject = $this->pqSubject->find($id);
-        if (!$pqSubject) {
-            return $this->notFound();
-        }
         
+        $pqSubject = $this->pqSubject->find($id);
+        if (!$pqSubject) { return $this->notFound(); }
         return $this->output(__METHOD__, ['pqSubject' => $pqSubject]);
         
     }
@@ -95,11 +97,9 @@ class PqSubjectController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(PqSubjectRequest $request, $id) {
-        $pqSubject = $this->pqSubject->find($id);
-        if (!$pqSubject) {
-            return $this->notFound();
-        }
         
+        $pqSubject = $this->pqSubject->find($id);
+        if (!$pqSubject) { return $this->notFound(); }
         return $pqSubject->update($request->all()) ? $this->succeed() : $this->fail();
     }
     
@@ -110,11 +110,9 @@ class PqSubjectController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
-        $pqSubject = $this->pqSubject->find($id);
-        if (!$pqSubject) {
-            return $this->notFound();
-        }
         
+        $pqSubject = $this->pqSubject->find($id);
+        if (!$pqSubject) { return $this->notFound(); }
         return $pqSubject->remove($id) ? $this->succeed() : $this->fail('失败：该题目存在有效关联数据，不能删除');
         
     }

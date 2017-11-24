@@ -3,6 +3,7 @@ namespace App\Models;
 
 use App\Helpers\ModelTrait;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -26,7 +27,9 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|Media whereUpdatedAt($value)
  * @property-read WapSiteModule $wapsitemoudle
  * @property-read WsmArticle $wasmarticle
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Menu[] $menus
+ * @property-read Collection|Menu[] $menus
+ * @property-read WapSiteModule $wapSiteModule
+ * @property-read WsmArticle $wsmArticle
  */
 class Media extends Model {
     
@@ -45,6 +48,10 @@ class Media extends Model {
      */
     public function mediaType() { return $this->belongsTo('App\Models\MediaType'); }
     
+    public function wapSiteModule() { return $this->hasOne('App\Models\WapSiteModule'); }
+    
+    public function wsmArticle() { return $this->hasOne('App\Models\WsmArticle'); }
+    
     /**
      * 获取指定媒体所包含的所有菜单对象
      *
@@ -55,11 +62,11 @@ class Media extends Model {
     /**
      * 根据媒体ID返回媒体对象
      *
-     * @param string $ids
+     * @param array $ids
      * @return array
      */
-    public function medias($ids) {
-        $ids = explode(',', $ids);
+    public function medias(array $ids) {
+        
         $medias = [];
         foreach ($ids as $mediaId) {
             $medias[] = $this->find($mediaId);
@@ -76,6 +83,7 @@ class Media extends Model {
      * @return bool
      */
     public function store(array $data) {
+        
         $media = $this->create($data);
         
         return $media ? true : false;
@@ -90,6 +98,7 @@ class Media extends Model {
      * @return bool
      */
     public function modify(array $data, $id) {
+        
         $media = $this->find($id);
         if (!$media) {
             return false;
@@ -106,11 +115,9 @@ class Media extends Model {
      * @return bool|null
      */
     public function remove($id) {
-        $media = $this->find($id);
-        if (!$media) {
-            return false;
-        }
         
+        $media = $this->find($id);
+        if (!$media) { return false; }
         return $media->removable($media) ? $media->delete() : false;
         
     }

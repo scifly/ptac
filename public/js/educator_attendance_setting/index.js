@@ -1,1 +1,1 @@
-$(crud.index('educator_attendance_settings'));
+page.index('educator_attendance_settings');

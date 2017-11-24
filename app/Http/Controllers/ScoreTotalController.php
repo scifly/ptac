@@ -17,6 +17,8 @@ class ScoreTotalController extends Controller {
     protected $subject;
     
     function __construct(ScoreTotal $score_total, Subject $subject) {
+    
+        $this->middleware(['auth']);
         $this->scoreTotal = $score_total;
         $this->subject = $subject;
         
@@ -28,6 +30,7 @@ class ScoreTotalController extends Controller {
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\JsonResponse|\Illuminate\View\View
      */
     public function index() {
+        
         if (Request::get('draw')) {
             return response()->json($this->scoreTotal->datatable());
         }
@@ -43,11 +46,11 @@ class ScoreTotalController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function show($id) {
+        
         $scoreTotal = $this->scoreTotal->find($id);
         if (!$scoreTotal) {
             return $this->notFound();
         }
-        
         return $this->output(__METHOD__, [
             'score_total' => $scoreTotal,
             'studentname' => $scoreTotal->student->user->realname,
@@ -64,6 +67,7 @@ class ScoreTotalController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function statistics($examId) {
+        
         return $this->scoreTotal->statistics($examId) ? $this->succeed() : $this->fail();
         
     }

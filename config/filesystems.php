@@ -21,7 +21,7 @@ return [
     | will be bound as the Cloud disk implementation in the container.
     |
     */
-    'cloud' => env('FILESYSTEM_CLOUD', 's3'),
+    'cloud'   => env('FILESYSTEM_CLOUD', 's3'),
     /*
     |--------------------------------------------------------------------------
     | Filesystem Disks
@@ -34,14 +34,14 @@ return [
     | Supported Drivers: "local", "ftp", "s3", "rackspace"
     |
     */
-    'disks' => [
-        'local' => [
+    'disks'   => [
+        'local'   => [
             'driver' => 'local',
             'root'   => storage_path('app'),
         ],
-        'public' => [
+        'public'  => [
             'driver'     => 'local',
-            'root'       => storage_path('app/public'),
+            'root'       => storage_path('app/public/' . date('Y') . '/' . date('m') . '/' . date('d')),
             'url'        => env('APP_URL') . '/storage',
             'visibility' => 'public',
         ],
@@ -55,6 +55,8 @@ return [
         'uploads' => [
             'driver' => 'local',
             'root'   => storage_path('app/uploads/' . date('Y') . '/' . date('m') . '/' . date('d')),
+            'visibility' => 'public',
+
         ],
     ],
 ];

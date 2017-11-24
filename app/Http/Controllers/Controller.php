@@ -48,61 +48,65 @@ class Controller extends BaseController {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     protected function output($method, array $params = []) {
-        # 获取功能名称
-        $arr = explode('::', $method);
-        $m = $arr[1];
-        # 获取控制器名称
-        $c = explode('\\', $arr[0]);
-        $c = $c[sizeof($c) - 1];
-        # 获取功能对象
-        $action = Action::whereMethod($m)->where('controller', $c)->first();
-        if (!$action) {
-            return $this->fail($method . '不存在');
-        }
-        # 获取功能对应的View
-        $view = $action->view;
-        if (!$view) {
-            return $this->fail($method . '配置错误');
-        }
-        $menu = Menu::whereId(session('menuId'))->first();
-        $tab = Tab::whereId(Request::get('tabId'))->first();
-        # 保存状态为active的卡片ID
-        if (!session('tabId') || session('tabId') !== $tab->id) {
-            session(['tabId' => $tab->id]);
-            session(['tabChanged' => 1]);
-        } else {
-            Session::forget('tabChanged');
-        }
-        session(['tabUrl' => Request::path()]);
-        if ($menu) {
-            $params['breadcrumb'] = $menu->name . ' / ' . $tab->name . ' / ' . $action->name;
-        } else {
-            // Todo: redirect to login
-            $menuName = session('menuName');
-            // $menuName = $this->menuName;
-            $params['breadcrumb'] =
-                "<span style=\"color: red\">菜单 - <strong>{$menuName}</strong> - 配置错误, 请检查后</span>" .
-                '<a href="' . session('pageUrl') . '">重试</a>';
-        }
         
-        return response()->json([
-            'html'       => view($view, $params)->render(),
-            'js'         => $action->js,
-            'breadcrumb' => $params['breadcrumb'],
-        ]);
+        if (Request::ajax()) {
+            # 获取功能名称
+            $arr = explode('::', $method);
+            $m = $arr[1];
+            # 获取控制器名称
+            $c = explode('\\', $arr[0]);
+            $c = $c[sizeof($c) - 1];
+            # 获取功能对象
+            $action = Action::whereMethod($m)->where('controller', $c)->first();
+            if (!$action) {
+                return $this->fail($method . '不存在');
+            }
+            # 获取功能对应的View
+            $view = $action->view;
+            if (!$view) {
+                return $this->fail($method . '配置错误');
+            }
+            $menu = Menu::whereId(session('menuId'))->first();
+            $tab = Tab::whereId(Request::get('tabId'))->first();
+            # 保存状态为active的卡片ID
+            if (!session('tabId') || session('tabId') !== $tab->id) {
+                session(['tabId' => $tab->id]);
+                session(['tabChanged' => 1]);
+            } else {
+                Session::forget('tabChanged');
+            }
+            session(['tabUrl' => Request::path()]);
+            if ($menu) {
+                $params['breadcrumb'] = $menu->name . ' / ' . $tab->name . ' / ' . $action->name;
+            } else {
+                return response()->json(['statusCode' => self::HTTP_STATUSCODE_UNAUTHORIZED]);
+            }
+    
+            return response()->json([
+                'statusCode' => 200,
+                'html'       => view($view, $params)->render(),
+                'js'         => $action->js,
+                'breadcrumb' => $params['breadcrumb'],
+            ]);
+        }
+        if (session('menuId')) {
+            return Response()->redirectTo('pages/' . session('menuId'));
+        }
+        return Response()->redirectToRoute('login');
         
     }
     
     protected function fail($msg = self::MSG_FAIL) {
+        
         $this->result = [
             'statusCode' => self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR,
             'message'    => $msg,
         ];
-        
         return response()->json($this->result);
     }
     
     protected function notFound() {
+        
         $this->result = [
             'statusCode' => self::HTTP_STATUSCODE_BAD_REQUEST,
             'message'    => self::MSG_BAD_REQUEST,
@@ -113,13 +117,22 @@ class Controller extends BaseController {
     }
     
     protected function succeed($msg = self::MSG_OK) {
+        
         $this->result = [
             'statusCode' => self::HTTP_STATUSCODE_OK,
             'message'    => $msg,
         ];
-        
         return response()->json($this->result);
         
     }
+    
+    public function getUserInfo() {
+        
+        $code = Request::query('code');
+        $url = 'http://weixin.028lk.com/wap_sites/webindex?code=' . $code;
+    
+        return $code ? \redirect($url) : 'no code !';
+    }
+    
     
 }

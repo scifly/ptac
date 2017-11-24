@@ -17,6 +17,8 @@ class GradeController extends Controller {
     protected $grade, $educator;
     
     function __construct(Grade $grade, Educator $educator) {
+    
+        $this->middleware(['auth']);
         $this->grade = $grade;
         $this->educator = $educator;
         
@@ -28,10 +30,10 @@ class GradeController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
+        
         if (Request::get('draw')) {
             return response()->json($this->grade->datatable());
         }
-        
         return $this->output(__METHOD__);
         
     }
@@ -42,6 +44,7 @@ class GradeController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function create() {
+        
         return $this->output(__METHOD__);
         
     }
@@ -53,6 +56,7 @@ class GradeController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(GradeRequest $request) {
+        
         return $this->grade->store($request->all(), true)
             ? $this->succeed() : $this->fail();
         
@@ -65,11 +69,11 @@ class GradeController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function show($id) {
+        
         $grade = $this->grade->find($id);
         if (!$grade) {
             return $this->notFound();
         }
-        
         return $this->output(__METHOD__, [
             'grade'     => $grade,
             'educators' => $this->educator->educators($grade->educator_ids),
@@ -84,12 +88,12 @@ class GradeController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function edit($id) {
+        
         $grade = $this->grade->find($id);
         if (!$grade) {
             return $this->notFound();
         }
         $gradeIds = explode(",", $grade->educator_ids);
-        
         return $this->output(__METHOD__, [
             'grade'             => $grade,
             'selectedEducators' => $this->educator->educators($gradeIds),
@@ -105,10 +109,8 @@ class GradeController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(GradeRequest $request, $id) {
-        if (!$this->grade->find($id)) {
-            return $this->notFound();
-        }
         
+        if (!$this->grade->find($id)) { return $this->notFound(); }
         return $this->grade->modify($request->all(), $id, true)
             ? $this->succeed() : $this->fail();
         
@@ -121,10 +123,8 @@ class GradeController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
-        if (!$this->grade->find($id)) {
-            return $this->notFound();
-        }
         
+        if (!$this->grade->find($id)) { return $this->notFound();}
         return $this->grade->remove($id, true)
             ? $this->succeed() : $this->fail();
         

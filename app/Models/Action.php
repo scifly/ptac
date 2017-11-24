@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
@@ -56,29 +57,7 @@ use ReflectionMethod;
  */
 class Action extends Model {
     
-    const BADGE_GRAY = '<span class="badge bg-black">[n/a]</span>';
-    const BADGE_GREEN = '<span class="badge bg-green">%s</span>';
-    const BADGE_YELLOW = '<span class="badge bg-yellow">%s</span>';
-    const BADGE_RED = '<span class="badge bg-red">%s</span>';
-    const BADGE_LIGHT_BLUE = '<span class="badge bg-light-blue">%s</span>';
-    const BADGE_MAROON = '<span class="badge bg-maroon">%s</span>';
-    const DT_ON = '<span class="badge bg-green">%s</span>';
-    const DT_OFF = '<span class="badge bg-gray">%s</span>';
-    const DT_LINK_EDIT = <<<HTML
-        <a id="%s" href="javascript:void(0)" class="btn btn-success btn-icon btn-circle btn-xs">
-            <i class="fa fa-edit"></i>
-        </a>
-HTML;
-    const DT_LINK_DEL = <<<HTML
-        <a id="%s" href="javascript:void(0)" class="btn btn-danger btn-icon btn-circle btn-xs" data-toggle="modal">
-            <i class="fa fa-trash"></i>
-        </a>
-HTML;
-    const DT_LINK_SHOW = <<<HTML
-        <a id="%s" href="javascript:void(0)" class="btn btn-primary btn-icon btn-circle btn-xs"  data-toggle="modal">
-            <i class="fa fa-eye"></i>
-        </a>
-HTML;
+    
     
     protected $fillable = [
         'name', 'method', 'remark',
@@ -98,8 +77,8 @@ HTML;
         'Score_SendController',
     ];
     protected $routes;
-    # 控制器路径
-    protected $dir = '/media/sf_sandbox/ptac/app/Http/Controllers';
+    # 控制器相对路径
+    protected $ctlrDir = 'app/Http/Controllers';
     
     /**
      * 返回当前action包含的卡片
@@ -114,8 +93,10 @@ HTML;
      * @return array
      */
     public function actions() {
+        
         $data = $this->whereEnabled(1)->get([
-            'controller', 'name', 'id', 'action_type_ids', 'route',
+            'controller', 'name', 'id',
+            'action_type_ids', 'route',
         ]);
         $actions = [];
         # 获取HTTP请求类型为GET的Action类型ID
@@ -141,6 +122,7 @@ HTML;
      * @return bool|mixed
      */
     public function store(ActionRequest $request) {
+        
         # 创建新的Action记录及卡片绑定记录
         try {
             $exception = DB::transaction(function () use ($request) {
@@ -162,6 +144,7 @@ HTML;
      * @return bool|mixed
      */
     public function modify(ActionRequest $request, $actionId) {
+        
         $action = $this->find($actionId);
         if (!isset($action)) {
             return false;
@@ -180,63 +163,61 @@ HTML;
     }
     
     public function datatable() {
+        
         $columns = [
             ['db' => 'Action.id', 'dt' => 0],
             [
                 'db'        => 'Action.name', 'dt' => 1,
                 'formatter' => function ($d) {
-                    return empty($d) ? self::BADGE_GRAY : $d;
+                    return empty($d) ? '-' : $d;
                 },
             ],
             [
                 'db'        => 'Action.method', 'dt' => 2,
                 'formatter' => function ($d) {
-                    return !empty($d) ? sprintf(self::BADGE_GREEN, $d) : self::BADGE_GRAY;
+                    return !empty($d) ? sprintf(Datatable::BADGE_GREEN, $d) : '-';
                 },
             ],
             [
                 'db'        => 'Action.route', 'dt' => 3,
                 'formatter' => function ($d) {
-                    return !empty($d) ? sprintf(self::BADGE_YELLOW, $d) : self::BADGE_GRAY;
+                    return !empty($d) ? sprintf(Datatable::BADGE_YELLOW, $d) : '-';
                 },
             ],
             [
                 'db'        => 'Action.controller', 'dt' => 4,
                 'formatter' => function ($d) {
-                    return !empty($d) ? sprintf(self::BADGE_RED, $d) : self::BADGE_GRAY;
+                    return !empty($d) ? sprintf(Datatable::BADGE_RED, $d) : '-';
                 },
             ],
             [
                 'db'        => 'Action.view', 'dt' => 5,
                 'formatter' => function ($d) {
-                    return !empty($d) ? sprintf(self::BADGE_LIGHT_BLUE, $d) : self::BADGE_GRAY;
+                    return !empty($d) ? sprintf(Datatable::BADGE_LIGHT_BLUE, $d) : '-';
                 },
             ],
             [
                 'db'        => 'Action.js', 'dt' => 6,
                 'formatter' => function ($d) {
-                    return !empty($d) ? sprintf(self::BADGE_MAROON, $d) : self::BADGE_GRAY;
+                    return !empty($d) ? sprintf(Datatable::BADGE_MAROON, $d) : '-';
                 },
             ],
             [
                 'db'        => 'Action.action_type_ids', 'dt' => 7,
                 'formatter' => function ($d) {
-                    return !empty($d) ? $this->actionTypes($d) : self::BADGE_GRAY;
+                    return !empty($d) ? $this->actionTypes($d) : '-';
                 },
             ],
             [
                 'db'        => 'Action.enabled', 'dt' => 8,
                 'formatter' => function ($d, $row) {
                     $id = $row['id'];
-                    $status = $d ? sprintf(self::DT_ON, '已启用') : sprintf(self::DT_OFF, '已禁用');
-                    $showLink = sprintf(self::DT_LINK_SHOW, 'show_' . $id);
-                    $editLink = sprintf(self::DT_LINK_EDIT, 'edit_' . $id);
-                    
-                    return $status . '&nbsp;' . $showLink . '&nbsp;' . $editLink;
+                    $status = $d ? Datatable::DT_ON : Datatable::DT_OFF;
+                    $editLink = sprintf(Datatable::DT_LINK_EDIT, 'edit_' . $id);
+                    return $status . str_repeat('&nbsp;', 3) . $editLink;
                 },
             ],
         ];
-        
         return Datatable::simple($this, $columns);
         
     }
@@ -248,6 +229,7 @@ HTML;
      * @return string
      */
     private function actionTypes($action_type_ids) {
+        
         $actionTypes = [];
         $actionTypeIds = explode(',', $action_type_ids);
         foreach ($actionTypeIds as $actionTypeId) {
@@ -262,12 +244,21 @@ HTML;
     }
     
     public function scan() {
+
         $actionType = new ActionType();
         $this->actionTypes = $actionType->pluck('id', 'name')->toArray();
+
         $this->routes = Route::getRoutes()->getRoutes();
-        $controllers = $this->scanDirectories($this->dir);
+
+        $controllers = $this->scanDirectories($this->getSiteRoot() . $this->ctlrDir);
+        # 获取控制器的名字空间
         $this->getControllerNamespaces($controllers);
-        $controllerNames = $this->getControllerNames($controllers);
+        
+        # 移除excluded控制器
+        $controllerNames = array_diff(
+            $this->getControllerNames($controllers),
+            $this->excludedControllers
+        );
         $selfDefinedMethods = [];
         // remove actions of non-existing controllers
         $ctlrs = $this->groupBy('controller')->get(['controller'])->toArray();
@@ -275,45 +266,47 @@ HTML;
         foreach ($ctlrs as $ctlr) {
             $existingCtlrs[] = $ctlr['controller'];
         }
-        $ctlrDiff = array_diff($existingCtlrs, $controllerNames);
-        foreach ($ctlrDiff as $ctlr) {
+        $ctlrDiffs = array_diff($existingCtlrs, $controllerNames);
+        foreach ($ctlrDiffs as $ctlr) {
             $actions = $this->where('controller', $ctlr)->get();
             foreach ($actions as $a) {
-                if (!$this->remove($a->id)) {
-                    return false;
-                };
+                if (!$this->remove($a->id)) { return false; };
             }
             # $this->where('controller', $ctlr)->delete();
         }
         foreach ($controllers as $controller) {
-            $obj = new ReflectionClass(ucfirst($controller));
-            $className = $obj->getName();
-            $methods = $obj->getMethods();
-            // remove non-existing methods of current controller
-            if (!$this->delNonExistingMethods($methods, $className)) {
-                return false;
-            }
-            foreach ($methods as $method) {
-                $action = $method->getName();
-                if (
-                    $method->class === $className &&
-                    !($method->isConstructor()) &&
-                    $method->isUserDefined() &&
-                    $method->isPublic()
-                ) {
-                    $ctlr = $this->getControllerName($className);
-                    $selfDefinedMethods[$className][$action] = [
-                        'name'            => $this->getMethodComment($obj, $method),
-                        'method'          => $action,
-                        'remark'          => '',
-                        'controller'      => $ctlr,
-                        'view'            => $this->getViewPath($ctlr, $action),
-                        'route'           => $this->getRoute($ctlr, $action),
-                        'action_type_ids' => $this->getActionTypeIds($ctlr, $action),
-                        'js'              => $this->getJsPath($ctlr, $action),
-                    ];
+            $paths = explode('\\', $controller);
+            if (!in_array($paths[sizeof($paths) - 1], $this->excludedControllers)) {
+                $obj = new ReflectionClass(ucfirst($controller));
+                $className = $obj->getName();
+                $methods = $obj->getMethods();
+                // remove non-existing methods of current controller
+                if (!$this->delNonExistingMethods($methods, $className)) {
+                    return false;
+                }
+                foreach ($methods as $method) {
+                    $action = $method->getName();
+                    if (
+                        $method->class === $className &&
+                        !($method->isConstructor()) &&
+                        $method->isUserDefined() &&
+                        $method->isPublic()
+                    ) {
+                        $ctlr = $this->getControllerName($className);
+                        $selfDefinedMethods[$className][$action] = [
+                            'name'            => $this->getMethodComment($obj, $method),
+                            'method'          => $action,
+                            'remark'          => '',
+                            'controller'      => $ctlr,
+                            'view'            => $this->getViewPath($ctlr, $action),
+                            'route'           => $this->getRoute($ctlr, $action),
+                            'action_type_ids' => $this->getActionTypeIds($ctlr, $action),
+                            'js'              => $this->getJsPath($ctlr, $action),
+                        ];
+                    }
                 }
             }
+            
         }
         foreach ($selfDefinedMethods as $actions) {
             foreach ($actions as $action) {
@@ -356,6 +349,7 @@ HTML;
      * @return array
      */
     public function scanDirectories($rootDir, $allData = []) {
+
         // set filenames invisible if you want
         $invisibleFileNames = [".", "..", ".htaccess", ".htpasswd"];
         // run through content of root directory
@@ -375,7 +369,6 @@ HTML;
                 }
             }
         }
-        
         return $allData;
         
     }
@@ -386,11 +379,19 @@ HTML;
      * @param $controllers
      */
     public function getControllerNamespaces(&$controllers) {
+        
+        $siteRoot = str_replace('/', '\\', $this->getSiteRoot());
         for ($i = 0; $i < sizeof($controllers); $i++) {
             $controllers[$i] = str_replace('/', '\\', $controllers[$i]);
-            $controllers[$i] = str_replace('\\media\\sf_sandbox\\ptac\\', '', $controllers[$i]);
+            $controllers[$i] = str_replace($siteRoot, '', $controllers[$i]);
             $controllers[$i] = str_replace('.php', '', $controllers[$i]);
         }
+        
+    }
+    
+    public function getSiteRoot() {
+    
+        return substr(__DIR__, 0, stripos(__DIR__, 'app/Models'));
         
     }
     
@@ -401,6 +402,7 @@ HTML;
      * @return array
      */
     public function getControllerNames($controllers) {
+        
         $controllerNames = [];
         foreach ($controllers as $controller) {
             $paths = explode('\\', $controller);
@@ -418,6 +420,7 @@ HTML;
      * @return bool|mixed
      */
     public function remove($actionId) {
+        
         $action = $this->find($actionId);
         if (!isset($action)) {
             return false;
@@ -443,6 +446,7 @@ HTML;
      * @return bool
      */
     private function delNonExistingMethods($methods, $className) {
+        
         // remove non-existing methods of current controller
         $currentMethods = $this->getMethodNames($methods);
         $existingMethods = [];
@@ -473,9 +477,10 @@ HTML;
      * @return array
      */
     private function getMethodNames($methods) {
+        
         $methodNames = [];
+        /** @var ReflectionMethod $method */
         foreach ($methods as $method) {
-            /** @noinspection PhpUndefinedMethodInspection */
             $methodNames[] = $method->getName();
         }
         
@@ -490,6 +495,7 @@ HTML;
      * @return mixed
      */
     public function getControllerName($controller) {
+        
         $nameSpacePaths = explode('\\', $controller);
         
         return $nameSpacePaths[sizeof($nameSpacePaths) - 1];
@@ -504,15 +510,16 @@ HTML;
      * @return mixed|string
      */
     private function getMethodComment(ReflectionClass $controllerObj, ReflectionMethod $method) {
+        
         $comment = $controllerObj->getMethod($method->getName())->getDocComment();
         $name = 'n/a';
         preg_match_all("#\/\*\*\n\s{5}\*[^\*]*\*#", $comment, $matches);
         if (isset($matches[0][0])) {
-            $name = str_replace(str_split("\n/* "), '', $matches[0][0]);
+            $name = str_replace(str_split("\r\n/*"), '', $matches[0][0]);
         } else {
             preg_match_all("#\/\*\*\r\n\s{5}\*[^\*]*\*#", $comment, $matches);
             if (isset($matches[0][0])) {
-                $name = str_replace(str_split("\n/* "), '', $matches[0][0]);
+                $name = str_replace(str_split("\r\n/*"), '', $matches[0][0]);
             }
         }
         
@@ -528,6 +535,7 @@ HTML;
      * @return string
      */
     private function getViewPath($controller, $action) {
+        
         if (!in_array($controller, $this->excludedControllers)) {
             switch ($action) {
                 case 'index':
@@ -540,6 +548,9 @@ HTML;
                     break;
                 case 'menuTabs':
                     $viewPath = 'menu.menu_tabs';
+                    break;
+                case 'relationship':
+                    $viewPath = 'custodian.relationship';
                     break;
                 default:
                     $viewPath = '';
@@ -559,6 +570,7 @@ HTML;
      * @return string 数据表名称
      */
     private function getTableName($controller) {
+        
         $modelName = substr(
             $controller, 0,
             strlen($controller) - strlen('Controller')
@@ -579,6 +591,7 @@ HTML;
      * @return mixed 路由名称
      */
     private function getRoute($controller, $action) {
+        
         $action = ($action == 'destroy' ? 'delete' : $action);
         if (!in_array($controller, $this->excludedControllers)) {
             $route = $this->getTableName($controller) . '/' . $action;
@@ -601,6 +614,7 @@ HTML;
      * @return null|string
      */
     private function getActionTypeIds($controller, $action) {
+        
         $action = ($action == 'destroy' ? 'delete' : $action);
         if (!in_array($controller, $this->excludedControllers)) {
             $route = $this->getTableName($controller) . '/' . $action;
@@ -628,20 +642,14 @@ HTML;
      * @return mixed
      */
     private function getJsPath($ctlr, $action) {
+        
         if (!in_array($ctlr, $this->excludedControllers)) {
             $prefix = str_singular($this->getTableName($ctlr));
             $prefix = ($prefix === 'corps') ? 'corp' : $prefix;
-            
+            if (in_array($action, ['destroy', 'store', 'update', 'sort', 'move', 'rankTabs', 'show'])) {
+                return null;
+            }
             return 'js/' . $prefix . '/' . $action . '.js';
-            /*switch ($action) {
-                case 'index':
-                case 'create':
-                case 'edit':
-                case ''
-                
-                default:
-                    return NULL;
-            }*/
         }
         
         return null;

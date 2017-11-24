@@ -16,7 +16,6 @@ class WapSiteComposer {
     
     public function compose(View $view) {
         
-        
         $view->with([
             'schools' => $this->schools->pluck('name', 'id'),
         ]);

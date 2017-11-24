@@ -1,11 +1,11 @@
-<div class="box box-widget">
+<div class="box box-default box-solid">
     <div class="box-header with-border">
         @include('partials.form_header')
     </div>
     <div class="box-body">
         <div class="form-horizontal">
-            @if (!empty($conferenceRoom['id']))
-                {{ Form::hidden('id', $conferenceRoom['id'], ['id' => 'id']) }}
+            @if (!empty($cr['id']))
+                {{ Form::hidden('id', $cr['id'], ['id' => 'id']) }}
             @endif
             <div class="form-group">
                 {!! Form::label('name', '名称', [
@@ -20,11 +20,7 @@
                     ]) !!}
                 </div>
             </div>
-            @include('partials.single_select', [
-                'label' => '所属学校',
-                'id' => 'school_id',
-                'items' => $schools
-            ])
+            {!! Form::hidden('school_id', $schoolId, ['id' => 'school_id']) !!}
             <div class="form-group">
                 {!! Form::label('capacity', '容量', [
                     'class' => 'col-sm-3 control-label'
@@ -38,23 +34,10 @@
                     ]) !!}
                 </div>
             </div>
-            <div class="form-group">
-                {!! Form::label('remark', '备注', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
-                <div class="col-sm-6">
-                    {!! Form::text('remark', null, [
-                        'class' => 'form-control',
-                        'placeholder' => '(请输入备注)',
-                        'required' => 'true',
-                        'data-parsley-length' => '[4, 255]'
-                    ]) !!}
-                </div>
-            </div>
+            @include('partials.remark')
             @include('partials.enabled', [
-                'label' => '是否启用',
                 'id' => 'enabled',
-                'value' => isset($conferenceRoom['enabled']) ? $conferenceRoom['enabled'] : NULL
+                'value' => isset($cr['enabled']) ? $cr['enabled'] : NULL
             ])
         </div>
     </div>

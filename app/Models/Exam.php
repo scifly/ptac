@@ -36,7 +36,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|Exam whereSubjectIds($value)
  * @method static Builder|Exam whereUpdatedAt($value)
  * @mixin \Eloquent
- * @property-read \App\Models\ExamType $examType
+ * @property-read ExamType $examType
  */
 class Exam extends Model {
     
@@ -71,7 +71,6 @@ class Exam extends Model {
             $class = Squad::whereId($classId)->first();
             $selectedClasses[$classId] = $class['name'];
         }
-        
         return $selectedClasses;
         
     }
@@ -82,13 +81,13 @@ class Exam extends Model {
      * @param $subjectIds
      * @return array
      */
-    public function subjects($subjectIds) {
+    public function subjects($subjectIds = null) {
+        
         $subjectIds = explode(",", $subjectIds);
         $selectedSubjects = [];
         foreach ($subjectIds as $subjectId) {
             $selectedSubjects[$subjectId] = Subject::whereId($subjectId)->value('name');
         }
-        
         return $selectedSubjects;
         
     }
@@ -120,7 +119,6 @@ class Exam extends Model {
                 $_exams[] = $exam;
             }
         }
-        
         return $_exams;
         
     }
@@ -139,7 +137,6 @@ class Exam extends Model {
         foreach ($subject_ids as $subject_id) {
             $subjects[] = Subject::whereId($subject_id)->first(['id', 'name']);
         }
-        
         return $subjects;
         
     }
@@ -219,7 +216,6 @@ class Exam extends Model {
                 ],
             ],
         ];
-        
         return Datatable::simple($this, $columns, $joins);
         
     }

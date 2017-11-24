@@ -23,10 +23,13 @@ class ScoreController extends Controller {
     protected $subject;
     
     function __construct(Score $score, Exam $exam, Student $student, Subject $subject) {
+        
+        $this->middleware(['auth']);
         $this->score = $score;
         $this->exam = $exam;
         $this->student = $student;
         $this->subject = $subject;
+        
     }
     
     /**

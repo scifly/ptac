@@ -1,1 +1,1 @@
-$(crud.index('messages'));
+page.index('messages');

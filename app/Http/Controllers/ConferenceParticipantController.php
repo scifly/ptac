@@ -13,10 +13,12 @@ use Illuminate\Support\Facades\Request;
  */
 class ConferenceParticipantController extends Controller {
     
-    protected $conferenceParticipant;
+    protected $cp;
     
-    function __construct(ConferenceParticipant $conferenceParticipant) {
-        $this->conferenceParticipant = $conferenceParticipant;
+    function __construct(ConferenceParticipant $cp) {
+    
+        $this->middleware(['auth']);
+        $this->cp = $cp;
         
     }
     
@@ -26,8 +28,9 @@ class ConferenceParticipantController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function index() {
+        
         if (Request::get('draw')) {
-            return response()->json($this->conferenceParticipant->datatable());
+            return response()->json($this->cp->datatable());
         }
         
         return $this->output(__METHOD__);
@@ -41,7 +44,9 @@ class ConferenceParticipantController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(ConferenceParticipantRequest $request) {
-        return $this->conferenceParticipant->create($request->all()) ? $this->succeed() : $this->fail();
+        
+        return $this->cp->create($request->all())
+            ? $this->succeed() : $this->fail();
         
     }
     
@@ -52,12 +57,11 @@ class ConferenceParticipantController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function show($id) {
-        $conferenceParticipant = $this->conferenceParticipant->find($id);
-        if (!$conferenceParticipant) {
-            return $this->notFound();
-        }
         
-        return $this->output(__METHOD__, ['conferenceParticipant' => $conferenceParticipant]);
+        $cp = $this->cp->find($id);
+        if (!$cp) { return $this->notFound(); }
+        
+        return $this->output(__METHOD__, ['cp' => $cp]);
         
     }
     

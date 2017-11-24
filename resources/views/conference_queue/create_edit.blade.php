@@ -1,11 +1,11 @@
-<div class="box box-widget">
+<div class="box box-default box-solid">
     <div class="box-header with-border">
         @include('partials.form_header')
     </div>
     <div class="box-body">
         <div class="form-horizontal">
-            @if (!empty($conferenceQueue['id']))
-                {{ Form::hidden('id', $conferenceQueue['id'], ['id' => 'id']) }}
+            @if (!empty($cq['id']))
+                {{ Form::hidden('id', $cq['id'], ['id' => 'id']) }}
             @endif
             <div class="form-group">
                 {!! Form::label('name', '名称', [
@@ -27,7 +27,7 @@
                 <div class="col-sm-6">
                     {!! Form::text('start', null, [
                         'class' => 'form-control',
-                        'placeholder' => '(请输入会议名称)',
+                        'placeholder' => '(请输入会议开始时间)',
                         'required' => 'true',
                         'type' => 'date'
                     ]) !!}
@@ -40,7 +40,7 @@
                 <div class="col-sm-6">
                     {!! Form::text('end', null, [
                         'class' => 'form-control',
-                        'placeholder' => '(请输入会议名称)',
+                        'placeholder' => '(请输入会议结束时间)',
                         'required' => 'true',
                         'type' => 'date'
                     ]) !!}
@@ -51,25 +51,13 @@
                 'id' => 'conference_room_id',
                 'items' => $conferenceRooms
             ])
-            <div class="form-group">
-                {!! Form::label('remark', '备注', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
-                <div class="col-sm-6">
-                    {!! Form::text('remark', null, [
-                        'class' => 'form-control',
-                        'placeholder' => '(会议室可容纳的人数)',
-                        'required' => 'true',
-                        'type' => 'number'
-                    ]) !!}
-                </div>
-            </div>
             @include('partials.multiple_select', [
                 'label' => '与会者',
                 'id' => 'educator_ids[]',
                 'items' => $educators,
                 'selectedItems' => isset($selectedEducators) ? $selectedEducators : NULL
             ])
+            @include('partials.remark')
         </div>
     </div>
     @include('partials.form_buttons')

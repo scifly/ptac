@@ -12,7 +12,7 @@ return [
     | Supported: "pusher", "redis", "log", "null"
     |
     */
-    'default' => env('BROADCAST_DRIVER', 'null'),
+    'default'     => env('BROADCAST_DRIVER', 'pusher'),
     /*
     |--------------------------------------------------------------------------
     | Broadcast Connections
@@ -30,18 +30,20 @@ return [
             'secret'  => env('PUSHER_APP_SECRET'),
             'app_id'  => env('PUSHER_APP_ID'),
             'options' => [
-                //
+                'cluster' => 'ap1',
+                'encrypted' => true
             ],
         ],
-        'redis' => [
+        'redis'  => [
             'driver'     => 'redis',
             'connection' => 'default',
         ],
-        'log' => [
+        'log'    => [
             'driver' => 'log',
         ],
-        'null' => [
+        'null'   => [
             'driver' => 'null',
         ],
+        
     ],
 ];

@@ -1,1 +1,1 @@
-$(crud.create('formComboType', 'combo_types'));
+page.create('formComboType', 'combo_types');

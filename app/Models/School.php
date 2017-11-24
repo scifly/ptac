@@ -65,7 +65,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $menu_id 对应的菜单ID
  * @property-read \App\Models\Menu $menu
  * @method static Builder|School whereMenuId($value)
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\ExamType[] $examTypes
+ * @property-read Collection|ExamType[] $examTypes
+ * @property-read Collection|Group[] $groups
  */
 class School extends Model {
     
@@ -201,6 +202,7 @@ class School extends Model {
      * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
      */
     public function wapSiteModules() {
+        
         return $this->hasManyThrough('App\Models\WapSiteModule', 'App\Models\WapSite');
         
     }
@@ -211,6 +213,7 @@ class School extends Model {
      * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
      */
     public function classes() {
+        
         return $this->hasManyThrough(
             'App\Models\Squad', 'App\Models\Grade',
             'school_id', 'grade_id'
@@ -225,6 +228,7 @@ class School extends Model {
      * @return Collection|static[]
      */
     public function operatorSchools($operatorId) {
+        
         $schoolIds = Operator::whereId($operatorId)->where('enabled', 1)->first()->school_ids;
         
         return $this->whereIn('id', explode(',', $schoolIds))->whereEnabled(1)->get();
@@ -239,6 +243,7 @@ class School extends Model {
      * @return bool
      */
     public function store(array $data, $fireEvent = false) {
+        
         $school = $this->create($data);
         if ($school && $fireEvent) {
             event(new SchoolCreated($school));
@@ -259,6 +264,7 @@ class School extends Model {
      * @return bool
      */
     public function modify(array $data, $id, $fireEvent = false) {
+        
         $school = $this->find($id);
         $updated = $school->update($data);
         if ($updated && $fireEvent) {
@@ -279,10 +285,9 @@ class School extends Model {
      * @return bool|null
      */
     public function remove($id, $fireEvent = false) {
+        
         $school = $this->find($id);
-        if (!$school) {
-            return false;
-        }
+        if (!$school) { return false; }
         $removed = $this->removable($school) ? $school->delete() : false;
         if ($removed && $fireEvent) {
             event(new SchoolDeleted($school));
@@ -295,12 +300,23 @@ class School extends Model {
     }
     
     public function datatable() {
+        
         $columns = [
             ['db' => 'School.id', 'dt' => 0],
-            ['db' => 'School.name as schoolname', 'dt' => 1],
+            [
+                'db' => 'School.name as schoolname', 'dt' => 1,
+                'formatter' => function($d) {
+                    return '<i class="fa fa-university"></i>&nbsp;' . $d;
+                }
+            ],
             ['db' => 'School.address', 'dt' => 2],
             ['db' => 'SchoolType.name as typename', 'dt' => 3],
-            ['db' => 'Corp.name as corpname', 'dt' => 4],
+            [
+                'db' => 'Corp.name as corpname', 'dt' => 4,
+                'formatter' => function($d) {
+                    return '<i class="fa fa-weixin"></i>&nbsp;' . $d;
+                }
+            ],
             ['db' => 'School.created_at', 'dt' => 5],
             ['db' => 'School.updated_at', 'dt' => 6],
             [
@@ -334,6 +350,7 @@ class School extends Model {
     }
     
     public function schools($schoolIds) {
+        
         $schoolList = [];
         if (!empty($schoolIds)) {
             $schools = $this->whereIn('id', explode(',', $schoolIds))->get()->toArray();
@@ -341,7 +358,7 @@ class School extends Model {
                 $schoolList[$school['id']] = $school['name'];
             }
         }
-        
+
         return $schoolList;
         
     }

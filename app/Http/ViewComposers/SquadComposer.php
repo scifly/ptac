@@ -19,12 +19,11 @@ class SquadComposer {
     
     public function compose(View $view) {
         
-        
         $data = Educator::with('user')->get()->toArray();
         $educators = [];
         if (!empty($data)) {
             foreach ($data as $v) {
-                $educators[$v['id']] = $v['user']['username'];
+                $educators[$v['id']] = $v['user']['realname'];
             }
         }
         $view->with([

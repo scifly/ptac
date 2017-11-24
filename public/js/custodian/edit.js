@@ -1,46 +1,47 @@
-$(crud.edit('formCustodian','custodians'));
-$(".expiry-date").datetimepicker({
-    dateFormat: 'yy-mm-dd'
-});
+page.edit('formCustodian', 'custodians');
 
 var $tbody = $("#mobileTable").find("tbody");
-var n = 0;
-
-var id = $('#id').val();
-var $formEducator = $('#formCustodian');
-var $mobileSize = $('#mobile-size').val();
+// 监护人手机号码数量
+var n = $('#count').val();
 $(document).off('click','.btn-mobile-add');
 
-// 手机号
+/** 监护人手机号管理 */
 $(document).on('click', '.btn-mobile-add', function (e) {
     e.preventDefault();
-    $mobileSize++;
-    // add html
+    n++;
+    // insert html for adding additional mobile number
     $tbody.append(
-        '<tr><td><input class="form-control" placeholder="（请输入手机号码）" name="mobile['+ $mobileSize +'][mobile]" value="" ></td>' +
-        '<td style="text-align: center"><input type="radio" class="minimal" id="mobile[isdefault]" name="mobile[isdefault]" value="' + $mobileSize + '"></td>' +
-        '<td style="text-align: center"><input type="checkbox" class="minimal" name="mobile['+ $mobileSize +'][enabled]"></td>' +
-        '<td style="text-align: center"><button class="btn btn-box-tool btn-add btn-mobile-add" type="button"><i class="fa fa-plus text-blue"></i></button></td></tr>'
+        '<tr>' +
+        '<td>' +
+        '<input class="form-control" placeholder="（请输入手机号码）" name="mobile['+ n +'][mobile]" value="" >' +
+        '</td>' +
+        '<td style="text-align: center">' +
+        '<input type="radio" class="minimal" id="mobile[isdefault]" name="mobile[isdefault]" value="' + n + '">' +
+        '</td>' +
+        '<td style="text-align: center">' +
+        '<input type="checkbox" class="minimal" name="mobile['+ n +'][enabled]">' +
+        '</td>' +
+        '<td style="text-align: center">' +
+        '<button class="btn btn-box-tool btn-add btn-mobile-add" type="button">' +
+        '<i class="fa fa-plus text-blue"></i>' +
+        '</button>' +
+        '</td>' +
+        '</tr>'
     );
-    // icheck init
-    $tbody.find('input[type="radio"]').iCheck({
-        checkboxClass: 'icheckbox_minimal-blue',
-        radioClass: 'iradio_minimal-blue'
-    });
-    $tbody.find('input[type="checkbox"]').iCheck({
-        checkboxClass: 'icheckbox_minimal-blue',
-        radioClass: 'iradio_minimal-blue'
-    });
+    // init iCheck plugin
+    page.initICheck();
+    // refresh add/remove buttons next to mobile numbers
     $tbody.find('tr:not(:last) .btn-mobile-add')
         .removeClass('btn-mobile-add').addClass('btn-mobile-remove')
         .html('<i class="fa fa-minus text-blue"></i>');
     var $mobile = $tbody.find('tr:last input[class="form-control"]');
-    // $formEducator.parsley().destroy();
-    // $mobile.attr('pattern', '/^1[0-9]{10}$/');
-    // $mobile.attr('required', 'true');
-    // $formEducator.parsley();
+    // reinitialize parsley plugin
+    $formCustodian.parsley().destroy();
+    $mobile.attr('pattern', '/^1[0-9]{10}$/');
+    $mobile.attr('required', 'true');
+    $formCustodian.parsley();
 }).on('click', '.btn-mobile-remove', function (e) {
-
+    // remove the current mobile number
     $(this).parents('tr:first').remove();
     e.preventDefault();
     var $defaults = $('input[name="mobile[isdefault]"]');
@@ -57,54 +58,20 @@ $(document).on('click', '.btn-mobile-add', function (e) {
     return false;
 });
 
-// $(function () {
-//     $(document).off('click','.btn-add2');
-//     $(document).on('click', '.btn-add2', function (e) {
-// //            样式
-//         e.preventDefault();
-//         var controlForm = $('.addInput');
-//         var html = '<div class="entry input-group col-sm-6 col-sm-offset-3">' +
-//             '<input type="text" class="form-control" name="relationship[]">' +
-//             '<span class="input-group-btn">' +
-//             '<button class="btn btn-add2 btn-success" type="button">' +
-//             '<span class="glyphicon glyphicon-plus"></span>' +
-//             '</button>' +
-//             '</span>' +
-//             '</div>';
-//         controlForm.append(html);
-//         controlForm.find('.entry:not(:last) .btn-add2')
-//             .removeClass('btn-add2').addClass('btn-remove')
-//             .removeClass('btn-success').addClass('btn-danger')
-//             .html('<span class="glyphicon glyphicon-minus"></span>');
-//     }).on('click', '.btn-remove', function (e) {
-//         $(this).parents('.entry:first').remove();
-//         e.preventDefault();
-//         return false;
-//     });
-// });
+/** 监护人学生关系管理 */
+var item = 0;
+if (typeof custodian === 'undefined') {
+    if($('#tBody tr:last').find('input').val() !== undefined) {
+        item = $('#tBody tr:last').find('input').val();
+    }
+    $.getMultiScripts(['js/custodian.relationship.js'], page.siteRoot())
+        .done(function() { custodian.init(item); });
+} else { custodian.init(item); }
 
-// 学生、关系
-var $tbody2 = $("#classTable").find("tbody");
-$(document).off('click','.btn-class-add');
-$(document).on('click', '.btn-class-add', function (e) {
-    e.preventDefault();
-    var html = $tbody2.find('tr').last().clone();
-    html.find('span.select2').remove();
-    // 删除插件初始化增加的html
-    $tbody2.append(html);
-    // select2 init
-    $('select').select2();
-    // 加减切换
-    $tbody2.find('tr:not(:last) .btn-class-add')
-        .removeClass('btn-class-add').addClass('btn-class-remove')
-        .html('<i class="fa fa-minus text-blue"></i>');
-}).on('click', '.btn-class-remove', function (e) {
-    // 删除元素
-    $(this).parents('tr:first').remove();
-    e.preventDefault();
-    return false;
-});
 
-//部门
-// 初始化部门树 相关事件
-dept.init('custodians/edit/' + id);
+// /** 监护人所属部门管理 */
+// var id = $('#id').val();    // 监护人ID
+// if (typeof dept === 'undefined') {
+//     $.getMultiScripts(['js/department.tree.js'], page.siteRoot())
+//         .done(function() { dept.init('custodians/edit/' + id); })
+// } else { dept.init('custodians/edit/' + id); }

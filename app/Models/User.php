@@ -1,8 +1,10 @@
 <?php
 namespace App\Models;
 
+use App\Events\UserCreated;
+use App\Events\UserDeleted;
+use App\Events\UserUpdated;
 use App\Facades\DatatableFacade as Datatable;
-use App\Http\Requests\UserRequest;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -192,6 +194,7 @@ class User extends Authenticatable {
      * @return array
      */
     public function users(array $userIds) {
+        
         $users = [];
         foreach ($userIds as $id) {
             $user = $this->find($id);
@@ -203,33 +206,82 @@ class User extends Authenticatable {
     }
     
     /**
-     * 判断用户记录是否已经存在
+     * 返回用户所属最顶级部门的ID
      *
-     * @param UserRequest $request
-     * @param null $id
-     * @return bool
+     * @param User $user
+     * @return mixed
      */
-    public function existed(UserRequest $request, $id = null) {
-        if (!$id) {
-            $user = $this->where('username', $request->input('username'))
-                ->orWhere('email', $request->input('email'))
-                ->orWhere('wechatid', $request->input('wechatid'))
-                ->orWhere('mobile', $request->input('mobile'))
-                ->first();
-        } else {
-            $user = $this->where('username', $request->input('username'))
-                ->where('id', '<>', $id)
-                ->orWhere('email', $request->input('email'))
-                ->orWhere('wechatid', $request->input('wechatid'))
-                ->orWhere('mobile', $request->input('mobile'))
-                ->first();
-        }
+    public function topDeptId(User $user) {
         
-        return $user ? true : false;
+        $departmentIds = $user->departments->pluck('id')->toArray();
+        sort($departmentIds);
+        
+        return !empty($departmentIds) ? $departmentIds[0] : 1;
+        
+    }
+    
+    /**
+     * 创建企业号会员
+     *
+     * @param $id
+     */
+    public function createWechatUser($id) {
+        
+        $user = $this->find($id);
+        $mobile = Mobile::whereUserId($id)->where('isdefault', 1)->first()->mobile;
+        // if ($user && $mobile) {
+            $data = [
+                'userid'       => $user->userid,
+                'name'         => $user->realname,
+                'english_name' => $user->english_name,
+                'mobile'       => $mobile,
+                'department'   => $user->departments->pluck('id')->toArray(),
+                'gender'       => $user->gender,
+                'enable'       => $user->enabled,
+            ];
+            event(new UserCreated($data));
+        // }
+    
+    }
+    public function importData(&$data) {
+        $u = $this->create($data);
+        $data['id'] = $u->id;
+    }
+    /**
+     * 更新企业号会员
+     *
+     * @param $id
+     */
+    public function updateWechatUser($id) {
+        
+        $user = $this->find($id);
+        $mobile = Mobile::whereUserId($id)->where('isdefault', 1)->first()->mobile;
+        $data = [
+            'userid'       => $user->userid,
+            'name'         => $user->realname,
+            'english_name' => $user->english_name,
+            'mobile'       => $mobile,
+            'department'   => $user->departments->pluck('id')->toArray(),
+            'gender'       => $user->gender,
+            'enable'       => $user->enabled,
+        ];
+        event(new UserUpdated($data));
+        
+    }
+    
+    /**
+     * 删除企业号会员
+     *
+     * @param $id
+     */
+    public function deleteWechatUser($id) {
+        
+        event(new UserDeleted($this->find($id)->userid));
         
     }
     
     public function datatable() {
+        
         $columns = [
             ['db' => 'User.id', 'dt' => 0],
             ['db' => 'User.username', 'dt' => 2],
@@ -264,6 +316,7 @@ class User extends Authenticatable {
         ];
         
         return Datatable::simple($this, $columns, $joins);
+        
     }
     
 }

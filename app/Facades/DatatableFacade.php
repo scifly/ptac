@@ -1,6 +1,8 @@
 <?php
 namespace App\Facades;
 
+use Carbon\Carbon;
+use DateTime;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Facade;
@@ -8,28 +10,18 @@ use Illuminate\Support\Facades\Request;
 
 class DatatableFacade extends Facade {
     
-    const DT_ON = '<span class="badge bg-green">%s</span>';
-    const DT_OFF = '<span class="badge bg-gray">%s</span>';
-    const DT_LINK_EDIT = <<<HTML
-        <a id="%s" href="javascript:void(0)" class="btn btn-success btn-icon btn-circle btn-xs">
-            <i class="fa fa-edit"></i>
-        </a>
-HTML;
-    const DT_LINK_DEL = <<<HTML
-        <a id="%s" href="javascript:void(0)" class="btn btn-danger btn-icon btn-circle btn-xs" data-toggle="modal">
-            <i class="fa fa-trash"></i>
-        </a>
-HTML;
-    const DT_LINK_SHOW = <<<HTML
-        <a id="%s" href="javascript:void(0)" class="btn btn-primary btn-icon btn-circle btn-xs"  data-toggle="modal">
-            <i class="fa fa-eye"></i>
-        </a>
-HTML;
-    const DT_LINK_RECHARGE = <<<HTML
-        <a id="%s" href="javascript:void(0)" class="btn btn-primary btn-icon btn-circle btn-xs"  >
-            <i class="fa fa-money"></i>
-        </a>
-HTML;
+    const DT_ON = '<i class="fa fa-circle text-green" title="已启用"></i>';
+    const DT_OFF = '<i class="fa fa-circle text-gray" title="未启用"></i>';
+    const BADGE_GRAY = '<span class="text-black">[n/a]</span>';
+    const BADGE_GREEN = '<span class="text-green">%s</span>';
+    const BADGE_YELLOW = '<span class="text-yellow">%s</span>';
+    const BADGE_RED = '<span class="text-red">%s</span>';
+    const BADGE_LIGHT_BLUE = '<span class="text-light-blue">%s</span>';
+    const BADGE_MAROON = '<span class="text-maroon">%s</span>';
+    const DT_LINK_EDIT = '<a id="%s" title="编辑" href="#"><i class="fa fa-pencil"></i></a>';
+    const DT_LINK_DEL = '<a id="%s" title="删除" href="#" data-toggle="modal"><i class="fa fa-remove"></i></a>';
+    const DT_LINK_SHOW = '<a id="%s" title="详情" href="#" data-toggle="modal"><i class="fa fa-bars"></i></a>';
+    const DT_LINK_RECHARGE = '<a id="%s" href="#"><i class="fa fa-money"></i></a>';
     const DT_SPACE = '&nbsp;';
     const DT_PRIMARY = '<span class="badge badge-info">%s</span>';
     const DT_LOCK = '<i class="fa fa-lock"></i>&nbsp;已占用';
@@ -52,6 +44,7 @@ HTML;
      * @internal param string $primaryKey Primary key of the table
      */
     static function simple(Model $model, array $columns, array $joins = null, $condition = null) {
+        
         $modelName = class_basename($model);
         $tableName = $model->getTable();
         switch ($modelName) {
@@ -98,7 +91,6 @@ HTML;
         // Total data set length
         $resTotalLength = DB::select("SELECT COUNT(*) AS t FROM " . $tableName)[0]->t;
         $recordsTotal = $resTotalLength;
-        
         // Output
         return [
             "draw"            => intval(Request::get('draw')),
@@ -118,6 +110,7 @@ HTML;
      * @internal param array $columns Column information array
      */
     private static function limit() {
+        
         $limit = '';
         $start = Request::get('start');
         $length = Request::get('length');
@@ -139,6 +132,7 @@ HTML;
      * @internal param Request $request Data sent to server by DataTables
      */
     private static function order(array $columns) {
+        
         $orderBy = '';
         $order = Request::get('order');
         if (isset($order) && count($order)) {
@@ -176,6 +170,7 @@ HTML;
      * @return array        Array of property values
      */
     private static function pluck(array $a, $prop) {
+        
         $out = [];
         for ($i = 0, $len = count($a); $i < $len; $i++) {
             $out[] = $a[$i][$prop];
@@ -201,6 +196,7 @@ HTML;
      *    sql_exec() function
      */
     private static function filter(array $columns) {
+        
         $globalSearch = [];
         $columnSearch = [];
         $dtColumns = self::pluck($columns, 'dt');
@@ -208,17 +204,20 @@ HTML;
         $requestColumns = Request::get('columns');
         if (isset($requestSearch) && $requestSearch['value'] != '') {
             $str = $requestSearch['value'];
-            for ($i = 0, $ien = count($requestColumns); $i < $ien; $i++) {
-                $requestColumn = $requestColumns[$i];
-                $columnIdx = array_search($requestColumn['data'], $dtColumns);
-                $column = $columns[$columnIdx];
-                if ($requestColumn['searchable'] == 'true') {
-                    # $binding = self::bind($bindings, '%' . $str . '%', PDO::PARAM_STR);
-                    $pos = stripos($column['db'], ' as ');
-                    if ($pos) {
-                        $column['db'] = substr($column['db'], 0, $pos);
+            $keys = explode(' ', $str);
+            for ($j = 0; $j < count($keys); $j++) {
+                for ($i = 0, $ien = count($requestColumns); $i < $ien; $i++) {
+                    $requestColumn = $requestColumns[$i];
+                    $columnIdx = array_search($requestColumn['data'], $dtColumns);
+                    $column = $columns[$columnIdx];
+                    if ($requestColumn['searchable'] == 'true') {
+                        # $binding = self::bind($bindings, '%' . $str . '%', PDO::PARAM_STR);
+                        $pos = stripos($column['db'], ' as ');
+                        if ($pos) {
+                            $column['db'] = substr($column['db'], 0, $pos);
+                        }
+                        $globalSearch[$j][] = $column['db'] . " LIKE BINARY '%" . $keys[$j] . "%'";
                     }
-                    $globalSearch[] = $column['db'] . " LIKE BINARY '%" . $str . "%'";
                 }
             }
         }
@@ -235,8 +234,12 @@ HTML;
         }
         // Combine the filters into a single string
         $where = '';
+        $filters = [];
         if (count($globalSearch)) {
-            $where = '(' . implode(' OR ', $globalSearch) . ')';
+            for ($i = 0; $i < count($globalSearch); $i++) {
+                $filters[$i] = '(' . implode(' OR ', $globalSearch[$i]) . ')';
+            }
+            $where = '(' . implode(' AND ', $filters) . ')';
         }
         if (count($columnSearch)) {
             $where = $where === '' ?
@@ -259,6 +262,7 @@ HTML;
      * @return array Formatted data in a row based format
      */
     static function data_output(array $columns, array $data) {
+        
         $out = [];
         $length = count($data);
         for ($i = 0; $i < $length; $i++) {
@@ -266,11 +270,11 @@ HTML;
             $_data = (array)$data[$i];
             $j = 0;
             foreach ($_data as $name => $value) {
-                /*if (in_array($name, ['created_at', 'updated_at'])) {
+                if (isset($value) && self::validateDate($value)) {
+                    Carbon::setLocale('zh');
                     $dt = Carbon::createFromFormat('Y-m-d H:i:s', $value);
-                    
                     $value = $dt->diffForhumans();
-                }*/
+                }
                 $column = $columns[$j];
                 if (isset($column['formatter'])) {
                     $row[$column['dt']] = $column['formatter']($value, $_data);
@@ -311,6 +315,7 @@ HTML;
      * @internal param string $primaryKey Primary key of the table
      */
     static function complex(Model $model, $columns, $whereResult = null, $whereAll = null) {
+        
         # $localWhereResult = [];
         # $localWhereAll = [];
         $whereAllSql = '';
@@ -345,10 +350,7 @@ HTML;
         $resTotalLength = DB::select("SELECT COUNT(*) AS cnt FROM " . $table . $whereAllSql);
         $recordsTotal = $resTotalLength[0]->cnt;
         
-        /*
-         * Output
-         */
-        
+        /* Output */
         return [
             "draw"            => intval(Request::get('draw')),
             "recordsTotal"    => intval($recordsTotal),
@@ -365,6 +367,7 @@ HTML;
      * @return string Joined string
      */
     static function _flatten($a, $join = ' AND ') {
+        
         if (!$a) {
             return '';
         } else if ($a && is_array($a)) {
@@ -385,14 +388,23 @@ HTML;
      * @return string
      */
     static function dtOps(Model $model, $active, $row, $del = true) {
+        
         $id = $row['id'];
-        $status = $active ? sprintf(self::DT_ON, '已启用') : sprintf(self::DT_OFF, '未启用');
+        $status = $active ? self::DT_ON : self::DT_OFF;
         $showLink = sprintf(self::DT_LINK_SHOW, 'show_' . $id);
         $editLink = sprintf(self::DT_LINK_EDIT, 'edit_' . $id);
         $delLink = sprintf(self::DT_LINK_DEL, $id);
+        return
+            $status . str_repeat(self::DT_SPACE, 3) .
+            $showLink . str_repeat(self::DT_SPACE, 3) .
+            $editLink . ($del ? str_repeat(self::DT_SPACE, 2) . $delLink : '');
         
-        return $status . self::DT_SPACE . $showLink . self::DT_SPACE .
-            $editLink . ($del ? self::DT_SPACE . $delLink : '');
+    }
+    
+    private static function validateDate($date, $format = 'Y-m-d H:i:s') {
+        
+        $d = DateTime::createFromFormat($format, $date);
+        return $d && $d->format($format) == $date;
         
     }
     

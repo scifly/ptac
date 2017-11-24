@@ -24,7 +24,6 @@ class MessageComposer {
     
     public function compose(View $view) {
         
-        
         $view->with([
             'users'        => $this->users->pluck('realname', 'id'),
             'messageTypes' => $this->messageTypes->pluck('name', 'id'),

@@ -1,1 +1,1 @@
-$(crud.create('formAlertType', 'alert_types'));
+page.create('formAlertType', 'alert_types');

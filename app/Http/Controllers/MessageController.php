@@ -23,10 +23,13 @@ class MessageController extends Controller {
     protected $department;
     
     public function __construct(Message $message, User $user, Media $media, Department $department) {
+    
+        $this->middleware(['auth']);
         $this->message = $message;
         $this->user = $user;
         $this->media = $media;
         $this->department = $department;
+        
     }
     
     /**
@@ -35,6 +38,7 @@ class MessageController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
+        
         if (Request::get('draw')) {
             return response()->json($this->message->datatable());
         }
@@ -80,6 +84,7 @@ class MessageController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function show($id) {
+        
         $message = $this->message->find($id);
         if (!$message) {
             return $this->notFound();
@@ -101,6 +106,7 @@ class MessageController extends Controller {
      *
      */
     public function edit($id) {
+        
         $message = $this->message->find($id);
         if (!$message) {
             return $this->notFound();
@@ -122,6 +128,7 @@ class MessageController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(MessageRequest $request, $id) {
+        
         return $this->message->modify($request, $id) ? $this->succeed() : $this->fail();
         
     }
@@ -133,6 +140,7 @@ class MessageController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
+        
         $message = $this->message->find($id);
         if (!$message) {
             return $this->notFound();
@@ -143,10 +151,12 @@ class MessageController extends Controller {
     }
     
     public function getDepartmentUsers() {
+        
         return $this->department->showDepartments($this->checkRole());
     }
     
     private function checkRole($userId = 1) {
+        
         $user = User::find($userId);
         $departments = [];
         $childDepartmentId = [];

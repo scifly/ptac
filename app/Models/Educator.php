@@ -3,11 +3,16 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
+use App\Http\Requests\CustodianRequest;
 use App\Http\Requests\EducatorRequest;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Maatwebsite\Excel\Facades\Excel;
+use Maatwebsite\Excel\Readers\LaravelExcelReader;
 use Mockery\Exception;
 
 /**
@@ -35,12 +40,20 @@ use Mockery\Exception;
  * @property-read Squad[] $classes
  * @property-read EducatorClass $educatorClass
  * @property-read Team[] $teams
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\EducatorClass[] $educatorClasses
+ * @property-read Collection|EducatorClass[] $educatorClasses
  */
 class Educator extends Model {
     
     use ModelTrait;
-    
+    const EXCEL_FILE_TITLE = [
+        '姓名', '性别', '生日', '学校',
+        '年级', '班级', '手机号码',
+    ];
+    const EXCEL_EXPORT_TITLE = [
+        '教职工名称', '所属学校', '可用短信条数',
+        '创建于', '更新于',
+        '状态',
+    ];
     protected $fillable = [
         'user_id', 'team_ids', 'school_id',
         'sms_quote', 'enabled',
@@ -66,6 +79,7 @@ class Educator extends Model {
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function classes() {
+        
         return $this->belongsToMany(
             'App\Models\Squad',
             'educators_classes',
@@ -81,6 +95,7 @@ class Educator extends Model {
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function teams() {
+        
         return $this->belongsToMany(
             'App\Models\Team',
             'educators_teams'
@@ -102,8 +117,8 @@ class Educator extends Model {
      * @return Collection|static[]
      */
     public function gradeDeans($gradeId) {
-        $educatorIds = Grade::whereId($gradeId)->where('enabled', 1)->first()->educator_ids;
         
+        $educatorIds = Grade::whereId($gradeId)->where('enabled', 1)->first()->educator_ids;
         return $this->whereIn('id', explode(',', $educatorIds))->whereEnabled(1)->get();
         
     }
@@ -115,8 +130,8 @@ class Educator extends Model {
      * @return Collection|static[]
      */
     public function classDeans($classId) {
-        $educatorIds = Squad::whereId($classId)->where('enabled', 1)->first()->educator_ids;
         
+        $educatorIds = Squad::whereId($classId)->where('enabled', 1)->first()->educator_ids;
         return $this->whereIn('id', explode(',', $educatorIds))->whereEnabled(1)->get();
         
     }
@@ -128,6 +143,7 @@ class Educator extends Model {
      * @return array
      */
     public function educators(array $schoolIds = []) {
+        
         $educatorList = [];
         if (empty($schoolIds)) {
             $educators = $this->all();
@@ -137,12 +153,29 @@ class Educator extends Model {
         foreach ($educators as $educator) {
             $educatorList[$educator->id] = $educator->user->realname;
         }
-        
         return $educatorList;
         
     }
     
+    /**
+     * 根据教职员工Id获取教职员工列表
+     *
+     * @param array $ids
+     * @return array
+     */
+    public function getEducatorListByIds(array $ids) {
+        
+        $educators = [];
+        foreach ($ids as $id) {
+            $educator = $this->find($id);
+            $educators[$id] = $educator->user->realname;
+        }
+        return $educators;
+        
+    }
+    
     public function datatable() {
+        
         $columns = [
             ['db' => 'Educator.id', 'dt' => 0],
             ['db' => 'User.realname as username', 'dt' => 1],
@@ -154,12 +187,11 @@ class Educator extends Model {
                 'db'        => 'Educator.enabled', 'dt' => 6,
                 'formatter' => function ($d, $row) {
                     $id = $row['id'];
-                    $status = $d ? sprintf(Datatable::DT_ON, '已启用') : sprintf(Datatable::DT_OFF, '未启用');
+                    $status = $d ? Datatable::DT_ON : Datatable::DT_OFF;
                     $showLink = sprintf(Datatable::DT_LINK_SHOW, 'show_' . $id);
                     $editLink = sprintf(Datatable::DT_LINK_EDIT, 'edit_' . $id);
                     $delLink = sprintf(Datatable::DT_LINK_DEL, $id);
                     $rechargeLink = sprintf(Datatable::DT_LINK_RECHARGE, 'recharge_' . $id);
-                    
                     return $status . Datatable::DT_SPACE . $showLink . Datatable::DT_SPACE .
                         $editLink . Datatable::DT_SPACE . $delLink . Datatable::DT_SPACE . $rechargeLink;
                 },
@@ -183,7 +215,6 @@ class Educator extends Model {
                 ],
             ],
         ];
-        
         return Datatable::simple($this, $columns, $joins);
         
     }
@@ -195,14 +226,15 @@ class Educator extends Model {
      * @return bool|mixed
      */
     public function store(EducatorRequest $request) {
+        
         try {
             $exception = DB::transaction(function () use ($request) {
-//                dd($request->all());
+               // dd($request->all());
                 $userInputData = $request->input('user');
                 $userData = [
                     'username'     => $userInputData['username'],
                     'group_id'     => $userInputData['group_id'],
-                    'password'     => $userInputData['password'],
+                    'password'     => bcrypt($userInputData['password']),
                     'email'        => $userInputData['email'],
                     'realname'     => $userInputData['realname'],
                     'gender'       => $userInputData['gender'],
@@ -212,12 +244,10 @@ class Educator extends Model {
                     'isleader'     => 0,
                     'english_name' => $userInputData['english_name'],
                     'telephone'    => $userInputData['telephone'],
-                    'wechatid'     => '',
                     'enabled'      => $userInputData['enabled'],
                 ];
                 $user = new User();
                 $u = $user->create($userData);
-                unset($user);
                 $selectedDepartments = $request->input('selectedDepartments');
                 if (!empty($selectedDepartments)) {
                     $departmentUserModel = new DepartmentUser();
@@ -239,10 +269,9 @@ class Educator extends Model {
                     'enabled'   => $userInputData['enabled'],
                 ];
                 $educator = $this->create($educatorData);
-                $teamIds = $educatorInputData['team_id'];
-                if ($teamIds) {
+                if (isset($educatorInputData['team_id'])) {
                     $edTeam = new EducatorTeam();
-                    foreach ($teamIds as $key => $row) {
+                    foreach ($educatorInputData['team_id'] as $key => $row) {
                         $edData = [
                             'educator_id' => $educator->id,
                             'team_id'     => $row,
@@ -292,8 +321,10 @@ class Educator extends Model {
                     }
                     unset($mobile);
                 }
+                # 创建企业号成员
+                $user->createWechatUser($u->id);
+                unset($user);
             });
-            
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
             return false;
@@ -314,14 +345,15 @@ class Educator extends Model {
             $csArray[$k]['class_id'] = $tempArray[0];
             $csArray[$k]['subject_id'] = $tempArray[1];
         }
-        
         return $csArray;
     }
     
     public function modify(EducatorRequest $request) {
+        
         try {
             $exception = DB::transaction(function () use ($request) {
-//                dd($request->all());die;
+
+               // dd($request->all());die;
                 $userInputData = $request->input('user');
                 $userData = [
                     'username'     => $userInputData['username'],
@@ -339,7 +371,6 @@ class Educator extends Model {
                 ];
                 $user = new User();
                 $u = $user->where('id', $request->input('user_id'))->update($userData);
-                unset($user);
                 $selectedDepartments = $request->input('selectedDepartments');
                 if (!empty($selectedDepartments)) {
                     $departmentUserModel = new DepartmentUser();
@@ -362,11 +393,10 @@ class Educator extends Model {
                     'enabled'   => $userInputData['enabled'],
                 ];
                 $educatorUpdate = $this->where('id', $request->input('id'))->update($educatorData);
-                $teamIds = $educator['team_id'];
-                if ($teamIds) {
+                if (isset($educator['team_id'])) {
                     $edTeam = new EducatorTeam();
                     $edTeam->where('educator_id', $request->input('id'))->delete();
-                    foreach ($teamIds as $key => $row) {
+                    foreach ($educator['team_id'] as $key => $row) {
                         $edData = [
                             'educator_id' => $request->input('id'),
                             'team_id'     => $row,
@@ -376,13 +406,21 @@ class Educator extends Model {
                     }
                     unset($edTeam);
                 }
-                $classSubject = $request->input('classSubject');
-                if ($classSubject) {
+                $classSubjectData = $request->input('classSubject');
+                if ($classSubjectData) {
                     $educatorClass = new EducatorClass();
                     $educatorClass->where('educator_id', $request->input('id'))->delete();
-                    $classSubject = $this->array_unique_fb($classSubject);
-                    foreach ($classSubject as $key => $row) {
-                        if ($row['class_id'] != "" && $row['class_id'] != "") {
+                    
+                    $uniqueArray = [];
+                    foreach ($classSubjectData['class_ids'] as $index => $class) {
+                        $uniqueArray[] = [
+                            'class_id'   => $class,
+                            'subject_id' => $classSubjectData['subject_ids'][$index],
+                        ];
+                    }
+                    $classSubjects = $this->array_unique_fb($uniqueArray);
+                    foreach ($classSubjects as $key => $row) {
+                        if ($row['class_id'] != 0 && $row['class_id'] != 0) {
                             $educatorClassData = [
                                 'educator_id' => $request->input('id'),
                                 'class_id'    => $row['class_id'],
@@ -390,8 +428,9 @@ class Educator extends Model {
                                 'enabled'     => $userInputData['enabled'],
                             ];
                             $educatorClass->create($educatorClassData);
+            
                         }
-                        
+        
                     }
                     unset($educatorClass);
                 }
@@ -410,9 +449,11 @@ class Educator extends Model {
                     }
                     unset($mobile);
                 }
+                # 更新企业号成员
+                $user->UpdateWechatUser($request->input('user_id'));
+                unset($user);
                 
             });
-            
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
             return false;
@@ -428,15 +469,87 @@ class Educator extends Model {
      * @return bool
      */
     public function remove($id, $fireEvent = false) {
+        
         $school = $this->find($id);
         $removed = $this->removable($school) ? $school->delete() : false;
         if ($removed && $fireEvent) {
 //            event(new SchoolDeleted($school));
             return true;
         }
-        
         return $removed ? true : false;
         
+    }
+    /**
+     * 导入
+     *
+     * @param UploadedFile $file
+     * @return array
+     */
+    public function upload(UploadedFile $file) {
+        
+        $ext = $file->getClientOriginalExtension();     // 扩展名//xls
+        $realPath = $file->getRealPath();   //临时文件的绝对路径
+        // 上传文件
+        $filename = date('His') . uniqid() . '.' . $ext;
+        $bool = Storage::disk('uploads')->put($filename, file_get_contents($realPath));
+        if ($bool) {
+            $filePath = 'storage/app/uploads/' . date('Y') . '/' . date('m') . '/' . date('d') . '/' . $filename;
+            // var_dump($filePath);die;
+            /** @var LaravelExcelReader $reader */
+            $reader = Excel::load($filePath);
+            $sheet = $reader->getExcel()->getSheet(0);
+            $educators = $sheet->toArray();
+            if ($this->checkFileFormat($educators[0])) {
+                return [
+                    'error'   => 1,
+                    'message' => '文件格式错误',
+                ];
+            }
+            unset($educators[0]);
+            $educators = array_values($educators);
+            if (count($educators) != 0) {
+                # 去除表格的空数据
+                foreach ($educators as $key => $v) {
+                    if ((array_filter($v)) == null) {
+                        unset($educators[$key]);
+                    }
+                }
+                // $this->checkData($educators);
+            }
+            Storage::disk('uploads')->delete($filename);
+    
+        }
+        
+    }
+    /**
+     * 检查表头是否合法
+     * @param array $fileTitle
+     * @return bool
+     */
+    private function checkFileFormat(array $fileTitle) {
+        
+        return count(array_diff(self::EXCEL_FILE_TITLE, $fileTitle)) != 0;
+        
+    }
+    public function export($id) {
+        $educators = $this->where('school_id', $id)->get();
+        $data = array(self::EXCEL_EXPORT_TITLE);
+        foreach ($educators as $educator) {
+            if (!empty($educator)) {
+                $item = [
+                    $educator->user->realname,
+                    $educator->school->name,
+                    $educator->sms_quote,
+                    $educator->created_at,
+                    $educator->updated_at,
+                    $educator->enabled == 1 ? '启用' : '禁用',
+                ];
+                $data[] = $item;
+                unset($item);
+            }
+        }
+        
+        return $data;
     }
 }
 

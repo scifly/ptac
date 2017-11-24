@@ -24,25 +24,24 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read \App\Models\Custodian $custodian
  * @property-read \App\Models\Student $student
  * @method static Builder|CustodianStudent whereEnabled($value)
+ * @property string|null $expiration
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\CustodianStudent whereExpiration($value)
  */
 class CustodianStudent extends Model {
     
     protected $table = 'custodians_students';
     
     protected $fillable = [
-        'custodian_id', 'student_id',
-        'relationship', 'enabled',
+        'custodian_id', 'student_id', 'relationship',
+        'expiration', 'enabled',
     ];
     
-    public function custodian() {
-        return $this->belongsTo('App\Models\Custodian');
-    }
+    public function custodian() { return $this->belongsTo('App\Models\Custodian'); }
     
-    public function student() {
-        return $this->belongsTo('App\Models\Student');
-    }
+    public function student() { return $this->belongsTo('App\Models\Student'); }
     
     public function storeByCustodianId($custodianId, array $studentIds) {
+        
         foreach ($studentIds as $studentId => $relationship) {
             $this->create([
                 'custodian_id' => $custodianId,
@@ -55,6 +54,7 @@ class CustodianStudent extends Model {
     }
     
     public function storeByStudentId($studentId, array $custodianIds) {
+        
         foreach ($custodianIds as $custodianId => $relationship) {
             $this->create([
                 'student_id'   => $studentId,

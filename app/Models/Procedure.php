@@ -4,6 +4,7 @@ namespace App\Models;
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -26,10 +27,10 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|Procedure whereSchoolId($value)
  * @method static Builder|Procedure whereUpdatedAt($value)
  * @mixin \Eloquent
- * @property-read \App\Models\ProcedureType $procedureType
- * @property-read \App\Models\School $school
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\ProcedureLog[] $procedureLogs
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\ProcedureStep[] $procedureSteps
+ * @property-read ProcedureType $procedureType
+ * @property-read School $school
+ * @property-read Collection|ProcedureLog[] $procedureLogs
+ * @property-read Collection|ProcedureStep[] $procedureSteps
  */
 class Procedure extends Model {
     

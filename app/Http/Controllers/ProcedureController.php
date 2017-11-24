@@ -15,7 +15,12 @@ class ProcedureController extends Controller {
     
     protected $procedure;
     
-    function __construct(Procedure $procedure) { $this->procedure = $procedure; }
+    function __construct(Procedure $procedure) {
+    
+        $this->middleware(['auth']);
+        $this->procedure = $procedure;
+    
+    }
     
     /**
      * 审批流程列表

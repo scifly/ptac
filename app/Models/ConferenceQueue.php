@@ -2,7 +2,7 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
-use App\Http\Requests\ConferenceQueueRequest;
+use App\Helpers\ModelTrait;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -42,7 +42,10 @@ use Illuminate\Database\Eloquent\Model;
  */
 class ConferenceQueue extends Model {
     
+    use ModelTrait;
+    
     protected $table = 'conference_queues';
+    
     protected $fillable = [
         'name', 'remark', 'start', 'end',
         'educator_id', 'educator_ids', 'attended_educator_ids',
@@ -66,23 +69,28 @@ class ConferenceQueue extends Model {
     /**
      * 保存会议
      *
-     * @param ConferenceQueueRequest $request
+     * @param array $data
      * @return bool
      */
-    public function store(ConferenceQueueRequest $request) {
-        return true;
+    public function store(array $data) {
+        
+        $cq = $this->create($data);
+        return $cq ? true : false;
         
     }
     
     /**
      * 更新会议
      *
-     * @param ConferenceQueueRequest $request
+     * @param array $data
      * @param $id
      * @return bool
      */
-    public function modify(ConferenceQueueRequest $request, $id) {
-        return true;
+    public function modify(array $data, $id) {
+
+        $cq = $this->find($id);
+        if (!$cq) { return false; }
+        return $cq->update($data) ? true : false;
         
     }
     
@@ -93,11 +101,15 @@ class ConferenceQueue extends Model {
      * @return bool
      */
     public function remove($id) {
-        return true;
+      
+        $cq = $this->find($id);
+        if (!$cq) { return false; }
+        return $cq->removable($id) ? $cq->delete() : false;
         
     }
     
     public function datatable() {
+        
         $columns = [
             ['db' => 'ConferenceQueue.id', 'dt' => 0],
             ['db' => 'ConferenceQueue.name', 'dt' => 1],

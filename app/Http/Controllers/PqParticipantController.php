@@ -33,6 +33,8 @@ class PqParticipantController extends Controller {
         PollQuestionnaireParticipant $pollQuestionnaireParticipant,
         User $user
     ) {
+        
+        $this->middleware(['auth']);
         #投票问卷
         $this->pollQuestionnaires = $pollQuestionnaires;
         #投票问卷参与者
@@ -52,6 +54,7 @@ class PqParticipantController extends Controller {
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function index() {
+        
         #根据登录的角色ID筛选参与的调查问卷
         $result = $this->pollQuestionnaires
             ->join('poll_questionnaire_participants as A', 'poll_questionnaires.id', 'A.pq_id')
@@ -64,6 +67,7 @@ class PqParticipantController extends Controller {
     }
     
     public function update(Request $q) {
+        
         #先获取项和题转换数组操作
         $json = json_decode($this->show($q->get('pollQuestion')));
         foreach ($json as $item) {
@@ -119,6 +123,7 @@ class PqParticipantController extends Controller {
      * @return string
      */
     public function show($id) {
+        
         #先获取投票问卷列
         $this->pollQuestionnaireSubject
             ->where('pq_id', $id)
@@ -147,15 +152,13 @@ class PqParticipantController extends Controller {
                                 #如果有答案
                                 if ($choice
                                     ->pollquestionnaireSubject
-                                    ->pollquestionnaireAnswer
-                                ) {
+                                    ->pollquestionnaireAnswer) {
                                     $answer = explode(',', $choice
                                         ->pollquestionnaireSubject
                                         ->pollquestionnaireAnswer->answer);
                                     #如果是填空
                                     if ($choice->pollquestionnaireSubject
-                                            ->subject_type == 2
-                                    ) {
+                                            ->subject_type == 2) {
                                         #如果有空数据处理
                                         if (count($answer) > $this->count)
                                             $tempC["answer"] = $answer[$this->count];

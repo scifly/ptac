@@ -1,1 +1,1 @@
-$(crud.create('formSchoolType', 'school_types'));
+page.create('formSchoolType', 'school_types');

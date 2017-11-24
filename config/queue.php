@@ -12,7 +12,7 @@ return [
     | Supported: "sync", "database", "beanstalkd", "sqs", "redis", "null"
     |
     */
-    'default' => env('QUEUE_DRIVER', 'sync'),
+    'default'     => env('QUEUE_DRIVER', 'database'),
     /*
     |--------------------------------------------------------------------------
     | Queue Connections
@@ -24,13 +24,13 @@ return [
     |
     */
     'connections' => [
-        'sync' => [
+        'sync'       => [
             'driver' => 'sync',
         ],
-        'database' => [
+        'database'   => [
             'driver'      => 'database',
             'table'       => 'jobs',
-            'queue'       => 'default',
+            'queue'       => '{default, import}',
             'retry_after' => 90,
         ],
         'beanstalkd' => [
@@ -39,7 +39,7 @@ return [
             'queue'       => 'default',
             'retry_after' => 90,
         ],
-        'sqs' => [
+        'sqs'        => [
             'driver' => 'sqs',
             'key'    => 'your-public-key',
             'secret' => 'your-secret-key',
@@ -47,7 +47,7 @@ return [
             'queue'  => 'your-queue-name',
             'region' => 'us-east-1',
         ],
-        'redis' => [
+        'redis'      => [
             'driver'      => 'redis',
             'connection'  => 'default',
             'queue'       => 'default',
@@ -64,7 +64,7 @@ return [
     | have failed. You may change them to any database / table you wish.
     |
     */
-    'failed' => [
+    'failed'      => [
         'database' => env('DB_CONNECTION', 'mysql'),
         'table'    => 'failed_jobs',
     ],

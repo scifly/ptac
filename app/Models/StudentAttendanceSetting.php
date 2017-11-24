@@ -33,8 +33,8 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|StudentAttendanceSetting whereStart($value)
  * @method static Builder|StudentAttendanceSetting whereUpdatedAt($value)
  * @mixin \Eloquent
- * @property-read \App\Models\Grade $grade
- * @property-read \App\Models\Semester $semester
+ * @property-read Grade $grade
+ * @property-read Semester $semester
  */
 class StudentAttendanceSetting extends Model {
     
@@ -106,7 +106,6 @@ class StudentAttendanceSetting extends Model {
                 ],
             ],
         ];
-        
         return Datatable::simple($this, $columns, $joins);
         
     }

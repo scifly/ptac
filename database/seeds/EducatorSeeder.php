@@ -2,17 +2,16 @@
 
 use Illuminate\Database\Seeder;
 
-class EducatorSeeder extends Seeder
-{
+class EducatorSeeder extends Seeder {
+
     /**
      * Run the database seeds.
      *
      * @return void
      */
-    public function run()
-    {
+    public function run() {
         //
-        factory(App\Models\Educator::class,10)->create()->each(function ($educator) {
+        factory(App\Models\Educator::class, 10)->create()->each(function ($educator) {
             $educator->save();
         });
     }

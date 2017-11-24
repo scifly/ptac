@@ -3,7 +3,7 @@
 use Illuminate\Database\Seeder;
 
 class StudentSeeder extends Seeder {
-    
+
     /**
      * Run the database seeds.
      *
@@ -12,7 +12,7 @@ class StudentSeeder extends Seeder {
     public function run() {
         factory(App\Models\Student::class, 10)->create()->each(function ($student) {
             $student->save();
-            
+
         });
     }
 }

@@ -34,15 +34,9 @@ class StudentAttendance extends Model {
     //
     protected $table = 'student_attendance';
     protected $fillable = [
-        'id',
-        'student_id',
-        'punch_time',
-        'inorout',
-        'attendance_machine_id',
-        'media_id',
-        'longitude',
-        'latitude',
-        'created_at',
+        'id', 'student_id', 'punch_time',
+        'inorout', 'attendance_machine_id', 'media_id',
+        'longitude', 'latitude', 'created_at',
         'updated_at',
     ];
     

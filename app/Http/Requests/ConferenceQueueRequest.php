@@ -18,6 +18,7 @@ class ConferenceQueueRequest extends FormRequest {
      * @return array
      */
     public function rules() {
+        
         return [
             'name'                  => 'required|string|between:4,120|unique:conference_queues,name,' .
                 $this->input('id') . ',id,' .
@@ -30,6 +31,17 @@ class ConferenceQueueRequest extends FormRequest {
             'educator_ids'          => 'required|string',
             'attendance_qrcode_url' => 'required|url',
         ];
+        
+    }
+    
+    protected function prepareForValidation() {
+        
+        $input = $this->all();
+        if (!isset($input['attended_educator_ids'])) {
+            $input['attended_educator_ids'] = '';
+        }
+        $this->replace($input);
+        
     }
     
 }

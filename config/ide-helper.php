@@ -8,8 +8,8 @@ return [
     | The default filename (without extension) and the format (php or json)
     |
     */
-    'filename' => '_ide_helper',
-    'format'   => 'php',
+    'filename'                    => '_ide_helper',
+    'format'                      => 'php',
     /*
     |--------------------------------------------------------------------------
     | Fluent helpers
@@ -18,7 +18,7 @@ return [
     | Set to true to generate commonly used Fluent methods
     |
     */
-    'include_fluent' => false,
+    'include_fluent'              => false,
     /*
     |--------------------------------------------------------------------------
     | Write Model Magic methods
@@ -27,7 +27,7 @@ return [
     | Set to false to disable write magic methods of model
     |
     */
-    'write_model_magic_where' => true,
+    'write_model_magic_where'     => true,
     /*
     |--------------------------------------------------------------------------
     | Helper files to include
@@ -37,8 +37,8 @@ return [
     | -- helpers (-H) option. Extra menu files can be included.
     |
     */
-    'include_helpers' => false,
-    'helper_files' => [
+    'include_helpers'             => false,
+    'helper_files'                => [
         base_path() . '/vendor/laravel/framework/src/Illuminate/Support/helpers.php',
     ],
     /*
@@ -50,7 +50,7 @@ return [
     | for models.
     |
     */
-    'model_locations' => [
+    'model_locations'             => [
         'app',
     ],
     /*
@@ -61,11 +61,11 @@ return [
     | These implementations are not really extended, but called with magic functions
     |
     */
-    'extra' => [
+    'extra'                       => [
         'Eloquent' => ['Illuminate\Database\Eloquent\Builder', 'Illuminate\Database\Query\Builder'],
         'Session'  => ['Illuminate\Session\Store'],
     ],
-    'magic' => [
+    'magic'                       => [
         'Log' => [
             'debug'     => 'Monolog\Logger::addDebug',
             'info'      => 'Monolog\Logger::addInfo',

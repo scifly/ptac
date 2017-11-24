@@ -19,7 +19,7 @@
         @if(isset($wapsite->wapSiteModules) && !empty($wapsite->wapSiteModules))
             @foreach($wapsite->wapSiteModules as $v)
 
-                <a href="../wap_site_modules/webindex/{{$v->id}}" class="weui-grid js_grid">
+                <a href="/wap_site_modules/webindex/{{$v->id}}" class="weui-grid js_grid">
                     <div class="weui-grid__icon">
                         <img src="../../{{$v->media->path}}" alt="Button">
                     </div>
@@ -28,6 +28,14 @@
                     </p>
                 </a>
             @endforeach
+                <a href="#" class="weui-grid js_grid">
+                    <div class="weui-grid__icon">
+                        <img src="" alt="Button">
+                    </div>
+                    <p class="weui-grid__label">
+                        {{$code}}
+                    </p>
+                </a>
         @endif
 
     </div>

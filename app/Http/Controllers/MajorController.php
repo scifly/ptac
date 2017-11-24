@@ -17,6 +17,8 @@ class MajorController extends Controller {
     protected $major, $subject;
     
     function __construct(Major $major, Subject $subject) {
+    
+        $this->middleware(['auth']);
         $this->major = $major;
         $this->subject = $subject;
         
@@ -28,6 +30,7 @@ class MajorController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
+        
         if (Request::get('draw')) {
             return response()->json($this->major->datatable());
         }
@@ -42,6 +45,7 @@ class MajorController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function create() {
+        
         return $this->output(__METHOD__, [
             'subjects' => $this->subject->subjects(1),
         ]);
@@ -55,6 +59,7 @@ class MajorController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(MajorRequest $request) {
+        
         return $this->major->store($request) ? $this->succeed() : $this->fail();
         
     }
@@ -66,6 +71,7 @@ class MajorController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function show($id) {
+        
         $major = $this->major->find($id);
         if (!$major) {
             return $this->notFound();
@@ -82,6 +88,7 @@ class MajorController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function edit($id) {
+        
         $major = $this->major->find($id);
         if (!$major) {
             return $this->notFound();
@@ -108,6 +115,7 @@ class MajorController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(MajorRequest $request, $id) {
+        
         $major = $this->major->find($id);
         if (!$major) {
             return $this->notFound();
@@ -124,6 +132,7 @@ class MajorController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
+        
         $major = $this->major->find($id);
         if (!$major) {
             return $this->notFound();

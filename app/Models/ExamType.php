@@ -25,6 +25,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read Exam $Exam
  * @property-read Exam[] $exams
  * @property-read \App\Models\School $school
+ * @property int $school_id
+ * @method static Builder|ExamType whereSchoolId($value)
  */
 class ExamType extends Model {
     

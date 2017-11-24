@@ -2,10 +2,9 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Helpers\ModelTrait;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
-use Mockery\Exception;
 
 /**
  * App\Models\ConferenceRoom 会议室
@@ -33,6 +32,8 @@ use Mockery\Exception;
  */
 class ConferenceRoom extends Model {
     
+    use ModelTrait;
+    
     protected $fillable = [
         'name', 'school_id', 'capacity',
         'remark', 'enabled',
@@ -44,6 +45,7 @@ class ConferenceRoom extends Model {
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function school() {
+        
         return $this->belongsTo('\App\Models\School');
         
     }
@@ -54,32 +56,55 @@ class ConferenceRoom extends Model {
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function conferenceQueues() {
+        
         return $this->hasMany('App\Models\ConferenceQueue');
         
     }
     
-    public function remove($conferenceRoomId) {
-        $conferenceRoom = $this->find($conferenceRoomId);
-        if (!$conferenceRoom) {
-            return false;
-        }
-        try {
-            $exception = DB::transaction(function () use ($conferenceRoom, $conferenceRoomId) {
-                $conferenceRoom->delete();
-                $conferenceQueues = ConferenceQueue::whereConferenceRoomId($conferenceRoomId)->get();
-                foreach ($conferenceQueues as $queue) {
-                    $queue->delete();
-                }
-            });
-            
-            return is_null($exception) ? true : false;
-        } catch (Exception $e) {
-            return false;
-        }
+    /**
+     * 保存会议室
+     *
+     * @param array $data
+     * @return bool
+     */
+    public function store(array $data) {
+        
+        $cr = $this->create($data);
+        return $cr ? true : false;
+        
+    }
+    
+    /**
+     * 更新会议室
+     *
+     * @param array $data
+     * @param $id
+     * @return bool
+     */
+    public function modify(array $data, $id) {
+        
+        $cr = $this->find($id);
+        if (!$cr) { return false; }
+        return $cr->update($data) ? true : false;
+        
+    }
+    
+    /**
+     * 删除会议室
+     *
+     * @param $id
+     * @return bool
+     */
+    public function remove($id) {
+        
+        $cr = $this->find($id);
+        if (!$cr) { return false; }
+        return $this->removable($id) ? $cr->delete() : false;
         
     }
     
     public function datatable() {
+        
         $columns = [
             ['db' => 'ConferenceRoom.id', 'dt' => 0],
             ['db' => 'ConferenceRoom.name', 'dt' => 1],

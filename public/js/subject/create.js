@@ -1,1 +1,1 @@
-$(crud.create('formSubject','subjects'))
+page.create('formSubject','subjects');

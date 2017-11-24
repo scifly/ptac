@@ -1,22 +1,36 @@
 var dept = {
     to: 0,
     $tree: function () {
-        return $('#department-tree');//树形图 jstree 左边
+        // 树形图 jstree 左边
+        return $('#department-tree');
     },
     $form: function () {
-        return $('.form-horizontal');//教职员工 编辑表单
+        // 教职员工 编辑表单
+        return $('.form-horizontal');
     },
     $footer: function () {
-        return $('.box-footer');//教职员工 编辑表单 保存取消按钮
+        //教职员工 编辑表单 保存取消按钮
+        return $('.box-footer');
     },
     $treeBox: function () {
-        return $('.tree-box');//整个 部门选择的页面
+        //整个 部门选择的页面
+        return $('.tree-box');
     },
     $todoList: function () {
-        return $('.todo-list');//部门选择-选择好的右边节点列表
+        //部门选择-选择好的右边节点列表
+        return $('.todo-list');
     },
     $checkedTreeNodes: function () {
-        return $('#department-nodes-checked');//教职员工 编辑表单 选择好的部门列表
+        //教职员工 编辑表单 选择好的部门列表
+        return $('#department-nodes-checked');
+    },
+    unbindEvents: function() {
+        $(document).off('click', '.remove-node');
+        $(document).off('click', '.close-selected');
+        $(document).off('click', '#save-nodes');
+        $(document).off('click', '#cancel-nodes');
+        $('#search_node').unbind('keyup');
+        $('#add-department').unbind('click');
     },
     remove: function () {
         $(document).on('click', '.remove-node', function () {
@@ -60,64 +74,68 @@ var dept = {
         var selectedDepartmentIds = selectedNodes.split(',');
         dept.$footer().hide();
         dept.$form().hide();
-
         dept.$treeBox().show();
         //部门树形图中的保存取消按钮
         $('.tree-box .box-footer').show();
-
         dept.$tree().data('jstree', false).empty();
-        dept.$tree().jstree({
-            selectedNodes: selectedNodes,
-            core: {
-                themes: {
-                    variant: 'large',
-                    dots: true,
-                    icons: true,
-                    stripes: true
-                },
-                multiple: true,
-                animation: 0,
-                data: {
-                    url: page.siteRoot() + uri,
-                    type: 'POST',
-                    dataType: 'json',
-                    data: function (node) {
-                        return {id: node.id, _token: $('#csrf_token').attr('content')}
+        var loadTree = function() {
+            dept.$tree().jstree({
+                selectedNodes: selectedNodes,
+                core: {
+                    themes: {
+                        variant: 'large',
+                        dots: true,
+                        icons: true,
+                        stripes: true
+                    },
+                    multiple: true,
+                    animation: 0,
+                    data: {
+                        url: page.siteRoot() + uri,
+                        type: 'POST',
+                        dataType: 'json',
+                        data: function (node) {
+                            return {id: node.id, _token: $('#csrf_token').attr('content')}
+                        }
                     }
-                }
-            },
-            checkbox: {
-                keep_selected_style: false,
-                three_state: false
-            },
-            plugins: ['types', 'search', 'checkbox', 'wholerow'],
-            types: tree.nodeTypes
-        }).on('select_node.jstree', function (node, selected) {
-            //选中事件 将选中的节点增|加到右边列表
-            console.log(selected);
-            var nodeHtml = '<li id="tree' + selected.node.id + '">' +
-                '<span class="handle ui-sortable-handle">' +
-                '<i class="' + selected.node.icon + '"></i>' +
-                '</span>' +
-                '<span class="text">' + selected.node.text + '</span>' +
-                '<div class="tools">' +
-                '<i class="fa fa-close remove-node"></i>' +
-                '<input type="hidden" value="' + selected.node.id + '"/>' +
-                '</div>' +
-                '</li>';
-            dept.$todoList().append(nodeHtml);
-        }).on('deselect_node.jstree', function (node, selected) {
-            //取消选中事件 将列表中的 节点 移除
-            var nodeId = '#tree' + selected.node.id;
-            var deselectNode = $(nodeId);
-            deselectNode.remove();
-        }).on('loaded.jstree', function () {
-            console.log(selectedDepartmentIds);
-            //展开所有节点
-            dept.$tree().jstree('open_all');
-            //初始化 根据后台数据节点数组 选中
-            dept.$tree().jstree().select_node(selectedDepartmentIds);
-        })
+                },
+                checkbox: {
+                    keep_selected_style: false,
+                    three_state: false
+                },
+                plugins: ['types', 'search', 'checkbox', 'wholerow'],
+                types: tree.nodeTypes
+            }).on('select_node.jstree', function (node, selected) {
+                //选中事件 将选中的节点增|加到右边列表
+                // console.log(selected);
+                var nodeHtml = '<li id="tree' + selected.node.id + '">' +
+                    '<span class="handle ui-sortable-handle">' +
+                    '<i class="' + selected.node.icon + '"></i>' +
+                    '</span>' +
+                    '<span class="text">' + selected.node.text + '</span>' +
+                    '<div class="tools">' +
+                    '<i class="fa fa-close remove-node"></i>' +
+                    '<input type="hidden" value="' + selected.node.id + '"/>' +
+                    '</div>' +
+                    '</li>';
+                dept.$todoList().append(nodeHtml);
+            }).on('deselect_node.jstree', function (node, selected) {
+                //取消选中事件 将列表中的 节点 移除
+                var nodeId = '#tree' + selected.node.id;
+                var deselectNode = $(nodeId);
+                deselectNode.remove();
+            }).on('loaded.jstree', function () {
+                console.log(selectedDepartmentIds);
+                //展开所有节点
+                dept.$tree().jstree('open_all');
+                //初始化 根据后台数据节点数组 选中
+                dept.$tree().jstree().select_node(selectedDepartmentIds);
+            })
+        };
+        if (typeof tree === 'undefined') {
+            $.getMultiScripts(['js/tree.crud.js'], page.siteRoot())
+                .done(function() { loadTree(); });
+        } else { loadTree(); }
     },
     modify: function (uri) {
         $('#add-department').on('click', function () {
@@ -179,21 +197,46 @@ var dept = {
         });
     },
     init: function (uri) {
-        //部门
-        //点击 表单中的部门修改按钮
-        dept.$tree().empty();
-        dept.$todoList().empty();
-        // 初始化“修改按钮”
-        dept.modify(uri);
-        //节点搜索功能
-        dept.search();
-        //右侧选中节点中的 删除图标 点击后移除本身并且将左侧取消选中
-        dept.remove();
-        //保存选中的节点
-        dept.save();
+        // 取消所有事件绑定
+        dept.unbindEvents();
+        // 部门树页面 的取消按钮
+        dept.cancel();
         // 点击 教职员工编辑表单中的 删除部门
         dept.purge();
-        //部门树页面 的取消按钮
-        dept.cancel();
+        // 点击表单中的部门修改按钮
+        dept.$tree().empty();
+        dept.$todoList().empty();
+        var init = function() {
+            // 初始化“修改按钮”
+            dept.modify(uri);
+            // 初始化节点搜索功能
+            dept.search();
+            // 右侧选中节点中的 删除图标 点击后移除本身并且将左侧取消选中
+            dept.remove();
+            // 初始化保存选中节点的功能
+            dept.save();
+        };
+        if (!($.fn.jstree) || !($.fn.select2) || !($.fn.iCheck)) {
+            var scripts = [
+                page.plugins.jstree.js,
+                page.plugins.select2.js,
+                page.plugins.icheck.js
+            ];
+            $.getMultiScripts(scripts, page.siteRoot())
+                .done(function() {
+                    var $cip = $('#cip');
+                    $cip.after($("<link/>", {
+                        rel: "stylesheet", type: "text/css",
+                        href: page.siteRoot() + page.plugins.jstree.css
+                    })).after($("<link/>", {
+                        rel: "stylesheet", type: "text/css",
+                        href: page.siteRoot() + page.plugins.select2.css
+                    })).after($("<link/>", {
+                        rel: "stylesheet", type: "text/css",
+                        href: page.siteRoot() + page.plugins.icheck.css
+                    }));
+                    init(uri);
+                });
+        } else { init(uri); }
     }
 };

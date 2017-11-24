@@ -1,14 +1,16 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CustodianRequest;
 use App\Models\Custodian;
-use App\Models\CustodianStudent;
 use App\Models\Department;
 use App\Models\DepartmentUser;
 use App\Models\Group;
 use App\Models\Student;
+use App\Models\CustodianStudent;
 use Illuminate\Support\Facades\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 /**
  * 监护人
@@ -17,47 +19,60 @@ use Illuminate\Support\Facades\Request;
  * @package App\Http\Controllers
  */
 class CustodianController extends Controller {
-    
+
     protected $custodian, $department, $group, $departmentUser, $student, $custodianStudent;
+
+    function __construct(
+        Custodian $custodian, Department $department, Group $group,
+        DepartmentUser $departmentUser, Student $student,
+        CustodianStudent $custodianStudent
+    ) {
     
-    function __construct(Custodian $custodian, Department $department, Group $group,
-                         DepartmentUser $departmentUser, Student $student, CustodianStudent $custodianStudent) {
+        $this->middleware(['auth']);
         $this->custodian = $custodian;
         $this->department = $department;
         $this->group = $group;
         $this->departmentUser = $departmentUser;
         $this->student = $student;
         $this->custodianStudent = $custodianStudent;
-        
+
     }
-    
+
     /**
      * 监护人列表
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
+        
         if (Request::get('draw')) {
             return response()->json($this->custodian->datatable());
         }
-        
+
         return parent::output(__METHOD__);
+        
     }
-    
+
     /**
      * 创建监护人
      *
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function create() {
+
         if (Request::method() === 'POST') {
-            return $this->department->tree();
-        }
-        
-        return parent::output(__METHOD__);
-        
-    }
+            
+            $field = Request::query('field');
+            $id = Request::query('id');
+            $this->result['html'] = $this->custodian->getFieldList($field, $id);
+            return response()->json($this->result);
     
+        }
+
+        return parent::output(__METHOD__);
+
+    }
+
     /**
      * 保存监护人
      *
@@ -65,49 +80,35 @@ class CustodianController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(CustodianRequest $request) {
-        return $this->custodian->store($request) ? $this->succeed() : $this->fail();
-        
+
+        return $this->custodian->store($request)
+            ? $this->succeed() : $this->fail();
+
     }
-    
+
     /**
-     * Display the specified resource.
-     * @param  \App\Models\Custodian $custodian
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Custodian $custodian) {
-    
-    }
-    
-    /**
-     * 编辑监护人.
+     * 编辑监护人
+     *
      * @param $id
-     * @return \Illuminate\Http\Response
-     * @internal param Custodian $custodian
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function edit($id) {
+
         if (Request::method() === 'POST') {
             return $this->department->tree();
         }
         $custodian = $this->custodian->find($id);
-        $departments = $custodian->user->departments;
-        $selectedDepartmentIds = [];
-        foreach ($departments as $department) {
-            $selectedDepartmentIds[] = $department->id;
-        }
-        $selectedDepartments = $this->department->selectedNodes($selectedDepartmentIds);
-        if (!$custodian) {
-            return $this->notFound();
-        }
-        
+        if (!$custodian) { return $this->notFound(); }
+        $pupils = $custodian->custodianStudents;
+
         return $this->output(__METHOD__, [
             'mobiles'               => $custodian->user->mobiles,
             'custodian'             => $custodian,
-            'selectedDepartmentIds' => implode(',', $selectedDepartmentIds),
-            'selectedDepartments'   => $selectedDepartments,
+            'pupils'                => $pupils,
         ]);
-        
+
     }
-    
+
     /**
      * 更新监护人.
      * @param CustodianRequest $request
@@ -115,10 +116,12 @@ class CustodianController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(CustodianRequest $request, $id) {
-        return $this->custodian->modify($request, $id) ? $this->succeed() : $this->fail();
-        
+
+        return $this->custodian->modify($request, $id)
+            ? $this->succeed() : $this->fail();
+
     }
-    
+
     /**
      * 删除指定的监护人
      *
@@ -126,6 +129,31 @@ class CustodianController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
-        return $this->custodian->remove($id) ? $this->succeed() : $this->fail();
+        
+        return $this->custodian->remove($id)
+            ? $this->succeed() : $this->fail();
+        
+    }
+    /**
+     * 导出数据
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function export() {
+        $data = $this->custodian->export();
+        Excel::create(iconv('UTF-8', 'GBK', '监护人列表'), function ($excel) use ($data) {
+            $excel->sheet('score', function($sheet) use ($data) {
+                $sheet->rows($data);
+                $sheet->setWidth(array(
+                    'A'     =>  30,
+                    'B'     =>  30,
+                    'C'     =>  30,
+                    'D'     =>  30,
+                    'E'     =>  30,
+                    'F'     =>  30,
+                ));
+                
+            });
+            
+        },'UTF-8')->export('xls');
     }
 }

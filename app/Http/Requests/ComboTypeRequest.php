@@ -4,11 +4,11 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ComboTypeRequest extends FormRequest {
-    
+
     public function authorize() { return true; }
-    
+
     public function rules() {
-        
+
         return [
             'name'      => 'required|string|between:2,60|unique:combo_types,name,' .
                 $this->input('id') . ',id,' .
@@ -19,11 +19,11 @@ class ComboTypeRequest extends FormRequest {
             'months'    => 'required|integer',
             'enabled'   => 'required|boolean',
         ];
-        
+
     }
-    
+
     protected function prepareForValidation() {
-        
+
         $input = $this->all();
         if (isset($input['enabled']) && $input['enabled'] === 'on') {
             $input['enabled'] = 1;
@@ -32,7 +32,7 @@ class ComboTypeRequest extends FormRequest {
             $input['enabled'] = 0;
         }
         $this->replace($input);
-        
+
     }
-    
+
 }

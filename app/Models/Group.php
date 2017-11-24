@@ -3,11 +3,12 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
-use App\Http\Requests\GroupRequest;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Mockery\Exception;
 
 /**
  * App\Models\Group
@@ -24,8 +25,15 @@ use Illuminate\Support\Facades\DB;
  * @method static Builder|Group whereName($value)
  * @method static Builder|Group whereRemark($value)
  * @method static Builder|Group whereUpdatedAt($value)
+ * @method static Builder|Group whereSchoolId($value)
  * @mixin \Eloquent
  * @property-read Collection|User[] $users
+ * @property-read Collection|Menu[] $menus
+ * @property-read Collection|Tab[] $tabs
+ * @property-read Collection|Action[] $actions
+ * @property int|null $school_id
+ * @property-read \App\Models\GroupType $groupType
+ * @property-read \App\Models\School|null $school
  */
 class Group extends Model {
     
@@ -56,22 +64,25 @@ class Group extends Model {
     public function actions() { return $this->belongsToMany('App\Models\Action', 'actions_groups'); }
     
     public function tabs() { return $this->belongsToMany('App\Models\Tab', 'groups_tabs'); }
+
+    public function groupType(){ return $this->belongsTo('App\Models\GroupType'); }
     
     /**
      * 保存角色
      *
      * @param array $data
      * @return bool
-     * @internal param GroupRequest $request
-     * @internal param array $data
      */
     public function store(array $data) {
+        
         try {
-            $exception = DB::transaction(function () use ($data) {
+            $exception = DB::transaction(function() use ($data) {
+
                 $groupData = [
                     'name'    => $data['name'],
                     'remark'  => $data['remark'],
                     'enabled' => $data['enabled'],
+                    'school_id' => $data['school_id'],
                 ];
                 $g = $this->create($groupData);
                 # 功能与角色的对应关系
@@ -88,7 +99,6 @@ class Group extends Model {
                 $groupTab->storeByGroupId($g->id, $tabIds);
                 
             });
-            
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
             return false;
@@ -104,12 +114,14 @@ class Group extends Model {
      * @return bool
      */
     public function modify(array $data, $id) {
+        
         $group = $this->find($id);
         if (!$group) {
             return false;
         }
         try {
             $exception = DB::transaction(function () use ($data, $group, $id) {
+                
                 $groupData = [
                     'name'    => $data['name'],
                     'remark'  => $data['remark'],
@@ -130,7 +142,6 @@ class Group extends Model {
                 $groupTab->storeByGroupId($id, $tabIds);
                 
             });
-            
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
             return false;
@@ -145,31 +156,77 @@ class Group extends Model {
      * @return bool
      */
     public function remove($id) {
-        $group = $this->find($id);
-        if (!$group) {
-            return false;
-        }
         
+        $group = $this->find($id);
+        if (!$group) { return false; }
         return $this->removable($group) ? $group->delete() : false;
         
     }
     
     public function datatable() {
+        
         $columns = [
             ['db' => 'Groups.id', 'dt' => 0],
-            ['db' => 'Groups.name', 'dt' => 1],
-            ['db' => 'Groups.remark', 'dt' => 2],
-            ['db' => 'Groups.created_at', 'dt' => 3],
-            ['db' => 'Groups.updated_at', 'dt' => 4],
             [
-                'db'        => 'Groups.enabled', 'dt' => 5,
+                'db' => 'Groups.name', 'dt' => 1,
+                'formatter' => function($d) {
+                    return '<i class="fa fa-meh-o"></i>&nbsp;' . $d;
+                }
+            ],
+            [
+                'db' => 'School.name as schoolname', 'dt' => 2,
+                'formatter' => function($d) {
+                    return '<i class="fa fa-university"></i>&nbsp;' . $d;
+                }
+            ],
+            ['db' => 'Groups.remark', 'dt' => 3],
+            ['db' => 'Groups.created_at', 'dt' => 4],
+            ['db' => 'Groups.updated_at', 'dt' => 5],
+            [
+                'db'        => 'Groups.enabled', 'dt' => 6,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
                 },
             ],
         ];
-        
-        return Datatable::simple($this, $columns);
+        $joins = [
+            [
+                'table' => 'schools',
+                'alias' => 'School',
+                'type' => 'INNER',
+                'conditions' => [
+                    'School.id = Groups.school_id'
+                ]
+            ]
+        ];
+        $condition = '';
+        $user = Auth::user();
+        switch ($user->group->name) {
+            case '运营': break;
+            case '企业':
+                $corpId = Corp::whereDepartmentId($user->topDeptId($user))
+                    ->first()->id;
+                $joins[] = [
+                    'table' => 'corps',
+                    'alias' => 'Corp',
+                    'type' => 'INNER',
+                    'conditions' => [
+                        'Corp.id = School.corp_id'
+                    ]
+                ];
+                $condition = 'Corp.id = ' . $corpId;
+                break;
+            case '学校':
+                $schoolId = School::whereDepartmentId($user->topDeptId($user))
+                    ->first()->id;
+                $condition = 'School.id = ' . $schoolId;
+                break;
+        }
+        if (empty($condition)) {
+            return Datatable::simple($this, $columns, $joins);
+        }
+        return Datatable::simple($this, $columns, $joins, $condition);
         
     }
+    
 }

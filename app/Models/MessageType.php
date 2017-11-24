@@ -4,6 +4,7 @@ namespace App\Models;
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -23,7 +24,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|MessageType whereUpdatedAt($value)
  * @mixin \Eloquent
  * @property-read Message[] $message
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Message[] $messages
+ * @property-read Collection|Message[] $messages
  */
 class MessageType extends Model {
     
@@ -47,6 +48,7 @@ class MessageType extends Model {
      * @return bool
      */
     public function store(array $data) {
+        
         $messageType = $this->create($data);
         
         return $messageType ? true : false;
@@ -61,6 +63,7 @@ class MessageType extends Model {
      * @return bool
      */
     public function modify(array $data, $id) {
+        
         $messageType = $this->find($id);
         if (!$messageType) {
             return false;
@@ -77,16 +80,15 @@ class MessageType extends Model {
      * @return bool|null
      */
     public function remove($id) {
-        $messageType = $this->find($id);
-        if (!$messageType) {
-            return false;
-        }
         
+        $messageType = $this->find($id);
+        if (!$messageType) { return false; }
         return $messageType->removable($messageType) ? $messageType->delete() : false;
         
     }
     
     public function datatable() {
+        
         $columns = [
             ['db' => 'MessageType.id', 'dt' => 0],
             ['db' => 'MessageType.name', 'dt' => 1],
@@ -96,7 +98,12 @@ class MessageType extends Model {
             [
                 'db'        => 'MessageType.enabled', 'dt' => 5,
                 'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($this, $d, $row);
+                    $id = $row['id'];
+                    $status = $d ? Datatable::DT_ON : Datatable::DT_OFF;
+                    $editLink = sprintf(Datatable::DT_LINK_EDIT, 'edit_' . $id);
+                    $delLink = sprintf(Datatable::DT_LINK_DEL, $id);
+                    return $status . Datatable::DT_SPACE .
+                        $editLink . Datatable::DT_SPACE . $delLink;
                 },
             ],
         ];

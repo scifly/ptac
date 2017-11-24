@@ -57,6 +57,9 @@ use Mockery\Exception;
  * @method static Builder|Message whereReaded($value)
  * @method static Builder|Message whereSUserId($value)
  * @method static Builder|Message whereSent($value)
+ * @property-read \App\Models\CommType $commType
+ * @property-read \App\Models\MessageSendingLog $messageSendinglog
+ * @property-read \App\Models\MessageSendingLog $messageSendinglogs
  */
 class Message extends Model {
     
@@ -88,12 +91,13 @@ class Message extends Model {
     }
     
     public function classes(array $classIds) {
+        
         return Squad::whereIn('id', $classIds)->get(['id', 'name']);
         
     }
     
     public function messageSendinglogs() {
-        return $this->belongsTo('App\Models\MessageSendingLogs');
+        return $this->belongsTo('App\Models\MessageSendingLog');
     }
     
     public function commType() {
@@ -102,12 +106,13 @@ class Message extends Model {
     
     public function store(MessageRequest $request) {
         $input = $request->all();
-        $messageSendingLog = new MessageSendingLogs();
+        $messageSendingLog = new MessageSendingLog();
         #新增一条日志记录（指定批次）
         $logId = $messageSendingLog->addMessageSendingLog(count($input['r_user_id']));
         $input['msl_id'] = $logId;
         $updateUrl = [];
         try {
+            $exception = null;
             foreach ($input['r_user_id'] as $receiveUser) {
                 $input['r_user_id'] = $receiveUser;
                 $exception = DB::transaction(function () use ($request, $input, $updateUrl) {
@@ -159,21 +164,9 @@ class Message extends Model {
             return false;
         }
     }
-//    private function addMessageSendingLog($recipientCount) {
-//        $input = Array();
-//        $input['read_count'] = 0;
-//        $input['received_count'] = 0;
-//        $input['recipient_count'] = $recipientCount;
-//        try {
-//            $exception = DB::transaction(function () use ($input) {
-//                $this->create($input);
-//            });
-//            return is_null($exception) ? true : $exception;
-//        } catch (Exception $e) {
-//            return false;
-//        }
-//    }
+
     public function datatable() {
+        
         $columns = [
             ['db' => 'Message.id', 'dt' => 0],
             ['db' => 'CommType.name as commtypename', 'dt' => 1],

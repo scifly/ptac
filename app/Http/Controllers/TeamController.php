@@ -15,7 +15,12 @@ class TeamController extends Controller {
     
     protected $team;
     
-    public function __construct(Team $team) { $this->team = $team; }
+    public function __construct(Team $team) {
+    
+        $this->middleware(['auth']);
+        $this->team = $team;
+    
+    }
     
     /**
      * 教职员工组列表

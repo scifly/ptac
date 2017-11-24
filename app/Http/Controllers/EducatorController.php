@@ -8,6 +8,7 @@ use App\Models\EducatorClass;
 use App\Models\Mobile;
 use App\Models\Team;
 use Illuminate\Support\Facades\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 /**
  * 教职员工
@@ -30,6 +31,8 @@ class EducatorController extends Controller {
         Team $team,
         Department $department
     ) {
+    
+        $this->middleware(['auth']);
         $this->educator = $educator;
         $this->mobile = $mobile;
         $this->educatorClass = $educatorClass;
@@ -44,10 +47,10 @@ class EducatorController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
+        
         if (Request::get('draw')) {
             return response()->json($this->educator->datatable());
         }
-        
         return $this->output(__METHOD__);
         
     }
@@ -58,10 +61,10 @@ class EducatorController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function create() {
+        
         if (Request::method() === 'POST') {
             return $this->department->tree();
         }
-        
         return $this->output(__METHOD__);
         
     }
@@ -73,7 +76,9 @@ class EducatorController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(EducatorRequest $request) {
-        return $this->educator->store($request) ? $this->succeed() : $this->fail();
+        
+        return $this->educator->store($request)
+            ? $this->succeed() : $this->fail();
         
     }
     
@@ -84,11 +89,9 @@ class EducatorController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function show($id) {
-        $educator = $this->educator->find($id);
-        if (!$educator) {
-            return $this->notFound();
-        }
         
+        $educator = $this->educator->find($id);
+        if (!$educator) { return $this->notFound(); }
         return $this->output(__METHOD__, [
             'educator'  => $educator,
             'educators' => $this->educator->teams(),
@@ -103,13 +106,12 @@ class EducatorController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function edit($id) {
+        
         if (Request::method() === 'POST') {
             return $this->department->tree();
         }
         $educator = $this->educator->find($id);
-        if (!$educator) {
-            return $this->notFound();
-        }
+        if (!$educator) { return $this->notFound(); }
         $selectedTeams = [];
         foreach ($educator->teams as $v) {
             $selectedTeams[$v->id] = $v->name;
@@ -119,7 +121,6 @@ class EducatorController extends Controller {
             $selectedDepartmentIds[] = $department->id;
         }
         $selectedDepartments = $this->department->selectedNodes($selectedDepartmentIds);
-        
         return $this->output(__METHOD__, [
             'mobiles'               => $educator->user->mobiles,
             'educator'              => $educator,
@@ -137,11 +138,11 @@ class EducatorController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function recharge($id) {
+        
         $educator = $this->educator->find($id);
         if (!$educator) {
             return $this->notFound();
         }
-        
         return $this->output(__METHOD__, [
             'educator' => $educator,
         ]);
@@ -156,11 +157,11 @@ class EducatorController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(EducatorRequest $request, $id) {
+        
         $educator = $this->educator->find($id);
         if (!$educator) {
             return $this->notFound();
         }
-        
         return $educator->modify($request) ? $this->succeed() : $this->fail();
         
     }
@@ -172,13 +173,13 @@ class EducatorController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function rechargeStore($id) {
+        
         $educator = $this->educator->find($id);
         if (!$educator) {
             return $this->notFound();
         }
         $recharge = Request::get('recharge');
         $educator->sms_quote += $recharge;
-        
         return $educator->save() ? $this->succeed() : $this->fail();
         
     }
@@ -190,14 +191,58 @@ class EducatorController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
+        
         $educator = $this->educator->find($id);
         if (!$educator) {
             return $this->notFound();
         }
-        
         return $this->educator->remove($id, true)
             ? parent::succeed() : parent::fail();
         
     }
+    /**
+     * 导入数据
+     */
+    public function import() {
+        
+        if (Request::isMethod('post')) {
+            $file = Request::file('file');
+            if (empty($file)) {
+                $result = [
+                    'statusCode' => 500,
+                    'message' => '您还没选择文件！',
+                ];
+                return response()->json($result);
+            }
+            // 文件是否上传成功
+            if ($file->isValid()) {
+                $this->educator->upload($file);
+            }
+        }
+    }
     
+    /**
+     * 导出数据
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function export() {
+        $id = Request::query('id');
+        if ($id) {
+            $data = $this->educator->export($id);
+            Excel::create(iconv('UTF-8', 'GBK', '教职员工列表'), function ($excel) use ($data) {
+                $excel->sheet('score', function($sheet) use ($data) {
+                    $sheet->rows($data);
+                    $sheet->setWidth(array(
+                        'A'     =>  30,
+                        'B'     =>  30,
+                        'C'     =>  30,
+                        'D'     =>  30,
+                        'E'     =>  30,
+                        'F'     =>  30,
+                    ));
+                });
+                
+            },'UTF-8')->export('xls');
+        }
+    }
 }

@@ -78,7 +78,6 @@ class ScoreTotal extends Model {
                 'formatter' => function ($d, $row) {
                     $id = $row['id'];
                     $showLink = $d . sprintf(Datatable::DT_LINK_SHOW, $id);
-                    
                     return Datatable::DT_SPACE . $showLink;
                     
                 },

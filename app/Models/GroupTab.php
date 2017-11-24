@@ -1,6 +1,7 @@
 <?php
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Mockery\Exception;
@@ -9,6 +10,18 @@ use Mockery\Exception;
  * App\Models\GroupTab
  *
  * @mixin \Eloquent
+ * @property int $id
+ * @property int $group_id
+ * @property int $tab_id
+ * @property \Carbon\Carbon|null $created_at
+ * @property \Carbon\Carbon|null $updated_at
+ * @property int $enabled
+ * @method static Builder|GroupTab whereCreatedAt($value)
+ * @method static Builder|GroupTab whereEnabled($value)
+ * @method static Builder|GroupTab whereGroupId($value)
+ * @method static Builder|GroupTab whereId($value)
+ * @method static Builder|GroupTab whereTabId($value)
+ * @method static Builder|GroupTab whereUpdatedAt($value)
  */
 class GroupTab extends Model {
     

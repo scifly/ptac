@@ -8,6 +8,7 @@ use App\Models\Menu;
 use App\Models\MenuTab;
 use App\Models\MenuType;
 use App\Models\Tab;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
 
@@ -18,29 +19,29 @@ use Illuminate\Support\Facades\Session;
  * @package App\Http\Controllers
  */
 class HomeController extends Controller {
-    
+
     protected $menu;
     protected $department;
     protected $action;
     protected $tab;
-    
+
     public function __construct(
         Menu $menu,
         Action $action,
         Tab $tab,
         Department $department
     ) {
-        // $this->middleware(['auth']);
+        
+        $this->middleware(['auth']);
         $this->menu = $menu;
         $this->action = $action;
         $this->tab = $tab;
         $this->department = $department;
-        
+
     }
-    
+
     public function index() {
-        // $this->action->scan();
-        // $this->tab->scan();
+
         $rootMenu = $this->menu->find(1);
         $menu = null;
         if (!$rootMenu) {
@@ -60,39 +61,42 @@ class HomeController extends Controller {
         }
         $rootDepartment = $this->department->find(1);
         if (!$rootDepartment) {
-            $department = $this->department->create([
+            $this->department->create([
                 'name'               => '部门',
                 'department_type_id' => DepartmentType::whereName('根')->first()->id,
                 'enabled'            => 1,
             ]);
         }
-        
+
         return redirect('pages/' . $menu->id);
-        
+
     }
-    
+
     public function menu($id) {
+
         if (!session('menuId') || session('menuId') !== $id) {
             session(['menuId' => $id]);
-            session(['menuName' => Menu::whereId($id)->first()->name]);
+            session(['menuName' => Menu::find($id)->name]);
             session(['pageUrl' => Request::fullUrl()]);
             session(['menuChanged' => true]);
         } else {
             Session::forget('menuChanged');
         }
+        # 获取菜单列表
+        $menu = $this->menu->getMenuHtml($this->menu->rootMenuId());
+        
         # 获取卡片列表
         $tabArray = [];
         $isTabLegit = true;
         $tabRanks = MenuTab::whereMenuId($id)->get()->sortBy('tab_order')->toArray();
-        if (empty($tabRanks)) {
-            $isTabLegit = false;
-        };
+        if (empty($tabRanks)) { $isTabLegit = false; };
         foreach ($tabRanks as $rank) {
             $tab = Tab::whereId($rank['tab_id'])->first();
             if (!empty($tab->action->route)) {
                 $tabArray[] = [
                     'id'     => 'tab_' . $tab->id,
                     'name'   => $tab->name,
+                    'icon'   => isset($tab->icon_id) ? $tab->icon->name : null,
                     'active' => false,
                     'url'    => $tab->action->route,
                 ];
@@ -128,20 +132,20 @@ class HomeController extends Controller {
             $tabArray[] = [
                 'id'     => 'tab_' . $tab->id,
                 'name'   => $tab->name,
+                'icon'   => isset($tab->icon_id) ? $tab->icon->name : null,
                 'active' => true,
                 'url'    => $tab->action->route,
             ];
         }
-        # 获取菜单列表
-        $menu = $this->menu->getMenuHtml($id);
-        
+
         return view('home.page', [
             'menu'   => $menu,
             'tabs'   => $tabArray,
             'menuId' => $id,
             'js'     => 'js/home/page.js',
+            'user'   => Auth::user(),
         ]);
-        
+
     }
-    
+
 }

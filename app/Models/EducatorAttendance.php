@@ -28,32 +28,33 @@ use Illuminate\Database\Eloquent\Model;
  * @mixin \Eloquent
  * @property-read EducatorAppeal $educatorAppeal
  * @property-read EducatorAttendanceSetting $educatorAttendanceSetting
- * @property-read \App\Models\Educator $educator
+ * @property-read Educator $educator
  */
 class EducatorAttendance extends Model {
-    
+
     protected $table = 'educator_attendances';
-    
+
     protected $fillable = [
         'educator_id', 'punch_time', 'longitude',
         'latitude', 'inorout', 'eas_id',
     ];
-    
+
     /**
      * 获取对应的教职员工对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function educator() { return $this->belongsTo('App\Models\Educator'); }
-    
+
     /**
      * 获取对应的教职员工考勤设置对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function educatorAttendanceSetting() {
+
         return $this->belongsTo('App\Models\EducatorAttendanceSetting', 'eas_id');
-        
+
     }
-    
+
 }

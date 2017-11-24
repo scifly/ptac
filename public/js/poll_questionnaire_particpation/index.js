@@ -1,4 +1,4 @@
-var dom=$('#panel');//获取dom
+var dom = $('#panel');//获取dom
 $(function(){
     $.ajaxSetup({
         headers: {

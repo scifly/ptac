@@ -48,7 +48,7 @@ class Corp extends Model {
     
     protected $fillable = [
         'name', 'company_id', 'corpid', 'menu_id',
-        'corpsecret', 'department_id', 'enabled',
+        'department_id', 'enabled',
     ];
     
     /**
@@ -85,6 +85,7 @@ class Corp extends Model {
      * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
      */
     public function grades() {
+        
         return $this->hasManyThrough('App\Models\Grade', 'App\Models\School');
         
     }
@@ -95,6 +96,7 @@ class Corp extends Model {
      * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
      */
     public function departments() {
+        
         return $this->hasManyThrough('App\Models\Department', 'App\Models\School');
         
     }
@@ -105,6 +107,7 @@ class Corp extends Model {
      * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
      */
     public function teams() {
+        
         return $this->hasManyThrough('App\Models\Team', 'App\Models\School');
         
     }
@@ -117,6 +120,7 @@ class Corp extends Model {
      * @return bool
      */
     public function store(array $data, $fireEvent = false) {
+        
         $corp = $this->create($data);
         if ($corp && $fireEvent) {
             event(new CorpCreated($corp));
@@ -137,6 +141,7 @@ class Corp extends Model {
      * @return bool
      */
     public function modify(array $data, $id, $fireEvent = false) {
+        
         $corp = $this->find($id);
         $updated = $corp->update($data);
         if ($updated && $fireEvent) {
@@ -157,6 +162,7 @@ class Corp extends Model {
      * @return bool
      */
     public function remove($id, $fireEvent = false) {
+        
         $corp = $this->find($id);
         if (!$corp) {
             return false;
@@ -176,10 +182,21 @@ class Corp extends Model {
      * @return mixed
      */
     public function datatable() {
+        
         $columns = [
             ['db' => 'Corp.id', 'dt' => 0],
-            ['db' => 'Corp.name', 'dt' => 1],
-            ['db' => 'Company.name as companyname', 'dt' => 2],
+            [
+                'db' => 'Corp.name', 'dt' => 1,
+                'formatter' => function($d) {
+                    return '<i class="fa fa-weixin"></i> &nbsp;' . $d;
+                }
+            ],
+            [
+                'db' => 'Company.name as companyname', 'dt' => 2,
+                'formatter' => function($d) {
+                    return '<i class="fa fa-building"></i>&nbsp;' . $d;
+                }
+            ],
             ['db' => 'Corp.corpid', 'dt' => 3],
             ['db' => 'Corp.created_at', 'dt' => 4],
             ['db' => 'Corp.updated_at', 'dt' => 5],

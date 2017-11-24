@@ -4,9 +4,11 @@ namespace App\Models;
 use App\Facades\DatatableFacade as Datatable;
 use App\Http\Requests\WapSiteModuleRequest;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Mockery\Exception;
 
 /**
  * App\Models\WapSiteModule
@@ -27,15 +29,14 @@ use Illuminate\Support\Facades\Storage;
  * @method static Builder|WapSiteModule whereWapSiteId($value)
  * @mixin \Eloquent
  * 网站类型
- * @property-read \App\Models\WapSite $belongsToWs
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\WsmArticle[] $hasManyArticle
- * @property-read \App\Models\WapSite $wapsite
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\WsmArticle[] $wsmarticles
- * @property-read \App\Models\Media $media
+ * @property-read WapSite $belongsToWs
+ * @property-read Collection|WsmArticle[] $hasManyArticle
+ * @property-read WapSite $wapsite
+ * @property-read Collection|WsmArticle[] $wsmarticles
+ * @property-read Media $media
  */
 class WapSiteModule extends Model {
     
-    //
     protected $table = 'wap_site_modules';
     protected $fillable = [
         'id',
@@ -49,6 +50,10 @@ class WapSiteModule extends Model {
     
     public function wsmarticles() {
         return $this->hasMany('App\Models\WsmArticle', 'wsm_id', 'id');
+    }
+    
+    public function media() {
+        return $this->belongsTo('App\Models\Media');
     }
     
     public function wapsite() {
@@ -75,12 +80,12 @@ class WapSiteModule extends Model {
      */
     private function removeMedias(WapSiteModuleRequest $request) {
         //删除原有的图片
-        $mediaIds = $request->input('del_ids');
+        $mediaIds = $request->input('del_id');
         if ($mediaIds) {
             $medias = Media::whereIn('id', $mediaIds)->get(['id', 'path']);
             foreach ($medias as $media) {
                 $paths = explode("/", $media->path);
-                Storage::disk('uploads')->delete($paths[5]);
+                Storage::disk('public')->delete($paths[5]);
                 
             }
             Media::whereIn('id', $mediaIds)->delete();
@@ -96,7 +101,7 @@ class WapSiteModule extends Model {
             $exception = DB::transaction(function () use ($request, $id) {
                 $this->removeMedias($request);
                 
-                return $this->where('id', $id)->update($request->except('_method', '_token'));
+                return $this->where('id', $id)->update($request->except('_method', '_token', 'del_id'));
             });
             
             return is_null($exception) ? true : $exception;
@@ -109,6 +114,7 @@ class WapSiteModule extends Model {
      * @return array
      */
     public function datatable() {
+        
         $columns = [
             ['db' => 'WapSiteModule.id', 'dt' => 0],
             ['db' => 'WapSiteModule.name', 'dt' => 1],
@@ -132,7 +138,6 @@ class WapSiteModule extends Model {
                 ],
             ],
         ];
-        
         return Datatable::simple($this, $columns, $joins);
     }
     

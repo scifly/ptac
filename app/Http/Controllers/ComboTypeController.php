@@ -16,6 +16,8 @@ class ComboTypeController extends Controller {
     protected $comboType;
     
     function __construct(ComboType $comboType) {
+    
+        $this->middleware(['auth']);
         $this->comboType = $comboType;
         
     }
@@ -26,6 +28,7 @@ class ComboTypeController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function index() {
+        
         if (Request::get('draw')) {
             return response()->json($this->comboType->datatable());
         }
@@ -40,6 +43,7 @@ class ComboTypeController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function create() {
+        
         return $this->output(__METHOD__);
         
     }
@@ -51,7 +55,9 @@ class ComboTypeController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(CommTypeRequest $request) {
-        return $this->comboType->create($request->all()) ? $this->succeed() : $this->fail();
+        
+        return $this->comboType->create($request->all())
+            ? $this->succeed() : $this->fail();
         
     }
     
@@ -62,10 +68,9 @@ class ComboTypeController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function edit($id) {
+        
         $comboType = $this->comboType->find($id);
-        if (!$comboType) {
-            return $this->notFound();
-        }
+        if (!$comboType) { return $this->notFound(); }
         
         return $this->output(__METHOD__, ['comboType' => $comboType]);
         
@@ -79,12 +84,12 @@ class ComboTypeController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(CommTypeRequest $request, $id) {
-        $comboType = $this->comboType->find($id);
-        if (!$comboType) {
-            return $this->notFound();
-        }
         
-        return $comboType->update($request->all()) ? $this->succeed() : $this->fail();
+        $comboType = $this->comboType->find($id);
+        if (!$comboType) { return $this->notFound(); }
+        
+        return $comboType->update($request->all())
+            ? $this->succeed() : $this->fail();
         
     }
     
@@ -95,12 +100,12 @@ class ComboTypeController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
-        $comboType = $this->comboType->find($id);
-        if (!$comboType) {
-            return $this->notFound();
-        }
         
-        return $comboType->delete() ? $this->succeed() : $this->fail();
+        $comboType = $this->comboType->find($id);
+        if (!$comboType) { return $this->notFound(); }
+        
+        return $comboType->delete()
+            ? $this->succeed() : $this->fail();
         
     }
     

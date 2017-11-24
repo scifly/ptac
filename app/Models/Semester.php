@@ -27,7 +27,7 @@ use Illuminate\Database\Eloquent\Model;
  * @mixin \Eloquent
  * 学期
  * @property string|null $remark 备注
- * @property-read \App\Models\School $school
+ * @property-read School $school
  * @method static Builder|Semester whereRemark($value)
  * @property-read \App\Models\StudentAttendanceSetting $studentAttendanceSetting
  */

@@ -52,6 +52,7 @@ class Major extends Model {
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function subjects() {
+        
         return $this->belongsToMany(
             'App\Models\Subject',
             'majors_subjects',
@@ -68,6 +69,7 @@ class Major extends Model {
      * @return \Illuminate\Support\Collection
      */
     public function majors($schoolId = null) {
+        
         if (isset($schoolId)) {
             return $this->where('school_id', $schoolId)->get()->pluck('id', 'name');
         }
@@ -83,6 +85,7 @@ class Major extends Model {
      * @return bool|mixed
      */
     public function store(MajorRequest $request) {
+        
         try {
             $exception = DB::transaction(function () use ($request) {
                 $m = $this->create($request->all());
@@ -106,6 +109,7 @@ class Major extends Model {
      * @return bool|mixed
      */
     public function modify(MajorRequest $request, $id) {
+        
         $major = $this->find($id);
         if (!isset($major)) {
             return false;
@@ -118,7 +122,6 @@ class Major extends Model {
                 $majorSubject::whereMajorId($id)->delete();
                 $majorSubject->storeByMajorId($id, $subjectIds);
             });
-            
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
             return false;
@@ -133,6 +136,7 @@ class Major extends Model {
      * @return bool|mixed
      */
     public function remove($id) {
+        
         $major = $this->find($id);
         if (!isset($major)) {
             return false;
@@ -153,6 +157,7 @@ class Major extends Model {
     }
     
     public function datatable() {
+        
         $columns = [
             ['db' => 'Major.id', 'dt' => 0],
             ['db' => 'Major.name', 'dt' => 1],

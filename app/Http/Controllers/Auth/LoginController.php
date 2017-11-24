@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 
 class LoginController extends Controller {
     
@@ -23,53 +24,75 @@ class LoginController extends Controller {
     use AuthenticatesUsers;
     
     /**
-     * Where to redirect users after login.
+     * 登录后的跳转地址
      *
      * @var string
      */
     protected $redirectTo = '/home';
     
     /**
-     * Create a new controller instance.
+     * 创建控制器实例
      *
      */
     public function __construct() {
+        
         $this->middleware('guest')->except('logout');
         
     }
     
+    /**
+     * 登录
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function login(Request $request) {
+        
         $input = $request->input('input');
         $password = $request->input('password');
+        $rememberMe = $request->input('rememberMe') == 'true' ? true : false;
+        # 用户名登录
         if (User::whereUsername($input)->first()) {
+            $user = User::whereUsername($input)->first();
             $field = 'username';
+        # 邮箱登录
         } elseif (User::whereEmail($input)->first()) {
+            $user = User::whereEmail($input)->first();
             $field = 'email';
+        # 手机号码登录
         } else {
+            # 获取用户的默认手机号码
             $mobile = Mobile::where('mobile', $input)
                 ->where('isdefault', 1)->first();
-            if (!$mobile->user_id) {
+            if (!$mobile || !$mobile->user_id) {
                 return response()->json(['statusCode' => 500]);
             }
+            # 通过默认手机号码查询对应的用户名
             $username = User::whereId($mobile->user_id)->first()->username;
-            if (
-            Auth::attempt(
+            $user = User::whereUsername($username)->first();
+            # 通过用户名登录
+            if (Auth::attempt(
                 ['username' => $username, 'password' => $password],
-                $request->input('remember')
-            )
-            ) {
+                $rememberMe
+            )) {
+                Session::put('user', $user);
                 return response()->json([
                     'statusCode' => 200,
-                    'url'        => '../public',
+                    'url'        => '/',
                 ]);
             } else {
                 return response()->json(['statusCode' => 500]);
             }
         }
-        if (Auth::attempt([$field => $input, 'password' => $password])) {
+        # 登录(用户名或邮箱)
+        if (Auth::attempt(
+            [$field => $input, 'password' => $password],
+            $rememberMe
+        )) {
+            Session::put('user', $user);
             return response()->json([
                 'statusCode' => 200,
-                'url'        => '../public',
+                'url'        => '/',
             ]);
         }
         

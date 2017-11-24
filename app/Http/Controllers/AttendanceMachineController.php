@@ -15,7 +15,12 @@ class AttendanceMachineController extends Controller {
     
     protected $am;
     
-    function __construct(AttendanceMachine $am) { $this->am = $am; }
+    function __construct(AttendanceMachine $am) {
+    
+        $this->middleware(['auth']);
+        $this->am = $am;
+    
+    }
     
     /**
      * 考勤机列表
@@ -23,6 +28,7 @@ class AttendanceMachineController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
+        
         if (Request::get('draw')) {
             return response()->json($this->am->datatable());
         }
@@ -37,6 +43,7 @@ class AttendanceMachineController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function create() {
+        
         return $this->output(__METHOD__);
         
     }
@@ -48,7 +55,9 @@ class AttendanceMachineController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(AttendanceMachineRequest $request) {
-        return $this->am->create($request->all()) ? $this->succeed() : $this->fail();
+        
+        return $this->am->create($request->all())
+            ? $this->succeed() : $this->fail();
         
     }
     
@@ -59,10 +68,9 @@ class AttendanceMachineController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function show($id) {
+        
         $am = $this->am->find($id);
-        if (!$am) {
-            return $this->notFound();
-        }
+        if (!$am) { return $this->notFound(); }
         
         return $this->output(__METHOD__, ['am' => $am]);
         
@@ -75,10 +83,9 @@ class AttendanceMachineController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function edit($id) {
+        
         $am = $this->am->find($id);
-        if (!$am) {
-            return $this->notFound();
-        }
+        if (!$am) { return $this->notFound(); }
         
         return $this->output(__METHOD__, ['am' => $am]);
         
@@ -92,12 +99,12 @@ class AttendanceMachineController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(AttendanceMachineRequest $request, $id) {
-        $am = $this->am->find($id);
-        if (!$am) {
-            return $this->notFound();
-        }
         
-        return $am->update($request->all()) ? $this->succeed() : $this->fail();
+        $am = $this->am->find($id);
+        if (!$am) { return $this->notFound(); }
+        
+        return $am->update($request->all())
+            ? $this->succeed() : $this->fail();
         
     }
     
@@ -108,10 +115,9 @@ class AttendanceMachineController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
+        
         $am = $this->am->find($id);
-        if (!$am) {
-            return $this->notFound();
-        }
+        if (!$am) { return $this->notFound(); }
         
         return $am->delete() ? $this->succeed() : $this->fail();
         

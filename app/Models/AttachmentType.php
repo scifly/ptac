@@ -23,16 +23,16 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read Attachment[] $attachments
  */
 class AttachmentType extends Model {
-    
+
     protected $table = 'attachment_types';
-    
+
     protected $fillable = ['name', 'remark', 'enabled'];
-    
+
     /**
      * 获取包含的所有附件对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function attachments() { return $this->hasMany('App\Models\Attachment'); }
-    
+
 }

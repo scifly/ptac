@@ -27,7 +27,7 @@ class ActionRequest extends FormRequest {
             'route'           => 'nullable|string|between:2,255',
             'js'              => 'nullable|string|between:2,255',
             'enabled'         => 'required|boolean',
-            'action_type_ids' => 'nullable|string|between:3,60',
+            'action_type_ids' => 'nullable|string|between:1,60',
         ];
     }
     

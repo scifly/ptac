@@ -1,4 +1,4 @@
-<div class="box box-widget">
+<div class="box box-default box-solid">
     <div class="box-header with-border">
         @include('partials.form_header')
     </div>
@@ -31,21 +31,8 @@
                 'items' => $subjects,
                 'selectedItems' => isset($selectedSubjects) ? $selectedSubjects : NULL
             ])
-            <div class="form-group">
-                {!! Form::label('remark', '备注', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
-                <div class="col-sm-6">
-                    {!! Form::text('remark', null, [
-                        'class' => 'form-control',
-                        'placeholder' => '(不超过255个汉字)',
-                        'required' => 'true',
-                        'data-parsley-length' => '[4, 255]'
-                    ]) !!}
-                </div>
-            </div>
+            @include('partials.remark')
             @include('partials.enabled', [
-                'label' => '是否启用',
                 'id' => 'enabled',
                 'value' => isset($major['enabled']) ? $major['enabled'] : NULL
             ])

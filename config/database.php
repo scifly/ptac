@@ -10,7 +10,7 @@ return [
     | you may use many connections at once using the Database library.
     |
     */
-    'default' => env('DB_CONNECTION', 'mysql'),
+    'default'     => env('DB_CONNECTION', 'mysql'),
     /*
     |--------------------------------------------------------------------------
     | Database Connections
@@ -32,7 +32,7 @@ return [
             'database' => env('DB_DATABASE', database_path('database.sqlite')),
             'prefix'   => '',
         ],
-        'mysql' => [
+        'mysql'  => [
             'driver'      => 'mysql',
             'host'        => env('DB_HOST', '127.0.0.1'),
             'port'        => env('DB_PORT', '3306'),
@@ -46,7 +46,7 @@ return [
             'strict'      => true,
             'engine'      => null,
         ],
-        'pgsql' => [
+        'pgsql'  => [
             'driver'   => 'pgsql',
             'host'     => env('DB_HOST', '127.0.0.1'),
             'port'     => env('DB_PORT', '5432'),
@@ -79,7 +79,7 @@ return [
     | the migrations on disk haven't actually been run in the database.
     |
     */
-    'migrations' => 'migrations',
+    'migrations'  => 'migrations',
     /*
     |--------------------------------------------------------------------------
     | Redis Databases
@@ -90,8 +90,8 @@ return [
     | such as APC or Memcached. Laravel makes it easy to dig right in.
     |
     */
-    'redis' => [
-        'client' => 'predis',
+    'redis'       => [
+        'client'  => 'predis',
         'default' => [
             'host'     => env('REDIS_HOST', '127.0.0.1'),
             'password' => env('REDIS_PASSWORD', null),

@@ -1,4 +1,4 @@
-$(crud.edit('formPq', 'poll_questionnaires'));
+page.edit('formPq', 'poll_questionnaires');
 $(function () {
     $(".datepicker").datetimepicker({
         dateFormat: 'yy-mm-dd',

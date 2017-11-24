@@ -7,26 +7,24 @@ use App\Models\Squad;
 use Illuminate\Contracts\View\View;
 
 class ScoreRangeShowStatisticsComposer {
-    
-    protected $grades;
-    
-    protected $exams;
-    
-    public function __construct(Grade $grades, Squad $classes, Exam $exams) {
-        
-        $this->grades = $grades;
-        $this->classes = $classes;
-        $this->exams = $exams;
-        
+
+    protected $grade, $exam, $class;
+
+    public function __construct(Grade $grade, Squad $class, Exam $exam) {
+
+        $this->grade = $grade;
+        $this->class = $class;
+        $this->exam = $exam;
+
     }
-    
+
     public function compose(View $view) {
-        
+
         $view->with([
-            'grades'  => $this->grades->pluck('name', 'id'),
-            'classes' => $this->classes->pluck('name', 'id'),
-            'exams'   => $this->exams->pluck('name', 'id'),
+            'grades'  => $this->grade->pluck('name', 'id'),
+            'classes' => $this->class->pluck('name', 'id'),
+            'exams'   => $this->exam->pluck('name', 'id'),
         ]);
     }
-    
+
 }

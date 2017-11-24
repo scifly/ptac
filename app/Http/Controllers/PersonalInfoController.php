@@ -18,23 +18,27 @@ class PersonalInfoController extends Controller {
     protected $user;
     
     function __construct(User $user) {
+        
+        $this->middleware(['auth']);
         $this->user = $user;
         
     }
     
     /**
      * 修改个人信息
-     * @return \Illuminate\Http\Response
-     * @internal param $id
-     * @internal param User $user
+     *
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
-        //$id = Session::get('user');
+        
         $id = 1;
         $personalInfo = $this->user->find($id);
-        $group = $personalInfo->group()->whereId($personalInfo->group_id)->first();
+        $group = $personalInfo->group::whereId($personalInfo->group_id)->first();
         
-        return $this->output(__METHOD__, ['personalInfo' => $personalInfo, 'group' => $group]);
+        return $this->output(__METHOD__, [
+            'personalInfo' => $personalInfo,
+            'group' => $group
+        ]);
         
     }
     
@@ -44,27 +48,28 @@ class PersonalInfoController extends Controller {
      * @param PersonalInfoRequest $request
      * @param $id
      * @return \Illuminate\Http\Response
-     * @internal param \Illuminate\Http\Request $request
-     * @internal param User $user
      */
     public function update(PersonalInfoRequest $request, $id) {
+        
         $input = $request->except(['group_id', 'avatar_url']);
         $personInfo = $this->user->find($id);
         if (!$personInfo) {
             return $this->notFound();
         }
         
-        return $personInfo->update($input) ? $this->succeed() : $this->fail('更新个人信息失败');
+        return $personInfo->update($input)
+            ? $this->succeed() : $this->fail('更新个人信息失败');
         
     }
     
     /**
-     * 上传个人信息头像
+     * 上传头像
      *
      * @param $id
      * @return \Illuminate\Http\JsonResponse
      */
     public function uploadAvatar($id) {
+        
         $file = Request::file('avatar');
         $check = $this->checkFile($file);
         if (!$check['status']) {
@@ -91,12 +96,13 @@ class PersonalInfoController extends Controller {
     }
     
     /**
-     * 验证文件是否上传成功
+     * 校验上传文件
      *
      * @param $file
      * @return array
      */
     private function checkFile(UploadedFile $file) {
+        
         if (!$file->isValid()) {
             return ['status' => false, 'msg' => '文件上传失败'];
         }
@@ -109,13 +115,14 @@ class PersonalInfoController extends Controller {
     }
     
     /**
-     * 将图片路径存入数据库
+     * 保存图片
      *
      * @param $id
      * @param $imgName
      * @return \Illuminate\Http\JsonResponse
      */
     private function saveImg($id, $imgName) {
+        
         $personalImg = $this->user->whereId($id)->first();
         //判断数据库头像是否相同
         if ($imgName !== $personalImg->avatar_url) {

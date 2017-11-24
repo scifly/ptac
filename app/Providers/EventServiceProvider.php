@@ -19,7 +19,10 @@ class EventServiceProvider extends ServiceProvider {
         'App\Listeners\SchoolEventSubscriber',
         'App\Listeners\GradeEventSubscriber',
         'App\Listeners\ClassEventSubscriber',
-        'App\Listeners\MenuEventSubScriber',
+        'App\Listeners\MenuEventSubscriber',
+        'App\Listeners\UserEventSubscriber',
+        'App\Listeners\AppEventSubscriber',
+        'App\Listeners\StudentEventSubscriber',
     ];
     
     /**

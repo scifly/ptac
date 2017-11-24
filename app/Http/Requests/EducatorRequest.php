@@ -39,7 +39,8 @@ class EducatorRequest extends FormRequest {
             'user.enabled'       => 'required|boolean',
             'user.email'         => 'nullable|email|unique:users,email,' .
                 $this->input('user_id') . ',id',
-            'user.password'      => 'string|min:3',
+            'user.password'      => 'string|min:3|confirmed',
+            'user.password_confirmation '      => 'string|min:3',
             'mobile.*'           => [
                 'required', new Mobiles(),
             ],
@@ -48,7 +49,6 @@ class EducatorRequest extends FormRequest {
             //            'mobile.*.isdefault' => 'required|boolean',
             //            'mobile.*.enabled' => 'required|boolean',
         ];
-        
         return $rules;
         
     }
@@ -106,7 +106,7 @@ class EducatorRequest extends FormRequest {
                 }
             }
         }
-        dd($input['mobile']);
+        // dd($input['mobile']);
 //        dd($this->input('mobile.*.mobile'));
         $this->replace($input);
         

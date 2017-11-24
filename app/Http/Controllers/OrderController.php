@@ -16,6 +16,8 @@ class OrderController extends Controller {
     protected $order;
     
     function __construct(Order $order) {
+    
+        $this->middleware(['auth']);
         $this->order = $order;
         
     }
@@ -26,6 +28,7 @@ class OrderController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function index() {
+        
         if (Request::get('draw')) {
             return response()->json($this->order->datatable());
         }
@@ -41,6 +44,7 @@ class OrderController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(OrderRequest $request) {
+        
         return $this->order->create($request->all()) ? $this->succeed() : $this->fail();
         
     }
@@ -52,6 +56,7 @@ class OrderController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function show($id) {
+        
         $order = $this->order->find($id);
         if (!$order) {
             return $this->notFound();
@@ -69,6 +74,7 @@ class OrderController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function update(OrderRequest $request, $id) {
+        
         $order = $this->order->find($id);
         if (!$order) {
             return $this->notFound();
@@ -85,6 +91,7 @@ class OrderController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
+        
         $order = $this->order->find($id);
         if (!$order) {
             return $this->notFound();

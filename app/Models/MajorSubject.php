@@ -22,29 +22,31 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read Subject $subject
  */
 class MajorSubject extends Model {
-    
+
     protected $table = 'majors_subjects';
-    
+
     protected $fillable = ['major_id', 'subject_id'];
-    
+
     public function storeByMajorId($majorId, array $subjectIds) {
+
         foreach ($subjectIds as $subjectId) {
             $this->create([
                 'major_id'   => $majorId,
                 'subject_id' => $subjectId,
             ]);
         }
-        
+
     }
-    
+
     public function storeBySubjectId($subjectId, $majorIds) {
+
         foreach ($majorIds as $majorId) {
             $this->create([
                 'major_id'   => $majorId,
                 'subject_id' => $subjectId,
             ]);
         }
-        
+
     }
-    
+
 }

@@ -2,7 +2,6 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
-use App\Http\Requests\ScoreRequest;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -38,12 +37,8 @@ use Illuminate\Support\Facades\DB;
 class Score extends Model {
     
     protected $fillable = [
-        'student_id',
-        'subject_id',
-        'exam_id',
-        'class_rank',
-        'grade_rank',
-        'score',
+        'student_id', 'subject_id', 'exam_id',
+        'class_rank', 'grade_rank', 'score',
         'enabled',
     ];
     
@@ -53,25 +48,8 @@ class Score extends Model {
     
     public function exam() { return $this->belongsTo('App\Models\Exam'); }
     
-    public function existed(ScoreRequest $request, $id = null) {
-        if (!$id) {
-            $score = $this->where('student_id', $request->input('student_id'))
-                ->where('subject_id', $request->input('subject_id'))
-                ->where('exam_id', $request->input('exam_id'))
-                ->first();
-        } else {
-            $score = $this->where('student_id', $request->input('student_id'))
-                ->where('id', '<>', $id)
-                ->where('subject_id', $request->input('subject_id'))
-                ->where('exam_id', $request->input('exam_id'))
-                ->first();
-        }
-        
-        return $score ? true : false;
-        
-    }
-    
     public function datatable() {
+        
         $columns = [
             ['db' => 'Score.id', 'dt' => 0],
             ['db' => 'Student.student_number', 'dt' => 1],
@@ -154,7 +132,7 @@ class Score extends Model {
                 ->join('students', 'students.id', '=', 'scores.student_id')
                 ->whereIn('students.class_id', $class_ids_arr)
                 ->where('scores.exam_id', $exam_id)
-                ->select('scores.id', 'scores.student_id', 'scores.subject_id', 'scores.score', 'students.class_id')
+                ->select(['scores.id', 'scores.student_id', 'scores.subject_id', 'scores.score', 'students.class_id'])
                 ->orderBy('scores.score', 'desc')
                 ->get();
             //通过科目分组

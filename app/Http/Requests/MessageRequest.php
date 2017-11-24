@@ -114,8 +114,8 @@ class MessageRequest extends FormRequest {
                 }
             }
         }
-        
         return $receiveUserIds = array_unique(array_merge($accordUserGetId, $accordDepartGetId));
+        
     }
     
 }

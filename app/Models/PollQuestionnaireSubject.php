@@ -4,6 +4,7 @@ namespace App\Models;
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -22,9 +23,12 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|PollQuestionnaireSubject whereSubjectType($value)
  * @method static Builder|PollQuestionnaireSubject whereUpdatedAt($value)
  * @mixin \Eloquent
- * @property-read \App\Models\PollQuestionnaireAnswer $pollquestionnaireAnswer
- * @property-read \App\Models\PollQuestionnaire $pollquestionnaire
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\PollQuestionnaireChoice[] $pollquestionnairechoice
+ * @property-read PollQuestionnaireAnswer $pollquestionnaireAnswer
+ * @property-read PollQuestionnaire $pollquestionnaire
+ * @property-read Collection|PollQuestionnaireChoice[] $pollquestionnairechoice
+ * @property-read PollQuestionnaire $poll_questionnaire
+ * @property-read PollQuestionnaireAnswer $poll_questionnaire_answer
+ * @property-read Collection|PollQuestionnaireChoice[] $poll_questionnaire_choice
  */
 class PollQuestionnaireSubject extends Model {
     
@@ -66,16 +70,17 @@ class PollQuestionnaireSubject extends Model {
      * @return bool|null
      */
     public function remove($id) {
+        
         $pqSubject = $this->find($id);
         if (!$pqSubject) {
             return false;
         }
-        
         return $this->removable($pqSubject) ? $pqSubject->delete() : false;
         
     }
     
     public function dataTable() {
+        
         $columns = [
             ['db' => 'PollQuestionnaireSubject.id', 'dt' => 0],
             ['db' => 'PollQuestionnaireSubject.subject', 'dt' => 1],
@@ -108,11 +113,11 @@ class PollQuestionnaireSubject extends Model {
                 ],
             ],
         ];
-        
         return Datatable::simple($this, $columns, $joins);
     }
     
     public function getType($type) {
+        
         switch ($type) {
             case 0:
                 return '单选';

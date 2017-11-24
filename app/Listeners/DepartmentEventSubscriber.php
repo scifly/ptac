@@ -9,9 +9,11 @@ use App\Models\DepartmentType;
 use App\Models\Menu;
 use App\Models\School;
 use Illuminate\Events\Dispatcher;
+use Illuminate\Foundation\Bus\DispatchesJobs;
 
 class DepartmentEventSubscriber {
     
+    use DispatchesJobs;
     protected $department, $departmentType;
     
     function __construct(Department $department, DepartmentType $departmentType) {
@@ -106,8 +108,10 @@ class DepartmentEventSubscriber {
             'enabled'            => $$model->enabled,
         ];
         $departments = $this->department->modify($data, $$model->department_id);
-        ManageWechatDepartment::dispatch($departments, 'update');
-        
+        $job = new ManageWechatDepartment($departments, 'update');
+        $this->dispatch($job);
+
+//        ManageWechatDepartment::dispatch($departments, 'update');
         return $departments ? true : false;
         
     }

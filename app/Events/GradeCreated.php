@@ -9,21 +9,22 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
 class GradeCreated {
-    
+
     use Dispatchable, InteractsWithSockets, SerializesModels;
-    
+
     public $grade;
-    
+
     /**
      * Create a new event instance.
      *
      * @param Grade $grade
      */
     public function __construct(Grade $grade) {
+
         $this->grade = $grade;
-        
+
     }
-    
+
     /**
      * Get the channels the event should broadcast on.
      *

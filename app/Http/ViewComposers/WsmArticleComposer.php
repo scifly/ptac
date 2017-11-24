@@ -5,15 +5,15 @@ use App\Models\WapSiteModule;
 use Illuminate\Contracts\View\View;
 
 class WsmArticleComposer {
-    
+
     protected $wsms;
-    
+
     public function __construct(WapSiteModule $wsms) {
-        
+
         $this->wsms = $wsms;
-        
+
     }
-    
+
     /**
      * @param View $view
      */
@@ -22,5 +22,5 @@ class WsmArticleComposer {
             'wsms' => $this->wsms->pluck('name', 'id'),
         ]);
     }
-    
+
 }

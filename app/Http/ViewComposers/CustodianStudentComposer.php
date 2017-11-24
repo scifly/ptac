@@ -7,18 +7,16 @@ use App\Models\User;
 use Illuminate\Contracts\View\View;
 
 class CustodianStudentComposer {
-    
-    protected $custodian;
-    
-    protected $user;
-    
+
+    protected $custodian, $user, $student;
+
     public function __construct(Custodian $custodian, User $user, Student $student) {
-        
+
         $this->custodian = $custodian;
         $this->user = $user;
         $this->student = $student;
     }
-    
+
     public function compose(View $view) {
         $custodians = Custodian::with('user')->get()->toArray();
         if (!empty($custodians)) {
@@ -37,5 +35,5 @@ class CustodianStudentComposer {
             'custodianName' => $custodianName,
         ]);
     }
-    
+
 }

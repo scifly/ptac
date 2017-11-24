@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Mockery\Exception;
 
 /**
  * App\Models\WsmArticle
@@ -33,31 +34,40 @@ use Illuminate\Support\Facades\Storage;
  * @method static Builder|WsmArticle whereWsmId($value)
  * @mixin \Eloquent
  * 网站内容
- * @property-read \App\Models\WapSiteModule $wapSiteModule
- * @property-read \App\Models\WapSiteModule $wapsitemodule
- * @property-read \App\Models\Media $thumbnailmedia
+ * @property-read WapSiteModule $wapSiteModule
+ * @property-read WapSiteModule $wapsitemodule
+ * @property-read Media $thumbnailmedia
  */
 class WsmArticle extends Model {
     
     protected $table = 'wsm_articles';
     protected $fillable = [
-        'id',
-        'wsm_id',
-        'name',
-        'summary',
-        'thumbnail_media_id',
-        'content',
-        'media_ids',
-        'created_at',
-        'updated_at',
+        'id', 'wsm_id', 'name',
+        'summary', 'thumbnail_media_id', 'content',
+        'media_ids', 'created_at', 'updated_at',
         'enabled',
     ];
     
     public function wapSiteModule() {
+        
         return $this->belongsTo('App\Models\WapSiteModule', 'wsm_id', 'id');
+        
     }
     
+    public function thumbnailmedia() {
+        
+        return $this->belongsTo('App\Models\Media', 'thumbnail_media_id', 'id');
+        
+    }
+    
+    /**
+     * 保存新建的网站文章
+     *
+     * @param WsmArticleRequest $request
+     * @return bool|mixed
+     */
     public function store(WsmArticleRequest $request) {
+        
         try {
             $exception = DB::transaction(function () use ($request) {
                 //删除原有的图片
@@ -70,9 +80,12 @@ class WsmArticle extends Model {
         } catch (Exception $e) {
             return false;
         }
+        
     }
     
     /**
+     * 移除关联的媒体文件
+     *
      * @param $request
      */
     private function removeMedias(WsmArticleRequest $request) {
@@ -89,6 +102,13 @@ class WsmArticle extends Model {
         }
     }
     
+    /**
+     * 更新网站文章
+     *
+     * @param WsmArticleRequest $request
+     * @param $id
+     * @return bool|mixed
+     */
     public function modify(WsmArticleRequest $request, $id) {
         $wapSite = $this->find($id);
         if (!$wapSite) {
@@ -98,7 +118,7 @@ class WsmArticle extends Model {
             $exception = DB::transaction(function () use ($request, $id) {
                 $this->removeMedias($request);
                 
-                return $this->where('id', $id)->update($request->except('_method', '_token'));
+                return $this->where('id', $id)->update($request->except('_method', '_token', 'del_ids'));
             });
             
             return is_null($exception) ? true : $exception;
@@ -108,9 +128,12 @@ class WsmArticle extends Model {
     }
     
     /**
+     * 返回数据列表
+     *
      * @return array
      */
     public function datatable() {
+        
         $columns = [
             ['db' => 'WsmArticle.id', 'dt' => 0],
             ['db' => 'Wsm.name as wsmname', 'dt' => 1],
@@ -135,7 +158,7 @@ class WsmArticle extends Model {
                 ],
             ],
         ];
-        
         return Datatable::simple($this, $columns, $joins);
     }
+    
 }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Events\eventTrigger;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -12,7 +13,13 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
+Route::get('/fireEvent', function() {
+    event(new eventTrigger());
+});
+
 Route::auth();
+# 关闭注册功能
+Route::any('register', function() { return redirect('login'); });
 Route::get('logout', 'Auth\LoginController@logout');
 // Route::get('/', function() { return 'Dashboard'; });
 Route::get('/', 'HomeController@index');
@@ -32,6 +39,9 @@ Route::group(['prefix' => 'educators'], function () {
     Route::put('rechargeStore/{id}', $ctlr . '@rechargeStore');
     Route::post('edit/{id}', $ctlr . '@edit');
     Route::post('create', $ctlr . '@create');
+    Route::get('export', $ctlr . '@export');
+    Route::post('import', $ctlr . '@import');
+    
 });
 // 监护人
 Route::group(['prefix' => 'custodians'], routes('CustodianController'));
@@ -39,6 +49,9 @@ Route::group(['prefix' => 'custodians'], function () {
     $ctlr = 'CustodianController';
     Route::post('edit/{id}', $ctlr . '@edit');
     Route::post('create', $ctlr . '@create');
+    Route::get('export', $ctlr . '@export');
+    
+    // Route::any('relationship', $ctlr . '@relationship');
 });
 // 学生
 Route::group(['prefix' => 'students'], routes('StudentController'));
@@ -46,6 +59,8 @@ Route::group(['prefix' => 'students'], function () {
     $ctlr = 'StudentController';
     Route::post('edit/{id}', $ctlr . '@edit');
     Route::post('create', $ctlr . '@create');
+    Route::post('import', $ctlr . '@import');
+    Route::get('export', $ctlr . '@export');
 });
 // 用户
 Route::group(['prefix' => 'users'], routes('UserController'));
@@ -105,9 +120,9 @@ Route::group(['prefix' => 'events'], function () {
 // 微网站设置 - 微网站管理.网站模块管理.文章管理
 Route::group(['prefix' => 'wap_sites'], routes('WapSiteController'));
 Route::any('wap_sites/uploadImages', 'WapSiteController@uploadImages');
-Route::get('wap_sites/webindex', 'WapSiteController@webindex');
+Route::get('wap_sites/webindex/{$school_id}', 'WapSiteController@wapHome');
 Route::group(['prefix' => 'wap_site_modules'], routes('WapSiteModuleController'));
-Route::get('wap_site_modules/webindex/{id}', 'WapSiteModuleController@webindex');
+Route::get('wap_site_modules/webindex/{id}', 'WapSiteModuleController@wapSiteModuleHome');
 Route::group(['prefix' => 'wsm_articles'], routes('WsmArticleController'));
 Route::get('wsm_articles/detail/{id}', 'WsmArticleController@detail');
 /** 投票问卷 */
@@ -200,6 +215,8 @@ Route::group(['prefix' => 'grades'], routes('GradeController'));
 Route::group(['prefix' => 'classes'], routes('SquadController'));
 // 应用设置 - 微信应用管理
 Route::group(['prefix' => 'apps'], routes('AppController'));
+Route::post('apps/index', 'AppController@index');
+Route::get('apps/menu/{id}', 'AppController@menu');
 // 图标管理 - 图标设置.图标类型管理
 Route::group(['prefix' => 'icons'], routes('IconController'));
 Route::group(['prefix' => 'icon_types'], routes('IconTypeController'));
@@ -234,6 +251,11 @@ Route::group(['prefix' => 'menus'], function () {
 });
 // 管理员
 Route::group(['prefix' => 'operators'], routes('OperatorController'));
+Route::group(['prefix' => 'operators'], function() {
+    $ctlr = 'OperatorController';
+    Route::post('create', $ctlr . '@create');
+    Route::post('edit/{id}', $ctlr . '@edit');
+});
 /**
  * routes - Helper function
  * 返回resource路由
@@ -250,5 +272,6 @@ function routes($ctlr) {
         Route::get('edit/{id}', $ctlr . '@edit');
         Route::put('update/{id}', $ctlr . '@update');
         Route::delete('delete/{id}', $ctlr . '@destroy');
+        Route::get('userInfo', $ctlr . '@getUserInfo');
     };
 }

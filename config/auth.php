@@ -10,7 +10,7 @@ return [
     | as required, but they're a perfect start for most applications.
     |
     */
-    'defaults' => [
+    'defaults'  => [
         'guard'     => 'web',
         'passwords' => 'users',
     ],
@@ -30,7 +30,7 @@ return [
     | Supported: "session", "token"
     |
     */
-    'guards' => [
+    'guards'    => [
         'web' => [
             'driver'   => 'session',
             'provider' => 'users',

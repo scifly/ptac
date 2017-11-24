@@ -1,1 +1,0 @@
-$(crud.create('formEducatorClass','educators_classes'))

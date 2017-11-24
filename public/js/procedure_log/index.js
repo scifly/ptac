@@ -1,5 +1,5 @@
 $(function(){
-    crud.unbindEvents();
+    page.unbindEvents();
 
     var $activeTabPane = $('#tab_' + page.getActiveTabId());
 
@@ -10,14 +10,12 @@ $(function(){
     // 新增记录
     $('#add-record').on('click', function () {
         page.getTabContent($activeTabPane, table + '/create');
-        crud.unbindEvents();
     });
 
     // 查看记录详情
     $(document).on('click', '.fa-eye', function () {
         var url = $(this).parents().eq(0).attr('id');
         url = url.replace('_', '/');
-        crud.unbindEvents();
     });
 });
 function initDatatable (obj,action) {

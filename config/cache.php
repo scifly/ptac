@@ -23,19 +23,19 @@ return [
     | same cache driver to group types of items stored in your caches.
     |
     */
-    'stores' => [
-        'apc' => [
+    'stores'  => [
+        'apc'       => [
             'driver' => 'apc',
         ],
-        'array' => [
+        'array'     => [
             'driver' => 'array',
         ],
-        'database' => [
+        'database'  => [
             'driver'     => 'database',
             'table'      => 'cache',
             'connection' => null,
         ],
-        'file' => [
+        'file'      => [
             'driver' => 'file',
             'path'   => storage_path('framework/cache/data'),
         ],
@@ -57,7 +57,7 @@ return [
                 ],
             ],
         ],
-        'redis' => [
+        'redis'     => [
             'driver'     => 'redis',
             'connection' => 'default',
         ],
@@ -72,5 +72,5 @@ return [
     | value to get prefixed to all our keys so we can avoid collisions.
     |
     */
-    'prefix' => 'laravel',
+    'prefix'  => 'laravel',
 ];

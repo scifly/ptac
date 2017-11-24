@@ -1,4 +1,4 @@
-<div class="box box-widget">
+<div class="box box-default box-solid">
     <div class="box-header with-border">
         @include('partials.list_header')
     </div>
@@ -6,12 +6,11 @@
         <table id="data-table" style="width: 100%"
                class="display nowrap table table-striped table-bordered table-hover table-condensed">
             <thead>
-            <tr>
+			<tr class="bg-info">
                 <th>#</th>
                 <th>姓名</th>
                 <th>用户名</th>
                 <th>角色</th>
-                <th>所属公司</th>
                 <th>微信帐号</th>
                 <th>手机号码</th>
                 <th>创建于</th>
@@ -22,4 +21,5 @@
             <tbody></tbody>
         </table>
     </div>
+    @include('partials.form_overlay')
 </div>

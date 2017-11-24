@@ -9,11 +9,11 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
 class ClassUpdated {
-    
+
     use Dispatchable, InteractsWithSockets, SerializesModels;
-    
+
     public $class;
-    
+
     /**
      * Create a new event instance.
      *
@@ -21,10 +21,11 @@ class ClassUpdated {
      * @param Squad $class
      */
     public function __construct(Squad $class) {
+
         $this->class = $class;
-        
+
     }
-    
+
     /**
      * Get the channels the event should broadcast on.
      *

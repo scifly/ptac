@@ -1,6 +1,7 @@
 <?php
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Mockery\Exception;
@@ -9,6 +10,18 @@ use Mockery\Exception;
  * App\Models\GroupMenu
  *
  * @mixin \Eloquent
+ * @property int $id
+ * @property int $group_id
+ * @property int $menu_id
+ * @property \Carbon\Carbon|null $created_at
+ * @property \Carbon\Carbon|null $updated_at
+ * @property int|null $enabled
+ * @method static Builder|GroupMenu whereCreatedAt($value)
+ * @method static Builder|GroupMenu whereEnabled($value)
+ * @method static Builder|GroupMenu whereGroupId($value)
+ * @method static Builder|GroupMenu whereId($value)
+ * @method static Builder|GroupMenu whereMenuId($value)
+ * @method static Builder|GroupMenu whereUpdatedAt($value)
  */
 class GroupMenu extends Model {
     

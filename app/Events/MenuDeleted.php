@@ -9,11 +9,11 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
 class MenuDeleted {
-    
+
     use Dispatchable, InteractsWithSockets, SerializesModels;
-    
+
     public $menu;
-    
+
     /**
      * Create a new event instance.
      *
@@ -21,10 +21,11 @@ class MenuDeleted {
      * @param Menu $menu
      */
     public function __construct(Menu $menu) {
+
         $this->menu = $menu;
-        
+
     }
-    
+
     /**
      * Get the channels the event should broadcast on.
      *

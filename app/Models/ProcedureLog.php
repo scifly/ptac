@@ -41,6 +41,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read User $operator_user
  * @property-read ProcedureStep $procedure_step
  * @method static Builder|ProcedureLog whereFirstLogId($value)
+ * @property-read \App\Models\User $initiatorUser
+ * @property-read \App\Models\User $operatorUser
  */
 class ProcedureLog extends Model {
     
@@ -87,6 +89,7 @@ class ProcedureLog extends Model {
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function initiatorUser() {
+        
         return $this->belongsTo('App\Models\User', 'initiator_user_id');
         
     }
@@ -124,23 +127,24 @@ class ProcedureLog extends Model {
      * @return array 处理后字典 key=>media.id,value => media
      */
     public function operate_ids($media_ids) {
+        
         $ids = explode(',', $media_ids);
         $medias = [];
         foreach ($ids as $mid) {
             $media = Media::find($mid);
             $medias[$mid] = $media;
         }
-        
         return $medias;
     }
     
     public function datatable($where) {
+        
         $columns = [
             ['db' => 'ProcedureLog.first_log_id', 'dt' => 0],
             [
                 'db'        => 'ProcedureLog.initiator_user_id', 'dt' => 1,
                 'formatter' => function ($d) {
-                    return $this->get_user($d)->realname;
+                    return User::find($d)->realname;
                 },
             ],
             ['db' => 'Procedures.name as procedure_name', 'dt' => 2],
@@ -150,29 +154,29 @@ class ProcedureLog extends Model {
             [
                 'db'        => 'ProcedureLog.step_status', 'dt' => 6,
                 'formatter' => function ($d, $row) {
+                    
                     switch ($d) {
+                        
                         case 0:
-                            $status = sprintf(Datatable::DT_ON, '通过');
+                            $status = Datatable::DT_ON;
                             break;
                         case 1:
-                            $status = sprintf(Datatable::DT_OFF, '拒绝');
+                            $status = Datatable::DT_OFF;
                             break;
                         case 2:
                             $status = sprintf(self::DT_PEND, '待定');
                             break;
                         default:
-                            $status = sprintf(Datatable::DT_OFF, '错误');
+                            $status = Datatable::DT_OFF;
                             break;
                     }
                     $id = $row['first_log_id'];
                     $showLink = '<a id = ' . $id . ' href="show/' . $id . '" class="btn btn-primary btn-icon btn-circle btn-xs" data-toggle="modal"><i class="fa fa-eye"></i></a>';
-                    
                     return $status . Datatable::DT_SPACE . $showLink;
                     
                 },
             ],
         ];
-        
         return Datatable::simple($this, $columns, $this->joins, $where);
     }
     

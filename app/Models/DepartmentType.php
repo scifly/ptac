@@ -16,7 +16,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property \Carbon\Carbon|null $created_at
  * @property \Carbon\Carbon|null $updated_at
  * @property int $enabled
- * @property-read Collection|\App\Models\Department[] $departments
+ * @property-read Collection|Department[] $departments
  * @method static Builder|DepartmentType whereCreatedAt($value)
  * @method static Builder|DepartmentType whereEnabled($value)
  * @method static Builder|DepartmentType whereId($value)
@@ -45,6 +45,7 @@ class DepartmentType extends Model {
      * @return $this|Model
      */
     public function store(array $data) {
+        
         return $this->create($data);
         
     }
@@ -57,6 +58,7 @@ class DepartmentType extends Model {
      * @return bool
      */
     public function modify(array $data, $id) {
+        
         return $this->find($id)->update($data);
         
     }
@@ -68,6 +70,7 @@ class DepartmentType extends Model {
      * @return bool|null
      */
     public function remove($id) {
+        
         $departmentType = $this->find($id);
         if (!$departmentType) {
             return false;
@@ -79,6 +82,7 @@ class DepartmentType extends Model {
     }
     
     public function datatable() {
+        
         $columns = [
             ['db' => 'DepartmentType.id', 'dt' => 0],
             ['db' => 'DepartmentType.name', 'dt' => 1],
@@ -88,11 +92,15 @@ class DepartmentType extends Model {
             [
                 'db'        => 'DepartmentType.enabled', 'dt' => 5,
                 'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($this, $d, $row);
+                    $id = $row['id'];
+                    $status = $d ? Datatable::DT_ON : Datatable::DT_OFF;
+                    $editLink = sprintf(Datatable::DT_LINK_EDIT, 'edit_' . $id);
+                    $delLink = sprintf(Datatable::DT_LINK_DEL, $id);
+                    return $status . Datatable::DT_SPACE .
+                        $editLink . Datatable::DT_SPACE . $delLink;
                 },
             ],
         ];
-        
         return Datatable::simple($this, $columns);
         
     }

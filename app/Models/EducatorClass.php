@@ -25,13 +25,14 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read Squad $squad
  * @property-read Subject $subject
  * @method static Builder|EducatorClass whereEnabled($value)
+ * @property-read Educator $classes
  */
 class EducatorClass extends Model {
-    
+
     protected $table = 'educators_classes';
-    
+
     protected $fillable = ['educator_id', 'class_id', 'subject_id', 'enabled'];
-    
+
     public function classes() { return $this->belongsTo('App\Models\Educator'); }
-    
+
 }

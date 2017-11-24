@@ -4,6 +4,7 @@ namespace App\Models;
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -32,6 +33,9 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read PollQuestionnaireParticipant $pollquestionnairePartcipant
  * @property-read School $school
  * @property-read User $user
+ * @property-read PollQuestionnaireAnswer $poll_questionnaire_answer
+ * @property-read PollQuestionnaireParticipant $poll_questionnaire_partcipant
+ * @property-read Collection|PollQuestionnaireSubject[] $poll_questionnaire_subject
  */
 class PollQuestionnaire extends Model {
     
@@ -127,7 +131,6 @@ class PollQuestionnaire extends Model {
                 ],
             ],
         ];
-        
         return Datatable::simple($this, $columns, $joins);
     }
 }

@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 
 use App\Helpers\ControllerTrait;
 use App\Http\Requests\ProcedureLogRequest;
+use App\Models\Media;
 use App\Models\ProcedureLog;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
@@ -21,7 +22,10 @@ class ProcedureLogController extends Controller {
     protected $procedureLog;
     
     function __construct(ProcedureLog $procedureLog) {
+    
+        $this->middleware(['auth']);
         $this->procedureLog = $procedureLog;
+        
     }
     
     /**
@@ -30,6 +34,7 @@ class ProcedureLogController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
+        
         if (Request::get('draw')) {
             $userId = 6;
             //查询我发布的流程最后一条log记录
@@ -38,9 +43,7 @@ class ProcedureLogController extends Controller {
                 ->groupBy('first_log_id')
                 ->pluck('id')->toArray();
             $where = 'ProcedureLog.id in (' . implode(',', $ids) . ')';
-            
             return response()->json($this->procedureLog->datatable($where));
-            
         }
         
         return $this->output(__METHOD__);
@@ -53,6 +56,7 @@ class ProcedureLogController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function pending() {
+        
         if (Request::get('draw')) {
             $userId = 3;
             //查询待审核的流程最后一条log记录
@@ -62,7 +66,6 @@ class ProcedureLogController extends Controller {
                 ->pluck('id')
                 ->toArray();
             $where = 'ProcedureLog.id in (' . implode(',', $ids) . ') and FIND_IN_SET(' . $userId . ',ProcedureStep.approver_user_ids)';
-            
             return response()->json($this->procedureLog->datatable($where));
             
         }
@@ -162,6 +165,7 @@ class ProcedureLogController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function decision() {
+        
         $userId = 3;
         $request = Request::all();
         $update = $this->procedureLog->where('id', $request['id'])
@@ -222,6 +226,7 @@ class ProcedureLogController extends Controller {
         }
         
         return response()->json($result);
+        
     }
     
     /**

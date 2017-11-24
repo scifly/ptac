@@ -3,9 +3,11 @@ namespace App\Http\ViewComposers;
 
 use App\Models\Custodian;
 use App\Models\Group;
+use App\Models\School;
 use App\Models\Squad;
 use App\Models\User;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Auth;
 
 class StudentComposer {
     
@@ -21,6 +23,15 @@ class StudentComposer {
     }
     
     public function compose(View $view) {
+
+        $user = Auth::user();
+        $schools = null;
+        switch ($user->group->name) {
+            case '运营':
+                $schools = School::whereEnabled(1)->pluck('name', 'id');
+                break;
+            
+        }
         $Custodian = Custodian::with('user')->get()->toArray();
         if (!empty($Custodian)) {
             foreach ($Custodian as $k => $v) {
@@ -32,8 +43,6 @@ class StudentComposer {
             'class'      => $this->class->pluck('name', 'id'),
             'groups'     => $this->group->pluck('name', 'id'),
             'custodians' => $custodian,
-//            'departments' => $this->department->pluck('name','id'),
-//            'departments' => $this->department->departments([1]),
         ]);
         
     }
