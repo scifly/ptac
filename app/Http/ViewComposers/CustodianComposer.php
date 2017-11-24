@@ -76,7 +76,7 @@ class CustodianComposer {
                 ->get();
             if (!empty($list)) {
                 foreach ($list as $s) {
-                    $students[$s->id] = $s->user->realname . "-" .$s->student_number;
+                    $students[$s->id] = $s->user->realname . "-" . $s->student_number;
                 }
             }
         }
