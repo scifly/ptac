@@ -2,16 +2,16 @@ var group = function(action) {
     page.unbindEvents();
     var $menuTree = $('#menu_tree');
     var $form = $('#formGroup');
-    var schoolId = $('#school_id').val();
+    var $schoolId = $('#school_id');
     var loadTree = function() {
         $.jstree.destroy();
         $('.overlay').show();
         $('a[href="#tab02"]').html(page.ajaxLoader());
         var url = '';
         if (action === 'create') {
-            url = page.siteRoot() + 'groups/create?schoolId=' + schoolId;
+            url = page.siteRoot() + 'groups/create?schoolId=' + $schoolId.val();
         } else {
-            url = page.siteRoot() + 'groups/edit/' + $('#id').val() + '?schoolId=' + schoolId;
+            url = page.siteRoot() + 'groups/edit/' + $('#id').val() + '?schoolId=' + $schoolId.val();
         }
         $menuTree.jstree({
             core: {
@@ -50,13 +50,9 @@ var group = function(action) {
             $('.overlay').hide();
         });
     };
-    // iCheck
     page.initICheck();
-    // select2
     page.initSelect2();
-    // Cancel button
     page.initBackBtn('groups');
-    // Parsley
     $form.parsley().on('form:validated', function () {
         if ($('.parsley-error').length === 0) {
             var url = '';
@@ -88,6 +84,7 @@ var group = function(action) {
             });
         }
     }).on('form:submit', function() { return false; });
+    $schoolId.on('change', function() { loadTree(); });
     $('.collapsed-box').boxWidget('collapse');
     $(document).on('ifChecked', '.tabs', function(e) {
         var $actionContainer = $(this).parentsUntil($('.box .box-default'), '.box-header').next();

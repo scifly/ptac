@@ -192,8 +192,12 @@ class Educator extends Model {
                     $editLink = sprintf(Datatable::DT_LINK_EDIT, 'edit_' . $id);
                     $delLink = sprintf(Datatable::DT_LINK_DEL, $id);
                     $rechargeLink = sprintf(Datatable::DT_LINK_RECHARGE, 'recharge_' . $id);
-                    return $status . Datatable::DT_SPACE . $showLink . Datatable::DT_SPACE .
-                        $editLink . Datatable::DT_SPACE . $delLink . Datatable::DT_SPACE . $rechargeLink;
+                    return
+                        $status . str_repeat(Datatable::DT_SPACE, 3) .
+                        $showLink . str_repeat(Datatable::DT_SPACE, 3) .
+                        $editLink . str_repeat(Datatable::DT_SPACE, 2) .
+                        $delLink . str_repeat(Datatable::DT_SPACE, 2) .
+                        $rechargeLink;
                 },
             ],
         ];
