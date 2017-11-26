@@ -1,6 +1,4 @@
-
 page.create('formStudent','students');
-
 var n = 0;
 // 手机号码列表容器
 var $mContainer = $("#mobiles").find("tbody");
@@ -36,15 +34,7 @@ $(document).on('click', '.btn-mobile-add', function (e) {
         '</td>' +
         '</tr>'
     );
-    // icheck init
-    $mContainer.find('input[type="radio"]').iCheck({
-        checkboxClass: 'icheckbox_minimal-blue',
-        radioClass: 'iradio_minimal-blue'
-    });
-    $mContainer.find('input[type="checkbox"]').iCheck({
-        checkboxClass: 'icheckbox_minimal-blue',
-        radioClass: 'iradio_minimal-blue'
-    });
+    page.initICheck($mContainer);
     $mContainer.find('tr:not(:last) .btn-mobile-add')
         .removeClass('btn-mobile-add').addClass('btn-mobile-remove')
         .html('<i class="fa fa-minus text-blue" title="删除"></i>');

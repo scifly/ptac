@@ -61,9 +61,7 @@ class IconType extends Model {
     public function modify(array $data, $id) {
         
         $iconType = $this->find($id);
-        if (!$iconType) {
-            return false;
-        }
+        if (!$iconType) { return false; }
         
         return $iconType->update($data) ? true : false;
         
@@ -79,6 +77,7 @@ class IconType extends Model {
         
         $iconType = $this->find($id);
         if (!$iconType) { return false; }
+        
         return $iconType->removable($iconType)
             ? $iconType->delete() : false;
         

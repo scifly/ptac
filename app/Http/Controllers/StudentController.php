@@ -94,6 +94,7 @@ class StudentController extends Controller {
         
         $student = $this->student->find($id);
         if (!$student) { return $this->notFound(); }
+        
         return $this->output(__METHOD__, ['student' => $student]);
         
     }
@@ -105,25 +106,16 @@ class StudentController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function edit($id) {
-        
-        if (Request::method() === 'POST') {
-            return $this->department->tree();
-        }
-        $student = $this->student->find($id);
-        $student['student'] = $this->student->find($id);
-        $selectedDepartmentIds = [];
-        foreach ($student->user->departments as $department) {
-            $selectedDepartmentIds[] = $department->id;
-        }
-        $selectedDepartments = $this->department->selectedNodes($selectedDepartmentIds);
+    
         # 查询学生信息
+        $student = $this->student->find($id);
         if (!$student) { return $this->notFound(); }
+        $user = $student->user;
 
         return $this->output(__METHOD__, [
-            'mobiles'               => $student->user->mobiles,
-            'student'               => $student,
-            'selectedDepartmentIds' => implode(',', $selectedDepartmentIds),
-            'selectedDepartments'   => $selectedDepartments,
+            'student' => $student,
+            'user'    => $user,
+            'mobiles' => $user->mobiles
         ]);
         
     }

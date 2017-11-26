@@ -91,6 +91,9 @@ var page = {
         var tabId = $('.nav-tabs .active a').attr('href').split('_');
         return tabId[tabId.length - 1];
     },
+    getActiveMenuId: function() {
+        return $('.sidebar-menu li.active').last().find('a').attr('id');
+    },
     errorHandler: function (e) {
         var obj = JSON.parse(e.responseText);
         console.log(e.responseJSON);
@@ -106,6 +109,7 @@ var page = {
             url = url.replace(page.siteRoot(), '');
         }
         var tabId = page.getActiveTabId();
+        var menuId = page.getActiveMenuId();
         $('a[href="#tab_' + tabId + '"]').attr('data-uri', url);
         $tabPane.html(page.ajaxLoader);
         $('.overlay').show();
@@ -113,7 +117,7 @@ var page = {
             type: 'GET',
             dataType: 'json',
             url: page.siteRoot() + url,
-            data: {tabId: tabId},
+            data: {tabId: tabId, menuId: menuId},
             success: function (result) {
                 if (result.statusCode === 200) {
                     $tabPane.html(result.html);
@@ -389,6 +393,8 @@ $(function () {
             $(this).removeClass('text-blue').addClass('text-gray');
         });
         $(this).removeClass('text-gray').addClass('text-blue');
+        var t = page.getActiveTabId();
+        var m = page.getActiveMenuId();
         // 获取被点击卡片的url
         var url = $(this).attr('data-uri');
         // 获取所有卡片
