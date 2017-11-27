@@ -122,11 +122,19 @@ class ManageImportEducator implements ShouldQueue {
                     $classInput = str_replace(['，', '：'], [',', ':'], $datum['classes']);
                     $classes = explode(',', $classInput);
                     foreach ($classes as $c) {
-                        $squads = Squad::where('name', $c)->get();
-                        foreach ($squads as $s) {
-                            if ($s->grade->school_id == $datum['school_id']) {
-                                $s->educator_ids .= $educator_id . ',';
-                                $s->save();
+                        $squadItem = explode(':', $c);
+                        $gradeItem = Grade::where('school_id', $datum['school_id'])
+                            ->where('name', $squadItem[0])->first();
+                        if (!empty($gradeItem)) {
+                            Log::debug($squadItem[0]);
+                            $squads = Squad::where('name', $squadItem[1])
+                                ->where('grade_id', $gradeItem->id)
+                                ->first();
+                            if (!empty($squads)) {
+                                if ($squads->grade->school_id == $datum['school_id']) {
+                                    $squads->educator_ids .= $educator_id . ',';
+                                    $squads->save();
+                                }
                             }
                         }
                     }
@@ -144,8 +152,8 @@ class ManageImportEducator implements ShouldQueue {
                                     ->where('name', $sub)->first();
                                 $classItems = Squad::where('name', $ec)->get();
                                 if (!empty($subject)) {
-                                
-                                    $subjectGradeIds = explode(',', $subject->grade_ids);
+    
+                                    $subjectGradeIds = explode('|', $subject->grade_ids);
                                     foreach ($classItems as $item) {
                                         # 班级的所属年级 是否在 科目对应的年级中
                                         if (in_array($item->grade_id, $subjectGradeIds)) {
