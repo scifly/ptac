@@ -55,7 +55,6 @@ class ManageImportEducator implements ShouldQueue {
                             'wechatid'   => '',
                             'enabled'    => 1,
                         ];
-                        // $u = new User();
                         $userData = User::create($user);
                         # 创建教职员工记录
                         $educator = [
@@ -131,27 +130,35 @@ class ManageImportEducator implements ShouldQueue {
                             }
                         }
                     }
+                    # 教职员工班级任课
                     if ($datum['subjects'] && $datum['educators_classes']) {
                         $subjectsInput = str_replace(['，', '：'], [',', ':'], $datum['subjects']);
+                        # 科目数组
                         $subjects = explode(',', $subjectsInput);
                         $ecInput = str_replace(['，', '：'], [',', ':'], $datum['educators_classes']);
+                        # 班级数组
                         $ecs = explode(',', $ecInput);
                         foreach ($subjects as $sub) {
                             foreach ($ecs as $ec) {
                                 $subject = Subject::where('school_id', $datum['school_id'])
                                     ->where('name', $sub)->first();
-                                $grade = Grade::where('school_id', $datum['school_id'])
-                                    ->where('name', $ec)->first();
-                                if ($subject && $grade) {
-                                    $educators_classes = [
-                                        'educator_id' => $educator_id,
-                                        'class_id'    => $ec,
-                                        'subject_id'  => $sub,
-                                        'enabled'     => 1,
-                                    ];
-                                    EducatorClass::create($educators_classes);
-                                }
+                                $classItems = Squad::where('name', $ec)->get();
+                                if (!empty($subject)) {
                                 
+                                    $subjectGradeIds = explode(',', $subject->grade_ids);
+                                    foreach ($classItems as $item) {
+                                        # 班级的所属年级 是否在 科目对应的年级中
+                                        if (in_array($item->grade_id, $subjectGradeIds)) {
+                                            $educators_classes = [
+                                                'educator_id' => $educator_id,
+                                                'class_id'    => $item->id,
+                                                'subject_id'  => $subject->id,
+                                                'enabled'     => 1,
+                                            ];
+                                            EducatorClass::create($educators_classes);
+                                        }
+                                    }
+                                }
                             }
                         }
                     }

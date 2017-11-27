@@ -156,7 +156,7 @@ class StudentController extends Controller {
     }
     
     /**
-     * 导入数据
+     * 导入学籍
      */
     public function import() {
 
@@ -176,7 +176,9 @@ class StudentController extends Controller {
         }
     }
     
-    /** 导出数据 */
+    /**
+     * 导出学籍
+     */
     public function export() {
         $id = Request::query('id');
         if ($id) {

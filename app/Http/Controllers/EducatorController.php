@@ -201,7 +201,7 @@ class EducatorController extends Controller {
         
     }
     /**
-     * 导入数据
+     * 导入教职员工
      */
     public function import() {
         
@@ -222,7 +222,7 @@ class EducatorController extends Controller {
     }
     
     /**
-     * 导出数据
+     * 导出教职员工
      * @return \Illuminate\Http\JsonResponse
      */
     public function export() {
