@@ -1,16 +1,21 @@
 <?php
 namespace App\Models;
 
+use App\Events\EducatorImported;
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
 use App\Http\Requests\CustodianRequest;
 use App\Http\Requests\EducatorRequest;
+use App\Listeners\EducatorEventSubscriber;
+use App\Rules\Mobiles;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 use Maatwebsite\Excel\Facades\Excel;
 use Maatwebsite\Excel\Readers\LaravelExcelReader;
 use Mockery\Exception;
@@ -47,7 +52,8 @@ class Educator extends Model {
     use ModelTrait;
     const EXCEL_FILE_TITLE = [
         '姓名', '性别', '生日', '学校',
-        '年级', '班级', '手机号码',
+        '手机号码', '年级主任', '班级主任',
+        '科目名称', '任课班级',
     ];
     const EXCEL_EXPORT_TITLE = [
         '教职工名称', '所属学校', '可用短信条数',
@@ -233,7 +239,7 @@ class Educator extends Model {
         
         try {
             $exception = DB::transaction(function () use ($request) {
-               // dd($request->all());
+                // dd($request->all());
                 $userInputData = $request->input('user');
                 $userData = [
                     'username'     => $userInputData['username'],
@@ -356,8 +362,8 @@ class Educator extends Model {
         
         try {
             $exception = DB::transaction(function () use ($request) {
-
-               // dd($request->all());die;
+                
+                // dd($request->all());die;
                 $userInputData = $request->input('user');
                 $userData = [
                     'username'     => $userInputData['username'],
@@ -414,7 +420,6 @@ class Educator extends Model {
                 if ($classSubjectData) {
                     $educatorClass = new EducatorClass();
                     $educatorClass->where('educator_id', $request->input('id'))->delete();
-                    
                     $uniqueArray = [];
                     foreach ($classSubjectData['class_ids'] as $index => $class) {
                         $uniqueArray[] = [
@@ -432,9 +437,9 @@ class Educator extends Model {
                                 'enabled'     => $userInputData['enabled'],
                             ];
                             $educatorClass->create($educatorClassData);
-            
+                            
                         }
-        
+                        
                     }
                     unset($educatorClass);
                 }
@@ -483,6 +488,7 @@ class Educator extends Model {
         return $removed ? true : false;
         
     }
+    
     /**
      * 导入
      *
@@ -518,13 +524,14 @@ class Educator extends Model {
                         unset($educators[$key]);
                     }
                 }
-                // $this->checkData($educators);
+                $this->checkData($educators);
             }
             Storage::disk('uploads')->delete($filename);
-    
+            
         }
         
     }
+    
     /**
      * 检查表头是否合法
      * @param array $fileTitle
@@ -535,9 +542,64 @@ class Educator extends Model {
         return count(array_diff(self::EXCEL_FILE_TITLE, $fileTitle)) != 0;
         
     }
+    
+    private function checkData(array $data) {
+        $rules = [
+            'name'              => 'required|string|between:2,6',
+            'gender'            => [
+                'required',
+                Rule::in(['男', '女']),
+            ],
+            'birthday'          => ['required', 'string', 'regex:/^((19\d{2})|(20\d{2}))-([1-12])-([1-31])$/'],
+            'school'            => 'required|string|between:4,20',
+            'mobile'            => 'required', new Mobiles(),
+            'grades'            => 'string',
+            'classes'           => 'string',
+            'subjects'          => 'string',
+            'educators_classes' => 'string',
+        ];
+        // Validator::make($data,$rules);
+        # 不合法的数据
+        $invalidRows = [];
+        # 需要添加的数据
+        $rows = [];
+        for ($i = 0; $i < count($data); $i++) {
+            $datum = $data[$i];
+            $user = [
+                'name'     => $datum[0],
+                'gender'   => $datum[1],
+                'birthday' => $datum[2],
+                'school'   => $datum[3],
+                'mobile'   => $datum[4],
+                'grades'   => $datum[5],
+                'classes'   => $datum[6],
+                'subjects'   => $datum[7],
+                'educators_classes'   => $datum[8],
+            ];
+            $status = Validator::make($user, $rules);
+            if ($status->fails()) {
+                $invalidRows[] = $datum;
+                unset($data[$i]);
+                continue;
+            }
+            $school = School::whereName($user['school'])->first();
+            if (!$school) {
+                $invalidRows[] = $datum;
+                unset($data[$i]);
+                continue;
+            }
+            $user['school_id'] = $school->id;
+            $rows[] = $user;
+            unset($user);
+        }
+        if (!empty($rows)) {
+            event(new EducatorImported($rows));
+        }
+    }
+    
     public function export($id) {
         $educators = $this->where('school_id', $id)->get();
-        $data = array(self::EXCEL_EXPORT_TITLE);
+        $data = [self::EXCEL_EXPORT_TITLE];
         foreach ($educators as $educator) {
             if (!empty($educator)) {
                 $item = [
@@ -552,7 +614,6 @@ class Educator extends Model {
                 unset($item);
             }
         }
-        
         return $data;
     }
 }

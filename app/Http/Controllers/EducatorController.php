@@ -229,9 +229,14 @@ class EducatorController extends Controller {
         $id = Request::query('id');
         if ($id) {
             $data = $this->educator->export($id);
+            /** @noinspection PhpMethodParametersCountMismatchInspection */
+            /** @noinspection PhpUndefinedMethodInspection */
             Excel::create(iconv('UTF-8', 'GBK', '教职员工列表'), function ($excel) use ($data) {
+                /** @noinspection PhpUndefinedMethodInspection */
                 $excel->sheet('score', function($sheet) use ($data) {
+                    /** @noinspection PhpUndefinedMethodInspection */
                     $sheet->rows($data);
+                    /** @noinspection PhpUndefinedMethodInspection */
                     $sheet->setWidth(array(
                         'A'     =>  30,
                         'B'     =>  30,
