@@ -754,5 +754,22 @@ HTML;
         return $menuHtml;
         
     }
+
+    /**
+     * 根据菜单ID返回其父级菜单中类型为“学校”的菜单ID
+     *
+     * @param $id
+     * @return int|mixed
+     */
+    public function getSchoolMenuId($id) {
+
+        $menu = $this->find($id);
+        $menuType = $menu->menuType->name;
+        while ($menuType != '学校') {
+            $menu = $menu->parent;
+            $menuType = $menu->menuType->name;
+        }
+        return $menu->id;
+    }
     
 }

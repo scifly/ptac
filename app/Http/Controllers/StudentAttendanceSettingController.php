@@ -15,10 +15,10 @@ class StudentAttendanceSettingController extends Controller {
     
     protected $sas;
     
-    function __construct(StudentAttendanceSetting $studentAttendanceSetting) {
+    function __construct(StudentAttendanceSetting $sas) {
     
         $this->middleware(['auth']);
-        $this->sas = $studentAttendanceSetting;
+        $this->sas = $sas;
         
     }
     
@@ -60,24 +60,7 @@ class StudentAttendanceSettingController extends Controller {
             ? $this->succeed() : $this->fail();
         
     }
-    
-    /**
-     * 编辑学生考勤设置
-     *
-     * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
-     */
-    public function show($id) {
-        
-        $sas = $this->sas->find($id);
-        if (!$sas) { return $this->notFound(); }
-        
-        return $this->output(__METHOD__, [
-            'studentAttendanceSetting' => $sas,
-        ]);
-        
-    }
-    
+
     /**
      * 编辑学生考勤设置
      *
@@ -89,9 +72,7 @@ class StudentAttendanceSettingController extends Controller {
         $sas = $this->sas->find($id);
         if (!$sas) { return $this->notFound(); }
         
-        return $this->output(__METHOD__, [
-            'studentAttendanceSetting' => $sas,
-        ]);
+        return $this->output(__METHOD__, ['sas' => $sas]);
         
     }
     

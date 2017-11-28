@@ -55,7 +55,7 @@ class AttendanceMachineController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(AttendanceMachineRequest $request) {
-        
+
         return $this->am->create($request->all())
             ? $this->succeed() : $this->fail();
         

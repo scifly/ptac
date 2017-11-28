@@ -39,7 +39,7 @@ class EducatorAttendanceSetting extends Model {
     
     protected $fillable = [
         'name', 'school_id', 'start',
-        'end', 'inorout',
+        'end', 'inorout','enabled'
     ];
     
     /**
@@ -61,7 +61,12 @@ class EducatorAttendanceSetting extends Model {
         $columns = [
             ['db' => 'EducatorAttendanceSetting.id', 'dt' => 0],
             ['db' => 'EducatorAttendanceSetting.name', 'dt' => 1],
-            ['db' => 'School.name as schoolname ', 'dt' => 2],
+            [
+                'db' => 'School.name as schoolname ', 'dt' => 2,
+                'formatter' => function ($d) {
+                    return '<i class="fa fa-university"></i>&nbsp;' . $d;
+                }
+            ],
             ['db' => 'EducatorAttendanceSetting.start', 'dt' => 3],
             ['db' => 'EducatorAttendanceSetting.end', 'dt' => 4],
             [

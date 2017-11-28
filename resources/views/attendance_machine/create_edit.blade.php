@@ -7,6 +7,7 @@
             @if(!empty($am['id'])) {
             {{ Form::hidden('id', $am['id'], ['id' => 'id']) }}
             @endif
+            {{ Form::hidden('school_id', $schoolId, ['id' => 'school_id']) }}
             <div class="form-group">
                 {!! Form::label('name', '名称', [
                     'class' => 'col-sm-3 control-label'
@@ -33,11 +34,6 @@
                     ]) !!}
                 </div>
             </div>
-            @include('partials.single_select', [
-                'label' => '所属学校',
-                'id' => 'school_id',
-                'items' => $schools
-            ])
             <div class="form-group">
                 {!! Form::label('machineid', '考勤机id', [
                     'class' => 'col-sm-3 control-label'
@@ -54,7 +50,7 @@
             </div>
             @include('partials.enabled', [
                 'id' => 'enabled',
-                'value' => isset($am['enabled']) ? $am['enabled'] : NULL
+                'value' => isset($am['enabled']) ? $am['enabled'] : null
             ])
         </div>
     </div>

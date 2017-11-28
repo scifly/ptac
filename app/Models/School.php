@@ -9,6 +9,7 @@ use App\Helpers\ModelTrait;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * App\Models\School
@@ -361,6 +362,30 @@ class School extends Model {
 
         return $schoolList;
         
+    }
+
+    public function getSchoolId()
+    {
+
+        $user = Auth::user();
+        switch ($user->group->name) {
+            case '运营':
+            case '企业':
+                $menu = new Menu();
+                $schoolMenuId = $menu->getSchoolMenuId(session('menuId'));
+                $schoolId = $this::whereMenuId($schoolMenuId)->first()->id;
+                unset($menu);
+                break;
+            case '学校':
+                $departmentId = $this->user->topDeptId($user);
+                $schoolId = School::whereDepartmentId($departmentId)->first()->id;
+                break;
+            default:
+                $schoolId = $user->educator->school_id;
+                break;
+        }
+        return $schoolId;
+
     }
     
 }

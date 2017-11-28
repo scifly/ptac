@@ -16,9 +16,7 @@ class AttendanceMachineComposer {
 
     public function compose(View $view) {
 
-        $view->with([
-            'schools' => $this->school->pluck('name', 'id'),
-        ]);
+        $view->with(['schoolId' => $this->school->getSchoolId()]);
     }
 
 }
