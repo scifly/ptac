@@ -148,7 +148,7 @@ class StudentController extends Controller {
     }
     
     /**
-     * 导入数据
+     * 导入学籍
      */
     public function import() {
 
@@ -169,20 +169,25 @@ class StudentController extends Controller {
     }
     
     /**
-     * 导出数据
-     * @return \Illuminate\Http\JsonResponse
+     * 导出学籍
      */
     public function export() {
         $id = Request::query('id');
         if ($id) {
             $data = $this->student->export($id);
+            /** @noinspection PhpMethodParametersCountMismatchInspection */
+            /** @noinspection PhpUndefinedMethodInspection */
             Excel::create(iconv('UTF-8', 'GBK', '学生列表'), function ($excel) use ($data) {
+                /** @noinspection PhpUndefinedMethodInspection */
                 $excel->sheet('score', function($sheet) use ($data) {
+                    /** @noinspection PhpUndefinedMethodInspection */
                     $sheet->rows($data);
+                    /** @noinspection PhpUndefinedMethodInspection */
                     $sheet->setColumnFormat(array(
                         'E' => '@',//文本
                         'H' => 'yyyy-mm-dd',
                     ));
+                    /** @noinspection PhpUndefinedMethodInspection */
                     $sheet->setWidth(array(
                         'A'     =>  20,
                         'B'     =>  10,
@@ -197,11 +202,10 @@ class StudentController extends Controller {
                         'K'     =>  15,
                         'L'     =>  30,
                     ));
-                    
                 });
-
             },'UTF-8')->export('xls');
         }
+        
     }
     
 }

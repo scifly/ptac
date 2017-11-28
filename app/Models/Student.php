@@ -396,9 +396,9 @@ class Student extends Model {
         // Validator::make($data,$rules);
         # 不合法的数据
         $invalidRows = [];
-        # 需要添加的数据
-        $updateRows = [];
         # 更新的数据
+        $updateRows = [];
+        # 需要添加的数据
         $rows = [];
         for ($i = 0; $i < count($data); $i++) {
             $datum = $data[$i];
@@ -593,7 +593,7 @@ class Student extends Model {
                     $student->user->gender == 1 ? '男' : '女',
                     $student->squad->name,
                     $student->student_number,
-                    $student->card_number,
+                    $student->card_number . "\t",
                     $student->oncampus == 1 ? '是' : '否',
                     $mobiles,
                     substr($student->birthday, 0, -8),

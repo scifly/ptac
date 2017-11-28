@@ -201,7 +201,7 @@ class EducatorController extends Controller {
         
     }
     /**
-     * 导入数据
+     * 导入教职员工
      */
     public function import() {
         
@@ -222,16 +222,21 @@ class EducatorController extends Controller {
     }
     
     /**
-     * 导出数据
+     * 导出教职员工
      * @return \Illuminate\Http\JsonResponse
      */
     public function export() {
         $id = Request::query('id');
         if ($id) {
             $data = $this->educator->export($id);
+            /** @noinspection PhpMethodParametersCountMismatchInspection */
+            /** @noinspection PhpUndefinedMethodInspection */
             Excel::create(iconv('UTF-8', 'GBK', '教职员工列表'), function ($excel) use ($data) {
+                /** @noinspection PhpUndefinedMethodInspection */
                 $excel->sheet('score', function($sheet) use ($data) {
+                    /** @noinspection PhpUndefinedMethodInspection */
                     $sheet->rows($data);
+                    /** @noinspection PhpUndefinedMethodInspection */
                     $sheet->setWidth(array(
                         'A'     =>  30,
                         'B'     =>  30,

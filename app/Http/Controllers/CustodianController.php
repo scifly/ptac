@@ -135,14 +135,19 @@ class CustodianController extends Controller {
         
     }
     /**
-     * 导出数据
+     * 导出监护人
      * @return \Illuminate\Http\JsonResponse
      */
     public function export() {
         $data = $this->custodian->export();
+        /** @noinspection PhpMethodParametersCountMismatchInspection */
+        /** @noinspection PhpUndefinedMethodInspection */
         Excel::create(iconv('UTF-8', 'GBK', '监护人列表'), function ($excel) use ($data) {
+            /** @noinspection PhpUndefinedMethodInspection */
             $excel->sheet('score', function($sheet) use ($data) {
+                /** @noinspection PhpUndefinedMethodInspection */
                 $sheet->rows($data);
+                /** @noinspection PhpUndefinedMethodInspection */
                 $sheet->setWidth(array(
                     'A'     =>  30,
                     'B'     =>  30,

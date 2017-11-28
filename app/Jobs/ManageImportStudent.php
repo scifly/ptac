@@ -44,9 +44,9 @@ class ManageImportStudent implements ShouldQueue {
                     if (empty($studentData)) {
                         # 创建用户
                         $user = [
-                            'username'   => uniqid('custodian_'),
+                            'username'   => uniqid('student_'),
                             'group_id'   => Group::whereName('学生')->first()->id,
-                            'password'   => bcrypt('custodian8888'),
+                            'password'   => bcrypt('student8888'),
                             'realname'   => $datum['name'],
                             'gender'     => $datum['gender'] == '男' ? '0' : '1',
                             'avatar_url' => '00001.jpg',
