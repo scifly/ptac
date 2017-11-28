@@ -4,15 +4,13 @@ namespace App\Http\ViewComposers;
 use App\Models\Corp;
 use App\Models\Department;
 use App\Models\Grade;
-use App\Models\Group;
 use App\Models\School;
 use App\Models\Squad;
-use App\Models\Student;
 use App\Models\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 
-class CustodianComposer {
+class EducatorIndexComposer {
     
     protected $user;
     
@@ -27,7 +25,6 @@ class CustodianComposer {
         $schools = null;
         $grades = null;
         $classes = null;
-        $students = null;
         $user = Auth::user();
         if ($user->educator) {
             $schools = School::whereId($user->educator->school_id)
@@ -68,34 +65,10 @@ class CustodianComposer {
                 ->where('enabled', 1)
                 ->pluck('name', 'id');
         }
-        if ($classes) {
-            // $students = Student::where('class_id', $classes->keys()->first())
-            //     ->where('enabled', 1)
-            //     ->pluck('student_number', 'id');
-            $list = Student::whereClassId($classes->keys()->first())
-                ->where('enabled', 1)
-                ->get();
-            $sIds = [];
-            if (!empty($list)) {
-                foreach ($list as $s) {
-                    if (!$s->user) {
-                        $sIds[] = $s->id;
-                    } else {
-                        $students[$s->id] = $s->user->realname . "-" . $s->student_number;
-                    }
-                }
-                if (!empty($sIds)) {
-                    Student::whereIn('id', $sIds)->delete();
-                }
-            }
-        }
-        // dd($students);die;
         $view->with([
             'schools'  => $schools,
             'grades'   => $grades,
             'classes'  => $classes,
-            'students' => $students,
-            'groupId'  => Group::whereName('监护人')->first()->id,
         ]);
     }
     
