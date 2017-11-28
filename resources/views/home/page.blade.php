@@ -33,7 +33,9 @@
     <!-- 页面左侧边栏 -->
     @include('partials.site_main_sidebar')
     <!-- 页面内容 -->
-    @include('partials.site_content')
+    <div class="content-wrapper">
+        @include('partials.site_content')
+    </div>
     <!-- 页面尾部 -->
     @include('partials.site_footer')
 </div>

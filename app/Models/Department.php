@@ -566,5 +566,46 @@ class Department extends Model {
         }
 
     }
+    
+    /**
+     * 获取用户所属学校/年级/班级的学校/年级/班级ID及名称
+     *
+     * @param $topDepartmentId
+     * @return array|null
+     */
+    public function topDepartment($topDepartmentId) {
+        
+        $type = $this->find($topDepartmentId)->departmentType->name;
+        if (in_array($type, ['运营', '企业'])) { return null; }
+        while (!in_array($type, ['学校', '年级', '班级'])) {
+            $parent = $this->find($topDepartmentId)->parent;
+            $type = $parent->departmentType->name;
+            $topDepartmentId = $parent->id;
+        }
+        $department = null;
+        switch ($type) {
+            case '学校':
+                $department = School::whereDepartmentId($topDepartmentId)
+                    ->where('enabled', 1)
+                    ->pluck('name', 'id')
+                    ->toArray();
+                break;
+            case '年级':
+                $department = Grade::whereDepartmentId($topDepartmentId)
+                    ->where('enabled', 1)
+                    ->pluck('name', 'id')
+                    ->toArray();
+                break;
+            case '班级':
+                $department = Squad::whereDepartmentId($topDepartmentId)
+                    ->where('enabled', 1)
+                    ->pluck('name', 'id')
+                    ->toArray();
+                break;
+            default: break;
+        }
+        return $department ? ['type' => $type, 'department' => $department] : null;
+        
+    }
 
 }

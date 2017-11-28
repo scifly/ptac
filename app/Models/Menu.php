@@ -61,7 +61,7 @@ use Mockery\Exception;
 class Menu extends Model {
     
     # 不含子菜单的HTML模板
-    const SIMPLE = '<li%s><a id="%s" href="%s"><i class="%s"></i> %s</a></li>';
+    const SIMPLE = '<li%s><a id="%s" href="%s" class="leaf"><i class="%s"></i> %s</a></li>';
     # 包含子菜单的HTML模板
     const TREE = <<<HTML
             <li class="treeview%s">
@@ -724,7 +724,8 @@ HTML;
             $mName = $menu['name'];
             $mIcon = $menu['icon'];
             $hasChildren = $this->find($mId)->children->count();
-            $mUrl = '../pages/' . $mId;
+            // $mUrl = '../pages/' . $mId;
+            $mUrl = '/pages/' . $mId;
             if ($currentParent == $menu['parent_id']) {
                 if ($hasChildren) {
                     $menuHtml .= sprintf(

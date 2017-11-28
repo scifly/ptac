@@ -3,7 +3,6 @@
     <div class="col-sm-6">
         <table id="mobiles" class="table-bordered table-responsive" style="width: 100%;">
             <thead>
-
 			<tr class="bg-info">
                 <td class="text-center">号码</td>
                 <td class="text-center">默认</td>
@@ -92,11 +91,22 @@
                     </td>
                     <td class="text-center">
                         <label for="mobile[isdefault]"></label>
-                        <input id="mobile[isdefault]" name="mobile[isdefault]" value="0" checked type="radio" class="minimal">
+                        <input id="mobile[isdefault]"
+                               name="mobile[isdefault]"
+                               value="0"
+                               checked
+                               type="radio"
+                               class="minimal"
+                        />
                     </td>
                     <td class="text-center">
                         <label for="mobile[0][enabled]"></label>
-                        <input id="mobile[0][enabled]" name="mobile[0][enabled]"  checked type="checkbox" class="minimal">
+                        <input id="mobile[0][enabled]"
+                               name="mobile[0][enabled]"
+                               checked
+                               type="checkbox"
+                               class="minimal"
+                        />
                     </td>
                     <td class="text-center">
                         <span class="input-group-btn">
