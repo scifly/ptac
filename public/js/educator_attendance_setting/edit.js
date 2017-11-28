@@ -3,7 +3,7 @@ page.initParsleyRules();
 
 function datetime($initTime) {
     $initTime.timepicker({
-        timeFormat: 'hh:mm:ss',
+        timeFormat: 'hh:mm:ss'
     })
 }
 if (!($.fn.timepicker)) {

@@ -69,8 +69,8 @@ var page = {
         timepicker: {
             css: 'js/plugins/jqueryui/css/jquery-ui.css',
             js: 'js/plugins/jqueryui/js/jquery-ui-timepicker-addon.js',
-            jscn: 'js/plugins/jqueryui/js/datepicker-zh-CN.js',
-        },
+            jscn: 'js/plugins/jqueryui/js/datepicker-zh-CN.js'
+        }
     },
     backToList: function (table) {
         var $activeTabPane = $('#tab_' + page.getActiveTabId());
@@ -418,15 +418,17 @@ var page = {
     },
     unbindEvents: function () {
         $('#add-record').unbind('click');
-        $(document).off('click', '.fa-edit');
-        $(document).off('click', '.fa-eye');
-        $(document).off('click', '.fa-trash');
+        $(document).off('click', '.fa-pencil');
+        $(document).off('click', '.fa-bars');
+        $(document).off('click', '.fa-remove');
         $(document).off('click', '.fa-money');
         $('#confirm-delete').unbind('click');
         $('#cancel, #record-list').unbind('click');
     },
     // 初始化起始时间与结束时间的Parsley验证规则
     initParsleyRules: function() {
+        window.Parsley.removeValidator('start');
+        window.Parsley.removeValidator('end');
         window.Parsley.addValidator('start', {
             requirementType: 'string',
             validateString: function(value, requirement) {
