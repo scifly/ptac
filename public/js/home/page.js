@@ -206,6 +206,9 @@ var page = {
                     $.getScript(page.siteRoot() + result.js, function () {
                         $('#ajaxLoader').remove();
                         $('.overlay').hide();
+                        // if (!$('#data-table').length) {
+                        //     $('link[href="' + page.siteRoot() + page.plugins.datatable.css +'"]').remove();
+                        // }
                     });
                     var breadcrumb = $('#breadcrumb').html();
                     document.title = docTitle + ' - ' + breadcrumb;
@@ -289,10 +292,7 @@ var page = {
                 // dom: '<"row"<"col-md-6"l><"col-sm-4"f><"col-sm-2"B>>rt<"row"<"col-sm-6"i><"col-sm-6"p>>',
                 // buttons: ['pdf', 'csv']
             };
-            $cip.after($("<link/>", {
-                rel: "stylesheet", type: "text/css",
-                href: page.siteRoot() + page.plugins.datatable.css
-            }));
+            page.loadCss(page.plugins.datatable.css);
             $('.overlay').show();
             var dt = $datatable.DataTable(params).on('init.dt', function () {
                 // $('.dt-buttons').addClass('pull-right');
@@ -366,10 +366,12 @@ var page = {
         page.initForm(table, formId, table + '/rechargeStore/' + id, 'PUT');
     },
     loadCss: function(css) {
-        $cip.after($("<link/>", {
-            rel: "stylesheet", type: "text/css",
-            href: page.siteRoot() + css
-        }));
+        if (!$('link[href="' + page.siteRoot() + css +'"]').length) {
+            $cip.after($("<link/>", {
+                rel: "stylesheet", type: "text/css",
+                href: page.siteRoot() + css
+            }));
+        }
     },
     initSelect2: function(options) {
         if (!($.fn.select2)) {
