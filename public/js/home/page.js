@@ -277,7 +277,6 @@ var page = {
             } else {
                 options.push(statusCol);
             }
-            var $cip = $('#cip');
             var params = {
                 processing: true,
                 serverSide: true,
@@ -348,8 +347,8 @@ var page = {
             $('#modal-dialog').modal({backdrop: true});
         });
         $('#confirm-delete').on('click', function () {
-            this.ajaxRequest(
-                'DELETE', page.siteRoot() + '/' + table + '/delete/' + id,
+            page.ajaxRequest(
+                'DELETE', page.siteRoot() + table + '/delete/' + id,
                 {_token: $('#csrf_token').attr('content')}
             );
         });
