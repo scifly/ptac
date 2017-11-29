@@ -94,6 +94,7 @@ class StudentController extends Controller {
         
         $student = $this->student->find($id);
         if (!$student) { return $this->notFound(); }
+        
         return $this->output(__METHOD__, ['student' => $student]);
         
     }
@@ -105,25 +106,16 @@ class StudentController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function edit($id) {
-        
-        if (Request::method() === 'POST') {
-            return $this->department->tree();
-        }
-        $student = $this->student->find($id);
-        $student['student'] = $this->student->find($id);
-        $selectedDepartmentIds = [];
-        foreach ($student->user->departments as $department) {
-            $selectedDepartmentIds[] = $department->id;
-        }
-        $selectedDepartments = $this->department->selectedNodes($selectedDepartmentIds);
+    
         # 查询学生信息
+        $student = $this->student->find($id);
         if (!$student) { return $this->notFound(); }
+        $user = $student->user;
 
         return $this->output(__METHOD__, [
-            'mobiles'               => $student->user->mobiles,
-            'student'               => $student,
-            'selectedDepartmentIds' => implode(',', $selectedDepartmentIds),
-            'selectedDepartments'   => $selectedDepartments,
+            'student' => $student,
+            'user'    => $user,
+            'mobiles' => $user->mobiles
         ]);
         
     }
@@ -156,7 +148,7 @@ class StudentController extends Controller {
     }
     
     /**
-     * 导入数据
+     * 导入学籍
      */
     public function import() {
 
@@ -177,20 +169,25 @@ class StudentController extends Controller {
     }
     
     /**
-     * 导出数据
-     * @return \Illuminate\Http\JsonResponse
+     * 导出学籍
      */
     public function export() {
         $id = Request::query('id');
         if ($id) {
             $data = $this->student->export($id);
+            /** @noinspection PhpMethodParametersCountMismatchInspection */
+            /** @noinspection PhpUndefinedMethodInspection */
             Excel::create(iconv('UTF-8', 'GBK', '学生列表'), function ($excel) use ($data) {
+                /** @noinspection PhpUndefinedMethodInspection */
                 $excel->sheet('score', function($sheet) use ($data) {
+                    /** @noinspection PhpUndefinedMethodInspection */
                     $sheet->rows($data);
+                    /** @noinspection PhpUndefinedMethodInspection */
                     $sheet->setColumnFormat(array(
                         'E' => '@',//文本
                         'H' => 'yyyy-mm-dd',
                     ));
+                    /** @noinspection PhpUndefinedMethodInspection */
                     $sheet->setWidth(array(
                         'A'     =>  20,
                         'B'     =>  10,
@@ -205,11 +202,10 @@ class StudentController extends Controller {
                         'K'     =>  15,
                         'L'     =>  30,
                     ));
-                    
                 });
-
             },'UTF-8')->export('xls');
         }
+        
     }
     
 }

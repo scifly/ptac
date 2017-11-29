@@ -54,6 +54,8 @@ class ProcedureType extends Model {
                 },
             ],
         ];
+        
         return Datatable::simple($this, $columns);
+        
     }
 }

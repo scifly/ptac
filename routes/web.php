@@ -13,9 +13,9 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
-Route::get('/fireEvent', function() {
-    event(new eventTrigger());
-});
+// Route::get('/fireEvent', function() {
+//     event(new eventTrigger());
+// });
 
 Route::auth();
 # 关闭注册功能

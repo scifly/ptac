@@ -41,9 +41,7 @@ class MenuType extends Model {
         $list = $this->pluck('name', 'id')->toArray();
         $types = collect($this->where('enabled', 1)->get(['name'])->toArray())
             ->flatten()->all();
-        if (!in_array($type, $types)) {
-            return false;
-        }
+        if (!in_array($type, $types)) { return false; }
         $allowedTypeList = [array_search('其他', $list) => '其他'];
         switch ($type) {
             case '根':
@@ -86,9 +84,7 @@ class MenuType extends Model {
      */
     public function modify(array $data, $id) {
         $menuType = $this->find($id);
-        if (!$menuType) {
-            return false;
-        }
+        if (!$menuType) { return false; }
         
         return $menuType->update($data) ? true : false;
         

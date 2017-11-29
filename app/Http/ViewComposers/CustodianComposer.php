@@ -54,8 +54,7 @@ class CustodianComposer {
                         ->where('enabled', 1)
                         ->pluck('name', 'id');
                     break;
-                default:
-                    break;
+                default: break;
             }
         }
         if ($schools) {
@@ -75,17 +74,9 @@ class CustodianComposer {
             $list = Student::whereClassId($classes->keys()->first())
                 ->where('enabled', 1)
                 ->get();
-            $sIds = [];
             if (!empty($list)) {
                 foreach ($list as $s) {
-                    if (!$s->user) {
-                        $sIds[] = $s->id;
-                    } else {
-                        $students[$s->id] = $s->user->realname . "-" . $s->student_number;
-                    }
-                }
-                if (!empty($sIds)) {
-                    Student::whereIn('id', $sIds)->delete();
+                    $students[$s->id] = $s->user->realname . "-" . $s->student_number;
                 }
             }
         }
@@ -95,7 +86,7 @@ class CustodianComposer {
             'grades'   => $grades,
             'classes'  => $classes,
             'students' => $students,
-            'groupId'  => Group::whereName('监护人')->first()->id,
+            'groupId'  => Group::whereName('监护人')->first()->id
         ]);
     }
     
