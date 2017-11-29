@@ -231,12 +231,12 @@ class User extends Authenticatable {
         $mobile = Mobile::whereUserId($id)->where('isdefault', 1)->first()->mobile;
         // if ($user && $mobile) {
             $data = [
-                'userid'       => $user->userid,
-                'name'         => $user->realname,
-                'english_name' => $user->english_name,
-                'mobile'       => $mobile,
+                'userid'       => '"' . $user->userid . '"',
+                'name'         => '"' . $user->realname . '"',
+                // 'english_name' => $user->english_name,
+                'mobile'       => '"' . $mobile . '"',
                 'department'   => $user->departments->pluck('id')->toArray(),
-                'gender'       => $user->gender,
+                'gender'       => '"' . $user->gender . '"',
                 'enable'       => $user->enabled,
             ];
             event(new UserCreated($data));

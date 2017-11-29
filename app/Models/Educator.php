@@ -241,6 +241,7 @@ class Educator extends Model {
             $exception = DB::transaction(function () use ($request) {
                 // dd($request->all());
                 $userInputData = $request->input('user');
+                $classSubjectData = $request->input('classSubject');
                 $userData = [
                     'username'     => $userInputData['username'],
                     'group_id'     => $userInputData['group_id'],
@@ -258,7 +259,15 @@ class Educator extends Model {
                 ];
                 $user = new User();
                 $u = $user->create($userData);
-                $selectedDepartments = $request->input('selectedDepartments');
+                $classIds = array_unique($classSubjectData['class_ids']);
+                $departmentIds = [];
+                foreach ($classIds as $classId){
+                    if($classId == 0) break;
+                    $departmentIds[] = Squad::find($classId)->department_id;
+                }
+                $selectedDepartments = array_unique(array_merge(
+                    $departmentIds, $request->input('selectedDepartments')
+                ));
                 if (!empty($selectedDepartments)) {
                     $departmentUserModel = new DepartmentUser();
                     foreach ($selectedDepartments as $department) {
@@ -291,7 +300,6 @@ class Educator extends Model {
                     }
                     unset($edTeam);
                 }
-                $classSubjectData = $request->input('classSubject');
                 if ($classSubjectData) {
                     $educatorClass = new EducatorClass();
                     $uniqueArray = [];

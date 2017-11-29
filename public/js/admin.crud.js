@@ -1,5 +1,5 @@
 var crud = {
-    $tbody: function () { return $("#mobileTable").find("tbody"); },
+    $tbody: function () { return $("#mobiles").find("tbody"); },
     mobiles: function (formId, requestType, ajaxUrl) {
         // icheck init
         page.initICheck(crud.$tbody());
@@ -22,13 +22,27 @@ var crud = {
             // add html
             size++;
             crud.$tbody().append(
-                '<tr><td><input class="form-control" placeholder="（请输入手机号码）" ' +
-                'name="mobile[' + size + '][mobile]" value=""></td><td style="text-align: center">' +
-                '<input type="radio" class="minimal" id="mobile[isdefault]" name="mobile[isdefault]" ' +
-                'value="' + size + '"></td><td style="text-align: center"><input type="checkbox" ' +
-                'class="minimal" name="mobile[' + size + '][enabled]"></td><td style="text-align: center">' +
-                '<button class="btn btn-box-tool btn-add btn-mobile-add" type="button">' +
-                '<i class="fa fa-plus text-blue"></i></button></td></tr>'
+                '<tr>' +
+                    '<td>' +
+                        '<div class="input-group">' +
+                            '<div class="input-group-addon">' +
+                                '<i class="fa fa-mobile"></i>' +
+                            '</div>' +
+                            '<input class="form-control" placeholder="（请输入手机号码）" name="mobile[' + size + '][mobile]" value="">' +
+                        '</div>' +
+                    '</td>' +
+                    '<td style="text-align: center">' +
+                        '<input type="radio" class="minimal" id="mobile[isdefault]" name="mobile[isdefault]" value="' + size + '">' +
+                    '</td>' +
+                    '<td style="text-align: center">' +
+                        '<input type="checkbox" class="minimal" name="mobile[' + size + '][enabled]">' +
+                    '</td>' +
+                    '<td style="text-align: center">' +
+                        '<button class="btn btn-box-tool btn-add btn-mobile-add" type="button">' +
+                            '<i class="fa fa-plus text-blue"></i>' +
+                        '</button>' +
+                    '</td>' +
+                '</tr>'
             );
             crud.mobiles(formId, requestType, ajaxUrl);
         }).on('click', '.btn-mobile-remove', function (e) {

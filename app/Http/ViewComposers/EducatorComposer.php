@@ -11,31 +11,40 @@ use Illuminate\Contracts\View\View;
 
 class EducatorComposer {
     
-    protected $user, $subject, $school, $squad, $group, $team;
+    protected $school;
     
-    public function __construct(User $user, Subject $subject, School $school, Squad $squad, Group $group, Team $team) {
+    public function __construct(School $school) {
         
-        $this->user = $user;
-        $this->subject = $subject;
         $this->school = $school;
-        $this->squad = $squad;
-        $this->group = $group;
-        $this->team = $team;
-        
     }
     
     public function compose(View $view) {
-        $squads = $this->squad->pluck('name', 'id')->toArray();
+        $schoolId = $this->school->getSchoolId();
+        /** @var School $school */
+        $school = School::find($schoolId);
+        
+        $squads = $school->classes->where('enabled',1)
+            ->pluck('name', 'id')->toArray();
         array_unshift($squads, '(请选择)');
-        $subjects = $this->subject->pluck('name', 'id')->toArray();
+        $subjects = Subject::whereSchoolId($schoolId)
+            ->where('enabled', 1)
+            ->pluck('name', 'id')
+            ->toArray();
+        $teams = Team::whereSchoolId($schoolId)
+            ->where('enabled', 1)
+            ->pluck('name', 'id')
+            ->toArray();
+        $groups = Group::whereSchoolId($schoolId)
+            ->where('enabled', 1)
+            ->pluck('name', 'id')
+            ->toArray();
         array_unshift($subjects, '(请选择)');
         $view->with([
-            'users'    => $this->user->pluck('realname', 'id'),
-            'schools'  => $this->school->pluck('name', 'id'),
+            'schoolId' => $schoolId,
             'squads'   => $squads,
             'subjects' => $subjects,
-            'groups'   => $this->group->pluck('name', 'id'),
-            'teams'    => $this->team->pluck('name', 'id'),
+            'groups'   => $groups,
+            'teams'    => $teams,
         ]);
     }
     
