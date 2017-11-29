@@ -7,6 +7,7 @@
             @if (!empty($major['id']))
                 {{ Form::hidden('id', $major['id'], ['id' => 'id']) }}
             @endif
+            {{ Form::hidden('school_id', $schoolId, ['id' => 'school_id']) }}
             <div class="form-group">
                 {!! Form::label('name', '名称', [
                     'class' => 'col-sm-3 control-label'
@@ -20,11 +21,6 @@
                     ]) !!}
                 </div>
             </div>
-            @include('partials.single_select', [
-                'label' => '所属学校',
-                'id' => 'school_id',
-                'items' => $schools
-            ])
             @include('partials.multiple_select', [
                 'label' => '包含科目',
                 'id' => 'subject_ids',

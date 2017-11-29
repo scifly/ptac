@@ -17,11 +17,11 @@ class MajorComposer {
 
     public function compose(View $view) {
 
+        $schoolId = $this->school->getSchoolId();
         $view->with([
-            'schools'  => $this->school->pluck('name', 'id'),
-            'subjects' => $this->subject->pluck('name', 'id'),
+            'schoolId' => $schoolId,
+            'subjects' => $this->subject->where('school_id', $schoolId)
+                ->pluck('name', 'id'),
         ]);
-
     }
-
 }

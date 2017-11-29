@@ -18,6 +18,6 @@ class CorpSeeder extends Seeder {
         factory(App\Models\Corp::class, 20)->create()->each(function ($corp) {
             $corp->save();
         });
-
+        
     }
 }

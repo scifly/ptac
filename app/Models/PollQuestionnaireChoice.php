@@ -37,7 +37,6 @@ class PollQuestionnaireChoice extends Model {
     }
     
     public function datatable() {
-        
         $columns = [
             ['db' => 'PollQuestionnaireChoice.id', 'dt' => 0],
             ['db' => 'PqSubject.subject', 'dt' => 1],

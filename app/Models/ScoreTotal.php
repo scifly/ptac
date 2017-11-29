@@ -64,7 +64,6 @@ class ScoreTotal extends Model {
     }
     
     public function datatable() {
-        
         $columns = [
             ['db' => 'ScoreTotal.id', 'dt' => 0],
             ['db' => 'Student.student_number', 'dt' => 1],
@@ -77,7 +76,6 @@ class ScoreTotal extends Model {
             [
                 'db'        => 'ScoreTotal.updated_at', 'dt' => 8,
                 'formatter' => function ($d, $row) {
-                    
                     $id = $row['id'];
                     $showLink = $d . sprintf(Datatable::DT_LINK_SHOW, $id);
                     return Datatable::DT_SPACE . $showLink;

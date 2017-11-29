@@ -52,7 +52,6 @@ class AttendanceMachine extends Model {
     public function studentAttendances() { return $this->hasMany('App\Models\StudentAttendance'); }
     
     public function datatable() {
-        
         $columns = [
             ['db' => 'AttendanceMachine.id', 'dt' => 0],
             ['db' => 'AttendanceMachine.name', 'dt' => 1],

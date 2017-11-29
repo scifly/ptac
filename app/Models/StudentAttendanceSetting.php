@@ -61,7 +61,6 @@ class StudentAttendanceSetting extends Model {
     }
     
     public function datatable() {
-        
         $columns = [
             ['db' => 'StudentAttendanceSetting.id', 'dt' => 0],
             ['db' => 'StudentAttendanceSetting.name', 'dt' => 1],

@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Mockery\Exception;
+use Symfony\Component\VarDumper\Cloner\Data;
 
 /**
  * App\Models\Subject
@@ -68,7 +69,6 @@ class Subject extends Model {
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function majors() {
-        
         return $this->belongsToMany(
             'App\Models\Major',
             'majors_subjects',
@@ -85,7 +85,6 @@ class Subject extends Model {
      * @return \Illuminate\Support\Collection
      */
     public function subjects($schoolId) {
-        
         return $this->where('school_id', $schoolId)->get()->pluck('id', 'name');
         
     }
@@ -97,7 +96,6 @@ class Subject extends Model {
      * @return array
      */
     public function selectedSubjects($ids) {
-        
         $ids = explode(',', $ids);
         $selectedSubjects = [];
         foreach ($ids as $id) {
@@ -115,7 +113,6 @@ class Subject extends Model {
      * @return bool
      */
     public function store(SubjectRequest $request) {
-        
         try {
             $exception = DB::transaction(function () use ($request) {
                 $subjectData = [
@@ -147,7 +144,6 @@ class Subject extends Model {
      * @return bool|mixed
      */
     public function modify(SubjectRequest $request, $id) {
-        
         $subject = $this->find($id);
         if (!isset($subject)) {
             return false;
@@ -182,7 +178,6 @@ class Subject extends Model {
      * @return bool|mixed
      */
     public function remove($subjectId) {
-        
         $subject = $this->find($subjectId);
         if (!isset($subject)) {
             return false;
@@ -212,11 +207,20 @@ class Subject extends Model {
     }
     
     public function datatable() {
-        
         $columns = [
             ['db' => 'Subject.id', 'dt' => 0],
-            ['db' => 'Subject.name', 'dt' => 1],
-            ['db' => 'School.name as schoolname', 'dt' => 2],
+            [
+                'db' => 'Subject.name', 'dt' => 1,
+                'formatter' => function($d) {
+                    return '<i class="fa fa-book"></i>&nbsp;' . $d;
+                }
+            ],
+            [
+                'db' => 'School.name as schoolname', 'dt' => 2,
+                'formatter' => function($d) {
+                    return '<i class="fa fa-university"></i>&nbsp;' . $d;
+                }
+            ],
             [
                 'db'        => 'Subject.isaux', 'dt' => 3,
                 'formatter' => function ($d) {
@@ -232,7 +236,14 @@ class Subject extends Model {
             [
                 'db'        => 'Subject.enabled', 'dt' => 8,
                 'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($this, $d, $row);
+                    $id = $row['id'];
+                    $status = $d ? Datatable::DT_ON : Datatable::DT_OFF;
+                    $editLink = sprintf(Datatable::DT_LINK_EDIT, 'edit_' . $id);
+                    $delLink = sprintf(Datatable::DT_LINK_DEL, $id);
+                    return
+                        $status . str_repeat(Datatable::DT_SPACE, 3) .
+                        $editLink . str_repeat(Datatable::DT_SPACE, 2) .
+                        $delLink;
                 },
             ],
         ];

@@ -74,7 +74,6 @@ class Company extends Model {
      * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
      */
     public function schools() {
-        
         return $this->hasManyThrough('App\Models\School', 'App\Models\Corp');
         
     }
@@ -138,10 +137,13 @@ class Company extends Model {
     public function remove($id, $fireEvent = false) {
         
         $company = $this->find($id);
-        if (!$company) { return false; }
+        if (!$company) {
+            return false;
+        }
         $removed = $this->removable($company) ? $company->delete() : false;
         if ($removed && $fireEvent) {
             event(new CompanyDeleted($company));
+            
             return true;
         }
         

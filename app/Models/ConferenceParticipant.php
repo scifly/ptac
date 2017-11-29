@@ -37,7 +37,6 @@ class ConferenceParticipant extends Model {
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function educator() {
-        
         return $this->belongsTo('\App\Models\Educator');
         
     }
@@ -48,13 +47,11 @@ class ConferenceParticipant extends Model {
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function conferenceQueue() {
-        
         return $this->belongsTo('App\Models\ConferenceQueue');
         
     }
     
     public function datatable() {
-        
         $columns = [
             ['db' => 'ConferenceParticipant.id', 'dt' => 0],
             ['db' => 'User.realname', 'dt' => 1],

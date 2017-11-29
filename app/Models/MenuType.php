@@ -38,7 +38,6 @@ class MenuType extends Model {
     public function menus() { return $this->hasMany('App\Models\Menu'); }
     
     public function typeList($type) {
-        
         $list = $this->pluck('name', 'id')->toArray();
         $types = collect($this->where('enabled', 1)->get(['name'])->toArray())
             ->flatten()->all();
@@ -70,7 +69,6 @@ class MenuType extends Model {
      * @return bool
      */
     public function store(array $data) {
-        
         $menuType = $this->create($data);
         
         return $menuType ? true : false;
@@ -85,7 +83,6 @@ class MenuType extends Model {
      * @return bool
      */
     public function modify(array $data, $id) {
-        
         $menuType = $this->find($id);
         if (!$menuType) { return false; }
         
@@ -100,9 +97,11 @@ class MenuType extends Model {
      * @return bool|null
      */
     public function remove($id) {
-        
         $menuType = $this->find($id);
-        if (!$menuType) { return false; }
+        if (!$menuType) {
+            return false;
+        }
+        
         return $menuType->removable($menuType)
             ? $menuType->delete() : false;
         

@@ -34,14 +34,12 @@ class RegisterController extends Controller {
      * @param User $user
      */
     public function __construct(User $user) {
-        
         $this->middleware('guest');
         $this->user = $user;
         
     }
     
     public function register(RegisterUser $request) {
-        
         event(new Registered($user = $this->create($request->all())));
         $this->guard()->login($user);
         
@@ -57,7 +55,6 @@ class RegisterController extends Controller {
      * @return User
      */
     protected function create(array $data) {
-        
         return $this->user->create([
             'realname' => $data['realname'],
             'username' => $data['username'],

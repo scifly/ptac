@@ -83,7 +83,6 @@ class Squad extends Model {
      * @return bool
      */
     public function store(array $data, $fireEvent = false) {
-        
         $class = $this->create($data);
         if ($class && $fireEvent) {
             event(new ClassCreated($class));
@@ -104,7 +103,6 @@ class Squad extends Model {
      * @return bool
      */
     public function modify(array $data, $id, $fireEvent = false) {
-        
         $class = $this->find($id);
         $updated = $class->update($data);
         if ($updated && $fireEvent) {
@@ -125,7 +123,6 @@ class Squad extends Model {
      * @return bool
      */
     public function remove($id, $fireEvent = false) {
-        
         $class = $this->find($id);
         if (!$class) {
             return false;
@@ -142,7 +139,6 @@ class Squad extends Model {
     }
     
     public function datatable() {
-        
         $columns = [
             ['db' => 'Squad.id', 'dt' => 0],
             [

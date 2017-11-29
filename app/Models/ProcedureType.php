@@ -41,7 +41,6 @@ class ProcedureType extends Model {
     public function procedures() { return $this->hasMany('App\Models\Procedure'); }
     
     public function datatable() {
-        
         $columns = [
             ['db' => 'ProcedureType.id', 'dt' => 0],
             ['db' => 'ProcedureType.name', 'dt' => 1],

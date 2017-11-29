@@ -53,7 +53,6 @@ class Team extends Model {
      * @return array
      */
     public function teams(array $teamIds) {
-        
         $teams = [];
         foreach ($teamIds as $id) {
             $team = $this->find($id);
@@ -65,7 +64,6 @@ class Team extends Model {
     }
     
     public function datatable() {
-        
         $columns = [
             ['db' => 'Team.id', 'dt' => 0],
             ['db' => 'Team.name', 'dt' => 1],

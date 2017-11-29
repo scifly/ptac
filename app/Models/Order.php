@@ -55,13 +55,11 @@ class Order extends Model {
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function comboType() {
-        
         return $this->belongsTo('App\models\ComboType');
         
     }
     
     public function datatable() {
-        
         $columns = [
             ['db' => 'Orders.id', 'dt' => 0],
             ['db' => 'User.realname', 'dt' => 1],

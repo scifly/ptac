@@ -77,7 +77,6 @@ class ProcedureLogController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function related() {
-        
         if (Request::get('draw')) {
             $userId = 3;
             $where = '(FIND_IN_SET(' . $userId . ',ProcedureStep.related_user_ids) or FIND_IN_SET(' . $userId . ',ProcedureStep.approver_user_ids))';
@@ -97,7 +96,6 @@ class ProcedureLogController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function show($firstLogId) {
-        
         $userId = 7;
         //根据IDs查询数据
         $data = $this->procedureLog
@@ -120,7 +118,6 @@ class ProcedureLogController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function create() {
-        
         $procedureId = DB::table('procedures')->pluck('name', 'id');
         
         return $this->output(__METHOD__, ['procedure_id' => $procedureId]);
@@ -134,7 +131,6 @@ class ProcedureLogController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(ProcedureLogRequest $request) {
-        
         $userId = 6;
         $mediaIds = $request->input('media_ids');
         $procedureStep = DB::table('procedure_steps')
@@ -214,7 +210,6 @@ class ProcedureLogController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function uploadMedias() {
-        
         $files = Request::file('medias');
         if (empty($files)) {
             $result['statusCode'] = 500;
@@ -241,7 +236,6 @@ class ProcedureLogController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function deleteMedias($id) {
-        
         $path = Media::whereId($id)->value('path');
         $path_arr = explode("/", $path);
         Storage::disk('uploads')->delete($path_arr[5]);

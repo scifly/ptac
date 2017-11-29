@@ -57,7 +57,6 @@ class EducatorAttendanceSetting extends Model {
     public function school() { return $this->belongsTo('App\Models\School'); }
     
     public function datatable() {
-        
         $columns = [
             ['db' => 'EducatorAttendanceSetting.id', 'dt' => 0],
             ['db' => 'EducatorAttendanceSetting.name', 'dt' => 1],
