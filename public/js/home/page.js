@@ -243,6 +243,10 @@ var page = {
                         case 'POST':        // create
                             obj.reset();    // reset create form
                             break;
+                        case 'DELETE':
+                            $('#data-table').dataTable().fnDestroy();
+                            page.initDatatable(obj);
+                            break;
                         default:
                             break;
                     }
@@ -349,8 +353,11 @@ var page = {
         });
         $('#confirm-delete').on('click', function () {
             page.ajaxRequest(
-                'DELETE', page.siteRoot() + table + '/delete/' + id,
-                {_token: $('#csrf_token').attr('content')}
+                'DELETE',
+                page.siteRoot() + table + '/delete/' + id,
+                {_token: $('#csrf_token').attr('content')},
+                table
+
             );
         });
     },

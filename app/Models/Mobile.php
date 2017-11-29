@@ -45,7 +45,6 @@ class Mobile extends Model {
      * @return bool
      */
     public function store(array $data) {
-        
         $mobile = $this->create($data);
         
         return $mobile ? true : false;
@@ -60,7 +59,6 @@ class Mobile extends Model {
      * @return bool
      */
     public function modify(array $data, $id) {
-        
         $mobile = $this->find($id);
         if (!$mobile) {
             return false;
@@ -77,9 +75,11 @@ class Mobile extends Model {
      * @return bool|null
      */
     public function remove($id) {
-        
         $mobile = $this->find($id);
-        if (!$mobile) { return false; }
+        if (!$mobile) {
+            return false;
+        }
+        
         return $mobile->removable($mobile) ? $mobile->delete() : false;
         
     }

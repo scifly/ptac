@@ -43,7 +43,6 @@ class Semester extends Model {
     ];
     
     public function school() {
-        
         return $this->belongsTo('App\Models\School');
         
     }
@@ -53,7 +52,6 @@ class Semester extends Model {
     }
     
     public function datatable() {
-        
         $columns = [
             ['db' => 'Semester.id', 'dt' => 0],
             ['db' => 'Semester.name as semestername', 'dt' => 1],

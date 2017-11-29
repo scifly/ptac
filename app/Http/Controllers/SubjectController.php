@@ -71,20 +71,6 @@ class SubjectController extends Controller {
     }
     
     /**
-     * 科目详情
-     *
-     * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
-     */
-    public function show($id) {
-        
-        $subject = $this->subject->find($id);
-        if (!$subject) { return $this->notFound(); }
-        return $this->output(__METHOD__, ['subject' => $subject]);
-        
-    }
-    
-    /**
      * 编辑科目
      *
      * @param $id

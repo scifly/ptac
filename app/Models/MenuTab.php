@@ -32,7 +32,6 @@ class MenuTab extends Model {
     protected $fillable = ['menu_id', 'tab_id', 'tab_order', 'enabled'];
     
     public function storeByMenuId($menuId, array $tabIds) {
-        
         try {
             $exception = DB::transaction(function () use ($menuId, $tabIds) {
                 foreach ($tabIds as $tabId) {
@@ -52,7 +51,6 @@ class MenuTab extends Model {
     }
     
     public function storeByTabId($tabId, array $menuIds) {
-        
         try {
             $exception = DB::transaction(function () use ($tabId, $menuIds) {
                 foreach ($menuIds as $menuId) {
@@ -72,7 +70,6 @@ class MenuTab extends Model {
     }
     
     public function storeTabRanks($menuId, array $ranks) {
-        
         try {
             $exception = DB::transaction(function () use ($menuId, $ranks) {
                 foreach ($ranks as $id => $rank) {

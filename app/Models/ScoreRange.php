@@ -57,7 +57,6 @@ class ScoreRange extends Model {
      * @return bool
      */
     public function store(array $data) {
-        
         $scoreRange = $this->create($data);
         
         return $scoreRange ? true : false;
@@ -72,9 +71,11 @@ class ScoreRange extends Model {
      * @return bool
      */
     public function modify(array $data, $id) {
-        
         $scoreRange = $this->find($id);
-        if (!$scoreRange) { return false; }
+        if (!$scoreRange) {
+            return false;
+        }
+        
         return $scoreRange->update($data) ? true : false;
         
     }
@@ -86,15 +87,16 @@ class ScoreRange extends Model {
      * @return bool|null
      */
     public function remove($id) {
-        
         $scoreRange = $this->find($id);
-        if (!$scoreRange) { return false; }
+        if (!$scoreRange) {
+            return false;
+        }
+        
         return $this->removable($scoreRange) ? $scoreRange->delete() : false;
         
     }
     
     public function datatable() {
-        
         $columns = [
             ['db' => 'ScoreRange.id', 'dt' => 0],
             ['db' => 'ScoreRange.name', 'dt' => 1],
@@ -126,7 +128,6 @@ class ScoreRange extends Model {
     }
     
     public function statistics($request) {
-        
         //查询班级
         if ($request['type'] == 'grade') {
             $classes = DB::table('classes')

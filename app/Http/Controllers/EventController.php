@@ -28,7 +28,6 @@ class EventController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
-        
         $userId = 2;
         $isAdmin = $this->event->getRole($userId) ? 1 : 0;
         $events = $this->event
@@ -51,7 +50,6 @@ class EventController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function calendarEvents($userId) {
-        
         return $this->event->showCalendar($userId);
         
     }

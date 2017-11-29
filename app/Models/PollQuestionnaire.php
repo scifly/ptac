@@ -87,15 +87,16 @@ class PollQuestionnaire extends Model {
      * @return bool|null
      */
     public function remove($id) {
-        
         $pollQuestionnaire = $this->find($id);
-        if (!$pollQuestionnaire) { return false; }
+        if (!$pollQuestionnaire) {
+            return false;
+        }
+        
         return $this->removable($pollQuestionnaire) ? $pollQuestionnaire->delete() : false;
         
     }
     
     public function dataTable() {
-        
         $columns = [
             ['db' => 'PollQuestionnaire.id', 'dt' => 0],
             ['db' => 'PollQuestionnaire.name', 'dt' => 1],

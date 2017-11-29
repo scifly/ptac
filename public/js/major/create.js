@@ -1,1 +1,1 @@
-page.create('formMajor', 'majors'c);
+page.create('formMajor', 'majors');
