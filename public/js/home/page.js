@@ -348,8 +348,8 @@ var page = {
             $('#modal-dialog').modal({backdrop: true});
         });
         $('#confirm-delete').on('click', function () {
-            this.ajaxRequest(
-                'DELETE', page.siteRoot() + '/' + table + '/delete/' + id,
+            page.ajaxRequest(
+                'DELETE', page.siteRoot() + table + '/delete/' + id,
                 {_token: $('#csrf_token').attr('content')}
             );
         });

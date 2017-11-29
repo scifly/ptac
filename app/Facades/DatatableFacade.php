@@ -19,7 +19,7 @@ class DatatableFacade extends Facade {
     const BADGE_LIGHT_BLUE = '<span class="text-light-blue">%s</span>';
     const BADGE_MAROON = '<span class="text-maroon">%s</span>';
     const DT_LINK_EDIT = '<a id="%s" title="编辑" href="#"><i class="fa fa-pencil"></i></a>';
-    const DT_LINK_DEL = '<a id="%s" title="删除" href="#" data-toggle="modal"><i class="fa fa-remove"></i></a>';
+    const DT_LINK_DEL = '<a id="%s" title="删除"  data-toggle="modal"><i class="fa fa-remove"></i></a>';
     const DT_LINK_SHOW = '<a id="%s" title="详情" href="#" data-toggle="modal"><i class="fa fa-bars"></i></a>';
     const DT_LINK_RECHARGE = '<a id="%s" title="充值" href="#"><i class="fa fa-money"></i></a>';
     const DT_SPACE = '&nbsp;';
