@@ -281,7 +281,6 @@ var page = {
             } else {
                 options.push(statusCol);
             }
-            var $cip = $('#cip');
             var params = {
                 processing: true,
                 serverSide: true,
