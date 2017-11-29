@@ -6,6 +6,7 @@ use App\Models\Department;
 use App\Models\Educator;
 use App\Models\EducatorClass;
 use App\Models\Mobile;
+use App\Models\School;
 use App\Models\Team;
 use Illuminate\Support\Facades\Request;
 use Maatwebsite\Excel\Facades\Excel;
@@ -23,13 +24,15 @@ class EducatorController extends Controller {
     protected $educatorClass;
     protected $team;
     protected $department;
+    protected $school;
     
     public function __construct(
         Educator $educator,
         Mobile $mobile,
         EducatorClass $educatorClass,
         Team $team,
-        Department $department
+        Department $department,
+        School $school
     ) {
     
         $this->middleware(['auth']);
@@ -38,7 +41,7 @@ class EducatorController extends Controller {
         $this->educatorClass = $educatorClass;
         $this->team = $team;
         $this->department = $department;
-        
+        $this->school = $school;
     }
     
     /**
@@ -63,7 +66,10 @@ class EducatorController extends Controller {
     public function create() {
         
         if (Request::method() === 'POST') {
-            return $this->department->tree();
+            $schoolId = $this->school->getSchoolId();
+            /** @var School $school */
+            $school = $this->school->find($schoolId);
+            return $this->department->tree($school->department_id);
         }
         return $this->output(__METHOD__);
         
