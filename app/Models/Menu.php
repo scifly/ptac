@@ -360,7 +360,7 @@ HTML;
                 if (!empty($tabIds)) {
                     $menuTab = new MenuTab();
                     $menuTab::whereMenuId($menuId)->delete();
-                    if (!$menu->children) {
+                    if ($menu->children->count() == 0) {
                         $menuTab->storeByMenuId($menuId, $tabIds);
                     }
                 } else {

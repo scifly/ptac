@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Mockery\Exception;
+use Symfony\Component\VarDumper\Cloner\Data;
 
 /**
  * App\Models\Subject
@@ -208,8 +209,18 @@ class Subject extends Model {
     public function datatable() {
         $columns = [
             ['db' => 'Subject.id', 'dt' => 0],
-            ['db' => 'Subject.name', 'dt' => 1],
-            ['db' => 'School.name as schoolname', 'dt' => 2],
+            [
+                'db' => 'Subject.name', 'dt' => 1,
+                'formatter' => function($d) {
+                    return '<i class="fa fa-book"></i>&nbsp;' . $d;
+                }
+            ],
+            [
+                'db' => 'School.name as schoolname', 'dt' => 2,
+                'formatter' => function($d) {
+                    return '<i class="fa fa-university"></i>&nbsp;' . $d;
+                }
+            ],
             [
                 'db'        => 'Subject.isaux', 'dt' => 3,
                 'formatter' => function ($d) {
@@ -225,7 +236,14 @@ class Subject extends Model {
             [
                 'db'        => 'Subject.enabled', 'dt' => 8,
                 'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($this, $d, $row);
+                    $id = $row['id'];
+                    $status = $d ? Datatable::DT_ON : Datatable::DT_OFF;
+                    $editLink = sprintf(Datatable::DT_LINK_EDIT, 'edit_' . $id);
+                    $delLink = sprintf(Datatable::DT_LINK_DEL, $id);
+                    return
+                        $status . str_repeat(Datatable::DT_SPACE, 3) .
+                        $editLink . str_repeat(Datatable::DT_SPACE, 2) .
+                        $delLink;
                 },
             ],
         ];
