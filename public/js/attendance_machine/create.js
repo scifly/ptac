@@ -1,1 +1,1 @@
-page.create('formAttendanceMachine');
+page.create('formAttendanceMachine', 'attendance_machines');

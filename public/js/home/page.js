@@ -61,6 +61,15 @@ var page = {
         },
         ueditor_all: {
             js: 'js/plugins/UEditor/ueditor.all.js'
+        },
+        datepicker: {
+            css: 'js/plugins/datepicker/datepicker3.css',
+            js: 'js/plugins/datepicker/bootstrap-datepicker.js'
+        },
+        timepicker: {
+            css: 'js/plugins/jqueryui/css/jquery-ui.css',
+            js: 'js/plugins/jqueryui/js/jquery-ui-timepicker-addon.js',
+            jscn: 'js/plugins/jqueryui/js/datepicker-zh-CN.js'
         }
     },
     backToList: function (table) {
@@ -197,6 +206,9 @@ var page = {
                     $.getScript(page.siteRoot() + result.js, function () {
                         $('#ajaxLoader').remove();
                         $('.overlay').hide();
+                        // if (!$('#data-table').length) {
+                        //     $('link[href="' + page.siteRoot() + page.plugins.datatable.css +'"]').remove();
+                        // }
                     });
                     var breadcrumb = $('#breadcrumb').html();
                     document.title = docTitle + ' - ' + breadcrumb;
@@ -242,7 +254,17 @@ var page = {
                 );
                 return false;
             },
-            error: function (e) { page.errorHandler(e); }
+            error: function (e) {
+                // page.errorHandler(e);
+                $('.overlay').hide();
+                var obj = JSON.parse(e.responseText);
+                var errors = obj['errors'];
+                for (var x in errors) {
+                    page.inform('出现异常', errors[x], page.failure);
+                }
+
+            }
+
         });
     },
     initDatatable: function (table, options) {
@@ -270,10 +292,7 @@ var page = {
                 // dom: '<"row"<"col-md-6"l><"col-sm-4"f><"col-sm-2"B>>rt<"row"<"col-sm-6"i><"col-sm-6"p>>',
                 // buttons: ['pdf', 'csv']
             };
-            $cip.after($("<link/>", {
-                rel: "stylesheet", type: "text/css",
-                href: page.siteRoot() + page.plugins.datatable.css
-            }));
+            page.loadCss(page.plugins.datatable.css);
             $('.overlay').show();
             var dt = $datatable.DataTable(params).on('init.dt', function () {
                 // $('.dt-buttons').addClass('pull-right');
@@ -347,10 +366,12 @@ var page = {
         page.initForm(table, formId, table + '/rechargeStore/' + id, 'PUT');
     },
     loadCss: function(css) {
-        $cip.after($("<link/>", {
-            rel: "stylesheet", type: "text/css",
-            href: page.siteRoot() + css
-        }));
+        if (!$('link[href="' + page.siteRoot() + css +'"]').length) {
+            $cip.after($("<link/>", {
+                rel: "stylesheet", type: "text/css",
+                href: page.siteRoot() + css
+            }));
+        }
     },
     initSelect2: function(options) {
         if (!($.fn.select2)) {
@@ -399,12 +420,37 @@ var page = {
     },
     unbindEvents: function () {
         $('#add-record').unbind('click');
-        $(document).off('click', '.fa-edit');
-        $(document).off('click', '.fa-eye');
-        $(document).off('click', '.fa-trash');
+        $(document).off('click', '.fa-pencil');
+        $(document).off('click', '.fa-bars');
+        $(document).off('click', '.fa-remove');
         $(document).off('click', '.fa-money');
         $('#confirm-delete').unbind('click');
         $('#cancel, #record-list').unbind('click');
+    },
+    // 初始化起始时间与结束时间的Parsley验证规则
+    initParsleyRules: function() {
+        window.Parsley.removeValidator('start');
+        window.Parsley.removeValidator('end');
+        window.Parsley.addValidator('start', {
+            requirementType: 'string',
+            validateString: function(value, requirement) {
+                var endTime = $(requirement).val();
+                return value < endTime;
+            },
+            messages: {
+                cn: '开始时间不得大于等于%s'
+            }
+        });
+        window.Parsley.addValidator('end', {
+            requirementType: 'string',
+            validateString: function(value, requirement) {
+                var startTime = $(requirement).val();
+                return value > startTime;
+            },
+            messages: {
+                cn: '结束时间不得小于等于%s'
+            }
+        });
     },
     getUrlVars: function () {
         var vars = [], hash;
