@@ -46,7 +46,8 @@ class ManageWechatMember implements ShouldQueue {
         $corp = $corp::whereName('万浪软件')->first();
         $corpId = $corp->corpid;
         $app = App::whereCorpId($corp->id)->where('name', '企业通讯录')->first();
-        $secret = $app->secret;
+        // $secret = $app->secret;
+        $secret = 'IoiSOIsOGrdps03Lx_h5V3cCvMl3ibu-FyqqAsy-qLM';
         $agentId = $app->agentid;
         // $dir = dirname(__FILE__);
         // $path = substr($dir, 0, stripos($dir, 'app/Jobs'));

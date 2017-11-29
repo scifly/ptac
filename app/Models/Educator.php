@@ -250,7 +250,7 @@ class Educator extends Model {
                     'realname'     => $userInputData['realname'],
                     'gender'       => $userInputData['gender'],
                     'avatar_url'   => '00001.jpg',
-                    'userid'       => "11111",
+                    'userid'       => 'user_' . uniqid(),
                     'wechatid'     => $userInputData['wechatid'],
                     'isleader'     => 0,
                     'english_name' => $userInputData['english_name'],
