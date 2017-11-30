@@ -20,7 +20,10 @@ $(function() {
             },
             success: function (result) {
                 if (result.statusCode === 200) {
-                    window.location = result['url'];
+                    if (typeof result['url'] !== 'undefined') {
+                        window.location = result['url'];
+                    }
+                    window.location = decodeURIComponent(returnUrl);
                 } else {
                     $('.overlay').hide();
                     $.gritter.add({
@@ -34,12 +37,12 @@ $(function() {
                 $('.overlay').hide();
                 var obj = JSON.parse(e.responseText);
                 if (obj['statusCode'] === 498) {
+                    window.location.reload();
                     $.gritter.add({
                         title: '登录',
                         text: '页面已失效, 请重试',
                         image: 'img/error.png'
                     });
-                    window.location.reload();
                 }
             }
         })
