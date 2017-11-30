@@ -416,10 +416,9 @@ class Student extends Model {
                 'remark'         => $datum[10],
                 'relationship'   => $datum[11],
                 'class_id'       => 0,
+                'department_id'       => 0,
             ];
             $status = Validator::make($user, $rules);
-            // $warnings = $status->messages();
-            // print_r($warnings);die;
             if ($status->fails()) {
                 $invalidRows[] = $datum;
                 unset($data[$i]);
@@ -453,6 +452,19 @@ class Student extends Model {
                 ->where('class_id', $class->id)
                 ->first();
             $user['class_id'] = $class->id;
+            $deptSchool = Department::where('name', $user['school'])->first();
+            if ($deptSchool) {
+                $deptGrade = Department::where('name', $user['grade'])->where('parent_id', $deptSchool->id)->first();
+                if ($deptGrade) {
+                    $deptClass = Department::where('name', $user['class'])->where('parent_id', $deptGrade->id)->first();
+                    $user['department_id'] = $deptClass->id;
+                }
+            }
+            if ($user['department_id'] == 0) {
+                $invalidRows[] = $datum;
+                unset($data[$i]);
+                continue;
+            }
             # 学生数据已存在 更新操作
             if ($student) {
                 $updateRows[] = $user;
@@ -464,7 +476,6 @@ class Student extends Model {
         // print_r($rows);die;
         // $this->updateData($updateRows);
         // $this->importData($rows);
-        
         event(new StudentUpdated($updateRows));
         event(new StudentImported($rows));
     }
