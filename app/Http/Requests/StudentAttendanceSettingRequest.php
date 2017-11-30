@@ -1,6 +1,8 @@
 <?php
 namespace App\Http\Requests;
 
+use App\Rules\Overlaid;
+use App\Rules\StartEnd;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StudentAttendanceSettingRequest extends FormRequest {
@@ -26,6 +28,11 @@ class StudentAttendanceSettingRequest extends FormRequest {
                 'grade_id,' . $this->input('grade_id') . ',' .
                 'semester_id,' . $this->input('semester_id'),
             'msg_template' => 'required|string|between:2,255',
+            'start' => 'required',
+            'end'   => 'required',
+            'startend' => [
+                'required', new StartEnd(), new Overlaid()
+            ]
         ];
     }
     
@@ -44,18 +51,15 @@ class StudentAttendanceSettingRequest extends FormRequest {
     protected function prepareForValidation() {
         
         $input = $this->all();
-        if (isset($input['ispublic']) && $input['ispublic'] === 'on') {
-            $input['ispublic'] = 1;
+        if (!isset($input['inorout'])) {
+            $input['inorout'] = 0;
         }
         if (!isset($input['ispublic'])) {
             $input['ispublic'] = 0;
         }
-        if (isset($input['inorout']) && $input['inorout'] === 'on') {
-            $input['inorout'] = 1;
-        }
-        if (!isset($input['inorout'])) {
-            $input['inorout'] = 0;
-        }
+        $input['startend'] = [
+            $input['start'], $input['end'], 'student', isset($input['id']) ? $input['id'] : null
+        ];
         $this->replace($input);
     }
 }

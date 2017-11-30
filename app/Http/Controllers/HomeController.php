@@ -82,9 +82,6 @@ class HomeController extends Controller {
         } else {
             Session::forget('menuChanged');
         }
-        # 获取菜单列表
-        $menu = $this->menu->getMenuHtml($this->menu->rootMenuId());
-        
         # 获取卡片列表
         $tabArray = [];
         $isTabLegit = true;
@@ -137,7 +134,17 @@ class HomeController extends Controller {
                 'url'    => $tab->action->route,
             ];
         }
-
+        # 获取并返回wrapper-content层中的html内容
+        if (Request::ajax()) {
+            return response()->json([
+                'statusCode' => 200,
+                'html' => view('partials.site_content', [
+                    'tabs' => $tabArray
+                ])->render()
+            ]);
+        }
+        # 获取菜单列表
+        $menu = $this->menu->getMenuHtml($this->menu->rootMenuId());
         return view('home.page', [
             'menu'   => $menu,
             'tabs'   => $tabArray,

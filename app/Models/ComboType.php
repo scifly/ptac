@@ -47,7 +47,6 @@ class ComboType extends Model {
     public function school() { return $this->belongsTo('App\Models\school'); }
     
     public function datatable() {
-        
         $columns = [
             ['db' => 'ComboType.id', 'dt' => 0],
             ['db' => 'ComboType.name', 'dt' => 1],

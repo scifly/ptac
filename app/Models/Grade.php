@@ -89,7 +89,6 @@ class Grade extends Model {
      * @return array|\Illuminate\Support\Collection
      */
     public function grades(array $schoolIds = []) {
-        
         if (sizeof($schoolIds) === 1) {
             return $this->where('school_id', $schoolIds[0])
                 ->where('enabled', 1)
@@ -112,7 +111,6 @@ class Grade extends Model {
     }
     
     private function getGradesList($grades, $schools) {
-        
         $gradesList = [];
         foreach ($grades as $grade) {
             $gradesList[$schools[$grade['school_id']]][$grade['id']] = $grade['name'];
@@ -130,7 +128,6 @@ class Grade extends Model {
      * @return bool
      */
     public function store(array $data, $fireEvent = false) {
-        
         $grade = $this->create($data);
         if ($grade && $fireEvent) {
             event(new GradeCreated($grade));
@@ -151,7 +148,6 @@ class Grade extends Model {
      * @return bool
      */
     public function modify(array $data, $id, $fireEvent = false) {
-        
         $grade = $this->find($id);
         $updated = $grade->update($data);
         if ($updated && $fireEvent) {
@@ -172,7 +168,6 @@ class Grade extends Model {
      * @return bool
      */
     public function remove($id, $fireEvent = false) {
-        
         $grade = $this->find($id);
         if (!$grade) {
             return false;
@@ -189,7 +184,6 @@ class Grade extends Model {
     }
     
     public function datatable() {
-        
         $columns = [
             ['db' => 'Grade.id', 'dt' => 0],
             [

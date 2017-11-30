@@ -36,11 +36,7 @@ class MediaType extends Model {
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function medias() {
-        
-        return $this->hasMany('App\Models\Media');
-        
-    }
+    public function medias() { return $this->hasMany('App\Models\Media'); }
     
     /**
      * 保存媒体类型
@@ -66,9 +62,7 @@ class MediaType extends Model {
     public function modify(array $data, $id) {
         
         $mediaType = $this->find($id);
-        if (!$mediaType) {
-            return false;
-        }
+        if (!$mediaType) { return false; }
         
         return $mediaType->update($data) ? true : false;
         
@@ -84,6 +78,7 @@ class MediaType extends Model {
         
         $mediaType = $this->find($id);
         if (!$mediaType) { return false; }
+        
         return $mediaType->removable($mediaType)
             ? $mediaType->delete() : false;
         

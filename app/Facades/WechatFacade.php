@@ -138,11 +138,11 @@ class Wechat extends Facade {
      * @return bool|mixed
      */
     static function getAccessToken($corpId, $secret, $agentid) {
-        
-        $app = App::whereAgentid($agentid)->where('corp_id', $corpId)->first();
+        $app = App::whereAgentid($agentid)->first();
         if ($app['expire_at'] < time() || !isset($app['expire_at'])) {
             $token = self::curlGet(sprintf(self::URL_GET_ACCESSTOKEN, $corpId, $secret));
             $result = json_decode($token);
+
             if ($result) {
                 $accessToken = $result->{'access_token'};
                 $app->update([

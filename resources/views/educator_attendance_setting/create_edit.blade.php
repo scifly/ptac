@@ -7,6 +7,7 @@
             @if (!empty($eas['id']))
                 {{ Form::hidden('id', $eas['id'], ['id' => 'id']) }}
             @endif
+                {{ Form::hidden('school_id', $schoolId, ['id' => 'school_id']) }}
             <div class="form-group">
                 {!! Form::label('name', '名称', [
                     'class' => 'col-sm-3 control-label'
@@ -20,35 +21,48 @@
                     ]) !!}
                 </div>
             </div>
-            @include('partials.single_select', [
-                'label' => '所属学校',
-                'id' => 'school_id',
-                'items' => $schools
-            ])
+
             <div class="form-group">
                 {!! Form::label('start', '起始时间', [
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
-                    {!! Form::text('start', null, [
-                        'class' => 'form-control start-date',
-                    ]) !!}
+                    <div class="input-group">
+                        <div class="input-group-addon">
+                            <i class="fa fa-clock-o"></i>
+                        </div>
+                        {!! Form::text('start', null, [
+                            'class' => 'form-control start-time',
+                            'required' => 'true',
+                            'data-parsley-start' => '.end-time',
+                            'placeholder' => '(不得大于等于结束时间)'
+                        ]) !!}
+                    </div>
                 </div>
             </div>
             <div class="form-group">
-                {!! Form::label('end', '起始时间', [
+                {!! Form::label('end', '结束时间', [
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
-                    {!! Form::text('end', null, [
-                        'class' => 'form-control end-date',
-                    ]) !!}
+                    <div class="input-group">
+                        <div class="input-group-addon">
+                            <i class="fa fa-clock-o"></i>
+                        </div>
+                        {!! Form::text('end', null, [
+                            'class' => 'form-control end-time',
+                            'required' => 'true',
+                            'data-parsley-end' => '.start-time',
+                            'placeholder' => '(不得小于等于开始时间)'
+                        ]) !!}
+                    </div>
                 </div>
             </div>
             @include('partials.enabled', [
                 'label' => '进或出',
                 'id' => 'inorout',
-                'value' => isset($eas['inorout']) ? $eas['inorout'] : NULL
+                'value' => isset($eas['inorout']) ? $eas['inorout'] : NULL,
+                'options' => ['进', '出']
             ])
             @include('partials.enabled', [
                 'id' => 'enabled',

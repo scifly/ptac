@@ -141,9 +141,7 @@ class Tab extends Model {
     public function remove($id) {
         
         $tab = $this->find($id);
-        if (!isset($tab)) {
-            return false;
-        }
+        if (!isset($tab)) { return false; }
         try {
             $exception = DB::transaction(function () use ($id, $tab) {
                 # 删除指定的卡片记录
@@ -199,9 +197,9 @@ class Tab extends Model {
                 'formatter' => function($d, $row) {
                     $iconId = $this->find($row['id'])->icon_id;
                     if ($iconId) {
-                        return '<i class="fa ' . Icon::find($iconId)->name .  '">&nbsp;' . $d;
+                        return '<i class="' . Icon::find($iconId)->name .  '"></i>&nbsp;' . $d;
                     }
-                    return $d;
+                    return '<i class="fa fa-calendar-check-o"></i>&nbsp;' . $d;
                 }
             ],
             [
@@ -219,7 +217,8 @@ class Tab extends Model {
                     $status = $d ? Datatable::DT_ON : Datatable::DT_OFF;
                     $showLink = sprintf(Datatable::DT_LINK_SHOW, 'show_' . $id);
                     $editLink = sprintf(Datatable::DT_LINK_EDIT, 'edit_' . $id);
-                    return $status . str_repeat('&nbsp;', 3) .
+                    return
+                        $status . str_repeat('&nbsp;', 3) .
                         $showLink . str_repeat('&nbsp;', 3) .
                         $editLink;
                 },

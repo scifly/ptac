@@ -30,7 +30,6 @@ class GroupMenu extends Model {
     protected $fillable = ['group_id', 'menu_id', 'enabled'];
     
     public function storeByGroupId($groupId, array $ids = []) {
-        
         try {
             $exception = DB::transaction(function () use ($groupId, $ids) {
                 $this->where('group_id', $groupId)->delete();

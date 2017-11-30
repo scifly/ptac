@@ -61,7 +61,7 @@ use Mockery\Exception;
 class Menu extends Model {
     
     # 不含子菜单的HTML模板
-    const SIMPLE = '<li%s><a id="%s" href="%s"><i class="%s"></i> %s</a></li>';
+    const SIMPLE = '<li%s><a id="%s" href="%s" class="leaf"><i class="%s"></i> %s</a></li>';
     # 包含子菜单的HTML模板
     const TREE = <<<HTML
             <li class="treeview%s">
@@ -360,7 +360,7 @@ HTML;
                 if (!empty($tabIds)) {
                     $menuTab = new MenuTab();
                     $menuTab::whereMenuId($menuId)->delete();
-                    if (!$menu->children) {
+                    if ($menu->children->count() == 0) {
                         $menuTab->storeByMenuId($menuId, $tabIds);
                     }
                 } else {
@@ -477,6 +477,7 @@ HTML;
                 $rootMenuId = Corp::whereDepartmentId($user->topDeptId($user))->first()->menu_id;
                 break;
             case '学校':
+                dd($user->topDeptId($user));
                 $rootMenuId = School::whereDepartmentId($user->topDeptId($user))->first()->menu_id;
                 break;
             default:
@@ -723,7 +724,8 @@ HTML;
             $mName = $menu['name'];
             $mIcon = $menu['icon'];
             $hasChildren = $this->find($mId)->children->count();
-            $mUrl = '../pages/' . $mId;
+            // $mUrl = '../pages/' . $mId;
+            $mUrl = '/pages/' . $mId;
             if ($currentParent == $menu['parent_id']) {
                 if ($hasChildren) {
                     $menuHtml .= sprintf(
@@ -751,6 +753,23 @@ HTML;
         
         return $menuHtml;
         
+    }
+
+    /**
+     * 根据菜单ID返回其父级菜单中类型为“学校”的菜单ID
+     *
+     * @param $id
+     * @return int|mixed
+     */
+    public function getSchoolMenuId($id) {
+
+        $menu = $this->find($id);
+        $menuType = $menu->menuType->name;
+        while ($menuType != '学校') {
+            $menu = $menu->parent;
+            $menuType = $menu->menuType->name;
+        }
+        return $menu->id;
     }
     
 }

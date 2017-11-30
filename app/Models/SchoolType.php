@@ -50,11 +50,14 @@ class SchoolType extends Model {
                     $status = $d ? Datatable::DT_ON : Datatable::DT_OFF;
                     $editLink = sprintf(Datatable::DT_LINK_EDIT, 'edit_' . $id);
                     $delLink = sprintf(Datatable::DT_LINK_DEL, $id);
-                    return $status . Datatable::DT_SPACE .
-                        $editLink . Datatable::DT_SPACE . $delLink;
+                    return
+                        $status . str_repeat(Datatable::DT_SPACE, 3).
+                        $editLink . str_repeat(Datatable::DT_SPACE, 2) .
+                        $delLink;
                 },
             ],
         ];
+        
         return Datatable::simple($this, $columns);
         
     }

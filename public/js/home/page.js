@@ -61,6 +61,15 @@ var page = {
         },
         ueditor_all: {
             js: 'js/plugins/UEditor/ueditor.all.js'
+        },
+        datepicker: {
+            css: 'js/plugins/datepicker/datepicker3.css',
+            js: 'js/plugins/datepicker/bootstrap-datepicker.js'
+        },
+        timepicker: {
+            css: 'js/plugins/jqueryui/css/jquery-ui.css',
+            js: 'js/plugins/jqueryui/js/jquery-ui-timepicker-addon.js',
+            jscn: 'js/plugins/jqueryui/js/datepicker-zh-CN.js'
         }
     },
     backToList: function (table) {
@@ -87,9 +96,40 @@ var page = {
         if (!state.id) { return state.text; }
         return $('<span><i class="' + state.text + '"> ' + state.text + '</span>');
     },
+    refreshMenus: function() {
+        var $active = $('.sidebar-menu li.active');
+        var parents = $active.parentsUntil('.sidebar-menu');
+        if (typeof parents !== 'undefined') {
+            $(parents[parents.length - 1]).addClass('active');
+            for (var i = 0; i < parents.length; i++) {
+                if ($(parents[i]).is('ul')) {
+                    $(parents[i]).addClass('menu-open').css('display', 'block');
+                } else {
+                    $(parents[i]).addClass('active');
+                }
+            }
+        }
+    },
+    refreshTabs: function() {
+        var $tabs = $('a.tab');
+        $.each($tabs, function() {
+            $(this).removeClass('text-blue').addClass('text-gray');
+        });
+        $('li.active a.tab').removeClass('text-gray').addClass('text-blue');
+    },
     getActiveTabId: function () {
-        var tabId = $('.nav-tabs .active a').attr('href').split('_');
-        return tabId[tabId.length - 1];
+        var $activeTab = $('.nav-tabs .active a');
+        if ($activeTab.length !== 0) {
+            var tabId = $activeTab.attr('href').split('_');
+            return tabId[tabId.length - 1];
+        }
+        return false;
+    },
+    getActiveMenuUri: function() {
+        return $('.sidebar-menu li.active').last().find('a').attr('href');
+    },
+    getActiveMenuId: function() {
+        return $('.sidebar-menu li.active').last().find('a').attr('id');
     },
     errorHandler: function (e) {
         var obj = JSON.parse(e.responseText);
@@ -101,11 +141,55 @@ var page = {
             window.location = page.siteRoot() + 'login';
         }
     },
+    getWrapperContent: function(uri, tabId, tabUrl) {
+        var $wrapper = $('.content-wrapper');
+        $('.overlay').show();
+        $.ajax({
+            type: 'GET',
+            dataType: 'json',
+            url: page.siteRoot() + uri,
+            success: function(result) {
+                if (result.statusCode === 200) {
+                    $wrapper.html(result.html);
+                    $('.overlay').hide();
+                    $('.tab').hover(
+                        function() { $(this).removeClass('text-gray').addClass('text-blue'); },
+                        function() {
+                            if (!($(this).parent().hasClass('active'))) {
+                                $(this).removeClass('text-blue').addClass('text-gray');
+                            }
+                        }
+                    );
+                    // 获取状态为active的卡片内容
+                    var $tab = null;
+                    var tabUri = $('.nav-tabs .active a').attr('data-uri');
+                    if (typeof tabId !== 'undefined') {
+                        var $tabPanes = $('.card');
+                        $.each($tabPanes, function() { $(this).html(''); });
+                        $('.nav-tabs .active').removeClass('active');
+                        $('.active .card').removeClass('active');
+                        $('a[href="#tab_' + tabId + '"]').parent().addClass('active');
+                        $tab = $('#tab_' + tabId);
+                        $tab.addClass('active');
+                        page.refreshTabs();
+                    } else {
+                        tabId = page.getActiveTabId();
+                        $tab = $('#tab_' + tabId);
+                    }
+                    if (typeof tabUrl !== 'undefined') {
+                        tabUri = tabUrl;
+                    }
+                    page.getTabContent($tab, tabUri);
+                }
+            }
+        });
+    },
     getTabContent: function ($tabPane, url) {
         if (url.indexOf('http://') > -1) {
             url = url.replace(page.siteRoot(), '');
         }
         var tabId = page.getActiveTabId();
+        var menuId = page.getActiveMenuUri();
         $('a[href="#tab_' + tabId + '"]').attr('data-uri', url);
         $tabPane.html(page.ajaxLoader);
         $('.overlay').show();
@@ -113,7 +197,7 @@ var page = {
             type: 'GET',
             dataType: 'json',
             url: page.siteRoot() + url,
-            data: {tabId: tabId},
+            data: {tabId: tabId, menuId: menuId},
             success: function (result) {
                 if (result.statusCode === 200) {
                     $tabPane.html(result.html);
@@ -122,10 +206,13 @@ var page = {
                     $.getScript(page.siteRoot() + result.js, function () {
                         $('#ajaxLoader').remove();
                         $('.overlay').hide();
+                        // if (!$('#data-table').length) {
+                        //     $('link[href="' + page.siteRoot() + page.plugins.datatable.css +'"]').remove();
+                        // }
                     });
                     var breadcrumb = $('#breadcrumb').html();
                     document.title = docTitle + ' - ' + breadcrumb;
-                    oPage.title = tabId;
+                    oPage.title = tabId + ',' + page.getActiveMenuId();
                     oPage.url = page.siteRoot() + url;
                     if (updateHistory) {
                         if (replaceState) {
@@ -156,6 +243,10 @@ var page = {
                         case 'POST':        // create
                             obj.reset();    // reset create form
                             break;
+                        case 'DELETE':
+                            $('#data-table').dataTable().fnDestroy();
+                            page.initDatatable(obj);
+                            break;
                         default:
                             break;
                     }
@@ -167,7 +258,17 @@ var page = {
                 );
                 return false;
             },
-            error: function (e) { page.errorHandler(e); }
+            error: function (e) {
+                // page.errorHandler(e);
+                $('.overlay').hide();
+                var obj = JSON.parse(e.responseText);
+                var errors = obj['errors'];
+                for (var x in errors) {
+                    page.inform('出现异常', errors[x], page.failure);
+                }
+
+            }
+
         });
     },
     initDatatable: function (table, options) {
@@ -180,7 +281,6 @@ var page = {
             } else {
                 options.push(statusCol);
             }
-            var $cip = $('#cip');
             var params = {
                 processing: true,
                 serverSide: true,
@@ -195,10 +295,7 @@ var page = {
                 // dom: '<"row"<"col-md-6"l><"col-sm-4"f><"col-sm-2"B>>rt<"row"<"col-sm-6"i><"col-sm-6"p>>',
                 // buttons: ['pdf', 'csv']
             };
-            $cip.after($("<link/>", {
-                rel: "stylesheet", type: "text/css",
-                href: page.siteRoot() + page.plugins.datatable.css
-            }));
+            page.loadCss(page.plugins.datatable.css);
             $('.overlay').show();
             var dt = $datatable.DataTable(params).on('init.dt', function () {
                 // $('.dt-buttons').addClass('pull-right');
@@ -254,9 +351,11 @@ var page = {
             $('#modal-dialog').modal({backdrop: true});
         });
         $('#confirm-delete').on('click', function () {
-            this.ajaxRequest(
-                'DELETE', page.siteRoot() + '/' + table + '/delete/' + id,
-                {_token: $('#csrf_token').attr('content')}
+            page.ajaxRequest(
+                'DELETE',
+                page.siteRoot() + table + '/delete/' + id,
+                {_token: $('#csrf_token').attr('content')},
+                table
             );
         });
     },
@@ -272,10 +371,12 @@ var page = {
         page.initForm(table, formId, table + '/rechargeStore/' + id, 'PUT');
     },
     loadCss: function(css) {
-        $cip.after($("<link/>", {
-            rel: "stylesheet", type: "text/css",
-            href: page.siteRoot() + css
-        }));
+        if (!$('link[href="' + page.siteRoot() + css +'"]').length) {
+            $cip.after($("<link/>", {
+                rel: "stylesheet", type: "text/css",
+                href: page.siteRoot() + css
+            }));
+        }
     },
     initSelect2: function(options) {
         if (!($.fn.select2)) {
@@ -324,12 +425,37 @@ var page = {
     },
     unbindEvents: function () {
         $('#add-record').unbind('click');
-        $(document).off('click', '.fa-edit');
-        $(document).off('click', '.fa-eye');
-        $(document).off('click', '.fa-trash');
+        $(document).off('click', '.fa-pencil');
+        $(document).off('click', '.fa-bars');
+        $(document).off('click', '.fa-remove');
         $(document).off('click', '.fa-money');
         $('#confirm-delete').unbind('click');
         $('#cancel, #record-list').unbind('click');
+    },
+    // 初始化起始时间与结束时间的Parsley验证规则
+    initParsleyRules: function() {
+        window.Parsley.removeValidator('start');
+        window.Parsley.removeValidator('end');
+        window.Parsley.addValidator('start', {
+            requirementType: 'string',
+            validateString: function(value, requirement) {
+                var endTime = $(requirement).val();
+                return value < endTime;
+            },
+            messages: {
+                cn: '开始时间不得大于等于%s'
+            }
+        });
+        window.Parsley.addValidator('end', {
+            requirementType: 'string',
+            validateString: function(value, requirement) {
+                var startTime = $(requirement).val();
+                return value > startTime;
+            },
+            messages: {
+                cn: '结束时间不得小于等于%s'
+            }
+        });
     },
     getUrlVars: function () {
         var vars = [], hash;
@@ -352,43 +478,50 @@ $.getMultiScripts = function(arr, path) {
     return $.when.apply($, _arr);
 };
 $(function () {
-    // 激活菜单
-    var $active = $('.sidebar-menu li.active');
-    var parents = $active.parentsUntil('.sidebar-menu');
-    if (typeof parents !== 'undefined') {
-        $(parents[parents.length - 1]).addClass('active');
-        for (var i = 0; i < parents.length; i++) {
-            if ($(parents[i]).is('ul')) {
-                $(parents[i]).addClass('menu-open').css('display', 'block');
-            } else {
-                $(parents[i]).addClass('active')
-            }
-        }
-    }
+    page.refreshMenus();
     // 获取状态为active的卡片
     var $activeTabPane = $('#tab_' + page.getActiveTabId());
     window.onpopstate = function (e) {
         if (!e.state) { return false; }
-        oPage.title = e.state.title;
-        oPage.url = e.state.url;
-        // deactivate current pane
+        updateHistory = false;
+        if (e.state.url.indexOf('pages') > -1) {
+            return false;
+        }
+        var ids = e.state.title.split(',');
+        var targetTabId = ids[0];
+        var targetMenuId = ids[1];
+        var uri = e.state.url;
+        // get current active tab id
         var activeTabId = page.getActiveTabId();
+        // deactivate current pane
         $('a[href="#tab_' + activeTabId + '"]').parent().removeClass();
         $activeTabPane = $('#tab_' + activeTabId);
         $activeTabPane.removeClass('active').html('');
-        // activate targe pane
-        $('a[href="#tab_' + oPage.title + '"]').parent().addClass('active');
-        $activeTabPane = $('#tab_' + oPage.title);
-        $activeTabPane.addClass('active');
-        updateHistory = false;
-        page.getTabContent($activeTabPane, oPage.url);
+        // activate target pane
+        var $targetTabLink = $('a[href="#tab_' + targetTabId + '"]');
+        if ($targetTabLink.length !== 0) {
+            $targetTabLink.parent().addClass('active');
+            $activeTabPane = $('#tab_' + targetTabId);
+            $activeTabPane.addClass('active');
+            page.getTabContent($activeTabPane, uri);
+            page.refreshTabs();
+        } else {
+            page.getWrapperContent('pages/' + targetMenuId, targetTabId, uri);
+            $('.sidebar-menu li.active').removeClass('active menu-open');
+            $('#' + targetMenuId).parent().addClass('active');
+            page.refreshMenus();
+        }
     };
-    $(document).on('click', '.tab', function () {
-        var tabs = $('a.tab');
-        $.each(tabs, function() {
-            $(this).removeClass('text-blue').addClass('text-gray');
-        });
-        $(this).removeClass('text-gray').addClass('text-blue');
+    $(document).on('click', '.sidebar-menu a.leaf', function(e) {
+        e.preventDefault();
+        var uri = $(this).attr('href');
+        $('.sidebar-menu li.active').removeClass('active menu-open');
+        $(this).parent().addClass('active');
+        page.refreshMenus();
+        page.getWrapperContent(uri);
+    });
+    $(document).on('click', '.tab', function() {
+        page.refreshTabs();
         // 获取被点击卡片的url
         var url = $(this).attr('data-uri');
         // 获取所有卡片
@@ -405,16 +538,6 @@ $(function () {
             page.getTabContent($activeTabPane, url);
         }
     });
-    $('.tab').hover(
-        function() { $(this).removeClass('text-gray').addClass('text-blue'); },
-        function() {
-            if (!($(this).parent().hasClass('active'))) {
-                $(this).removeClass('text-blue').addClass('text-gray');
-            }
-        }
-    );
-    // 获取状态为active的卡片的url
-    url = $('.nav-tabs .active a').attr('data-uri');
-    // 获取状态为active的卡片内容
-    page.getTabContent($activeTabPane, url);
+    var menuUri = page.getActiveMenuUri();
+    page.getWrapperContent(menuUri, page.getActiveTabId());
 });

@@ -44,7 +44,6 @@ class SubjectModule extends Model {
     public function subject() { return $this->belongsTo('App\Models\Subject'); }
     
     public function datatable() {
-        
         $columns = [
             ['db' => 'SubjectModule.id', 'dt' => 0],
             ['db' => 'Subject.name as subjectname', 'dt' => 1],

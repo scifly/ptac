@@ -38,13 +38,10 @@ class MenuType extends Model {
     public function menus() { return $this->hasMany('App\Models\Menu'); }
     
     public function typeList($type) {
-        
         $list = $this->pluck('name', 'id')->toArray();
         $types = collect($this->where('enabled', 1)->get(['name'])->toArray())
             ->flatten()->all();
-        if (!in_array($type, $types)) {
-            return false;
-        }
+        if (!in_array($type, $types)) { return false; }
         $allowedTypeList = [array_search('其他', $list) => '其他'];
         switch ($type) {
             case '根':
@@ -72,7 +69,6 @@ class MenuType extends Model {
      * @return bool
      */
     public function store(array $data) {
-        
         $menuType = $this->create($data);
         
         return $menuType ? true : false;
@@ -87,11 +83,8 @@ class MenuType extends Model {
      * @return bool
      */
     public function modify(array $data, $id) {
-        
         $menuType = $this->find($id);
-        if (!$menuType) {
-            return false;
-        }
+        if (!$menuType) { return false; }
         
         return $menuType->update($data) ? true : false;
         
@@ -104,9 +97,11 @@ class MenuType extends Model {
      * @return bool|null
      */
     public function remove($id) {
-        
         $menuType = $this->find($id);
-        if (!$menuType) { return false; }
+        if (!$menuType) {
+            return false;
+        }
+        
         return $menuType->removable($menuType)
             ? $menuType->delete() : false;
         

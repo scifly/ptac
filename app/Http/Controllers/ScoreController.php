@@ -38,7 +38,6 @@ class ScoreController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
-        
         if (Request::get('draw')) {
             return response()->json($this->score->datatable());
         }
@@ -53,7 +52,6 @@ class ScoreController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function create() {
-        
         return $this->output(__METHOD__);
         
     }
@@ -65,7 +63,6 @@ class ScoreController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(ScoreRequest $request) {
-        
         return $this->score->create($request->all()) ? $this->succeed() : $this->fail();
         
     }
@@ -77,7 +74,6 @@ class ScoreController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function show($id) {
-        
         $score = $this->score->find($id);
         if (!$score) {
             return $this->notFound();
@@ -97,7 +93,6 @@ class ScoreController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function edit($id) {
-        
         $score = $this->score->find($id);
         if (!$score) {
             return $this->notFound();
@@ -118,7 +113,6 @@ class ScoreController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(ScoreRequest $request, $id) {
-        
         $score = $this->score->find($id);
         if (!$score) {
             return $this->notFound();
@@ -135,7 +129,6 @@ class ScoreController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
-        
         $score = $this->score->find($id);
         if (!$score) {
             return $this->notFound();
@@ -152,7 +145,6 @@ class ScoreController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function statistics($examId) {
-        
         return $this->score->statistics($examId) ? $this->succeed() : $this->fail();
         
     }

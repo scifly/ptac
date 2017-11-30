@@ -28,7 +28,6 @@ class TeamController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
-        
         if (Request::get('draw')) {
             return response()->json($this->team->datatable());
         }
@@ -43,7 +42,6 @@ class TeamController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function create() {
-        
         return $this->output(__METHOD__);
         
     }
@@ -55,7 +53,6 @@ class TeamController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(TeamRequest $request) {
-        
         return $this->team->create($request->all()) ? $this->succeed() : $this->fail();
         
     }
@@ -67,7 +64,6 @@ class TeamController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function show($id) {
-        
         $team = $this->team->find($id);
         if (!$team) {
             return $this->notFound();
@@ -84,7 +80,6 @@ class TeamController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function edit($id) {
-        
         $team = $this->team->find($id);
         if (!$team) {
             return $this->notFound();
@@ -102,7 +97,6 @@ class TeamController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(TeamRequest $request, $id) {
-        
         $team = $this->team->find($id);
         if (!$team) {
             return $this->notFound();
@@ -119,7 +113,6 @@ class TeamController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
-        
         $team = $this->team->find($id);
         if (!$team) {
             return $this->notFound();

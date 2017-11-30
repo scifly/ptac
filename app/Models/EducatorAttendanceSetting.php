@@ -39,7 +39,7 @@ class EducatorAttendanceSetting extends Model {
     
     protected $fillable = [
         'name', 'school_id', 'start',
-        'end', 'inorout',
+        'end', 'inorout','enabled'
     ];
     
     /**
@@ -57,11 +57,15 @@ class EducatorAttendanceSetting extends Model {
     public function school() { return $this->belongsTo('App\Models\School'); }
     
     public function datatable() {
-        
         $columns = [
             ['db' => 'EducatorAttendanceSetting.id', 'dt' => 0],
             ['db' => 'EducatorAttendanceSetting.name', 'dt' => 1],
-            ['db' => 'School.name as schoolname ', 'dt' => 2],
+            [
+                'db' => 'School.name as schoolname ', 'dt' => 2,
+                'formatter' => function ($d) {
+                    return '<i class="fa fa-university"></i>&nbsp;' . $d;
+                }
+            ],
             ['db' => 'EducatorAttendanceSetting.start', 'dt' => 3],
             ['db' => 'EducatorAttendanceSetting.end', 'dt' => 4],
             [
@@ -71,8 +75,6 @@ class EducatorAttendanceSetting extends Model {
                 },
             ],
             ['db' => 'EducatorAttendanceSetting.created_at', 'dt' => 6],
-            ['db' => 'EducatorAttendanceSetting.updated_at', 'dt' => 7],
-            ['db' => 'EducatorAttendanceSetting.updated_at', 'dt' => 7],
             [
                 'db'        => 'EducatorAttendanceSetting.enabled', 'dt' => 7,
                 'formatter' => function ($d, $row) {

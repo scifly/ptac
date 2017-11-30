@@ -78,7 +78,6 @@ class Procedure extends Model {
      * @return bool
      */
     public function store(array $data) {
-        
         $procedure = $this->create($data);
         
         return $procedure ? true : false;
@@ -93,9 +92,11 @@ class Procedure extends Model {
      * @return bool
      */
     public function modify(array $data, $id) {
-        
         $procedure = $this->find($id);
-        if (!$procedure) { return false; }
+        if (!$procedure) {
+            return false;
+        }
+        
         return $procedure->update($data) ? true : false;
         
     }
@@ -107,15 +108,16 @@ class Procedure extends Model {
      * @return bool|null
      */
     public function remove($id) {
-        
         $procedure = $this->find($id);
-        if (!$procedure) { return false; }
+        if (!$procedure) {
+            return false;
+        }
+        
         return $this->removable($procedure) ? $procedure->delete() : false;
         
     }
     
     public function datatable() {
-        
         $columns = [
             ['db' => 'Procedures.id', 'dt' => 0],
             ['db' => 'ProcedureType.name as proceduretypename', 'dt' => 1],

@@ -23,7 +23,6 @@ class PermissionController extends Controller {
         GroupMenu $groupMenu,
         GroupTab $groupTab
     ) {
-        
         $this->group = $group;
         $this->action = $action;
         $this->tab = $tab;
