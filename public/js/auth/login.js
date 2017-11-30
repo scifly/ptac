@@ -6,6 +6,7 @@ $(function() {
         if (typeof paths[1] !== 'undefined') {
             returnUrl = paths[1];
         }
+        $('.overlay').show();
         $.ajax({
             type: 'POST',
             dataType: 'json',
@@ -19,11 +20,27 @@ $(function() {
             },
             success: function (result) {
                 if (result.statusCode === 200) {
-                    window.location = result['url'];
+                    if (typeof result['url'] !== 'undefined') {
+                        window.location = result['url'];
+                    }
+                    window.location = returnUrl ? decodeURIComponent(returnUrl) : '/';
                 } else {
+                    $('.overlay').hide();
                     $.gritter.add({
                         title: '登录',
                         text: '用户名/密码错误',
+                        image: 'img/error.png'
+                    });
+                }
+            },
+            error: function(e) {
+                $('.overlay').hide();
+                var obj = JSON.parse(e.responseText);
+                if (obj['statusCode'] === 498) {
+                    window.location.reload();
+                    $.gritter.add({
+                        title: '登录',
+                        text: '页面已失效, 请重试',
                         image: 'img/error.png'
                     });
                 }
