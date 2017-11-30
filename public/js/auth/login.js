@@ -23,7 +23,7 @@ $(function() {
                     if (typeof result['url'] !== 'undefined') {
                         window.location = result['url'];
                     }
-                    window.location = decodeURIComponent(returnUrl);
+                    window.location = returnUrl ? decodeURIComponent(returnUrl) : '/';
                 } else {
                     $('.overlay').hide();
                     $.gritter.add({

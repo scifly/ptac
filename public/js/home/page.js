@@ -148,45 +148,56 @@ var page = {
     },
     getWrapperContent: function(uri, tabId, tabUrl) {
         var $wrapper = $('.content-wrapper');
+        var menuId = page.getActiveMenuId();
         $('.overlay').show();
         $.ajax({
             type: 'GET',
             dataType: 'json',
             url: page.siteRoot() + uri,
+            data: { menuId: menuId },
             success: function(result) {
-                if (result.statusCode === 200) {
-                    $wrapper.html(result.html);
-                    $('.overlay').hide();
-                    $('.tab').hover(
-                        function() { $(this).removeClass('text-gray').addClass('text-blue'); },
-                        function() {
-                            if (!($(this).parent().hasClass('active'))) {
-                                $(this).removeClass('text-blue').addClass('text-gray');
+                switch (result.statusCode) {
+                    case 200:
+                        $wrapper.html(result.html);
+                        $('.overlay').hide();
+                        $('.tab').hover(
+                            function() { $(this).removeClass('text-gray').addClass('text-blue'); },
+                            function() {
+                                if (!($(this).parent().hasClass('active'))) {
+                                    $(this).removeClass('text-blue').addClass('text-gray');
+                                }
                             }
+                        );
+                        // 获取状态为active的卡片内容
+                        var $tab = null;
+                        var tabUri = $('.nav-tabs .active a').attr('data-uri');
+                        if (typeof tabId !== 'undefined') {
+                            var $tabPanes = $('.card');
+                            $.each($tabPanes, function() { $(this).html(''); });
+                            $('.nav-tabs .active').removeClass('active');
+                            $('.active .card').removeClass('active');
+                            $('a[href="#tab_' + tabId + '"]').parent().addClass('active');
+                            $tab = $('#tab_' + tabId);
+                            $tab.addClass('active');
+                            page.refreshTabs();
+                        } else {
+                            tabId = page.getActiveTabId();
+                            $tab = $('#tab_' + tabId);
                         }
-                    );
-                    // 获取状态为active的卡片内容
-                    var $tab = null;
-                    var tabUri = $('.nav-tabs .active a').attr('data-uri');
-                    if (typeof tabId !== 'undefined') {
-                        var $tabPanes = $('.card');
-                        $.each($tabPanes, function() { $(this).html(''); });
-                        $('.nav-tabs .active').removeClass('active');
-                        $('.active .card').removeClass('active');
-                        $('a[href="#tab_' + tabId + '"]').parent().addClass('active');
-                        $tab = $('#tab_' + tabId);
-                        $tab.addClass('active');
-                        page.refreshTabs();
-                    } else {
-                        tabId = page.getActiveTabId();
-                        $tab = $('#tab_' + tabId);
-                    }
-                    if (typeof tabUrl !== 'undefined') {
-                        tabUri = tabUrl;
-                    }
-                    page.getTabContent($tab, tabUri);
+                        if (typeof tabUrl !== 'undefined') {
+                            tabUri = tabUrl;
+                        }
+                        page.getTabContent($tab, tabUri);
+                        break;
+                    case 401:
+                        window.location = page.siteRoot() + 'login?returnUrl=' + encodeURIComponent(obj['returnUrl']);
+                        break;
+                    default:
+                        break;
                 }
-            }
+
+            },
+            error: function(e) { page.errorHandler(e); }
         });
     },
     getTabContent: function ($tabPane, url) {
