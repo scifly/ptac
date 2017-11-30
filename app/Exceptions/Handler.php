@@ -57,6 +57,11 @@ class Handler extends ExceptionHandler {
 
         if ($request->ajax() || $request->wantsJson()) {
             $response = ['message' => $exception->getMessage()];
+            if ($response['message'] == 'Unauthenticated.') {
+                $response['returnUrl'] = $request->fullUrl();
+                $status = 401;
+                return response()->json($response, $status);
+            }
             if (env('APP_DEBUG')) {
                $response['exception'] = get_class($exception);
                $response['file'] = $exception->getFile();
@@ -67,6 +72,7 @@ class Handler extends ExceptionHandler {
                    $response['errors'] = $ve->errors();
                }
             }
+            
             $status = 400;
             if ($this->isHttpException($exception)) {
                $status = $exception->getCode();
