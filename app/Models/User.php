@@ -233,7 +233,7 @@ class User extends Authenticatable {
             $data = [
                 'userid'       => $user->userid,
                 'name'         => $user->realname,
-                'english_name' => $user->english_name,
+                // 'english_name' => $user->english_name,
                 'mobile'       => $mobile,
                 'department'   => $user->departments->pluck('id')->toArray(),
                 'gender'       => $user->gender,
