@@ -6,7 +6,6 @@ use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
 use App\Http\Requests\CustodianRequest;
 use App\Http\Requests\EducatorRequest;
-use App\Listeners\EducatorEventSubscriber;
 use App\Rules\Mobiles;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -53,7 +52,7 @@ class Educator extends Model {
     const EXCEL_FILE_TITLE = [
         '姓名', '性别', '生日', '学校',
         '手机号码', '年级主任', '班级主任',
-        '科目名称', '任课班级',
+        '科目名称', '任课班级', '所属部门',
     ];
     const EXCEL_EXPORT_TITLE = [
         '教职工名称', '所属学校', '可用短信条数',
@@ -557,6 +556,7 @@ class Educator extends Model {
             'classes'           => 'string',
             'subjects'          => 'string',
             'educators_classes' => 'string',
+            'departments'       => 'required|string',
         ];
         // Validator::make($data,$rules);
         # 不合法的数据
@@ -566,17 +566,20 @@ class Educator extends Model {
         for ($i = 0; $i < count($data); $i++) {
             $datum = $data[$i];
             $user = [
-                'name'     => $datum[0],
-                'gender'   => $datum[1],
-                'birthday' => $datum[2],
-                'school'   => $datum[3],
-                'mobile'   => $datum[4],
-                'grades'   => $datum[5],
-                'classes'   => $datum[6],
-                'subjects'   => $datum[7],
-                'educators_classes'   => $datum[8],
+                'name'              => $datum[0],
+                'gender'            => $datum[1],
+                'birthday'          => $datum[2],
+                'school'            => $datum[3],
+                'mobile'            => $datum[4],
+                'grades'            => $datum[5],
+                'classes'           => $datum[6],
+                'subjects'          => $datum[7],
+                'educators_classes' => $datum[8],
+                'departments'       => $datum[9],
             ];
+    
             $status = Validator::make($user, $rules);
+    
             if ($status->fails()) {
                 $invalidRows[] = $datum;
                 unset($data[$i]);
@@ -588,10 +591,22 @@ class Educator extends Model {
                 unset($data[$i]);
                 continue;
             }
+            $departments = explode(',', $user['departments']);
+    
+            foreach ($departments as $d) {
+                $department = Department::whereName($d)->first();
+                if (empty($department)) {
+                    $invalidRows[] = $datum;
+                    unset($data[$i]);
+                    continue;
+                }
+            }
+            $user['departments'] = $departments;
             $user['school_id'] = $school->id;
             $rows[] = $user;
             unset($user);
         }
+        // print_r($rows);die;
         if (!empty($rows)) {
             event(new EducatorImported($rows));
         }

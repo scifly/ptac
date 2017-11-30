@@ -11,6 +11,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Notifications\DatabaseNotificationCollection;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Log;
 
 /**
  * App\User 用户
@@ -229,18 +230,16 @@ class User extends Authenticatable {
         
         $user = $this->find($id);
         $mobile = Mobile::whereUserId($id)->where('isdefault', 1)->first()->mobile;
-        // if ($user && $mobile) {
-            $data = [
-                'userid'       => $user->userid,
-                'name'         => $user->realname,
-                'english_name' => $user->english_name,
-                'mobile'       => $mobile,
-                'department'   => $user->departments->pluck('id')->toArray(),
-                'gender'       => $user->gender,
-                'enable'       => $user->enabled,
-            ];
-            event(new UserCreated($data));
-        // }
+        $data = [
+            'userid'       => $user->userid,
+            'name'         => $user->realname,
+            'english_name' => $user->english_name,
+            'mobile'       => $mobile,
+            'department'   => $user->departments->pluck('id')->toArray(),
+            'gender'       => $user->gender,
+            'enable'       => $user->enabled,
+        ];
+        event(new UserCreated($data));
     
     }
     public function importData(&$data) {

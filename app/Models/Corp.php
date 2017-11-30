@@ -16,12 +16,10 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $id
  * @property string $name 企业名称
  * @property string $corpid 企业号id
- * @property string $corpsecret 管理组的凭证密钥
  * @property \Carbon\Carbon|null $created_at
  * @property \Carbon\Carbon|null $updated_at
  * @property int $enabled
  * @method static Builder|Corp whereCorpid($value)
- * @method static Builder|Corp whereCorpsecret($value)
  * @method static Builder|Corp whereCreatedAt($value)
  * @method static Builder|Corp whereEnabled($value)
  * @method static Builder|Corp whereId($value)

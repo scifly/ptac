@@ -8,6 +8,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 
 /**
  * 企业号会员管理
@@ -40,15 +41,19 @@ class ManageWechatMember implements ShouldQueue {
      * @return void
      */
     public function handle() {
-        
+        Log::debug('create_user');
         $corp = new Corp();
         $corps = $corp::whereName('万浪软件')->first();
         $corpId = $corps->corpid;
-        $secret = $corps->corpsecret;
-        $dir = dirname(__FILE__);
-        $path = substr($dir, 0, stripos($dir, 'app/Jobs'));
-        $tokenFile = $path . 'public/token.txt';
-        $token = Wechat::getAccessToken($tokenFile, $corpId, $secret);
+        Log::debug('ID:'.$corps->corpid);
+        // $secret = $corps->corpsecret;
+        # 通讯录同步助手 secret
+        $secret = 'IoiSOIsOGrdps03Lx_h5V3cCvMl3ibu-FyqqAsy-qLM';
+        $agentid = '2';
+        // $dir = dirname(__FILE__);
+        // $path = substr($dir, 0, stripos($dir, 'app/Jobs'));
+        // $tokenFile = $path . 'public/token.txt';
+        $token = Wechat::getAccessToken($corpId, $secret, $agentid);
         switch ($this->action) {
             case 'create':
                 Wechat::createUser($token, $this->data);

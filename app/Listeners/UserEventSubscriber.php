@@ -4,6 +4,7 @@ namespace App\Listeners;
 use App\Jobs\ManageWechatMember;
 use Illuminate\Events\Dispatcher;
 use Illuminate\Foundation\Bus\DispatchesJobs;
+use Illuminate\Support\Facades\Log;
 
 class UserEventSubscriber {
     
@@ -15,10 +16,11 @@ class UserEventSubscriber {
      * @param $event
      */
     public function onUserCreated($event) {
-        
-        $job = new ManageWechatMember($event->user, 'create');
-        $this->dispatch($job);
-        
+        Log::debug('come');
+        // $job = new ManageWechatMember($event->data, 'create');
+        // $this->dispatch($job)->onQueue('import');
+        ManageWechatMember::dispatch($event->data, 'create')->onQueue('import');
+    
     }
     
     /**
@@ -28,7 +30,7 @@ class UserEventSubscriber {
      */
     public function onUserUpdated($event) {
         
-        $job = new ManageWechatMember($event->user, 'update');
+        $job = new ManageWechatMember($event->data, 'update');
         $this->dispatch($job);
         
     }
