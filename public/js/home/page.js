@@ -134,10 +134,16 @@ var page = {
     errorHandler: function (e) {
         var obj = JSON.parse(e.responseText);
         $('.overlay').hide();
-        if (obj['message'] !== 'Unauthenticated.') {
-            page.inform('出现异常', obj['message'], page.failure);
-        } else {
-            window.location = page.siteRoot() + 'login?returnUrl=' + encodeURIComponent(obj['returnUrl']);
+        switch (obj['statusCode']) {
+            case 401:
+                window.location = page.siteRoot() + 'login?returnUrl=' + encodeURIComponent(obj['returnUrl']);
+                break;
+            case 498:
+                window.location.reload();
+                break;
+            default:
+                page.inform('出现异常', obj['message'], page.failure);
+                break;
         }
     },
     getWrapperContent: function(uri, tabId, tabUrl) {
