@@ -3,6 +3,8 @@ namespace App\Jobs;
 
 use App\Models\Custodian;
 use App\Models\CustodianStudent;
+use App\Models\Department;
+use App\Models\DepartmentUser;
 use App\Models\Group;
 use App\Models\Mobile;
 use App\Models\Student;
@@ -115,6 +117,14 @@ class ManageImportStudent implements ShouldQueue {
                                             'enabled'   => 1,
                                         ];
                                         Mobile::create($mobile);
+                                        # 创建部门成员
+                                        $departmentUser = [
+                                            'department_id' => $datum['department_id'],
+                                            'user_id'       => $userData['id'],
+                                            'enabled'       => 1,
+                                        ];
+                                        DepartmentUser::create($departmentUser);
+                                        # 创建企业号成员
                                         $userModel = new User();
                                         $userModel->createWechatUser($userData['id']);
                                         unset($userModel);
@@ -158,6 +168,15 @@ class ManageImportStudent implements ShouldQueue {
                                                 CustodianStudent::create($custodianStudent);
                                             }
                                         }
+                                        # 更新部门成员
+                                        DepartmentUser::where('user_id', $m->user_id)->delete();
+                                        $departmentUser = [
+                                            'department_id' => $datum['department_id'],
+                                            'user_id'       => $m->user_id,
+                                            'enabled'       => 1,
+                                        ];
+                                        DepartmentUser::create($departmentUser);
+                                        # 更新企业号监护人成员
                                         $userModel = new User();
                                         $userModel->updateWechatUser($m->user_id);
                                         unset($userModel);
@@ -166,6 +185,7 @@ class ManageImportStudent implements ShouldQueue {
                             }
                             
                         }
+                        Log::debug('导入学生');
                         # 创建学生用户手机号码
                         $mobile = [
                             'user_id'   => $u['id'],
@@ -175,6 +195,14 @@ class ManageImportStudent implements ShouldQueue {
                         ];
                         Mobile::create($mobile);
                         Log::debug($u['id']);
+                        # 创建部门成员
+                        $departmentUser = [
+                            'department_id' => $datum['department_id'],
+                            'user_id'       => $u['id'],
+                            'enabled'       => 1,
+                        ];
+                        DepartmentUser::create($departmentUser);
+                        # 创建企业号成员
                         $user = new User();
                         $user->createWechatUser($u['id']);
                         unset($user);
