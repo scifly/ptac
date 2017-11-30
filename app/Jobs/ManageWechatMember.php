@@ -9,6 +9,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 
 /**
  * 企业号会员管理
@@ -41,8 +42,9 @@ class ManageWechatMember implements ShouldQueue {
      * @return void
      */
     public function handle() {
-        
+        Log::debug('create_user');
         $corp = new Corp();
+
         $corp = $corp::whereName('万浪软件')->first();
         $corpId = $corp->corpid;
         $app = App::whereCorpId($corp->id)->where('name', '企业通讯录')->first();
