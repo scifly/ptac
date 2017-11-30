@@ -79,7 +79,11 @@ class Controller extends BaseController {
             if ($menu) {
                 $params['breadcrumb'] = $menu->name . ' / ' . $tab->name . ' / ' . $action->name;
             } else {
-                return response()->json(['statusCode' => self::HTTP_STATUSCODE_UNAUTHORIZED]);
+                return response()->json([
+                    'statusCode' => self::HTTP_STATUSCODE_UNAUTHORIZED,
+                    'mId' => Request::get('menuId'),
+                    'tId' => Request::get('tabId')
+                ]);
             }
     
             return response()->json([
@@ -91,6 +95,12 @@ class Controller extends BaseController {
         }
         if (session('menuId')) {
             return Response()->redirectTo('pages/' . session('menuId'));
+        }
+        if (Request::query('menuId') && Request::query('tabId')) {
+            session(['menuId' => Request::query('menuId')]);
+            session(['tabId' => Request::query('tabId')]);
+            session(['tabUrl' => Request::path()]);
+            return response()->redirectTo('pages/' . session('menuId'));
         }
         return Response()->redirectToRoute('login');
         

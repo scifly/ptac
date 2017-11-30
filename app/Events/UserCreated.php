@@ -6,21 +6,22 @@ use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 
 class UserCreated {
     
     use Dispatchable, InteractsWithSockets, SerializesModels;
     
-    public $user;
+    public $data;
     
     /**
      * Create a new event instance.
      *
-     * @param array $user
+     * @param array $data
      */
-    public function __construct(array $user) {
-        
-        $this->user = $user;
+    public function __construct(array $data) {
+        Log::debug('sub');
+        $this->data = $data;
         
     }
     

@@ -4,6 +4,7 @@ namespace App\Facades;
 use App\Models\App;
 use App\Models\Corp;
 use Illuminate\Support\Facades\Facade;
+use Illuminate\Support\Facades\Log;
 
 class Wechat extends Facade {
     
@@ -138,14 +139,11 @@ class Wechat extends Facade {
     static function getAccessToken($corpId, $secret) {
         $app = App::whereSecret($secret)->first();
         if ($app['expire_at'] < time() || !isset($app['expire_at'])) {
-            $result = json_decode(
-                self::curlGet(sprintf(
-                    self::URL_GET_ACCESSTOKEN,
-                    $corpId, $secret
-                )), true
-            );
+            $token = self::curlGet(sprintf(self::URL_GET_ACCESSTOKEN, $corpId, $secret));
+            $result = json_decode($token);
+
             if ($result) {
-                $accessToken = $result['access_token'];
+                $accessToken = $result->{'access_token'};
                 $app->update([
                     'expire_at' => date('Y-m-d H:i:s', time() + 7000),
                     'access_token' => $accessToken
@@ -156,7 +154,7 @@ class Wechat extends Facade {
         } else {
             $accessToken = $app['access_token'];
         }
-        
+        Log::debug('token');
         return $accessToken;
         
     }
@@ -340,9 +338,10 @@ class Wechat extends Facade {
      * @internal param array $extAttr 自定义字段。自定义字段需要先在WEB管理端“我的企业” — “通讯录管理”添加，否则忽略未知属性的赋值
      */
     static function createUser(
+        
         $accessToken, array $data
     ) {
-        
+        Log::debug(json_encode($data));
         return self::curlPost(
             sprintf(self::URL_CREATE_USER, $accessToken),
             json_encode($data)
