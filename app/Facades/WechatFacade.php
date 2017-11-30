@@ -133,11 +133,10 @@ class Wechat extends Facade {
      *
      * @param string $corpId 企业号ID
      * @param string $secret 应用secret
-     * @param string $agentid 应用ID
      * @return bool|mixed
      */
-    static function getAccessToken($corpId, $secret, $agentid) {
-        $app = App::whereAgentid($agentid)->first();
+    static function getAccessToken($corpId, $secret) {
+        $app = App::whereSecret($secret)->first();
         if ($app['expire_at'] < time() || !isset($app['expire_at'])) {
             $result = json_decode(
                 self::curlGet(sprintf(

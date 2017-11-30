@@ -45,14 +45,12 @@ class ManageWechatMember implements ShouldQueue {
         $corp = new Corp();
         $corp = $corp::whereName('万浪软件')->first();
         $corpId = $corp->corpid;
-        $app = App::whereCorpId($corp->id)->where('name', '企业通讯录')->first();
-        // $secret = $app->secret;
-        $secret = 'IoiSOIsOGrdps03Lx_h5V3cCvMl3ibu-FyqqAsy-qLM';
-        $agentId = $app->agentid;
-        // $dir = dirname(__FILE__);
-        // $path = substr($dir, 0, stripos($dir, 'app/Jobs'));
-        // $tokenFile = $path . 'public/token.txt';
-        $token = Wechat::getAccessToken($corpId, $secret, $agentId);
+        // $app = App::whereCorpId($corp->id)->where('name', '企业通讯录')->first();
+        $contactSync = App::whereAgentid('999')->first();
+        $secret = $contactSync->secret;
+        // $secret = 'IoiSOIsOGrdps03Lx_h5V3cCvMl3ibu-FyqqAsy-qLM';
+        // $agentId = $app->agentid;
+        $token = Wechat::getAccessToken($corpId, $secret);
         switch ($this->action) {
             case 'create':
                 Wechat::createUser($token, $this->data);

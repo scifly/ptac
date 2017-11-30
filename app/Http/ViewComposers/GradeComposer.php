@@ -8,24 +8,23 @@ use Illuminate\Contracts\View\View;
 class GradeComposer {
 
     protected $school;
-    protected $educator;
 
-    public function __construct(School $school, Educator $educator) {
-
+    public function __construct(School $school) {
         $this->school = $school;
-        $this->educator = $educator;
-
     }
 
     public function compose(View $view) {
-
-        $educators = $this->educator->all();
+        
+        $schoolId = $this->school->getSchoolId();
+        $educators = Educator::whereSchoolId($schoolId)
+            ->where('enabled',1)
+            ->get();
         $educatorUsers = [];
         foreach ($educators as $educator) {
             $educatorUsers[$educator->id] = $educator->user->realname;
         }
         $view->with([
-            'schools'   => $this->school->pluck('name', 'id'),
+            'schoolId'  => $schoolId,
             'educators' => $educatorUsers,
         ]);
     }
