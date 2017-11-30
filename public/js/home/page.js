@@ -133,12 +133,11 @@ var page = {
     },
     errorHandler: function (e) {
         var obj = JSON.parse(e.responseText);
-        console.log(e.responseJSON);
         $('.overlay').hide();
         if (obj['message'] !== 'Unauthenticated.') {
             page.inform('出现异常', obj['message'], page.failure);
         } else {
-            window.location = page.siteRoot() + 'login';
+            window.location = page.siteRoot() + 'login?returnUrl=' + encodeURIComponent(obj['returnUrl']);
         }
     },
     getWrapperContent: function(uri, tabId, tabUrl) {
@@ -189,7 +188,7 @@ var page = {
             url = url.replace(page.siteRoot(), '');
         }
         var tabId = page.getActiveTabId();
-        var menuId = page.getActiveMenuUri();
+        var menuId = page.getActiveMenuId();
         $('a[href="#tab_' + tabId + '"]').attr('data-uri', url);
         $tabPane.html(page.ajaxLoader);
         $('.overlay').show();
