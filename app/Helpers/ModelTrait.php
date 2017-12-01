@@ -24,7 +24,6 @@ trait ModelTrait {
                 return false;
             }
         }
-        
         return true;
         
     }

@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 
 class LoginController extends Controller {
@@ -48,6 +49,22 @@ class LoginController extends Controller {
      */
     public function login(Request $request) {
         
+        if (!$request->ajax() && Auth::id()) {
+            Log::debug('GET request');
+            return response()->redirectTo($request->server('HTTP_REFERER'));
+        }
+        $returnUrl = null;
+        
+        if ($request->get('returnUrl')) {
+            $returnUrl = urldecode($request->get('returnUrl'));
+        }
+        if (Auth::id()) {
+            Log::debug('AJAX request');
+            return response()->json([
+                'statusCode' => 200,
+                'url' => $returnUrl ? $returnUrl : '/'
+            ]);
+        }
         $input = $request->input('input');
         $password = $request->input('password');
         $rememberMe = $request->input('rememberMe') == 'true' ? true : false;
@@ -78,7 +95,7 @@ class LoginController extends Controller {
                 Session::put('user', $user);
                 return response()->json([
                     'statusCode' => 200,
-                    'url'        => '/',
+                    'url'        => $returnUrl ? $returnUrl : '/',
                 ]);
             } else {
                 return response()->json(['statusCode' => 500]);
@@ -92,7 +109,7 @@ class LoginController extends Controller {
             Session::put('user', $user);
             return response()->json([
                 'statusCode' => 200,
-                'url'        => '/',
+                'url'        => $returnUrl ? $returnUrl : '/',
             ]);
         }
         

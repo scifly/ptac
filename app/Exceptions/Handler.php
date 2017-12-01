@@ -36,14 +36,16 @@ class Handler extends ExceptionHandler {
      * @return void
      */
     public function report(Exception $exception) {
-        parent::report($exception);
-        // Log::error(
-        //     get_class($exception) .
-        //     '(code: ' . $exception->getCode() . '): ' .
-        //     $exception->getMessage() . ' at ' .
-        //     $exception->getFile() . ' on line ' .
-        //     $exception->getLine()
-        // );
+        
+        // parent::report($exception);
+        Log::error(
+            get_class($exception) .
+            '(code: ' . $exception->getCode() . '): ' .
+            $exception->getMessage() . ' at ' .
+            $exception->getFile() . ' on line ' .
+            $exception->getLine()
+        );
+        
     }
     
     /**
@@ -56,21 +58,33 @@ class Handler extends ExceptionHandler {
     public function render($request, Exception $exception) {
 
         if ($request->ajax() || $request->wantsJson()) {
-            $response = ['message' => $exception->getMessage()];
-            if (env('APP_DEBUG')) {
-               $response['exception'] = get_class($exception);
-               $response['file'] = $exception->getFile();
-               $response['line'] = $exception->getLine();
-               if (stripos($response['exception'], 'ValidationException')) {
-                   /** @var ValidationException $ve */
-                   $ve = $exception;
-                   $response['errors'] = $ve->errors();
-               }
-            }
             $status = 400;
+            $paths = explode('\\', get_class($exception));
+            $response['message'] = $exception->getMessage();
+            $response['file'] = $exception->getFile();
+            $response['line'] = $exception->getLine();
+            $eName = $paths[sizeof($paths) -1];
+            switch ($eName) {
+                case 'AuthenticationException':
+                    $status = 401;
+                    $response['returnUrl'] = $request->fullUrl();
+                    break;
+                case 'TokenMismatchException':
+                    $status = 498;
+                    break;
+                default:
+                    break;
+            }
+            if (env('APP_DEBUG') && $eName == 'ValidationException' ) {
+                /** @var ValidationException $ve */
+                $ve = $exception;
+                $response['errors'] = $ve->errors();
+            }
             if ($this->isHttpException($exception)) {
                $status = $exception->getCode();
             }
+            $response['statusCode'] = $status;
+            $response['exception'] = $eName;
             return response()->json($response, $status);
         }
         return parent::render($request, $exception);

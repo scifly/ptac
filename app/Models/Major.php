@@ -160,8 +160,18 @@ class Major extends Model {
         
         $columns = [
             ['db' => 'Major.id', 'dt' => 0],
-            ['db' => 'Major.name', 'dt' => 1],
-            ['db' => 'School.name as schoolname', 'dt' => 2],
+            [
+                'db' => 'Major.name', 'dt' => 1,
+                'formatter' => function($d) {
+                     return '<i class="fa fa-graduation-cap"></i>&nbsp;' . $d;
+                }
+            ],
+            [
+                'db' => 'School.name as schoolname', 'dt' => 2,
+                'formatter' => function($d) {
+                    return '<i class="fa fa-university"></i>&nbsp;' . $d;
+                }
+            ],
             ['db' => 'Major.remark', 'dt' => 3],
             ['db' => 'Major.created_at', 'dt' => 4],
             [

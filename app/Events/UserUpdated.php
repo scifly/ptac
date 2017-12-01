@@ -11,15 +11,15 @@ class UserUpdated {
     
     use Dispatchable, InteractsWithSockets, SerializesModels;
     
-    public $user;
+    public $data;
     
     /**
      * Create a new event instance.
      * @param array $user
      */
-    public function __construct(array $user) {
+    public function __construct(array $data) {
         
-        $this->user = $user;
+        $this->data = $data;
         
     }
     

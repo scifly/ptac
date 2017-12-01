@@ -62,3 +62,27 @@ $(document).on('click', '.btn-mobile-add', function (e) {
     }
     return false;
 });
+
+// 年级班级
+$(document).off('change', '#grade_id');
+$(document).on('change', '#grade_id', function (e) {
+    e.preventDefault();
+    var gradeId = $('#grade_id').val();
+    var $classId = $('#classId');
+    var $next = $classId.next();
+    var $prev = $classId.prev();
+
+    var token = $('#csrf_token').attr('content');
+    $.ajax({
+        type: 'POST',
+        dataType: 'json',
+        url: page.siteRoot() + 'custodians/create?field=grade' + '&id=' + gradeId + '&_token=' + token,
+        success: function (result) {
+            $next.remove();
+            $classId.remove();
+            $prev.after(result['html']['classes']);
+            $('#classId').attr('name', 'class_id');
+            page.initSelect2();
+        }
+    });
+});

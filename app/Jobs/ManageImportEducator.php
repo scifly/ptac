@@ -1,6 +1,8 @@
 <?php
 namespace App\Jobs;
 
+use App\Models\Department;
+use App\Models\DepartmentUser;
 use App\Models\Educator;
 use App\Models\EducatorClass;
 use App\Models\Grade;
@@ -73,6 +75,17 @@ class ManageImportEducator implements ShouldQueue {
                             'enabled'   => 1,
                         ];
                         Mobile::create($mobile);
+                        # 创建部门成员
+                        foreach ($datum['departments'] as $d) {
+                            $i = Department::whereName($d)->first();
+                            $departmentUser = [
+                                'department_id' => $i->id,
+                                'user_id'       => $userData['id'],
+                                'enabled'       => 1,
+                            ];
+                            DepartmentUser::create($departmentUser);
+                        }
+                        # 创建企业号成员
                         $userModel = new User();
                         $userModel->createWechatUser($userData['id']);
                         unset($userModel);
@@ -106,6 +119,21 @@ class ManageImportEducator implements ShouldQueue {
                             $educator_id = $eduData['id'];
                         }
                         unset($em);
+                        # 更新部门成员
+                        DepartmentUser::where('user_id', $m->user_id)->delete();
+                        foreach ($datum['departments'] as $d) {
+                            $i = Department::whereName($d)->first();
+                            $departmentUser = [
+                                'department_id' => $i->id,
+                                'user_id'       => $m->user_id,
+                                'enabled'       => 1,
+                            ];
+                            DepartmentUser::create($departmentUser);
+                        }
+                        # 更新企业号成员
+                        $userUpdateModel = new User();
+                        $userUpdateModel->updateWechatUser($m->user_id);
+                        unset($userUpdateModel);
                     }
                     # 年级数据 存在时更新年级主任数据
                     $gradeInput = str_replace(['，', '：'], [',', ':'], $datum['grades']);
@@ -152,7 +180,7 @@ class ManageImportEducator implements ShouldQueue {
                                     ->where('name', $sub)->first();
                                 $classItems = Squad::where('name', $ec)->get();
                                 if (!empty($subject)) {
-    
+                                    
                                     $subjectGradeIds = explode('|', $subject->grade_ids);
                                     foreach ($classItems as $item) {
                                         # 班级的所属年级 是否在 科目对应的年级中
