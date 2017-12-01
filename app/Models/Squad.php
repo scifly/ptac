@@ -204,7 +204,10 @@ class Squad extends Model {
                 ],
             ],
         ];
-        return Datatable::simple($this, $columns, $joins);
+        $school = new School();
+        $schoolId = $school->getSchoolId();
+        $condition = 'Grade.school_id = ' . $schoolId;
+        return Datatable::simple($this, $columns, $joins, $condition);
         
     }
     
