@@ -2,7 +2,7 @@ page.edit('formStudent','students');
 var $mContainer = $("#mobiles").find("tbody");
 var n = 0;
 var id = $('#id').val();
-var $formEducator = $('#formCustodian');
+var $formEducator = $('#formStudent');
 var $mobileSize = $('#mobile-size').val();
 $(document).off('click','.btn-mobile-add');
 
