@@ -24,7 +24,7 @@ class ComposerServiceProvider extends ServiceProvider {
         View::composer('student_attendance_setting.create_edit', 'App\Http\ViewComposers\StudentAttendanceSettingComposer');
         
         View::composer('student.index', 'App\Http\ViewComposers\StudentIndexComposer');
-        View::composer('student.create_edit', 'App\Http\ViewComposers\StudentComposer');
+        // View::composer('student.create_edit', 'App\Http\ViewComposers\StudentComposer');
     
         View::composer('custodian.create_edit', 'App\Http\ViewComposers\CustodianComposer');
         View::composer('custodian.relationship', 'App\Http\ViewComposers\CustodianRelationshipComposer');

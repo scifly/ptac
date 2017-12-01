@@ -150,12 +150,12 @@ class Student extends Model {
                 $userData = [
                     'username'     => uniqid('custodian_'),
                     'group_id'     => Group::whereName('学生')->first()->id,
-                    'password'     => 'custodian8888',
+                    'password'     => 'student8888',
                     'email'        => $user['email'],
                     'realname'     => $user['realname'],
                     'gender'       => $user['gender'],
                     'avatar_url'   => '00001.jpg',
-                    'userid'       => uniqid('custodian_'),
+                    'userid'       => uniqid('student_'),
                     'isleader'     => 0,
                     'english_name' => $user['english_name'],
                     'telephone'    => $user['telephone'],
@@ -164,7 +164,7 @@ class Student extends Model {
                 ];
                 $user = new User();
                 $u = $user->create($userData);
-                $student = $request->input('student');
+                $student = $request->all();
                 $studentData = [
                     'user_id'        => $u->id,
                     'class_id'       => $student['class_id'],
@@ -173,7 +173,7 @@ class Student extends Model {
                     'oncampus'       => $student['oncampus'],
                     'birthday'       => $student['birthday'],
                     'remark'         => $request->input('remark'),
-                    'enabled'        => $user['enabled'],
+                    'enabled'        => $userData['enabled'],
                 ];
                 $mobiles = $request->input('mobile');
                 if ($mobiles) {
@@ -190,9 +190,21 @@ class Student extends Model {
                     unset($mobileModel);
                 }
                 # 向student表添加数据
-                $Student = new Student();
-                $s = $Student->create($studentData);
-                unset($Student);
+                $this->create($studentData);
+                
+                # 创建部门成员
+                $school = new School();
+                $schoolName = School::whereId($school->getSchoolId())->first();
+                $gradeName = Grade::whereId($student['grade_id'])->first();
+                $className = Squad::whereId($student['class_id'])->first();
+                $deptId = $this->getDeptId($schoolName->name, $gradeName->name, $className->name);
+                
+                $departmentUser = [
+                    'department_id' => $deptId,
+                    'user_id'       => $u->id,
+                    'enabled'       => 1,
+                ];
+                DepartmentUser::create($departmentUser);
                 # 创建企业号成员
                 $user->createWechatUser($u->id);
                 unset($user);
@@ -204,6 +216,40 @@ class Student extends Model {
         
     }
     
+    /**
+     * 返回表单 年级和班级的下拉框数据
+     * @param int $gradeId
+     * @return array
+     */
+    public function getGradeClass($gradeId = 0) {
+        $school = new School();
+        $schoolId = $school->getSchoolId();
+        $grades = Grade::whereEnabled(1)
+            ->where('school_id', $schoolId)
+            ->pluck('name', 'id')
+            ->toArray();
+        $gradeId = $gradeId == 0 ? array_keys($grades)[0] : $gradeId;
+        $classes = Squad::whereEnabled(1)
+            ->where('grade_id', $gradeId)
+            ->pluck('name', 'id')
+            ->toArray();
+        return [
+            'grades' => $grades,
+            'classes' => $classes,
+        ];
+    }
+    public function getDeptId($school, $grade, $class) {
+        $deptSchool = Department::where('name', $school)->first();
+        if ($deptSchool) {
+            $deptGrade = Department::where('name', $grade)->where('parent_id', $deptSchool->id)->first();
+            if ($deptGrade) {
+                $deptClass = Department::where('name', $class)->where('parent_id', $deptGrade->id)->first();
+                return $deptClass->id;
+            }
+            return 0;
+        }
+        return 0;
+    }
     /**
      * 返回学生学号姓名列表
      *
@@ -251,7 +297,7 @@ class Student extends Model {
                         'telephone'    => $userData['telephone'],
                         'enabled'      => $userData['enabled'],
                     ]);
-                $studentData = $request->input('student');
+                $studentData = $request->all();
                 $student->update([
                     'user_id'        => $userId,
                     'class_id'       => $studentData['class_id'],
@@ -279,6 +325,20 @@ class Student extends Model {
                     }
                     unset($mobile);
                 }
+                # 创建部门成员
+                DepartmentUser::where('user_id', $userId)->delete();
+                $school = new School();
+                $schoolName = School::whereId($school->getSchoolId())->first();
+                $gradeName = Grade::whereId($studentData['grade_id'])->first();
+                $className = Squad::whereId($studentData['class_id'])->first();
+                $deptId = $this->getDeptId($schoolName->name, $gradeName->name, $className->name);
+    
+                $departmentUser = [
+                    'department_id' => $deptId,
+                    'user_id'       => $userId,
+                    'enabled'       => 1,
+                ];
+                DepartmentUser::create($departmentUser);
                 # 更新企业号成员
                 $user->UpdateWechatUser($userId);
                 unset($user);
@@ -452,14 +512,10 @@ class Student extends Model {
                 ->where('class_id', $class->id)
                 ->first();
             $user['class_id'] = $class->id;
-            $deptSchool = Department::where('name', $user['school'])->first();
-            if ($deptSchool) {
-                $deptGrade = Department::where('name', $user['grade'])->where('parent_id', $deptSchool->id)->first();
-                if ($deptGrade) {
-                    $deptClass = Department::where('name', $user['class'])->where('parent_id', $deptGrade->id)->first();
-                    $user['department_id'] = $deptClass->id;
-                }
-            }
+            $deptId =$this->getDeptId($user['school'], $user['grade'], $user['class']);
+            $user['department_id'] = $deptId;
+    
+            
             if ($user['department_id'] == 0) {
                 $invalidRows[] = $datum;
                 unset($data[$i]);
