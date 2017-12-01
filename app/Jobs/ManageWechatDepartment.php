@@ -2,12 +2,17 @@
 namespace App\Jobs;
 
 use App\Facades\Wechat;
+use App\Models\Action;
+use App\Models\App;
 use App\Models\Corp;
+use App\Models\Department;
+use App\Models\School;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 use Mockery\Exception;
 
 /**
@@ -20,7 +25,7 @@ class ManageWechatDepartment implements ShouldQueue {
     
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     
-    protected $department, $action;
+    protected $department, $action, $school;
     
     /**
      * Create a new job instance.
@@ -32,7 +37,6 @@ class ManageWechatDepartment implements ShouldQueue {
         
         $this->department = $department;
         $this->action = $action;
-        
     }
     
     /**
@@ -41,25 +45,26 @@ class ManageWechatDepartment implements ShouldQueue {
      * @return void
      */
     public function handle() {
-        
-        $corp = new Corp();
-        $corps = $corp::whereName('万浪软件')->first();
-        $corpId = $corps->corpid;
-        $secret = $corps->corpsecret;
+        $this->school = new School();
+        $schoolId = $this->school->getSchoolId();
+        $school = $this->school->find($schoolId);
+        $corpMenuId = $school->menu->parent_id;
+        $corp = Corp::where('menu_id',$corpMenuId)->first();
+        $corpId = $corp->corpid;
+        $contactSync = App::whereAgentid('999')->first();
+        $secret = $contactSync->secret;
         $name = $this->department->name;
         $parent_id = $this->department->departmentType->name == '学校'
             ? 1 : $this->department->parent->id;
         $order = $this->department->order;
         $departmentId = $this->department->id;
-        $dir = dirname(__FILE__);
-        $path = substr($dir, 0, stripos($dir, 'app/Jobs'));
-        $tokenFile = $path . 'public/token.txt';
-        $token = Wechat::getAccessToken($tokenFile, $corpId, $secret);
+        $token = Wechat::getAccessToken($corpId, $secret);
         switch ($this->action) {
             case 'create':
-                Wechat::createDept(
+                $a = Wechat::createDept(
                     $token, $name, $parent_id, $order, $departmentId
                 );
+                Log::debug(json_encode($a));
                 break;
             case 'update':
                 Wechat::updateDept(
@@ -72,9 +77,6 @@ class ManageWechatDepartment implements ShouldQueue {
         }
         
     }
-    
-    public function failed(Exception $e) {
-    
-    }
+
     
 }
