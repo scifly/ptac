@@ -7,24 +7,25 @@
             @if (isset($grade) && !empty($grade['id']))
                 {{ Form::hidden('id', $grade['id'], ['id' => 'id']) }}
             @endif
-            <div class="form-group">
+                {{ Form::hidden('school_id', $schoolId, ['id' => 'school_id']) }}
+                <div class="form-group">
                 {!! Form::label('name', '名称', [
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
+                    <div class="input-group">
+                        <div class="input-group-addon">
+                            <i class= "fa fa-object-group"></i>
+                        </div>
                     {!! Form::text('name', null, [
                         'class' => 'form-control',
                         'placeholder' => '(不超过40个汉字)',
                         'required' => 'true',
                         'data-parsley-length' => '[4, 40]'
                     ]) !!}
+                    </div>
                 </div>
             </div>
-            @include('partials.single_select', [
-                'label' => '所属学校',
-                'id' => 'school_id',
-                'items' => $schools
-            ])
             @include('partials.multiple_select', [
                 'label' => '年级主任',
                 'id' => 'educator_ids',

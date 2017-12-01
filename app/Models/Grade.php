@@ -80,7 +80,7 @@ class Grade extends Model {
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
      */
-    public function students() { return $this->hasManyThrough('App\Models\Student', 'App\Models\Squad'); }
+    public function students() { return $this->hasManyThrough('App\Models\Student', 'App\Models\Squad', 'id', 'class_id'); }
     
     /**
      * 根据学校ID返回年级列表(id, name)
