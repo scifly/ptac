@@ -15,7 +15,7 @@
                                class="tab @if($tab['active']) text-blue @else text-gray @endif"
                             >
                                 @if(isset($tab['icon']))
-                                    <i class="fa {{ $tab['icon'] }}"></i>
+                                    <i class="{{ $tab['icon'] }}"></i>
                                 @endif
                                 {{ $tab['name'] }}
                             </a>

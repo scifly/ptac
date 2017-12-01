@@ -24,7 +24,7 @@ return [
     | to immediately expire on the browser closing, set that option.
     |
     */
-    'lifetime'        => 120,
+    'lifetime'        => 1,
     'expire_on_close' => false,
     /*
     |--------------------------------------------------------------------------
