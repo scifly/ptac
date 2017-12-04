@@ -162,8 +162,8 @@ class Student extends Model {
                     'wechatid'     => '',
                     'enabled'      => $user['enabled'],
                 ];
-                $user = new User();
-                $u = $user->create($userData);
+                $userModel = new User();
+                $u = $userModel->create($userData);
                 $student = $request->all();
                 $studentData = [
                     'user_id'        => $u->id,
@@ -172,7 +172,7 @@ class Student extends Model {
                     'card_number'    => $student['card_number'],
                     'oncampus'       => $student['oncampus'],
                     'birthday'       => $student['birthday'],
-                    'remark'         => $request->input('remark'),
+                    'remark'         => $user['remark'],
                     'enabled'        => $userData['enabled'],
                 ];
                 $mobiles = $request->input('mobile');
@@ -206,7 +206,7 @@ class Student extends Model {
                 ];
                 DepartmentUser::create($departmentUser);
                 # 创建企业号成员
-                $user->createWechatUser($u->id);
+                $userModel->createWechatUser($u->id);
                 unset($user);
             });
             return is_null($exception) ? true : $exception;
@@ -305,7 +305,7 @@ class Student extends Model {
                     'card_number'    => $studentData['card_number'],
                     'oncampus'       => $studentData['oncampus'],
                     'birthday'       => $studentData['birthday'],
-                    'remark'         => $request->input('remark'),
+                    'remark'         => $userData['remark'],
                     'enabled'        => $userData['enabled'],
                 ]);
                 $mobiles = $request->input('mobile');
@@ -432,6 +432,10 @@ class Student extends Model {
         
     }
     
+    /**
+     *  检查每行数据 是否符合导入数据
+     * @param array $data
+     */
     private function checkData(array $data) {
         $rules = [
             'name'           => 'required|string|between:2,6',
@@ -534,6 +538,11 @@ class Student extends Model {
         event(new StudentImported($rows));
     }
     
+    /**
+     *  导出数据
+     * @param $id
+     * @return array
+     */
     public function export($id) {
         $students = $this->where('class_id', $id)->get();
         $data = array(self::EXCEL_EXPORT_TITLE);
