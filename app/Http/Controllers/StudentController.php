@@ -51,7 +51,6 @@ class StudentController extends Controller {
         if (Request::get('draw')) {
             return response()->json($this->student->datatable());
         }
-        
         return $this->output(__METHOD__);
         
     }
@@ -66,8 +65,11 @@ class StudentController extends Controller {
         if (Request::method() === 'POST') {
             return $this->department->tree();
         }
-        
-        return $this->output(__METHOD__);
+        $items = $this->student->getGradeClass();
+        return $this->output(__METHOD__, [
+            'grades'  => $items['grades'],
+            'classes' => $items['classes'],
+        ]);
         
     }
     
@@ -93,8 +95,9 @@ class StudentController extends Controller {
     public function show($id) {
         
         $student = $this->student->find($id);
-        if (!$student) { return $this->notFound(); }
-        
+        if (!$student) {
+            return $this->notFound();
+        }
         return $this->output(__METHOD__, ['student' => $student]);
         
     }
@@ -106,16 +109,22 @@ class StudentController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function edit($id) {
-    
+        
         # 查询学生信息
         $student = $this->student->find($id);
-        if (!$student) { return $this->notFound(); }
+        if (!$student) {
+            return $this->notFound();
+        }
         $user = $student->user;
-
+        // print_r($student->toArray());die;
+        $items = $this->student->getGradeClass($student->squad->grade_id);
+        $student->grade_id = $student->squad->grade_id;
         return $this->output(__METHOD__, [
             'student' => $student,
-            'user'    => $user,
-            'mobiles' => $user->mobiles
+            // 'user'    => $user,
+            'mobiles' => $user->mobiles,
+            'grades'  => $items['grades'],
+            'classes' => $items['classes'],
         ]);
         
     }
@@ -151,13 +160,13 @@ class StudentController extends Controller {
      * 导入学籍
      */
     public function import() {
-
+        
         if (Request::isMethod('post')) {
             $file = Request::file('file');
             if (empty($file)) {
                 $result = [
                     'statusCode' => 500,
-                    'message' => '您还没选择文件！',
+                    'message'    => '您还没选择文件！',
                 ];
                 return response()->json($result);
             }
@@ -179,31 +188,31 @@ class StudentController extends Controller {
             /** @noinspection PhpUndefinedMethodInspection */
             Excel::create(iconv('UTF-8', 'GBK', '学生列表'), function ($excel) use ($data) {
                 /** @noinspection PhpUndefinedMethodInspection */
-                $excel->sheet('score', function($sheet) use ($data) {
+                $excel->sheet('score', function ($sheet) use ($data) {
                     /** @noinspection PhpUndefinedMethodInspection */
                     $sheet->rows($data);
                     /** @noinspection PhpUndefinedMethodInspection */
-                    $sheet->setColumnFormat(array(
+                    $sheet->setColumnFormat([
                         'E' => '@',//文本
                         'H' => 'yyyy-mm-dd',
-                    ));
+                    ]);
                     /** @noinspection PhpUndefinedMethodInspection */
-                    $sheet->setWidth(array(
-                        'A'     =>  20,
-                        'B'     =>  10,
-                        'C'     =>  25,
-                        'D'     =>  30,
-                        'E'     =>  30,
-                        'F'     =>  30,
-                        'G'     =>  20,
-                        'H'     =>  15,
-                        'I'     =>  30,
-                        'J'     =>  30,
-                        'K'     =>  15,
-                        'L'     =>  30,
-                    ));
+                    $sheet->setWidth([
+                        'A' => 20,
+                        'B' => 10,
+                        'C' => 25,
+                        'D' => 30,
+                        'E' => 30,
+                        'F' => 30,
+                        'G' => 20,
+                        'H' => 15,
+                        'I' => 30,
+                        'J' => 30,
+                        'K' => 15,
+                        'L' => 30,
+                    ]);
                 });
-            },'UTF-8')->export('xls');
+            }, 'UTF-8')->export('xls');
         }
         
     }

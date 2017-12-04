@@ -300,7 +300,21 @@ var page = {
             var params = {
                 processing: true,
                 serverSide: true,
-                ajax: page.siteRoot() + table + '/index',
+                ajax: {
+                    url: page.siteRoot() + table + '/index',
+                    error: function(e) {
+                        var response = JSON.parse(e.responseText);
+                        switch (response['statusCode']) {
+                            case 401:
+                                var tabId = page.getActiveTabId();
+                                var menuId = page.getActiveMenuId();
+                                window.location = page.siteRoot() + 'login?returnUrl=' +
+                                    encodeURIComponent(window.location.href + '?menuId=' + menuId + '&tabId=' + tabId);
+                                break;
+                            default: break;
+                        }
+                    }
+                },
                 order: [[0, 'desc']],
                 stateSave: true,
                 autoWidth: true,
@@ -313,6 +327,7 @@ var page = {
             };
             page.loadCss(page.plugins.datatable.css);
             $('.overlay').show();
+            $.fn.dataTable.ext.errMode = 'none';
             var dt = $datatable.DataTable(params).on('init.dt', function () {
                 // $('.dt-buttons').addClass('pull-right');
                 // $('.buttons-pdf').addClass('btn-sm');
@@ -320,6 +335,12 @@ var page = {
                 // $('.paginate_button').each(function() { $(this).addClass('btn-sm'); })
                 $('input[type="search"]').attr('placeholder', '多关键词请用空格分隔');
                 $('.overlay').hide();
+            }).on('error.dt', function(e, settings, techNote, message) {
+                console.log(message);
+                console.log(e);
+                console.log(settings);
+                console.log(techNote);
+                page.inform('出现异常', message, page.failure);
             });
             $('input[type="search"]').on('keyup', function() {
                 dt.search(this.value, true).draw();
