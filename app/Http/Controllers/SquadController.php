@@ -92,13 +92,16 @@ class SquadController extends Controller {
     public function edit($id) {
         
         $class = $this->class->find($id);
+        $selectedEducators = [];
         if (!$class) {
             return $this->notFound();
         }
-        $educatorIds = explode(",", $class->educator_ids);
+        if ($class->educator_ids != '0') {
+            $selectedEducators = $this->educator->getEducatorListByIds(explode(",", $class->educator_ids));
+        }
         return $this->output(__METHOD__, [
             'class'             => $class,
-            'selectedEducators' => $this->educator->educators($educatorIds),
+            'selectedEducators' => $selectedEducators
         ]);
         
     }
@@ -111,7 +114,6 @@ class SquadController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(SquadRequest $request, $id) {
-        
         if (!$this->class->find($id)) {
             return $this->notFound();
         }

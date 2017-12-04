@@ -66,7 +66,7 @@ class Squad extends Model {
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function students() { return $this->hasMany('App\Models\Student'); }
+    public function students() { return $this->hasMany('App\Models\Student','class_id'); }
     
     /**
      * 获取指定班级包含的所有教职员工对象

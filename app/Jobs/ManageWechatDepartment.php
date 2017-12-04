@@ -2,10 +2,8 @@
 namespace App\Jobs;
 
 use App\Facades\Wechat;
-use App\Models\Action;
 use App\Models\App;
 use App\Models\Corp;
-use App\Models\Department;
 use App\Models\School;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -34,7 +32,6 @@ class ManageWechatDepartment implements ShouldQueue {
      * @param $action
      */
     public function __construct($department, $action) {
-        
         $this->department = $department;
         $this->action = $action;
     }
@@ -61,10 +58,9 @@ class ManageWechatDepartment implements ShouldQueue {
         $token = Wechat::getAccessToken($corpId, $secret);
         switch ($this->action) {
             case 'create':
-                $a = Wechat::createDept(
+                Wechat::createDept(
                     $token, $name, $parent_id, $order, $departmentId
                 );
-                Log::debug(json_encode($a));
                 break;
             case 'update':
                 Wechat::updateDept(
