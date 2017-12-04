@@ -23,12 +23,17 @@ var custodian = {
     saveStudent: function(item) {
         $(document).on('click', '#confirm-bind', function () {
             var relationship = custodian.relationship().val();
+            var student = custodian.$studentId().find("option:selected").text().split('-');
+            var studentId = custodian.$studentId().val();
             if (relationship === '') {
                 alert('监护关系不能为空');
                 return false
             }
-            var student = custodian.$studentId().find("option:selected").text().split('-');
-            var studentId = custodian.$studentId().val();
+            if (student === '' || studentId === '') {
+                alert('被监护人不能为空');
+                return false
+            }
+
             item++;
 
             var htm = '<tr>' +
