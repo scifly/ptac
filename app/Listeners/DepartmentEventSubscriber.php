@@ -137,7 +137,6 @@ class DepartmentEventSubscriber {
      */
     private function deleteDepartment($event, $model) {
         $department = $this->department->find($event->{$model}->department_id);
-        // $result = $this->department->remove($event->{$model}->department_id);
         ManageWechatDepartment::dispatch($department, 'delete');
         $result = $this->department->remove($event->{$model}->department_id);
         return $result;

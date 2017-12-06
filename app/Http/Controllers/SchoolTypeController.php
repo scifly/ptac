@@ -62,24 +62,6 @@ class SchoolTypeController extends Controller {
     }
     
     /**
-     * 学校类型详情
-     *
-     * @param $id
-     * @internal param SchoolType $schoolType
-     * @return bool|\Illuminate\Http\JsonResponse
-     */
-    public function show($id) {
-        
-        $schoolType = $this->schoolType->find($id);
-        if (!$schoolType) {
-            return parent::notFound();
-        }
-        
-        return parent::output(__METHOD__, ['schoolType' => $schoolType]);
-        
-    }
-    
-    /**
      * 编辑学校类型
      *
      * @param $id

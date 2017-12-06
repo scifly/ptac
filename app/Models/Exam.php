@@ -202,7 +202,7 @@ class Exam extends Model {
             [
                 'db'        => 'Exam.enabled', 'dt' => 10,
                 'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($this, $d, $row);
+                    return Datatable::dtOps($d, $row);
                 },
             ],
         ];
