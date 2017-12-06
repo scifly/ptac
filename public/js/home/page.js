@@ -6,6 +6,7 @@ var $cip = $('#cip');
 var page = {
     success: 'img/confirm.png',
     failure: 'img/error.png',
+    info: 'img/info.png',
     plugins: {
         datatable: {
             css: 'js/plugins/datatables/datatables.min.css',
