@@ -63,25 +63,25 @@ class SquadController extends Controller {
         
     }
     
-    /**
-     * 班级详情
-     *
-     * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
-     */
-    public function show($id) {
-        
-        $class = $this->class->find($id);
-        if (!$class) {
-            return $this->notFound();
-        }
-        $educatorIds = explode(",", $class->educator_ids);
-        return $this->output(__METHOD__, [
-            'class'     => $class,
-            'educators' => $this->educator->educators($educatorIds),
-        ]);
-        
-    }
+    // /**
+    //  * 班级详情
+    //  *
+    //  * @param $id
+    //  * @return bool|\Illuminate\Http\JsonResponse
+    //  */
+    // public function show($id) {
+    //
+    //     $class = $this->class->find($id);
+    //     if (!$class) {
+    //         return $this->notFound();
+    //     }
+    //     $educatorIds = explode(",", $class->educator_ids);
+    //     return $this->output(__METHOD__, [
+    //         'class'     => $class,
+    //         'educators' => $this->educator->educators($educatorIds),
+    //     ]);
+    //
+    // }
     
     /**
      * 编辑班级

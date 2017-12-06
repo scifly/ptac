@@ -63,25 +63,25 @@ class GradeController extends Controller {
         
     }
     
-    /**
-     * 年级详情
-     *
-     * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
-     */
-    public function show($id) {
-        
-        $grade = $this->grade->find($id);
-        if (!$grade) {
-            return $this->notFound();
-        }
-        
-        return $this->output(__METHOD__, [
-            'grade'     => $grade,
-            'educators' => $this->educator->educators($grade->educator_ids),
-        ]);
-        
-    }
+    // /**
+    //  * 年级详情
+    //  *
+    //  * @param $id
+    //  * @return bool|\Illuminate\Http\JsonResponse
+    //  */
+    // public function show($id) {
+    //
+    //     $grade = $this->grade->find($id);
+    //     if (!$grade) {
+    //         return $this->notFound();
+    //     }
+    //
+    //     return $this->output(__METHOD__, [
+    //         'grade'     => $grade,
+    //         'educators' => $this->educator->educators($grade->educator_ids),
+    //     ]);
+    //
+    // }
     
     /**
      * 编辑年级
