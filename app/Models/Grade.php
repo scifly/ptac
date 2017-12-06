@@ -71,9 +71,9 @@ class Grade extends Model {
     /**
      * 获取指定年级包含的学生考勤设置对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function studentAttendanceSetting() { return $this->hasOne('App\Models\StudentAttendanceSetting'); }
+    public function studentAttendanceSetting() { return $this->hasMany('App\Models\StudentAttendanceSetting'); }
     
     /**
      * 通过Squad中间对象获取指定年级包含的所有学生对象

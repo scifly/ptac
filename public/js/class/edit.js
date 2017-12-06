@@ -1,1 +1,1 @@
-page.edit('fromSquad', 'classes');
+page.edit('formSquad', 'classes');

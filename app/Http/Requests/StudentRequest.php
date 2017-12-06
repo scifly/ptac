@@ -22,7 +22,7 @@ class StudentRequest extends FormRequest {
      */
     public function rules() {
         $rules = [
-            'student.card_number'    => 'required|alphanum|between:2,32',
+            'card_number'    => 'required|alphanum|between:2,32',
             'user.realname'          => 'required|string',
             'user.gender'            => 'required|boolean',
             'user.email'             => 'nullable|email|unique:users,email,' .
@@ -30,10 +30,10 @@ class StudentRequest extends FormRequest {
             'mobile.*'               => [
                 'required', new Mobiles(),
             ],
-            'student.student_number' => 'required|alphanum|between:2,32|unique:students,student_number,'
+            'student_number' => 'required|alphanum|between:2,32|unique:students,student_number,'
                 . $this->input('user_id') . ',user_id,' .
                 'card_number,' . $this->input('student.card_number'),
-            'student.birthday'       => 'required',
+            'birthday'       => 'required',
         ];
         return $rules;
     }
@@ -62,11 +62,11 @@ class StudentRequest extends FormRequest {
     protected function prepareForValidation() {
         
         $input = $this->all();
-        if (isset($input['student']['oncampus']) && $input['student']['oncampus'] === 'on') {
-            $input['student']['oncampus'] = 1;
+        if (isset($input['oncampus']) && $input['oncampus'] === 'on') {
+            $input['oncampus'] = 1;
         }
-        if (!isset($input['student']['oncampus'])) {
-            $input['student']['oncampus'] = 0;
+        if (!isset($input['oncampus'])) {
+            $input['oncampus'] = 0;
         }
 
         if (isset($input['mobile'])) {
