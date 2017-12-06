@@ -42,12 +42,20 @@ class ManageWechatDepartment implements ShouldQueue {
      * @return void
      */
     public function handle() {
+        Log::debug('come');
         $this->school = new School();
         $schoolId = $this->school->getSchoolId();
-        $school = $this->school->find($schoolId);
-        $corpMenuId = $school->menu->parent_id;
-        $corp = Corp::where('menu_id',$corpMenuId)->first();
-        $corpId = $corp->corpid;
+        Log::debug('schoolId'. $schoolId);
+        if ($schoolId) {
+            $school = $this->school->find($schoolId);
+            $corpMenuId = $school->menu->parent_id;
+            $corp = Corp::where('menu_id', $corpMenuId)->first();
+            $corpId = $corp->corpid;
+        }else{
+            $corp = Corp::where('id',1)->first();
+            $corpId = $corp->corpid;
+        }
+        Log::debug('corpid:'. $corpId);
         $contactSync = App::whereAgentid('999')->first();
         $secret = $contactSync->secret;
         $name = $this->department->name;

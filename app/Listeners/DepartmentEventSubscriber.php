@@ -10,6 +10,7 @@ use App\Models\Menu;
 use App\Models\School;
 use Illuminate\Events\Dispatcher;
 use Illuminate\Foundation\Bus\DispatchesJobs;
+use Illuminate\Support\Facades\Log;
 
 class DepartmentEventSubscriber {
     
@@ -58,6 +59,7 @@ class DepartmentEventSubscriber {
             'enabled'            => $$model->enabled,
         ];
         $department = $this->department->store($data, true);
+        Log::debug('department:'. json_encode($department));
         ManageWechatDepartment::dispatch($department, 'create');
         
         return $department ? true : false;
