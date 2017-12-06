@@ -97,6 +97,9 @@ var dept = {
                         data: function (node) {
                             return {id: node.id, _token: $('#csrf_token').attr('content')}
                         }
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+
                     }
                 },
                 checkbox: {

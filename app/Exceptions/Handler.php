@@ -67,7 +67,15 @@ class Handler extends ExceptionHandler {
             switch ($eName) {
                 case 'AuthenticationException':
                     $status = 401;
-                    $response['returnUrl'] = $request->fullUrl();
+                    if ($request->method() == 'GET') {
+                        if ($request->query('draw')) {
+                            $response['returnUrl'] = $request->url() .
+                                '?menuId=' . $request->query('menuId') .
+                                '&tabId=' . $request->query('tabId');
+                        } else {
+                            $response['returnUrl'] = $request->fullUrl();
+                        }
+                    }
                     break;
                 case 'TokenMismatchException':
                     $status = 498;
