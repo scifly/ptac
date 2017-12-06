@@ -21,7 +21,6 @@ Route::auth();
 # 关闭注册功能
 Route::any('register', function() { return redirect('login'); });
 Route::get('logout', 'Auth\LoginController@logout');
-// Route::get('/', function() { return 'Dashboard'; });
 Route::get('/', 'HomeController@index');
 Route::get('/home', 'HomeController@index')->name('home');
 /** 测试用路由 */
@@ -30,6 +29,7 @@ Route::get('test/create', 'TestController@create');
 Route::get('test', 'TestController@test');
 /** 菜单入口路由 */
 Route::get('pages/{id}', 'HomeController@menu');
+// Route::get('pages/{id}', 'MenuController@page');
 /** 用户/通讯录 */
 // 教职员工
 Route::group(['prefix' => 'educators'], routes('EducatorController'));
@@ -41,7 +41,6 @@ Route::group(['prefix' => 'educators'], function () {
     Route::post('create', $ctlr . '@create');
     Route::get('export', $ctlr . '@export');
     Route::post('import', $ctlr . '@import');
-    
 });
 // 监护人
 Route::group(['prefix' => 'custodians'], routes('CustodianController'));

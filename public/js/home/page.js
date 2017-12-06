@@ -1,7 +1,4 @@
-var oPage = {
-    title: '',
-    url: location.href
-};
+var oPage = { title: '', url: location.href};
 var updateHistory = true;
 var replaceState = true;
 var docTitle = '家校通';
@@ -125,18 +122,35 @@ var page = {
         }
         return false;
     },
-    getActiveMenuUri: function() {
-        return $('.sidebar-menu li.active').last().find('a').attr('href');
-    },
     getActiveMenuId: function() {
         return $('.sidebar-menu li.active').last().find('a').attr('id');
+    },
+    getTabUrl: function() {
+        var url = window.location.href;
+        return encodeURIComponent(url + this.getQuerySting());
+    },
+    getMenuUrl: function() {
+        return page.siteRoot() + $('.sidebar-menu li.active').last().find('a').attr('href');
+    },
+    getQuerySting: function() {
+        return '?menuId=' + this.getActiveMenuId() + '&tabId=' + this.getActiveTabId();
     },
     errorHandler: function (e) {
         var obj = JSON.parse(e.responseText);
         $('.overlay').hide();
         switch (obj['statusCode']) {
+            case 400:
+                var response = JSON.parse(e.responseText);
+                var errors = response['errors'];
+                $.each(errors, function() {
+                    page.inform('验证错误', this, page.failure);
+                });
+                break;
             case 401:
-                window.location = page.siteRoot() + 'login?returnUrl=' + encodeURIComponent(obj['returnUrl']);
+                window.location = page.siteRoot() + 'login?returnUrl=' +
+                    (typeof obj['returnUrl'] !== 'undefined'
+                    ? encodeURIComponent(obj['returnUrl'])
+                    : this.getTabUrl());
                 break;
             case 498:
                 window.location.reload();
@@ -146,56 +160,72 @@ var page = {
                 break;
         }
     },
-    getWrapperContent: function(uri, tabId, tabUrl) {
+    getWrapperContent: function(menuId, menuUrl, tabId, tabUrl) {
         var $wrapper = $('.content-wrapper');
-        var menuId = page.getActiveMenuId();
         $('.overlay').show();
         $.ajax({
             type: 'GET',
             dataType: 'json',
-            url: page.siteRoot() + uri,
+            url: menuUrl,
             data: { menuId: menuId },
             success: function(result) {
                 switch (result.statusCode) {
                     case 200:
                         $wrapper.html(result.html);
                         $('.overlay').hide();
-                        $('.tab').hover(
-                            function() { $(this).removeClass('text-gray').addClass('text-blue'); },
-                            function() {
-                                if (!($(this).parent().hasClass('active'))) {
-                                    $(this).removeClass('text-blue').addClass('text-gray');
-                                }
-                            }
-                        );
                         // 获取状态为active的卡片内容
                         var $tab = null;
                         var tabUri = $('.nav-tabs .active a').attr('data-uri');
-                        if (typeof tabId !== 'undefined') {
-                            var $tabPanes = $('.card');
-                            $.each($tabPanes, function() { $(this).html(''); });
-                            $('.nav-tabs .active').removeClass('active');
-                            $('.active .card').removeClass('active');
-                            $('a[href="#tab_' + tabId + '"]').parent().addClass('active');
-                            $tab = $('#tab_' + tabId);
-                            $tab.addClass('active');
-                            page.refreshTabs();
+                        if (typeof tabUri !== 'undefined') {
+                            // Wrapper中的Html包含卡片，获取卡片中的Html
+                            if (typeof tabId !== 'undefined') {
+                                var $tabPanes = $('.card');
+                                $.each($tabPanes, function() { $(this).html(''); });
+                                $('.nav-tabs .active').removeClass('active');
+                                $('.active .card').removeClass('active');
+                                $('a[href="#tab_' + tabId + '"]').parent().addClass('active');
+                                $tab = $('#tab_' + tabId);
+                                $tab.addClass('active');
+                                page.refreshTabs();
+                            } else {
+                                tabId = page.getActiveTabId();
+                                $tab = $('#tab_' + tabId);
+                            }
+                            if (typeof tabUrl !== 'undefined') {
+                                tabUri = tabUrl;
+                            }
+                            $('.tab').hover(
+                                function() { $(this).removeClass('text-gray').addClass('text-blue'); },
+                                function() {
+                                    if (!($(this).parent().hasClass('active'))) {
+                                        $(this).removeClass('text-blue').addClass('text-gray');
+                                    }
+                                }
+                            );
+                            page.getTabContent($tab, tabUri);
                         } else {
-                            tabId = page.getActiveTabId();
-                            $tab = $('#tab_' + tabId);
+                            // Wrapper中的Html不含卡片，更新浏览器History
+                            document.title = docTitle + ' - ' + result['title'];
+                            // 0 - tabId, 1 - menuId, 2 - menuUrl
+                            oPage.title = '0,' + page.getActiveMenuId() + ',' + page.getMenuUrl();
+                            oPage.url = page.siteRoot() + result['uri'];
+                            if (updateHistory) {
+                                if (replaceState) {
+                                    history.replaceState(oPage, oPage.title, oPage.url);
+                                } else {
+                                    history.pushState(oPage, oPage.title, oPage.url);
+                                }
+                            }
+                            replaceState = false;
+                            updateHistory = true;
                         }
-                        if (typeof tabUrl !== 'undefined') {
-                            tabUri = tabUrl;
-                        }
-                        page.getTabContent($tab, tabUri);
                         break;
                     case 401:
-                        window.location = page.siteRoot() + 'login?returnUrl=' + encodeURIComponent(obj['returnUrl']);
+                        window.location = page.siteRoot() + 'login?returnUrl=' + page.getMenuUrl();
                         break;
                     default:
                         break;
                 }
-
             },
             error: function(e) { page.errorHandler(e); }
         });
@@ -228,7 +258,8 @@ var page = {
                     });
                     var breadcrumb = $('#breadcrumb').html();
                     document.title = docTitle + ' - ' + breadcrumb;
-                    oPage.title = tabId + ',' + page.getActiveMenuId();
+                    // 0 - tabId, 1 - menuId, 2 - menuUrl
+                    oPage.title = tabId + ',' + page.getActiveMenuId() + ',' + page.getMenuUrl();
                     oPage.url = page.siteRoot() + url;
                     if (updateHistory) {
                         if (replaceState) {
@@ -254,37 +285,33 @@ var page = {
             url: url,
             data: data,
             success: function (result) {
-                if (result.statusCode === 200) {
-                    switch (requestType) {
-                        case 'POST':        // create
-                            obj.reset();    // reset create form
-                            break;
-                        case 'DELETE':
-                            $('#data-table').dataTable().fnDestroy();
-                            page.initDatatable(obj);
-                            break;
-                        default:
-                            break;
-                    }
+                switch (result.statusCode) {
+                    case 200:
+                        switch (requestType) {
+                            case 'POST':        // create
+                                obj.reset();    // reset create form
+                                break;
+                            case 'DELETE':
+                                $('#data-table').dataTable().fnDestroy();
+                                page.initDatatable(obj);
+                                break;
+                            default:
+                                break;
+                        }
+                        $('.overlay').hide();
+                        page.inform(
+                            '操作结果', result.message,
+                            result.statusCode === 200 ? page.success : page.failure
+                        );
+                        break;
+                    case 401:
+                        window.location = page.siteRoot() + 'login?returnUrl=' + page.getTabUrl();
+                        break;
+                    default:
+                        break;
                 }
-                $('.overlay').hide();
-                page.inform(
-                    '操作结果', result.message,
-                    result.statusCode === 200 ? page.success : page.failure
-                );
-                return false;
             },
-            error: function (e) {
-                // page.errorHandler(e);
-                $('.overlay').hide();
-                var obj = JSON.parse(e.responseText);
-                var errors = obj['errors'];
-                for (var x in errors) {
-                    page.inform('出现异常', errors[x], page.failure);
-                }
-
-            }
-
+            error: function (e) { page.errorHandler(e); }
         });
     },
     initDatatable: function (table, options) {
@@ -301,19 +328,8 @@ var page = {
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: page.siteRoot() + table + '/index',
-                    error: function(e) {
-                        var response = JSON.parse(e.responseText);
-                        switch (response['statusCode']) {
-                            case 401:
-                                var tabId = page.getActiveTabId();
-                                var menuId = page.getActiveMenuId();
-                                window.location = page.siteRoot() + 'login?returnUrl=' +
-                                    encodeURIComponent(window.location.href + '?menuId=' + menuId + '&tabId=' + tabId);
-                                break;
-                            default: break;
-                        }
-                    }
+                    url: page.siteRoot() + table + '/index' + page.getQuerySting(),
+                    error: function (e) { page.errorHandler(e); }
                 },
                 order: [[0, 'desc']],
                 stateSave: true,
@@ -336,10 +352,6 @@ var page = {
                 $('input[type="search"]').attr('placeholder', '多关键词请用空格分隔');
                 $('.overlay').hide();
             }).on('error.dt', function(e, settings, techNote, message) {
-                console.log(message);
-                console.log(e);
-                console.log(settings);
-                console.log(techNote);
                 page.inform('出现异常', message, page.failure);
             });
             $('input[type="search"]').on('keyup', function() {
@@ -364,23 +376,30 @@ var page = {
         $('#add-record').on('click', function () {
             page.getTabContent($activeTabPane, table + '/create');
         });
-        // 编辑记录
-        $(document).on('click', '.fa-pencil', function () {
+        // 编辑、充值、查看
+        var selectors = ['.fa-pencil', '.fa-money', '.fa-bars'];
+        $(document).on('click', selectors.join(), function () {
             var url = $(this).parents().eq(0).attr('id');
             url = url.replace('_', '/');
             page.getTabContent($activeTabPane, table + '/' + url);
         });
-        // 充值
-        $(document).on('click', '.fa-money', function () {
-            var url = $(this).parents().eq(0).attr('id');
-            url = url.replace('_', '/');
-            page.getTabContent($activeTabPane, table + '/' + url);
-        });
-        // 查看记录详情
-        $(document).on('click', '.fa-bars', function () {
-            var url = $(this).parents().eq(0).attr('id');
-            url = url.replace('_', '/');
-        });
+        // $(document).on('click', '.fa-pencil', function () {
+        //     var url = $(this).parents().eq(0).attr('id');
+        //     url = url.replace('_', '/');
+        //     page.getTabContent($activeTabPane, table + '/' + url);
+        // });
+        // // 充值
+        // $(document).on('click', '.fa-money', function () {
+        //     var url = $(this).parents().eq(0).attr('id');
+        //     url = url.replace('_', '/');
+        //     page.getTabContent($activeTabPane, table + '/' + url);
+        // });
+        // // 查看记录详情
+        // $(document).on('click', '.fa-bars', function () {
+        //     var url = $(this).parents().eq(0).attr('id');
+        //     url = url.replace('_', '/');
+        //     page.getTabContent($activeTabPane, table + '/' + url);
+        // });
         // 删除记录
         var id;
         $(document).on('click', '.fa-remove', function () {
@@ -524,16 +543,19 @@ $(function () {
         if (e.state.url.indexOf('pages') > -1) {
             return false;
         }
-        var ids = e.state.title.split(',');
-        var targetTabId = ids[0];
-        var targetMenuId = ids[1];
+        var paths = e.state.title.split(',');
+        var targetTabId = paths[0];
+        var targetMenuId = paths[1];
+        var targetMenuUrl = paths[2];
         var uri = e.state.url;
         // get current active tab id
         var activeTabId = page.getActiveTabId();
         // deactivate current pane
-        $('a[href="#tab_' + activeTabId + '"]').parent().removeClass();
-        $activeTabPane = $('#tab_' + activeTabId);
-        $activeTabPane.removeClass('active').html('');
+        if (activeTabId) {
+            $('a[href="#tab_' + activeTabId + '"]').parent().removeClass();
+            $activeTabPane = $('#tab_' + activeTabId);
+            $activeTabPane.removeClass('active').html('');
+        }
         // activate target pane
         var $targetTabLink = $('a[href="#tab_' + targetTabId + '"]');
         if ($targetTabLink.length !== 0) {
@@ -543,7 +565,11 @@ $(function () {
             page.getTabContent($activeTabPane, uri);
             page.refreshTabs();
         } else {
-            page.getWrapperContent('pages/' + targetMenuId, targetTabId, uri);
+            if (targetTabId !== '0') {
+                page.getWrapperContent(targetMenuId, targetMenuUrl, targetTabId, uri);
+            } else {
+                page.getWrapperContent(targetMenuId, targetMenuUrl);
+            }
             $('.sidebar-menu li.active').removeClass('active menu-open');
             $('#' + targetMenuId).parent().addClass('active');
             page.refreshMenus();
@@ -551,11 +577,11 @@ $(function () {
     };
     $(document).on('click', '.sidebar-menu a.leaf', function(e) {
         e.preventDefault();
-        var uri = $(this).attr('href');
+        // var uri = $(this).attr('href');
         $('.sidebar-menu li.active').removeClass('active menu-open');
         $(this).parent().addClass('active');
         page.refreshMenus();
-        page.getWrapperContent(uri);
+        page.getWrapperContent(page.getActiveMenuId(), page.getMenuUrl());
     });
     $(document).on('click', '.tab', function() {
         page.refreshTabs();
@@ -575,6 +601,5 @@ $(function () {
             page.getTabContent($activeTabPane, url);
         }
     });
-    var menuUri = page.getActiveMenuUri();
-    page.getWrapperContent(menuUri, page.getActiveTabId());
+    page.getWrapperContent(page.getActiveMenuId(), page.getMenuUrl(), page.getActiveTabId());
 });

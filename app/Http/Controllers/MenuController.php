@@ -8,7 +8,6 @@ use App\Models\MenuType;
 use App\Models\Tab;
 use Illuminate\Support\Facades\Request;
 
-
 /**
  * 菜单
  *
@@ -68,21 +67,6 @@ class MenuController extends Controller {
 
         return $this->menu->store($request)
             ? $this->succeed() : $this->fail();
-
-    }
-
-    /**
-     * 菜单详情
-     *
-     * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
-     */
-    public function show($id) {
-
-        $menu = $this->menu->find($id);
-        if (!$menu) { return $this->notFound(); }
-
-        return $this->output(__METHOD__, ['menu' => $menu]);
 
     }
 
@@ -168,9 +152,7 @@ class MenuController extends Controller {
 
     }
 
-    /**
-     * 保存菜单排列顺序
-     */
+    /** 保存菜单排列顺序 */
     public function sort() {
 
         $positions = Request::get('data');
@@ -226,5 +208,5 @@ class MenuController extends Controller {
             ? $this->succeed() : $this->fail();
 
     }
-
+    
 }

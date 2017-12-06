@@ -75,7 +75,7 @@ class Menu extends Model {
 HTML;
     
     protected $fillable = [
-        'parent_id', 'name', 'remark',
+        'parent_id', 'name', 'remark', 'uri',
         'menu_type_id', 'position', 'media_id',
         'action_id', 'icon_id', 'enabled',
     ];
@@ -356,15 +356,18 @@ HTML;
                 # 更新指定Menu记录
                 $menu->update($request->all());
                 # 更新与指定Menu记录绑定的卡片记录
+                $menuTab = new MenuTab();
+                $menuTab::whereMenuId($menuId)->delete();
                 $tabIds = $request->input('tab_ids', []);
-                if (!empty($tabIds)) {
-                    $menuTab = new MenuTab();
-                    $menuTab::whereMenuId($menuId)->delete();
-                    if ($menu->children->count() == 0) {
-                        $menuTab->storeByMenuId($menuId, $tabIds);
+                $uri = $request->input('uri', '');
+                if (empty($uri)) {
+                    if (!empty($tabIds)) {
+                        if ($menu->children->count() == 0) {
+                            $menuTab->storeByMenuId($menuId, $tabIds);
+                        }
+                    } else {
+                        $menu->update(['enabled' => 0]);
                     }
-                } else {
-                    $menu->update(['enabled' => 0]);
                 }
             });
             
@@ -474,14 +477,19 @@ HTML;
             case '运营':
                 break;
             case '企业':
-                $rootMenuId = Corp::whereDepartmentId($user->topDeptId($user))->first()->menu_id;
+                $rootMenuId = Corp::whereDepartmentId($user->topDeptId($user))
+                    ->first()
+                    ->menu_id;
                 break;
             case '学校':
-                dd($user->topDeptId($user));
-                $rootMenuId = School::whereDepartmentId($user->topDeptId($user))->first()->menu_id;
+                // dd($user->topDeptId($user));
+                $rootMenuId = School::whereDepartmentId($user->topDeptId($user))
+                    ->first()
+                    ->menu_id;
                 break;
             default:
-                $rootMenuId = School::find(Group::find($user->group->id)->school_id)->menu_id;
+                $rootMenuId = School::find(Group::find($user->group->id)->school_id)
+                    ->menu_id;
                 break;
         }
         
@@ -698,6 +706,7 @@ HTML;
             $menus[$datum->id] = [
                 'parent_id'    => $datum->parent_id,
                 'name'         => $datum->name,
+                'uri'          => $datum->uri,
                 'icon'         => $icon,
                 'menu_type_id' => $datum->menu_type_id,
             ];
@@ -723,9 +732,9 @@ HTML;
             $mId = $menuId;
             $mName = $menu['name'];
             $mIcon = $menu['icon'];
+            $mUri = $menu['uri'];
             $hasChildren = $this->find($mId)->children->count();
-            // $mUrl = '../pages/' . $mId;
-            $mUrl = '/pages/' . $mId;
+            $mUrl = empty($mUri) ? 'pages/' . $mId : $mUri;
             if ($currentParent == $menu['parent_id']) {
                 if ($hasChildren) {
                     $menuHtml .= sprintf(
@@ -754,7 +763,7 @@ HTML;
         return $menuHtml;
         
     }
-
+    
     /**
      * 根据菜单ID返回其父级菜单中类型为“学校”的菜单ID
      *
@@ -762,14 +771,17 @@ HTML;
      * @return int|mixed
      */
     public function getSchoolMenuId($id) {
-
+        
         $menu = $this->find($id);
         $menuType = $menu->menuType->name;
         while ($menuType != '学校') {
             $menu = $menu->parent;
+            if (!$menu) { return null; }
             $menuType = $menu->menuType->name;
         }
+        
         return $menu->id;
+        
     }
     
 }
