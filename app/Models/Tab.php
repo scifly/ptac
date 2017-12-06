@@ -248,6 +248,7 @@ class Tab extends Model {
         
         try {
             $exception = DB::transaction(function () use ($data) {
+
                 $t = $this->create($data);
                 $menuTab = new MenuTab();
                 $menuIds = $data['menu_ids'];

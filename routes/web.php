@@ -168,6 +168,10 @@ Route::group(['prefix' => 'conference_participants'], function () {
 });
 // 申诉
 /** 用户中心 */
+Route::get('users/profile','UserController@profile');
+Route::get('users/reset','UserController@reset');
+Route::get('users/messages','UserController@messages');
+Route::get('users/events','UserController@events');
 // 个人通讯录
 // 消息中心
 Route::group(['prefix' => 'messages'], routes('MessageController'));
