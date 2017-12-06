@@ -175,7 +175,7 @@
                             @include('partials.single_select', [
                                     'id' => 'schoolId',
                                     'label' => '所属学校',
-                                    'items' => $schools
+                                    'items' => $schools,
                                 ])
                             {{--@if($schools->count() > 1)--}}
                             {{--@include('partials.single_select', [--}}

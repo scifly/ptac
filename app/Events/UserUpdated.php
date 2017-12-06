@@ -15,7 +15,8 @@ class UserUpdated {
     
     /**
      * Create a new event instance.
-     * @param array $user
+     * @param array $data
+     * @internal param array $user
      */
     public function __construct(array $data) {
         
