@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="{{ URL::asset('js/plugins/parsley/parsley.css') }}">
     <link rel="stylesheet" href="{{ URL::asset('css/AdminLTE.min.css') }}">
     <link rel="stylesheet" href="{{ URL::asset('css/skins/_all-skins.min.css') }}">
+    <link rel="shortcut icon" href="{{ URL::asset('favicon.ico') }}">
     <!--[if lt IE 9]>
     <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
     <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
