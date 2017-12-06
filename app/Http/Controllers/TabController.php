@@ -63,7 +63,6 @@ class TabController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(TabRequest $request) {
-        
         return $this->tab->store($request->all())
             ? parent::succeed() : parent::fail();
         
