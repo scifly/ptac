@@ -46,7 +46,7 @@ class ManageWechatDepartment implements ShouldQueue {
         $this->school = new School();
         $schoolId = $this->school->getSchoolId();
         Log::debug('schoolId'. $schoolId);
-        if ($schoolId) {
+        if ($schoolId != 0) {
             $school = $this->school->find($schoolId);
             $corpMenuId = $school->menu->parent_id;
             $corp = Corp::where('menu_id', $corpMenuId)->first();
