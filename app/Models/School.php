@@ -288,7 +288,9 @@ class School extends Model {
     public function remove($id, $fireEvent = false) {
         
         $school = $this->find($id);
-        if (!$school) { return false; }
+        if (!$school) {
+            return false;
+        }
         $removed = $this->removable($school) ? $school->delete() : false;
         if ($removed && $fireEvent) {
             event(new SchoolDeleted($school));
@@ -305,18 +307,18 @@ class School extends Model {
         $columns = [
             ['db' => 'School.id', 'dt' => 0],
             [
-                'db' => 'School.name as schoolname', 'dt' => 1,
-                'formatter' => function($d) {
+                'db'        => 'School.name as schoolname', 'dt' => 1,
+                'formatter' => function ($d) {
                     return '<i class="fa fa-university"></i>&nbsp;' . $d;
-                }
+                },
             ],
             ['db' => 'School.address', 'dt' => 2],
             ['db' => 'SchoolType.name as typename', 'dt' => 3],
             [
-                'db' => 'Corp.name as corpname', 'dt' => 4,
-                'formatter' => function($d) {
+                'db'        => 'Corp.name as corpname', 'dt' => 4,
+                'formatter' => function ($d) {
                     return '<i class="fa fa-weixin"></i>&nbsp;' . $d;
-                }
+                },
             ],
             ['db' => 'School.created_at', 'dt' => 5],
             ['db' => 'School.updated_at', 'dt' => 6],
@@ -354,19 +356,20 @@ class School extends Model {
         
         $schoolList = [];
         if (!empty($schoolIds)) {
-            $schools = $this->whereIn('id', explode(',', $schoolIds))->get()->toArray();
+            $schools = $this->whereIn('id', explode(',', $schoolIds))
+                ->get()
+                ->toArray();
             foreach ($schools as $school) {
                 $schoolList[$school['id']] = $school['name'];
             }
         }
-
+        
         return $schoolList;
         
     }
-
-    public function getSchoolId()
-    {
-
+    
+    public function getSchoolId() {
+        
         $user = Auth::user();
         switch ($user->group->name) {
             case '运营':
@@ -377,15 +380,16 @@ class School extends Model {
                 unset($menu);
                 break;
             case '学校':
-                $departmentId = $this->user->topDeptId($user);
+                $departmentId = $user->topDeptId($user);
                 $schoolId = School::whereDepartmentId($departmentId)->first()->id;
                 break;
             default:
                 $schoolId = $user->educator->school_id;
                 break;
         }
+        
         return $schoolId;
-
+        
     }
     
 }
