@@ -108,7 +108,7 @@ class ScoreRange extends Model {
             [
                 'db'        => 'ScoreRange.enabled', 'dt' => 7,
                 'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($this, $d, $row);
+                    return Datatable::dtOps($d, $row);
                 },
             ],
         ];

@@ -84,7 +84,7 @@ class StudentAttendanceSetting extends Model {
             [
                 'db'        => 'StudentAttendanceSetting.updated_at', 'dt' => 10,
                 'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($this, $d, $row);
+                    return Datatable::dtOps($d, $row);
                 },
             ],
         ];

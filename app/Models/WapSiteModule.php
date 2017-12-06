@@ -124,7 +124,7 @@ class WapSiteModule extends Model {
             [
                 'db'        => 'WapSiteModule.enabled', 'dt' => 5,
                 'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($this, $d, $row);
+                    return Datatable::dtOps($d, $row);
                 },
             ],
         ];

@@ -54,7 +54,7 @@ class SubjectModule extends Model {
             [
                 'db'        => 'SubjectModule.enabled', 'dt' => 6,
                 'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($this, $d, $row);
+                    return Datatable::dtOps($d, $row);
                 },
             ],
         ];
