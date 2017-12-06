@@ -98,14 +98,7 @@ class MessageType extends Model {
             [
                 'db'        => 'MessageType.enabled', 'dt' => 5,
                 'formatter' => function ($d, $row) {
-                    $id = $row['id'];
-                    $status = $d ? Datatable::DT_ON : Datatable::DT_OFF;
-                    $editLink = sprintf(Datatable::DT_LINK_EDIT, 'edit_' . $id);
-                    $delLink = sprintf(Datatable::DT_LINK_DEL, $id);
-                    return
-                        $status . str_repeat(Datatable::DT_SPACE, 3) .
-                        $editLink . str_repeat(Datatable::DT_SPACE, 2) .
-                        $delLink;
+                    return Datatable::dtOps($d, $row, false);
                 },
             ],
         ];

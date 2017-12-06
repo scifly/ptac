@@ -62,20 +62,6 @@ class CorpController extends Controller {
     }
     
     /**
-     * 企业详情
-     *
-     * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
-     */
-    public function show($id) {
-        
-        $corp = $this->corp->find($id);
-        if (!$corp) { return $this->notFound(); }
-        return $this->output(__METHOD__, ['corp' => $corp]);
-        
-    }
-    
-    /**
      * 编辑企业
      *
      * @param $id

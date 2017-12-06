@@ -177,7 +177,7 @@ class Major extends Model {
             [
                 'db'        => 'Major.updated_at', 'dt' => 5,
                 'formatter' => function ($d, $row) {
-                    return DataTable::dtOps($this, $d, $row);
+                    return Datatable::dtOps($d, $row, false);
                 },
             ],
         ];

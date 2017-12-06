@@ -116,7 +116,7 @@ class ConferenceRoom extends Model {
             [
                 'db'        => 'ConferenceRoom.created_at', 'dt' => 7,
                 'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($this, $d, $row);
+                    return Datatable::dtOps($d, $row);
                 },
             ],
         ];
