@@ -148,6 +148,7 @@ var page = {
                 });
                 break;
             case 401:
+                page.inform('重新登录', '会话已过期，请重新登录', page.info);
                 window.location = page.siteRoot() + 'login?returnUrl=' +
                     (typeof obj['returnUrl'] !== 'undefined'
                     ? encodeURIComponent(obj['returnUrl'])
