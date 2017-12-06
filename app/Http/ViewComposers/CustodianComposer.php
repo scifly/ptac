@@ -85,7 +85,6 @@ class CustodianComposer {
                 }
             }
         }
-        // dd($students);die;
         $view->with([
             'schools'  => $schools,
             'grades'   => $grades,

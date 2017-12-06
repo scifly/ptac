@@ -105,6 +105,7 @@ class ComposerServiceProvider extends ServiceProvider {
         View::composer('attendance_machine.create_edit', 'App\Http\ViewComposers\AttendanceMachineComposer');
         
         View::composer('semester.create_edit', 'App\Http\ViewComposers\SemesterComposer');
+
     
     }
     

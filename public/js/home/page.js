@@ -403,6 +403,7 @@ var page = {
                 page.siteRoot() + table + '/delete/' + id,
                 {_token: $('#csrf_token').attr('content')},
                 table
+
             );
         });
     },

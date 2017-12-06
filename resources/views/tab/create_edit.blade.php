@@ -13,7 +13,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     {!! Form::text('name', null, [
-                        'readonly' => true,
+
                         'class' => 'form-control'
                     ]) !!}
                 </div>

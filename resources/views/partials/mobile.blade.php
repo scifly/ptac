@@ -11,7 +11,7 @@
             </tr>
             </thead>
             <tbody>
-            @if(!empty($mobiles))
+            @if(!empty($mobiles) && sizeof($mobiles) != 0)
                 @foreach($mobiles as $key => $mobile)
                     <tr>
                         <td class="text-center">

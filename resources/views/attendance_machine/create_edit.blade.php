@@ -4,7 +4,7 @@
     </div>
     <div class="box-body">
         <div class="form-horizontal">
-            @if(!empty($am['id'])) {
+            @if(!empty($am['id']))
             {{ Form::hidden('id', $am['id'], ['id' => 'id']) }}
             @endif
             {{ Form::hidden('school_id', $schoolId, ['id' => 'school_id']) }}
