@@ -32,7 +32,7 @@ class UserController extends Controller {
         if (Request::get('draw')) {
             return response()->json($this->user->datatable());
         }
-        
+
         return $this->output(__METHOD__);
         
     }
@@ -129,7 +129,47 @@ class UserController extends Controller {
         return $user->delete() ? $this->succeed() : $this->fail();
         
     }
-    
+
+    /**
+     * 修改个人信息
+     *
+     * @param $id
+     * @return bool|\Illuminate\Http\JsonResponse
+     */
+    public function profile($id){
+        $user = $this->user->find($id);
+        if (!$user) {
+            return $this->notFound();
+        }
+
+        return $this->output(__METHOD__, ['user' => $user]);
+    }
+
+    /**
+     * 重置密码
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function reset($id){
+        $user = $this->user->find($id);
+        if(!$user) {
+            return $this->notFound();
+        }
+
+        return $this->output(__METHOD__, ['user' => $user]);
+    }
+
+    /**
+     * 我的消息
+     * @param $id
+     */
+    public function messages($id){
+
+    }
+
+    public function events(){
+
+    }
     /**
      * 上传用户头像
      *

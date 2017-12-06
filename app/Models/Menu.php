@@ -482,10 +482,10 @@ HTML;
                     ->menu_id;
                 break;
             case '学校':
-                // dd($user->topDeptId($user));
                 $rootMenuId = School::whereDepartmentId($user->topDeptId($user))
                     ->first()
                     ->menu_id;
+
                 break;
             default:
                 $rootMenuId = School::find(Group::find($user->group->id)->school_id)

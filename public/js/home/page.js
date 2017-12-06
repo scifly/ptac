@@ -6,6 +6,7 @@ var $cip = $('#cip');
 var page = {
     success: 'img/confirm.png',
     failure: 'img/error.png',
+    info: 'img/info.png',
     plugins: {
         datatable: {
             css: 'js/plugins/datatables/datatables.min.css',
@@ -147,6 +148,7 @@ var page = {
                 });
                 break;
             case 401:
+                page.inform('重新登录', '会话已过期，请重新登录', page.info);
                 window.location = page.siteRoot() + 'login?returnUrl=' +
                     (typeof obj['returnUrl'] !== 'undefined'
                     ? encodeURIComponent(obj['returnUrl'])
@@ -194,6 +196,7 @@ var page = {
                             if (typeof tabUrl !== 'undefined') {
                                 tabUri = tabUrl;
                             }
+                            // 初始化鼠标悬停特效
                             $('.tab').hover(
                                 function() { $(this).removeClass('text-gray').addClass('text-blue'); },
                                 function() {
@@ -202,6 +205,7 @@ var page = {
                                     }
                                 }
                             );
+                            // 获取当前卡片中的HTML
                             page.getTabContent($tab, tabUri);
                         } else {
                             // Wrapper中的Html不含卡片，更新浏览器History
@@ -246,25 +250,33 @@ var page = {
             data: {tabId: tabId, menuId: menuId},
             success: function (result) {
                 if (result.statusCode === 200) {
+                    // 在当前已激活卡片中加载服务器返回的HTML
                     $tabPane.html(result.html);
                     $('.overlay').show();
                     // $('#ajaxLoader').after(result.html);
+                    // 动态加载服务器返回的链接地址指向的js脚本
                     $.getScript(page.siteRoot() + result.js, function () {
                         $('#ajaxLoader').remove();
                         $('.overlay').hide();
+                        // 移除当前页面的datatable.css
                         // if (!$('#data-table').length) {
                         //     $('link[href="' + page.siteRoot() + page.plugins.datatable.css +'"]').remove();
                         // }
                     });
+                    // 更新浏览器抬头
                     var breadcrumb = $('#breadcrumb').html();
                     document.title = docTitle + ' - ' + breadcrumb;
+                    // 更新浏览器访问历史
                     // 0 - tabId, 1 - menuId, 2 - menuUrl
                     oPage.title = tabId + ',' + page.getActiveMenuId() + ',' + page.getMenuUrl();
                     oPage.url = page.siteRoot() + url;
+                    // 如果需要更新浏览器历史
                     if (updateHistory) {
                         if (replaceState) {
+                            // 替换当前会话中的第一条访问记录
                             history.replaceState(oPage, oPage.title, oPage.url);
                         } else {
+                            // 新增一条浏览器访问记录
                             history.pushState(oPage, oPage.title, oPage.url);
                         }
                     }
@@ -366,40 +378,21 @@ var page = {
     index: function (table, options) {
         this.unbindEvents();
         var $activeTabPane = $('#tab_' + page.getActiveTabId());
-
-        // 显示记录列表
+        // 记录列表
         this.initDatatable(table, options);
         // $('div.dataTables_length select').addClass('form-control');
         // $('div.dataTables_filter label').addClass('control-label');
-
         // 新增记录
         $('#add-record').on('click', function () {
             page.getTabContent($activeTabPane, table + '/create');
         });
-        // 编辑、充值、查看
+        // 编辑、充值、查看记录
         var selectors = ['.fa-pencil', '.fa-money', '.fa-bars'];
         $(document).on('click', selectors.join(), function () {
             var url = $(this).parents().eq(0).attr('id');
             url = url.replace('_', '/');
             page.getTabContent($activeTabPane, table + '/' + url);
         });
-        // $(document).on('click', '.fa-pencil', function () {
-        //     var url = $(this).parents().eq(0).attr('id');
-        //     url = url.replace('_', '/');
-        //     page.getTabContent($activeTabPane, table + '/' + url);
-        // });
-        // // 充值
-        // $(document).on('click', '.fa-money', function () {
-        //     var url = $(this).parents().eq(0).attr('id');
-        //     url = url.replace('_', '/');
-        //     page.getTabContent($activeTabPane, table + '/' + url);
-        // });
-        // // 查看记录详情
-        // $(document).on('click', '.fa-bars', function () {
-        //     var url = $(this).parents().eq(0).attr('id');
-        //     url = url.replace('_', '/');
-        //     page.getTabContent($activeTabPane, table + '/' + url);
-        // });
         // 删除记录
         var id;
         $(document).on('click', '.fa-remove', function () {
@@ -412,6 +405,7 @@ var page = {
                 page.siteRoot() + table + '/delete/' + id,
                 {_token: $('#csrf_token').attr('content')},
                 table
+
             );
         });
     },
@@ -480,11 +474,10 @@ var page = {
         page.initParsley($form, requestType, url);
     },
     unbindEvents: function () {
+        var selectors = ['.fa-pencil', '.fa-money', '.fa-bars'];
         $('#add-record').unbind('click');
-        $(document).off('click', '.fa-pencil');
-        $(document).off('click', '.fa-bars');
+        $(document).off('click', selectors.join());
         $(document).off('click', '.fa-remove');
-        $(document).off('click', '.fa-money');
         $('#confirm-delete').unbind('click');
         $('#cancel, #record-list').unbind('click');
     },
@@ -534,47 +527,58 @@ $.getMultiScripts = function(arr, path) {
     return $.when.apply($, _arr);
 };
 $(function () {
+    // 刷新菜单
     page.refreshMenus();
     // 获取状态为active的卡片
     var $activeTabPane = $('#tab_' + page.getActiveTabId());
+    // 初始化浏览器历史相关的popstate事件
     window.onpopstate = function (e) {
         if (!e.state) { return false; }
+        // 如果用户点击浏览器“前进”或“后退”按钮，则不需要更新浏览器历史
         updateHistory = false;
-        if (e.state.url.indexOf('pages') > -1) {
-            return false;
-        }
+        // 如果目标页面链接地址中包含pages关键字，则停止重定向
+        if (e.state.url.indexOf('pages') > -1) { return false; }
+        // 获取目标页面的卡片ID、菜单ID和菜单链接地址
         var paths = e.state.title.split(',');
         var targetTabId = paths[0];
         var targetMenuId = paths[1];
         var targetMenuUrl = paths[2];
         var uri = e.state.url;
-        // get current active tab id
+        // 获取当前已激活卡片的ID
         var activeTabId = page.getActiveTabId();
-        // deactivate current pane
+        // 清除当前已激活卡片中的内容
         if (activeTabId) {
             $('a[href="#tab_' + activeTabId + '"]').parent().removeClass();
             $activeTabPane = $('#tab_' + activeTabId);
             $activeTabPane.removeClass('active').html('');
         }
-        // activate target pane
+        // 激活目标卡片
         var $targetTabLink = $('a[href="#tab_' + targetTabId + '"]');
         if ($targetTabLink.length !== 0) {
+            // 如果目标页面包含的卡片与当前页面包含的卡片属于相同菜单
             $targetTabLink.parent().addClass('active');
             $activeTabPane = $('#tab_' + targetTabId);
             $activeTabPane.addClass('active');
+            // 获取目标卡片中的HTML
             page.getTabContent($activeTabPane, uri);
+            // 刷新卡片状态
             page.refreshTabs();
         } else {
+            // 如果目标页面与当前页面属于不同菜单
             if (targetTabId !== '0') {
+                // 如果目标页面包含卡片
                 page.getWrapperContent(targetMenuId, targetMenuUrl, targetTabId, uri);
             } else {
+                // 如果目标页面不包含卡片
                 page.getWrapperContent(targetMenuId, targetMenuUrl);
             }
+            // 刷新菜单状态
             $('.sidebar-menu li.active').removeClass('active menu-open');
             $('#' + targetMenuId).parent().addClass('active');
             page.refreshMenus();
         }
     };
+    // 初始化菜单点击事件
     $(document).on('click', '.sidebar-menu a.leaf', function(e) {
         e.preventDefault();
         // var uri = $(this).attr('href');
@@ -583,23 +587,23 @@ $(function () {
         page.refreshMenus();
         page.getWrapperContent(page.getActiveMenuId(), page.getMenuUrl());
     });
+    // 初始化卡片点击事件
     $(document).on('click', '.tab', function() {
         page.refreshTabs();
-        // 获取被点击卡片的url
+        // 获取被点击卡片的uri
         var url = $(this).attr('data-uri');
-        // 获取所有卡片
+        // 选地所有卡片
         var $tabPanes = $('.card');
         // 获取状态为active的卡片
         var $activeTabPane = $('#tab_' + page.getActiveTabId());
         // 如果状态为active的卡片的内容为空, 清空其他卡片的内容
         if ($activeTabPane.html() === '') {
             // 清空所有卡片的内容
-            $.each($tabPanes, function () {
-                $(this).html('');
-            });
+            $.each($tabPanes, function () { $(this).html(''); });
             // 获取状态为active的卡片内容
             page.getTabContent($activeTabPane, url);
         }
     });
+    // 获取wrapper div中显示的Html
     page.getWrapperContent(page.getActiveMenuId(), page.getMenuUrl(), page.getActiveTabId());
 });
