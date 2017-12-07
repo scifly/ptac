@@ -134,6 +134,7 @@ class Company extends Model {
      * @param $id
      * @param bool $fireEvent
      * @return bool
+     * @throws \Exception
      */
     public function remove($id, $fireEvent = false) {
 
