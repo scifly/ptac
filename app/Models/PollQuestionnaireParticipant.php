@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
@@ -22,16 +23,16 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read User $user
  */
 class PollQuestionnaireParticipant extends Model {
-    
+
     //
     protected $table = 'poll_questionnaire_participants';
-    
+
     protected $fillable = ['pq_id', 'user_id', 'created_at', 'updated-at'];
-    
+
     public function pollquestionnaire() {
         return $this->belongsTo('App\Models\PollQuestionnaire');
     }
-    
+
     public function user() {
         return $this->belongsTo('App\Models\User');
     }

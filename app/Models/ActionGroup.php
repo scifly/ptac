@@ -1,10 +1,11 @@
 <?php
+
 namespace App\Models;
 
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
-use Mockery\Exception;
 
 /**
  * App\Models\ActionGroup
@@ -29,23 +30,30 @@ class ActionGroup extends Model {
 
     protected $fillable = ['action_id', 'group_id', 'enabled'];
 
+    /**
+     * 根据groupId保存所有记录
+     *
+     * @param $groupId
+     * @param array $ids
+     * @throws Exception
+     */
     public function storeByGroupId($groupId, array $ids = []) {
 
         try {
-            $exception = DB::transaction(function () use ($groupId, $ids) {
+            DB::transaction(function () use ($groupId, $ids) {
+                # step 1: 删除group_id等于$groupId的所有记录
                 $this->where('group_id', $groupId)->delete();
+                # step 2: 创建ids中的所有记录
                 foreach ($ids as $id) {
                     $this->create([
-                        'group_id'  => $groupId,
+                        'group_id' => $groupId,
                         'action_id' => $id,
-                        'enabled'   => 1,
+                        'enabled' => 1,
                     ]);
                 }
             });
-
-            return !is_null($exception) ? true : $exception;
         } catch (Exception $e) {
-            return false;
+            throw $e;
         }
 
     }

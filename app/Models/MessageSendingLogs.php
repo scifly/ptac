@@ -1,10 +1,11 @@
 <?php
+
 namespace App\Models;
 
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
-use Mockery\Exception;
 
 /**
  * App\Models\messageSendingLogs
@@ -25,33 +26,38 @@ use Mockery\Exception;
  * @method static Builder|messageSendingLogs whereUpdatedAt($value)
  */
 class messageSendingLogs extends Model {
-    
+
     protected $fillable = [
         'read_count',
         'received_count',
         'recipient_count',
     ];
-    
+
     public function messages() {
         return $this->hasMany('App\Models\Message');
     }
-    
+
+    /**
+     * @param $recipientCount
+     * @return bool
+     * @throws Exception
+     */
     public function addMessageSendingLog($recipientCount) {
         try {
-            $exception = DB::transaction(function () use ($recipientCount) {
+            DB::transaction(function () use ($recipientCount) {
                 $log = $this->create([
-                    'read_count'      => 0,
-                    'received_count'  => 0,
+                    'read_count' => 0,
+                    'received_count' => 0,
                     'recipient_count' => $recipientCount,
                 ]);
                 return $log->id;
             });
-            
-            return is_null($exception) ? true : $exception;
-        } catch (Exception $exception) {
-            return false;
+
+
+        } catch (Exception $e) {
+            throw $e;
         }
-        
+        return true;
     }
-    
+
 }

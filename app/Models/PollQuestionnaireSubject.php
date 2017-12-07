@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
@@ -31,13 +32,13 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read Collection|PollQuestionnaireChoice[] $poll_questionnaire_choice
  */
 class PollQuestionnaireSubject extends Model {
-    
+
     use ModelTrait;
     //
     protected $table = 'poll_questionnaire_subjects';
-    
+
     protected $fillable = ['subject', 'pq_id', 'subject_type', 'created_at', 'updated_at'];
-    
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
@@ -45,7 +46,7 @@ class PollQuestionnaireSubject extends Model {
         return $this->hasOne('App\Models\PollQuestionnaireAnswer'
             , 'pqs_id', 'id');
     }
-    
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
@@ -54,7 +55,7 @@ class PollQuestionnaireSubject extends Model {
             ->hasMany("App\Models\PollQuestionnaireChoice"
                 , 'pqs_id', 'id');
     }
-    
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
@@ -62,7 +63,7 @@ class PollQuestionnaireSubject extends Model {
         return $this->belongsTo('App\Models\PollQuestionnaire'
             , 'pq_id');
     }
-    
+
     /**
      * 删除问卷题目
      *
@@ -70,34 +71,34 @@ class PollQuestionnaireSubject extends Model {
      * @return bool|null
      */
     public function remove($id) {
-        
+
         $pqSubject = $this->find($id);
         if (!$pqSubject) {
             return false;
         }
         return $this->removable($pqSubject) ? $pqSubject->delete() : false;
-        
+
     }
-    
+
     public function dataTable() {
-        
+
         $columns = [
             ['db' => 'PollQuestionnaireSubject.id', 'dt' => 0],
             ['db' => 'PollQuestionnaireSubject.subject', 'dt' => 1],
             ['db' => 'PollQuestionnaire.name as pq_name', 'dt' => 2],
             [
-                'db'        => 'PollQuestionnaireSubject.subject_type', 'dt' => 3,
+                'db' => 'PollQuestionnaireSubject.subject_type', 'dt' => 3,
                 'formatter' => function ($d) {
                     return $this->getType($d);
                 },
             ],
             [
-                'db'        => 'PollQuestionnaireSubject.id as subject_id', 'dt' => 4,
+                'db' => 'PollQuestionnaireSubject.id as subject_id', 'dt' => 4,
                 'formatter' => function ($d) {
                     $showLink = sprintf(Datatable::DT_LINK_SHOW, 'show_' . $d);
                     $editLink = sprintf(Datatable::DT_LINK_EDIT, 'edit_' . $d);
                     $delLink = sprintf(Datatable::DT_LINK_DEL, $d);
-                    
+
                     return $showLink . Datatable::DT_SPACE .
                         $editLink . Datatable::DT_SPACE . $delLink;
                 },
@@ -105,9 +106,9 @@ class PollQuestionnaireSubject extends Model {
         ];
         $joins = [
             [
-                'table'      => 'poll_questionnaires',
-                'alias'      => 'PollQuestionnaire',
-                'type'       => 'left',
+                'table' => 'poll_questionnaires',
+                'alias' => 'PollQuestionnaire',
+                'type' => 'left',
                 'conditions' => [
                     'PollQuestionnaire.id = PollQuestionnaireSubject.pq_id',
                 ],
@@ -115,9 +116,9 @@ class PollQuestionnaireSubject extends Model {
         ];
         return Datatable::simple($this, $columns, $joins);
     }
-    
+
     public function getType($type) {
-        
+
         switch ($type) {
             case 0:
                 return '单选';
@@ -128,6 +129,6 @@ class PollQuestionnaireSubject extends Model {
             default:
                 return '错误';
         }
-        
+
     }
 }

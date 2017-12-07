@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use App\Helpers\ModelTrait;
@@ -24,20 +25,20 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read Media[] $medias
  */
 class MediaType extends Model {
-    
+
     use ModelTrait;
-    
+
     protected $table = 'media_types';
-    
+
     protected $fillable = ['name', 'remark', 'enabled'];
-    
+
     /**
      * 获取指定媒体类型所包含的所有媒体对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function medias() { return $this->hasMany('App\Models\Media'); }
-    
+
     /**
      * 保存媒体类型
      *
@@ -45,13 +46,13 @@ class MediaType extends Model {
      * @return bool
      */
     public function store(array $data) {
-        
+
         $mediaType = $this->create($data);
-        
+
         return $mediaType ? true : false;
-        
+
     }
-    
+
     /**
      * 更新媒体类型
      *
@@ -60,14 +61,16 @@ class MediaType extends Model {
      * @return bool
      */
     public function modify(array $data, $id) {
-        
+
         $mediaType = $this->find($id);
-        if (!$mediaType) { return false; }
-        
+        if (!$mediaType) {
+            return false;
+        }
+
         return $mediaType->update($data) ? true : false;
-        
+
     }
-    
+
     /**
      * 删除媒体类型
      *
@@ -75,13 +78,15 @@ class MediaType extends Model {
      * @return bool|null
      */
     public function remove($id) {
-        
+
         $mediaType = $this->find($id);
-        if (!$mediaType) { return false; }
-        
+        if (!$mediaType) {
+            return false;
+        }
+
         return $mediaType->removable($mediaType)
             ? $mediaType->delete() : false;
-        
+
     }
-    
+
 }
