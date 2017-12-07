@@ -6,6 +6,7 @@ use App\Events\StudentUpdated;
 use App\Facades\DatatableFacade as Datatable;
 use App\Http\Requests\StudentRequest;
 use App\Rules\Mobiles;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -16,7 +17,6 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Maatwebsite\Excel\Facades\Excel;
 use Maatwebsite\Excel\Readers\LaravelExcelReader;
-use Mockery\Exception;
 
 /**
  * App\Models\Student
@@ -139,13 +139,12 @@ class Student extends Model {
     /**
      * 保存新创建的学生记录
      * @param StudentRequest $request
-     * @return bool|mixed
+     * @return bool
      */
     public function store(StudentRequest $request) {
         
         try {
-            $exception = DB::transaction(function () use ($request) {
-                
+            DB::transaction(function () use ($request) {
                 $user = $request->input('user');
                 $userData = [
                     'username'     => uniqid('custodian_'),
@@ -191,14 +190,12 @@ class Student extends Model {
                 }
                 # 向student表添加数据
                 $this->create($studentData);
-                
                 # 创建部门成员
                 $school = new School();
                 $schoolName = School::whereId($school->getSchoolId())->first();
                 $gradeName = Grade::whereId($student['grade_id'])->first();
                 $className = Squad::whereId($student['class_id'])->first();
                 $deptId = $this->getDeptId($schoolName->name, $gradeName->name, $className->name);
-                
                 $departmentUser = [
                     'department_id' => $deptId,
                     'user_id'       => $u->id,
@@ -209,10 +206,11 @@ class Student extends Model {
                 $userModel->createWechatUser($u->id);
                 unset($user);
             });
-            return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
             return false;
         }
+        
+        return true;
         
     }
     
@@ -222,6 +220,7 @@ class Student extends Model {
      * @return array
      */
     public function getGradeClass($gradeId = 0) {
+        
         $school = new School();
         $schoolId = $school->getSchoolId();
         $grades = Grade::whereEnabled(1)
@@ -233,12 +232,16 @@ class Student extends Model {
             ->where('grade_id', $gradeId)
             ->pluck('name', 'id')
             ->toArray();
+        
         return [
             'grades' => $grades,
             'classes' => $classes,
         ];
+        
     }
+    
     public function getDeptId($school, $grade, $class) {
+        
         $deptSchool = Department::where('name', $school)->first();
         if ($deptSchool) {
             $deptGrade = Department::where('name', $grade)->where('parent_id', $deptSchool->id)->first();
@@ -249,7 +252,9 @@ class Student extends Model {
             return 0;
         }
         return 0;
+        
     }
+    
     /**
      * 返回学生学号姓名列表
      *
@@ -273,30 +278,29 @@ class Student extends Model {
      * @param StudentRequest $request
      * @param $studentId
      * @return bool|mixed
+     * @throws Exception
      */
     public function modify(StudentRequest $request, $studentId) {
         
         $student = $this->find($studentId);
-        if (!isset($student)) {
-            return false;
-        }
+        if (!isset($student)) { return false; }
         try {
-            $exception = DB::transaction(function () use ($request, $studentId, $student) {
-                
+            DB::transaction(function () use ($request, $studentId, $student) {
+                # step 1: update User record
                 $userId = $request->input('user_id');
                 $userData = $request->input('user');
                 $user = new User();
-                $user->where('id', $userId)
-                    ->update([
-                        'group_id'     => Group::whereName('学生')->first()->id,
-                        'email'        => $userData['email'],
-                        'realname'     => $userData['realname'],
-                        'gender'       => $userData['gender'],
-                        'isleader'     => 0,
-                        'english_name' => $userData['english_name'],
-                        'telephone'    => $userData['telephone'],
-                        'enabled'      => $userData['enabled'],
-                    ]);
+                $user->where('id', $userId)->update([
+                    'group_id'     => Group::whereName('学生')->first()->id,
+                    'email'        => $userData['email'],
+                    'realname'     => $userData['realname'],
+                    'gender'       => $userData['gender'],
+                    'isleader'     => 0,
+                    'english_name' => $userData['english_name'],
+                    'telephone'    => $userData['telephone'],
+                    'enabled'      => $userData['enabled'],
+                ]);
+                # step 2: update Student record
                 $studentData = $request->all();
                 $student->update([
                     'user_id'        => $userId,
@@ -308,6 +312,7 @@ class Student extends Model {
                     'remark'         => $userData['remark'],
                     'enabled'        => $userData['enabled'],
                 ]);
+                # step 3: update Mobile records
                 $mobiles = $request->input('mobile');
                 if ($mobiles) {
                     $mobileModel = new Mobile();
@@ -325,14 +330,13 @@ class Student extends Model {
                     }
                     unset($mobile);
                 }
-                # 创建部门成员
+                # step 4: 创建部门成员
                 DepartmentUser::where('user_id', $userId)->delete();
                 $school = new School();
                 $schoolName = School::whereId($school->getSchoolId())->first();
                 $gradeName = Grade::whereId($studentData['grade_id'])->first();
                 $className = Squad::whereId($studentData['class_id'])->first();
                 $deptId = $this->getDeptId($schoolName->name, $gradeName->name, $className->name);
-    
                 $departmentUser = [
                     'department_id' => $deptId,
                     'user_id'       => $userId,
@@ -343,10 +347,11 @@ class Student extends Model {
                 $user->UpdateWechatUser($userId);
                 unset($user);
             });
-            return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
-            return false;
+            throw $e;
         }
+        
+        return true;
         
     }
     
@@ -355,15 +360,14 @@ class Student extends Model {
      *
      * @param $studentId
      * @return bool|mixed
+     * @throws \Exception|\Throwable
      */
     public function remove($studentId) {
         
         $student = $this->find($studentId);
-        if (!isset($custodian)) {
-            return false;
-        }
+        if (!isset($custodian)) { return false; }
         try {
-            $exception = DB::transaction(function () use ($studentId, $student) {
+            DB::transaction(function () use ($studentId, $student) {
                 # 删除指定的学生记录
                 $student->delete();
                 # 删除与指定学生绑定的监护人记录
@@ -374,17 +378,20 @@ class Student extends Model {
                 Mobile::where('user_id', $student['user_id'])->delete();
                 
             });
-            return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
-            return false;
+            throw $e;
         }
+        
+        return true;
+        
     }
     
     /**
      * 导入
      *
      * @param UploadedFile $file
-     * @return array
+     * @return array|bool
+     * @throws \PHPExcel_Exception
      */
     public function upload(UploadedFile $file) {
         
@@ -392,13 +399,17 @@ class Student extends Model {
         $realPath = $file->getRealPath();   //临时文件的绝对路径
         // 上传文件
         $filename = date('His') . uniqid() . '.' . $ext;
-        $bool = Storage::disk('uploads')->put($filename, file_get_contents($realPath));
-        if ($bool) {
+        $stored = Storage::disk('uploads')->put($filename, file_get_contents($realPath));
+        if ($stored) {
             $filePath = 'storage/app/uploads/' . date('Y') . '/' . date('m') . '/' . date('d') . '/' . $filename;
             // var_dump($filePath);die;
             /** @var LaravelExcelReader $reader */
             $reader = Excel::load($filePath);
-            $sheet = $reader->getExcel()->getSheet(0);
+            try {
+                $sheet = $reader->getExcel()->getSheet(0);
+            } catch (\PHPExcel_Exception $e) {
+                throw $e;
+            }
             $students = $sheet->toArray();
             if ($this->checkFileFormat($students[0])) {
                 return [
@@ -418,6 +429,7 @@ class Student extends Model {
                 $this->checkData($students);
             }
         }
+        return false;
         
     }
     
@@ -439,10 +451,7 @@ class Student extends Model {
     private function checkData(array $data) {
         $rules = [
             'name'           => 'required|string|between:2,6',
-            'gender'         => [
-                'required',
-                Rule::in(['男', '女']),
-            ],
+            'gender'         => ['required', Rule::in(['男', '女'])],
             'birthday'       => ['required', 'string', 'regex:/^((19\d{2})|(20\d{2}))-([1-12])-([1-31])$/'],
             'school'         => 'required|string|between:4,20',
             'grade'          => 'required|string|between:3,20',
