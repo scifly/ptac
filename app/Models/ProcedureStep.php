@@ -140,7 +140,7 @@ class ProcedureStep extends Model {
             [
                 'db'        => 'ProcedureStep.enabled', 'dt' => 8,
                 'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($this, $d, $row);
+                    return Datatable::dtOps($d, $row);
                 },
             ],
         ];

@@ -81,20 +81,6 @@ class GroupController extends Controller {
     }
     
     /**
-     * 角色详情
-     *
-     * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
-     */
-    public function show($id) {
-        
-        $group = $this->group->find($id);
-        if (!$group) { return $this->notFound(); }
-        return $this->output(__METHOD__, ['group' => $group]);
-        
-    }
-    
-    /**
      * 编辑角色
      *
      * @param $id

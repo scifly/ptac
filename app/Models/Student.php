@@ -633,7 +633,7 @@ class Student extends Model {
             [
                 'db'        => 'Student.enabled', 'dt' => 11,
                 'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($this, $d, $row);
+                    return Datatable::dtOps($d, $row);
                 },
             ],
         ];

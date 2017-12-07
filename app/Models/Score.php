@@ -72,7 +72,7 @@ class Score extends Model {
             [
                 'db'        => 'Score.enabled', 'dt' => 10,
                 'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($this, $d, $row);
+                    return Datatable::dtOps($d, $row);
                 },
             ],
         ];

@@ -182,7 +182,7 @@ class Squad extends Model {
             [
                 'db'        => 'Squad.enabled', 'dt' => 7,
                 'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($this, $d, $row);
+                    return Datatable::dtOps($d, $row, false);
                 },
             ],
         ];

@@ -325,7 +325,7 @@ class School extends Model {
             [
                 'db'        => 'School.enabled', 'dt' => 7,
                 'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($this, $d, $row);
+                    return Datatable::dtOps($d, $row);
                 },
             ],
         ];
@@ -376,7 +376,11 @@ class School extends Model {
             case '企业':
                 $menu = new Menu();
                 $schoolMenuId = $menu->getSchoolMenuId(session('menuId'));
-                $schoolId = $this::whereMenuId($schoolMenuId)->first()->id;
+                if ($schoolMenuId) {
+                    $schoolId = $this::whereMenuId($schoolMenuId)->first()->id;
+                }else{
+                    $schoolId = 0;
+                }
                 unset($menu);
                 break;
             case '学校':
