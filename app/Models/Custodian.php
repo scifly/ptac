@@ -8,6 +8,9 @@ use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -44,30 +47,30 @@ class Custodian extends Model {
     /**
      * 返回对应的用户对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function user() { return $this->belongsTo('App\Models\User'); }
 
     /**
      * 返回对应的学生对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return BelongsToMany
      */
     public function students() {
+        
         return $this->belongsToMany(
             'App\Models\Student',
             'custodians_students',
             'custodian_id',
             'student_id'
         );
+        
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
-    public function custodianStudents() {
-        return $this->hasMany('App\Models\CustodianStudent');
-    }
+    public function custodianStudents() { return $this->hasMany('App\Models\CustodianStudent'); }
 
     /**
      * 保存新创建的监护人记录

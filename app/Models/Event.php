@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Http\JsonResponse;
 
 /**
  * App\Models\Event
@@ -66,28 +68,28 @@ class Event extends Model {
     /**
      * 返回事件创建者的用户对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function user() { return $this->belongsTo('App\Models\User'); }
 
     /**
      * 返回课程表事件对应的教职员工对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function educator() { return $this->belongsTo('App\Models\Educator'); }
 
     /**
      * 返回课程表事件对应的科目对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function subject() { return $this->belongsTo('App\Models\Subject'); }
 
     /**
      * 显示日历事件
      * @param $userId
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function showCalendar($userId) {
         //通过userId找出educator_id
@@ -162,6 +164,7 @@ class Event extends Model {
      * @return bool
      */
     public function isRepeatTimeUser($userId, $start, $end, $id = null) {
+        
         //通过userId 找到educator_id
         $educator = Educator::where('user_id', $userId)->first();
         //验证是否和课表时间有冲突
@@ -216,6 +219,7 @@ class Event extends Model {
         }
 
         return !empty($event);
+        
     }
 
     /**
@@ -228,6 +232,7 @@ class Event extends Model {
      * @return bool
      */
     public function isRepeatTimeAdmin($educatorId, $start, $end, $id = null) {
+        
         $event = $this
             ->where('id', '<>', $id)
             ->where('educator_id', $educatorId)
@@ -262,6 +267,7 @@ class Event extends Model {
         }
 
         return !empty($event);
+        
     }
 
     /**
@@ -272,11 +278,13 @@ class Event extends Model {
      * @return int
      */
     public function timeDiff($day, $hour, $minute) {
+        
         $days = $day * 24 * 60 * 60;
         $hours = $hour * 60 * 60;
         $minutes = $minute * 60;
 
         return $diffTime = $days + $hours + $minutes;
+        
     }
 
 }

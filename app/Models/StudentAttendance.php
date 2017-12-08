@@ -32,7 +32,6 @@ use Illuminate\Database\Eloquent\Model;
  */
 class StudentAttendance extends Model {
 
-    //
     protected $table = 'student_attendance';
     protected $fillable = [
         'id', 'student_id', 'punch_time',

@@ -3,7 +3,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ProcedureRequest;
 use App\Models\Procedure;
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
+use Throwable;
 
 /**
  * 审批流程
@@ -25,7 +28,8 @@ class ProcedureController extends Controller {
     /**
      * 审批流程列表
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function index() {
         if (Request::get('draw')) {
@@ -39,9 +43,11 @@ class ProcedureController extends Controller {
     /**
      * 创建审批流程
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function create() {
+        
         return $this->output(__METHOD__);
         
     }
@@ -50,7 +56,7 @@ class ProcedureController extends Controller {
      * 保存审批流程
      *
      * @param ProcedureRequest $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function store(ProcedureRequest $request) {
         return $this->procedure->store($request->all())
@@ -62,7 +68,8 @@ class ProcedureController extends Controller {
      * 审批流程详情
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function show($id) {
         $procedure = $this->procedure->find($id);
@@ -78,7 +85,8 @@ class ProcedureController extends Controller {
      * 编辑审批流程
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function edit($id) {
         $procedure = $this->procedure->find($id);
@@ -95,7 +103,7 @@ class ProcedureController extends Controller {
      *
      * @param ProcedureRequest $request
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function update(ProcedureRequest $request, $id) {
         $procedure = $this->procedure->find($id);
@@ -109,9 +117,10 @@ class ProcedureController extends Controller {
     
     /**
      * 删除审批流程
-     *\
+     *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function destroy($id) {
         $procedure = $this->procedure->find($id);

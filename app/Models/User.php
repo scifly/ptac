@@ -8,6 +8,10 @@ use App\Events\UserUpdated;
 use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Notifications\DatabaseNotificationCollection;
@@ -108,84 +112,100 @@ class User extends Authenticatable {
     /**
      * 返回指定用户所属的角色对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function group() { return $this->belongsTo('App\Models\Group'); }
 
     /**
      * 获取指定用户对应的监护人对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return HasOne
      */
     public function custodian() { return $this->hasOne('App\Models\Custodian'); }
 
     /**
      * 获取指定用户对应的教职员工对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return HasOne
      */
     public function educator() { return $this->hasOne('App\Models\Educator'); }
 
     /**
      * 获取指定用户对应的学生对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return HasOne
      */
     public function student() { return $this->hasOne('App\Models\Student'); }
 
     /**
      * 获取指定用户对应的管理/操作员对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return HasOne
      */
     public function operator() { return $this->hasOne('App\Models\Operator'); }
 
     /**
      * 获取指定用户的所有订单对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function orders() { return $this->hasMany('App\Models\Order'); }
 
     /**
      * 获取指定用户的所有手机号码对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function mobiles() { return $this->hasMany('App\Models\Mobile'); }
 
     /**
      * 获取指定用户所属的所有部门对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return BelongsToMany
      */
-    public function departments() { return $this->belongsToMany('App\Models\Department', 'departments_users'); }
+    public function departments() {
+        
+        return $this->belongsToMany('App\Models\Department', 'departments_users');
+    
+    }
 
     /**
      * 获取指定用户发起的所有调查问卷对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
-    public function pollQuestionnaires() { return $this->hasMany('App\Models\PollQuestionnaire'); }
+    public function pollQuestionnaires() {
+        
+        return $this->hasMany('App\Models\PollQuestionnaire');
+    
+    }
 
     /**
      * 获取指定用户参与的调查问卷所给出的答案对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
-    public function pollQuestionnaireAnswers() { return $this->hasMany('App\Models\PollQuestionnaireAnswer'); }
+    public function pollQuestionnaireAnswers() {
+        
+        return $this->hasMany('App\Models\PollQuestionnaireAnswer');
+    
+    }
 
     /**
      * 获取指定用户参与的所有调查问卷对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
-    public function pollQuestionnairePartcipants() { return $this->hasMany('App\Models\PollQuestionnaireParticipant'); }
+    public function pollQuestionnairePartcipants() {
+        
+        return $this->hasMany('App\Models\PollQuestionnaireParticipant');
+    
+    }
 
     /**
      * 获取指定用户发出的消息对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function messages() { return $this->hasMany('App\Models\Message'); }
 
@@ -244,8 +264,10 @@ class User extends Authenticatable {
     }
 
     public function importData(&$data) {
+        
         $u = $this->create($data);
         $data['id'] = $u->id;
+        
     }
 
     /**

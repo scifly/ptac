@@ -11,6 +11,10 @@ use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -62,56 +66,56 @@ class Department extends Model {
     /**
      * 返回所属的部门类型对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function departmentType() { return $this->belongsTo('App\Models\DepartmentType'); }
 
     /**
      * 返回对应的运营者对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return HasOne
      */
     public function company() { return $this->hasOne('App\Models\Company'); }
 
     /**
      * 返回对应的班级对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return HasOne
      */
     public function corp() { return $this->hasOne('App\Models\Corp'); }
 
     /**
      * 返回对应的学校对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return HasOne
      */
     public function school() { return $this->hasOne('App\Models\School'); }
 
     /**
      * 返回对应的年级对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return HasOne
      */
     public function grade() { return $this->hasOne('App\Models\Grade'); }
 
     /**
      * 返回对应的班级对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return HasOne
      */
     public function squad() { return $this->hasOne('App\Models\Squad'); }
 
     /**
      * 获取指定部门包含的所有用户对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return BelongsToMany
      */
     public function users() { return $this->belongsToMany('App\Models\User', 'departments_users'); }
 
     /**
      * 返回上级部门对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function parent() {
 
@@ -182,7 +186,7 @@ class Department extends Model {
     /**
      * 获取指定部门的子部门
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function children() {
 

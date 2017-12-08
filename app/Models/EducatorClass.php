@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * App\Models\EducatorClass 教职员工与班级
@@ -33,7 +34,12 @@ class EducatorClass extends Model {
     protected $table = 'educators_classes';
 
     protected $fillable = ['educator_id', 'class_id', 'subject_id', 'enabled'];
-
+    
+    /**
+     * 返回所属的教职员工对象
+     *
+     * @return BelongsTo
+     */
     public function classes() { return $this->belongsTo('App\Models\Educator'); }
 
 }

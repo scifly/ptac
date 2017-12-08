@@ -3,8 +3,10 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * App\Models\Order
@@ -17,8 +19,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $combo_type_id 套餐类型ID
  * @property int $payment 支付类型（直付、代缴）
  * @property string $transactionid 微信订单号
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @method static Builder|Order whereComboTypeId($value)
  * @method static Builder|Order whereCreatedAt($value)
  * @method static Builder|Order whereId($value)
@@ -46,21 +48,19 @@ class Order extends Model {
     /**
      * 返回指定订单所属的用户对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function user() { return $this->belongsTo('App\Models\User'); }
 
     /**
      * 返回指定订单所属的套餐类型对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
-    public function comboType() {
-        return $this->belongsTo('App\models\ComboType');
-
-    }
+    public function comboType() { return $this->belongsTo('App\models\ComboType'); }
 
     public function datatable() {
+        
         $columns = [
             ['db' => 'Orders.id', 'dt' => 0],
             ['db' => 'User.realname', 'dt' => 1],

@@ -4,8 +4,11 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * App\Models\ExamType 考试类型
@@ -38,14 +41,14 @@ class ExamType extends Model {
     /**
      * 返回所属的学校对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function school() { return $this->belongsTo('App\Models\School'); }
 
     /**
      * 获取指定考试类型包含的所有考试对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function exams() { return $this->hasMany('App\Models\Exam'); }
 
@@ -56,6 +59,7 @@ class ExamType extends Model {
      * @return bool
      */
     public function store(array $data) {
+        
         $examType = $this->create($data);
 
         return $examType ? true : false;
@@ -70,32 +74,32 @@ class ExamType extends Model {
      * @return bool
      */
     public function modify(array $data, $id) {
+        
         $examType = $this->find($id);
-        if (!$examType) {
-            return false;
-        }
+        if (!$examType) { return false; }
 
         return $examType->update($data) ? true : false;
 
     }
-
+    
     /**
      * 删除考试类型
      *
      * @param $id
      * @return bool
+     * @throws Exception
      */
     public function remove($id) {
+        
         $examType = $this->find($id);
-        if (!$examType) {
-            return false;
-        }
+        if (!$examType) { return false; }
 
         return $this->removable($examType) ? $examType->delete() : false;
 
     }
 
     public function datatable() {
+        
         $columns = [
             ['db' => 'ExamType.id', 'dt' => 0],
             ['db' => 'ExamType.name', 'dt' => 1],

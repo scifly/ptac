@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 use App\Http\Requests\DepartmentRequest;
 use App\Models\Department;
 use App\Models\DepartmentType;
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
+use Throwable;
 
 /**
  * 部门
@@ -27,7 +30,8 @@ class DepartmentController extends Controller {
     /**
      * 部门列表
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function index() {
         
@@ -43,7 +47,8 @@ class DepartmentController extends Controller {
      * 创建部门
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function create($id) {
         
@@ -60,7 +65,7 @@ class DepartmentController extends Controller {
      * 保存部门
      *
      * @param DepartmentRequest $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function store(DepartmentRequest $request) {
         
@@ -73,7 +78,8 @@ class DepartmentController extends Controller {
      * 部门详情
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function show($id) {
         
@@ -92,7 +98,8 @@ class DepartmentController extends Controller {
      * 编辑部门
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function edit($id) {
         
@@ -112,7 +119,7 @@ class DepartmentController extends Controller {
      *
      * @param DepartmentRequest $request
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function update(DepartmentRequest $request, $id) {
         
@@ -129,7 +136,8 @@ class DepartmentController extends Controller {
      * 删除部门
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function destroy($id) {
         
@@ -146,7 +154,7 @@ class DepartmentController extends Controller {
      *
      * @param $id
      * @param $parentId
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function move($id, $parentId = null) {
         

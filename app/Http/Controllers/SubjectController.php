@@ -6,7 +6,10 @@ use App\Models\Grade;
 use App\Models\Major;
 use App\Models\MajorSubject;
 use App\Models\Subject;
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
+use Throwable;
 
 /**
  * 科目
@@ -31,7 +34,8 @@ class SubjectController extends Controller {
     /**
      * 科目列表
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function index() {
         
@@ -46,7 +50,8 @@ class SubjectController extends Controller {
     /**
      * 创建科目
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function create() {
         
@@ -61,7 +66,8 @@ class SubjectController extends Controller {
      * 保存科目
      *
      * @param SubjectRequest $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function store(SubjectRequest $request) {
         
@@ -74,7 +80,8 @@ class SubjectController extends Controller {
      * 编辑科目
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function edit($id) {
         
@@ -105,7 +112,8 @@ class SubjectController extends Controller {
      *
      * @param SubjectRequest $request
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function update(SubjectRequest $request, $id) {
         
@@ -118,7 +126,8 @@ class SubjectController extends Controller {
      * 删除科目
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function destroy($id) {
         

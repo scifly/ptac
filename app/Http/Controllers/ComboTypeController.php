@@ -3,7 +3,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CommTypeRequest;
 use App\Models\ComboType;
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
+use Throwable;
 
 /**
  * 套餐类型
@@ -25,7 +28,8 @@ class ComboTypeController extends Controller {
     /**
      * 套餐类型列表
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Throwable
      */
     public function index() {
         
@@ -40,7 +44,8 @@ class ComboTypeController extends Controller {
     /**
      * 创建套餐类型
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Throwable
      */
     public function create() {
         
@@ -52,7 +57,7 @@ class ComboTypeController extends Controller {
      * 保存套餐类型
      *
      * @param CommTypeRequest $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function store(CommTypeRequest $request) {
         
@@ -65,7 +70,8 @@ class ComboTypeController extends Controller {
      * 编辑套餐类型
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Throwable
      */
     public function edit($id) {
         
@@ -81,7 +87,7 @@ class ComboTypeController extends Controller {
      *
      * @param CommTypeRequest $request
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function update(CommTypeRequest $request, $id) {
         
@@ -97,7 +103,8 @@ class ComboTypeController extends Controller {
      * 删除套餐类型
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function destroy($id) {
         

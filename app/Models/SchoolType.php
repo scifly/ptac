@@ -6,6 +6,7 @@ use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * App\Models\SchoolType
@@ -32,7 +33,7 @@ class SchoolType extends Model {
     /**
      * 获取指定学校类型下属的所有学校对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function schools() { return $this->hasMany('App\Models\School'); }
 

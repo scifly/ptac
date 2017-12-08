@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -42,11 +43,26 @@ class Score extends Model {
         'class_rank', 'grade_rank', 'score',
         'enabled',
     ];
-
+    
+    /**
+     * 返回分数记录所属的学生对象
+     * 
+     * @return BelongsTo
+     */
     public function student() { return $this->belongsTo('App\Models\Student'); }
-
+    
+    /**
+     * 返回分数记录所属的科目对象
+     * 
+     * @return BelongsTo
+     */
     public function subject() { return $this->belongsTo('App\Models\Subject'); }
-
+    
+    /**
+     * 返回分数记录所述的考试对象
+     * 
+     * @return BelongsTo
+     */
     public function exam() { return $this->belongsTo('App\Models\Exam'); }
 
     public function datatable() {
@@ -116,6 +132,7 @@ class Score extends Model {
     }
 
     public function statistics($exam_id) {
+        
         $class_ids = DB::table('exams')->where('id', $exam_id)->value('class_ids');
         $class = DB::table('classes')
             ->whereIn('id', explode(',', $class_ids))

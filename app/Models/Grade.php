@@ -7,9 +7,13 @@ use App\Events\GradeDeleted;
 use App\Events\GradeUpdated;
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 /**
  * App\Models\Grade 年级
@@ -51,45 +55,54 @@ class Grade extends Model {
     /**
      * 返回对应的部门对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function department() { return $this->belongsTo('App\Models\Department'); }
 
     /**
      * 返回指定年级所属的学校对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function school() { return $this->belongsTo('App\Models\School'); }
 
     /**
      * 获取指定年级包含的所有班级对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function classes() { return $this->hasMany('App\Models\Squad'); }
 
     /**
      * 获取指定年级包含的学生考勤设置对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function studentAttendanceSetting() { return $this->hasMany('App\Models\StudentAttendanceSetting'); }
 
     /**
      * 通过Squad中间对象获取指定年级包含的所有学生对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
+     * @return HasManyThrough
      */
-    public function students() { return $this->hasManyThrough('App\Models\Student', 'App\Models\Squad', 'id', 'class_id'); }
+    public function students() {
+        
+        return $this->hasManyThrough(
+            'App\Models\Student',
+            'App\Models\Squad',
+            'id',
+            'class_id');
+    
+    }
 
     /**
      * 根据学校ID返回年级列表(id, name)
      *
      * @param array $schoolIds
-     * @return array|\Illuminate\Support\Collection
+     * @return array|Collection
      */
     public function grades(array $schoolIds = []) {
+        
         if (sizeof($schoolIds) === 1) {
             return $this->where('school_id', $schoolIds[0])
                 ->where('enabled', 1)
@@ -110,8 +123,16 @@ class Grade extends Model {
         return $this->getGradesList($grades, $schools);
 
     }
-
+    
+    /**
+     * 获取年级列表
+     *
+     * @param $grades
+     * @param $schools
+     * @return array
+     */
     private function getGradesList($grades, $schools) {
+        
         $gradesList = [];
         foreach ($grades as $grade) {
             $gradesList[$schools[$grade['school_id']]][$grade['id']] = $grade['name'];
@@ -129,10 +150,10 @@ class Grade extends Model {
      * @return bool
      */
     public function store(array $data, $fireEvent = false) {
+        
         $grade = $this->create($data);
         if ($grade && $fireEvent) {
             event(new GradeCreated($grade));
-
             return true;
         }
 
@@ -149,34 +170,33 @@ class Grade extends Model {
      * @return bool
      */
     public function modify(array $data, $id, $fireEvent = false) {
+        
         $grade = $this->find($id);
         $updated = $grade->update($data);
         if ($updated && $fireEvent) {
             event(new GradeUpdated($grade));
-
             return true;
         }
 
         return $updated ? true : false;
 
     }
-
+    
     /**
      * 删除年级
      *
      * @param $id
      * @param bool $fireEvent
      * @return bool
+     * @throws Exception
      */
     public function remove($id, $fireEvent = false) {
+        
         $grade = $this->find($id);
-        if (!$grade) {
-            return false;
-        }
+        if (!$grade) { return false; }
         $removed = $this->removable($grade) ? $grade->delete() : false;
         if ($removed && $fireEvent) {
             event(new GradeDeleted($grade));
-
             return true;
         }
 
@@ -185,6 +205,7 @@ class Grade extends Model {
     }
 
     public function datatable() {
+        
         $columns = [
             ['db' => 'Grade.id', 'dt' => 0],
             [
@@ -239,6 +260,7 @@ class Grade extends Model {
         $school = new School();
         $schoolId = $school->getSchoolId();
         $condition = 'Grade.school_id = ' . $schoolId;
+        
         return Datatable::simple($this, $columns, $joins, $condition);
 
     }

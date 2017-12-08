@@ -7,6 +7,8 @@ use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Facades\DB;
 use ReflectionClass;
 
@@ -53,35 +55,23 @@ class Tab extends Model {
     /**
      * 返回指定卡片所属的菜单对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return BelongsToMany
      */
-    public function menus() {
-
-        return $this->belongsToMany('App\Models\Menu', 'menus_tabs');
-
-    }
+    public function menus() { return $this->belongsToMany('App\Models\Menu', 'menus_tabs'); }
 
     /**
      * 返回指定卡片所属的图标对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
-    public function icon() {
-
-        return $this->belongsTo('App\Models\Icon');
-
-    }
+    public function icon() { return $this->belongsTo('App\Models\Icon'); }
 
     /**
      * 返回指定卡片默认的Action对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
-    public function action() {
-
-        return $this->belongsTo('App\Models\Action');
-
-    }
+    public function action() { return $this->belongsTo('App\Models\Action'); }
 
     /**
      * 扫描
@@ -182,9 +172,7 @@ class Tab extends Model {
     public function remove($id) {
 
         $tab = $this->find($id);
-        if (!isset($tab)) {
-            return false;
-        }
+        if (!isset($tab)) { return false; }
         try {
             DB::transaction(function () use ($id, $tab) {
                 # 删除指定的卡片记录
@@ -192,10 +180,10 @@ class Tab extends Model {
                 # 删除与指定卡片绑定的菜单记录
                 MenuTab::whereTabId($id)->delete();
             });
-
         } catch (Exception $e) {
             throw $e;
         }
+        
         return true;
 
     }
@@ -294,16 +282,15 @@ class Tab extends Model {
 
         try {
             DB::transaction(function () use ($data) {
-
                 $t = $this->create($data);
                 $menuTab = new MenuTab();
                 $menuIds = $data['menu_ids'];
                 $menuTab->storeByTabId($t->id, $menuIds);
             });
-
         } catch (Exception $e) {
             throw $e;
         }
+        
         return true;
 
     }
@@ -319,9 +306,7 @@ class Tab extends Model {
     public function modify(array $data, $id) {
 
         $tab = $this->find($id);
-        if (!isset($tab)) {
-            return false;
-        }
+        if (!isset($tab)) { return false; }
         try {
             DB::transaction(function () use ($data, $id, $tab) {
                 $tab->update($data);

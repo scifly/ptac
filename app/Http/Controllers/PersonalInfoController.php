@@ -3,8 +3,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\PersonalInfoRequest;
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Response;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Request;
+use Throwable;
 
 /**
  * 个人信息
@@ -27,7 +30,8 @@ class PersonalInfoController extends Controller {
     /**
      * 修改个人信息
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function index() {
         
@@ -47,15 +51,13 @@ class PersonalInfoController extends Controller {
      *
      * @param PersonalInfoRequest $request
      * @param $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function update(PersonalInfoRequest $request, $id) {
         
         $input = $request->except(['group_id', 'avatar_url']);
         $personInfo = $this->user->find($id);
-        if (!$personInfo) {
-            return $this->notFound();
-        }
+        if (!$personInfo) { return $this->notFound(); }
         
         return $personInfo->update($input)
             ? $this->succeed() : $this->fail('更新个人信息失败');
@@ -66,7 +68,7 @@ class PersonalInfoController extends Controller {
      * 上传头像
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function uploadAvatar($id) {
         
@@ -119,7 +121,7 @@ class PersonalInfoController extends Controller {
      *
      * @param $id
      * @param $imgName
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     private function saveImg($id, $imgName) {
         
