@@ -178,7 +178,10 @@ class UserController extends Controller {
 
     }
 
-    public function events(){
+    /**
+     * 待办事项
+     */
+    public function event(){
 
     }
     /**
