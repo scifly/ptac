@@ -18,6 +18,12 @@
                     ]) !!}
                 </div>
             </div>
+            @include('partials.single_select', [
+                'label' => '所属角色',
+                'id' => 'group_id',
+                'items' => $groups,
+                'icon' => 'fa fa-meh-o'
+            ])
             <div class="form-group">
                 {!! Form::label('icon_id', '图标', [
                     'class' => 'col-sm-3 control-label'
