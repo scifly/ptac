@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
@@ -31,36 +32,36 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read School $school
  */
 class ConferenceRoom extends Model {
-    
+
     use ModelTrait;
-    
+
     protected $fillable = [
         'name', 'school_id', 'capacity',
         'remark', 'enabled',
     ];
-    
+
     /**
      * 返回会议室所属的学校对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function school() {
-        
+
         return $this->belongsTo('\App\Models\School');
-        
+
     }
-    
+
     /**
      * 获取指定会议室的会议队列
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function conferenceQueues() {
-        
+
         return $this->hasMany('App\Models\ConferenceQueue');
-        
+
     }
-    
+
     /**
      * 保存会议室
      *
@@ -68,12 +69,12 @@ class ConferenceRoom extends Model {
      * @return bool
      */
     public function store(array $data) {
-        
+
         $cr = $this->create($data);
         return $cr ? true : false;
-        
+
     }
-    
+
     /**
      * 更新会议室
      *
@@ -82,13 +83,15 @@ class ConferenceRoom extends Model {
      * @return bool
      */
     public function modify(array $data, $id) {
-        
+
         $cr = $this->find($id);
-        if (!$cr) { return false; }
+        if (!$cr) {
+            return false;
+        }
         return $cr->update($data) ? true : false;
-        
+
     }
-    
+
     /**
      * 删除会议室
      *
@@ -96,15 +99,17 @@ class ConferenceRoom extends Model {
      * @return bool
      */
     public function remove($id) {
-        
+
         $cr = $this->find($id);
-        if (!$cr) { return false; }
+        if (!$cr) {
+            return false;
+        }
         return $this->removable($id) ? $cr->delete() : false;
-        
+
     }
-    
+
     public function datatable() {
-        
+
         $columns = [
             ['db' => 'ConferenceRoom.id', 'dt' => 0],
             ['db' => 'ConferenceRoom.name', 'dt' => 1],
@@ -114,7 +119,7 @@ class ConferenceRoom extends Model {
             ['db' => 'ConferenceRoom.created_at', 'dt' => 5],
             ['db' => 'ConferenceRoom.updated_at', 'dt' => 6],
             [
-                'db'        => 'ConferenceRoom.created_at', 'dt' => 7,
+                'db' => 'ConferenceRoom.created_at', 'dt' => 7,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($d, $row);
                 },
@@ -122,17 +127,17 @@ class ConferenceRoom extends Model {
         ];
         $joins = [
             [
-                'table'      => 'schools',
-                'alias'      => 'School',
-                'type'       => 'INNER',
+                'table' => 'schools',
+                'alias' => 'School',
+                'type' => 'INNER',
                 'conditions' => [
                     'School.id = ConferenceRoom.school_id',
                 ],
             ],
         ];
-        
+
         return Datatable::simple($this, $columns, $joins);
-        
+
     }
-    
+
 }

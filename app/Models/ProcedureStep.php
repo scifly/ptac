@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
@@ -31,47 +32,23 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read Procedure $procedure
  */
 class ProcedureStep extends Model {
-    
+
     use ModelTrait;
-    
+
     protected $table = 'procedure_steps';
-    
+
     protected $fillable = [
         'procedure_id', 'name', 'approver_user_ids',
         'related_user_ids', 'remark', 'enabled',
     ];
-    
+
     /**
      * 返回指定审批流程步骤所属的审批流程对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function procedure() { return $this->belongsTo('App\Models\Procedure'); }
-    
-    /**
-     * 返回审批者用户列表
-     *
-     * @param $id
-     * @return string
-     */
-    public function approverUsers($id) {
-    
-        return $this->getUserList($id, 'approver_user_ids');
-        
-    }
-    
-    /**
-     * 返回相关人用户列表
-     *
-     * @param $id
-     * @return string
-     */
-    public function relatedUsers($id) {
-    
-        return $this->getUserList($id, 'related_user_ids');
-    
-    }
-    
+
     /**
      * 保存审批流程步骤
      *
@@ -79,13 +56,13 @@ class ProcedureStep extends Model {
      * @return bool
      */
     public function store(array $data) {
-        
+
         $ps = $this->create($data);
-        
+
         return $ps ? true : false;
-        
+
     }
-    
+
     /**
      * 更新审批流程步骤
      *
@@ -94,14 +71,16 @@ class ProcedureStep extends Model {
      * @return bool
      */
     public function modify(array $data, $id) {
-        
+
         $ps = $this->find($id);
-        if (!$ps) { return false; }
-        
+        if (!$ps) {
+            return false;
+        }
+
         return $ps->update($data) ? true : false;
-        
+
     }
-    
+
     /**
      * 删除审批流程步骤
      *
@@ -109,26 +88,28 @@ class ProcedureStep extends Model {
      * @return bool|null
      */
     public function remove($id) {
-        
+
         $ps = $this->find($id);
-        if (!$ps) { return false; }
+        if (!$ps) {
+            return false;
+        }
         return $ps->removable($ps) ? $ps->delete() : false;
-        
+
     }
-    
+
     public function datatable() {
-        
+
         $columns = [
             ['db' => 'ProcedureStep.id', 'dt' => 0],
             ['db' => 'Procedures.name as procedurename', 'dt' => 1],
             [
-                'db'        => 'ProcedureStep.approver_user_ids', 'dt' => 2,
+                'db' => 'ProcedureStep.approver_user_ids', 'dt' => 2,
                 'formatter' => function ($row) {
                     return $this->approverUsers($row['id']);
                 },
             ],
             [
-                'db'        => 'ProcedureStep.related_user_ids', 'dt' => 3,
+                'db' => 'ProcedureStep.related_user_ids', 'dt' => 3,
                 'formatter' => function ($row) {
                     return $this->relatedUsers($row['id']);
                 },
@@ -138,7 +119,7 @@ class ProcedureStep extends Model {
             ['db' => 'ProcedureStep.created_at', 'dt' => 6],
             ['db' => 'ProcedureStep.updated_at', 'dt' => 7],
             [
-                'db'        => 'ProcedureStep.enabled', 'dt' => 8,
+                'db' => 'ProcedureStep.enabled', 'dt' => 8,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($d, $row);
                 },
@@ -146,18 +127,30 @@ class ProcedureStep extends Model {
         ];
         $joins = [
             [
-                'table'      => 'procedures',
-                'alias'      => 'Procedures',
-                'type'       => 'INNER',
+                'table' => 'procedures',
+                'alias' => 'Procedures',
+                'type' => 'INNER',
                 'conditions' => [
                     'Procedures.id = ProcedureStep.procedure_id',
                 ],
             ],
         ];
-        
+
         return Datatable::simple($this, $columns, $joins);
     }
-    
+
+    /**
+     * 返回审批者用户列表
+     *
+     * @param $id
+     * @return string
+     */
+    public function approverUsers($id) {
+
+        return $this->getUserList($id, 'approver_user_ids');
+
+    }
+
     /**
      * 根据流程步骤ID获取审批者/相关人用户列表
      *
@@ -165,15 +158,27 @@ class ProcedureStep extends Model {
      * @param $field string (用户ID)字段名称
      * @return string
      */
-    private function getUserList($id, $field): string {
-        
+    private function getUserList($id, $field) {
+
         $ps = $this->find($id);
         $user = new User();
         $userIds = $user->users(explode(',', $ps->{$field}));
         $userList = collect($userIds)->flatten()->toArray();
-        
+
         return implode(',', $userList);
-        
+
     }
-    
+
+    /**
+     * 返回相关人用户列表
+     *
+     * @param $id
+     * @return string
+     */
+    public function relatedUsers($id) {
+
+        return $this->getUserList($id, 'related_user_ids');
+
+    }
+
 }

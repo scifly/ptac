@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
@@ -29,28 +30,28 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read StudentAttendance[] $studentAttendances
  */
 class AttendanceMachine extends Model {
-    
+
     protected $table = 'attendance_machines';
-    
+
     protected $fillable = [
         'name', 'location', 'school_id',
         'machineid', 'enabled',
     ];
-    
+
     /**
      * 返回考勤机所属的学校对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function school() { return $this->belongsTo('App\Models\School'); }
-    
+
     /**
      * 获取指定考勤机记录的学生考勤记录对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function studentAttendances() { return $this->hasMany('App\Models\StudentAttendance'); }
-    
+
     public function datatable() {
         $columns = [
             ['db' => 'AttendanceMachine.id', 'dt' => 0],
@@ -58,7 +59,7 @@ class AttendanceMachine extends Model {
             ['db' => 'AttendanceMachine.location', 'dt' => 2],
             [
                 'db' => 'School.name as schoolname', 'dt' => 3,
-                'formatter' => function($d) {
+                'formatter' => function ($d) {
                     return '<i class="fa fa-university"></i>&nbsp;' . $d;
                 }
             ],
@@ -66,7 +67,7 @@ class AttendanceMachine extends Model {
             ['db' => 'AttendanceMachine.created_at', 'dt' => 5],
             ['db' => 'AttendanceMachine.updated_at', 'dt' => 6],
             [
-                'db'        => 'AttendanceMachine.enabled', 'dt' => 7,
+                'db' => 'AttendanceMachine.enabled', 'dt' => 7,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($d, $row, false);
                 },
@@ -74,9 +75,9 @@ class AttendanceMachine extends Model {
         ];
         $joins = [
             [
-                'table'      => 'schools',
-                'alias'      => 'School',
-                'type'       => 'INNER',
+                'table' => 'schools',
+                'alias' => 'School',
+                'type' => 'INNER',
                 'conditions' => [
                     'School.id = AttendanceMachine.school_id',
                 ],
@@ -86,8 +87,8 @@ class AttendanceMachine extends Model {
         $condition = 'School.id = ' . $school->getSchoolId();
         unset($school);
 
-        
-        return Datatable::simple($this, $columns, $joins,$condition );
+
+        return Datatable::simple($this, $columns, $joins, $condition);
     }
-    
+
 }

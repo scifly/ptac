@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
@@ -29,23 +30,23 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read School $school
  */
 class Team extends Model {
-    
+
     protected $fillable = ['name', 'school_id', 'remark', 'enabled'];
-    
+
     /**
      * 返回指定教职员工组所属的学校对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function school() { return $this->belongsTo('App\Models\School'); }
-    
+
     /**
      * 获取指定教职员工组包含的所有教职员工对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function educators() { return $this->belongsToMany('App\Models\Educator', 'educators_teams'); }
-    
+
     /**
      * 获取教职员工组列表
      *
@@ -58,11 +59,11 @@ class Team extends Model {
             $team = $this->find($id);
             $teams[$team['id']] = $team['name'];
         }
-        
+
         return $teams;
-        
+
     }
-    
+
     public function datatable() {
         $columns = [
             ['db' => 'Team.id', 'dt' => 0],
@@ -72,7 +73,7 @@ class Team extends Model {
             ['db' => 'Team.created_at', 'dt' => 4],
             ['db' => 'Team.updated_at', 'dt' => 5],
             [
-                'db'        => 'Team.enabled', 'dt' => 6,
+                'db' => 'Team.enabled', 'dt' => 6,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
                 },
@@ -80,16 +81,16 @@ class Team extends Model {
         ];
         $joins = [
             [
-                'table'      => 'schools',
-                'alias'      => 'School',
-                'type'       => 'INNER',
+                'table' => 'schools',
+                'alias' => 'School',
+                'type' => 'INNER',
                 'conditions' => [
                     'School.id = Team.school_id',
                 ],
             ],
         ];
         return Datatable::simple($this, $columns, $joins);
-        
+
     }
-    
+
 }

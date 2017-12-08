@@ -2,8 +2,10 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\UserRequest;
+use App\Models\Menu;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 
 /**
@@ -15,12 +17,13 @@ use Illuminate\Support\Facades\Request;
 class UserController extends Controller {
     
     protected $user;
+    protected $menu;
     
-    function __construct(User $user) {
+    function __construct(User $user, Menu $menu) {
     
         $this->middleware(['auth']);
         $this->user = $user;
-    
+        $this->menu = $menu;
     }
     
     /**
@@ -136,13 +139,19 @@ class UserController extends Controller {
      * @param $id
      * @return bool|\Illuminate\Http\JsonResponse
      */
-    public function profile($id){
+    public function profile(){
+        $id = Auth::id();
+
         $user = $this->user->find($id);
         if (!$user) {
             return $this->notFound();
         }
 
-        return $this->output(__METHOD__, ['user' => $user]);
+        return view('user.profile', [
+            'user' => $user,
+            'menu' => $this->menu->getMenuHtml($this->menu->rootMenuId()),
+
+        ]);
     }
 
     /**
@@ -150,13 +159,32 @@ class UserController extends Controller {
      * @param $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function reset($id){
+    public function reset(){
+        $id = Auth::id();
+        if(Request::isMethod('post'))
+        {
+           $password = Request::input('password') ;
+           $pwd = bcrypt(Request::input('pwd'));
+           $user = User::find($id);
+            if (!Auth::attempt([ 'password' => $password])){
+                return response()->json(['statusCode' => 201 ]);
+            }
+            $res = $user->update(['password' => $pwd]);
+            if($res){
+                return response()->json(['statusCode' => 200]);
+            }
+
+        }
+
         $user = $this->user->find($id);
         if(!$user) {
             return $this->notFound();
         }
-
-        return $this->output(__METHOD__, ['user' => $user]);
+        return view('user.reset', [
+            'user' => $user,
+            'menu' => $this->menu->getMenuHtml($this->menu->rootMenuId()),
+            'js' => '../public/js/user/reset.js',
+        ]);
     }
 
     /**

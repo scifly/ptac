@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
@@ -30,7 +31,7 @@ use Illuminate\Database\Eloquent\Model;
  * @mixin \Eloquent 考勤
  */
 class StudentAttendance extends Model {
-    
+
     //
     protected $table = 'student_attendance';
     protected $fillable = [
@@ -39,5 +40,5 @@ class StudentAttendance extends Model {
         'longitude', 'latitude', 'created_at',
         'updated_at',
     ];
-    
+
 }

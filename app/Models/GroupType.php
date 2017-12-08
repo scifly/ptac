@@ -13,6 +13,6 @@ use Illuminate\Database\Eloquent\Model;
  */
 class GroupType extends Model {
 
-    public function groups() { return $this->hasMany('App\Models\Group');}
-    
+    public function groups() { return $this->hasMany('App\Models\Group'); }
+
 }

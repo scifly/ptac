@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
@@ -32,24 +33,24 @@ use Illuminate\Support\Facades\DB;
  * @property-read School $school
  */
 class ScoreRange extends Model {
-    
+
     use ModelTrait;
-    
+
     protected $table = 'score_ranges';
-    
+
     protected $fillable = [
         'name', 'subject_ids', 'school_id',
         'start_score', 'end_score', 'created_at',
         'updated_at', 'enabled',
     ];
-    
+
     /**
      * 获取指定成绩统计项所属的学校对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function school() { return $this->belongsTo('App\Models\School'); }
-    
+
     /**
      * 保存成绩统计项
      *
@@ -58,11 +59,11 @@ class ScoreRange extends Model {
      */
     public function store(array $data) {
         $scoreRange = $this->create($data);
-        
+
         return $scoreRange ? true : false;
-        
+
     }
-    
+
     /**
      * 更新成绩统计项
      *
@@ -75,11 +76,11 @@ class ScoreRange extends Model {
         if (!$scoreRange) {
             return false;
         }
-        
+
         return $scoreRange->update($data) ? true : false;
-        
+
     }
-    
+
     /**
      * 删除成绩统计项
      *
@@ -91,11 +92,11 @@ class ScoreRange extends Model {
         if (!$scoreRange) {
             return false;
         }
-        
+
         return $this->removable($scoreRange) ? $scoreRange->delete() : false;
-        
+
     }
-    
+
     public function datatable() {
         $columns = [
             ['db' => 'ScoreRange.id', 'dt' => 0],
@@ -106,7 +107,7 @@ class ScoreRange extends Model {
             ['db' => 'ScoreRange.created_at', 'dt' => 5],
             ['db' => 'ScoreRange.updated_at', 'dt' => 6],
             [
-                'db'        => 'ScoreRange.enabled', 'dt' => 7,
+                'db' => 'ScoreRange.enabled', 'dt' => 7,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($d, $row);
                 },
@@ -114,19 +115,19 @@ class ScoreRange extends Model {
         ];
         $joins = [
             [
-                'table'      => 'schools',
-                'alias'      => 'School',
-                'type'       => 'LEFT',
+                'table' => 'schools',
+                'alias' => 'School',
+                'type' => 'LEFT',
                 'conditions' => [
                     'School.id = ScoreRange.school_id',
                 ],
             ],
         ];
-        
+
         return Datatable::simple($this, $columns, $joins);
-        
+
     }
-    
+
     public function statistics($request) {
         //查询班级
         if ($request['type'] == 'grade') {
@@ -176,10 +177,10 @@ class ScoreRange extends Model {
             if (count($item) != 0) {
                 $v->precentage = round($v->number / count($item) * 100, 2);
             }
-            
+
         }
-        
+
         return response()->json($score_range);
     }
-    
+
 }

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
@@ -32,7 +33,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read \App\Models\StudentAttendanceSetting $studentAttendanceSetting
  */
 class Semester extends Model {
-    
+
     protected $fillable = [
         'school_id',
         'name',
@@ -41,16 +42,16 @@ class Semester extends Model {
         'end_date',
         'enabled',
     ];
-    
+
     public function school() {
         return $this->belongsTo('App\Models\School');
-        
+
     }
-    
+
     public function studentAttendanceSetting() {
         return $this->hasOne('App\Models\StudentAttendanceSetting', 'semester_id', 'id');
     }
-    
+
     public function datatable() {
         $columns = [
             ['db' => 'Semester.id', 'dt' => 0],
@@ -61,7 +62,7 @@ class Semester extends Model {
             ['db' => 'Semester.created_at', 'dt' => 5],
             ['db' => 'Semester.updated_at', 'dt' => 6],
             [
-                'db'        => 'Semester.enabled', 'dt' => 7,
+                'db' => 'Semester.enabled', 'dt' => 7,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($d, $row);
                 },
@@ -69,17 +70,17 @@ class Semester extends Model {
         ];
         $joins = [
             [
-                'table'      => 'schools',
-                'alias'      => 'School',
-                'type'       => 'INNER',
+                'table' => 'schools',
+                'alias' => 'School',
+                'type' => 'INNER',
                 'conditions' => [
                     'School.id = Semester.school_id',
                 ],
             ],
         ];
-        
+
         return Datatable::simple($this, $columns, $joins);
-        
+
     }
-    
+
 }
