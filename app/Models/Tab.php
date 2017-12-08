@@ -42,7 +42,7 @@ use ReflectionClass;
 class Tab extends Model {
 
     protected $fillable = [
-        'name', 'remark', 'icon_id',
+        'name', 'remark', 'icon_id','group_id',
         'action_id', 'enabled', 'controller',
     ];
     protected $excluded_controllers = [

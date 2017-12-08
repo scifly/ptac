@@ -420,6 +420,15 @@ var page = {
         var id = $('#id').val();
         page.initForm(table, formId, table + '/rechargeStore/' + id, 'PUT');
     },
+    show: function (table) {
+        var id = $('#id').val();
+        var url = 'edit/' + id;
+        var $activeTabPane = $('#tab_' + page.getActiveTabId());
+        page.initBackBtn(table);
+        $('.btn-bianji').on('click',function () {
+            page.getTabContent($activeTabPane,table + '/' + url);
+        });
+    },
     loadCss: function(css) {
         if (!$('link[href="' + page.siteRoot() + css +'"]').length) {
             $cip.after($("<link/>", {
