@@ -15,6 +15,6 @@
         fire off the related listener command.
     </p>
 </div>
-<script src="../resources/assets/js/app.js" charset="utf-8"></script>
+<script src="js/app.js" charset="utf-8"></script>
 </body>
 </html>
