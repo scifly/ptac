@@ -6,6 +6,7 @@ use App\Models\CommType;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
+use Throwable;
 
 /**
  * 通信方式
@@ -28,7 +29,7 @@ class CommTypeController extends Controller {
      * 通信方式列表
      *
      * @return JsonResponse
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function index() {
         
