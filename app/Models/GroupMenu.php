@@ -1,10 +1,11 @@
 <?php
+
 namespace App\Models;
 
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
-use Mockery\Exception;
 
 /**
  * App\Models\GroupMenu
@@ -24,29 +25,35 @@ use Mockery\Exception;
  * @method static Builder|GroupMenu whereUpdatedAt($value)
  */
 class GroupMenu extends Model {
-    
+
     protected $table = 'groups_menus';
-    
+
     protected $fillable = ['group_id', 'menu_id', 'enabled'];
-    
+
+    /**
+     * @param $groupId
+     * @param array $ids
+     * @return bool
+     * @throws Exception
+     */
     public function storeByGroupId($groupId, array $ids = []) {
         try {
-            $exception = DB::transaction(function () use ($groupId, $ids) {
+            DB::transaction(function () use ($groupId, $ids) {
                 $this->where('group_id', $groupId)->delete();
                 foreach ($ids as $id) {
                     $this->create([
                         'group_id' => $groupId,
-                        'menu_id'  => $id,
-                        'enabled'  => 1,
+                        'menu_id' => $id,
+                        'enabled' => 1,
                     ]);
                 }
             });
-            
-            return !is_null($exception) ? true : $exception;
+
         } catch (Exception $e) {
-            return false;
+            throw $e;
         }
-        
+        return true;
+
     }
-    
+
 }

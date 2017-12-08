@@ -63,23 +63,23 @@ class MajorController extends Controller {
         return $this->major->store($request) ? $this->succeed() : $this->fail();
         
     }
-    
-    /**
-     * 专业详情
-     *
-     * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
-     */
-    public function show($id) {
-        
-        $major = $this->major->find($id);
-        if (!$major) {
-            return $this->notFound();
-        }
-        
-        return $this->output(__METHOD__, ['major' => $major]);
-        
-    }
+    //
+    // /**
+    //  * 专业详情
+    //  *
+    //  * @param $id
+    //  * @return bool|\Illuminate\Http\JsonResponse
+    //  */
+    // public function show($id) {
+    //
+    //     $major = $this->major->find($id);
+    //     if (!$major) {
+    //         return $this->notFound();
+    //     }
+    //
+    //     return $this->output(__METHOD__, ['major' => $major]);
+    //
+    // }
     
     /**
      * 编辑专业

@@ -1,16 +1,18 @@
 <?php
+
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Http\Requests\WapSiteRequest;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use Mockery\Exception;
 
 /**
+ * 网站
  * App\Models\WapSite
  *
  * @property int $id
@@ -28,14 +30,13 @@ use Mockery\Exception;
  * @method static Builder|WapSite whereSiteTitle($value)
  * @method static Builder|WapSite whereUpdatedAt($value)
  * @mixin \Eloquent
- * 网站
  * @property-read Collection|WapSiteModule[] $hasManyWsm
  * @property-read School $school
  * @property-read Collection|WapSiteModule[] $wapsiteModules
  * @property-read Collection|WapSiteModule[] $wapSiteModules
  */
 class WapSite extends Model {
-    
+
     //
     protected $fillable = [
         'id',
@@ -46,33 +47,39 @@ class WapSite extends Model {
         'updated_at',
         'enabled',
     ];
-    
+
     public function wapSiteModules() {
-        
+
         return $this->hasMany('App\Models\WapSiteModule');
-        
+
     }
-    
+
     public function school() {
-        
+
         return $this->belongsTo('App\Models\School');
-        
+
     }
-    
+
+    /**
+     * @param WapSiteRequest $request
+     * @return bool
+     * @throws Exception
+     */
     public function store(WapSiteRequest $request) {
         try {
-            $exception = DB::transaction(function () use ($request) {
+            DB::transaction(function () use ($request) {
                 //删除原有的图片
                 $this->removeMedias($request);
                 $this->create($request->all());
             });
-            
-            return is_null($exception) ? true : $exception;
+
         } catch (Exception $e) {
-            return false;
+            throw $e;
         }
+        return true;
+
     }
-    
+
     /**
      * @param $request
      */
@@ -84,35 +91,43 @@ class WapSite extends Model {
             foreach ($medias as $media) {
                 $paths = explode("/", $media->path);
                 Storage::disk('public')->delete($paths[5]);
-                
+
             }
             Media::whereIn('id', $mediaIds)->delete();
         }
     }
-    
+
+    /**
+     * 更新微网站
+     *
+     * @param WapSiteRequest $request
+     * @param $id
+     * @return bool|mixed
+     * @throws Exception
+     */
     public function modify(WapSiteRequest $request, $id) {
         $wapSite = $this->find($id);
         if (!$wapSite) {
             return false;
         }
         try {
-            $exception = DB::transaction(function () use ($request, $id) {
+            DB::transaction(function () use ($request, $id) {
                 $this->removeMedias($request);
                 // dd($request->except('_method', '_token'));
                 return $this->where('id', $id)->update($request->except('_method', '_token', 'del_ids'));
             });
-            
-            return is_null($exception) ? true : $exception;
+
         } catch (Exception $e) {
-            return false;
+            throw $e;
         }
+        return true;
     }
-    
+
     /**
      * @return array
      */
     public function datatable() {
-        
+
         $columns = [
             ['db' => 'WapSite.id', 'dt' => 0],
             ['db' => 'School.name', 'dt' => 1],
@@ -120,17 +135,17 @@ class WapSite extends Model {
             ['db' => 'WapSite.created_at', 'dt' => 3],
             ['db' => 'WapSite.updated_at', 'dt' => 4],
             [
-                'db'        => 'WapSite.enabled', 'dt' => 5,
+                'db' => 'WapSite.enabled', 'dt' => 5,
                 'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($this, $d, $row);
+                    return Datatable::dtOps($d, $row);
                 },
             ],
         ];
         $joins = [
             [
-                'table'      => 'schools',
-                'alias'      => 'School',
-                'type'       => 'INNER',
+                'table' => 'schools',
+                'alias' => 'School',
+                'type' => 'INNER',
                 'conditions' => [
                     'School.id = WapSite.school_id',
                 ],

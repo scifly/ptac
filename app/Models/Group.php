@@ -1,14 +1,15 @@
 <?php
+
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Mockery\Exception;
 
 /**
  * App\Models\Group
@@ -36,51 +37,52 @@ use Mockery\Exception;
  * @property-read \App\Models\School|null $school
  */
 class Group extends Model {
-    
+
     use ModelTrait;
-    
+
     protected $table = 'groups';
-    
+
     protected $fillable = [
         'name', 'school_id', 'remark', 'enabled',
     ];
-    
+
     /**
      * 获取指定角色下的所有用户对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function users() { return $this->hasMany('App\Models\User'); }
-    
+
     /**
      * 返回指定角色所属的学校对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function school() { return $this->belongsTo('App\Models\School'); }
-    
+
     public function menus() { return $this->belongsToMany('App\Models\Menu', 'groups_menus'); }
-    
+
     public function actions() { return $this->belongsToMany('App\Models\Action', 'actions_groups'); }
-    
+
     public function tabs() { return $this->belongsToMany('App\Models\Tab', 'groups_tabs'); }
 
-    public function groupType(){ return $this->belongsTo('App\Models\GroupType'); }
-    
+    public function groupType() { return $this->belongsTo('App\Models\GroupType'); }
+
     /**
      * 保存角色
      *
      * @param array $data
      * @return bool
+     * @throws Exception
      */
     public function store(array $data) {
-        
+
         try {
-            $exception = DB::transaction(function() use ($data) {
+            DB::transaction(function () use ($data) {
 
                 $groupData = [
-                    'name'    => $data['name'],
-                    'remark'  => $data['remark'],
+                    'name' => $data['name'],
+                    'remark' => $data['remark'],
                     'enabled' => $data['enabled'],
                     'school_id' => $data['school_id'],
                 ];
@@ -97,34 +99,36 @@ class Group extends Model {
                 $tabIds = $data['tabId'];
                 $groupTab = new GroupTab();
                 $groupTab->storeByGroupId($g->id, $tabIds);
-                
+
             });
-            return is_null($exception) ? true : $exception;
+
         } catch (Exception $e) {
-            return false;
+            throw $e;
         }
-        
+        return true;
+
     }
-    
+
     /**
      * 更新角色
      *
      * @param array $data
      * @param $id
      * @return bool
+     * @throws Exception
      */
     public function modify(array $data, $id) {
-        
+
         $group = $this->find($id);
         if (!$group) {
             return false;
         }
         try {
-            $exception = DB::transaction(function () use ($data, $group, $id) {
-                
+            DB::transaction(function () use ($data, $group, $id) {
+
                 $groupData = [
-                    'name'    => $data['name'],
-                    'remark'  => $data['remark'],
+                    'name' => $data['name'],
+                    'remark' => $data['remark'],
                     'enabled' => $data['enabled'],
                 ];
                 $group->update($groupData);
@@ -140,15 +144,16 @@ class Group extends Model {
                 $tabIds = $data['tabId'];
                 $groupTab = new GroupTab();
                 $groupTab->storeByGroupId($id, $tabIds);
-                
+
             });
-            return is_null($exception) ? true : $exception;
+
         } catch (Exception $e) {
-            return false;
+            throw $e;
         }
-        
+        return true;
+
     }
-    
+
     /**
      * 删除角色
      *
@@ -156,26 +161,28 @@ class Group extends Model {
      * @return bool
      */
     public function remove($id) {
-        
+
         $group = $this->find($id);
-        if (!$group) { return false; }
+        if (!$group) {
+            return false;
+        }
         return $this->removable($group) ? $group->delete() : false;
-        
+
     }
-    
+
     public function datatable() {
-        
+
         $columns = [
             ['db' => 'Groups.id', 'dt' => 0],
             [
                 'db' => 'Groups.name', 'dt' => 1,
-                'formatter' => function($d) {
+                'formatter' => function ($d) {
                     return '<i class="fa fa-meh-o"></i>&nbsp;' . $d;
                 }
             ],
             [
                 'db' => 'School.name as schoolname', 'dt' => 2,
-                'formatter' => function($d) {
+                'formatter' => function ($d) {
                     return '<i class="fa fa-university"></i>&nbsp;' . $d;
                 }
             ],
@@ -183,9 +190,9 @@ class Group extends Model {
             ['db' => 'Groups.created_at', 'dt' => 4],
             ['db' => 'Groups.updated_at', 'dt' => 5],
             [
-                'db'        => 'Groups.enabled', 'dt' => 6,
+                'db' => 'Groups.enabled', 'dt' => 6,
                 'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($this, $d, $row);
+                    return Datatable::dtOps($d, $row, false);
                 },
             ],
         ];
@@ -202,7 +209,8 @@ class Group extends Model {
         $condition = '';
         $user = Auth::user();
         switch ($user->group->name) {
-            case '运营': break;
+            case '运营':
+                break;
             case '企业':
                 $corpId = Corp::whereDepartmentId($user->topDeptId($user))
                     ->first()->id;
@@ -226,7 +234,7 @@ class Group extends Model {
             return Datatable::simple($this, $columns, $joins);
         }
         return Datatable::simple($this, $columns, $joins, $condition);
-        
+
     }
-    
+
 }

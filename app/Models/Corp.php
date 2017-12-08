@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use App\Events\CorpCreated;
@@ -41,75 +42,75 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|Corp whereMenuId($value)
  */
 class Corp extends Model {
-    
+
     use ModelTrait;
-    
+
     protected $fillable = [
         'name', 'company_id', 'corpid', 'menu_id',
         'department_id', 'enabled',
     ];
-    
+
     /**
      * 返回对应的部门对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function department() { return $this->belongsTo('App\Models\Department'); }
-    
+
     /**
      * 返回对应的菜单对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function menu() { return $this->belongsTo('App\Models\Menu'); }
-    
+
     /**
      * 获取所属运营者公司对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function company() { return $this->belongsTo('App\Models\Company'); }
-    
+
     /**
      * 获取下属学校对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function schools() { return $this->hasMany('App\Models\School'); }
-    
+
     /**
      * 通过School中间对象获取所有年级对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
      */
     public function grades() {
-        
+
         return $this->hasManyThrough('App\Models\Grade', 'App\Models\School');
-        
+
     }
-    
+
     /**
      * 通过School中间对象获取所有部门对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
      */
     public function departments() {
-        
+
         return $this->hasManyThrough('App\Models\Department', 'App\Models\School');
-        
+
     }
-    
+
     /**
      * 通过School中间对象获取所有教职员工组对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
      */
     public function teams() {
-        
+
         return $this->hasManyThrough('App\Models\Team', 'App\Models\School');
-        
+
     }
-    
+
     /**
      * 保存企业
      *
@@ -118,18 +119,18 @@ class Corp extends Model {
      * @return bool
      */
     public function store(array $data, $fireEvent = false) {
-        
+
         $corp = $this->create($data);
         if ($corp && $fireEvent) {
             event(new CorpCreated($corp));
-            
+
             return true;
         }
-        
+
         return $corp ? true : false;
-        
+
     }
-    
+
     /**
      * 更新企业
      *
@@ -139,19 +140,19 @@ class Corp extends Model {
      * @return bool
      */
     public function modify(array $data, $id, $fireEvent = false) {
-        
+
         $corp = $this->find($id);
         $updated = $corp->update($data);
         if ($updated && $fireEvent) {
             event(new CorpUpdated($corp));
-            
+
             return true;
         }
-        
+
         return $updated ? true : false;
-        
+
     }
-    
+
     /**
      * 删除企业
      *
@@ -160,7 +161,7 @@ class Corp extends Model {
      * @return bool
      */
     public function remove($id, $fireEvent = false) {
-        
+
         $corp = $this->find($id);
         if (!$corp) {
             return false;
@@ -168,30 +169,30 @@ class Corp extends Model {
         $removed = $this->removable($corp) ? $corp->delete() : false;
         if ($removed && $fireEvent) {
             event(new CorpDeleted($corp));
-            
+
             return true;
         }
-        
+
         return $removed ? true : false;
-        
+
     }
-    
+
     /**
      * @return mixed
      */
     public function datatable() {
-        
+
         $columns = [
             ['db' => 'Corp.id', 'dt' => 0],
             [
                 'db' => 'Corp.name', 'dt' => 1,
-                'formatter' => function($d) {
+                'formatter' => function ($d) {
                     return '<i class="fa fa-weixin"></i> &nbsp;' . $d;
                 }
             ],
             [
                 'db' => 'Company.name as companyname', 'dt' => 2,
-                'formatter' => function($d) {
+                'formatter' => function ($d) {
                     return '<i class="fa fa-building"></i>&nbsp;' . $d;
                 }
             ],
@@ -199,24 +200,24 @@ class Corp extends Model {
             ['db' => 'Corp.created_at', 'dt' => 4],
             ['db' => 'Corp.updated_at', 'dt' => 5],
             [
-                'db'        => 'Corp.enabled', 'dt' => 6,
+                'db' => 'Corp.enabled', 'dt' => 6,
                 'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($this, $d, $row);
+                    return Datatable::dtOps($d, $row, false);
                 },
             ],
         ];
         $joins = [
             [
-                'table'      => 'companies',
-                'alias'      => 'Company',
-                'type'       => 'INNER',
+                'table' => 'companies',
+                'alias' => 'Company',
+                'type' => 'INNER',
                 'conditions' => [
                     'Company.id = Corp.company_id',
                 ],
             ],
         ];
-        
+
         return Datatable::simple($this, $columns, $joins);
     }
-    
+
 }

@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="{{ asset('css/AdminLTE.min.css') }}">
     <link rel="stylesheet" href="{{ URL::asset('css/skins/_all-skins.min.css') }}">
     <link rel="stylesheet" href="{{asset('js/plugins/icheck/all.css')}}">
+    <link rel="shortcut icon" href="{{ URL::asset('favicon.ico') }}">
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>

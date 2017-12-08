@@ -62,21 +62,6 @@ class CompanyController extends Controller {
     }
     
     /**
-     * 运营者公司记录详情
-     *
-     * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
-     */
-    public function show($id) {
-        
-        $company = $this->company->find($id);
-        if (!$company) { return $this->notFound(); }
-        
-        return $this->output(__METHOD__, ['company' => $company]);
-        
-    }
-    
-    /**
      * 编辑运营者公司记录
      *
      * @param $id

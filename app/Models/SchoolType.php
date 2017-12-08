@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
@@ -25,18 +26,18 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read Collection|School[] $schools
  */
 class SchoolType extends Model {
-    
+
     protected $fillable = ['name', 'remark', 'enabled'];
-    
+
     /**
      * 获取指定学校类型下属的所有学校对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function schools() { return $this->hasMany('App\Models\School'); }
-    
+
     public function datatable() {
-        
+
         $columns = [
             ['db' => 'SchoolType.id', 'dt' => 0],
             ['db' => 'SchoolType.name', 'dt' => 1],
@@ -44,22 +45,15 @@ class SchoolType extends Model {
             ['db' => 'SchoolType.created_at', 'dt' => 3],
             ['db' => 'SchoolType.updated_at', 'dt' => 4],
             [
-                'db'        => 'SchoolType.enabled', 'dt' => 5,
+                'db' => 'SchoolType.enabled', 'dt' => 5,
                 'formatter' => function ($d, $row) {
-                    $id = $row['id'];
-                    $status = $d ? Datatable::DT_ON : Datatable::DT_OFF;
-                    $editLink = sprintf(Datatable::DT_LINK_EDIT, 'edit_' . $id);
-                    $delLink = sprintf(Datatable::DT_LINK_DEL, $id);
-                    return
-                        $status . str_repeat(Datatable::DT_SPACE, 3).
-                        $editLink . str_repeat(Datatable::DT_SPACE, 2) .
-                        $delLink;
+                    return Datatable::dtOps($d, $row, false);
                 },
             ],
         ];
-        
+
         return Datatable::simple($this, $columns);
-        
+
     }
-    
+
 }

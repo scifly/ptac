@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
@@ -29,25 +30,25 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|ExamType whereSchoolId($value)
  */
 class ExamType extends Model {
-    
+
     use ModelTrait;
-    
+
     protected $fillable = ['name', 'remark', 'school_id', 'enabled'];
-    
+
     /**
      * 返回所属的学校对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function school() { return $this->belongsTo('App\Models\School'); }
-    
+
     /**
      * 获取指定考试类型包含的所有考试对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function exams() { return $this->hasMany('App\Models\Exam'); }
-    
+
     /**
      * 保存考试类型
      *
@@ -56,11 +57,11 @@ class ExamType extends Model {
      */
     public function store(array $data) {
         $examType = $this->create($data);
-        
+
         return $examType ? true : false;
-        
+
     }
-    
+
     /**
      * 更新考试类型
      *
@@ -73,11 +74,11 @@ class ExamType extends Model {
         if (!$examType) {
             return false;
         }
-        
+
         return $examType->update($data) ? true : false;
-        
+
     }
-    
+
     /**
      * 删除考试类型
      *
@@ -89,11 +90,11 @@ class ExamType extends Model {
         if (!$examType) {
             return false;
         }
-        
+
         return $this->removable($examType) ? $examType->delete() : false;
-        
+
     }
-    
+
     public function datatable() {
         $columns = [
             ['db' => 'ExamType.id', 'dt' => 0],
@@ -103,24 +104,24 @@ class ExamType extends Model {
             ['db' => 'ExamType.created_at', 'dt' => 4],
             ['db' => 'ExamType.updated_at', 'dt' => 5],
             [
-                'db'        => 'ExamType.enabled', 'dt' => 6,
+                'db' => 'ExamType.enabled', 'dt' => 6,
                 'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($this, $d, $row);
+                    return Datatable::dtOps($d, $row);
                 },
             ],
         ];
         $joins = [
             [
-                'table'      => 'schools',
-                'alias'      => 'School',
-                'type'       => 'INNER',
+                'table' => 'schools',
+                'alias' => 'School',
+                'type' => 'INNER',
                 'conditions' => [
                     'School.id = ExamType.school_id',
                 ],
             ],
         ];
-        
+
         return Datatable::simple($this, $columns, $joins);
     }
-    
+
 }

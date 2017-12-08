@@ -1,15 +1,17 @@
 <?php
+
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Http\Requests\WsmArticleRequest;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use Mockery\Exception;
 
 /**
+ * 网站内容
  * App\Models\WsmArticle
  *
  * @property int $id
@@ -33,13 +35,12 @@ use Mockery\Exception;
  * @method static Builder|WsmArticle whereUpdatedAt($value)
  * @method static Builder|WsmArticle whereWsmId($value)
  * @mixin \Eloquent
- * 网站内容
  * @property-read WapSiteModule $wapSiteModule
  * @property-read WapSiteModule $wapsitemodule
  * @property-read Media $thumbnailmedia
  */
 class WsmArticle extends Model {
-    
+
     protected $table = 'wsm_articles';
     protected $fillable = [
         'id', 'wsm_id', 'name',
@@ -47,42 +48,43 @@ class WsmArticle extends Model {
         'media_ids', 'created_at', 'updated_at',
         'enabled',
     ];
-    
+
     public function wapSiteModule() {
-        
+
         return $this->belongsTo('App\Models\WapSiteModule', 'wsm_id', 'id');
-        
+
     }
-    
+
     public function thumbnailmedia() {
-        
+
         return $this->belongsTo('App\Models\Media', 'thumbnail_media_id', 'id');
-        
+
     }
-    
+
     /**
      * 保存新建的网站文章
      *
      * @param WsmArticleRequest $request
      * @return bool|mixed
+     * @throws Exception
      */
     public function store(WsmArticleRequest $request) {
-        
+
         try {
-            $exception = DB::transaction(function () use ($request) {
+            DB::transaction(function () use ($request) {
                 //删除原有的图片
                 $this->removeMedias($request);
-                
+
                 return $this->create($request->all());
             });
-            
-            return is_null($exception) ? true : $exception;
+
         } catch (Exception $e) {
-            return false;
+            throw $e;
         }
-        
+        return true;
+
     }
-    
+
     /**
      * 移除关联的媒体文件
      *
@@ -96,18 +98,19 @@ class WsmArticle extends Model {
             foreach ($medias as $media) {
                 $paths = explode("/", $media->path);
                 Storage::disk('uploads')->delete($paths[5]);
-                
+
             }
             Media::whereIn('id', $mediaIds)->delete();
         }
     }
-    
+
     /**
      * 更新网站文章
      *
      * @param WsmArticleRequest $request
      * @param $id
      * @return bool|mixed
+     * @throws Exception
      */
     public function modify(WsmArticleRequest $request, $id) {
         $wapSite = $this->find($id);
@@ -115,25 +118,25 @@ class WsmArticle extends Model {
             return false;
         }
         try {
-            $exception = DB::transaction(function () use ($request, $id) {
+            DB::transaction(function () use ($request, $id) {
                 $this->removeMedias($request);
-                
+
                 return $this->where('id', $id)->update($request->except('_method', '_token', 'del_ids'));
             });
-            
-            return is_null($exception) ? true : $exception;
+
         } catch (Exception $e) {
-            return false;
+            throw $e;
         }
+        return true;
     }
-    
+
     /**
      * 返回数据列表
      *
      * @return array
      */
     public function datatable() {
-        
+
         $columns = [
             ['db' => 'WsmArticle.id', 'dt' => 0],
             ['db' => 'Wsm.name as wsmname', 'dt' => 1],
@@ -142,17 +145,17 @@ class WsmArticle extends Model {
             ['db' => 'WsmArticle.created_at', 'dt' => 4],
             ['db' => 'WsmArticle.updated_at', 'dt' => 5],
             [
-                'db'        => 'WsmArticle.enabled', 'dt' => 6,
+                'db' => 'WsmArticle.enabled', 'dt' => 6,
                 'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($this, $d, $row);
+                    return Datatable::dtOps($d, $row);
                 },
             ],
         ];
         $joins = [
             [
-                'table'      => 'wap_site_modules',
-                'alias'      => 'Wsm',
-                'type'       => 'INNER',
+                'table' => 'wap_site_modules',
+                'alias' => 'Wsm',
+                'type' => 'INNER',
                 'conditions' => [
                     'Wsm.id = WsmArticle.wsm_id',
                 ],
@@ -160,5 +163,5 @@ class WsmArticle extends Model {
         ];
         return Datatable::simple($this, $columns, $joins);
     }
-    
+
 }

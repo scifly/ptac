@@ -382,13 +382,14 @@ class DatatableFacade extends Facade {
     /**
      * Display data entry operations
      *
-     * @param Model $model
      * @param $active
      * @param $row
+     * @param bool $show
+     * @param bool $edit
      * @param bool|true $del - if set to false, do not show delete link
      * @return string
      */
-    static function dtOps(Model $model, $active, $row, $del = true) {
+    static function dtOps($active, $row, $show = true, $edit = true, $del = true) {
         
         $id = $row['id'];
         $status = $active ? self::DT_ON : self::DT_OFF;
@@ -396,9 +397,10 @@ class DatatableFacade extends Facade {
         $editLink = sprintf(self::DT_LINK_EDIT, 'edit_' . $id);
         $delLink = sprintf(self::DT_LINK_DEL, $id);
         return
-            $status . str_repeat(self::DT_SPACE, 3) .
-            $showLink . str_repeat(self::DT_SPACE, 3) .
-            $editLink . ($del ? str_repeat(self::DT_SPACE, 2) . $delLink : '');
+            $status .
+            ($show ? str_repeat(self::DT_SPACE, 3) . $showLink : '') .
+            ($edit ? str_repeat(self::DT_SPACE, 3) . $editLink : '') .
+            ($del ? str_repeat(self::DT_SPACE, 2) . $delLink : '');
         
     }
     

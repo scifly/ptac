@@ -3,12 +3,11 @@ var id = $('#id').val();
 var $formEducator = $('#formStudent');
 $(document).off('click', '.btn-class-add');
 $(document).off('click', '.btn-class-remove');
-
+// 手机号
 if (typeof crud === 'undefined') {
     $.getMultiScripts(['js/admin.crud.js'], page.siteRoot())
         .done(function() { crud.mobile('formEducator', 0, 'POST', 'educators/store'); })
 } else { crud.mobile('formEducator', 0, 'POST', 'educators/store'); }
-// 手机号
 // 班级、科目
 var $class = $("#classes").find("tbody");
 $(document).on('click', '.btn-class-add', function (e) {
