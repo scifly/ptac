@@ -31,12 +31,15 @@ class DepartmentUser extends Model {
     protected $fillable = ['department_id', 'user_id', 'enabled'];
 
     /**
+     * 按UserId保存记录
+     *
      * @param $userId
      * @param array $departmentIds
      * @return bool
      * @throws Exception
      */
     public function storeByUserId($userId, array $departmentIds) {
+        
         try {
             DB::transaction(function () use ($userId, $departmentIds) {
                 foreach ($departmentIds as $departmentId) {
@@ -47,21 +50,24 @@ class DepartmentUser extends Model {
                     ]);
                 }
             });
-
-
         } catch (Exception $e) {
             throw $e;
         }
+        
         return true;
+        
     }
 
     /**
+     * 按部门Id保存记录
+     *
      * @param $departmentId
      * @param array $userIds
      * @return bool
      * @throws Exception
      */
     public function storeByDepartmentId($departmentId, array $userIds) {
+        
         try {
             DB::transaction(function () use ($departmentId, $userIds) {
                 foreach ($userIds as $userId) {
@@ -72,11 +78,10 @@ class DepartmentUser extends Model {
                     ]);
                 }
             });
-
-
         } catch (Exception $e) {
             throw $e;
         }
+        
         return true;
 
     }

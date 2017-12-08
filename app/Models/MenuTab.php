@@ -33,6 +33,8 @@ class MenuTab extends Model {
     protected $fillable = ['menu_id', 'tab_id', 'tab_order', 'enabled'];
 
     /**
+     * 按菜单ID保存记录
+     *
      * @param $menuId
      * @param array $tabIds
      * @return bool
@@ -57,12 +59,15 @@ class MenuTab extends Model {
     }
 
     /**
+     * 按卡片ID保存记录
+     *
      * @param $tabId
      * @param array $menuIds
      * @return bool
      * @throws Exception
      */
     public function storeByTabId($tabId, array $menuIds) {
+        
         try {
             DB::transaction(function () use ($tabId, $menuIds) {
                 foreach ($menuIds as $menuId) {
@@ -73,22 +78,24 @@ class MenuTab extends Model {
                     ]);
                 }
             });
-
-
         } catch (Exception $e) {
             throw $e;
         }
+        
         return true;
 
     }
 
     /**
+     * 保存卡片排序
+     *
      * @param $menuId
      * @param array $ranks
      * @return bool
      * @throws Exception
      */
     public function storeTabRanks($menuId, array $ranks) {
+        
         try {
             DB::transaction(function () use ($menuId, $ranks) {
                 foreach ($ranks as $id => $rank) {
@@ -96,11 +103,10 @@ class MenuTab extends Model {
                         ->update(['tab_order' => $rank + 1]);
                 }
             });
-
-
         } catch (Exception $e) {
             throw $e;
         }
+        
         return true;
 
     }

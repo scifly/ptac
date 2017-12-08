@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -14,8 +15,8 @@ use Illuminate\Support\Facades\DB;
  * @property int $id
  * @property int $group_id
  * @property int $menu_id
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property int|null $enabled
  * @method static Builder|GroupMenu whereCreatedAt($value)
  * @method static Builder|GroupMenu whereEnabled($value)
@@ -37,6 +38,7 @@ class GroupMenu extends Model {
      * @throws Exception
      */
     public function storeByGroupId($groupId, array $ids = []) {
+        
         try {
             DB::transaction(function () use ($groupId, $ids) {
                 $this->where('group_id', $groupId)->delete();
@@ -52,6 +54,7 @@ class GroupMenu extends Model {
         } catch (Exception $e) {
             throw $e;
         }
+        
         return true;
 
     }

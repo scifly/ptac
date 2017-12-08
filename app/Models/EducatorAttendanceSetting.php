@@ -6,6 +6,8 @@ use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * App\Models\EducatorAttendanceSetting 教职员工考勤设置
@@ -46,18 +48,19 @@ class EducatorAttendanceSetting extends Model {
     /**
      * 获取对应的所有教职员工考勤记录对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function educatorAttendances() { return $this->hasMany('App\Models\EducatorAttendance', 'eas_id'); }
 
     /**
      * 返回所属的学校对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function school() { return $this->belongsTo('App\Models\School'); }
 
     public function datatable() {
+        
         $columns = [
             ['db' => 'EducatorAttendanceSetting.id', 'dt' => 0],
             ['db' => 'EducatorAttendanceSetting.name', 'dt' => 1],

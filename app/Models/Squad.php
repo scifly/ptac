@@ -7,9 +7,13 @@ use App\Events\ClassDeleted;
 use App\Events\ClassUpdated;
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * App\Models\Squad 班级
@@ -51,28 +55,28 @@ class Squad extends Model {
     /**
      * 返回对应的部门对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function department() { return $this->belongsTo('App\Models\Department'); }
 
     /**
      * 返回指定班级所属的年级对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function grade() { return $this->belongsTo('App\Models\Grade'); }
 
     /**
      * 获取指定班级包含的所有学生对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function students() { return $this->hasMany('App\Models\Student', 'class_id'); }
 
     /**
      * 获取指定班级包含的所有教职员工对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return BelongsToMany
      */
     public function educators() { return $this->belongsToMany('App\Models\Educator', 'educators_classes'); }
 
@@ -115,23 +119,22 @@ class Squad extends Model {
         return $updated ? true : false;
 
     }
-
+    
     /**
      * 删除班级
      *
      * @param $id
      * @param bool $fireEvent
      * @return bool
+     * @throws Exception
      */
     public function remove($id, $fireEvent = false) {
+        
         $class = $this->find($id);
-        if (!$class) {
-            return false;
-        }
+        if (!$class) { return false; }
         $removed = $this->removable($class) ? $class->delete() : false;
         if ($removed && $fireEvent) {
             event(new ClassDeleted($class));
-
             return true;
         }
 
@@ -140,6 +143,7 @@ class Squad extends Model {
     }
 
     public function datatable() {
+        
         $columns = [
             ['db' => 'Squad.id', 'dt' => 0],
             [
@@ -210,6 +214,7 @@ class Squad extends Model {
         $school = new School();
         $schoolId = $school->getSchoolId();
         $condition = 'Grade.school_id = ' . $schoolId;
+        
         return Datatable::simple($this, $columns, $joins, $condition);
 
     }

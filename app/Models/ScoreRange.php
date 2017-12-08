@@ -6,6 +6,7 @@ use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -47,7 +48,7 @@ class ScoreRange extends Model {
     /**
      * 获取指定成绩统计项所属的学校对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function school() { return $this->belongsTo('App\Models\School'); }
 
@@ -58,6 +59,7 @@ class ScoreRange extends Model {
      * @return bool
      */
     public function store(array $data) {
+        
         $scoreRange = $this->create($data);
 
         return $scoreRange ? true : false;
@@ -72,32 +74,32 @@ class ScoreRange extends Model {
      * @return bool
      */
     public function modify(array $data, $id) {
+        
         $scoreRange = $this->find($id);
-        if (!$scoreRange) {
-            return false;
-        }
+        if (!$scoreRange) { return false; }
 
         return $scoreRange->update($data) ? true : false;
 
     }
-
+    
     /**
      * 删除成绩统计项
      *
      * @param $id
      * @return bool|null
+     * @throws \Exception
      */
     public function remove($id) {
+        
         $scoreRange = $this->find($id);
-        if (!$scoreRange) {
-            return false;
-        }
+        if (!$scoreRange) { return false; }
 
         return $this->removable($scoreRange) ? $scoreRange->delete() : false;
 
     }
 
     public function datatable() {
+        
         $columns = [
             ['db' => 'ScoreRange.id', 'dt' => 0],
             ['db' => 'ScoreRange.name', 'dt' => 1],
@@ -129,6 +131,7 @@ class ScoreRange extends Model {
     }
 
     public function statistics($request) {
+        
         //查询班级
         if ($request['type'] == 'grade') {
             $classes = DB::table('classes')
@@ -181,6 +184,7 @@ class ScoreRange extends Model {
         }
 
         return response()->json($score_range);
+        
     }
 
 }

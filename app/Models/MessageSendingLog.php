@@ -6,6 +6,7 @@ use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -33,15 +34,23 @@ class MessageSendingLog extends Model {
         'received_count',
         'recipient_count',
     ];
-
+    
+    /**
+     * 返回指定消息发送记录包含的所有消息对象
+     *
+     * @return HasMany
+     */
     public function messages() { return $this->hasMany('App\Models\Message'); }
 
     /**
+     * 保存消息发送记录
+     *
      * @param $recipientCount
      * @return bool
      * @throws Exception
      */
-    public function addMessageSendingLog($recipientCount) {
+    public function store($recipientCount) {
+        
         try {
             DB::transaction(function () use ($recipientCount) {
                 $log = $this->create([
@@ -51,11 +60,12 @@ class MessageSendingLog extends Model {
                 ]);
                 return $log->id;
             });
-
         } catch (Exception $e) {
             throw $e;
         }
+        
         return true;
+        
     }
 
 }

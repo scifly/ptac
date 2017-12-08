@@ -7,9 +7,13 @@ use App\Events\CorpDeleted;
 use App\Events\CorpUpdated;
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 /**
  * App\Models\Corp 企业
@@ -53,35 +57,35 @@ class Corp extends Model {
     /**
      * 返回对应的部门对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function department() { return $this->belongsTo('App\Models\Department'); }
 
     /**
      * 返回对应的菜单对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function menu() { return $this->belongsTo('App\Models\Menu'); }
 
     /**
      * 获取所属运营者公司对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function company() { return $this->belongsTo('App\Models\Company'); }
 
     /**
      * 获取下属学校对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function schools() { return $this->hasMany('App\Models\School'); }
 
     /**
      * 通过School中间对象获取所有年级对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
+     * @return HasManyThrough
      */
     public function grades() {
 
@@ -92,7 +96,7 @@ class Corp extends Model {
     /**
      * 通过School中间对象获取所有部门对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
+     * @return HasManyThrough
      */
     public function departments() {
 
@@ -103,7 +107,7 @@ class Corp extends Model {
     /**
      * 通过School中间对象获取所有教职员工组对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
+     * @return HasManyThrough
      */
     public function teams() {
 
@@ -152,24 +156,22 @@ class Corp extends Model {
         return $updated ? true : false;
 
     }
-
+    
     /**
      * 删除企业
      *
      * @param $id
      * @param bool $fireEvent
      * @return bool
+     * @throws Exception
      */
     public function remove($id, $fireEvent = false) {
 
         $corp = $this->find($id);
-        if (!$corp) {
-            return false;
-        }
+        if (!$corp) { return false; }
         $removed = $this->removable($corp) ? $corp->delete() : false;
         if ($removed && $fireEvent) {
             event(new CorpDeleted($corp));
-
             return true;
         }
 

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Events\EducatorImported;
+use App\Events\SchoolDeleted;
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
 use App\Http\Requests\CustodianRequest;
@@ -12,6 +13,9 @@ use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -19,6 +23,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Maatwebsite\Excel\Facades\Excel;
 use Maatwebsite\Excel\Readers\LaravelExcelReader;
+use PHPExcel_Exception;
 
 /**
  * App\Models\Educator 教职员工
@@ -68,21 +73,21 @@ class Educator extends Model {
     /**
      * 返回指定教职员工对应的用户对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function user() { return $this->belongsTo('App\Models\User'); }
 
     /**
      * 返回指定教职员工所属的学校对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function school() { return $this->belongsTo('App\Models\School'); }
 
     /**
      * 获取指定教职员工所属的所有班级对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return BelongsToMany
      */
     public function classes() {
 
@@ -98,7 +103,7 @@ class Educator extends Model {
     /**
      * 获取指定教职员工所属的所有教职员工组对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return BelongsToMany
      */
     public function teams() {
 
@@ -112,7 +117,7 @@ class Educator extends Model {
     /**
      *  获取指定教职员工的班级科目关系
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function educatorClasses() { return $this->hasMany('App\Models\EducatorClass'); }
 
@@ -487,31 +492,36 @@ class Educator extends Model {
         }
         return true;
     }
-
+    
     /**
      * 删除教职员工
      *
      * @param $id
      * @param bool $fireEvent
      * @return bool
+     * @throws Exception
      */
     public function remove($id, $fireEvent = false) {
 
         $school = $this->find($id);
+        /** @var School $school */
         $removed = $this->removable($school) ? $school->delete() : false;
         if ($removed && $fireEvent) {
-//            event(new SchoolDeleted($school));
+            /** @var School $school */
+            event(new SchoolDeleted($school));
             return true;
         }
+        
         return $removed ? true : false;
 
     }
-
+    
     /**
      * 导入
      *
      * @param UploadedFile $file
      * @return array
+     * @throws PHPExcel_Exception
      */
     public function upload(UploadedFile $file) {
 
@@ -525,7 +535,11 @@ class Educator extends Model {
             // var_dump($filePath);die;
             /** @var LaravelExcelReader $reader */
             $reader = Excel::load($filePath);
-            $sheet = $reader->getExcel()->getSheet(0);
+            try {
+                $sheet = $reader->getExcel()->getSheet(0);
+            } catch (PHPExcel_Exception $e) {
+                throw $e;
+            }
             $educators = $sheet->toArray();
             if ($this->checkFileFormat($educators[0])) {
                 return [
@@ -570,6 +584,7 @@ class Educator extends Model {
     }
 
     private function checkData(array $data) {
+        
         $rules = [
             'name' => 'required|string|between:2,6',
             'gender' => [
@@ -640,6 +655,7 @@ class Educator extends Model {
     }
 
     public function export($id) {
+        
         $educators = $this->where('school_id', $id)->get();
         $data = [self::EXCEL_EXPORT_TITLE];
         foreach ($educators as $educator) {
@@ -656,7 +672,10 @@ class Educator extends Model {
                 unset($item);
             }
         }
+        
         return $data;
+        
     }
+    
 }
 

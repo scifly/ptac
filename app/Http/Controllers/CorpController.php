@@ -3,7 +3,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CorpRequest;
 use App\Models\Corp;
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
+use Throwable;
 
 /**
  * 企业
@@ -25,7 +28,8 @@ class CorpController extends Controller {
     /**
      * 企业列表
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function index() {
         
@@ -40,7 +44,8 @@ class CorpController extends Controller {
     /**
      * 创建企业
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function create() {
         
@@ -52,7 +57,7 @@ class CorpController extends Controller {
      * 保存企业
      *
      * @param CorpRequest $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function store(CorpRequest $request) {
         
@@ -65,7 +70,8 @@ class CorpController extends Controller {
      * 编辑企业
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function edit($id) {
         
@@ -81,7 +87,7 @@ class CorpController extends Controller {
      *
      * @param CorpRequest $request
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function update(CorpRequest $request, $id) {
         
@@ -95,11 +101,13 @@ class CorpController extends Controller {
      * 删除企业
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function destroy($id) {
         
         if (!$this->corp->find($id)) { return $this->notFound(); }
+        
         return $this->corp->remove($id, true)
             ? $this->succeed() : $this->fail();
         

@@ -5,7 +5,12 @@ use App\Http\Requests\WapSiteModuleRequest;
 use App\Models\Media;
 use App\Models\WapSiteModule;
 use App\Models\WsmArticle;
+use Exception;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
+use Illuminate\View\View;
+use Throwable;
 
 /**
  * 微网站栏目
@@ -29,9 +34,11 @@ class WapSiteModuleController extends Controller {
     /**
      * 微网站栏目列表
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function index() {
+        
         if (Request::get('draw')) {
             return response()->json($this->wapSiteModule->datatable());
         }
@@ -42,7 +49,8 @@ class WapSiteModuleController extends Controller {
     /**
      * 创建微网站栏目
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function create() {
         
@@ -54,7 +62,8 @@ class WapSiteModuleController extends Controller {
      * 保存微网站栏目
      *
      * @param WapSiteModuleRequest $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function store(WapSiteModuleRequest $request) {
         
@@ -65,7 +74,8 @@ class WapSiteModuleController extends Controller {
      * 微网站栏目详情
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function show($id) {
         
@@ -83,7 +93,8 @@ class WapSiteModuleController extends Controller {
      * 编辑微网站栏目
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function edit($id) {
         
@@ -101,7 +112,8 @@ class WapSiteModuleController extends Controller {
      *
      * @param WapSiteModuleRequest $request
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function update(WapSiteModuleRequest $request, $id) {
         
@@ -114,7 +126,8 @@ class WapSiteModuleController extends Controller {
      * 删除微网站栏目
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function destroy($id) {
         
@@ -129,7 +142,7 @@ class WapSiteModuleController extends Controller {
      * 微网站栏目首页
      *
      * @param $id
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return Factory|View
      */
     public function wapSiteModuleHome($id) {
         

@@ -5,7 +5,10 @@ use App\Http\Requests\SchoolRequest;
 use App\Jobs\CreateWechatDepartment;
 use App\Models\Menu;
 use App\Models\School as School;
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
+use Throwable;
 
 /**
  * 学校
@@ -28,7 +31,8 @@ class SchoolController extends Controller {
     /**
      * 学校列表
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function index() {
         
@@ -43,7 +47,8 @@ class SchoolController extends Controller {
     /**
      * 创建学校
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function create() {
         
@@ -68,8 +73,8 @@ class SchoolController extends Controller {
      * 学校详情
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
-     * @throws \Throwable
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function show($id = null) {
         if ($id){
@@ -94,7 +99,8 @@ class SchoolController extends Controller {
      * 编辑学校
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function edit($id) {
         
@@ -112,7 +118,7 @@ class SchoolController extends Controller {
      *
      * @param SchoolRequest|\Illuminate\Http\Request $request
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function update(SchoolRequest $request, $id) {
         
@@ -126,7 +132,8 @@ class SchoolController extends Controller {
      * 删除学校
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function destroy($id) {
         

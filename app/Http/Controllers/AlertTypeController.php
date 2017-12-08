@@ -3,7 +3,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\AlertTypeRequest;
 use App\Models\AlertType;
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
+use Throwable;
 
 /**
  * 警告类型
@@ -25,7 +28,8 @@ class AlertTypeController extends Controller {
     /**
      * 警告类型列表
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Throwable
      */
     public function index() {
         
@@ -40,7 +44,8 @@ class AlertTypeController extends Controller {
     /**
      * 创建警告类型
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Throwable
      */
     public function create() {
         
@@ -52,7 +57,7 @@ class AlertTypeController extends Controller {
      * 保存警告类型
      *
      * @param AlertTypeRequest $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function store(AlertTypeRequest $request) {
         
@@ -65,14 +70,13 @@ class AlertTypeController extends Controller {
      * 编辑警告类型
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Throwable
      */
     public function edit($id) {
         
         $alertType = $this->alertType->find($id);
-        if (!$alertType) {
-            return $this->notFound();
-        }
+        if (!$alertType) { return $this->notFound(); }
         
         return $this->output(__METHOD__, ['alertType' => $alertType]);
         
@@ -83,7 +87,7 @@ class AlertTypeController extends Controller {
      *
      * @param AlertTypeRequest $request
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
      */
     public function update(AlertTypeRequest $request, $id) {
         
@@ -98,7 +102,8 @@ class AlertTypeController extends Controller {
      * 删除警告类型
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function destroy($id) {
         
