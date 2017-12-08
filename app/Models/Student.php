@@ -143,7 +143,6 @@ class Student extends Model {
      * @throws Exception
      */
     public function store(StudentRequest $request) {
-
         try {
             DB::transaction(function () use ($request) {
 
@@ -275,7 +274,7 @@ class Student extends Model {
      * @param StudentRequest $request
      * @param $studentId
      * @return bool|mixed
-     * @throws Exception
+     * @throws \Exception|\Throwable
      */
     public function modify(StudentRequest $request, $studentId) {
 
@@ -358,7 +357,11 @@ class Student extends Model {
      *
      * @param $studentId
      * @return bool|mixed
+<<<<<<< HEAD
+     * @throws \Exception|\Throwable
+=======
      * @throws Exception
+>>>>>>> refs/remotes/origin/master
      */
     public function remove($studentId) {
 
