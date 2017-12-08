@@ -20,6 +20,9 @@
           
 </div>-->
 <div class="box box-default box-solid">
+    @if (!empty($student['id']))
+        {{ Form::hidden('id', $student['id'], ['id' => 'id']) }}
+    @endif
     <div class="box-header with-border">
         @include('partials.form_header')
     </div>

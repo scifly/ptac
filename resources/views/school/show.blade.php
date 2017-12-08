@@ -20,9 +20,11 @@
     @if (!empty($school['id']))
         {{ Form::hidden('id', $school['id'], ['id' => 'id']) }}
     @endif
+    @if(isset($breadcrumb))
 <div class="box-header with-border">
     @include('partials.form_header')
 </div>
+        @endif
     <div class="box box-primary" style="margin-top:10px;">
         <div class="box-body box-profile" style="position: relative;padding: 20px;text-align: center;">
             <img class="avater" src='{{asset("../public/img/avatar5.png")}}' alt="User profile picture">
