@@ -8,6 +8,8 @@ use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * App\Models\ConferenceQueue 会议队列
@@ -57,14 +59,14 @@ class ConferenceQueue extends Model {
     /**
      * 返回举行指定会议的会议室对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function conferenceRoom() { return $this->belongsTo('App\Models\ConferenceRoom'); }
 
     /**
      * 获取参与指定会议的所有教职员工对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function conferenceParticipants() { return $this->hasMany('App\Models\ConferenceParticipant'); }
 

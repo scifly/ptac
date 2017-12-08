@@ -5,9 +5,11 @@ namespace App\Models;
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
 use App\Http\Requests\OperatorRequest;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -19,8 +21,8 @@ use Illuminate\Support\Facades\DB;
  * @property int $user_id 用户ID
  * @property string $school_ids 可管理的学校ID
  * @property int $type 管理员类型：0 - 我们 1 - 代理人
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @method static Builder|Operator whereCompanyId($value)
  * @method static Builder|Operator whereCreatedAt($value)
  * @method static Builder|Operator whereId($value)
@@ -40,7 +42,7 @@ class Operator extends Model {
     /**
      * 获取指定管理/操作员对应的用户对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function user() { return $this->belongsTo('App\Models\User'); }
 

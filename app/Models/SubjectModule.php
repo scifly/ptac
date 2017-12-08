@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * App\Models\SubjectModule
@@ -33,18 +34,18 @@ use Illuminate\Database\Eloquent\Model;
  */
 class SubjectModule extends Model {
 
-    //
     protected $table = 'subject_modules';
-    protected $fillable = [
-        'subject_id',
-        'name',
-        'weight',
-        'enabled',
-    ];
-
+    protected $fillable = ['subject_id', 'name', 'weight', 'enabled'];
+    
+    /**
+     * 返回科目次分类所属的科目对象
+     * 
+     * @return BelongsTo
+     */
     public function subject() { return $this->belongsTo('App\Models\Subject'); }
 
     public function datatable() {
+        
         $columns = [
             ['db' => 'SubjectModule.id', 'dt' => 0],
             ['db' => 'Subject.name as subjectname', 'dt' => 1],
@@ -69,6 +70,7 @@ class SubjectModule extends Model {
                 ],
             ],
         ];
+        
         return Datatable::simple($this, $columns, $joins);
 
     }

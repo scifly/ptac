@@ -6,6 +6,7 @@ use App\Helpers\ModelTrait;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * App\Models\MediaType 媒体类型
@@ -34,9 +35,9 @@ class MediaType extends Model {
     protected $fillable = ['name', 'remark', 'enabled'];
 
     /**
-     * 获取指定媒体类型所包含的所有媒体对象
+     * 获取指定媒体类型包含的所有媒体对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function medias() { return $this->hasMany('App\Models\Media'); }
 

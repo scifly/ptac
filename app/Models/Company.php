@@ -7,9 +7,13 @@ use App\Events\CompanyDeleted;
 use App\Events\CompanyUpdated;
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 /**
  * App\Models\Company 运营者公司
@@ -51,28 +55,28 @@ class Company extends Model {
     /**
      * 返回对应的部门对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function department() { return $this->belongsTo('App\Models\Department'); }
 
     /**
      * 返回对应的菜单对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function menu() { return $this->belongsTo('App\Models\Menu'); }
 
     /**
      * 获取指定运营者公司下属的企业对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function corps() { return $this->hasMany('App\Models\Corp'); }
 
     /**
      * 通过Corp中间对象获取所有的学校对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
+     * @return HasManyThrough
      */
     public function schools() {
         return $this->hasManyThrough('App\Models\School', 'App\Models\Corp');
@@ -82,7 +86,7 @@ class Company extends Model {
     /**
      * 获取指定运营者公司内部的所有管理/操作员对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function operators() { return $this->hasMany('App\Models\Operator'); }
 
@@ -134,7 +138,7 @@ class Company extends Model {
      * @param $id
      * @param bool $fireEvent
      * @return bool
-     * @throws \Exception
+     * @throws Exception
      */
     public function remove($id, $fireEvent = false) {
 

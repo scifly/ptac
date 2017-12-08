@@ -12,6 +12,10 @@ use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -84,42 +88,42 @@ HTML;
     /**
      * 获取菜单所属类型
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function menuType() { return $this->belongsTo('App\Models\MenuType'); }
 
     /**
      * 返回菜单所属的媒体对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function media() { return $this->belongsTo('App\Models\Media'); }
 
     /**
      * 获取对应的公司对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return HasOne
      */
     public function company() { return $this->hasOne('App\Models\Company'); }
 
     /**
      * 获取对应的企业对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return HasOne
      */
     public function corp() { return $this->hasOne('App\Models\Corp'); }
 
     /**
      * 获取对应的学校对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return HasOne
      */
     public function school() { return $this->hasOne('App\Models\School'); }
 
     /**
      * 获取菜单包含的卡片
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return BelongsToMany
      */
     public function tabs() {
 
@@ -135,35 +139,23 @@ HTML;
     /**
      * 获取上级菜单
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
-    public function parent() {
-
-        return $this->belongsTo('App\Models\Menu', 'parent_id');
-
-    }
+    public function parent() { return $this->belongsTo('App\Models\Menu', 'parent_id'); }
 
     /**
      * 获取图标
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
-    public function icon() {
-
-        return $this->belongsTo('App\Models\Icon');
-
-    }
+    public function icon() { return $this->belongsTo('App\Models\Icon'); }
 
     /**
      * 获取指定菜单的子菜单
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
-    public function children() {
-
-        return $this->hasMany('App\Models\Menu', 'parent_id', 'id');
-
-    }
+    public function children() { return $this->hasMany('App\Models\Menu', 'parent_id', 'id'); }
 
     /**
      * 获取所有叶节点菜单

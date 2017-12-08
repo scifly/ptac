@@ -4,8 +4,11 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * App\Models\ConferenceRoom 会议室
@@ -43,24 +46,16 @@ class ConferenceRoom extends Model {
     /**
      * 返回会议室所属的学校对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
-    public function school() {
-
-        return $this->belongsTo('\App\Models\School');
-
-    }
+    public function school() { return $this->belongsTo('\App\Models\School'); }
 
     /**
      * 获取指定会议室的会议队列
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
-    public function conferenceQueues() {
-
-        return $this->hasMany('App\Models\ConferenceQueue');
-
-    }
+    public function conferenceQueues() { return $this->hasMany('App\Models\ConferenceQueue'); }
 
     /**
      * 保存会议室
@@ -71,6 +66,7 @@ class ConferenceRoom extends Model {
     public function store(array $data) {
 
         $cr = $this->create($data);
+        
         return $cr ? true : false;
 
     }
@@ -85,9 +81,8 @@ class ConferenceRoom extends Model {
     public function modify(array $data, $id) {
 
         $cr = $this->find($id);
-        if (!$cr) {
-            return false;
-        }
+        if (!$cr) { return false; }
+        
         return $cr->update($data) ? true : false;
 
     }
@@ -97,7 +92,7 @@ class ConferenceRoom extends Model {
      *
      * @param $id
      * @return bool
-     * @throws \Exception
+     * @throws Exception
      */
     public function remove($id) {
 

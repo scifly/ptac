@@ -8,6 +8,9 @@ use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
  * App\Models\PollQuestionnaireSubject
@@ -35,34 +38,36 @@ use Illuminate\Database\Eloquent\Model;
 class PollQuestionnaireSubject extends Model {
 
     use ModelTrait;
-    //
+
     protected $table = 'poll_questionnaire_subjects';
 
     protected $fillable = ['subject', 'pq_id', 'subject_type', 'created_at', 'updated_at'];
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return HasOne
      */
     public function poll_questionnaire_answer() {
-        return $this->hasOne('App\Models\PollQuestionnaireAnswer'
-            , 'pqs_id', 'id');
+        
+        return $this->hasOne('App\Models\PollQuestionnaireAnswer', 'pqs_id', 'id');
+        
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function poll_questionnaire_choice() {
-        return $this
-            ->hasMany("App\Models\PollQuestionnaireChoice"
-                , 'pqs_id', 'id');
+        
+        return $this->hasMany("App\Models\PollQuestionnaireChoice", 'pqs_id', 'id');
+        
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function poll_questionnaire() {
-        return $this->belongsTo('App\Models\PollQuestionnaire'
-            , 'pq_id');
+        
+        return $this->belongsTo('App\Models\PollQuestionnaire', 'pq_id');
+        
     }
     
     /**

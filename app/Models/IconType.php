@@ -7,6 +7,7 @@ use App\Helpers\ModelTrait;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * App\Models\IconType
@@ -35,7 +36,7 @@ class IconType extends Model {
     /**
      * 获取指定图标类型包含的所有图标对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function icons() { return $this->hasMany('App\Models\Icon'); }
 
@@ -102,7 +103,9 @@ class IconType extends Model {
                 },
             ],
         ];
+        
         return Datatable::simple($this, $columns);
+        
     }
 
 }

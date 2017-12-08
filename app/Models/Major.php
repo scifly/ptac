@@ -8,6 +8,8 @@ use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -43,14 +45,14 @@ class Major extends Model {
     /**
      * 返回专业所属的学校对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function school() { return $this->belongsTo('App\Models\School'); }
 
     /**
      * 获取指定专业所包含的科目对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return BelongsToMany
      */
     public function subjects() {
 
@@ -67,7 +69,7 @@ class Major extends Model {
      * 返回专业列表
      *
      * @param null $schoolId
-     * @return \Illuminate\Support\Collection
+     * @return Collection|\Illuminate\Support\Collection
      */
     public function majors($schoolId = null) {
 

@@ -6,6 +6,7 @@ use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * App\Models\Exam 考试
@@ -55,7 +56,7 @@ class Exam extends Model {
     /**
      * 返回指定考试所属的考试类型对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function examType() { return $this->belongsTo('App\models\ExamType'); }
 
@@ -92,9 +93,15 @@ class Exam extends Model {
         return $selectedSubjects;
 
     }
-
-    //获取当前考试班级
+    
+    /**
+     * 获取当前考试班级
+     *
+     * @param $classIds
+     * @return array
+     */
     public function examClasses($classIds) {
+        
         $class_ids = explode(',', $classIds);
         $classes = [];
         foreach ($class_ids as $class_id) {
@@ -112,6 +119,7 @@ class Exam extends Model {
      * @return array
      */
     public function examsByClassId($class_id) {
+        
         $exams = $this::all();
         $_exams = [];
         foreach ($exams as $exam) {
@@ -120,6 +128,7 @@ class Exam extends Model {
                 $_exams[] = $exam;
             }
         }
+        
         return $_exams;
 
     }
@@ -132,12 +141,14 @@ class Exam extends Model {
      * @internal param $subjectIds
      */
     public function subjectsByExamId($examId) {
+        
         $subjectIds = self::whereid($examId)->first(["subject_ids"])->toArray();
         $subject_ids = explode(',', $subjectIds['subject_ids']);
         $subjects = [];
         foreach ($subject_ids as $subject_id) {
             $subjects[] = Subject::whereId($subject_id)->first(['id', 'name']);
         }
+        
         return $subjects;
 
     }
@@ -149,6 +160,7 @@ class Exam extends Model {
      * @return bool
      */
     public function store(array $data) {
+        
         $exam = $this->create($data);
 
         return $exam ? true : false;
@@ -163,10 +175,9 @@ class Exam extends Model {
      * @return bool
      */
     public function modify(array $data, $id) {
+        
         $exam = $this->find($id);
-        if (!$exam) {
-            return false;
-        }
+        if (!$exam) { return false; }
 
         return $exam->update($data) ? true : false;
 
@@ -179,16 +190,16 @@ class Exam extends Model {
      * @return bool
      */
     public function remove($id) {
+        
         $exam = $this->find($id);
-        if (!$exam) {
-            return false;
-        }
+        if (!$exam) { return false; }
 
         return $exam->removable($exam) ? true : false;
 
     }
 
     public function datatable() {
+        
         $columns = [
             ['db' => 'Exam.id', 'dt' => 0],
             ['db' => 'Exam.name', 'dt' => 1],
@@ -217,6 +228,7 @@ class Exam extends Model {
                 ],
             ],
         ];
+        
         return Datatable::simple($this, $columns, $joins);
 
     }

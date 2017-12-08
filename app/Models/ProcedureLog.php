@@ -4,7 +4,9 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * App\Models\ProcedureLog
@@ -87,39 +89,33 @@ class ProcedureLog extends Model {
     /**
      * 返回审批流程发起者对应的用户对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
-    public function initiatorUser() {
-
-        return $this->belongsTo('App\Models\User', 'initiator_user_id');
-
-    }
+    public function initiatorUser() { return $this->belongsTo('App\Models\User', 'initiator_user_id'); }
 
     /**
      * 返回审批流程操作者对应的用户对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
-    public function operatorUser() {
-        return $this->belongsTo('App\Models\User', 'operator_user_id');
-    }
+    public function operatorUser() { return $this->belongsTo('App\Models\User', 'operator_user_id'); }
 
     /**
      * 返回指定流程日志所属的流程对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
-    public function procedure() {
-        return $this->belongsTo('App\Models\Procedure');
-    }
+    public function procedure() { return $this->belongsTo('App\Models\Procedure'); }
 
     /**
      * 返回指定流程日志所属的流程步骤对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function procedureStep() {
+        
         return $this->belongsTo('App\Models\ProcedureStep', 'procedure_step_id');
+        
     }
 
     /**
@@ -184,10 +180,12 @@ class ProcedureLog extends Model {
     /**
      * 获取用户信息
      * @param $userId
-     * @return \Illuminate\Database\Eloquent\Collection|Model|null|static|static[]
+     * @return Collection|Model|null|static|static[]
      */
     public function get_user($userId) {
+        
         return User::find($userId);
+        
     }
 
 }

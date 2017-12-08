@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * App\Models\CustodianStudent
@@ -36,11 +37,27 @@ class CustodianStudent extends Model {
         'custodian_id', 'student_id', 'relationship',
         'expiration', 'enabled',
     ];
-
+    
+    /**
+     * 返回所属的监护人对象
+     * 
+     * @return BelongsTo
+     */
     public function custodian() { return $this->belongsTo('App\Models\Custodian'); }
-
+    
+    /**
+     * 返回所属的学生对象
+     * 
+     * @return BelongsTo
+     */
     public function student() { return $this->belongsTo('App\Models\Student'); }
-
+    
+    /**
+     * 按监护人ID保存记录
+     * 
+     * @param $custodianId
+     * @param array $studentIds
+     */
     public function storeByCustodianId($custodianId, array $studentIds) {
 
         foreach ($studentIds as $studentId => $relationship) {
@@ -53,7 +70,13 @@ class CustodianStudent extends Model {
         }
 
     }
-
+    
+    /**
+     * 按学生ID保存记录
+     * 
+     * @param $studentId
+     * @param array $custodianIds
+     */
     public function storeByStudentId($studentId, array $custodianIds) {
 
         foreach ($custodianIds as $custodianId => $relationship) {

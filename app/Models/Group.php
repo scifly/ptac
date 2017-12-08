@@ -8,6 +8,9 @@ use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -49,23 +52,43 @@ class Group extends Model {
     /**
      * 获取指定角色下的所有用户对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function users() { return $this->hasMany('App\Models\User'); }
 
     /**
      * 返回指定角色所属的学校对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function school() { return $this->belongsTo('App\Models\School'); }
-
+    
+    /**
+     * 获取对象的菜单对象
+     *
+     * @return BelongsToMany
+     */
     public function menus() { return $this->belongsToMany('App\Models\Menu', 'groups_menus'); }
-
+    
+    /**
+     * 获取对象的功能对象
+     *
+     * @return BelongsToMany
+     */
     public function actions() { return $this->belongsToMany('App\Models\Action', 'actions_groups'); }
-
+    
+    /**
+     * 获取对应的卡片对象
+     *
+     * @return BelongsToMany
+     */
     public function tabs() { return $this->belongsToMany('App\Models\Tab', 'groups_tabs'); }
-
+    
+    /**
+     * 返回所属的角色类型对象
+     *
+     * @return BelongsTo
+     */
     public function groupType() { return $this->belongsTo('App\Models\GroupType'); }
 
     /**
@@ -79,7 +102,6 @@ class Group extends Model {
 
         try {
             DB::transaction(function () use ($data) {
-
                 $groupData = [
                     'name' => $data['name'],
                     'remark' => $data['remark'],
@@ -101,7 +123,6 @@ class Group extends Model {
                 $groupTab->storeByGroupId($g->id, $tabIds);
 
             });
-
         } catch (Exception $e) {
             throw $e;
         }

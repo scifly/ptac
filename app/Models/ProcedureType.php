@@ -7,6 +7,7 @@ use App\Helpers\ModelTrait;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * App\Models\ProcedureType 审批流程类型
@@ -37,7 +38,7 @@ class ProcedureType extends Model {
     /**
      * 返回指定审批流程类型包含的所有审批流程对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function procedures() { return $this->hasMany('App\Models\Procedure'); }
 

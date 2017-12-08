@@ -11,6 +11,9 @@ use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * App\Models\Squad 班级
@@ -52,28 +55,28 @@ class Squad extends Model {
     /**
      * 返回对应的部门对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function department() { return $this->belongsTo('App\Models\Department'); }
 
     /**
      * 返回指定班级所属的年级对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function grade() { return $this->belongsTo('App\Models\Grade'); }
 
     /**
      * 获取指定班级包含的所有学生对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function students() { return $this->hasMany('App\Models\Student', 'class_id'); }
 
     /**
      * 获取指定班级包含的所有教职员工对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return BelongsToMany
      */
     public function educators() { return $this->belongsToMany('App\Models\Educator', 'educators_classes'); }
 

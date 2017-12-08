@@ -4,10 +4,13 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
  * App\Models\PollQuestionnaire 调查问卷
@@ -18,8 +21,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $name 问卷调查名称
  * @property string $start 开始时间
  * @property string $end 结束时间
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property int $enabled
  * @method static Builder|PollQuestionnaire whereCreatedAt($value)
  * @method static Builder|PollQuestionnaire whereEnabled($value)
@@ -50,36 +53,46 @@ class PollQuestionnaire extends Model {
     /**
      * 返回指定调查问卷所属的学校对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function school() { return $this->belongsTo('App\Models\School'); }
 
     /**
      * 返回调查问卷发起者的用户对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function user() { return $this->belongsTo('App\Models\User'); }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * 返回指定调查问卷包含的调查问卷答案对象
+     * 
+     * @return HasOne
      */
     public function poll_questionnaire_answer() {
+        
         return $this->hasOne('App\Models\PollQuestionnaireAnswer', 'pq_id');
+        
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * 
+     * 
+     * @return HasOne
      */
     public function poll_questionnaire_partcipant() {
+        
         return $this->hasOne('App\Models\PollQuestionnaireParticipant', 'pq_id');
+        
     }
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function poll_questionnaire_subject() {
+        
         return $this->hasMany('App\Models\PollQuestionnaireSubject', 'pq_id');
+        
     }
     
     /**

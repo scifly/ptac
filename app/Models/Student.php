@@ -11,6 +11,9 @@ use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -18,6 +21,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Maatwebsite\Excel\Facades\Excel;
 use Maatwebsite\Excel\Readers\LaravelExcelReader;
+use PHPExcel_Exception;
 
 /**
  * App\Models\Student
@@ -79,14 +83,14 @@ class Student extends Model {
     /**
      * 返回指定学生所属的班级对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function squad() { return $this->belongsTo('App\Models\Squad', 'class_id', 'id'); }
 
     /**
      * 获取指定学生的所有监护人对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return BelongsToMany
      */
     public function custodians() {
 
@@ -97,21 +101,21 @@ class Student extends Model {
     /**
      * 获取指定学生对应的用户对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function user() { return $this->belongsTo('App\Models\User'); }
 
     /**
      * 获取指定学生所有的分数对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function scores() { return $this->hasMany('App\Models\Score'); }
 
     /**
      * 获取指定学生所有的总分对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function scoreTotals() { return $this->hasMany('App\Models\ScoreTotal'); }
 
@@ -357,18 +361,12 @@ class Student extends Model {
      *
      * @param $studentId
      * @return bool|mixed
-<<<<<<< HEAD
-     * @throws \Exception|\Throwable
-=======
      * @throws Exception
->>>>>>> refs/remotes/origin/master
      */
     public function remove($studentId) {
 
         $student = $this->find($studentId);
-        if (!isset($custodian)) {
-            return false;
-        }
+        if (!isset($custodian)) { return false; }
         try {
             DB::transaction(function () use ($studentId, $student) {
                 # 删除指定的学生记录
@@ -379,12 +377,13 @@ class Student extends Model {
                 DepartmentUser::where('user_id', $student['user_id'])->delete();
                 # 删除与指定学生绑定的手机记录
                 Mobile::where('user_id', $student['user_id'])->delete();
-
             });
         } catch (Exception $e) {
             throw $e;
         }
-        return false;
+        
+        return true;
+        
     }
     
     /**
@@ -392,7 +391,7 @@ class Student extends Model {
      *
      * @param UploadedFile $file
      * @return array
-     * @throws \PHPExcel_Exception
+     * @throws PHPExcel_Exception
      */
     public function upload(UploadedFile $file) {
 
@@ -400,8 +399,8 @@ class Student extends Model {
         $realPath = $file->getRealPath();   //临时文件的绝对路径
         // 上传文件
         $filename = date('His') . uniqid() . '.' . $ext;
-        $bool = Storage::disk('uploads')->put($filename, file_get_contents($realPath));
-        if ($bool) {
+        $stored = Storage::disk('uploads')->put($filename, file_get_contents($realPath));
+        if ($stored) {
             $filePath = 'storage/app/uploads/' . date('Y') . '/' . date('m') . '/' . date('d') . '/' . $filename;
             // var_dump($filePath);die;
             /** @var LaravelExcelReader $reader */

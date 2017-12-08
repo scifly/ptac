@@ -8,6 +8,8 @@ use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * App\Models\Icon 图标
@@ -40,21 +42,21 @@ class Icon extends Model {
     /**
      * 返回指定图标所属的图标类型对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function iconType() { return $this->belongsTo('App\Models\IconType'); }
 
     /**
      * 返回Icon包含的菜单对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function menus() { return $this->hasMany('App\Models\Menu'); }
 
     /**
      * 返回指定图标包含的所有卡片对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function tabs() { return $this->hasMany('App\Models\Tab'); }
 

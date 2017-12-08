@@ -7,6 +7,7 @@ use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * App\Models\MenuType 菜单类型
@@ -35,11 +36,12 @@ class MenuType extends Model {
     /**
      * 获取指定菜单类型所包含的所有菜单对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function menus() { return $this->hasMany('App\Models\Menu'); }
 
     public function typeList($type) {
+        
         $list = $this->pluck('name', 'id')->toArray();
         $types = collect($this->where('enabled', 1)->get(['name'])->toArray())
             ->flatten()->all();
@@ -73,6 +75,7 @@ class MenuType extends Model {
      * @return bool
      */
     public function store(array $data) {
+        
         $menuType = $this->create($data);
 
         return $menuType ? true : false;
@@ -87,10 +90,9 @@ class MenuType extends Model {
      * @return bool
      */
     public function modify(array $data, $id) {
+        
         $menuType = $this->find($id);
-        if (!$menuType) {
-            return false;
-        }
+        if (!$menuType) { return false; }
 
         return $menuType->update($data) ? true : false;
 
