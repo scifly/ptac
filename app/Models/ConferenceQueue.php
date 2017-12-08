@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -96,19 +97,19 @@ class ConferenceQueue extends Model {
         return $cq->update($data) ? true : false;
 
     }
-
+    
     /**
      * 删除会议
      *
      * @param $id
      * @return bool
+     * @throws Exception
      */
     public function remove($id) {
 
         $cq = $this->find($id);
-        if (!$cq) {
-            return false;
-        }
+        if (!$cq) { return false; }
+        
         return $cq->removable($id) ? $cq->delete() : false;
 
     }

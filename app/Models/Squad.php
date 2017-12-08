@@ -7,6 +7,7 @@ use App\Events\ClassDeleted;
 use App\Events\ClassUpdated;
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -115,23 +116,22 @@ class Squad extends Model {
         return $updated ? true : false;
 
     }
-
+    
     /**
      * 删除班级
      *
      * @param $id
      * @param bool $fireEvent
      * @return bool
+     * @throws Exception
      */
     public function remove($id, $fireEvent = false) {
+        
         $class = $this->find($id);
-        if (!$class) {
-            return false;
-        }
+        if (!$class) { return false; }
         $removed = $this->removable($class) ? $class->delete() : false;
         if ($removed && $fireEvent) {
             event(new ClassDeleted($class));
-
             return true;
         }
 
@@ -140,6 +140,7 @@ class Squad extends Model {
     }
 
     public function datatable() {
+        
         $columns = [
             ['db' => 'Squad.id', 'dt' => 0],
             [
@@ -210,6 +211,7 @@ class Squad extends Model {
         $school = new School();
         $schoolId = $school->getSchoolId();
         $condition = 'Grade.school_id = ' . $schoolId;
+        
         return Datatable::simple($this, $columns, $joins, $condition);
 
     }

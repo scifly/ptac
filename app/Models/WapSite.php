@@ -79,9 +79,10 @@ class WapSite extends Model {
         return true;
 
     }
-
+    
     /**
      * @param $request
+     * @throws Exception
      */
     private function removeMedias(WapSiteRequest $request) {
         //删除原有的图片
@@ -93,7 +94,11 @@ class WapSite extends Model {
                 Storage::disk('public')->delete($paths[5]);
 
             }
-            Media::whereIn('id', $mediaIds)->delete();
+            try {
+                Media::whereIn('id', $mediaIds)->delete();
+            } catch (Exception $e) {
+                throw $e;
+            }
         }
     }
 
@@ -107,20 +112,19 @@ class WapSite extends Model {
      */
     public function modify(WapSiteRequest $request, $id) {
         $wapSite = $this->find($id);
-        if (!$wapSite) {
-            return false;
-        }
+        if (!$wapSite) { return false; }
         try {
             DB::transaction(function () use ($request, $id) {
                 $this->removeMedias($request);
                 // dd($request->except('_method', '_token'));
                 return $this->where('id', $id)->update($request->except('_method', '_token', 'del_ids'));
             });
-
         } catch (Exception $e) {
             throw $e;
         }
+        
         return true;
+        
     }
 
     /**
@@ -151,6 +155,9 @@ class WapSite extends Model {
                 ],
             ],
         ];
+        
         return Datatable::simple($this, $columns, $joins);
+        
     }
+    
 }

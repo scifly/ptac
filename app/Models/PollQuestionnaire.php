@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -80,24 +81,25 @@ class PollQuestionnaire extends Model {
     public function poll_questionnaire_subject() {
         return $this->hasMany('App\Models\PollQuestionnaireSubject', 'pq_id');
     }
-
+    
     /**
      * 删除问卷
      *
      * @param $id
      * @return bool|null
+     * @throws Exception
      */
     public function remove($id) {
-        $pollQuestionnaire = $this->find($id);
-        if (!$pollQuestionnaire) {
-            return false;
-        }
+        
+        $pq = $this->find($id);
+        if (!$pq) { return false; }
 
-        return $this->removable($pollQuestionnaire) ? $pollQuestionnaire->delete() : false;
+        return $this->removable($pq) ? $pq->delete() : false;
 
     }
 
     public function dataTable() {
+        
         $columns = [
             ['db' => 'PollQuestionnaire.id', 'dt' => 0],
             ['db' => 'PollQuestionnaire.name', 'dt' => 1],
@@ -132,6 +134,9 @@ class PollQuestionnaire extends Model {
                 ],
             ],
         ];
+        
         return Datatable::simple($this, $columns, $joins);
+        
     }
+    
 }

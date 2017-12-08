@@ -3,7 +3,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ConferenceRoomRequest;
 use App\Models\ConferenceRoom;
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
+use Throwable;
 
 /**
  * 会议室
@@ -25,7 +28,8 @@ class ConferenceRoomController extends Controller {
     /**
      * 会议室列表
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Throwable
      */
     public function index() {
         
@@ -40,7 +44,8 @@ class ConferenceRoomController extends Controller {
     /**
      * 创建会议室
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Throwable
      */
     public function create() {
         
@@ -52,7 +57,7 @@ class ConferenceRoomController extends Controller {
      * 保存会议室
      *
      * @param ConferenceRoomRequest $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function store(ConferenceRoomRequest $request) {
         
@@ -65,7 +70,8 @@ class ConferenceRoomController extends Controller {
      * 会议室详情
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Throwable
      */
     public function show($id) {
         
@@ -80,7 +86,8 @@ class ConferenceRoomController extends Controller {
      * 编辑会议室
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Throwable
      */
     public function edit($id) {
         
@@ -96,7 +103,7 @@ class ConferenceRoomController extends Controller {
      *
      * @param ConferenceRoomRequest $request
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function update(ConferenceRoomRequest $request, $id) {
         
@@ -112,7 +119,8 @@ class ConferenceRoomController extends Controller {
      * 删除会议室
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function destroy($id) {
         

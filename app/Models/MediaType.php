@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Helpers\ModelTrait;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
@@ -70,22 +71,20 @@ class MediaType extends Model {
         return $mediaType->update($data) ? true : false;
 
     }
-
+    
     /**
      * 删除媒体类型
      *
      * @param $id
      * @return bool|null
+     * @throws Exception
      */
     public function remove($id) {
 
         $mediaType = $this->find($id);
-        if (!$mediaType) {
-            return false;
-        }
+        if (!$mediaType) { return false; }
 
-        return $mediaType->removable($mediaType)
-            ? $mediaType->delete() : false;
+        return $mediaType->removable($mediaType) ? $mediaType->delete() : false;
 
     }
 

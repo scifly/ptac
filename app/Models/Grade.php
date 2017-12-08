@@ -7,6 +7,7 @@ use App\Events\GradeDeleted;
 use App\Events\GradeUpdated;
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -160,23 +161,22 @@ class Grade extends Model {
         return $updated ? true : false;
 
     }
-
+    
     /**
      * 删除年级
      *
      * @param $id
      * @param bool $fireEvent
      * @return bool
+     * @throws Exception
      */
     public function remove($id, $fireEvent = false) {
+        
         $grade = $this->find($id);
-        if (!$grade) {
-            return false;
-        }
+        if (!$grade) { return false; }
         $removed = $this->removable($grade) ? $grade->delete() : false;
         if ($removed && $fireEvent) {
             event(new GradeDeleted($grade));
-
             return true;
         }
 

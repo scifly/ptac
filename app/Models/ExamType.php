@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
@@ -78,18 +79,18 @@ class ExamType extends Model {
         return $examType->update($data) ? true : false;
 
     }
-
+    
     /**
      * 删除考试类型
      *
      * @param $id
      * @return bool
+     * @throws Exception
      */
     public function remove($id) {
+        
         $examType = $this->find($id);
-        if (!$examType) {
-            return false;
-        }
+        if (!$examType) { return false; }
 
         return $this->removable($examType) ? $examType->delete() : false;
 

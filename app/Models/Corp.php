@@ -7,6 +7,7 @@ use App\Events\CorpDeleted;
 use App\Events\CorpUpdated;
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -152,24 +153,22 @@ class Corp extends Model {
         return $updated ? true : false;
 
     }
-
+    
     /**
      * 删除企业
      *
      * @param $id
      * @param bool $fireEvent
      * @return bool
+     * @throws Exception
      */
     public function remove($id, $fireEvent = false) {
 
         $corp = $this->find($id);
-        if (!$corp) {
-            return false;
-        }
+        if (!$corp) { return false; }
         $removed = $this->removable($corp) ? $corp->delete() : false;
         if ($removed && $fireEvent) {
             event(new CorpDeleted($corp));
-
             return true;
         }
 

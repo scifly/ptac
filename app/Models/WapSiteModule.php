@@ -81,11 +81,13 @@ class WapSiteModule extends Model {
         return true;
 
     }
-
+    
     /**
      * @param $request
+     * @throws Exception
      */
     private function removeMedias(WapSiteModuleRequest $request) {
+        
         //删除原有的图片
         $mediaIds = $request->input('del_id');
         if ($mediaIds) {
@@ -95,7 +97,11 @@ class WapSiteModule extends Model {
                 Storage::disk('public')->delete($paths[5]);
 
             }
-            Media::whereIn('id', $mediaIds)->delete();
+            try {
+                Media::whereIn('id', $mediaIds)->delete();
+            } catch (Exception $e) {
+                throw $e;
+            }
         }
     }
 

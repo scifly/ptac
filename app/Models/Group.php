@@ -153,19 +153,19 @@ class Group extends Model {
         return true;
 
     }
-
+    
     /**
      * 删除角色
      *
      * @param $id
      * @return bool
+     * @throws Exception
      */
     public function remove($id) {
 
         $group = $this->find($id);
-        if (!$group) {
-            return false;
-        }
+        if (!$group) { return false; }
+        
         return $this->removable($group) ? $group->delete() : false;
 
     }

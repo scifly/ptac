@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\AppRequest;
 use App\Models\App;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 
 /**
@@ -25,7 +26,8 @@ class AppController extends Controller {
     /**
      * 微信应用列表
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws \Throwable
      */
     public function index() {
     
@@ -40,7 +42,8 @@ class AppController extends Controller {
     /**
      * 创建微信应用
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws \Throwable
      */
     public function create() {
         
@@ -52,7 +55,7 @@ class AppController extends Controller {
      * 保存微信应用
      *
      * @param AppRequest $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function store(AppRequest $request) {
         
@@ -65,7 +68,8 @@ class AppController extends Controller {
      * 微信应用详情
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws \Throwable
      */
     public function show($id) {
         
@@ -80,7 +84,8 @@ class AppController extends Controller {
      * 编辑微信应用
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws \Throwable
      */
     public function edit($id) {
         
@@ -96,7 +101,7 @@ class AppController extends Controller {
      *
      * @param AppRequest $request
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function update(AppRequest $request, $id) {
         
@@ -112,7 +117,8 @@ class AppController extends Controller {
      * 获取指定应用的menu
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws \Throwable
      */
     public function menu($id) {
         

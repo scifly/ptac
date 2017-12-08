@@ -84,13 +84,15 @@ class WsmArticle extends Model {
         return true;
 
     }
-
+    
     /**
      * 移除关联的媒体文件
      *
      * @param $request
+     * @throws Exception
      */
     private function removeMedias(WsmArticleRequest $request) {
+        
         //删除原有的图片
         $mediaIds = $request->input('del_ids');
         if ($mediaIds) {
@@ -100,8 +102,13 @@ class WsmArticle extends Model {
                 Storage::disk('uploads')->delete($paths[5]);
 
             }
-            Media::whereIn('id', $mediaIds)->delete();
+            try {
+                Media::whereIn('id', $mediaIds)->delete();
+            } catch (Exception $e) {
+                throw $e;
+            }
         }
+        
     }
 
     /**

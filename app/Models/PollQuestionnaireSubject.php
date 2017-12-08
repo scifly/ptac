@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -63,19 +64,19 @@ class PollQuestionnaireSubject extends Model {
         return $this->belongsTo('App\Models\PollQuestionnaire'
             , 'pq_id');
     }
-
+    
     /**
      * 删除问卷题目
      *
      * @param $id
      * @return bool|null
+     * @throws Exception
      */
     public function remove($id) {
 
         $pqSubject = $this->find($id);
-        if (!$pqSubject) {
-            return false;
-        }
+        if (!$pqSubject) { return false; }
+        
         return $this->removable($pqSubject) ? $pqSubject->delete() : false;
 
     }

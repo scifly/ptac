@@ -3,7 +3,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\PqSubjectRequest;
 use App\Models\PollQuestionnaireSubject;
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
+use Throwable;
 
 /**
  * 问卷题目
@@ -25,7 +28,8 @@ class PqSubjectController extends Controller {
     /**
      * 题目列表
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function index() {
         
@@ -40,7 +44,8 @@ class PqSubjectController extends Controller {
     /**
      * 创建题目
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function create() {
         
@@ -52,7 +57,7 @@ class PqSubjectController extends Controller {
      * 保存题目
      *
      * @param PqSubjectRequest $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function store(PqSubjectRequest $request) {
         
@@ -64,7 +69,8 @@ class PqSubjectController extends Controller {
      * 题目详情
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function show($id) {
         
@@ -79,7 +85,8 @@ class PqSubjectController extends Controller {
     /**
      * 编辑题目
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function edit($id) {
         
@@ -94,7 +101,7 @@ class PqSubjectController extends Controller {
      *
      * @param PqSubjectRequest $request
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function update(PqSubjectRequest $request, $id) {
         
@@ -107,13 +114,15 @@ class PqSubjectController extends Controller {
      * 删除题目
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function destroy($id) {
         
         $pqSubject = $this->pqSubject->find($id);
         if (!$pqSubject) { return $this->notFound(); }
-        return $pqSubject->remove($id) ? $this->succeed() : $this->fail('失败：该题目存在有效关联数据，不能删除');
+        return $pqSubject->remove($id) 
+            ? $this->succeed() : $this->fail('失败：该题目存在有效关联数据，不能删除');
         
     }
 }

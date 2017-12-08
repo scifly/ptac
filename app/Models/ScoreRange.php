@@ -80,24 +80,25 @@ class ScoreRange extends Model {
         return $scoreRange->update($data) ? true : false;
 
     }
-
+    
     /**
      * 删除成绩统计项
      *
      * @param $id
      * @return bool|null
+     * @throws \Exception
      */
     public function remove($id) {
+        
         $scoreRange = $this->find($id);
-        if (!$scoreRange) {
-            return false;
-        }
+        if (!$scoreRange) { return false; }
 
         return $this->removable($scoreRange) ? $scoreRange->delete() : false;
 
     }
 
     public function datatable() {
+        
         $columns = [
             ['db' => 'ScoreRange.id', 'dt' => 0],
             ['db' => 'ScoreRange.name', 'dt' => 1],
@@ -129,6 +130,7 @@ class ScoreRange extends Model {
     }
 
     public function statistics($request) {
+        
         //查询班级
         if ($request['type'] == 'grade') {
             $classes = DB::table('classes')
@@ -181,6 +183,7 @@ class ScoreRange extends Model {
         }
 
         return response()->json($score_range);
+        
     }
 
 }

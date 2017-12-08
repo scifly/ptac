@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -104,19 +105,19 @@ class Icon extends Model {
         return $icon->update($data) ? true : false;
 
     }
-
+    
     /**
      * 删除图标
      *
      * @param $id
      * @return bool|null
+     * @throws Exception
      */
     public function remove($id) {
 
         $icon = $this->find($id);
-        if (!$icon) {
-            return false;
-        }
+        if (!$icon) { return false; }
+        
         return $icon->removable($icon) ? $icon->delete() : false;
 
     }

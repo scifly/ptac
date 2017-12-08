@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ExamRequest;
 use App\Models\Exam;
 use App\Models\Squad;
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
+use Throwable;
 
 /**
  * 考试
@@ -28,7 +31,8 @@ class ExamController extends Controller {
     /**
      * 考试列表
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function index() {
         
@@ -43,7 +47,8 @@ class ExamController extends Controller {
     /**
      * 创建考试
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function create() {
         
@@ -55,7 +60,7 @@ class ExamController extends Controller {
      * 保存考试
      *
      * @param ExamRequest $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function store(ExamRequest $request) {
         
@@ -67,14 +72,14 @@ class ExamController extends Controller {
      * 考试详情
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function show($id) {
         
         $exam = $this->exam->find($id);
-        if (!$exam) {
-            return $this->notFound();
-        }
+        if (!$exam) { return $this->notFound(); }
+        
         return $this->output(__METHOD__, [
             'exam'     => $exam,
             'classes'  => $this->exam->classes($exam->class_ids),
@@ -87,13 +92,12 @@ class ExamController extends Controller {
      * 编辑考试
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function edit($id) {
         $exam = $this->exam->find($id);
-        if (!$exam) {
-            return $this->notFound();
-        }
+        if (!$exam) { return $this->notFound(); }
         
         return $this->output(__METHOD__, [
             'exam'             => $exam,
@@ -107,7 +111,7 @@ class ExamController extends Controller {
      *
      * @param ExamRequest $request
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function update(ExamRequest $request, $id) {
         
@@ -124,7 +128,8 @@ class ExamController extends Controller {
      * 删除考试
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function destroy($id) {
         

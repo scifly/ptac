@@ -383,12 +383,13 @@ class Student extends Model {
         }
         return false;
     }
-
+    
     /**
      * 导入
      *
      * @param UploadedFile $file
      * @return array
+     * @throws \PHPExcel_Exception
      */
     public function upload(UploadedFile $file) {
 

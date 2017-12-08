@@ -9,8 +9,11 @@ use App\Models\DepartmentUser;
 use App\Models\Group;
 use App\Models\Student;
 use App\Models\User;
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 use Maatwebsite\Excel\Facades\Excel;
+use Throwable;
 
 /**
  * 学生
@@ -44,7 +47,8 @@ class StudentController extends Controller {
     /**
      * 学生记录列表
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function index() {
         
@@ -58,7 +62,8 @@ class StudentController extends Controller {
     /**
      * 创建学生记录
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Throwable
      */
     public function create() {
         
@@ -77,7 +82,8 @@ class StudentController extends Controller {
      * 保存学生记录
      *
      * @param StudentRequest $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function store(StudentRequest $request) {
         
@@ -90,7 +96,8 @@ class StudentController extends Controller {
      * 学生记录详情
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function show($id) {
         
@@ -106,7 +113,8 @@ class StudentController extends Controller {
      * 编辑学生记录
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function edit($id) {
         
@@ -134,7 +142,8 @@ class StudentController extends Controller {
      *
      * @param StudentRequest $request
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function update(StudentRequest $request, $id) {
         
@@ -147,7 +156,8 @@ class StudentController extends Controller {
      * 删除学生记录
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function destroy($id) {
         
@@ -158,6 +168,7 @@ class StudentController extends Controller {
     
     /**
      * 导入学籍
+     * @throws \PHPExcel_Exception
      */
     public function import() {
         

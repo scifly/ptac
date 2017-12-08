@@ -7,6 +7,7 @@ use App\Events\SchoolDeleted;
 use App\Events\SchoolUpdated;
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -271,31 +272,28 @@ class School extends Model {
         $updated = $school->update($data);
         if ($updated && $fireEvent) {
             event(new SchoolUpdated($this->find($id)));
-
             return true;
         }
 
         return $updated ? true : false;
 
     }
-
+    
     /**
      * 删除学校
      *
      * @param $id
      * @param bool $fireEvent
      * @return bool|null
+     * @throws Exception
      */
     public function remove($id, $fireEvent = false) {
 
         $school = $this->find($id);
-        if (!$school) {
-            return false;
-        }
+        if (!$school) { return false; }
         $removed = $this->removable($school) ? $school->delete() : false;
         if ($removed && $fireEvent) {
             event(new SchoolDeleted($school));
-
             return true;
         }
 

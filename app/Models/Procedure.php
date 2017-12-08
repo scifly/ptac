@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -101,24 +102,25 @@ class Procedure extends Model {
         return $procedure->update($data) ? true : false;
 
     }
-
+    
     /**
      * 删除审批流程
      *
      * @param $id
      * @return bool|null
+     * @throws Exception
      */
     public function remove($id) {
+        
         $procedure = $this->find($id);
-        if (!$procedure) {
-            return false;
-        }
+        if (!$procedure) { return false; }
 
         return $this->removable($procedure) ? $procedure->delete() : false;
 
     }
 
     public function datatable() {
+        
         $columns = [
             ['db' => 'Procedures.id', 'dt' => 0],
             ['db' => 'ProcedureType.name as proceduretypename', 'dt' => 1],
@@ -154,6 +156,7 @@ class Procedure extends Model {
         ];
 
         return Datatable::simple($this, $columns, $joins);
+        
     }
 
 }

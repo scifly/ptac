@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Events\EducatorImported;
+use App\Events\SchoolDeleted;
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
 use App\Http\Requests\CustodianRequest;
@@ -487,31 +488,36 @@ class Educator extends Model {
         }
         return true;
     }
-
+    
     /**
      * 删除教职员工
      *
      * @param $id
      * @param bool $fireEvent
      * @return bool
+     * @throws Exception
      */
     public function remove($id, $fireEvent = false) {
 
         $school = $this->find($id);
+        /** @var School $school */
         $removed = $this->removable($school) ? $school->delete() : false;
         if ($removed && $fireEvent) {
-//            event(new SchoolDeleted($school));
+            /** @var School $school */
+            event(new SchoolDeleted($school));
             return true;
         }
+        
         return $removed ? true : false;
 
     }
-
+    
     /**
      * 导入
      *
      * @param UploadedFile $file
      * @return array
+     * @throws \PHPExcel_Exception
      */
     public function upload(UploadedFile $file) {
 
@@ -525,7 +531,11 @@ class Educator extends Model {
             // var_dump($filePath);die;
             /** @var LaravelExcelReader $reader */
             $reader = Excel::load($filePath);
-            $sheet = $reader->getExcel()->getSheet(0);
+            try {
+                $sheet = $reader->getExcel()->getSheet(0);
+            } catch (\PHPExcel_Exception $e) {
+                throw $e;
+            }
             $educators = $sheet->toArray();
             if ($this->checkFileFormat($educators[0])) {
                 return [

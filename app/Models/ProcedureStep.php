@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
@@ -80,19 +81,19 @@ class ProcedureStep extends Model {
         return $ps->update($data) ? true : false;
 
     }
-
+    
     /**
      * 删除审批流程步骤
      *
      * @param $id
      * @return bool|null
+     * @throws Exception
      */
     public function remove($id) {
 
         $ps = $this->find($id);
-        if (!$ps) {
-            return false;
-        }
+        if (!$ps) { return false; }
+        
         return $ps->removable($ps) ? $ps->delete() : false;
 
     }

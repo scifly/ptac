@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Helpers\ModelTrait;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
@@ -68,18 +69,18 @@ class Mobile extends Model {
         return $mobile->update($data) ? true : false;
 
     }
-
+    
     /**
      * 删除手机号码
      *
      * @param $id
      * @return bool|null
+     * @throws Exception
      */
     public function remove($id) {
+        
         $mobile = $this->find($id);
-        if (!$mobile) {
-            return false;
-        }
+        if (!$mobile) { return false; }
 
         return $mobile->removable($mobile) ? $mobile->delete() : false;
 

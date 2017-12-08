@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -63,19 +64,18 @@ class DepartmentType extends Model {
         return $this->find($id)->update($data);
 
     }
-
+    
     /**
      * 删除部门类型
      *
      * @param $id
      * @return bool|null
+     * @throws Exception
      */
     public function remove($id) {
 
         $departmentType = $this->find($id);
-        if (!$departmentType) {
-            return false;
-        }
+        if (!$departmentType) { return false; }
         $removed = $this->removable($departmentType) ? $departmentType->delete() : false;
 
         return $removed ? true : false;

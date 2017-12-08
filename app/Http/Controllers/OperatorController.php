@@ -5,8 +5,11 @@ use App\Http\Requests\OperatorRequest;
 use App\Models\Department;
 use App\Models\Operator;
 use App\Models\School;
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
+use Throwable;
 
 /**
  * 系统管理员
@@ -32,7 +35,8 @@ class OperatorController extends Controller {
     /**
      * 系统管理员列表
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function index() {
         
@@ -47,7 +51,8 @@ class OperatorController extends Controller {
     /**
      * 创建系统管理员
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function create() {
         
@@ -64,7 +69,8 @@ class OperatorController extends Controller {
      * 保存系统管理员
      *
      * @param OperatorRequest $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function store(OperatorRequest $request) {
         
@@ -77,7 +83,8 @@ class OperatorController extends Controller {
      * 系统管理员详情
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function show($id) {
         
@@ -95,7 +102,8 @@ class OperatorController extends Controller {
      * 编辑系统管理员
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function edit($id) {
         
@@ -114,7 +122,8 @@ class OperatorController extends Controller {
      *
      * @param OperatorRequest $request
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function update(OperatorRequest $request, $id) {
         
@@ -130,7 +139,8 @@ class OperatorController extends Controller {
      * 删除系统管理员
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function destroy($id) {
         

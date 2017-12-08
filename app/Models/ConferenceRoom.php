@@ -91,19 +91,19 @@ class ConferenceRoom extends Model {
         return $cr->update($data) ? true : false;
 
     }
-
+    
     /**
      * 删除会议室
      *
      * @param $id
      * @return bool
+     * @throws \Exception
      */
     public function remove($id) {
 
         $cr = $this->find($id);
-        if (!$cr) {
-            return false;
-        }
+        if (!$cr) { return false; }
+        
         return $this->removable($id) ? $cr->delete() : false;
 
     }

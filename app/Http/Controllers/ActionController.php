@@ -3,7 +3,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ActionRequest;
 use App\Models\Action;
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
+use Throwable;
 
 /**
  * 功能
@@ -21,11 +24,13 @@ class ActionController extends Controller {
         $this->action = $action;
 
     }
-
+    
     /**
      * 功能列表
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Exception
+     * @throws Throwable
      */
     public function index() {
 
@@ -37,12 +42,13 @@ class ActionController extends Controller {
         return parent::output(__METHOD__);
 
     }
-
+    
     /**
      * 编辑功能
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function edit($id) {
 
@@ -58,7 +64,7 @@ class ActionController extends Controller {
      *
      * @param ActionRequest $request
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function update(ActionRequest $request, $id) {
 

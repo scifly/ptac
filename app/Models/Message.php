@@ -134,11 +134,13 @@ class Message extends Model {
         }
         return true;
     }
-
+    
     /**
      * @param $request
+     * @throws Exception
      */
     private function removeMedias(MessageRequest $request) {
+        
         //删除原有的图片
         $mediaIds = $request->input('del_ids');
         if ($mediaIds) {
@@ -148,7 +150,11 @@ class Message extends Model {
                 Storage::disk('uploads')->delete($paths[5]);
 
             }
-            Media::whereIn('id', $mediaIds)->delete();
+            try {
+                Media::whereIn('id', $mediaIds)->delete();
+            } catch (Exception $e) {
+                throw $e;
+            }
         }
     }
 

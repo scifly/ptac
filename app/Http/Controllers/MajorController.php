@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 use App\Http\Requests\MajorRequest;
 use App\Models\Major;
 use App\Models\Subject;
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
+use Throwable;
 
 /**
  * 专业
@@ -27,7 +30,8 @@ class MajorController extends Controller {
     /**
      * 专业列表
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function index() {
         
@@ -42,7 +46,8 @@ class MajorController extends Controller {
     /**
      * 创建专业
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function create() {
         
@@ -56,36 +61,21 @@ class MajorController extends Controller {
      * 保存专业
      *
      * @param MajorRequest $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function store(MajorRequest $request) {
         
         return $this->major->store($request) ? $this->succeed() : $this->fail();
         
     }
-    //
-    // /**
-    //  * 专业详情
-    //  *
-    //  * @param $id
-    //  * @return bool|\Illuminate\Http\JsonResponse
-    //  */
-    // public function show($id) {
-    //
-    //     $major = $this->major->find($id);
-    //     if (!$major) {
-    //         return $this->notFound();
-    //     }
-    //
-    //     return $this->output(__METHOD__, ['major' => $major]);
-    //
-    // }
-    
+
     /**
      * 编辑专业
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function edit($id) {
         
@@ -112,14 +102,13 @@ class MajorController extends Controller {
      *
      * @param MajorRequest $request
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function update(MajorRequest $request, $id) {
         
         $major = $this->major->find($id);
-        if (!$major) {
-            return $this->notFound();
-        }
+        if (!$major) { return $this->notFound(); }
         
         return $major->modify($request, $id) ? $this->succeed() : $this->fail();
         
@@ -129,14 +118,13 @@ class MajorController extends Controller {
      * 删除专业
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function destroy($id) {
         
         $major = $this->major->find($id);
-        if (!$major) {
-            return $this->notFound();
-        }
+        if (!$major) { return $this->notFound(); }
         
         return $major->remove($id) ? $this->succeed() : $this->fail();
         

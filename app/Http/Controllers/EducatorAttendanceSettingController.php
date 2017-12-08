@@ -3,6 +3,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\EducatorAttendanceSettingRequest;
 use App\Models\EducatorAttendanceSetting;
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 
 /**
@@ -25,7 +27,8 @@ class EducatorAttendanceSettingController extends Controller {
     /**
      * 教职员工考勤设置列表
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws \Throwable
      */
     public function index() {
         
@@ -39,7 +42,8 @@ class EducatorAttendanceSettingController extends Controller {
     /**
      * 创建教职工考勤设置
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws \Throwable
      */
     public function create() {
         
@@ -51,7 +55,7 @@ class EducatorAttendanceSettingController extends Controller {
      * 保存教职工考勤设置
      *
      * @param EducatorAttendanceSettingRequest $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function store(EducatorAttendanceSettingRequest $request) {
         
@@ -64,7 +68,8 @@ class EducatorAttendanceSettingController extends Controller {
      * 教职员工考勤详情
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws \Throwable
      */
     public function show($id) {
         
@@ -80,7 +85,8 @@ class EducatorAttendanceSettingController extends Controller {
     /**
      * 编辑教职员工考勤设置
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws \Throwable
      */
     public function edit($id) {
         
@@ -96,7 +102,7 @@ class EducatorAttendanceSettingController extends Controller {
      *
      * @param EducatorAttendanceSettingRequest $request
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function update(EducatorAttendanceSettingRequest $request, $id) {
         
@@ -114,17 +120,15 @@ class EducatorAttendanceSettingController extends Controller {
      * 删除教职员工考勤设置
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function destroy($id) {
         
         $eas = $this->eas->find($id);
-        if (!$eas) {
-            return $this->notFound();
-        }
+        if (!$eas) { return $this->notFound(); }
         
-        return $eas->delete()
-            ? $this->succeed() : $this->fail();
+        return $eas->delete() ? $this->succeed() : $this->fail();
         
     }
     

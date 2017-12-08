@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -73,19 +74,19 @@ class MessageType extends Model {
         return $messageType->update($data) ? true : false;
 
     }
-
+    
     /**
      * 删除消息类型
      *
      * @param $id
      * @return bool|null
+     * @throws Exception
      */
     public function remove($id) {
 
         $messageType = $this->find($id);
-        if (!$messageType) {
-            return false;
-        }
+        if (!$messageType) { return false; }
+        
         return $messageType->removable($messageType) ? $messageType->delete() : false;
 
     }

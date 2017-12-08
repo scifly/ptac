@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\GradeRequest;
 use App\Models\Educator;
 use App\Models\Grade;
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 
 /**
@@ -27,7 +29,8 @@ class GradeController extends Controller {
     /**
      * 年级列表
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws \Throwable
      */
     public function index() {
         
@@ -42,7 +45,8 @@ class GradeController extends Controller {
     /**
      * 创建年级
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws \Throwable
      */
     public function create() {
         
@@ -54,7 +58,7 @@ class GradeController extends Controller {
      * 保存年级
      *
      * @param GradeRequest $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function store(GradeRequest $request) {
         
@@ -82,12 +86,12 @@ class GradeController extends Controller {
     //     ]);
     //
     // }
-    
     /**
      * 编辑年级
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws \Throwable
      */
     public function edit($id) {
         
@@ -111,7 +115,7 @@ class GradeController extends Controller {
      *
      * @param GradeRequest $request
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function update(GradeRequest $request, $id) {
         
@@ -128,13 +132,12 @@ class GradeController extends Controller {
      * 删除年级
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function destroy($id) {
         
-        if (!$this->grade->find($id)) {
-            return $this->notFound();
-        }
+        if (!$this->grade->find($id)) { return $this->notFound(); }
         
         return $this->grade->remove($id, true)
             ? $this->succeed() : $this->fail();

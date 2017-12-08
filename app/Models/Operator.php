@@ -278,19 +278,19 @@ class Operator extends Model {
         return true;
 
     }
-
+    
     /**
      * 删除系统管理员
      *
      * @param $id
      * @return bool
+     * @throws Exception
      */
     public function remove($id) {
 
         $operator = $this->find($id);
-        if (!$operator) {
-            return false;
-        }
+        if (!$operator) { return false; }
+        
         return $this->removable($id) ? $operator->delete() : false;
 
     }
