@@ -63,6 +63,10 @@ Route::group(['prefix' => 'students'], function () {
 });
 // 用户
 Route::group(['prefix' => 'users'], routes('UserController'));
+Route::group(['prefix' => 'users'], function () {
+    $ctlr = 'UserController';
+    Route::get('event', $ctlr . '@event');
+});
 Route::post('users/upload_ava/{id}', 'UserController@uploadAvatar');
 /** 成绩管理 */
 // 考试管理 - 考试设置.考试类型设置
@@ -170,8 +174,8 @@ Route::group(['prefix' => 'conference_participants'], function () {
 Route::get('users/profile','UserController@profile');
 Route::get('users/reset','UserController@reset');
 Route::post('users/reset','UserController@reset');
-Route::get('users/messages/{id}','UserController@messages');
-Route::get('users/events/{id}','UserController@events');
+Route::get('users/messages','UserController@messages');
+Route::get('users/events','UserController@events');
 // 个人通讯录
 // 消息中心
 Route::group(['prefix' => 'messages'], routes('MessageController'));
