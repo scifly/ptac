@@ -63,6 +63,10 @@ Route::group(['prefix' => 'students'], function () {
 });
 // 用户
 Route::group(['prefix' => 'users'], routes('UserController'));
+Route::group(['prefix' => 'users'], function () {
+    $ctlr = 'UserController';
+    Route::get('event', $ctlr . '@event');
+});
 Route::post('users/upload_ava/{id}', 'UserController@uploadAvatar');
 /** 成绩管理 */
 // 考试管理 - 考试设置.考试类型设置

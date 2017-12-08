@@ -116,12 +116,13 @@ class UserController extends Controller {
         return $user->update($request->all()) ? $this->succeed() : $this->fail();
         
     }
-    
+
     /**
      * 删除用户
      *
      * @param $id
      * @return \Illuminate\Http\JsonResponse
+     * @throws \Exception
      */
     public function destroy($id) {
         $user = $this->user->find($id);
@@ -136,7 +137,6 @@ class UserController extends Controller {
     /**
      * 修改个人信息
      *
-     * @param $id
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function profile(){
@@ -156,7 +156,6 @@ class UserController extends Controller {
 
     /**
      * 重置密码
-     * @param $id
      * @return \Illuminate\Http\JsonResponse
      */
     public function reset(){
@@ -195,8 +194,13 @@ class UserController extends Controller {
 
     }
 
-    public function events(){
-
+    /**
+     * 待办事项
+     */
+    public function event(){
+        /** @noinspection PhpParamsInspection */
+        $event = new EventController();
+        return $event->index();
     }
     /**
      * 上传用户头像
