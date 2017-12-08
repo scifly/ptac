@@ -635,9 +635,12 @@ class Action extends Model {
         if (!in_array($ctlr, $this->excludedControllers)) {
             $prefix = str_singular($this->getTableName($ctlr));
             $prefix = ($prefix === 'corps') ? 'corp' : $prefix;
-            if (in_array($action, ['destroy', 'store', 'update', 'sort', 'move', 'rankTabs', 'show'])) {
+            if (in_array($action, ['destroy', 'store', 'update', 'sort', 'move', 'rankTabs'])) {
                 return null;
             }
+            // if (in_array($action, ['destroy', 'store', 'update', 'sort', 'move', 'rankTabs', 'show'])) {
+            //     return null;
+            // }
             return 'js/' . $prefix . '/' . $action . '.js';
         }
 

@@ -24,6 +24,7 @@ class TabRequest extends FormRequest {
                 $this->input('id') . ',id',
             'remark'    => 'nullable|string|between:2,255',
             'action_id' => 'required|integer',
+            'group_id'  => 'required|integer',
             'icon_id'   => 'nullable|integer',
             'enabled'   => 'required|boolean',
         ];
@@ -38,6 +39,9 @@ class TabRequest extends FormRequest {
         }
         if (!isset($input['enabled'])) {
             $input['enabled'] = 0;
+        }
+        if (!isset($input['menu_ids'])) {
+            $input['menu_ids'] = [];
         }
         $this->replace($input);
         
