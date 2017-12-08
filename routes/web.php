@@ -3,6 +3,12 @@
 use App\Events\eventTrigger;
 use Illuminate\Support\Facades\Route;
 
+Route::get('/alertBox', function()  {
+    return view('test.eventListener');
+});
+Route::get('/fireEvent', function() {
+    event(new eventTrigger());
+});
 /*
 |--------------------------------------------------------------------------
 | Web Routes
