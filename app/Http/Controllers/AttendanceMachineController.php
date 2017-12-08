@@ -62,21 +62,6 @@ class AttendanceMachineController extends Controller {
     }
     
     /**
-     * 考勤机详情
-     *
-     * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
-     */
-    public function show($id) {
-        
-        $am = $this->am->find($id);
-        if (!$am) { return $this->notFound(); }
-        
-        return $this->output(__METHOD__, ['am' => $am]);
-        
-    }
-    
-    /**
      * 编辑考勤机记录
      *
      * @param $id
