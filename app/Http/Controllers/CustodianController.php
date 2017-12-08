@@ -78,6 +78,7 @@ class CustodianController extends Controller {
      *
      * @param CustodianRequest $request
      * @return \Illuminate\Http\JsonResponse
+     * @throws \Exception
      */
     public function store(CustodianRequest $request) {
 
@@ -114,6 +115,7 @@ class CustodianController extends Controller {
      * @param CustodianRequest $request
      * @param $id
      * @return \Illuminate\Http\JsonResponse
+     * @throws \Exception
      */
     public function update(CustodianRequest $request, $id) {
 
@@ -127,6 +129,7 @@ class CustodianController extends Controller {
      *
      * @param $id
      * @return \Illuminate\Http\JsonResponse
+     * @throws \Exception
      */
     public function destroy($id) {
         

@@ -136,7 +136,6 @@ class UserController extends Controller {
     /**
      * 修改个人信息
      *
-     * @param $id
      * @return bool|\Illuminate\Http\JsonResponse
      */
     public function profile(){
@@ -156,7 +155,6 @@ class UserController extends Controller {
 
     /**
      * 重置密码
-     * @param $id
      * @return \Illuminate\Http\JsonResponse
      */
     public function reset(){
@@ -191,7 +189,7 @@ class UserController extends Controller {
      * 我的消息
      * @param $id
      */
-    public function messages($id){
+    public function messages(){
 
     }
 

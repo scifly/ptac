@@ -60,12 +60,13 @@ class MessageController extends Controller {
         return $this->output(__METHOD__);
         
     }
-    
+
     /**
      * 保存消息
      *
      * @param MessageRequest $request
      * @return \Illuminate\Http\JsonResponse
+     * @throws \Exception
      */
     public function store(MessageRequest $request) {
         $commTypeName = ['微信', '短信', '应用'];
@@ -119,13 +120,14 @@ class MessageController extends Controller {
         ]);
         
     }
-    
+
     /**
      * 更新消息
      *
      * @param MessageRequest $request
      * @param $id
      * @return \Illuminate\Http\JsonResponse
+     * @throws \Exception
      */
     public function update(MessageRequest $request, $id) {
         

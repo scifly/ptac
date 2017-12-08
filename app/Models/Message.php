@@ -137,6 +137,7 @@ class Message extends Model {
 
     /**
      * @param $request
+     * @throws Exception
      */
     private function removeMedias(MessageRequest $request) {
         //删除原有的图片
