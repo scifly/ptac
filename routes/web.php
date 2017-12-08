@@ -167,8 +167,9 @@ Route::group(['prefix' => 'conference_participants'], function () {
 });
 // 申诉
 /** 用户中心 */
-Route::get('users/profile/{id}','UserController@profile');
-Route::get('users/reset/{id}','UserController@reset');
+Route::get('users/profile','UserController@profile');
+Route::get('users/reset','UserController@reset');
+Route::post('users/reset','UserController@reset');
 Route::get('users/messages/{id}','UserController@messages');
 Route::get('users/events/{id}','UserController@events');
 // 个人通讯录

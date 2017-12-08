@@ -135,13 +135,14 @@ class Student extends Model {
         return $studentList;
         
     }
-    
+
     /**
      * 保存新创建的学生记录
      * @param StudentRequest $request
      * @return bool|mixed
+     * @throws \Exception|\Throwable
      */
-    public function store(StudentRequest $request) {
+    public function store( StudentRequest $request) {
         
         try {
             $exception = DB::transaction(function () use ($request) {
@@ -266,13 +267,14 @@ class Student extends Model {
         return $studentList;
         
     }
-    
+
     /**
      * 更新指定的学生记录
      *
      * @param StudentRequest $request
      * @param $studentId
      * @return bool|mixed
+     * @throws \Exception|\Throwable
      */
     public function modify(StudentRequest $request, $studentId) {
         
@@ -349,12 +351,13 @@ class Student extends Model {
         }
         
     }
-    
+
     /**
      * 删除指定的学生记录
      *
      * @param $studentId
      * @return bool|mixed
+     * @throws \Exception|\Throwable
      */
     public function remove($studentId) {
         
@@ -379,12 +382,13 @@ class Student extends Model {
             return false;
         }
     }
-    
+
     /**
      * 导入
      *
      * @param UploadedFile $file
      * @return array
+     * @throws \PHPExcel_Exception
      */
     public function upload(UploadedFile $file) {
         

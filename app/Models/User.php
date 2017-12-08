@@ -102,7 +102,7 @@ class User extends Authenticatable {
      *
      * @var array
      */
-    protected $hidden = ['password', 'remember_token'];
+    protected $hidden = ['remember_token'];
     
     /**
      * 返回指定用户所属的角色对象
