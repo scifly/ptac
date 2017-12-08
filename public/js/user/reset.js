@@ -7,28 +7,48 @@ $('#save').on('click',function (e) {
        
         if(password.value === '')
         {
-            alert('原密码不能为空！');
+            $.gritter.add({
+                title: '操作结果',
+                text: '原密码不能为空!',
+                image: '../img/error.png'
+            });
             password.focus();
             return false;
         }
         else if(pwd1.value === '')
         {
-            alert('密码不能为空！');
+            $.gritter.add({
+                title: '操作结果',
+                text: '新密码不能为空!',
+                image: '../img/error.png'
+            });
             pwd1.focus();
             return false;
         }else if(password.value === pwd1.value)
         {
-            alert('新密码不能和原密码相同！');
+            $.gritter.add({
+                title: '操作结果',
+                text: '新密码不能不能和原密码相同!',
+                image: '../img/error.png'
+            });
             pwd1.focus();
             return false;
         }else if(pwd2.value === '')
         {
-            alert('密码不能为空！');
+            $.gritter.add({
+                title: '操作结果',
+                text: '确认密码不能为空!',
+                image: '../img/error.png'
+            });
             pwd2.focus();
             return false;
         }else if(pwd1.value!== pwd2.value)
         {
-            alert('两次密码不一致！')
+            $.gritter.add({
+                title: '操作结果',
+                text: '两次密码不一致!',
+                image: '../img/error.png'
+            });
             pwd2.focus();
             return false;
         }
