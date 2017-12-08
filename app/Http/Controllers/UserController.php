@@ -2,12 +2,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\UserRequest;
+use App\Models\Menu;
 use App\Models\User;
-use Exception;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
-use Throwable;
 
 /**
  * 用户
@@ -16,98 +15,94 @@ use Throwable;
  * @package App\Http\Controllers
  */
 class UserController extends Controller {
-    
+
     protected $user;
-    
-    function __construct(User $user) {
-    
+    protected $menu;
+
+    function __construct(User $user, Menu $menu) {
+
         $this->middleware(['auth']);
         $this->user = $user;
-    
+        $this->menu = $menu;
     }
-    
+
     /**
      * 用户列表
      *
-     * @return bool|JsonResponse
-     * @throws Throwable
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function index() {
-        
         if (Request::get('draw')) {
             return response()->json($this->user->datatable());
         }
 
         return $this->output(__METHOD__);
-        
+
     }
-    
+
     /**
      * 创建用户
      *
-     * @return bool|JsonResponse
-     * @throws Throwable
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function create() {
         return $this->output(__METHOD__);
-        
+
     }
-    
+
     /**
      * 保存用户
      *
      * @param UserRequest $request
-     * @return JsonResponse
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(UserRequest $request) {
         if ($this->user->existed($request)) {
             return $this->fail('已经有此记录');
         }
-        
+
         return $this->user->create($request->all()) ? $this->succeed() : $this->fail();
-        
+
     }
-    
+
     /**
      * 用户详情
      *
      * @param $id
-     * @return bool|JsonResponse
-     * @throws Throwable
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function show($id) {
         $user = $this->user->find($id);
         if (!$user) {
             return $this->notFound();
         }
-        
+
         return $this->output(__METHOD__, ['user' => $user]);
-        
+
     }
-    
+
     /**
      * 编辑用户
      *
      * @param $id
-     * @return bool|JsonResponse
-     * @throws Throwable
+     * @return bool|\Illuminate\Http\JsonResponse
      */
     public function edit($id) {
         $user = $this->user->find($id);
         if (!$user) {
             return $this->notFound();
         }
-        
+
         return $this->output(__METHOD__, ['user' => $user]);
-        
+
     }
-    
+
     /**
      * 更新用户
      *
      * @param UserRequest $request
      * @param $id
-     * @return JsonResponse
+     * @return \Illuminate\Http\JsonResponse
      */
     public function update(UserRequest $request, $id) {
         $user = $this->user->find($id);
@@ -117,64 +112,84 @@ class UserController extends Controller {
         if ($this->user->existed($request, $id)) {
             return $this->fail('已经有此记录');
         }
-        
+
         return $user->update($request->all()) ? $this->succeed() : $this->fail();
-        
+
     }
-    
+
     /**
      * 删除用户
      *
      * @param $id
-     * @return JsonResponse
-     * @throws Exception
+     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id) {
         $user = $this->user->find($id);
         if (!$user) {
             return $this->notFound();
         }
-        
+
         return $user->delete() ? $this->succeed() : $this->fail();
-        
+
     }
-    
+
     /**
      * 修改个人信息
      *
-     * @param $id
-     * @return bool|JsonResponse
-     * @throws Throwable
+     * @return bool|\Illuminate\Http\JsonResponse
      */
-    public function profile($id){
+    public function profile(){
+        $id = Auth::id();
+
         $user = $this->user->find($id);
         if (!$user) {
             return $this->notFound();
         }
 
-        return $this->output(__METHOD__, ['user' => $user]);
+        return view('user.profile', [
+            'user' => $user,
+            'menu' => $this->menu->getMenuHtml($this->menu->rootMenuId()),
+
+        ]);
     }
-    
+
     /**
      * 重置密码
-     * @param $id
-     * @return JsonResponse
-     * @throws Throwable
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function reset($id){
-        
-        $user = $this->user->find($id);
-        if(!$user) { return $this->notFound(); }
+    public function reset(){
+        $id = Auth::id();
+        if(Request::isMethod('post'))
+        {
+           $password = Request::input('password') ;
+           $pwd = bcrypt(Request::input('pwd'));
+           $user = User::find($id);
+            if (!Auth::attempt([ 'password' => $password])){
+                return response()->json(['statusCode' => 201 ]);
+            }
+            $res = $user->update(['password' => $pwd]);
+            if($res){
+                return response()->json(['statusCode' => 200]);
+            }
 
-        return $this->output(__METHOD__, ['user' => $user]);
-        
+        }
+
+        $user = $this->user->find($id);
+        if(!$user) {
+            return $this->notFound();
+        }
+        return view('user.reset', [
+            'user' => $user,
+            'menu' => $this->menu->getMenuHtml($this->menu->rootMenuId()),
+            'js' => '../public/js/user/reset.js',
+        ]);
     }
 
     /**
      * 我的消息
      * @param $id
      */
-    public function messages($id){
+    public function messages(){
 
     }
 
@@ -188,7 +203,7 @@ class UserController extends Controller {
      * 上传用户头像
      *
      * @param $id
-     * @return JsonResponse
+     * @return \Illuminate\Http\JsonResponse
      */
     public function uploadAvatar($id) {
         $file = Request::file('avatar');
@@ -216,14 +231,14 @@ class UserController extends Controller {
         if ($id < 1) {
             $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
             $this->result['fileName'] = $fileName;
-            
+
             return response()->json($this->result);
         }
-        
+
         return $this->saveImg($id, $fileName);
-        
+
     }
-    
+
     /**
      * 验证文件是否上传成功
      *
@@ -237,17 +252,17 @@ class UserController extends Controller {
         if ($file->getClientSize() > $file->getMaxFilesize()) {
             return ['status' => false, 'msg' => '图片过大'];
         }
-        
+
         return ['status' => true];
-        
+
     }
-    
+
     /**
      * 将图片路径存入数据库
      *
      * @param $id
      * @param $imgName
-     * @return JsonResponse
+     * @return \Illuminate\Http\JsonResponse
      */
     private function saveImg($id, $imgName) {
         $user = $this->user->find($id);

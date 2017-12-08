@@ -82,7 +82,7 @@ var page = {
             ? window.location.origin + '/'
             : window.location.protocol + '/' + window.location.host + '/';
         if (window.location.href.indexOf('public') > -1) {
-            return siteRoot + 'pppp/public/';
+            return siteRoot + 'ptac/public/';
         }
         return siteRoot;
     },
@@ -419,6 +419,15 @@ var page = {
     recharge: function (formId, table) {
         var id = $('#id').val();
         page.initForm(table, formId, table + '/rechargeStore/' + id, 'PUT');
+    },
+    show: function (table) {
+        var id = $('#id').val();
+        var url = 'edit/' + id;
+        var $activeTabPane = $('#tab_' + page.getActiveTabId());
+        page.initBackBtn(table);
+        $('.btn-bianji').on('click',function () {
+            page.getTabContent($activeTabPane,table + '/' + url);
+        });
     },
     loadCss: function(css) {
         if (!$('link[href="' + page.siteRoot() + css +'"]').length) {
