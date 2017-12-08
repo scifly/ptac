@@ -4,9 +4,12 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
+use Carbon\Carbon;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * App\Models\MessageType
@@ -14,8 +17,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $id
  * @property string $name 消息类型名称
  * @property string $remark 消息类型备注
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property int $enabled
  * @method static Builder|MessageType whereCreatedAt($value)
  * @method static Builder|MessageType whereEnabled($value)
@@ -38,7 +41,7 @@ class MessageType extends Model {
     /**
      * 获取指定消息类型包含的所有消息对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function messages() { return $this->hasMany('App\Models\Message'); }
 
@@ -66,26 +69,24 @@ class MessageType extends Model {
     public function modify(array $data, $id) {
 
         $messageType = $this->find($id);
-        if (!$messageType) {
-            return false;
-        }
+        if (!$messageType) { return false; }
 
         return $messageType->update($data) ? true : false;
 
     }
-
+    
     /**
      * 删除消息类型
      *
      * @param $id
      * @return bool|null
+     * @throws Exception
      */
     public function remove($id) {
 
         $messageType = $this->find($id);
-        if (!$messageType) {
-            return false;
-        }
+        if (!$messageType) { return false; }
+        
         return $messageType->removable($messageType) ? $messageType->delete() : false;
 
     }

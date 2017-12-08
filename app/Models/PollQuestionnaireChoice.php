@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * App\Models\PollQuestionnaireChoice
@@ -30,14 +31,18 @@ class PollQuestionnaireChoice extends Model {
     protected $table = 'poll_questionnaire_subject_choices';
 
     protected $fillable = ['pqs_id', 'choice', 'seq_no', 'created_at', 'updated_at'];
-
+    
+    /**
+     * @return BelongsTo
+     */
     public function pollquestionnaireSubject() {
-        return $this->belongsTo('App\Models\PollQuestionnaireSubject'
-            , 'pqs_id'
-            , 'id');
+        
+        return $this->belongsTo('App\Models\PollQuestionnaireSubject', 'pqs_id', 'id');
+        
     }
 
     public function datatable() {
+        
         $columns = [
             ['db' => 'PollQuestionnaireChoice.id', 'dt' => 0],
             ['db' => 'PqSubject.subject', 'dt' => 1],
@@ -65,6 +70,9 @@ class PollQuestionnaireChoice extends Model {
                 ],
             ],
         ];
+        
         return Datatable::simple($this, $columns, $joins);
+        
     }
+    
 }

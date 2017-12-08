@@ -2,11 +2,12 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\UserRequest;
-use App\Models\Menu;
 use App\Models\User;
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
+use Throwable;
 
 /**
  * 用户
@@ -17,21 +18,22 @@ use Illuminate\Support\Facades\Request;
 class UserController extends Controller {
     
     protected $user;
-    protected $menu;
     
-    function __construct(User $user, Menu $menu) {
+    function __construct(User $user) {
     
         $this->middleware(['auth']);
         $this->user = $user;
-        $this->menu = $menu;
+    
     }
     
     /**
      * 用户列表
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function index() {
+        
         if (Request::get('draw')) {
             return response()->json($this->user->datatable());
         }
@@ -43,7 +45,8 @@ class UserController extends Controller {
     /**
      * 创建用户
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function create() {
         return $this->output(__METHOD__);
@@ -54,7 +57,7 @@ class UserController extends Controller {
      * 保存用户
      *
      * @param UserRequest $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function store(UserRequest $request) {
         if ($this->user->existed($request)) {
@@ -69,7 +72,8 @@ class UserController extends Controller {
      * 用户详情
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function show($id) {
         $user = $this->user->find($id);
@@ -85,7 +89,8 @@ class UserController extends Controller {
      * 编辑用户
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function edit($id) {
         $user = $this->user->find($id);
@@ -102,7 +107,7 @@ class UserController extends Controller {
      *
      * @param UserRequest $request
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function update(UserRequest $request, $id) {
         $user = $this->user->find($id);
@@ -121,7 +126,8 @@ class UserController extends Controller {
      * 删除用户
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function destroy($id) {
         $user = $this->user->find($id);
@@ -132,64 +138,43 @@ class UserController extends Controller {
         return $user->delete() ? $this->succeed() : $this->fail();
         
     }
-
+    
     /**
      * 修改个人信息
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @param $id
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
-    public function profile(){
-        $id = Auth::id();
-
+    public function profile($id){
         $user = $this->user->find($id);
         if (!$user) {
             return $this->notFound();
         }
 
-        return view('user.profile', [
-            'user' => $user,
-            'menu' => $this->menu->getMenuHtml($this->menu->rootMenuId()),
-
-        ]);
+        return $this->output(__METHOD__, ['user' => $user]);
     }
-
+    
     /**
      * 重置密码
-     * @return \Illuminate\Http\JsonResponse
+     * @param $id
+     * @return JsonResponse
+     * @throws Throwable
      */
-    public function reset(){
-        $id = Auth::id();
-        if(Request::isMethod('post'))
-        {
-           $password = Request::input('password') ;
-           $pwd = bcrypt(Request::input('pwd'));
-           $user = User::find($id);
-            if (!Auth::attempt([ 'password' => $password])){
-                return response()->json(['statusCode' => 201 ]);
-            }
-            $res = $user->update(['password' => $pwd]);
-            if($res){
-                return response()->json(['statusCode' => 200]);
-            }
-
-        }
-
+    public function reset($id){
+        
         $user = $this->user->find($id);
-        if(!$user) {
-            return $this->notFound();
-        }
-        return view('user.reset', [
-            'user' => $user,
-            'menu' => $this->menu->getMenuHtml($this->menu->rootMenuId()),
-            'js' => '../public/js/user/reset.js',
-        ]);
+        if(!$user) { return $this->notFound(); }
+
+        return $this->output(__METHOD__, ['user' => $user]);
+        
     }
 
     /**
      * 我的消息
      * @param $id
      */
-    public function messages(){
+    public function messages($id){
 
     }
 
@@ -200,7 +185,7 @@ class UserController extends Controller {
      * 上传用户头像
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function uploadAvatar($id) {
         $file = Request::file('avatar');
@@ -259,7 +244,7 @@ class UserController extends Controller {
      *
      * @param $id
      * @param $imgName
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     private function saveImg($id, $imgName) {
         $user = $this->user->find($id);

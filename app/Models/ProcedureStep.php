@@ -4,8 +4,10 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * App\Models\ProcedureStep
@@ -45,7 +47,7 @@ class ProcedureStep extends Model {
     /**
      * 返回指定审批流程步骤所属的审批流程对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function procedure() { return $this->belongsTo('App\Models\Procedure'); }
 
@@ -73,26 +75,24 @@ class ProcedureStep extends Model {
     public function modify(array $data, $id) {
 
         $ps = $this->find($id);
-        if (!$ps) {
-            return false;
-        }
+        if (!$ps) { return false; }
 
         return $ps->update($data) ? true : false;
 
     }
-
+    
     /**
      * 删除审批流程步骤
      *
      * @param $id
      * @return bool|null
+     * @throws Exception
      */
     public function remove($id) {
 
         $ps = $this->find($id);
-        if (!$ps) {
-            return false;
-        }
+        if (!$ps) { return false; }
+        
         return $ps->removable($ps) ? $ps->delete() : false;
 
     }
@@ -137,6 +137,7 @@ class ProcedureStep extends Model {
         ];
 
         return Datatable::simple($this, $columns, $joins);
+        
     }
 
     /**

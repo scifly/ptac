@@ -4,15 +4,19 @@ namespace App\Http\Controllers;
 use App\Models\Action;
 use App\Models\Corp;
 use App\Models\Department;
-use App\Models\DepartmentType;
 use App\Models\Menu;
 use App\Models\MenuTab;
 use App\Models\MenuType;
 use App\Models\School;
 use App\Models\Tab;
+use Exception;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
+use Illuminate\View\View;
+use Throwable;
 
 /**
  * 首页
@@ -44,6 +48,8 @@ class HomeController extends Controller {
     
     /**
      * 后台首页
+     *
+     * @throws Throwable
      */
     public function index() {
     
@@ -118,7 +124,15 @@ class HomeController extends Controller {
         }
 
     }
-
+    
+    /**
+     * 菜单入口
+     *
+     * @param $id
+     * @return Factory|JsonResponse|View
+     * @throws Exception
+     * @throws Throwable
+     */
     public function menu($id) {
 
         if (!session('menuId') || session('menuId') !== $id) {
@@ -185,12 +199,15 @@ class HomeController extends Controller {
             ];
         }
         # 获取并返回wrapper-content层中的html内容
+        try {
+            $html = view('partials.site_content', ['tabs' => $tabArray])->render();
+        } catch (Exception $e) {
+            throw $e;
+        }
         if (Request::ajax()) {
             return response()->json([
                 'statusCode' => 200,
-                'html' => view('partials.site_content', [
-                    'tabs' => $tabArray
-                ])->render()
+                'html' => $html 
             ]);
         }
         # 获取菜单列表

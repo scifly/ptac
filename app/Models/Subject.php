@@ -4,10 +4,14 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Http\Requests\SubjectRequest;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -20,8 +24,8 @@ use Illuminate\Support\Facades\DB;
  * @property int $max_score 科目满分
  * @property int $pass_score 及格分数
  * @property string $grade_ids 年级ID
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property int $enabled
  * @method static Builder|Subject whereCreatedAt($value)
  * @method static Builder|Subject whereEnabled($value)
@@ -52,23 +56,24 @@ class Subject extends Model {
     /**
      * 返回指定科目所属的学校对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function school() { return $this->belongsTo('App\Models\School'); }
 
     /**
      * 获取指定科目包含的所有科目次分类对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function subjectModules() { return $this->hasMany('App\Models\SubjectModule'); }
 
     /**
      * 获取指定科目包含的所有专业对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return BelongsToMany
      */
     public function majors() {
+        
         return $this->belongsToMany(
             'App\Models\Major',
             'majors_subjects',
@@ -82,9 +87,10 @@ class Subject extends Model {
      * 获取指定学校的科目列表
      *
      * @param $schoolId
-     * @return \Illuminate\Support\Collection
+     * @return Collection
      */
     public function subjects($schoolId) {
+        
         return $this->where('school_id', $schoolId)->get()->pluck('id', 'name');
 
     }
@@ -114,6 +120,7 @@ class Subject extends Model {
      * @throws Exception
      */
     public function store(SubjectRequest $request) {
+        
         try {
             DB::transaction(function () use ($request) {
                 $subjectData = [
@@ -133,6 +140,7 @@ class Subject extends Model {
         } catch (Exception $e) {
             throw $e;
         }
+        
         return true;
 
     }
@@ -146,10 +154,9 @@ class Subject extends Model {
      * @throws Exception
      */
     public function modify(SubjectRequest $request, $id) {
+        
         $subject = $this->find($id);
-        if (!isset($subject)) {
-            return false;
-        }
+        if (!isset($subject)) { return false; }
         try {
             DB::transaction(function () use ($request, $id, $subject) {
                 $subject->update([
@@ -169,6 +176,7 @@ class Subject extends Model {
         } catch (Exception $e) {
             throw $e;
         }
+        
         return true;
 
     }
@@ -181,10 +189,9 @@ class Subject extends Model {
      * @throws Exception
      */
     public function remove($subjectId) {
+        
         $subject = $this->find($subjectId);
-        if (!isset($subject)) {
-            return false;
-        }
+        if (!isset($subject)) { return false; }
         try {
             DB::transaction(function () use ($subjectId, $subject) {
                 # 删除指定的科目记录
@@ -196,11 +203,13 @@ class Subject extends Model {
         } catch (Exception $e) {
             throw $e;
         }
+        
         return true;
 
     }
 
     public function getId(array $subjects) {
+        
         $result = [];
         foreach ($subjects as $v) {
             $result[$v] = $this->whereName($v)->value('id');
@@ -210,6 +219,7 @@ class Subject extends Model {
     }
 
     public function datatable() {
+        
         $columns = [
             ['db' => 'Subject.id', 'dt' => 0],
             [
@@ -262,6 +272,7 @@ class Subject extends Model {
         $school = new School();
         $schoolId = $school->getSchoolId();
         $condition = 'Subject.school_id = ' . $schoolId;
+        
         return Datatable::simple($this, $columns, $joins, $condition);
 
     }

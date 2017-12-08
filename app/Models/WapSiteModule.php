@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Http\Requests\WapSiteModuleRequest;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -19,8 +20,8 @@ use Illuminate\Support\Facades\Storage;
  * @property int $wap_site_id 所属微网站ID
  * @property string $name 模块名称
  * @property int $media_id 模块图片多媒体ID
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property int $enabled
  * @method static Builder|WapSiteModule whereCreatedAt($value)
  * @method static Builder|WapSiteModule whereEnabled($value)
@@ -40,27 +41,20 @@ class WapSiteModule extends Model {
 
     protected $table = 'wap_site_modules';
     protected $fillable = [
-        'id',
-        'wap_site_id',
-        'name',
-        'media_id',
-        'created_at',
-        'updated_at',
+        'id', 'wap_site_id', 'name',
+        'media_id', 'created_at', 'updated_at',
         'enabled',
     ];
-
-    public function wsmarticles() {
+    
+    public function wsmArticles() {
+        
         return $this->hasMany('App\Models\WsmArticle', 'wsm_id', 'id');
+        
     }
 
-    public function media() {
-        return $this->belongsTo('App\Models\Media');
-    }
+    public function media() { return $this->belongsTo('App\Models\Media'); }
 
-    public function wapsite() {
-        return $this->belongsTo('App\Models\WapSite');
-
-    }
+    public function wapsite() { return $this->belongsTo('App\Models\WapSite'); }
 
     /**
      * @param WapSiteModuleRequest $request
@@ -68,24 +62,27 @@ class WapSiteModule extends Model {
      * @throws Exception
      */
     public function store(WapSiteModuleRequest $request) {
+        
         try {
             DB::transaction(function () use ($request) {
                 //删除原有的图片
                 $this->removeMedias($request);
                 $this->create($request->all());
             });
-
         } catch (Exception $e) {
             throw $e;
         }
+        
         return true;
 
     }
-
+    
     /**
      * @param $request
+     * @throws Exception
      */
     private function removeMedias(WapSiteModuleRequest $request) {
+        
         //删除原有的图片
         $mediaIds = $request->input('del_id');
         if ($mediaIds) {
@@ -93,10 +90,14 @@ class WapSiteModule extends Model {
             foreach ($medias as $media) {
                 $paths = explode("/", $media->path);
                 Storage::disk('public')->delete($paths[5]);
-
             }
-            Media::whereIn('id', $mediaIds)->delete();
+            try {
+                Media::whereIn('id', $mediaIds)->delete();
+            } catch (Exception $e) {
+                throw $e;
+            }
         }
+        
     }
 
     /**
@@ -106,21 +107,20 @@ class WapSiteModule extends Model {
      * @throws Exception
      */
     public function modify(WapSiteModuleRequest $request, $id) {
+        
         $wapSite = $this->find($id);
-        if (!$wapSite) {
-            return false;
-        }
+        if (!$wapSite) { return false; }
         try {
             DB::transaction(function () use ($request, $id) {
                 $this->removeMedias($request);
-
                 return $this->where('id', $id)->update($request->except('_method', '_token', 'del_id'));
             });
-
         } catch (Exception $e) {
             throw $e;
         }
+        
         return true;
+        
     }
 
     /**
@@ -151,7 +151,9 @@ class WapSiteModule extends Model {
                 ],
             ],
         ];
+        
         return Datatable::simple($this, $columns, $joins);
+        
     }
 
 }

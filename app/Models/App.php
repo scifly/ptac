@@ -9,6 +9,7 @@ use App\Facades\DatatableFacade as Datatable;
 use App\Facades\Wechat;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Request;
 
@@ -157,7 +158,7 @@ class App extends Model {
      *
      * @param array $data
      * @param $id
-     * @return bool|\Illuminate\Database\Eloquent\Collection|Model|null|static|static[]
+     * @return bool|Collection|Model|null|static|static[]
      */
     public function modify(array $data, $id) {
 
@@ -179,7 +180,7 @@ class App extends Model {
      *
      * @param array $data
      * @param $id
-     * @return bool|\Illuminate\Database\Eloquent\Collection|Model|null|static|static[]
+     * @return bool|Collection|Model|null|static|static[]
      */
     public function storeMenu(array $data, $id) {
 

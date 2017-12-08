@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * App\Models\EducatorAttendance 教职员工考勤记录
@@ -43,14 +44,14 @@ class EducatorAttendance extends Model {
     /**
      * 获取对应的教职员工对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function educator() { return $this->belongsTo('App\Models\Educator'); }
 
     /**
      * 获取对应的教职员工考勤设置对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function educatorAttendanceSetting() {
 

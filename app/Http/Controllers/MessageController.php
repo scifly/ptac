@@ -7,7 +7,10 @@ use App\Models\Department;
 use App\Models\Media;
 use App\Models\Message;
 use App\Models\User;
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
+use Throwable;
 
 /**
  * 消息
@@ -35,7 +38,8 @@ class MessageController extends Controller {
     /**
      * 消息列表
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function index() {
         
@@ -50,9 +54,11 @@ class MessageController extends Controller {
     /**
      * 创建消息
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function create() {
+        
         if (Request::method() === 'POST') {
             return $this->department->tree();
         }
@@ -60,21 +66,23 @@ class MessageController extends Controller {
         return $this->output(__METHOD__);
         
     }
-
+    
     /**
      * 保存消息
      *
      * @param MessageRequest $request
-     * @return \Illuminate\Http\JsonResponse
-     * @throws \Exception
+     * @return bool|JsonResponse
+     * @throws Exception
      */
     public function store(MessageRequest $request) {
+        
         $commTypeName = ['微信', '短信', '应用'];
         $input = $request->all();
         $commType = CommType::whereId($input['comm_type_id'])->first();
         if ($commType->name == $commTypeName[0]) {
             return $this->message->store($request) ? $this->succeed() : $this->fail();
         }
+        return true;
         
     }
     
@@ -82,7 +90,8 @@ class MessageController extends Controller {
      * 消息详情
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function show($id) {
         
@@ -103,8 +112,8 @@ class MessageController extends Controller {
      * 编辑消息
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
-     *
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function edit($id) {
         
@@ -120,14 +129,14 @@ class MessageController extends Controller {
         ]);
         
     }
-
+    
     /**
      * 更新消息
      *
      * @param MessageRequest $request
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
-     * @throws \Exception
+     * @return JsonResponse
+     * @throws Exception
      */
     public function update(MessageRequest $request, $id) {
         
@@ -139,7 +148,8 @@ class MessageController extends Controller {
      * 删除消息
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function destroy($id) {
         
@@ -224,7 +234,4 @@ class MessageController extends Controller {
             ->where('message_type_id', $messageType)->get();
     }
     
-    private function userSendMessages() {
-        //当前用户发送消息
-    }
 }

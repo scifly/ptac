@@ -3,7 +3,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CompanyRequest;
 use App\Models\Company;
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
+use Throwable;
 
 /**
  * 运营者
@@ -25,7 +28,8 @@ class CompanyController extends Controller {
     /**
      * 运营者公司列表
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function index() {
         
@@ -40,7 +44,8 @@ class CompanyController extends Controller {
     /**
      * 创建运营者公司记录
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function create() {
         
@@ -52,7 +57,7 @@ class CompanyController extends Controller {
      * 保存运营者公司记录
      *
      * @param CompanyRequest $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function store(CompanyRequest $request) {
         
@@ -65,7 +70,8 @@ class CompanyController extends Controller {
      * 编辑运营者公司记录
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function edit($id) {
         
@@ -81,7 +87,7 @@ class CompanyController extends Controller {
      *
      * @param CompanyRequest $request
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function update(CompanyRequest $request, $id) {
         
@@ -97,7 +103,8 @@ class CompanyController extends Controller {
      * 删除运营者公司记录
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function destroy($id) {
     

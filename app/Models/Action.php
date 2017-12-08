@@ -10,9 +10,11 @@ use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Route;
 use ReflectionClass;
 use ReflectionMethod;
+use Throwable;
 
 /**
  * App\Models\Action 功能
@@ -80,7 +82,7 @@ class Action extends Model {
     /**
      * 返回当前action包含的卡片
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function tabs() { return $this->hasMany('App\Models\Tab'); }
 
@@ -409,7 +411,7 @@ class Action extends Model {
      *
      * @param $actionId
      * @return bool|mixed
-     * @throws \Exception|\Throwable
+     * @throws Exception|Throwable
      */
     public function remove($actionId) {
 
@@ -427,7 +429,7 @@ class Action extends Model {
      * @param $methods
      * @param $className
      * @return bool
-     * @throws \Exception
+     * @throws Exception
      */
     private function delNonExistingMethods($methods, $className) {
 
@@ -447,7 +449,7 @@ class Action extends Model {
             ])->first();
             try {
                 $this->remove($a->id);
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 throw $e;
             }
         }

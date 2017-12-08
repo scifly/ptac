@@ -3,7 +3,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\EventRequest;
 use App\Models\Event;
+use Exception;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Request;
+use Throwable;
 
 /**
  * 日历
@@ -26,6 +30,7 @@ class EventController extends Controller {
      * 事件列表
      *
      * @return bool|\Illuminate\Http\JsonResponse
+     * @throws Throwable
      */
     public function index() {
         $userId = 2;
@@ -58,8 +63,8 @@ class EventController extends Controller {
      * 新增一个列表事件
      *
      * @param EventRequest $request
-     * @return \Illuminate\Http\Response
-     * @internal param \Illuminate\Http\Request $request
+     * @return Response
+     * @internal param Request $request
      */
     public function store(EventRequest $request) {
         $inputEvent = $request->all();
@@ -72,8 +77,9 @@ class EventController extends Controller {
      * 编辑日程事件的表单
      *
      * @param $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      * @internal param Event $event
+     * @throws Throwable
      */
     public function edit($id) {
         //判断当前用户权限
@@ -93,8 +99,8 @@ class EventController extends Controller {
      *
      * @param EventRequest $request
      * @param $id
-     * @return \Illuminate\Http\Response
-     * @internal param \Illuminate\Http\Request $request
+     * @return Response
+     * @internal param Request $request
      * @internal param Event $event
      */
     public function update(EventRequest $request, $id) {
@@ -116,17 +122,16 @@ class EventController extends Controller {
     }
     
     /**
-     *删除事件包括日历事件和列表事件
+     * 删除事件包括日历事件和列表事件
      *
      * @param $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      * @internal param Event $event
+     * @throws Exception
      */
     public function destroy($id) {
         $event = $this->event->find($id);
-        if (!$event) {
-            return $this->notFound();
-        }
+        if (!$event) { return $this->notFound(); }
         
         return $event->delete() ? $this->succeed() : $this->fail();
     }
@@ -154,7 +159,7 @@ class EventController extends Controller {
     /**
      * 拖动实时保存日历事件
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function updateTime() {
         $data = Request::all();

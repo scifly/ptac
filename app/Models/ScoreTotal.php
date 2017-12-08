@@ -6,6 +6,7 @@ use App\Facades\DatatableFacade as Datatable;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -52,20 +53,30 @@ class ScoreTotal extends Model {
         'grade_rank',
         'enabled',
     ];
-
-    public function student() {
-        return $this->belongsTo('App\Models\Student');
-    }
-
-    public function exam() {
-        return $this->belongsTo('App\Models\Exam');
-    }
-
-    function subjects() {
-        return $this->belongsTo('App\Models\Subject');
-    }
+    
+    /**
+     * 返回总分记录所属的学生对象
+     *
+     * @return BelongsTo
+     */
+    public function student() { return $this->belongsTo('App\Models\Student'); }
+    
+    /**
+     * 返回总分记录所属的考试对象
+     *
+     * @return BelongsTo
+     */
+    public function exam() { return $this->belongsTo('App\Models\Exam'); }
+    
+    /**
+     * 返回总分记录所属的科目对象
+     *
+     * @return BelongsTo
+     */
+    function subject() { return $this->belongsTo('App\Models\Subject'); }
 
     public function datatable() {
+        
         $columns = [
             ['db' => 'ScoreTotal.id', 'dt' => 0],
             ['db' => 'Student.student_number', 'dt' => 1],
@@ -113,6 +124,7 @@ class ScoreTotal extends Model {
         ];
 
         return Datatable::simple($this, $columns, $joins);
+        
     }
 
     /**
@@ -123,6 +135,7 @@ class ScoreTotal extends Model {
      * @throws Exception
      */
     public function statistics($exam_id) {
+        
         //删除之前这场考试的统计
         try {
             $this->where('exam_id', $exam_id)->delete();
@@ -216,5 +229,7 @@ class ScoreTotal extends Model {
         }
 
         return true;
+        
     }
+    
 }

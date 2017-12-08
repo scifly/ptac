@@ -8,9 +8,12 @@ use App\Models\Department;
 use App\Models\Media;
 use App\Models\User;
 use App\Models\WapSite;
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Storage;
+use Throwable;
 
 /**
  * 微网站
@@ -34,7 +37,8 @@ class WapSiteController extends Controller {
     /**
      * 微网站列表
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function index() {
         
@@ -49,7 +53,8 @@ class WapSiteController extends Controller {
     /**
      * 创建微网站
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function create() {
         
@@ -61,7 +66,8 @@ class WapSiteController extends Controller {
      * 保存微网站
      *
      * @param WapSiteRequest $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function store(WapSiteRequest $request) {
         
@@ -74,7 +80,8 @@ class WapSiteController extends Controller {
      * 微网站详情
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function show($id) {
         
@@ -95,7 +102,8 @@ class WapSiteController extends Controller {
      * 编辑微网站
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function edit($id) {
         $wapSite = $this->wapSite->find($id);
@@ -115,7 +123,8 @@ class WapSiteController extends Controller {
      *
      * @param WapSiteRequest $request
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function update(WapSiteRequest $request, $id) {
         
@@ -128,14 +137,13 @@ class WapSiteController extends Controller {
      * 删除微网站
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function destroy($id) {
         
         $wapsite = $this->wapSite->find($id);
-        if (!$wapsite) {
-            return parent::notFound();
-        }
+        if (!$wapsite) { return parent::notFound(); }
         
         return $wapsite->delete() ? parent::succeed() : parent::fail();
         
@@ -144,7 +152,7 @@ class WapSiteController extends Controller {
     /**
      * 上传图片
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function uploadImages() {
         

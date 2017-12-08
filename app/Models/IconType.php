@@ -4,8 +4,10 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * App\Models\IconType
@@ -34,7 +36,7 @@ class IconType extends Model {
     /**
      * 获取指定图标类型包含的所有图标对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function icons() { return $this->hasMany('App\Models\Icon'); }
 
@@ -69,22 +71,20 @@ class IconType extends Model {
         return $iconType->update($data) ? true : false;
 
     }
-
+    
     /**
      * 删除图标类型
      *
      * @param $id
      * @return bool|null
+     * @throws Exception
      */
     public function remove($id) {
 
         $iconType = $this->find($id);
-        if (!$iconType) {
-            return false;
-        }
+        if (!$iconType) { return false; }
 
-        return $iconType->removable($iconType)
-            ? $iconType->delete() : false;
+        return $iconType->removable($iconType) ? $iconType->delete() : false;
 
     }
 
@@ -103,7 +103,9 @@ class IconType extends Model {
                 },
             ],
         ];
+        
         return Datatable::simple($this, $columns);
+        
     }
 
 }

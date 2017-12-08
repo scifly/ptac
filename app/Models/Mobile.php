@@ -3,8 +3,11 @@
 namespace App\Models;
 
 use App\Helpers\ModelTrait;
+use Carbon\Carbon;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * App\Models\Mobile 手机号码
@@ -12,8 +15,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $id
  * @property int $user_id 手机号码所属用户ID
  * @property string $mobile 手机号码
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property int $enabled
  * @property int $isdefault 是否为默认的手机号码
  * @property-read \App\Models\User $user
@@ -35,7 +38,7 @@ class Mobile extends Model {
     /**
      * 返回指定手机所属的用户对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function user() { return $this->belongsTo('App\Models\User'); }
 
@@ -46,6 +49,7 @@ class Mobile extends Model {
      * @return bool
      */
     public function store(array $data) {
+        
         $mobile = $this->create($data);
 
         return $mobile ? true : false;
@@ -60,26 +64,25 @@ class Mobile extends Model {
      * @return bool
      */
     public function modify(array $data, $id) {
+        
         $mobile = $this->find($id);
-        if (!$mobile) {
-            return false;
-        }
+        if (!$mobile) { return false; }
 
         return $mobile->update($data) ? true : false;
 
     }
-
+    
     /**
      * 删除手机号码
      *
      * @param $id
      * @return bool|null
+     * @throws Exception
      */
     public function remove($id) {
+        
         $mobile = $this->find($id);
-        if (!$mobile) {
-            return false;
-        }
+        if (!$mobile) { return false; }
 
         return $mobile->removable($mobile) ? $mobile->delete() : false;
 

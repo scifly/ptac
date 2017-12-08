@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * App\Models\EducatorAppeal
@@ -47,18 +48,19 @@ class EducatorAppeal extends Model {
     /**
      * 获取对应的教职员工对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function educator() { return $this->belongsTo('App\Models\Educator'); }
 
     /**
      * 获取对应的流程日志对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function procedureLog() { return $this->belongsTo('App\Models\ProcedureLog'); }
 
     public function datatable() {
+        
         $columns = [
             ['db' => 'EducatorAppeal.id', 'dt' => 0],
             ['db' => 'Educator.name as educatorname', 'dt' => 1],
@@ -85,6 +87,7 @@ class EducatorAppeal extends Model {
         ];
 
         return Datatable::simple($this, $columns, $joins);
+        
     }
 
 }

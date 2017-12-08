@@ -7,6 +7,8 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
  * App\Models\Team 教职员工组
@@ -36,14 +38,14 @@ class Team extends Model {
     /**
      * 返回指定教职员工组所属的学校对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function school() { return $this->belongsTo('App\Models\School'); }
 
     /**
      * 获取指定教职员工组包含的所有教职员工对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return BelongsToMany
      */
     public function educators() { return $this->belongsToMany('App\Models\Educator', 'educators_teams'); }
 
@@ -54,6 +56,7 @@ class Team extends Model {
      * @return array
      */
     public function teams(array $teamIds) {
+        
         $teams = [];
         foreach ($teamIds as $id) {
             $team = $this->find($id);
@@ -65,6 +68,7 @@ class Team extends Model {
     }
 
     public function datatable() {
+        
         $columns = [
             ['db' => 'Team.id', 'dt' => 0],
             ['db' => 'Team.name', 'dt' => 1],
@@ -89,6 +93,7 @@ class Team extends Model {
                 ],
             ],
         ];
+        
         return Datatable::simple($this, $columns, $joins);
 
     }

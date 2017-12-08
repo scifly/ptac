@@ -3,9 +3,13 @@
 namespace App\Models;
 
 use App\Helpers\ModelTrait;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
  * App\Models\Media 媒体
@@ -45,18 +49,28 @@ class Media extends Model {
     /**
      * 返回指定媒体所属的媒体类型对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function mediaType() { return $this->belongsTo('App\Models\MediaType'); }
-
+    
+    /**
+     * 返回对应的网站模块对象
+     *
+     * @return HasOne
+     */
     public function wapSiteModule() { return $this->hasOne('App\Models\WapSiteModule'); }
-
+    
+    /**
+     * 返回对应的网站文章对象
+     *
+     * @return HasOne
+     */
     public function wsmArticle() { return $this->hasOne('App\Models\WsmArticle'); }
 
     /**
      * 获取指定媒体所包含的所有菜单对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function menus() { return $this->hasMany('App\Models\Menu'); }
 
@@ -108,19 +122,19 @@ class Media extends Model {
         return $media->update($data) ? true : false;
 
     }
-
+    
     /**
      * 删除删除媒体
      *
      * @param $id
      * @return bool|null
+     * @throws Exception
      */
     public function remove($id) {
 
         $media = $this->find($id);
-        if (!$media) {
-            return false;
-        }
+        if (!$media) { return false; }
+        
         return $media->removable($media) ? $media->delete() : false;
 
     }

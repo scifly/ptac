@@ -7,9 +7,11 @@ use App\Models\Tab;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
+use Throwable;
 
 class Controller extends BaseController {
     
@@ -45,7 +47,8 @@ class Controller extends BaseController {
      *
      * @param string $method 带控制器名称的方法名称
      * @param array $params 需要输出至view的变量数组
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     protected function output($method, array $params = []) {
         

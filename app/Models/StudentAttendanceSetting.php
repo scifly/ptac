@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * App\Models\StudentAttendanceSetting
@@ -42,26 +43,31 @@ class StudentAttendanceSetting extends Model {
     //
     protected $table = 'student_attendance_settings';
     protected $fillable = [
-        'name',
-        'grade_id',
-        'semester_id',
-        'ispublic',
-        'start',
-        'end',
-        'day',
-        'inorout',
-        'msg_template',
+        'name', 'grade_id', 'semester_id',
+        'ispublic', 'start', 'end',
+        'day', 'inorout', 'msg_template',
     ];
-
-    public function grade() {
-        return $this->belongsTo('App\Models\Grade');
-    }
-
+    
+    /**
+     * 返回指定学生考勤设置所属的年级对象
+     *
+     * @return BelongsTo
+     */
+    public function grade() { return $this->belongsTo('App\Models\Grade'); }
+    
+    /**
+     * 返回指定学生考勤设置所属的学期对象
+     *
+     * @return BelongsTo
+     */
     public function semester() {
+        
         return $this->belongsTo('App\Models\Semester', 'semester_id', 'id');
+        
     }
 
     public function datatable() {
+        
         $columns = [
             ['db' => 'StudentAttendanceSetting.id', 'dt' => 0],
             ['db' => 'StudentAttendanceSetting.name', 'dt' => 1],
@@ -107,6 +113,7 @@ class StudentAttendanceSetting extends Model {
                 ],
             ],
         ];
+        
         return Datatable::simple($this, $columns, $joins);
 
     }

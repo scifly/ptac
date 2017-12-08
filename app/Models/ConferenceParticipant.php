@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * App\Models\ConferenceParticipant 与会者
@@ -35,24 +36,19 @@ class ConferenceParticipant extends Model {
     /**
      * 返回与会者的教职员工对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
-    public function educator() {
-        return $this->belongsTo('\App\Models\Educator');
-
-    }
+    public function educator() { return $this->belongsTo('\App\Models\Educator'); }
 
     /**
      * 返回与会者参加的会议对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
-    public function conferenceQueue() {
-        return $this->belongsTo('App\Models\ConferenceQueue');
-
-    }
+    public function conferenceQueue() { return $this->belongsTo('App\Models\ConferenceQueue'); }
 
     public function datatable() {
+        
         $columns = [
             ['db' => 'ConferenceParticipant.id', 'dt' => 0],
             ['db' => 'User.realname', 'dt' => 1],

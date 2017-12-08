@@ -3,7 +3,10 @@ namespace App\Http\Controllers;
 
 use App\Models\ScoreTotal;
 use App\Models\Subject;
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
+use Throwable;
 
 /**
  * 总成绩
@@ -27,7 +30,8 @@ class ScoreTotalController extends Controller {
     /**
      * 总成绩列表
      *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\JsonResponse|\Illuminate\View\View
+     * @return JsonResponse
+     * @throws Throwable
      */
     public function index() {
         
@@ -43,7 +47,8 @@ class ScoreTotalController extends Controller {
      * 总成绩详情
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function show($id) {
         
@@ -64,7 +69,8 @@ class ScoreTotalController extends Controller {
      * 总成绩统计
      *
      * @param $examId
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function statistics($examId) {
         

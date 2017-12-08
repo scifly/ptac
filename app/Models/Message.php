@@ -6,7 +6,9 @@ use App\Facades\DatatableFacade as Datatable;
 use App\Http\Requests\MessageRequest;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
@@ -42,8 +44,8 @@ use Illuminate\Support\Facades\Storage;
  * @method static Builder|Message whereUserId($value)
  * @method static Builder|Message whereUserIds($value)
  * @mixin \Eloquent
- * @property-read \App\Models\MessageType $messageType
- * @property-read \App\Models\User $user
+ * @property-read MessageType $messageType
+ * @property-read User $user
  * @property int $comm_type_id 通信方式id
  * @property int $app_id 应用id
  * @property int $msl_id 消息发送批次id
@@ -59,8 +61,8 @@ use Illuminate\Support\Facades\Storage;
  * @method static Builder|Message whereSUserId($value)
  * @method static Builder|Message whereSent($value)
  * @property-read \App\Models\CommType $commType
- * @property-read \App\Models\MessageSendingLog $messageSendinglog
- * @property-read \App\Models\MessageSendingLog $messageSendinglogs
+ * @property-read MessageSendingLog $messageSendinglog
+ * @property-read MessageSendingLog $messageSendinglogs
  */
 class Message extends Model {
 
@@ -76,34 +78,28 @@ class Message extends Model {
     /**
      * 返回指定消息所属的消息类型对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
-    public function messageType() {
-        return $this->belongsTo('App\Models\MessageType');
-    }
+    public function messageType() { return $this->belongsTo('App\Models\MessageType'); }
 
     /**
      * 返回指定消息所属的用户对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
-    public function user() {
-        return $this->belongsTo('App\Models\User');
-    }
+    public function user() { return $this->belongsTo('App\Models\User'); }
+    
+    /**
+     * 获取
+     *
+     * @param array $classIds
+     * @return Collection|static[]
+     */
+    public function classes(array $classIds) { return Squad::whereIn('id', $classIds)->get(['id', 'name']); }
 
-    public function classes(array $classIds) {
+    public function messageSendinglogs() { return $this->belongsTo('App\Models\MessageSendingLog'); }
 
-        return Squad::whereIn('id', $classIds)->get(['id', 'name']);
-
-    }
-
-    public function messageSendinglogs() {
-        return $this->belongsTo('App\Models\MessageSendingLog');
-    }
-
-    public function commType() {
-        return $this->belongsTo('App\Models\CommType');
-    }
+    public function commType() { return $this->belongsTo('App\Models\CommType'); }
 
     /**
      * @param MessageRequest $request
@@ -114,7 +110,7 @@ class Message extends Model {
         $input = $request->all();
         $messageSendingLog = new MessageSendingLog();
         #新增一条日志记录（指定批次）
-        $logId = $messageSendingLog->addMessageSendingLog(count($input['r_user_id']));
+        $logId = $messageSendingLog->store(count($input['r_user_id']));
         $input['msl_id'] = $logId;
         $updateUrl = [];
         try {
@@ -134,12 +130,13 @@ class Message extends Model {
         }
         return true;
     }
-
+    
     /**
      * @param $request
      * @throws Exception
      */
     private function removeMedias(MessageRequest $request) {
+        
         //删除原有的图片
         $mediaIds = $request->input('del_ids');
         if ($mediaIds) {
@@ -149,7 +146,11 @@ class Message extends Model {
                 Storage::disk('uploads')->delete($paths[5]);
 
             }
-            Media::whereIn('id', $mediaIds)->delete();
+            try {
+                Media::whereIn('id', $mediaIds)->delete();
+            } catch (Exception $e) {
+                throw $e;
+            }
         }
     }
 
