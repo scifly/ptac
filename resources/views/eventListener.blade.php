@@ -9,12 +9,7 @@
     <title>Document</title>
 </head>
 <body>
-<div id="app">
-    <p>
-        This is the Event Listener page and when the event is fired off, this page will listen to the status update, and
-        fire off the related listener command.
-    </p>
-</div>
+<div id="app"><p>This is the event listener page</p></div>
 <script src="js/app.js" charset="utf-8"></script>
 </body>
 </html>
