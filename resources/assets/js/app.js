@@ -21,7 +21,7 @@ const app = new Vue({
     created() {
         Echo.channel('channelDemoEvent')
             .listen('eventTrigger', (e) => {
-                alert('got it!');
+                alert(e);
             });
     }
 });
