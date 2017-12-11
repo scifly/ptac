@@ -24,7 +24,7 @@ const app = new Vue({
         //         alert(e);
         //     });
 
-        Echo.channel('user.2')
+        Echo.private('user.' + id)
             .listen('eventTrigger', (e) => {
                 alert('123');
             });
