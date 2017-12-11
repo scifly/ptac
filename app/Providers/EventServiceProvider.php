@@ -11,8 +11,8 @@ class EventServiceProvider extends ServiceProvider {
      * @var array
      */
     protected $listen = [
-        'App\Events\Event' => [
-            'App\Listeners\EventListener',
+        'App\Events\eventTrigger' => [
+            'App\Listeners\popUpbox',
         ],
     ];
     
