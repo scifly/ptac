@@ -6,7 +6,10 @@ var size = $('#count').val();
 var id = $('#id').val();
 
 /** 监护人手机号管理 */
-$(crud.mobile('formCustodian',size, 'PUT', 'custodians/update/'+id));
+if (typeof crud === 'undefined') {
+    $.getMultiScripts(['js/admin.crud.js'], page.siteRoot())
+        .done(function() { crud.mobile('formCustodian',size, 'PUT', 'custodians/update/'+id); })
+} else { crud.mobile('formCustodian',size, 'PUT', 'custodians/update/'+id); }
 // $(document).off('click','.btn-mobile-add');
 // $(document).on('click', '.btn-mobile-add', function (e) {
 //     e.preventDefault();
