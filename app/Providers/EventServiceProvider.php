@@ -12,7 +12,7 @@ class EventServiceProvider extends ServiceProvider {
      */
     protected $listen = [
         'App\Events\eventTrigger' => [
-            'App\Listeners\popUpbox',
+            'App\Listeners\popUpBox',
         ],
     ];
     
