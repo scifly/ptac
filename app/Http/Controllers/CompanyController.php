@@ -41,7 +41,7 @@ class CompanyController extends Controller {
             env('PUSHER_APP_ID'),
             ['cluster' => 'ap1', 'encrypted' => true]
         );
-//        $pusher->socket_auth('user.' . Auth::id(), '');
+        $pusher->socket_auth('user.' . Auth::id(), '5686.5060336');
         $pusher->trigger(
             'user.' . Auth::id(),
             'App\Events\eventTrigger',
