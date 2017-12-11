@@ -27,6 +27,7 @@ class eventTrigger implements ShouldBroadcast {
      * @return Channel
      */
     public function broadcastOn() {
-        return new Channel('channelDemoEvent');
+        // return new Channel('channelDemoEvent');
+        return ['channelDemoEvent'];
     }
 }
