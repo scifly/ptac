@@ -47,7 +47,8 @@ class LoginController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function login(Request $request) {
-        
+
+
         $input = $request->input('input');
         $password = $request->input('password');
         if (User::whereUsername($input)->first()) {
