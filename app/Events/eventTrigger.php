@@ -32,6 +32,6 @@ class eventTrigger implements ShouldBroadcast
     public function broadcastOn()
     {
 //        return new Channel('channelDemoEvent');
-        return new PrivateChannel('user.'. $this->user->id);
+        return new PrivateChannel('user.' . $this->user->id);
     }
 }

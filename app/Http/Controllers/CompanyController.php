@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Events\eventTrigger;
 use App\Http\Requests\CompanyRequest;
 use App\Models\Company;
 use Exception;
@@ -42,13 +41,11 @@ class CompanyController extends Controller {
             env('PUSHER_APP_ID'),
             ['cluster' => 'ap1', 'encrypted' => true]
         );
-        // $pusher->socket_auth('user.' . Auth::id(), )
-        event(new eventTrigger(Auth::user()));
-//        $pusher->trigger(
-//            'user.' . Auth::id(),
-//            'App\Events\eventTrigger',
-//            'test'
-//        );
+        $pusher->trigger(
+            'user.' . Auth::id(),
+            'App\Events\eventTrigger',
+            'test'
+        );
         exit;
         if (Request::get('draw')) {
             return response()->json($this->company->datatable());
