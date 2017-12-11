@@ -2,6 +2,7 @@
 
 namespace App\Events;
 
+use App\Models\User;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
@@ -12,15 +13,16 @@ use Illuminate\Queue\SerializesModels;
 class eventTrigger implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
+    public $user;
 
     /**
      * Create a new event instance.
      *
-     * @return void
+     * @param User $user
      */
-    public function __construct()
+    public function __construct(User $user)
     {
-        //
+        $this->user = $user;
     }
 
     /**
@@ -29,6 +31,7 @@ class eventTrigger implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new Channel('channelDemoEvent');
+//        return new Channel('channelDemoEvent');
+        return new PrivateChannel('user.'. $this->user->id);
     }
 }

@@ -5,7 +5,9 @@ use App\Http\Requests\CompanyRequest;
 use App\Models\Company;
 use Exception;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
+use Pusher\Pusher;
 use Throwable;
 
 /**
@@ -32,7 +34,19 @@ class CompanyController extends Controller {
      * @throws Throwable
      */
     public function index() {
-        
+
+        $pusher = new Pusher(
+            env('PUSHER_APP_KEY'),
+            env('PUSHER_APP_SECRET'),
+            env('PUSHER_APP_ID'),
+            ['cluster' => 'ap1', 'encrypted' => true]
+        );
+        $pusher->trigger(
+            'user.' . Auth::id(),
+            'App\Events\eventTrigger',
+            'test'
+        );
+        exit;
         if (Request::get('draw')) {
             return response()->json($this->company->datatable());
         }

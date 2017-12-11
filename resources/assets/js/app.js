@@ -19,9 +19,13 @@ Vue.component('example', require('./components/Example.vue'));
 const app = new Vue({
     el: '#app',
     created() {
-        Echo.channel('channelDemoEvent')
+        // Echo.channel('channelDemoEvent')
+        //     .listen('eventTrigger', (e) => {
+        //         alert(e);
+        //     });
+        Echo.private(`user.${userId}`)
             .listen('eventTrigger', (e) => {
-                alert(e);
+                alert('123');
             });
     }
 });
