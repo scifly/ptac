@@ -26,7 +26,7 @@ const app = new Vue({
         //         alert(e);
         //     });
 
-        Echo.private('private-user.2')
+        Echo.private('user.2')
             .listen('eventTrigger', (e) => {
                 alert('123');
             });
