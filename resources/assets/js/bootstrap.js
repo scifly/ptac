@@ -48,6 +48,7 @@ import Echo from "laravel-echo";
 window.Pusher = require('pusher-js');
 
 window.Echo = new Echo({
+    authEndpoint: "/ptac/broadcasting/auth",
     broadcaster: 'pusher',
     key: '15d0dcb36363ff076262',
     cluster: 'ap1',

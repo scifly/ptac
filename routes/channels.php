@@ -9,6 +9,6 @@
 | used to check if an authenticated user can listen to the channel.
 |
 */
-Broadcast::channel('user.*', function ($user, $userId) {
+Broadcast::auth('user.*', function ($user, $userId) {
     return (int)$user->id === (int)$userId;
 });
