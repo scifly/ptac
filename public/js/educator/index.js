@@ -27,10 +27,12 @@ $import.on('click', function () {
             contentType: false,
             processData: false,
             success: function (result) {
-                console.log(result);
+                page.inform("操作成功",result.message, page.success);
             },
             error: function (result) {
                 console.log(result);
+                page.inform("操作失败",result.message, page.failure);
+
             }
         });
     })
