@@ -1,6 +1,5 @@
 <?php
 
-use App\Events\eventTrigger;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/alertBox', function() {
@@ -21,9 +20,6 @@ Route::get('/fireEvent', function() {
 | contains the "web" middleware group. Now create something great!
 |
 */
-// Route::get('/fireEvent', function() {
-//     event(new eventTrigger());
-// });
 
 Route::auth();
 # 关闭注册功能
@@ -57,7 +53,6 @@ Route::group(['prefix' => 'custodians'], function () {
     Route::post('edit/{id}', $ctlr . '@edit');
     Route::post('create', $ctlr . '@create');
     Route::get('export', $ctlr . '@export');
-    
     // Route::any('relationship', $ctlr . '@relationship');
 });
 // 学生
