@@ -13,16 +13,16 @@ use Illuminate\Queue\SerializesModels;
 class eventTrigger implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
-    public $user;
+    public $data;
 
     /**
      * Create a new event instance.
      *
-     * @param User $user
+     * @param $data
      */
-    public function __construct(User $user)
+    public function __construct($data)
     {
-        $this->user = $user;
+        $this->data = $data;
     }
 
     /**
@@ -32,6 +32,6 @@ class eventTrigger implements ShouldBroadcast
     public function broadcastOn()
     {
 //        return new Channel('channelDemoEvent');
-        return new PrivateChannel('user.' . $this->user->id);
+        return new PrivateChannel('user.' . $this->data['user']->id);
     }
 }

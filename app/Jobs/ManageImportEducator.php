@@ -204,7 +204,10 @@ class ManageImportEducator implements ShouldQueue {
                 }
                 
             });
-            event(new eventTrigger(Auth::user()));
+            $data['user'] = Auth::user();
+            $data['type'] = 'educator';
+
+            event(new eventTrigger($data));
 
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
