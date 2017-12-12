@@ -202,6 +202,7 @@ class ManageImportEducator implements ShouldQueue {
                 }
                 
             });
+
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
             return false;

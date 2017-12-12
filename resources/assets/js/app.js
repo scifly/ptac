@@ -24,8 +24,11 @@ const app = new Vue({
         Echo.private('user.' + document.getElementById('userId').value)
             .listen('eventTrigger', (e) => {
                 console.log(e);
-                alert('123');
-            });
+                // alert('123');
+                page.inform()
+            })
+            .listen('importCompleted', );
+
     }
 });
 

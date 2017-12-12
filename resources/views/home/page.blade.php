@@ -28,6 +28,7 @@
     </style>
 </head>
 <body class="hold-transition skin-blue sidebar-mini">
+<input type="hidden" id="userId" value="{{ $user->id }}"/>
 <div class="wrapper">
     <!-- 页面头部 -->
     @include('partials.site_header')

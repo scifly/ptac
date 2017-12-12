@@ -28,6 +28,7 @@
     </style>
 </head>
 <body class="hold-transition skin-blue sidebar-mini">
+<input type="hidden" id="userId" value="{{ $user->id }}"/>
 <div class="wrapper">
     <!-- 页面头部 -->
     @include('partials.site_header')
@@ -45,6 +46,7 @@
 <script src="{{ URL::asset('js/jquery-ui.min.js') }}"></script>
 <script src="{{ URL::asset('js/bootstrap.min.js') }}"></script>
 <script src="{{ URL::asset('js/adminlte.min.js') }}"></script>
+<script src="{{ URL::asset('js/app.js') }}"></script>
 <script src="{{ URL::asset('js/plugins/gritter/js/jquery.gritter.min.js') }}"></script>
 <script src="{{ URL::asset('js/plugins/parsley/parsley.min.js') }}"></script>
 <script src="{{ URL::asset('js/plugins/parsley/i18n/zh_cn.js') }}"></script>
