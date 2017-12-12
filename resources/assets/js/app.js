@@ -21,7 +21,7 @@ const app = new Vue({
     created() {
         Echo.private('user.' + document.getElementById('userId').value)
             .listen('eventTrigger', (e) => {
-                // console.log(e);
+                console.log(e);
                 // alert('123');
                 page.inform('导入成功', '教职员工队列导入成功', page.success)
             });
