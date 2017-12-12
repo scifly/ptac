@@ -21,7 +21,7 @@ Vue.component('example', require('./components/Example.vue'));
 const app = new Vue({
     el: '#app',
     created() {
-        Echo.private('user.' + userId)
+        Echo.private('user.' + document.getElementById('userId').value)
             .listen('eventTrigger', (e) => {
                 alert('123');
             });
