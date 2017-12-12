@@ -36,8 +36,8 @@ class CompanyController extends Controller {
      */
     public function index() {
 
-        event(new eventTrigger(Auth::user()));
-        exit;
+//        event(new eventTrigger(Auth::user()));
+//        exit;
         if (Request::get('draw')) {
             return response()->json($this->company->datatable());
         }

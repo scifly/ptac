@@ -17,6 +17,7 @@ var $file = $('#confirm-import');
 $import.on('click', function () {
     $importEducator.modal({backdrop: true});
     $file.on('click', function () {
+        page.inform("温馨提示", '正在导入中...', page.info);
         var formData = new FormData();
         formData.append('file', $('#fileupload')[0].files[0]);
         formData.append('_token', $('#csrf_token').attr('content'));
@@ -27,7 +28,6 @@ $import.on('click', function () {
             contentType: false,
             processData: false,
             success: function (result) {
-                // page.inform("操作成功",result.message, page.success);
             },
             error: function (result) {
                 console.log(result);
