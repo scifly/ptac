@@ -621,7 +621,7 @@ class Educator extends Model {
             ];
 
             $status = Validator::make($user, $rules);
-
+        print_r($status->messages());
             if ($status->fails()) {
                 $invalidRows[] = $datum;
                 unset($data[$i]);
