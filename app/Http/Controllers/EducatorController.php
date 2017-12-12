@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Events\eventTrigger;
 use App\Http\Requests\EducatorRequest;
 use App\Models\Department;
 use App\Models\Educator;
@@ -10,6 +11,7 @@ use App\Models\School;
 use App\Models\Team;
 use Exception;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use PHPExcel_Exception;
@@ -235,6 +237,7 @@ class EducatorController extends Controller {
             // 文件是否上传成功
             if ($file->isValid()) {
                 $result = $this->educator->upload($file);
+                event(new eventTrigger(Auth::user()));
                 return response()->json($result);
             }
         }
