@@ -648,7 +648,7 @@ class Educator extends Model {
             $rows[] = $user;
             unset($user);
         }
-        dd($rows);die;
+        print_r($rows);die;
         // print_r($rows);die;
         if (!empty($rows)) {
             event(new EducatorImported($rows));
