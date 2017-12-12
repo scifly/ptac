@@ -30,6 +30,7 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
  */
 
 let token = document.head.querySelector('meta[name="csrf-token"]');
+console.log(token);
 
 if (token) {
     window.axios.defaults.headers.common['X-CSRF-TOKEN'] = token.content;
@@ -59,7 +60,7 @@ var pusher = new Pusher('15d0dcb36363ff076262', {
 window.Echo = new Echo({
     authEndpoint: '/broadcasting/auth',
     broadcaster: 'pusher',
-    key: 'bc8e8ee821cf30234a31',
+    key: '15d0dcb36363ff076262',
     cluster: 'ap1',
     encrypted: true
 });
