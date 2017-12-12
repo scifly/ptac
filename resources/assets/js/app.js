@@ -23,6 +23,7 @@ const app = new Vue({
     created() {
         Echo.private('user.' + document.getElementById('userId').value)
             .listen('eventTrigger', (e) => {
+                console.log(e);
                 alert('123');
             });
     }
