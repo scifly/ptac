@@ -26,8 +26,7 @@ const app = new Vue({
                 console.log(e);
                 // alert('123');
                 page.inform()
-            })
-            .listen('importCompleted', );
+            });
 
     }
 });
