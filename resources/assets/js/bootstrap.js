@@ -48,14 +48,14 @@ import Echo from "laravel-echo";
 
 window.Pusher = require('pusher-js');
 
-// var pusher = new Pusher('15d0dcb36363ff076262', {
-//     authEndpoint: '/broadcasting/auth',
-//     auth: {
-//         headers: {
-//             'X-CSRF-Token': token.content
-//         }
-//     }
-// });
+var pusher = new Pusher('15d0dcb36363ff076262', {
+    authEndpoint: '/broadcasting/auth',
+    auth: {
+        headers: {
+            'X-CSRF-Token': token.content
+        }
+    }
+});
 
 window.Echo = new Echo({
     authEndpoint: '/broadcasting/auth',
