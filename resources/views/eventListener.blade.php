@@ -11,6 +11,6 @@
 <body>
 <input type="hidden" id="userId" value="{{ $user->id }}"/>
 <div id="app"><p>广播时间侦听</p></div>
-<script src="js/app.js" charset="utf-8"></script>
+{{--<script src="js/app.js" charset="utf-8"></script>--}}
 </body>
 </html>
