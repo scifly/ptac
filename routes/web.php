@@ -4,7 +4,7 @@ use App\Events\eventTrigger;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/alertBox', function() {
-    return view('eventListener');
+    return view('eventListener', ['user' => Auth::user()]);
 });
 
 Route::get('/fireEvent', function() {

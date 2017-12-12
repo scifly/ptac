@@ -16,17 +16,12 @@ window.Vue = require('vue');
 
 Vue.component('example', require('./components/Example.vue'));
 
-var pusher = new Pusher('15d0dcb36363ff076262', {authEndpoint: '/pusher_auth.php'});
+// var pusher = new Pusher('15d0dcb36363ff076262', {authEndpoint: '/pusher_auth.php'});
 
 const app = new Vue({
     el: '#app',
     created() {
-        // Echo.channel('channelDemoEvent')
-        //     .listen('eventTrigger', (e) => {
-        //         alert(e);
-        //     });
-
-        Echo.private('user.2')
+        Echo.private('user.' + userId)
             .listen('eventTrigger', (e) => {
                 alert('123');
             });
