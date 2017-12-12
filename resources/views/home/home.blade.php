@@ -30,6 +30,8 @@
 </head>
 <body class="hold-transition skin-blue sidebar-mini">
 <input type="hidden" id="userId" value="{{ $user->id }}"/>
+<div id="app"><p>广播时间侦听</p></div>
+
 <div class="wrapper">
     <!-- 页面头部 -->
     @include('partials.site_header')
