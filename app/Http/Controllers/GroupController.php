@@ -10,6 +10,7 @@ use App\Models\School;
 use App\Models\Tab;
 use Exception;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Throwable;
 
@@ -63,9 +64,11 @@ class GroupController extends Controller {
     public function create() {
 
         if (Request::method() === 'POST') {
-            $schoolId = Request::query('schoolId');
+//            $schoolId = Request::query('schoolId');
+//            $schoolId = $this->school->;
             $menuId = School::whereId($schoolId)->first()->menu_id;
-            return $this->menu->getTree($menuId);
+//            return $this->menu->getTree($menuId);
+            return $this->tab->getTree($schoolId);
         }
 
         return $this->output(__METHOD__);

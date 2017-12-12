@@ -1,4 +1,3 @@
-
 /**
  * First we will load all of this project's JavaScript dependencies which
  * includes Vue and other libraries. It is a great starting point when
@@ -20,9 +19,10 @@ Vue.component('example', require('./components/Example.vue'));
 const app = new Vue({
     el: '#app',
     created() {
-        Echo.channel('channelDemoEvent')
+        Echo.private('user.' + document.getElementById('userId').value)
             .listen('eventTrigger', (e) => {
-                alert('The event has been triggered, here is the alert box for proof.');
-            })
+                console.log(e);
+                alert('123');
+            });
     }
 });

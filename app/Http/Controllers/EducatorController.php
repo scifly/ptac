@@ -107,7 +107,6 @@ class EducatorController extends Controller {
         if (!$educator) { return $this->notFound(); }
         return $this->output(__METHOD__, [
             'educator'  => $educator,
-            'educators' => $this->educator->teams(),
         ]);
         
     }

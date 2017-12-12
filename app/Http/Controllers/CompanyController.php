@@ -1,11 +1,14 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Events\eventTrigger;
 use App\Http\Requests\CompanyRequest;
 use App\Models\Company;
 use Exception;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
+use Pusher\Pusher;
 use Throwable;
 
 /**
@@ -32,7 +35,9 @@ class CompanyController extends Controller {
      * @throws Throwable
      */
     public function index() {
-        
+
+        event(new eventTrigger(Auth::user()));
+        exit;
         if (Request::get('draw')) {
             return response()->json($this->company->datatable());
         }

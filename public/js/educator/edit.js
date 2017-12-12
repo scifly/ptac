@@ -4,7 +4,11 @@ page.edit('formEducator', 'educators');
 var size = $('#mobile-size').val();
 var id = $('#id').val();
 
-$(crud.mobile('formEducator',size, 'PUT', 'educators/update/'+id));
+// $(crud.mobile('formEducator',size, 'PUT', 'educators/update/'+id));
+if (typeof crud === 'undefined') {
+    $.getMultiScripts(['js/admin.crud.js'], page.siteRoot())
+        .done(function() { crud.mobile('formEducator', size, 'PUT', 'educators/update/'+id); })
+} else { crud.mobile('formEducator', size, 'PUT', 'educators/update/'+id); }
 var $tbody2 = $("#classTable").find("tbody");
 // 手机号
 // $(crud.mobileMgmt('formEducator'));
@@ -31,7 +35,10 @@ $(document).on('click', '.btn-class-add', function (e) {
 });
 
 // 初始化部门树 相关事件
-dept.init('educators/edit/' + id);
+if (typeof dept === 'undefined') {
+    $.getMultiScripts(['js/department.tree.js'], page.siteRoot())
+        .done(function() { dept.init('educators/edit/' + id); })
+} else { dept.init('educators/edit/' + id); }
 
 
 

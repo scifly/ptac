@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\UserRequest;
 use App\Models\Menu;
 use App\Models\User;
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
@@ -29,7 +31,8 @@ class UserController extends Controller {
     /**
      * 用户列表
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws \Throwable
      */
     public function index() {
         if (Request::get('draw')) {
@@ -43,7 +46,8 @@ class UserController extends Controller {
     /**
      * 创建用户
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws \Throwable
      */
     public function create() {
         return $this->output(__METHOD__);
@@ -54,12 +58,9 @@ class UserController extends Controller {
      * 保存用户
      *
      * @param UserRequest $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function store(UserRequest $request) {
-        if ($this->user->existed($request)) {
-            return $this->fail('已经有此记录');
-        }
 
         return $this->user->create($request->all()) ? $this->succeed() : $this->fail();
 
@@ -69,7 +70,8 @@ class UserController extends Controller {
      * 用户详情
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws \Throwable
      */
     public function show($id) {
         $user = $this->user->find($id);
@@ -85,7 +87,8 @@ class UserController extends Controller {
      * 编辑用户
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws \Throwable
      */
     public function edit($id) {
         $user = $this->user->find($id);
@@ -100,17 +103,14 @@ class UserController extends Controller {
     /**
      * 更新用户
      *
-     * @param UserRequest $request
+     * @param UserRequest $request;
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function update(UserRequest $request, $id) {
         $user = $this->user->find($id);
         if (!$user) {
             return $this->notFound();
-        }
-        if ($this->user->existed($request, $id)) {
-            return $this->fail('已经有此记录');
         }
 
         return $user->update($request->all()) ? $this->succeed() : $this->fail();
@@ -121,13 +121,12 @@ class UserController extends Controller {
      * 删除用户
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function destroy($id) {
         $user = $this->user->find($id);
-        if (!$user) {
-            return $this->notFound();
-        }
+        if (!$user) { return $this->notFound(); }
 
         return $user->delete() ? $this->succeed() : $this->fail();
 
@@ -136,7 +135,7 @@ class UserController extends Controller {
     /**
      * 修改个人信息
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
      */
     public function profile(){
         $id = Auth::id();
@@ -155,7 +154,7 @@ class UserController extends Controller {
 
     /**
      * 重置密码
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function reset(){
         $id = Auth::id();
@@ -187,20 +186,22 @@ class UserController extends Controller {
 
     /**
      * 我的消息
-     * @param $id
      */
     public function messages(){
 
     }
 
-    public function events(){
+    /**
+     * 待办事项
+     */
+    public function event(){
 
     }
     /**
      * 上传用户头像
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function uploadAvatar($id) {
         $file = Request::file('avatar');
@@ -259,7 +260,7 @@ class UserController extends Controller {
      *
      * @param $id
      * @param $imgName
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     private function saveImg($id, $imgName) {
         $user = $this->user->find($id);

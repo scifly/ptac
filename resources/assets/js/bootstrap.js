@@ -43,11 +43,21 @@ if (token) {
  * allows your team to easily build robust real-time web applications.
  */
 
-import Echo from 'laravel-echo'
+import Echo from "laravel-echo";
 
 window.Pusher = require('pusher-js');
 
+var pusher = new Pusher('15d0dcb36363ff076262', {
+    authEndpoint: '/broadcasting/auth',
+    auth: {
+        headers: {
+            'X-CSRF-Token': token.content
+        }
+    }
+});
+
 window.Echo = new Echo({
+    authEndpoint: '/broadcasting/auth',
     broadcaster: 'pusher',
     key: 'bc8e8ee821cf30234a31',
     cluster: 'ap1',
