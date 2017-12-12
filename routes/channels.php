@@ -13,3 +13,4 @@ Broadcast::channel('user.*', function ($user, $userId) {
 //    return (int)$user->id === (int)$userId;
     return true;
 });
+

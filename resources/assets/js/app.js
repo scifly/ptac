@@ -16,7 +16,7 @@ window.Vue = require('vue');
 
 Vue.component('example', require('./components/Example.vue'));
 
-// var pusher = new Pusher('15d0dcb36363ff076262', {authEndpoint: '/pusher_auth.php'});
+var pusher = new Pusher('15d0dcb36363ff076262', {authEndpoint: '/pusher_auth.php'});
 
 const app = new Vue({
     el: '#app',
@@ -26,7 +26,7 @@ const app = new Vue({
         //         alert(e);
         //     });
 
-        Echo.private('user.2')
+        Echo.private(`user.2`)
             .listen('eventTrigger', (e) => {
                 alert('123');
             });
