@@ -237,7 +237,6 @@ class EducatorController extends Controller {
             // 文件是否上传成功
             if ($file->isValid()) {
                 $result = $this->educator->upload($file);
-                event(new eventTrigger(Auth::user()));
                 return response()->json($result);
             }
         }
