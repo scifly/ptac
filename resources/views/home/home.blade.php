@@ -4,7 +4,6 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="csrf_token" content="{{ csrf_token() }}" id="csrf_token">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>家校通</title>
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
@@ -29,9 +28,6 @@
     </style>
 </head>
 <body class="hold-transition skin-blue sidebar-mini">
-{{--<input type="hidden" id="userId" value="{{ $user->id }}"/>--}}
-{{--<div id="app"><p>广播时间侦听</p></div>--}}
-
 <div class="wrapper">
     <!-- 页面头部 -->
     @include('partials.site_header')
@@ -49,7 +45,6 @@
 <script src="{{ URL::asset('js/jquery-ui.min.js') }}"></script>
 <script src="{{ URL::asset('js/bootstrap.min.js') }}"></script>
 <script src="{{ URL::asset('js/adminlte.min.js') }}"></script>
-<script src="{{ URL::asset('js/app.js') }}"></script>
 <script src="{{ URL::asset('js/plugins/gritter/js/jquery.gritter.min.js') }}"></script>
 <script src="{{ URL::asset('js/plugins/parsley/parsley.min.js') }}"></script>
 <script src="{{ URL::asset('js/plugins/parsley/i18n/zh_cn.js') }}"></script>
