@@ -1,14 +1,7 @@
 <?php
 
-use App\Events\eventTrigger;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/alertBox', function() {
-    return view('eventListener');
-});
-Route::get('/fireEvent', function() {
-    event(new eventTrigger());
-});
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -52,7 +45,6 @@ Route::group(['prefix' => 'custodians'], function () {
     Route::post('edit/{id}', $ctlr . '@edit');
     Route::post('create', $ctlr . '@create');
     Route::get('export', $ctlr . '@export');
-    
     // Route::any('relationship', $ctlr . '@relationship');
 });
 // 学生
