@@ -24,8 +24,8 @@ const app = new Vue({
         Echo.private('user.' + document.getElementById('userId').value)
             .listen('eventTrigger', (e) => {
                 // console.log(e);
-                alert('123');
-                // page.inform()
+                // alert('123');
+                page.inform('导入成功', '教职员工导入成功', page.success)
             });
 
     }
