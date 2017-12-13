@@ -32,28 +32,24 @@ class GroupComposer {
 
         $tabActions = [];
         $tabs = $this->tab->whereIn('group_id', [0, 3])->get();
-//        Log::debug(json_encode($tabs));
-//        $tabs = $this->tab->all();
         foreach ($tabs as $tab) {
-//            if (!in_array($tab->name, $this->excludedTabs)) {
-                $actions = $this->action->where('controller', $tab->controller)
-                    ->get(['id', 'name', 'method']);
-                $actionList = [];
-                foreach ($actions as $action) {
+            $actions = $this->action->where('controller', $tab->controller)
+                ->get(['id', 'name', 'method']);
+            $actionList = [];
+            foreach ($actions as $action) {
 
-                    if (!in_array(trim($action->name), $this->excludedActions)) {
-                        $actionList[] = [
-                            'id'   => $action->id,
-                            'name' => $action->name,
-                            'method' => $action->method
-                        ];
-                    }
+                if (!in_array(trim($action->name), $this->excludedActions)) {
+                    $actionList[] = [
+                        'id'   => $action->id,
+                        'name' => $action->name,
+                        'method' => $action->method
+                    ];
                 }
-                $tabActions[] = [
-                    'tab'     => ['id' => $tab->id, 'name' => $tab->name],
-                    'actions' => $actionList,
-                ];
-//            }
+            }
+            $tabActions[] = [
+                'tab'     => ['id' => $tab->id, 'name' => $tab->name],
+                'actions' => $actionList,
+            ];
         }
         $view->with(['tabActions' => $tabActions]);
     }
