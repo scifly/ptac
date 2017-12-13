@@ -28,6 +28,9 @@ $import.on('click', function () {
             contentType: false,
             processData: false,
             success: function (result) {
+                if (result.error !== 0) {
+                    page.inform("操作失败",result.message, page.failure);
+                }
             },
             error: function (result) {
                 console.log(result);

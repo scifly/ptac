@@ -23,7 +23,9 @@ const app = new Vue({
             .listen('ContactImportTrigger', (e) => {
                 console.log(e);
                 // alert('123');
-                page.inform('导入成功', '教职员工队列导入成功', page.success)
+                if (e.type = 'educator') {
+                    page.inform('导入成功', '教职员工队列导入成功', page.success)
+                }
             });
 
     }

@@ -183,7 +183,8 @@ class StudentController extends Controller {
             }
             // 文件是否上传成功
             if ($file->isValid()) {
-                $this->student->upload($file);
+                $result = $this->student->upload($file);
+                return response()->json($result);
             }
         }
     }

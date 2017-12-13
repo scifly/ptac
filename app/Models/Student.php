@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Events\ContactImportTrigger;
 use App\Events\StudentImported;
 use App\Events\StudentUpdated;
 use App\Facades\DatatableFacade as Datatable;
@@ -15,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -424,10 +426,10 @@ class Student extends Model {
                 }
                 $this->checkData($students);
             }
-            return [
-                'error' => 0,
-                'message' => '上传成功',
-            ];
+            $data['user'] = Auth::user();
+            $data['type'] = 'educator';
+
+            event(new ContactImportTrigger($data));
         }
         return [
             'error' => 2,
