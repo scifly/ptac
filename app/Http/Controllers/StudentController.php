@@ -110,7 +110,7 @@ class StudentController extends Controller {
     }
     
     /**
-     * 编辑学生记录
+     * 编辑学生记录\
      *
      * @param $id
      * @return bool|JsonResponse
