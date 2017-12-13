@@ -5,15 +5,16 @@ use App\Models\Action;
 use App\Models\School;
 use App\Models\Tab;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Log;
 
 class GroupComposer {
     
     protected $tab, $action, $corp, $school;
-    protected $excludedTabs = [
-        '功能', '微信企业应用', '运营者', '企业', '图标', '图标类型',
-        '消息类型', '系统管理员', '学校类型', '卡片', '警告类型', '通信方式',
-        '部门类型'
-    ];
+//    protected $excludedTabs = [
+//        '功能', '微信企业应用', '运营者', '企业', '图标', '图标类型',
+//        '消息类型', '系统管理员', '学校类型', '卡片', '警告类型', '通信方式',
+//        '部门类型'
+//    ];
     protected $excludedActions = [
         '创建学校', '保存学校', '删除学校',
         '创建微网站', '保存微网站', '删除微网站'
@@ -30,14 +31,17 @@ class GroupComposer {
     public function compose(View $view) {
 
         $tabActions = [];
-        $tabs = $this->tab->all();
+        $tabs = $this->tab->whereIn('group_id', [0, 3])->get();
+//        Log::debug(json_encode($tabs));
+//        $tabs = $this->tab->all();
         foreach ($tabs as $tab) {
-            if (!in_array($tab->name, $this->excludedTabs)) {
+//            if (!in_array($tab->name, $this->excludedTabs)) {
                 $actions = $this->action->where('controller', $tab->controller)
                     ->get(['id', 'name', 'method']);
                 $actionList = [];
                 foreach ($actions as $action) {
-                    if (!in_array($action->name, $this->excludedActions)) {
+
+                    if (!in_array(trim($action->name), $this->excludedActions)) {
                         $actionList[] = [
                             'id'   => $action->id,
                             'name' => $action->name,
@@ -49,10 +53,9 @@ class GroupComposer {
                     'tab'     => ['id' => $tab->id, 'name' => $tab->name],
                     'actions' => $actionList,
                 ];
-            }
+//            }
         }
         $view->with(['tabActions' => $tabActions]);
-        
     }
     
 }

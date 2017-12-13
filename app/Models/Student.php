@@ -427,7 +427,7 @@ class Student extends Model {
                 $this->checkData($students);
             }
             $data['user'] = Auth::user();
-            $data['type'] = 'educator';
+            $data['type'] = 'student';
 
             event(new ContactImportTrigger($data));
         }

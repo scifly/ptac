@@ -22,9 +22,12 @@ const app = new Vue({
         Echo.private('user.' + document.getElementById('userId').value)
             .listen('ContactImportTrigger', (e) => {
                 console.log(e);
-                alert('123');
+                // alert('123');
                 if (e.type = 'educator') {
                     page.inform('导入成功', '教职员工队列导入成功', page.success)
+                }
+                if (e.type = 'student') {
+                    page.inform('导入成功', '学生队列导入成功', page.success)
                 }
             });
 
