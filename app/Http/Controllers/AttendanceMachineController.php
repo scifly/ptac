@@ -3,6 +3,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\AttendanceMachineRequest;
 use App\Models\AttendanceMachine;
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 
 /**
@@ -25,7 +27,8 @@ class AttendanceMachineController extends Controller {
     /**
      * 考勤机列表
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws \Throwable
      */
     public function index() {
         
@@ -40,7 +43,8 @@ class AttendanceMachineController extends Controller {
     /**
      * 创建考勤机记录
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws \Throwable
      */
     public function create() {
         
@@ -52,10 +56,10 @@ class AttendanceMachineController extends Controller {
      * 保存考勤机记录
      *
      * @param AttendanceMachineRequest $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function store(AttendanceMachineRequest $request) {
-        
+
         return $this->am->create($request->all())
             ? $this->succeed() : $this->fail();
         
@@ -65,7 +69,8 @@ class AttendanceMachineController extends Controller {
      * 考勤机详情
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws \Throwable
      */
     public function show($id) {
         
@@ -80,7 +85,8 @@ class AttendanceMachineController extends Controller {
      * 编辑考勤机记录
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws \Throwable
      */
     public function edit($id) {
         
@@ -96,7 +102,7 @@ class AttendanceMachineController extends Controller {
      *
      * @param AttendanceMachineRequest $request
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function update(AttendanceMachineRequest $request, $id) {
         
@@ -112,7 +118,8 @@ class AttendanceMachineController extends Controller {
      * 删除考勤机记录
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function destroy($id) {
         

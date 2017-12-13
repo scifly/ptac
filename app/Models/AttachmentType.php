@@ -1,8 +1,10 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * App\Models\AttachmentType 附件类型
@@ -31,7 +33,7 @@ class AttachmentType extends Model {
     /**
      * 获取包含的所有附件对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function attachments() { return $this->hasMany('App\Models\Attachment'); }
 

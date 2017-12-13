@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use App\Events\DepartmentCreated;
@@ -6,12 +7,16 @@ use App\Events\DepartmentMoved;
 use App\Events\DepartmentUpdated;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Mockery\Exception;
 
 /**
  * App\Models\Department 部门
@@ -61,56 +66,56 @@ class Department extends Model {
     /**
      * 返回所属的部门类型对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function departmentType() { return $this->belongsTo('App\Models\DepartmentType'); }
 
     /**
      * 返回对应的运营者对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return HasOne
      */
     public function company() { return $this->hasOne('App\Models\Company'); }
 
     /**
      * 返回对应的班级对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return HasOne
      */
     public function corp() { return $this->hasOne('App\Models\Corp'); }
 
     /**
      * 返回对应的学校对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return HasOne
      */
     public function school() { return $this->hasOne('App\Models\School'); }
 
     /**
      * 返回对应的年级对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return HasOne
      */
     public function grade() { return $this->hasOne('App\Models\Grade'); }
 
     /**
      * 返回对应的班级对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return HasOne
      */
     public function squad() { return $this->hasOne('App\Models\Squad'); }
 
     /**
      * 获取指定部门包含的所有用户对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return BelongsToMany
      */
     public function users() { return $this->belongsToMany('App\Models\User', 'departments_users'); }
 
     /**
      * 返回上级部门对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function parent() {
 
@@ -140,7 +145,7 @@ class Department extends Model {
         return $leaves;
 
     }
-    
+
     /**
      * 根据根部门ID返回所有下级部门对象
      *
@@ -161,7 +166,7 @@ class Department extends Model {
         return $nodes;
 
     }
-    
+
     /**
      * 根据Department ID返回所有下级部门
      *
@@ -169,19 +174,19 @@ class Department extends Model {
      * @param Collection $nodes
      */
     private function getChildren($id, Collection &$nodes) {
-    
+
         $node = $this->find($id);
         foreach ($node->children as $child) {
             $nodes->push($child);
             $this->getChildren($child->id, $nodes);
         }
-        
+
     }
 
     /**
      * 获取指定部门的子部门
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function children() {
 
@@ -199,7 +204,9 @@ class Department extends Model {
     private function leafPath($id, array &$path) {
 
         $department = $this->find($id);
-        if (!isset($department)) { return ''; }
+        if (!isset($department)) {
+            return '';
+        }
         $path[] = $department->name;
         if (isset($department->parent_id)) {
             $this->leafPath($department->parent_id, $path);
@@ -226,7 +233,7 @@ class Department extends Model {
         return $departmentList;
 
     }
-    
+
     /**
      * 创建部门
      *
@@ -245,7 +252,7 @@ class Department extends Model {
         return $department ? $department : false;
 
     }
-    
+
     /**
      * 更新部门
      *
@@ -272,14 +279,19 @@ class Department extends Model {
      *
      * @param $id
      * @return bool|null
+     * @throws Exception
      */
     public function remove($id) {
 
         $department = $this->find($id);
-        if (!$department) { return false; }
-        if (!$this->removable($department)) { return false; }
+        if (!$department) {
+            return false;
+        }
+        if (!$this->removable($department)) {
+            return false;
+        }
         try {
-            $exception = DB::transaction(function () use ($id, $department) {
+            DB::transaction(function () use ($id, $department) {
                 # 删除指定的Department记录
                 $department->delete();
                 # 移除指定部门与用户的绑定记录
@@ -291,11 +303,10 @@ class Department extends Model {
                     $this->remove($department->id);
                 }
             });
-            return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
-            return false;
+            throw $e;
         }
-
+        return true;
     }
 
     /**
@@ -309,7 +320,9 @@ class Department extends Model {
     public function move($id, $parentId, $fireEvent = false) {
 
         $deparment = $this->find($id);
-        if (!isset($deparment)) { return false; }
+        if (!isset($deparment)) {
+            return false;
+        }
         $deparment->parent_id = $parentId === '#' ? null : intval($parentId);
         $moved = $deparment->save();
         if ($moved && $fireEvent) {
@@ -320,7 +333,7 @@ class Department extends Model {
         return $moved ? true : false;
 
     }
-    
+
     /**
      * 获取用于显示jstree的部门数据
      *
@@ -328,7 +341,7 @@ class Department extends Model {
      * @return \Illuminate\Http\JsonResponse
      */
     public function tree($rootId = null) {
-    
+
         $departments = $this->nodes();
         if (isset($rootId)) {
             $departments = $this->nodes($rootId);
@@ -344,22 +357,36 @@ class Department extends Model {
             $text = $departments[$i]['name'];
             $departmentType = DepartmentType::find($departments[$i]['department_type_id'])->name;
             switch ($departmentType) {
-                case '根': $type = 'root'; break;
-                case '运营': $type = 'company'; break;
-                case '企业': $type = 'corp'; break;
-                case '学校': $type = 'school'; break;
-                case '年级': $type = 'grade'; break;
-                case '班级': $type = 'class'; break;
-                default: $type = 'other'; break;
+                case '根':
+                    $type = 'root';
+                    break;
+                case '运营':
+                    $type = 'company';
+                    break;
+                case '企业':
+                    $type = 'corp';
+                    break;
+                case '学校':
+                    $type = 'school';
+                    break;
+                case '年级':
+                    $type = 'grade';
+                    break;
+                case '班级':
+                    $type = 'class';
+                    break;
+                default:
+                    $type = 'other';
+                    break;
             }
             $data[] = [
-                'id'     => $departments[$i]['id'],
+                'id' => $departments[$i]['id'],
                 'parent' => $parentId,
-                'text'   => $text,
-                'type'   => $type,
+                'text' => $text,
+                'type' => $type,
             ];
         }
-        
+
         return response()->json($data);
 
     }
@@ -379,20 +406,41 @@ class Department extends Model {
             $text = $department['name'];
             $departmentType = DepartmentType::whereId($department['department_type_id'])->first()->name;
             switch ($departmentType) {
-                case '根': $type = 'root'; $icon = 'fa fa-sitemap'; break;
-                case '运营': $type = 'company'; $icon = 'fa fa-building'; break;
-                case '企业': $type = 'corp'; $icon = 'fa fa-weixin'; break;
-                case '学校': $type = 'school'; $icon = 'fa fa-university'; break;
-                case '年级': $type = 'grade'; $icon = 'fa fa-object-group'; break;
-                case '班级': $type = 'class'; $icon = 'fa fa-users'; break;
-                default: $type = 'other'; $icon = 'fa fa-list'; break;
+                case '根':
+                    $type = 'root';
+                    $icon = 'fa fa-sitemap';
+                    break;
+                case '运营':
+                    $type = 'company';
+                    $icon = 'fa fa-building';
+                    break;
+                case '企业':
+                    $type = 'corp';
+                    $icon = 'fa fa-weixin';
+                    break;
+                case '学校':
+                    $type = 'school';
+                    $icon = 'fa fa-university';
+                    break;
+                case '年级':
+                    $type = 'grade';
+                    $icon = 'fa fa-object-group';
+                    break;
+                case '班级':
+                    $type = 'class';
+                    $icon = 'fa fa-users';
+                    break;
+                default:
+                    $type = 'other';
+                    $icon = 'fa fa-list';
+                    break;
             }
             $data[] = [
-                'id'     => $department['id'],
+                'id' => $department['id'],
                 'parent' => $parentId,
-                'text'   => $text,
-                'icon'   => $icon,
-                'type'   => $type,
+                'text' => $text,
+                'icon' => $icon,
+                'type' => $type,
             ];
         }
 
@@ -412,11 +460,11 @@ class Department extends Model {
             $department = Department::find($departmentId);
             foreach ($department->users as $user) {
                 $departmentUsers[] = [
-                    'id'     => $departmentId . 'UserId_' . $user['id'],
+                    'id' => $departmentId . 'UserId_' . $user['id'],
                     'parent' => $departmentId,
-                    'text'   => $user['username'],
-                    'icon'   => 'fa fa-user',
-                    'type'   => 'user',
+                    'text' => $user['username'],
+                    'icon' => 'fa fa-user',
+                    'type' => 'user',
                 ];
             }
         }
@@ -429,25 +477,46 @@ class Department extends Model {
             $text = $department['name'];
             $departmentType = DepartmentType::whereId($department['department_type_id'])->first()->name;
             switch ($departmentType) {
-                case '根': $type = 'root'; $icon = 'fa fa-sitemap'; break;
-                case '运营': $type = 'company'; $icon = 'fa fa-building'; break;
-                case '企业': $type = 'corp'; $icon = 'fa fa-weixin'; break;
-                case '学校': $type = 'school'; $icon = 'fa fa-university'; break;
-                case '年级': $type = 'grade'; $icon = 'fa fa-object-group'; break;
-                case '班级': $type = 'class'; $icon = 'fa fa-users'; break;
-                default: $type = 'other'; $icon = 'fa fa-list'; break;
+                case '根':
+                    $type = 'root';
+                    $icon = 'fa fa-sitemap';
+                    break;
+                case '运营':
+                    $type = 'company';
+                    $icon = 'fa fa-building';
+                    break;
+                case '企业':
+                    $type = 'corp';
+                    $icon = 'fa fa-weixin';
+                    break;
+                case '学校':
+                    $type = 'school';
+                    $icon = 'fa fa-university';
+                    break;
+                case '年级':
+                    $type = 'grade';
+                    $icon = 'fa fa-object-group';
+                    break;
+                case '班级':
+                    $type = 'class';
+                    $icon = 'fa fa-users';
+                    break;
+                default:
+                    $type = 'other';
+                    $icon = 'fa fa-list';
+                    break;
             }
             $data[] = [
-                'id'     => $department['id'],
+                'id' => $department['id'],
                 'parent' => $parentId,
-                'text'   => $text,
-                'icon'   => $icon,
-                'type'   => $type,
+                'text' => $text,
+                'icon' => $icon,
+                'type' => $type,
             ];
         }
 
         return $data;
-        
+
     }
 
     /**
@@ -459,17 +528,26 @@ class Department extends Model {
      */
     public function movable($id, $parentId) {
 
-        if (!isset($parentId)) { return false; }
+        if (!isset($parentId)) {
+            return false;
+        }
         $type = $this->find($id)->departmentType->name;
         $parentType = $this->find($parentId)->departmentType->name;
         switch ($type) {
-            case '运营': return $parentType == '根';
-            case '企业': return $parentType == '运营';
-            case '学校': return $parentType == '企业';
-            case '年级': return $parentType == '学校' or $parentType == '其他';
-            case '班级': return $parentType == '年级' or $parentType == '其他';
-            case '其他': return !($parentType == '企业' or $parentType == '运营');
-            default: return false;
+            case '运营':
+                return $parentType == '根';
+            case '企业':
+                return $parentType == '运营';
+            case '学校':
+                return $parentType == '企业';
+            case '年级':
+                return $parentType == '学校' or $parentType == '其他';
+            case '班级':
+                return $parentType == '年级' or $parentType == '其他';
+            case '其他':
+                return !($parentType == '企业' or $parentType == '运营');
+            default:
+                return false;
         }
 
     }
@@ -494,25 +572,46 @@ class Department extends Model {
             $text = $department['name'];
             $departmentType = DepartmentType::whereId($department['department_type_id'])->first()->name;
             switch ($departmentType) {
-                case '根': $type = 'root'; $icon = 'fa fa-sitemap'; break;
-                case '运营': $type = 'company'; $icon = 'fa fa-building'; break;
-                case '企业': $type = 'corp'; $icon = 'fa fa-weixin'; break;
-                case '学校': $type = 'school'; $icon = 'fa fa-university'; break;
-                case '年级': $type = 'grade'; $icon = 'fa fa-users'; break;
-                case '班级': $type = 'class'; $icon = 'fa fa-user'; break;
-                default: $type = 'other'; $icon = 'fa fa-list'; break;
+                case '根':
+                    $type = 'root';
+                    $icon = 'fa fa-sitemap';
+                    break;
+                case '运营':
+                    $type = 'company';
+                    $icon = 'fa fa-building';
+                    break;
+                case '企业':
+                    $type = 'corp';
+                    $icon = 'fa fa-weixin';
+                    break;
+                case '学校':
+                    $type = 'school';
+                    $icon = 'fa fa-university';
+                    break;
+                case '年级':
+                    $type = 'grade';
+                    $icon = 'fa fa-users';
+                    break;
+                case '班级':
+                    $type = 'class';
+                    $icon = 'fa fa-user';
+                    break;
+                default:
+                    $type = 'other';
+                    $icon = 'fa fa-list';
+                    break;
             }
             $data[] = [
-                'id'     => $department['id'],
+                'id' => $department['id'],
                 'parent' => $parentId,
-                'text'   => $text,
-                'icon'   => $icon,
-                'type'   => $type,
+                'text' => $text,
+                'icon' => $icon,
+                'type' => $type,
             ];
         }
 
         return $data;
-        
+
     }
 
     /**
@@ -552,18 +651,68 @@ class Department extends Model {
     }
 
     public function groupLevel($userId) {
-        
+
         $group = User::whereId($userId)->first()->group;
-        if(isset($group->school_id)) { return 'school'; }
+        if (isset($group->school_id)) {
+            return 'school';
+        }
         $user = User::find($userId);
         $topDepartmentId = $user->topDeptId($user);
         $departmentType = $this->find($topDepartmentId)->departmentType->name;
         switch ($departmentType) {
-            case '根': return 'root';
-            case '运营': return 'company';
-            case '企业': return 'corp';
-            default: return null;
+            case '根':
+                return 'root';
+            case '运营':
+                return 'company';
+            case '企业':
+                return 'corp';
+            default:
+                return null;
         }
+
+    }
+
+    /**
+     * 获取用户所属学校/年级/班级的学校/年级/班级ID及名称
+     *
+     * @param $topDepartmentId
+     * @return array|null
+     */
+    public function topDepartment($topDepartmentId) {
+
+        $type = $this->find($topDepartmentId)->departmentType->name;
+        if (in_array($type, ['运营', '企业'])) {
+            return null;
+        }
+        while (!in_array($type, ['学校', '年级', '班级'])) {
+            $parent = $this->find($topDepartmentId)->parent;
+            $type = $parent->departmentType->name;
+            $topDepartmentId = $parent->id;
+        }
+        $department = null;
+        switch ($type) {
+            case '学校':
+                $department = School::whereDepartmentId($topDepartmentId)
+                    ->where('enabled', 1)
+                    ->pluck('name', 'id')
+                    ->toArray();
+                break;
+            case '年级':
+                $department = Grade::whereDepartmentId($topDepartmentId)
+                    ->where('enabled', 1)
+                    ->pluck('name', 'id')
+                    ->toArray();
+                break;
+            case '班级':
+                $department = Squad::whereDepartmentId($topDepartmentId)
+                    ->where('enabled', 1)
+                    ->pluck('name', 'id')
+                    ->toArray();
+                break;
+            default:
+                break;
+        }
+        return $department ? ['type' => $type, 'department' => $department] : null;
 
     }
 

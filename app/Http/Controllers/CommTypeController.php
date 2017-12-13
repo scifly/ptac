@@ -3,7 +3,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CommTypeRequest;
 use App\Models\CommType;
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
+use Throwable;
 
 /**
  * 通信方式
@@ -25,7 +28,8 @@ class CommTypeController extends Controller {
     /**
      * 通信方式列表
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Throwable
      */
     public function index() {
         
@@ -40,7 +44,8 @@ class CommTypeController extends Controller {
     /**
      * 创建通信方式
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws \Throwable
      */
     public function create() {
         
@@ -52,7 +57,7 @@ class CommTypeController extends Controller {
      * 保存通信方式
      *
      * @param CommTypeRequest $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function store(CommTypeRequest $request) {
         
@@ -65,7 +70,8 @@ class CommTypeController extends Controller {
      * 编辑通信方式
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws \Throwable
      */
     public function edit($id) {
         
@@ -81,7 +87,7 @@ class CommTypeController extends Controller {
      *
      * @param CommTypeRequest $request
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function update(CommTypeRequest $request, $id) {
         
@@ -97,7 +103,8 @@ class CommTypeController extends Controller {
      * 删除通信方式
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function destroy($id) {
         

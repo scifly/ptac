@@ -3,7 +3,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\SemesterRequest;
 use App\Models\Semester;
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
+use Throwable;
 
 /**
  * 学期
@@ -25,10 +28,10 @@ class SemesterController extends Controller {
     /**
      * 学期列表
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function index() {
-        
         if (Request::get('draw')) {
             return response()->json($this->semester->datatable());
         }
@@ -40,10 +43,10 @@ class SemesterController extends Controller {
     /**
      * 创建学期
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function create() {
-        
         return $this->output(__METHOD__);
         
     }
@@ -52,10 +55,9 @@ class SemesterController extends Controller {
      * 保存学期
      *
      * @param SemesterRequest $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function store(SemesterRequest $request) {
-        
         return $this->semester->create($request->all()) ? $this->succeed() : $this->fail();
         
     }
@@ -64,7 +66,8 @@ class SemesterController extends Controller {
      * 学期详情
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function show($id) {
         $semester = $this->semester->find($id);
@@ -79,10 +82,10 @@ class SemesterController extends Controller {
      * 编辑学期
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function edit($id) {
-        
         $semester = $this->semester->find($id);
         if (!$semester) {
             return $this->notFound();
@@ -97,10 +100,9 @@ class SemesterController extends Controller {
      *
      * @param SemesterRequest $request
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function update(SemesterRequest $request, $id) {
-        
         $semester = $this->semester->find($id);
         if (!$semester) {
             return $this->notFound();
@@ -114,14 +116,12 @@ class SemesterController extends Controller {
      * 删除学期
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function destroy($id) {
-        
         $semester = $this->semester->find($id);
-        if (!$semester) {
-            return $this->notFound();
-        }
+        if (!$semester) { return $this->notFound(); }
         
         return $semester->delete() ? $this->succeed() : $this->fail();
         

@@ -11,7 +11,6 @@ use App\Models\Student;
 use App\Models\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 
 class CustodianComposer {
     
@@ -29,37 +28,42 @@ class CustodianComposer {
         $grades = null;
         $classes = null;
         $students = null;
-        $user = Auth::user();
-        if ($user->educator) {
-            $schools = School::whereId($user->educator->school_id)
-                ->where('enabled', 1)
-                ->pluck('name', 'id');
-        } else {
-            $topDepartmentId = $this->user->topDeptId($user);
-            $departmentType = Department::whereId($topDepartmentId)->first()->departmentType;
-            switch ($departmentType->name) {
-                case '根':
-                case '运营':
-                    $schools = School::all()
-                        ->where('enabled', 1)
-                        ->pluck('name', 'id');
-                    break;
-                case '企业':
-                    $corpId = Corp::whereDepartmentId($topDepartmentId)->first()->id;
-                    $schools = School::whereCorpId($corpId)
-                        ->where('enabled', 1)
-                        ->pluck('name', 'id');
-                    break;
-                case '学校':
-                    $schools = School::whereDepartmentId($topDepartmentId)
-                        ->where('enabled', 1)
-                        ->pluck('name', 'id');
-                    break;
-                default: break;
-            }
-        }
+        // $user = Auth::user();
+        // if ($user->educator) {
+        //     $schools = School::whereId($user->educator->school_id)
+        //         ->where('enabled', 1)
+        //         ->pluck('name', 'id');
+        // } else {
+        //     $topDepartmentId = $this->user->topDeptId($user);
+        //     $departmentType = Department::whereId($topDepartmentId)->first()->departmentType;
+        //     switch ($departmentType->name) {
+        //         case '根':
+        //         case '运营':
+        //             $schools = School::all()
+        //                 ->where('enabled', 1)
+        //                 ->pluck('name', 'id');
+        //             break;
+        //         case '企业':
+        //             $corpId = Corp::whereDepartmentId($topDepartmentId)->first()->id;
+        //             $schools = School::whereCorpId($corpId)
+        //                 ->where('enabled', 1)
+        //                 ->pluck('name', 'id');
+        //             break;
+        //         case '学校':
+        //             $schools = School::whereDepartmentId($topDepartmentId)
+        //                 ->where('enabled', 1)
+        //                 ->pluck('name', 'id');
+        //             break;
+        //         default: break;
+        //     }
+        // }
+        $school = new School();
+        $schoolId = $school->getSchoolId();
+        $schools = School::whereId($schoolId)
+            ->where('enabled', 1)
+            ->pluck('name', 'id');
         if ($schools) {
-            $grades = Grade::whereSchoolId($schools->keys()->first())
+            $grades = Grade::whereSchoolId($schoolId)
                 ->where('enabled', 1)
                 ->pluck('name', 'id');
         }
@@ -77,11 +81,10 @@ class CustodianComposer {
                 ->get();
             if (!empty($list)) {
                 foreach ($list as $s) {
-                    $students[$s->id] = $s->user->realname . "-" .$s->student_number;
+                    $students[$s->id] = $s->user->realname . "-" . $s->student_number;
                 }
             }
         }
-        // dd($students);die;
         $view->with([
             'schools'  => $schools,
             'grades'   => $grades,

@@ -4,8 +4,12 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ScoreRangeRequest;
 use App\Models\ScoreRange;
 use App\Models\Subject;
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request as HttpRequest;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Request;
+use Throwable;
 
 /**
  * 成绩统计项
@@ -29,7 +33,8 @@ class ScoreRangeController extends Controller {
     /**
      * 成绩统计项列表
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function index() {
         
@@ -44,7 +49,8 @@ class ScoreRangeController extends Controller {
     /**
      * 创建成绩统计项
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function create() {
         
@@ -58,8 +64,7 @@ class ScoreRangeController extends Controller {
      * 保存成绩统计项
      *
      * @param ScoreRangeRequest $request
-     * @return \Illuminate\Http\Response
-     * @internal param \Illuminate\Http\Request|Request $request
+     * @return Response
      */
     public function store(ScoreRangeRequest $request) {
         
@@ -73,7 +78,8 @@ class ScoreRangeController extends Controller {
      * 成绩统计项详情
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function show($id) {
         
@@ -94,7 +100,8 @@ class ScoreRangeController extends Controller {
      * 编辑成绩统计项
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function edit($id) {
         
@@ -113,7 +120,7 @@ class ScoreRangeController extends Controller {
      *
      * @param ScoreRangeRequest $request
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function update(ScoreRangeRequest $request, $id) {
         
@@ -130,14 +137,13 @@ class ScoreRangeController extends Controller {
      * 删除成绩统计项
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function destroy($id) {
         
         $scoreRange = $this->scoreRange->find($id);
-        if (!$scoreRange) {
-            return $this->notFound();
-        }
+        if (!$scoreRange) { return $this->notFound(); }
         
         return $scoreRange->delete() ? $this->succeed() : $this->fail();
         
@@ -146,7 +152,8 @@ class ScoreRangeController extends Controller {
     /**
      * 成绩统计项详情
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function showStatistics() {
         
@@ -158,7 +165,7 @@ class ScoreRangeController extends Controller {
      * 按统计项进行统计
      *
      * @param HttpRequest $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function statistics(HttpRequest $request) {
         

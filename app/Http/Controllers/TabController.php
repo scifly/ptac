@@ -5,7 +5,10 @@ use App\Http\Requests\TabRequest;
 use App\Models\Action;
 use App\Models\Menu;
 use App\Models\Tab;
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
+use Throwable;
 
 /**
  * 卡片
@@ -29,7 +32,9 @@ class TabController extends Controller {
     /**
      * 卡片列表
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Exception
+     * @throws Throwable
      */
     public function index() {
         
@@ -46,7 +51,8 @@ class TabController extends Controller {
     /**
      * 创建卡片
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function create() {
         
@@ -60,10 +66,10 @@ class TabController extends Controller {
      * 保存卡片
      *
      * @param TabRequest $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function store(TabRequest $request) {
-        
         return $this->tab->store($request->all())
             ? parent::succeed() : parent::fail();
         
@@ -73,7 +79,8 @@ class TabController extends Controller {
      * 卡片详情
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function show($id) {
         
@@ -88,7 +95,8 @@ class TabController extends Controller {
      * 编辑卡片
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function edit($id) {
         
@@ -112,7 +120,8 @@ class TabController extends Controller {
      *
      * @param TabRequest $request
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function update(TabRequest $request, $id) {
         
@@ -128,7 +137,8 @@ class TabController extends Controller {
      * 删除卡片
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function destroy($id) {
         

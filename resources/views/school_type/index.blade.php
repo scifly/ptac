@@ -6,7 +6,7 @@
         <table id="data-table" style="width: 100%"
                class="display nowrap dataTable table table-striped table-hover table-bordered">
             <thead>
-            <tr>
+			<tr class="bg-info">
                 <th>#</th>
                 <th>名称</th>
                 <th>备注</th>

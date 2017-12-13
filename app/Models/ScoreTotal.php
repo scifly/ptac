@@ -1,9 +1,12 @@
 <?php
+
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -38,7 +41,7 @@ use Illuminate\Support\Facades\DB;
  * @method static Builder|ScoreTotal whereEnabled($value)
  */
 class ScoreTotal extends Model {
-    
+
     protected $table = 'score_totals';
     protected $fillable = [
         'student_id',
@@ -51,18 +54,27 @@ class ScoreTotal extends Model {
         'enabled',
     ];
     
-    public function student() {
-        return $this->belongsTo('App\Models\Student');
-    }
+    /**
+     * 返回总分记录所属的学生对象
+     *
+     * @return BelongsTo
+     */
+    public function student() { return $this->belongsTo('App\Models\Student'); }
     
-    public function exam() {
-        return $this->belongsTo('App\Models\Exam');
-    }
+    /**
+     * 返回总分记录所属的考试对象
+     *
+     * @return BelongsTo
+     */
+    public function exam() { return $this->belongsTo('App\Models\Exam'); }
     
-    function subjects() {
-        return $this->belongsTo('App\Models\Subject');
-    }
-    
+    /**
+     * 返回总分记录所属的科目对象
+     *
+     * @return BelongsTo
+     */
+    function subject() { return $this->belongsTo('App\Models\Subject'); }
+
     public function datatable() {
         
         $columns = [
@@ -75,49 +87,61 @@ class ScoreTotal extends Model {
             ['db' => 'ScoreTotal.grade_rank', 'dt' => 6],
             ['db' => 'ScoreTotal.created_at', 'dt' => 7],
             [
-                'db'        => 'ScoreTotal.updated_at', 'dt' => 8,
+                'db' => 'ScoreTotal.updated_at', 'dt' => 8,
                 'formatter' => function ($d, $row) {
-                    
                     $id = $row['id'];
                     $showLink = $d . sprintf(Datatable::DT_LINK_SHOW, $id);
                     return Datatable::DT_SPACE . $showLink;
-                    
+
                 },
             ],
         ];
         $joins = [
             [
-                'table'      => 'students',
-                'alias'      => 'Student',
-                'type'       => 'INNER',
+                'table' => 'students',
+                'alias' => 'Student',
+                'type' => 'INNER',
                 'conditions' => [
                     'Student.id = ScoreTotal.student_id',
                 ],
             ],
             [
-                'table'      => 'exams',
-                'alias'      => 'Exam',
-                'type'       => 'INNER',
+                'table' => 'exams',
+                'alias' => 'Exam',
+                'type' => 'INNER',
                 'conditions' => [
                     'Exam.id = ScoreTotal.exam_id',
                 ],
             ],
             [
-                'table'      => 'users',
-                'alias'      => 'User',
-                'type'       => 'INNER',
+                'table' => 'users',
+                'alias' => 'User',
+                'type' => 'INNER',
                 'conditions' => [
                     'User.id = Student.user_id',
                 ],
             ],
         ];
-        
+
         return Datatable::simple($this, $columns, $joins);
+        
     }
-    
+
+    /**
+     * 统计
+     *
+     * @param $exam_id
+     * @return bool
+     * @throws Exception
+     */
     public function statistics($exam_id) {
+        
         //删除之前这场考试的统计
-        $this->where('exam_id', $exam_id)->delete();
+        try {
+            $this->where('exam_id', $exam_id)->delete();
+        } catch (Exception $e) {
+            throw $e;
+        }
         //查询参与这场考试的所有班级和科目
         $exam = DB::table('exams')->where('id', $exam_id)->select('class_ids', 'subject_ids')->first();
         $class = DB::table('classes')
@@ -155,11 +179,11 @@ class ScoreTotal extends Model {
                 }
                 //建立写入数据库的数组数据
                 $insert = [
-                    'student_id'     => $student,
-                    'class_id'       => $class_id,
-                    'exam_id'        => intval($exam_id),
-                    'score'          => $score,
-                    'subject_ids'    => empty($subject_ids) ? '' : substr($subject_ids, 1),
+                    'student_id' => $student,
+                    'class_id' => $class_id,
+                    'exam_id' => intval($exam_id),
+                    'score' => $score,
+                    'subject_ids' => empty($subject_ids) ? '' : substr($subject_ids, 1),
                     'na_subject_ids' => empty($na_subject_ids) ? '' : substr($na_subject_ids, 1),
                 ];
                 $data [] = $insert;
@@ -203,7 +227,9 @@ class ScoreTotal extends Model {
                 $this->insert($inserts);
             }
         }
-        
+
         return true;
+        
     }
+    
 }

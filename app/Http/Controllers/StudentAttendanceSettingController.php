@@ -3,7 +3,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StudentAttendanceSettingRequest;
 use App\Models\StudentAttendanceSetting;
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
+use Throwable;
 
 /**
  * 学生考勤设置
@@ -15,17 +18,18 @@ class StudentAttendanceSettingController extends Controller {
     
     protected $sas;
     
-    function __construct(StudentAttendanceSetting $studentAttendanceSetting) {
+    function __construct(StudentAttendanceSetting $sas) {
     
         $this->middleware(['auth']);
-        $this->sas = $studentAttendanceSetting;
+        $this->sas = $sas;
         
     }
     
     /**
      * 学生考勤设置列表
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function index() {
         
@@ -40,7 +44,8 @@ class StudentAttendanceSettingController extends Controller {
     /**
      * 创建学生考勤设置
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function create() {
         
@@ -52,7 +57,7 @@ class StudentAttendanceSettingController extends Controller {
      * 保存学生考勤设置
      *
      * @param StudentAttendanceSettingRequest $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function store(StudentAttendanceSettingRequest $request) {
         
@@ -65,33 +70,15 @@ class StudentAttendanceSettingController extends Controller {
      * 编辑学生考勤设置
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
-     */
-    public function show($id) {
-        
-        $sas = $this->sas->find($id);
-        if (!$sas) { return $this->notFound(); }
-        
-        return $this->output(__METHOD__, [
-            'studentAttendanceSetting' => $sas,
-        ]);
-        
-    }
-    
-    /**
-     * 编辑学生考勤设置
-     *
-     * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function edit($id) {
         
         $sas = $this->sas->find($id);
         if (!$sas) { return $this->notFound(); }
         
-        return $this->output(__METHOD__, [
-            'studentAttendanceSetting' => $sas,
-        ]);
+        return $this->output(__METHOD__, ['sas' => $sas]);
         
     }
     
@@ -100,7 +87,7 @@ class StudentAttendanceSettingController extends Controller {
      *
      * @param StudentAttendanceSettingRequest $request
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function update(StudentAttendanceSettingRequest $request, $id) {
         
@@ -115,7 +102,8 @@ class StudentAttendanceSettingController extends Controller {
      * 删除学生考勤设置
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function destroy($id) {
         

@@ -3,6 +3,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\MessageTypeRequest;
 use App\Models\MessageType;
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 
 /**
@@ -25,7 +27,8 @@ class MessageTypeController extends Controller {
     /**
      * 消息类型
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws \Throwable
      */
     public function index() {
         
@@ -40,7 +43,8 @@ class MessageTypeController extends Controller {
     /**
      * 创建消息类型
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws \Throwable
      */
     public function create() {
         
@@ -52,7 +56,7 @@ class MessageTypeController extends Controller {
      * 保存消息类型
      *
      * @param MessageTypeRequest $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function store(MessageTypeRequest $request) {
         
@@ -61,27 +65,11 @@ class MessageTypeController extends Controller {
     }
     
     /**
-     * 消息类型详情
-     *
-     * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
-     */
-    public function show($id) {
-        
-        $messageType = $this->messageType->find($id);
-        if (!$messageType) {
-            return $this->notFound();
-        }
-        
-        return $this->output(__METHOD__, ['messageType' => $messageType]);
-        
-    }
-    
-    /**
      * 编辑消息类型
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws \Throwable
      */
     public function edit($id) {
         
@@ -99,7 +87,7 @@ class MessageTypeController extends Controller {
      *
      * @param MessageTypeRequest $request
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function update(MessageTypeRequest $request, $id) {
         
@@ -116,14 +104,13 @@ class MessageTypeController extends Controller {
      * 删除消息类型
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function destroy($id) {
         
         $messageType = $this->messageType->find($id);
-        if (!$messageType) {
-            return $this->notFound();
-        }
+        if (!$messageType) { return $this->notFound(); }
         
         return $messageType->delete() ? $this->succeed() : $this->fail();
         

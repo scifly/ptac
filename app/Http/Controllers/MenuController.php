@@ -2,17 +2,14 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\MenuRequest;
-use App\Models\Corp;
-use App\Models\Department;
-use App\Models\Group;
 use App\Models\Menu;
 use App\Models\MenuTab;
 use App\Models\MenuType;
-use App\Models\School;
 use App\Models\Tab;
-use Illuminate\Support\Facades\Auth;
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
-
+use Throwable;
 
 /**
  * 菜单
@@ -32,11 +29,13 @@ class MenuController extends Controller {
         $this->menuTab = $menuTab;
 
     }
-
+    
     /**
      * 菜单列表
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
+     * @throws Throwable
      */
     public function index() {
         
@@ -47,12 +46,13 @@ class MenuController extends Controller {
         return $this->output(__METHOD__);
 
     }
-
+    
     /**
      * 创建菜单
      *
      * @param $id integer 上级菜单ID
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function create($id) {
 
@@ -62,12 +62,13 @@ class MenuController extends Controller {
         ]);
 
     }
-
+    
     /**
      * 保存菜单
      *
      * @param MenuRequest $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function store(MenuRequest $request) {
 
@@ -75,27 +76,13 @@ class MenuController extends Controller {
             ? $this->succeed() : $this->fail();
 
     }
-
-    /**
-     * 菜单详情
-     *
-     * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
-     */
-    public function show($id) {
-
-        $menu = $this->menu->find($id);
-        if (!$menu) { return $this->notFound(); }
-
-        return $this->output(__METHOD__, ['menu' => $menu]);
-
-    }
-
+    
     /**
      * 编辑菜单
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function edit($id) {
 
@@ -114,13 +101,14 @@ class MenuController extends Controller {
         ]);
 
     }
-
+    
     /**
      * 更新菜单
      *
      * @param MenuRequest $request
      * @param integer $id 菜单ID
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function update(MenuRequest $request, $id) {
 
@@ -137,7 +125,7 @@ class MenuController extends Controller {
      *
      * @param $id
      * @param $parentId
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function move($id, $parentId = null) {
 
@@ -157,12 +145,13 @@ class MenuController extends Controller {
         return $this->fail('非法操作');
 
     }
-
+    
     /**
      * 删除菜单
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function destroy($id) {
 
@@ -173,9 +162,7 @@ class MenuController extends Controller {
 
     }
 
-    /**
-     * 保存菜单排列顺序
-     */
+    /** 保存菜单排列顺序 */
     public function sort() {
 
         $positions = Request::get('data');
@@ -188,12 +175,13 @@ class MenuController extends Controller {
         }
 
     }
-
+    
     /**
      * 菜单包含的卡片
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Throwable
      */
     public function menuTabs($id) {
 
@@ -212,12 +200,13 @@ class MenuController extends Controller {
         return $this->output(__METHOD__, ['tabs' => $tabs]);
 
     }
-
+    
     /**
      * 保存菜单卡片排列顺序
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function rankTabs($id) {
 
@@ -231,5 +220,5 @@ class MenuController extends Controller {
             ? $this->succeed() : $this->fail();
 
     }
-
+    
 }

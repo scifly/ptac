@@ -1,7 +1,9 @@
 <?php
+
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use Doctrine\Common\Collections\Collection;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
@@ -21,20 +23,18 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|CommType whereRemark($value)
  * @method static Builder|CommType whereUpdatedAt($value)
  * @mixin \Eloquent
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Message[] $messages
+ * @property-read Collection|Message[] $messages
  */
 class CommType extends Model {
-    
+
     protected $table = 'comm_types';
-    
+
     protected $fillable = ['name', 'remark', 'enabled'];
-    
-    public function messages() {
-        return $this->hasMany('App\Models\Message');
-    }
-    
+
+    public function messages() { return $this->hasMany('App\Models\Message'); }
+
     public function datatable() {
-        
+
         $columns = [
             ['db' => 'CommType.id', 'dt' => 0],
             ['db' => 'CommType.name', 'dt' => 1],
@@ -42,15 +42,15 @@ class CommType extends Model {
             ['db' => 'CommType.created_at', 'dt' => 3],
             ['db' => 'CommType.updated_at', 'dt' => 4],
             [
-                'db'        => 'CommType.enabled', 'dt' => 5,
+                'db' => 'CommType.enabled', 'dt' => 5,
                 'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($this, $d, $row);
+                    return Datatable::dtOps($d, $row);
                 },
             ],
         ];
-        
+
         return Datatable::simple($this, $columns);
-        
+
     }
-    
+
 }

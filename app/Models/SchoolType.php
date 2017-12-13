@@ -1,9 +1,12 @@
 <?php
+
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * App\Models\SchoolType
@@ -21,21 +24,21 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|SchoolType whereRemark($value)
  * @method static Builder|SchoolType whereUpdatedAt($value)
  * @mixin \Eloquent
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\School[] $schools
+ * @property-read Collection|School[] $schools
  */
 class SchoolType extends Model {
-    
+
     protected $fillable = ['name', 'remark', 'enabled'];
-    
+
     /**
      * 获取指定学校类型下属的所有学校对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function schools() { return $this->hasMany('App\Models\School'); }
-    
+
     public function datatable() {
-        
+
         $columns = [
             ['db' => 'SchoolType.id', 'dt' => 0],
             ['db' => 'SchoolType.name', 'dt' => 1],
@@ -43,14 +46,15 @@ class SchoolType extends Model {
             ['db' => 'SchoolType.created_at', 'dt' => 3],
             ['db' => 'SchoolType.updated_at', 'dt' => 4],
             [
-                'db'        => 'SchoolType.enabled', 'dt' => 5,
+                'db' => 'SchoolType.enabled', 'dt' => 5,
                 'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($this, $d, $row);
+                    return Datatable::dtOps($d, $row, false);
                 },
             ],
         ];
+
         return Datatable::simple($this, $columns);
-        
+
     }
-    
+
 }

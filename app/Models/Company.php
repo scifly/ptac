@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use App\Events\CompanyCreated;
@@ -6,9 +7,13 @@ use App\Events\CompanyDeleted;
 use App\Events\CompanyUpdated;
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 /**
  * App\Models\Company 运营者公司
@@ -39,53 +44,52 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|Company whereMenuId($value)
  */
 class Company extends Model {
-    
+
     use ModelTrait;
-    
+
     protected $fillable = [
         'name', 'remark', 'department_id',
         'menu_id', 'enabled',
     ];
-    
+
     /**
      * 返回对应的部门对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function department() { return $this->belongsTo('App\Models\Department'); }
-    
+
     /**
      * 返回对应的菜单对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function menu() { return $this->belongsTo('App\Models\Menu'); }
-    
+
     /**
      * 获取指定运营者公司下属的企业对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function corps() { return $this->hasMany('App\Models\Corp'); }
-    
+
     /**
      * 通过Corp中间对象获取所有的学校对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
+     * @return HasManyThrough
      */
     public function schools() {
-        
         return $this->hasManyThrough('App\Models\School', 'App\Models\Corp');
-        
+
     }
-    
+
     /**
      * 获取指定运营者公司内部的所有管理/操作员对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function operators() { return $this->hasMany('App\Models\Operator'); }
-    
+
     /**
      * 保存运营者
      *
@@ -94,18 +98,18 @@ class Company extends Model {
      * @return bool
      */
     public function store(array $data, $fireEvent = false) {
-        
+
         $company = $this->create($data);
         if ($company && $fireEvent) {
             event(new CompanyCreated($company));
-            
+
             return true;
         }
-        
+
         return $company ? true : false;
-        
+
     }
-    
+
     /**
      * 更新运营者
      *
@@ -115,47 +119,49 @@ class Company extends Model {
      * @return bool
      */
     public function modify(array $data, $id, $fireEvent = false) {
-        
+
         $company = $this->find($id);
         $updated = $company->update($data);
         if ($updated && $fireEvent) {
             event(new CompanyUpdated($company));
-            
+
             return true;
         }
-        
+
         return $updated ? true : false;
-        
+
     }
-    
+
     /**
      * 删除运营者
      *
      * @param $id
      * @param bool $fireEvent
      * @return bool
+     * @throws Exception
      */
     public function remove($id, $fireEvent = false) {
-        
+
         $company = $this->find($id);
         if (!$company) { return false; }
         $removed = $this->removable($company) ? $company->delete() : false;
         if ($removed && $fireEvent) {
             event(new CompanyDeleted($company));
+
             return true;
         }
-        
+
         return $removed ? true : false;
-        
+
     }
-    
+
     function datatable() {
-        
+
         $columns = [
             ['db' => 'Company.id', 'dt' => 0],
             [
                 'db' => 'Company.name', 'dt' => 1,
-                'formatter' => function($d) {
+                'formatter' => function ($d) {
                     return '<i class="fa fa-building"></i>&nbsp;' . $d;
                 }
             ],
@@ -163,14 +169,14 @@ class Company extends Model {
             ['db' => 'Company.created_at', 'dt' => 3],
             ['db' => 'Company.updated_at', 'dt' => 4],
             [
-                'db'        => 'Company.enabled', 'dt' => 5,
+                'db' => 'Company.enabled', 'dt' => 5,
                 'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($this, $d, $row);
+                    return Datatable::dtOps($d, $row, false);
                 }],
         ];
-        
+
         return Datatable::simple($this, $columns);
-        
+
     }
-    
+
 }

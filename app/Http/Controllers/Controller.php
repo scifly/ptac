@@ -7,10 +7,11 @@ use App\Models\Tab;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller as BaseController;
-use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
+use Throwable;
 
 class Controller extends BaseController {
     
@@ -46,7 +47,8 @@ class Controller extends BaseController {
      *
      * @param string $method 带控制器名称的方法名称
      * @param array $params 需要输出至view的变量数组
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     protected function output($method, array $params = []) {
         
@@ -80,7 +82,11 @@ class Controller extends BaseController {
             if ($menu) {
                 $params['breadcrumb'] = $menu->name . ' / ' . $tab->name . ' / ' . $action->name;
             } else {
-                return response()->json(['statusCode' => self::HTTP_STATUSCODE_UNAUTHORIZED]);
+                return response()->json([
+                    'statusCode' => self::HTTP_STATUSCODE_UNAUTHORIZED,
+                    'mId' => Request::get('menuId'),
+                    'tId' => Request::get('tabId')
+                ]);
             }
     
             return response()->json([
@@ -92,6 +98,12 @@ class Controller extends BaseController {
         }
         if (session('menuId')) {
             return Response()->redirectTo('pages/' . session('menuId'));
+        }
+        if (Request::query('menuId') && Request::query('tabId')) {
+            session(['menuId' => Request::query('menuId')]);
+            session(['tabId' => Request::query('tabId')]);
+            session(['tabUrl' => Request::path()]);
+            return response()->redirectTo('pages/' . session('menuId'));
         }
         return Response()->redirectToRoute('login');
         

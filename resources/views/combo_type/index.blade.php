@@ -6,7 +6,7 @@
         <table id="data-table" style="width: 100%"
                class="display nowrap table table-striped table-bordered table-hover table-condensed">
             <thead>
-            <tr>
+			<tr class="bg-info">
                 <th>#</th>
                 <th>套餐名称</th>
                 <th>金额</th>

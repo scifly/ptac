@@ -21,10 +21,10 @@ class SubjectRequest extends FormRequest {
         return [
             'name'       => 'required|string|between:2,20|unique:subjects,name,' .
                 $this->input('id') . ',id,' .
-                'school_id,' . $this->input('school_id') . ',' .
-                'max_score,' . $this->input('max_score') . ',' .
-                'pass_score,' . $this->input('pass_score') . ',' .
-                'isaux,' . $this->input('isaux'),
+                'school_id,' . $this->input('school_id') . ',' ,
+                // 'max_score,' . $this->input('max_score') . ',' .
+                // 'pass_score,' . $this->input('pass_score') . ',' .
+                // 'isaux,' . $this->input('isaux'),
             'max_score'  => 'required|numeric',
             'pass_score' => 'required|numeric',
             'grade_ids'  => 'required',

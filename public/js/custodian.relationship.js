@@ -2,8 +2,17 @@ var custodian = {
     $studentId: function () {
         return $('#studentId');
     },
+    $classId: function () {
+        return $('#classId');
+    },
+    $schoolId: function () {
+        return $('#schoolId');
+    },
     $addPupil: function () {
         return $('#add-pupil');
+    },
+    $export: function () {
+        return $('#export');
     },
     $tBody: function () {
         return $('#tBody');
@@ -14,12 +23,17 @@ var custodian = {
     saveStudent: function(item) {
         $(document).on('click', '#confirm-bind', function () {
             var relationship = custodian.relationship().val();
+            var student = custodian.$studentId().find("option:selected").text().split('-');
+            var studentId = custodian.$studentId().val();
             if (relationship === '') {
                 alert('监护关系不能为空');
                 return false
             }
-            var student = custodian.$studentId().find("option:selected").text().split('-');
-            var studentId = custodian.$studentId().val();
+            if (student === '' || studentId === '') {
+                alert('被监护人不能为空');
+                return false
+            }
+
             item++;
 
             var htm = '<tr>' +
@@ -133,11 +147,41 @@ var custodian = {
         });
     },
     init: function (item) {
-        custodian.saveStudent(item);
-        custodian.deleteItem();
         custodian.schoolChange();
         custodian.gradeChange();
         custodian.classChange();
-        custodian.$addPupil().on('click', function () { custodian.relationship().val("");$('#pupils').modal({backdrop: true}) });
+
+        if (item === 'student') {
+            page.initSelect2();
+            custodian.exportStudent();
+            custodian.$export().on('click', function () { $('#export-pupils').modal({backdrop: true}) });
+
+        }else if (item === 'educator') {
+            page.initSelect2();
+            custodian.exportEducator();
+            custodian.$export().on('click', function () { $('#export-pupils').modal({backdrop: true}) });
+
+        }else{
+            custodian.relationship().val("");
+            custodian.deleteItem();
+            custodian.saveStudent(item);
+            custodian.$addPupil().on('click', function () { $('#pupils').modal({backdrop: true}) });
+        }
+    },
+    exportStudent: function () {
+        $(document).on('click', '#confirm-bind', function () {
+            var classId = custodian.$classId().val();
+            //无法用ajax请求
+            window.location.href='../ptac/public/students/export/?id=' + classId;
+            $("#export-pupils").modal('hide');
+        });
+    },
+    exportEducator: function () {
+        $(document).on('click', '#confirm-bind', function () {
+            var schoolId = custodian.$schoolId().val();
+            //无法用ajax请求
+            window.location.href='../ptac/public/educators/export/?id=' + schoolId;
+            $("#export-pupils").modal('hide');
+        });
     }
 };

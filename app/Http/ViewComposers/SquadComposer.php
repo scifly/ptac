@@ -3,23 +3,31 @@ namespace App\Http\ViewComposers;
 
 use App\Models\Educator;
 use App\Models\Grade;
+use App\Models\School;
 use Illuminate\Contracts\View\View;
 
 class SquadComposer {
     
     protected $grades;
     protected $educators;
+    protected $school;
     
-    public function __construct(Grade $grades, Educator $educators) {
+    public function __construct(Grade $grades, Educator $educators, School $school) {
         
         $this->grades = $grades;
         $this->educators = $educators;
+        $this->school = $school;
         
     }
     
     public function compose(View $view) {
-        
-        $data = Educator::with('user')->get()->toArray();
+        $schoolId = $this->school->getSchoolId();
+        $grades = Grade::whereSchoolId($schoolId)
+            ->where('enabled', 1)
+            ->pluck('name', 'id');
+        $data = Educator::with('user')
+            ->where('school_id', $schoolId)
+            ->get()->toArray();
         $educators = [];
         if (!empty($data)) {
             foreach ($data as $v) {
@@ -27,7 +35,7 @@ class SquadComposer {
             }
         }
         $view->with([
-            'grades'    => $this->grades->pluck('name', 'id'),
+            'grades'    => $grades,
             'educators' => $educators,
         ]);
     }

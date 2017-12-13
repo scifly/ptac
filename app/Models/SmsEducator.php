@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
@@ -28,8 +29,7 @@ use Illuminate\Database\Eloquent\Model;
  * @mixin \Eloquent
  */
 class SmsEducator extends Model {
-    
-    //
+
     protected $table = 'sms_educators';
-    
+
 }

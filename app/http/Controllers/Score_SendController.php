@@ -18,10 +18,10 @@ use App\Models\Subject;
  * @package App\Http\Controllers
  */
 class Score_SendController extends Controller {
-
+    
     protected $exam, $score, $user, $student,
         $class, $school, $grade, $subject, $scoreTotal;
-
+    
     /**
      * Score_SendController constructor.
      * 初始化注入关联模型
@@ -44,7 +44,6 @@ class Score_SendController extends Controller {
         Subject $subject,
         ScoreTotal $scoreTotal
     ) {
-
         $this->exam = $exam;
         $this->school = $school;
         $this->grade = $grade;
@@ -54,7 +53,7 @@ class Score_SendController extends Controller {
         $this->subject = $subject;
         $this->scoreTotal = $scoreTotal;
     }
-
+    
     /**
      * 发送成绩首页,加载学校列表
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
@@ -64,7 +63,7 @@ class Score_SendController extends Controller {
         //如果是普通老师获取关联的考次，班主任获取管理班级所考次，科任老师获取任教科目考次
         return view("score_send.index", ['js' => 'js/score_send/index.js', 'schools' => $this->school->all(['name', 'id']), 'form' => 0, 'datatable' => 1]);
     }
-
+    
     /**
      * @param null $id
      * @return string
@@ -72,9 +71,9 @@ class Score_SendController extends Controller {
     public function getGrade($id = null) {
         //根据学校ID获取年级信息
         return json_encode($this->grade->all(['id', 'name', 'school_id'])->where("school_id", $id));
-
+        
     }
-
+    
     /**
      * @param null $id
      * @return string
@@ -82,19 +81,18 @@ class Score_SendController extends Controller {
     public function getClass($id = null) {
         //根据年级ID获取班级信息
         return json_encode($this->class->all(['id', 'name', 'grade_id'])->where("grade_id", $id));
-
+        
     }
-
+    
     /**
      * @param null $id
      * @return string
      */
     public function getExam($id = null) {
-
         //根据班级ID获取考次
         return json_encode($this->exam->examsByClassId($id));
     }
-
+    
     /**
      * @param null $id
      * @return string
@@ -103,7 +101,7 @@ class Score_SendController extends Controller {
         //获取考次关联的科目
         return json_encode($this->exam->subjectsByExamId($id));
     }
-
+    
     /**
      * @param $examId
      * @param $classId
@@ -257,6 +255,7 @@ class Score_SendController extends Controller {
             }
             $strs[] = ["id" => $student[0]->id, 'name' => $student[0]->realname, "msg" => $str];
         }
+        
         return '';
         
     }

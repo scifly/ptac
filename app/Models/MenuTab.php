@@ -1,10 +1,11 @@
 <?php
+
 namespace App\Models;
 
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
-use Mockery\Exception;
 
 /**
  * App\Models\MenuTab
@@ -26,66 +27,88 @@ use Mockery\Exception;
  * @method static Builder|MenuTab whereUpdatedAt($value)
  */
 class MenuTab extends Model {
-    
+
     protected $table = 'menus_tabs';
-    
+
     protected $fillable = ['menu_id', 'tab_id', 'tab_order', 'enabled'];
-    
+
+    /**
+     * 按菜单ID保存记录
+     *
+     * @param $menuId
+     * @param array $tabIds
+     * @return bool
+     * @throws Exception
+     */
     public function storeByMenuId($menuId, array $tabIds) {
-        
         try {
-            $exception = DB::transaction(function () use ($menuId, $tabIds) {
+            DB::transaction(function () use ($menuId, $tabIds) {
                 foreach ($tabIds as $tabId) {
                     $this->create([
                         'menu_id' => $menuId,
-                        'tab_id'  => $tabId,
+                        'tab_id' => $tabId,
                         'enabled' => 1,
                     ]);
                 }
             });
-            
-            return is_null($exception) ? true : $exception;
-        } catch (Exception $exception) {
-            return false;
+        } catch (Exception $e) {
+            throw $e;
         }
-        
+        return true;
+
     }
-    
+
+    /**
+     * 按卡片ID保存记录
+     *
+     * @param $tabId
+     * @param array $menuIds
+     * @return bool
+     * @throws Exception
+     */
     public function storeByTabId($tabId, array $menuIds) {
         
         try {
-            $exception = DB::transaction(function () use ($tabId, $menuIds) {
+            DB::transaction(function () use ($tabId, $menuIds) {
                 foreach ($menuIds as $menuId) {
                     $this->create([
                         'menu_id' => $menuId,
-                        'tab_id'  => $tabId,
+                        'tab_id' => $tabId,
                         'enabled' => 1,
                     ]);
                 }
             });
-            
-            return is_null($exception) ? true : $exception;
-        } catch (Exception $exception) {
-            return false;
+        } catch (Exception $e) {
+            throw $e;
         }
         
+        return true;
+
     }
-    
+
+    /**
+     * 保存卡片排序
+     *
+     * @param $menuId
+     * @param array $ranks
+     * @return bool
+     * @throws Exception
+     */
     public function storeTabRanks($menuId, array $ranks) {
         
         try {
-            $exception = DB::transaction(function () use ($menuId, $ranks) {
+            DB::transaction(function () use ($menuId, $ranks) {
                 foreach ($ranks as $id => $rank) {
                     $this::whereMenuId($menuId)->where('tab_id', $id)
                         ->update(['tab_order' => $rank + 1]);
                 }
             });
-            
-            return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
-            return false;
+            throw $e;
         }
         
+        return true;
+
     }
-    
+
 }

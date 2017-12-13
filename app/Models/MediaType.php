@@ -1,9 +1,12 @@
 <?php
+
 namespace App\Models;
 
 use App\Helpers\ModelTrait;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * App\Models\MediaType 媒体类型
@@ -24,24 +27,20 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read Media[] $medias
  */
 class MediaType extends Model {
-    
+
     use ModelTrait;
-    
+
     protected $table = 'media_types';
-    
+
     protected $fillable = ['name', 'remark', 'enabled'];
-    
+
     /**
-     * 获取指定媒体类型所包含的所有媒体对象
+     * 获取指定媒体类型包含的所有媒体对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
-    public function medias() {
-        
-        return $this->hasMany('App\Models\Media');
-        
-    }
-    
+    public function medias() { return $this->hasMany('App\Models\Media'); }
+
     /**
      * 保存媒体类型
      *
@@ -49,13 +48,13 @@ class MediaType extends Model {
      * @return bool
      */
     public function store(array $data) {
-        
+
         $mediaType = $this->create($data);
-        
+
         return $mediaType ? true : false;
-        
+
     }
-    
+
     /**
      * 更新媒体类型
      *
@@ -64,14 +63,14 @@ class MediaType extends Model {
      * @return bool
      */
     public function modify(array $data, $id) {
-        
+
         $mediaType = $this->find($id);
         if (!$mediaType) {
             return false;
         }
-        
+
         return $mediaType->update($data) ? true : false;
-        
+
     }
     
     /**
@@ -79,14 +78,15 @@ class MediaType extends Model {
      *
      * @param $id
      * @return bool|null
+     * @throws Exception
      */
     public function remove($id) {
-        
+
         $mediaType = $this->find($id);
         if (!$mediaType) { return false; }
-        return $mediaType->removable($mediaType)
-            ? $mediaType->delete() : false;
-        
+
+        return $mediaType->removable($mediaType) ? $mediaType->delete() : false;
+
     }
-    
+
 }

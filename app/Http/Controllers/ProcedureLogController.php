@@ -5,9 +5,11 @@ use App\Helpers\ControllerTrait;
 use App\Http\Requests\ProcedureLogRequest;
 use App\Models\Media;
 use App\Models\ProcedureLog;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Storage;
+use Throwable;
 
 /**
  * 申请/审批
@@ -31,7 +33,8 @@ class ProcedureLogController extends Controller {
     /**
      * 我发起的流程审批列表
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function index() {
         
@@ -53,7 +56,7 @@ class ProcedureLogController extends Controller {
     /**
      * 待审核的流程审批列表
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
      */
     public function pending() {
         
@@ -74,10 +77,10 @@ class ProcedureLogController extends Controller {
     /**
      * 相关流程列表
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function related() {
-        
         if (Request::get('draw')) {
             $userId = 3;
             $where = '(FIND_IN_SET(' . $userId . ',ProcedureStep.related_user_ids) or FIND_IN_SET(' . $userId . ',ProcedureStep.approver_user_ids))';
@@ -94,10 +97,10 @@ class ProcedureLogController extends Controller {
      * 流程审批详情
      *
      * @param $firstLogId
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function show($firstLogId) {
-        
         $userId = 7;
         //根据IDs查询数据
         $data = $this->procedureLog
@@ -117,10 +120,10 @@ class ProcedureLogController extends Controller {
     /**
      * 发起申请
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function create() {
-        
         $procedureId = DB::table('procedures')->pluck('name', 'id');
         
         return $this->output(__METHOD__, ['procedure_id' => $procedureId]);
@@ -131,10 +134,9 @@ class ProcedureLogController extends Controller {
      * 保存申请信息
      *
      * @param ProcedureLogRequest $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function store(ProcedureLogRequest $request) {
-        
         $userId = 6;
         $mediaIds = $request->input('media_ids');
         $procedureStep = DB::table('procedure_steps')
@@ -166,7 +168,7 @@ class ProcedureLogController extends Controller {
     /**
      * 审批申请
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function decision() {
         
@@ -211,10 +213,9 @@ class ProcedureLogController extends Controller {
     /**
      * 上传审批流程相关文件
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function uploadMedias() {
-        
         $files = Request::file('medias');
         if (empty($files)) {
             $result['statusCode'] = 500;
@@ -238,10 +239,9 @@ class ProcedureLogController extends Controller {
      * 删除审批流程日志相关文件
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function deleteMedias($id) {
-        
         $path = Media::whereId($id)->value('path');
         $path_arr = explode("/", $path);
         Storage::disk('uploads')->delete($path_arr[5]);

@@ -7,7 +7,10 @@ use App\Models\Score;
 use App\Models\Student;
 use App\Models\Subject;
 use Excel;
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
+use Throwable;
 
 /**
  * 成绩
@@ -35,10 +38,10 @@ class ScoreController extends Controller {
     /**
      * 成绩列表
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function index() {
-        
         if (Request::get('draw')) {
             return response()->json($this->score->datatable());
         }
@@ -50,10 +53,10 @@ class ScoreController extends Controller {
     /**
      * 录入成绩
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function create() {
-        
         return $this->output(__METHOD__);
         
     }
@@ -62,10 +65,9 @@ class ScoreController extends Controller {
      * 保存成绩
      *
      * @param ScoreRequest $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function store(ScoreRequest $request) {
-        
         return $this->score->create($request->all()) ? $this->succeed() : $this->fail();
         
     }
@@ -74,10 +76,10 @@ class ScoreController extends Controller {
      * 成绩详情
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function show($id) {
-        
         $score = $this->score->find($id);
         if (!$score) {
             return $this->notFound();
@@ -94,10 +96,10 @@ class ScoreController extends Controller {
      * 修改成绩
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function edit($id) {
-        
         $score = $this->score->find($id);
         if (!$score) {
             return $this->notFound();
@@ -115,10 +117,9 @@ class ScoreController extends Controller {
      *
      * @param ScoreRequest $request
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function update(ScoreRequest $request, $id) {
-        
         $score = $this->score->find($id);
         if (!$score) {
             return $this->notFound();
@@ -132,14 +133,13 @@ class ScoreController extends Controller {
      * 删除成绩
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function destroy($id) {
         
         $score = $this->score->find($id);
-        if (!$score) {
-            return $this->notFound();
-        }
+        if (!$score) { return $this->notFound(); }
         
         return $score->delete() ? $this->succeed() : $this->fail();
         
@@ -149,10 +149,9 @@ class ScoreController extends Controller {
      * 统计成绩排名
      *
      * @param $examId
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function statistics($examId) {
-        
         return $this->score->statistics($examId) ? $this->succeed() : $this->fail();
         
     }
@@ -162,6 +161,7 @@ class ScoreController extends Controller {
      * @param $examId
      */
     public function export($examId) {
+        
         $exam = $this->exam->find($examId);
         $subject = $this->exam->subjects($exam->subject_ids);
         $heading = ['学号', '姓名'];
@@ -176,6 +176,7 @@ class ScoreController extends Controller {
             });
             $excel->setTitle($examId);
         })->store('xls')->export('xls');
+        
     }
     
     /**

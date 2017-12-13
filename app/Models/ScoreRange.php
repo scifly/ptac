@@ -1,10 +1,12 @@
 <?php
+
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -29,27 +31,27 @@ use Illuminate\Support\Facades\DB;
  * @method static Builder|ScoreRange whereSubjectIds($value)
  * @method static Builder|ScoreRange whereUpdatedAt($value)
  * @mixin \Eloquent
- * @property-read \App\Models\School $school
+ * @property-read School $school
  */
 class ScoreRange extends Model {
-    
+
     use ModelTrait;
-    
+
     protected $table = 'score_ranges';
-    
+
     protected $fillable = [
         'name', 'subject_ids', 'school_id',
         'start_score', 'end_score', 'created_at',
         'updated_at', 'enabled',
     ];
-    
+
     /**
      * 获取指定成绩统计项所属的学校对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function school() { return $this->belongsTo('App\Models\School'); }
-    
+
     /**
      * 保存成绩统计项
      *
@@ -59,11 +61,11 @@ class ScoreRange extends Model {
     public function store(array $data) {
         
         $scoreRange = $this->create($data);
-        
+
         return $scoreRange ? true : false;
-        
+
     }
-    
+
     /**
      * 更新成绩统计项
      *
@@ -75,8 +77,9 @@ class ScoreRange extends Model {
         
         $scoreRange = $this->find($id);
         if (!$scoreRange) { return false; }
+
         return $scoreRange->update($data) ? true : false;
-        
+
     }
     
     /**
@@ -84,15 +87,17 @@ class ScoreRange extends Model {
      *
      * @param $id
      * @return bool|null
+     * @throws \Exception
      */
     public function remove($id) {
         
         $scoreRange = $this->find($id);
         if (!$scoreRange) { return false; }
+
         return $this->removable($scoreRange) ? $scoreRange->delete() : false;
-        
+
     }
-    
+
     public function datatable() {
         
         $columns = [
@@ -104,27 +109,27 @@ class ScoreRange extends Model {
             ['db' => 'ScoreRange.created_at', 'dt' => 5],
             ['db' => 'ScoreRange.updated_at', 'dt' => 6],
             [
-                'db'        => 'ScoreRange.enabled', 'dt' => 7,
+                'db' => 'ScoreRange.enabled', 'dt' => 7,
                 'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($this, $d, $row);
+                    return Datatable::dtOps($d, $row);
                 },
             ],
         ];
         $joins = [
             [
-                'table'      => 'schools',
-                'alias'      => 'School',
-                'type'       => 'LEFT',
+                'table' => 'schools',
+                'alias' => 'School',
+                'type' => 'LEFT',
                 'conditions' => [
                     'School.id = ScoreRange.school_id',
                 ],
             ],
         ];
-        
+
         return Datatable::simple($this, $columns, $joins);
-        
+
     }
-    
+
     public function statistics($request) {
         
         //查询班级
@@ -175,10 +180,11 @@ class ScoreRange extends Model {
             if (count($item) != 0) {
                 $v->precentage = round($v->number / count($item) * 100, 2);
             }
-            
+
         }
-        
+
         return response()->json($score_range);
+        
     }
-    
+
 }

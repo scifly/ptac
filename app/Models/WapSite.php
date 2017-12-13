@@ -1,15 +1,20 @@
 <?php
+
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Http\Requests\WapSiteRequest;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use Mockery\Exception;
 
 /**
+ * 网站
  * App\Models\WapSite
  *
  * @property int $id
@@ -27,55 +32,61 @@ use Mockery\Exception;
  * @method static Builder|WapSite whereSiteTitle($value)
  * @method static Builder|WapSite whereUpdatedAt($value)
  * @mixin \Eloquent
- * 网站
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\WapSiteModule[] $hasManyWsm
- * @property-read \App\Models\School $school
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\WapSiteModule[] $wapsiteModules
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\WapSiteModule[] $wapSiteModules
+ * @property-read Collection|WapSiteModule[] $hasManyWsm
+ * @property-read School $school
+ * @property-read Collection|WapSiteModule[] $wapsiteModules
+ * @property-read Collection|WapSiteModule[] $wapSiteModules
  */
 class WapSite extends Model {
-    
+
     //
     protected $fillable = [
-        'id',
-        'school_id',
-        'site_title',
-        'media_ids',
-        'created_at',
-        'updated_at',
+        'id', 'school_id', 'site_title',
+        'media_ids', 'created_at', 'updated_at',
         'enabled',
     ];
     
-    public function wapSiteModules() {
-        
-        return $this->hasMany('App\Models\WapSiteModule');
-        
-    }
+    /**
+     * 获取微网站包含的所有网站模块对象
+     *
+     * @return HasMany
+     */
+    public function wapSiteModules() { return $this->hasMany('App\Models\WapSiteModule'); }
     
-    public function school() {
-        
-        return $this->belongsTo('App\Models\School');
-        
-    }
-    
+    /**
+     * 返回微网站所属的学校对象
+     *
+     * @return BelongsTo
+     */
+    public function school() { return $this->belongsTo('App\Models\School'); }
+
+    /**
+     * @param WapSiteRequest $request
+     * @return bool
+     * @throws Exception
+     */
     public function store(WapSiteRequest $request) {
+        
         try {
-            $exception = DB::transaction(function () use ($request) {
+            DB::transaction(function () use ($request) {
                 //删除原有的图片
                 $this->removeMedias($request);
                 $this->create($request->all());
             });
-            
-            return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
-            return false;
+            throw $e;
         }
+        
+        return true;
+
     }
     
     /**
      * @param $request
+     * @throws Exception
      */
     private function removeMedias(WapSiteRequest $request) {
+        
         //删除原有的图片
         $mediaIds = $request->input('del_ids');
         if ($mediaIds) {
@@ -83,35 +94,44 @@ class WapSite extends Model {
             foreach ($medias as $media) {
                 $paths = explode("/", $media->path);
                 Storage::disk('public')->delete($paths[5]);
-                
             }
-            Media::whereIn('id', $mediaIds)->delete();
+            try {
+                Media::whereIn('id', $mediaIds)->delete();
+            } catch (Exception $e) {
+                throw $e;
+            }
         }
+        
     }
-    
+
+    /**
+     * 更新微网站
+     *
+     * @param WapSiteRequest $request
+     * @param $id
+     * @return bool|mixed
+     * @throws Exception
+     */
     public function modify(WapSiteRequest $request, $id) {
+        
         $wapSite = $this->find($id);
-        if (!$wapSite) {
-            return false;
-        }
+        if (!$wapSite) { return false; }
         try {
-            $exception = DB::transaction(function () use ($request, $id) {
+            DB::transaction(function () use ($request, $id) {
                 $this->removeMedias($request);
                 // dd($request->except('_method', '_token'));
                 return $this->where('id', $id)->update($request->except('_method', '_token', 'del_ids'));
             });
-            
-            return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
-            return false;
+            throw $e;
         }
-    }
-    
-    /**
-     * @return array
-     */
-    public function datatable() {
         
+        return true;
+        
+    }
+
+    public function datatable() {
+
         $columns = [
             ['db' => 'WapSite.id', 'dt' => 0],
             ['db' => 'School.name', 'dt' => 1],
@@ -119,22 +139,25 @@ class WapSite extends Model {
             ['db' => 'WapSite.created_at', 'dt' => 3],
             ['db' => 'WapSite.updated_at', 'dt' => 4],
             [
-                'db'        => 'WapSite.enabled', 'dt' => 5,
+                'db' => 'WapSite.enabled', 'dt' => 5,
                 'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($this, $d, $row);
+                    return Datatable::dtOps($d, $row);
                 },
             ],
         ];
         $joins = [
             [
-                'table'      => 'schools',
-                'alias'      => 'School',
-                'type'       => 'INNER',
+                'table' => 'schools',
+                'alias' => 'School',
+                'type' => 'INNER',
                 'conditions' => [
                     'School.id = WapSite.school_id',
                 ],
             ],
         ];
+        
         return Datatable::simple($this, $columns, $joins);
+        
     }
+    
 }

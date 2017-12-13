@@ -1,10 +1,13 @@
 <?php
+
 namespace App\Models;
 
 use App\Helpers\ModelTrait;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * App\Models\MenuType 菜单类型
@@ -25,18 +28,18 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read Collection|\App\Models\Menu[] $menus
  */
 class MenuType extends Model {
-    
+
     use ModelTrait;
-    
+
     protected $fillable = ['name', 'remark', 'enabled'];
-    
+
     /**
      * 获取指定菜单类型所包含的所有菜单对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function menus() { return $this->hasMany('App\Models\Menu'); }
-    
+
     public function typeList($type) {
         
         $list = $this->pluck('name', 'id')->toArray();
@@ -58,13 +61,13 @@ class MenuType extends Model {
                 break;
             default:
                 break;
-            
+
         }
-        
+
         return $allowedTypeList;
-        
+
     }
-    
+
     /**
      * 保存菜单类型
      *
@@ -74,11 +77,11 @@ class MenuType extends Model {
     public function store(array $data) {
         
         $menuType = $this->create($data);
-        
+
         return $menuType ? true : false;
-        
+
     }
-    
+
     /**
      * 更新菜单类型
      *
@@ -89,12 +92,10 @@ class MenuType extends Model {
     public function modify(array $data, $id) {
         
         $menuType = $this->find($id);
-        if (!$menuType) {
-            return false;
-        }
-        
+        if (!$menuType) { return false; }
+
         return $menuType->update($data) ? true : false;
-        
+
     }
     
     /**
@@ -102,14 +103,15 @@ class MenuType extends Model {
      *
      * @param $id
      * @return bool|null
+     * @throws Exception
      */
     public function remove($id) {
         
         $menuType = $this->find($id);
         if (!$menuType) { return false; }
-        return $menuType->removable($menuType)
-            ? $menuType->delete() : false;
-        
+
+        return $menuType->removable($menuType) ? $menuType->delete() : false;
+
     }
-    
+
 }

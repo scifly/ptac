@@ -1,13 +1,16 @@
 <?php
+
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Http\Requests\MessageRequest;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use Mockery\Exception;
 
 /**
  * App\Models\Message
@@ -41,8 +44,8 @@ use Mockery\Exception;
  * @method static Builder|Message whereUserId($value)
  * @method static Builder|Message whereUserIds($value)
  * @mixin \Eloquent
- * @property-read \App\Models\MessageType $messageType
- * @property-read \App\Models\User $user
+ * @property-read MessageType $messageType
+ * @property-read User $user
  * @property int $comm_type_id 通信方式id
  * @property int $app_id 应用id
  * @property int $msl_id 消息发送批次id
@@ -58,63 +61,62 @@ use Mockery\Exception;
  * @method static Builder|Message whereSUserId($value)
  * @method static Builder|Message whereSent($value)
  * @property-read \App\Models\CommType $commType
- * @property-read \App\Models\MessageSendingLog $messageSendinglog
- * @property-read \App\Models\MessageSendingLog $messageSendinglogs
+ * @property-read MessageSendingLog $messageSendinglog
+ * @property-read MessageSendingLog $messageSendinglogs
  */
 class Message extends Model {
-    
+
     //
     protected $table = 'messages';
-    
+
     protected $fillable = [
         'comm_type_id', 'app_id', 'msl_id', 'content',
         'serviceid', 'message_id', 'url', 'media_ids',
         's_user_id', 'r_user_id', 'message_type_id', 'readed', 'sent',
     ];
-    
+
     /**
      * 返回指定消息所属的消息类型对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
-    public function messageType() {
-        return $this->belongsTo('App\Models\MessageType');
-    }
-    
+    public function messageType() { return $this->belongsTo('App\Models\MessageType'); }
+
     /**
      * 返回指定消息所属的用户对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
-    public function user() {
-        return $this->belongsTo('App\Models\User');
-    }
+    public function user() { return $this->belongsTo('App\Models\User'); }
     
-    public function classes(array $classIds) {
-        
-        return Squad::whereIn('id', $classIds)->get(['id', 'name']);
-        
-    }
-    
-    public function messageSendinglogs() {
-        return $this->belongsTo('App\Models\MessageSendingLog');
-    }
-    
-    public function commType() {
-        return $this->belongsTo('App\Models\CommType');
-    }
-    
+    /**
+     * 获取
+     *
+     * @param array $classIds
+     * @return Collection|static[]
+     */
+    public function classes(array $classIds) { return Squad::whereIn('id', $classIds)->get(['id', 'name']); }
+
+    public function messageSendinglogs() { return $this->belongsTo('App\Models\MessageSendingLog'); }
+
+    public function commType() { return $this->belongsTo('App\Models\CommType'); }
+
+    /**
+     * @param MessageRequest $request
+     * @return bool
+     * @throws Exception
+     */
     public function store(MessageRequest $request) {
         $input = $request->all();
         $messageSendingLog = new MessageSendingLog();
         #新增一条日志记录（指定批次）
-        $logId = $messageSendingLog->addMessageSendingLog(count($input['r_user_id']));
+        $logId = $messageSendingLog->store(count($input['r_user_id']));
         $input['msl_id'] = $logId;
         $updateUrl = [];
         try {
             foreach ($input['r_user_id'] as $receiveUser) {
                 $input['r_user_id'] = $receiveUser;
-                $exception = DB::transaction(function () use ($request, $input, $updateUrl) {
+                DB::transaction(function () use ($request, $input, $updateUrl) {
                     //删除原有的图片
                     $this->removeMedias($request);
                     $crateDate = $this->create($input);
@@ -122,17 +124,19 @@ class Message extends Model {
                     $crateDate->update($updateUrl);
                 });
             }
-            
-            return is_null($exception) ? true : $exception;
+
         } catch (Exception $e) {
-            return false;
+            throw $e;
         }
+        return true;
     }
     
     /**
      * @param $request
+     * @throws Exception
      */
     private function removeMedias(MessageRequest $request) {
+        
         //删除原有的图片
         $mediaIds = $request->input('del_ids');
         if ($mediaIds) {
@@ -140,45 +144,42 @@ class Message extends Model {
             foreach ($medias as $media) {
                 $paths = explode("/", $media->path);
                 Storage::disk('uploads')->delete($paths[5]);
-                
+
             }
-            Media::whereIn('id', $mediaIds)->delete();
+            try {
+                Media::whereIn('id', $mediaIds)->delete();
+            } catch (Exception $e) {
+                throw $e;
+            }
         }
     }
-    
+
+    /**
+     * @param MessageRequest $request
+     * @param $id
+     * @return bool
+     * @throws Exception
+     */
     public function modify(MessageRequest $request, $id) {
         $message = $this->find($id);
         if (!$message) {
             return false;
         }
         try {
-            $exception = DB::transaction(function () use ($request, $id) {
+            DB::transaction(function () use ($request, $id) {
                 $this->removeMedias($request);
-                
+
                 return $this->where('id', $id)->update($request->except('_method', '_token'));
             });
-            
-            return is_null($exception) ? true : $exception;
+
         } catch (Exception $e) {
-            return false;
+            throw $e;
         }
+        return true;
     }
-//    private function addMessageSendingLog($recipientCount) {
-//        $input = Array();
-//        $input['read_count'] = 0;
-//        $input['received_count'] = 0;
-//        $input['recipient_count'] = $recipientCount;
-//        try {
-//            $exception = DB::transaction(function () use ($input) {
-//                $this->create($input);
-//            });
-//            return is_null($exception) ? true : $exception;
-//        } catch (Exception $e) {
-//            return false;
-//        }
-//    }
+
     public function datatable() {
-        
+
         $columns = [
             ['db' => 'Message.id', 'dt' => 0],
             ['db' => 'CommType.name as commtypename', 'dt' => 1],
@@ -186,19 +187,19 @@ class Message extends Model {
             ['db' => 'Message.msl_id', 'dt' => 3],
             ['db' => 'User.realname', 'dt' => 4],
             ['db' => 'MessageType.name', 'dt' => 5],
-            ['db'        => 'Message.readed', 'dt' => 6,
-             'formatter' => function ($d) {
-                 return $d === 0 ? "否" : "是";
-             },
+            ['db' => 'Message.readed', 'dt' => 6,
+                'formatter' => function ($d) {
+                    return $d === 0 ? "否" : "是";
+                },
             ],
-            ['db'        => 'Message.sent', 'dt' => 7,
-             'formatter' => function ($d) {
-                 return $d === 0 ? "否" : "是";
-             },
+            ['db' => 'Message.sent', 'dt' => 7,
+                'formatter' => function ($d) {
+                    return $d === 0 ? "否" : "是";
+                },
             ],
             ['db' => 'Message.created_at', 'dt' => 8],
             [
-                'db'        => 'Message.updated_at', 'dt' => 9,
+                'db' => 'Message.updated_at', 'dt' => 9,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($this, $d, $row);
                 },
@@ -206,39 +207,39 @@ class Message extends Model {
         ];
         $joins = [
             [
-                'table'      => 'comm_types',
-                'alias'      => 'CommType',
-                'type'       => 'INNER',
+                'table' => 'comm_types',
+                'alias' => 'CommType',
+                'type' => 'INNER',
                 'conditions' => [
                     'CommType.id = Message.comm_type_id',
                 ],
             ],
             [
-                'table'      => 'apps',
-                'alias'      => 'App',
-                'type'       => 'INNER',
+                'table' => 'apps',
+                'alias' => 'App',
+                'type' => 'INNER',
                 'conditions' => [
                     'App.id = Message.app_id',
                 ],
             ],
             [
-                'table'      => 'message_types',
-                'alias'      => 'MessageType',
-                'type'       => 'INNER',
+                'table' => 'message_types',
+                'alias' => 'MessageType',
+                'type' => 'INNER',
                 'conditions' => [
                     'MessageType.id = Message.message_type_id',
                 ],
             ],
             [
-                'table'      => 'users',
-                'alias'      => 'User',
-                'type'       => 'INNER',
+                'table' => 'users',
+                'alias' => 'User',
+                'type' => 'INNER',
                 'conditions' => [
                     'User.id = Message.s_user_id',
                 ],
             ],
         ];
-        
+
         return Datatable::simple($this, $columns, $joins);
     }
 }

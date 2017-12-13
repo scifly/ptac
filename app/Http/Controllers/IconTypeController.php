@@ -3,7 +3,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\IconTypeRequest;
 use App\Models\IconType;
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request as Request;
+use Throwable;
 
 /**
  * 图标类型
@@ -25,7 +28,8 @@ class IconTypeController extends Controller {
     /**
      * 图标类型列表
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function index() {
         
@@ -40,7 +44,8 @@ class IconTypeController extends Controller {
     /**
      * 创建图标类型
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function create() {
         
@@ -52,7 +57,7 @@ class IconTypeController extends Controller {
      * 保存图标类型
      *
      * @param IconTypeRequest $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function store(IconTypeRequest $request) {
         
@@ -62,34 +67,16 @@ class IconTypeController extends Controller {
     }
     
     /**
-     * 图标类型详情
-     *
-     * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
-     */
-    public function show($id) {
-        
-        $iconType = $this->iconType->find($id);
-        if (!$iconType) {
-            return $this->notFound();
-        }
-        
-        return $this->output(__METHOD__, ['iconType' => $iconType]);
-        
-    }
-    
-    /**
      * 编辑图标类型
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function edit($id) {
         
         $iconType = $this->iconType->find($id);
-        if (!$iconType) {
-            return $this->notFound();
-        }
+        if (!$iconType) { return $this->notFound(); }
         
         return $this->output(__METHOD__, ['iconType' => $iconType]);
         
@@ -100,14 +87,12 @@ class IconTypeController extends Controller {
      *
      * @param IconTypeRequest $request
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function update(IconTypeRequest $request, $id) {
         
         $iconType = $this->iconType->find($id);
-        if (!$iconType) {
-            return $this->notFound();
-        }
+        if (!$iconType) { return $this->notFound(); }
         
         return $iconType->modify($request->all(), $id)
             ? $this->succeed() : $this->fail();
@@ -118,14 +103,13 @@ class IconTypeController extends Controller {
      * 删除图标类型
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function destroy($id) {
         
         $iconType = $this->iconType->find($id);
-        if (!$iconType) {
-            return $this->notFound();
-        }
+        if (!$iconType) { return $this->notFound(); }
         
         return $iconType->remove($id) ? $this->succeed() : $this->fail();
         

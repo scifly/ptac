@@ -1,9 +1,11 @@
 <?php
+
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * App\Models\StudentAttendanceSetting
@@ -33,33 +35,37 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|StudentAttendanceSetting whereStart($value)
  * @method static Builder|StudentAttendanceSetting whereUpdatedAt($value)
  * @mixin \Eloquent
- * @property-read \App\Models\Grade $grade
- * @property-read \App\Models\Semester $semester
+ * @property-read Grade $grade
+ * @property-read Semester $semester
  */
 class StudentAttendanceSetting extends Model {
-    
+
     //
     protected $table = 'student_attendance_settings';
     protected $fillable = [
-        'name',
-        'grade_id',
-        'semester_id',
-        'ispublic',
-        'start',
-        'end',
-        'day',
-        'inorout',
-        'msg_template',
+        'name', 'grade_id', 'semester_id',
+        'ispublic', 'start', 'end',
+        'day', 'inorout', 'msg_template',
     ];
     
-    public function grade() {
-        return $this->belongsTo('App\Models\Grade');
-    }
+    /**
+     * 返回指定学生考勤设置所属的年级对象
+     *
+     * @return BelongsTo
+     */
+    public function grade() { return $this->belongsTo('App\Models\Grade'); }
     
+    /**
+     * 返回指定学生考勤设置所属的学期对象
+     *
+     * @return BelongsTo
+     */
     public function semester() {
+        
         return $this->belongsTo('App\Models\Semester', 'semester_id', 'id');
+        
     }
-    
+
     public function datatable() {
         
         $columns = [
@@ -68,7 +74,7 @@ class StudentAttendanceSetting extends Model {
             ['db' => 'Grade.name as gradename', 'dt' => 2],
             ['db' => 'Semester.name as semestername', 'dt' => 3],
             [
-                'db'        => 'StudentAttendanceSetting.ispublic', 'dt' => 4,
+                'db' => 'StudentAttendanceSetting.ispublic', 'dt' => 4,
                 'formatter' => function ($d) {
                     return $d == 1 ? '是' : '否';
                 },
@@ -76,38 +82,39 @@ class StudentAttendanceSetting extends Model {
             ['db' => 'StudentAttendanceSetting.start', 'dt' => 5],
             ['db' => 'StudentAttendanceSetting.end', 'dt' => 6],
             ['db' => 'StudentAttendanceSetting.day', 'dt' => 7],
-            ['db'        => 'StudentAttendanceSetting.inorout', 'dt' => 8,
-             'formatter' => function ($d) {
-                 return $d == 1 ? '进' : '出';
-             },
+            ['db' => 'StudentAttendanceSetting.inorout', 'dt' => 8,
+                'formatter' => function ($d) {
+                    return $d == 1 ? '进' : '出';
+                },
             ],
             ['db' => 'StudentAttendanceSetting.msg_template', 'dt' => 9],
             [
-                'db'        => 'StudentAttendanceSetting.updated_at', 'dt' => 10,
+                'db' => 'StudentAttendanceSetting.updated_at', 'dt' => 10,
                 'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($this, $d, $row);
+                    return Datatable::dtOps($d, $row);
                 },
             ],
         ];
         $joins = [
             [
-                'table'      => 'grades',
-                'alias'      => 'Grade',
-                'type'       => 'INNER',
+                'table' => 'grades',
+                'alias' => 'Grade',
+                'type' => 'INNER',
                 'conditions' => [
                     'Grade.id = StudentAttendanceSetting.grade_id',
                 ],
             ],
             [
-                'table'      => 'semesters',
-                'alias'      => 'Semester',
-                'type'       => 'INNER',
+                'table' => 'semesters',
+                'alias' => 'Semester',
+                'type' => 'INNER',
                 'conditions' => [
                     'Semester.id = StudentAttendanceSetting.semester_id',
                 ],
             ],
         ];
-        return Datatable::simple($this, $columns, $joins);
         
+        return Datatable::simple($this, $columns, $joins);
+
     }
 }

@@ -6,8 +6,13 @@ use App\Models\Department;
 use App\Models\Educator;
 use App\Models\EducatorClass;
 use App\Models\Mobile;
+use App\Models\School;
 use App\Models\Team;
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
+use Maatwebsite\Excel\Facades\Excel;
+use PHPExcel_Exception;
 
 /**
  * 教职员工
@@ -22,13 +27,15 @@ class EducatorController extends Controller {
     protected $educatorClass;
     protected $team;
     protected $department;
+    protected $school;
     
     public function __construct(
         Educator $educator,
         Mobile $mobile,
         EducatorClass $educatorClass,
         Team $team,
-        Department $department
+        Department $department,
+        School $school
     ) {
     
         $this->middleware(['auth']);
@@ -37,13 +44,14 @@ class EducatorController extends Controller {
         $this->educatorClass = $educatorClass;
         $this->team = $team;
         $this->department = $department;
-        
+        $this->school = $school;
     }
     
     /**
      * 教职员工列表
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws \Throwable
      */
     public function index() {
         
@@ -57,12 +65,16 @@ class EducatorController extends Controller {
     /**
      * 创建教职员工
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws \Throwable
      */
     public function create() {
         
         if (Request::method() === 'POST') {
-            return $this->department->tree();
+            $schoolId = $this->school->getSchoolId();
+            /** @var School $school */
+            $school = $this->school->find($schoolId);
+            return $this->department->tree($school->department_id);
         }
         return $this->output(__METHOD__);
         
@@ -72,7 +84,8 @@ class EducatorController extends Controller {
      * 保存教职员工
      *
      * @param EducatorRequest $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function store(EducatorRequest $request) {
         
@@ -85,7 +98,8 @@ class EducatorController extends Controller {
      * 教职员工详情
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws \Throwable
      */
     public function show($id) {
         
@@ -102,7 +116,8 @@ class EducatorController extends Controller {
      * 编辑教职员工
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws \Throwable
      */
     public function edit($id) {
         
@@ -134,7 +149,8 @@ class EducatorController extends Controller {
      * 教职员工充值
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws \Throwable
      */
     public function recharge($id) {
         
@@ -153,7 +169,8 @@ class EducatorController extends Controller {
      *
      * @param EducatorRequest $request
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function update(EducatorRequest $request, $id) {
         
@@ -169,7 +186,7 @@ class EducatorController extends Controller {
      * 更新教职员工充值
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function rechargeStore($id) {
         
@@ -187,17 +204,72 @@ class EducatorController extends Controller {
      * 删除教职员工
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function destroy($id) {
         
         $educator = $this->educator->find($id);
-        if (!$educator) {
-            return $this->notFound();
-        }
+        if (!$educator) { return $this->notFound(); }
+        
         return $this->educator->remove($id, true)
             ? parent::succeed() : parent::fail();
         
     }
     
+    /**
+     * 导入教职员工
+     *
+     * @throws PHPExcel_Exception
+     */
+    public function import() {
+        
+        if (Request::isMethod('post')) {
+            $file = Request::file('file');
+            if (empty($file)) {
+                $result = [
+                    'statusCode' => 500,
+                    'message' => '您还没选择文件！',
+                ];
+                return response()->json($result);
+            }
+            // 文件是否上传成功
+            if ($file->isValid()) {
+                $this->educator->upload($file);
+            }
+        }
+        return true;
+    }
+    
+    /**
+     * 导出教职员工
+     *
+     * @return void
+     */
+    public function export() {
+        
+        $id = Request::query('id');
+        if ($id) {
+            $data = $this->educator->export($id);
+            /** @noinspection PhpMethodParametersCountMismatchInspection */
+            /** @noinspection PhpUndefinedMethodInspection */
+            Excel::create(iconv('UTF-8', 'GBK', '教职员工列表'), function ($excel) use ($data) {
+                /** @noinspection PhpUndefinedMethodInspection */
+                $excel->sheet('score', function($sheet) use ($data) {
+                    /** @noinspection PhpUndefinedMethodInspection */
+                    $sheet->rows($data);
+                    /** @noinspection PhpUndefinedMethodInspection */
+                    $sheet->setWidth(array(
+                        'A'     =>  30,
+                        'B'     =>  30,
+                        'C'     =>  30,
+                        'D'     =>  30,
+                        'E'     =>  30,
+                        'F'     =>  30,
+                    ));
+                });
+                
+            },'UTF-8')->export('xls');
+        }
+    }
 }

@@ -8,7 +8,10 @@ use App\Models\Group;
 use App\Models\Menu;
 use App\Models\School;
 use App\Models\Tab;
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
+use Throwable;
 
 /**
  * 角色
@@ -20,7 +23,10 @@ class GroupController extends Controller {
     
     protected $group, $menu, $tab, $action, $corp, $school;
     
-    function __construct(Group $group, Menu $menu, Tab $tab, Action $action, Corp $corp, School $school) {
+    function __construct(
+        Group $group, Menu $menu, Tab $tab,
+        Action $action, Corp $corp, School $school
+    ) {
     
         $this->middleware(['auth']);
         $this->group = $group;
@@ -35,7 +41,8 @@ class GroupController extends Controller {
     /**
      * 角色列表
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function index() {
         
@@ -50,7 +57,8 @@ class GroupController extends Controller {
     /**
      * 创建角色
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function create() {
 
@@ -68,7 +76,8 @@ class GroupController extends Controller {
      * 保存角色
      *
      * @param GroupRequest $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function store(GroupRequest $request) {
         
@@ -78,24 +87,11 @@ class GroupController extends Controller {
     }
     
     /**
-     * 角色详情
-     *
-     * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
-     */
-    public function show($id) {
-        
-        $group = $this->group->find($id);
-        if (!$group) { return $this->notFound(); }
-        return $this->output(__METHOD__, ['group' => $group]);
-        
-    }
-    
-    /**
      * 编辑角色
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function edit($id) {
         
@@ -116,7 +112,8 @@ class GroupController extends Controller {
      *
      * @param GroupRequest $request
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function update(GroupRequest $request, $id) {
         
@@ -131,7 +128,8 @@ class GroupController extends Controller {
      * 删除角色
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function destroy($id) {
         

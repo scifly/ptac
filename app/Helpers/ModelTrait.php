@@ -20,11 +20,13 @@ trait ModelTrait {
             }
         }
         foreach ($relations as $relation) {
-            if ($model->{$relation}) {
+            // if ($model->{$relation}) {
+            //     return false;
+            // }
+            if(count($model->{$relation})){
                 return false;
             }
         }
-        
         return true;
         
     }

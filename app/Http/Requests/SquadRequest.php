@@ -78,7 +78,7 @@ class SquadRequest extends FormRequest {
             $input['educator_ids'] = implode(',', $input['educator_ids']);
         }
         if (!isset($input['educator_ids'])) {
-            $input['educator_ids'] = '1';
+            $input['educator_ids'] = '0';
         }
         if (!isset($input['department_id'])) {
             $input['department_id'] = 0;

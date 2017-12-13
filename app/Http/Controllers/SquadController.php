@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 use App\Http\Requests\SquadRequest;
 use App\Models\Educator;
 use App\Models\Squad;
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
+use Throwable;
 
 /**
  * 班级
@@ -27,7 +30,8 @@ class SquadController extends Controller {
     /**
      * 班级列表
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function index() {
         
@@ -42,7 +46,8 @@ class SquadController extends Controller {
     /**
      * 创建班级
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function create() {
         
@@ -54,7 +59,7 @@ class SquadController extends Controller {
      * 保存班级
      *
      * @param SquadRequest $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function store(SquadRequest $request) {
         
@@ -63,42 +68,45 @@ class SquadController extends Controller {
         
     }
     
-    /**
-     * 班级详情
-     *
-     * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
-     */
-    public function show($id) {
-        
-        $class = $this->class->find($id);
-        if (!$class) {
-            return $this->notFound();
-        }
-        $educatorIds = explode(",", $class->educator_ids);
-        return $this->output(__METHOD__, [
-            'class'     => $class,
-            'educators' => $this->educator->educators($educatorIds),
-        ]);
-        
-    }
-    
+    // /**
+    //  * 班级详情
+    //  *
+    //  * @param $id
+    //  * @return bool|\Illuminate\Http\JsonResponse
+    //  */
+    // public function show($id) {
+    //
+    //     $class = $this->class->find($id);
+    //     if (!$class) {
+    //         return $this->notFound();
+    //     }
+    //     $educatorIds = explode(",", $class->educator_ids);
+    //     return $this->output(__METHOD__, [
+    //         'class'     => $class,
+    //         'educators' => $this->educator->educators($educatorIds),
+    //     ]);
+    //
+    // }
     /**
      * 编辑班级
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function edit($id) {
         
         $class = $this->class->find($id);
+        $selectedEducators = [];
         if (!$class) {
             return $this->notFound();
         }
-        $educatorIds = explode(",", $class->educator_ids);
+        if ($class->educator_ids != '0') {
+            $selectedEducators = $this->educator->getEducatorListByIds(explode(",", $class->educator_ids));
+        }
         return $this->output(__METHOD__, [
             'class'             => $class,
-            'selectedEducators' => $this->educator->educators($educatorIds),
+            'selectedEducators' => $selectedEducators
         ]);
         
     }
@@ -108,13 +116,11 @@ class SquadController extends Controller {
      *
      * @param SquadRequest $request
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function update(SquadRequest $request, $id) {
         
-        if (!$this->class->find($id)) {
-            return $this->notFound();
-        }
+        if (!$this->class->find($id)) { return $this->notFound(); }
         
         return $this->class->modify($request->all(), $id, true)
             ? $this->succeed() : $this->fail();
@@ -125,16 +131,14 @@ class SquadController extends Controller {
      * 删除班级
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function destroy($id) {
         
-        if (!$this->class->find($id)) {
-            return $this->notFound();
-        }
+        if (!$this->class->find($id)) { return $this->notFound(); }
         
-        return $this->class->remove($id, true)
-            ? $this->succeed() : $this->fail();
+        return $this->class->remove($id, true) ? $this->succeed() : $this->fail();
         
     }
     

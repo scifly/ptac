@@ -99,22 +99,11 @@
             <div class="form-group">
                 <label class="col-sm-3 control-label">被监护人</label>
                 <div class="col-sm-6" style="padding-top: 3px;">
-                    {{--@if(!isset($pupils))--}}
-                    {{--<button id="add-pupil" class="btn btn-box-tool" type="button">--}}
-                    {{--<i class="fa fa-user-plus text-blue"> 添加</i>--}}
-                    {{--</button>--}}
-                    {{--@else--}}
-                    {{--<div id="department-nodes-checked">--}}
-                    {{--<button type="button" class="btn btn-flat" style="margin-right: 5px;margin-bottom: 5px">--}}
-                    {{--<i class=""></i>--}}
-                    {{--张三--}}
-                    {{--<i class="fa fa-close close-selected"></i>--}}
-                    {{--<input type="hidden" name="selectedStudents[]" value="1"/>--}}
-                    {{--</button>--}}
-                    {{--</div>--}}
-                    <table class="table table-striped table-bordered table-hover table-condensed">
+                    <div style="display: block; overflow-x: auto; clear: both; width: 100%; margin-top: 10px;">
+                        <table class="table table-striped table-bordered table-hover table-condensed"
+                               style="white-space: nowrap; width: 100%;">
                         <thead>
-                        <tr>
+                        <tr class="bg-info">
                             <th>学生</th>
                             <th>学号</th>
                             <th>监护人关系</th>
@@ -142,8 +131,9 @@
 
                         </tbody>
                     </table>
+                    </div>
                     <button id="add-pupil" class="btn btn-box-tool" type="button">
-                        <i class="fa fa-user-plus text-blue"></i>
+                        <i class="fa fa-user-plus text-blue">新增</i>
                     </button>
                     {{--@endif--}}
                 </div>
@@ -175,7 +165,7 @@
                             @include('partials.single_select', [
                                     'id' => 'schoolId',
                                     'label' => '所属学校',
-                                    'items' => $schools
+                                    'items' => $schools,
                                 ])
                             {{--@if($schools->count() > 1)--}}
                             {{--@include('partials.single_select', [--}}

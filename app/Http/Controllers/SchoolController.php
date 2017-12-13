@@ -3,8 +3,12 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\SchoolRequest;
 use App\Jobs\CreateWechatDepartment;
+use App\Models\Menu;
 use App\Models\School as School;
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
+use Throwable;
 
 /**
  * 学校
@@ -14,19 +18,21 @@ use Illuminate\Support\Facades\Request;
  */
 class SchoolController extends Controller {
     
-    protected $school;
+    protected $school, $menu;
     
-    function __construct(School $school) {
+    function __construct(School $school, Menu $menu) {
     
         $this->middleware(['auth']);
         $this->school = $school;
+        $this->menu = $menu;
     
     }
     
     /**
      * 学校列表
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function index() {
         
@@ -41,7 +47,8 @@ class SchoolController extends Controller {
     /**
      * 创建学校
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function create() {
         
@@ -66,21 +73,34 @@ class SchoolController extends Controller {
      * 学校详情
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
-    public function show($id) {
-        
-        $school = $this->school->find($id);
-        if (!$school) { return parent::notFound(); }
-        return parent::output(__METHOD__, ['school' => $school]);
-        
+    public function show($id = null) {
+        if ($id){
+            $school = $this->school->find($id);
+            if (!$school) { return parent::notFound(); }
+            return parent::output(__METHOD__, ['school' => $school]);
+        }else{
+            $menuId = Request::input('menuId');
+            $schoolMenuId = $this->menu->getSchoolMenuId($menuId);
+            $school = $this->school->where('menu_id', $schoolMenuId)->first();
+            return response()->json([
+                'statusCode' => 200,
+                'html'       => view('school.show', ['school' => $school])->render(),
+                // 'js'         => 'js/school/show',
+                'uri'        => Request::path(),
+                'title'      => '学校设置',
+            ]);
+        }
     }
     
     /**
      * 编辑学校
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function edit($id) {
         
@@ -98,7 +118,7 @@ class SchoolController extends Controller {
      *
      * @param SchoolRequest|\Illuminate\Http\Request $request
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function update(SchoolRequest $request, $id) {
         
@@ -112,7 +132,8 @@ class SchoolController extends Controller {
      * 删除学校
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function destroy($id) {
         

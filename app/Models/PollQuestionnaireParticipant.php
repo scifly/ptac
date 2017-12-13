@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
@@ -18,21 +19,17 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|PollQuestionnaireParticipant whereUpdatedAt($value)
  * @method static Builder|PollQuestionnaireParticipant whereUserId($value)
  * @mixin \Eloquent
- * @property-read \App\Models\PollQuestionnaire $pollquestionnaire
- * @property-read \App\Models\User $user
+ * @property-read PollQuestionnaire $pollquestionnaire
+ * @property-read User $user
  */
 class PollQuestionnaireParticipant extends Model {
-    
-    //
+
     protected $table = 'poll_questionnaire_participants';
-    
+
     protected $fillable = ['pq_id', 'user_id', 'created_at', 'updated-at'];
+
+    public function pollquestionnaire() { return $this->belongsTo('App\Models\PollQuestionnaire'); }
+
+    public function user() { return $this->belongsTo('App\Models\User'); }
     
-    public function pollquestionnaire() {
-        return $this->belongsTo('App\Models\PollQuestionnaire');
-    }
-    
-    public function user() {
-        return $this->belongsTo('App\Models\User');
-    }
 }

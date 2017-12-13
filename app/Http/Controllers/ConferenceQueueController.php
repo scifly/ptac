@@ -3,7 +3,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ConferenceQueueRequest;
 use App\Models\ConferenceQueue;
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
+use Throwable;
 
 /**
  * 会议
@@ -25,7 +28,8 @@ class ConferenceQueueController extends Controller {
     /**
      * 会议列表
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Throwable
      */
     public function index() {
         
@@ -40,7 +44,8 @@ class ConferenceQueueController extends Controller {
     /**
      * 创建会议
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Throwable
      */
     public function create() {
         
@@ -52,7 +57,7 @@ class ConferenceQueueController extends Controller {
      * 保存会议
      *
      * @param ConferenceQueueRequest $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function store(ConferenceQueueRequest $request) {
         
@@ -65,7 +70,8 @@ class ConferenceQueueController extends Controller {
      * 会议详情
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Throwable
      */
     public function show($id) {
         
@@ -80,7 +86,8 @@ class ConferenceQueueController extends Controller {
      * 编辑会议
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Throwable
      */
     public function edit($id) {
         
@@ -96,7 +103,7 @@ class ConferenceQueueController extends Controller {
      *
      * @param ConferenceQueueRequest $request
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function update(ConferenceQueueRequest $request, $id) {
         
@@ -112,15 +119,15 @@ class ConferenceQueueController extends Controller {
      * 删除会议
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function destroy($id) {
         
         $cq = $this->cq->find($id);
         if (!$cq) { $this->notFound(); }
         
-        return $this->cq->remove($id)
-            ? $this->succeed() : $this->fail();
+        return $this->cq->remove($id) ? $this->succeed() : $this->fail();
         
     }
     

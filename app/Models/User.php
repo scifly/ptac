@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use App\Events\UserCreated;
@@ -7,6 +8,10 @@ use App\Events\UserUpdated;
 use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Notifications\DatabaseNotificationCollection;
@@ -78,10 +83,10 @@ use Illuminate\Notifications\Notifiable;
  * @property-read Collection|Order[] $orders
  */
 class User extends Authenticatable {
-    
+
     use Notifiable;
     protected $table = 'users';
-    
+
     /**
      * The attributes that are mass assignable.
      *
@@ -95,98 +100,115 @@ class User extends Authenticatable {
         'telephone', 'order', 'mobile',
         'avatar_mediaid', 'enabled',
     ];
-    
+
     /**
      * The attributes that should be hidden for arrays.
      *
      * @var array
      */
+
     protected $hidden = ['password', 'remember_token'];
-    
+
     /**
      * 返回指定用户所属的角色对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function group() { return $this->belongsTo('App\Models\Group'); }
-    
+
     /**
      * 获取指定用户对应的监护人对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return HasOne
      */
     public function custodian() { return $this->hasOne('App\Models\Custodian'); }
-    
+
     /**
      * 获取指定用户对应的教职员工对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return HasOne
      */
     public function educator() { return $this->hasOne('App\Models\Educator'); }
-    
+
     /**
      * 获取指定用户对应的学生对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return HasOne
      */
     public function student() { return $this->hasOne('App\Models\Student'); }
-    
+
     /**
      * 获取指定用户对应的管理/操作员对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return HasOne
      */
     public function operator() { return $this->hasOne('App\Models\Operator'); }
-    
+
     /**
      * 获取指定用户的所有订单对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function orders() { return $this->hasMany('App\Models\Order'); }
-    
+
     /**
      * 获取指定用户的所有手机号码对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function mobiles() { return $this->hasMany('App\Models\Mobile'); }
-    
+
     /**
      * 获取指定用户所属的所有部门对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return BelongsToMany
      */
-    public function departments() { return $this->belongsToMany('App\Models\Department', 'departments_users'); }
+    public function departments() {
+        
+        return $this->belongsToMany('App\Models\Department', 'departments_users');
     
+    }
+
     /**
      * 获取指定用户发起的所有调查问卷对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
-    public function pollQuestionnaires() { return $this->hasMany('App\Models\PollQuestionnaire'); }
+    public function pollQuestionnaires() {
+        
+        return $this->hasMany('App\Models\PollQuestionnaire');
     
+    }
+
     /**
      * 获取指定用户参与的调查问卷所给出的答案对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
-    public function pollQuestionnaireAnswers() { return $this->hasMany('App\Models\PollQuestionnaireAnswer'); }
+    public function pollQuestionnaireAnswers() {
+        
+        return $this->hasMany('App\Models\PollQuestionnaireAnswer');
     
+    }
+
     /**
      * 获取指定用户参与的所有调查问卷对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
-    public function pollQuestionnairePartcipants() { return $this->hasMany('App\Models\PollQuestionnaireParticipant'); }
+    public function pollQuestionnairePartcipants() {
+        
+        return $this->hasMany('App\Models\PollQuestionnaireParticipant');
     
+    }
+
     /**
      * 获取指定用户发出的消息对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function messages() { return $this->hasMany('App\Models\Message'); }
-    
+
     /**
      * 返回用户列表(id, name)
      *
@@ -194,17 +216,17 @@ class User extends Authenticatable {
      * @return array
      */
     public function users(array $userIds) {
-        
+
         $users = [];
         foreach ($userIds as $id) {
             $user = $this->find($id);
             $users[$user->id] = $user->realname;
         }
-        
+
         return $users;
-        
+
     }
-    
+
     /**
      * 返回用户所属最顶级部门的ID
      *
@@ -212,71 +234,77 @@ class User extends Authenticatable {
      * @return mixed
      */
     public function topDeptId(User $user) {
-        
+
         $departmentIds = $user->departments->pluck('id')->toArray();
         sort($departmentIds);
-        
+
         return !empty($departmentIds) ? $departmentIds[0] : 1;
-        
+
     }
-    
+
     /**
      * 创建企业号会员
      *
      * @param $id
      */
     public function createWechatUser($id) {
-        
+
         $user = $this->find($id);
         $mobile = Mobile::whereUserId($id)->where('isdefault', 1)->first()->mobile;
         $data = [
-            'userid'       => $user->userid,
-            'name'         => $user->realname,
-            'english_name' => $user->english_name,
-            'mobile'       => $mobile,
-            'department'   => $user->departments->pluck('id')->toArray(),
-            'gender'       => $user->gender,
-            'enable'       => $user->enabled,
+            'userid' => $user->userid,
+            'name' => $user->realname,
+            'mobile' => $mobile,
+            'department' => $user->departments->pluck('id')->toArray(),
+            'gender' => $user->gender,
+            'enable' => $user->enabled,
         ];
         event(new UserCreated($data));
+
+    }
+
+    public function importData(&$data) {
+        
+        $u = $this->create($data);
+        $data['id'] = $u->id;
         
     }
-    
+
     /**
      * 更新企业号会员
      *
      * @param $id
      */
     public function updateWechatUser($id) {
-        
+
         $user = $this->find($id);
         $mobile = Mobile::whereUserId($id)->where('isdefault', 1)->first()->mobile;
         $data = [
-            'userid'       => $user->userid,
-            'name'         => $user->realname,
+            'userid' => $user->userid,
+            'name' => $user->realname,
             'english_name' => $user->english_name,
-            'mobile'       => $mobile,
-            'department'   => $user->departments->pluck('id')->toArray(),
-            'gender'       => $user->gender,
-            'enable'       => $user->enabled,
+            'mobile' => $mobile,
+            'department' => $user->departments->pluck('id')->toArray(),
+            'gender' => $user->gender,
+            'enable' => $user->enabled,
         ];
         event(new UserUpdated($data));
-        
+
     }
-    
+
     /**
      * 删除企业号会员
      *
      * @param $id
      */
     public function deleteWechatUser($id) {
-        
+
         event(new UserDeleted($this->find($id)->userid));
-        
+
     }
-    
+
     public function datatable() {
-        
+
         $columns = [
             ['db' => 'User.id', 'dt' => 0],
             ['db' => 'User.username', 'dt' => 2],
@@ -284,7 +312,7 @@ class User extends Authenticatable {
             ['db' => 'User.avatar_url', 'dt' => 3],
             ['db' => 'User.realname', 'dt' => 4],
             [
-                'db'        => 'User.gender', 'dt' => 5,
+                'db' => 'User.gender', 'dt' => 5,
                 'formatter' => function ($d) {
                     return $d ? '男' : '女';
                 },
@@ -293,25 +321,25 @@ class User extends Authenticatable {
             ['db' => 'User.created_at', 'dt' => 7],
             ['db' => 'User.updated_at', 'dt' => 8],
             [
-                'db'        => 'User.enabled', 'dt' => 9,
+                'db' => 'User.enabled', 'dt' => 9,
                 'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($this, $d, $row);
+                    return Datatable::dtOps($d, $row);
                 },
             ],
         ];
         $joins = [
             [
-                'table'      => 'groups',
-                'alias'      => 'Groups',
-                'type'       => 'INNER',
+                'table' => 'groups',
+                'alias' => 'Groups',
+                'type' => 'INNER',
                 'conditions' => [
                     'Groups.id = User.group_id',
                 ],
             ],
         ];
-        
+
         return Datatable::simple($this, $columns, $joins);
-        
+
     }
-    
+
 }

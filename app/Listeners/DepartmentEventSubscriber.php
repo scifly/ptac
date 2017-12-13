@@ -10,6 +10,7 @@ use App\Models\Menu;
 use App\Models\School;
 use Illuminate\Events\Dispatcher;
 use Illuminate\Foundation\Bus\DispatchesJobs;
+use Illuminate\Support\Facades\Log;
 
 class DepartmentEventSubscriber {
     
@@ -58,6 +59,7 @@ class DepartmentEventSubscriber {
             'enabled'            => $$model->enabled,
         ];
         $department = $this->department->store($data, true);
+        Log::debug('department:'. json_encode($department));
         ManageWechatDepartment::dispatch($department, 'create');
         
         return $department ? true : false;
@@ -111,7 +113,7 @@ class DepartmentEventSubscriber {
         $job = new ManageWechatDepartment($departments, 'update');
         $this->dispatch($job);
 
-//        ManageWechatDepartment::dispatch($departments, 'update');
+        ManageWechatDepartment::dispatch($departments, 'update');
         return $departments ? true : false;
         
     }
@@ -137,9 +139,8 @@ class DepartmentEventSubscriber {
      */
     private function deleteDepartment($event, $model) {
         $department = $this->department->find($event->{$model}->department_id);
-        $result = $this->department->remove($event->{$model}->department_id);
         ManageWechatDepartment::dispatch($department, 'delete');
-        
+        $result = $this->department->remove($event->{$model}->department_id);
         return $result;
         
     }

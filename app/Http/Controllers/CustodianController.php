@@ -4,12 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CustodianRequest;
 use App\Models\Custodian;
+use App\Models\CustodianStudent;
 use App\Models\Department;
 use App\Models\DepartmentUser;
 use App\Models\Group;
 use App\Models\Student;
-use App\Models\CustodianStudent;
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
+use Maatwebsite\Excel\Facades\Excel;
+use Throwable;
 
 /**
  * 监护人
@@ -36,11 +40,12 @@ class CustodianController extends Controller {
         $this->custodianStudent = $custodianStudent;
 
     }
-
+    
     /**
      * 监护人列表
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function index() {
         
@@ -51,11 +56,12 @@ class CustodianController extends Controller {
         return parent::output(__METHOD__);
         
     }
-
+    
     /**
      * 创建监护人
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function create() {
 
@@ -71,12 +77,13 @@ class CustodianController extends Controller {
         return parent::output(__METHOD__);
 
     }
-
+    
     /**
      * 保存监护人
      *
      * @param CustodianRequest $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function store(CustodianRequest $request) {
 
@@ -84,12 +91,13 @@ class CustodianController extends Controller {
             ? $this->succeed() : $this->fail();
 
     }
-
+    
     /**
      * 编辑监护人
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function edit($id) {
 
@@ -107,12 +115,13 @@ class CustodianController extends Controller {
         ]);
 
     }
-
+    
     /**
      * 更新监护人.
      * @param CustodianRequest $request
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function update(CustodianRequest $request, $id) {
 
@@ -120,12 +129,13 @@ class CustodianController extends Controller {
             ? $this->succeed() : $this->fail();
 
     }
-
+    
     /**
      * 删除指定的监护人
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function destroy($id) {
         
@@ -133,5 +143,32 @@ class CustodianController extends Controller {
             ? $this->succeed() : $this->fail();
         
     }
-
+    
+    /**
+     * 导出监护人
+     * @return void
+     */
+    public function export() {
+        $data = $this->custodian->export();
+        /** @noinspection PhpMethodParametersCountMismatchInspection */
+        /** @noinspection PhpUndefinedMethodInspection */
+        Excel::create(iconv('UTF-8', 'GBK', '监护人列表'), function ($excel) use ($data) {
+            /** @noinspection PhpUndefinedMethodInspection */
+            $excel->sheet('score', function($sheet) use ($data) {
+                /** @noinspection PhpUndefinedMethodInspection */
+                $sheet->rows($data);
+                /** @noinspection PhpUndefinedMethodInspection */
+                $sheet->setWidth(array(
+                    'A'     =>  30,
+                    'B'     =>  30,
+                    'C'     =>  30,
+                    'D'     =>  30,
+                    'E'     =>  30,
+                    'F'     =>  30,
+                ));
+                
+            });
+            
+        },'UTF-8')->export('xls');
+    }
 }

@@ -9,6 +9,7 @@
             'data-parsley-validate' => 'true'
         ]) !!}
         <div class="form-inline">
+            <!-- 所属企业 -->
             <div class="form-group" style="margin-right: 10px">
                 {!! Form::label('corp_id', '所属企业：', [
                     'class' => 'control-label',
@@ -18,13 +19,13 @@
                         'class' => 'form-control input-sm'
                     ]) !!}
                 @else
-
                     {!! Form::label('name', $corp->name, [
                         'class' => 'control-label',
                         'style' => 'font-weight: normal;'
                     ]) !!}
                 @endif
             </div>
+            <!-- 企业应用ID -->
             <div class="form-group" style="margin-right: 10px">
                 {!! Form::label('agentid', '企业应用id：', [
                     'class' => 'control-label'
@@ -35,6 +36,7 @@
                     'required' => 'true',
                 ]) !!}
             </div>
+            <!-- 应用Secret -->
             <div class="form-group" style="margin-right: 10px">
                 {!! Form::label('secret', '应用Secret：', [
                     'class' => 'control-label'
@@ -52,11 +54,12 @@
             ]) !!}
         </div>
         {!! Form::close() !!}
-        <div style="display: block; overflow-x: auto; clear: both; width: 100%;">
+        <!-- 企业应用列表 -->
+        <div style="display: block; overflow-x: auto; clear: both; width: 100%; margin-top: 10px;">
             <table class="table-striped table-bordered table-hover table-condensed"
                style="white-space: nowrap; width: 100%;">
             <thead>
-            <tr>
+			<tr class="bg-info">
                 <th>#</th>
                 <th class="text-center">应用id</th>
                 <th class="text-center">应用名称</th>
@@ -84,16 +87,14 @@
                         <td class="text-center">{{ $app['updated_at'] }}</td>
                         <td class="text-right">
                             @if($app['enabled'])
-                                <span class="badge bg-green">已启用</span>
+                                <i class="fa fa-circle text-green" title="已启用"></i>
                             @else
-                                <span class="badge bg-gray">未启用</span>
+                                <i class="fa fa-circle text-gray" title="未启用"></i>
                             @endif
-                            <a href="javascript:void(0)" class="btn btn-primary btn-xs">
-                                修改
-                            </a>
-                            <a href="javascript:void(0)" class="btn bg-purple btn-xs">
-                                同步菜单
-                            </a>
+                            &nbsp;&nbsp;&nbsp;
+                            <a href="#"><i class="fa fa-pencil" title="修改"></i></a>
+                            &nbsp;&nbsp;
+                            <a href="#"><i class="fa fa-exchange" title="同步菜单"></i></a>
                         </td>
                     </tr>
                 @endforeach

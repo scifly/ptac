@@ -1,12 +1,15 @@
 <?php
+
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Facades\DB;
-use Mockery\Exception;
 use ReflectionClass;
 
 /**
@@ -37,65 +40,47 @@ use ReflectionClass;
  * @method static Builder|Tab whereController($value)
  */
 class Tab extends Model {
-    
-    const DT_ON = '<span class="badge bg-green">%s</span>';
-    const DT_OFF = '<span class="badge bg-gray">%s</span>';
-    const DT_LINK_EDIT = <<<HTML
-        <a id="%s" href="javascript:void(0)" class="btn btn-success btn-icon btn-circle btn-xs">
-            <i class="fa fa-edit"></i>
-        </a>
-HTML;
-    const DT_LINK_SHOW = <<<HTML
-        <a id="%s" href="javascript:void(0)" class="btn btn-primary btn-icon btn-circle btn-xs"  data-toggle="modal">
-            <i class="fa fa-eye"></i>
-        </a>
-HTML;
+
     protected $fillable = [
-        'name', 'remark', 'icon_id',
+        'name', 'remark', 'icon_id','group_id',
         'action_id', 'enabled', 'controller',
     ];
     protected $excluded_controllers = [
         'ForgotPasswordController', 'Controller', 'RegisterController',
         'LoginController', 'ResetPasswordController', 'TestController',
     ];
-    
+
     protected $ctlrDir = 'app/Http/Controllers';
-    
+
     /**
      * 返回指定卡片所属的菜单对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return BelongsToMany
      */
-    public function menus() {
-        
-        return $this->belongsToMany('App\Models\Menu', 'menus_tabs');
-        
-    }
-    
+    public function menus() { return $this->belongsToMany('App\Models\Menu', 'menus_tabs'); }
+
     /**
      * 返回指定卡片所属的图标对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
-    public function icon() {
-        
-        return $this->belongsTo('App\Models\Icon');
-        
-    }
-    
+    public function icon() { return $this->belongsTo('App\Models\Icon'); }
+
     /**
      * 返回指定卡片默认的Action对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
-    public function action() {
-        
-        return $this->belongsTo('App\Models\Action');
-        
-    }
-    
+    public function action() { return $this->belongsTo('App\Models\Action'); }
+
+    /**
+     * 扫描
+     *
+     * @return bool
+     * @throws Exception
+     */
     public function scan() {
-        
+
         $action = new Action();
         $controllers = $this->scanDirectories($action->getSiteRoot() . $this->ctlrDir);
         $action->getControllerNamespaces($controllers);
@@ -110,7 +95,9 @@ HTML;
         foreach ($ctlrDiff as $ctlr) {
             $tab = $this->where('controller', $ctlr)->first();
             if ($tab) {
-                if (!$this->remove($tab->id)) { return false; };
+                if (!$this->remove($tab->id)) {
+                    return false;
+                };
             }
         }
         // create new Tabs or update the existing Tabs
@@ -121,11 +108,11 @@ HTML;
             $ctlrName = $paths[sizeof($paths) - 1];
             if (in_array($ctlrName, $this->excluded_controllers)) continue;
             $record = [
-                'name'       => $this->getControllerComment($obj),
+                'name' => $this->getControllerComment($obj),
                 'controller' => $ctlrName,
-                'remark'     => $controller,
-                'action_id'  => $this->getIndexActionId($ctlrName),
-                'enabled'    => 1,
+                'remark' => $controller,
+                'action_id' => $this->getIndexActionId($ctlrName),
+                'enabled' => 1,
             ];
             $tab = $this->where('controller', $record['controller'])->first();
             if ($tab) {
@@ -140,166 +127,9 @@ HTML;
         }
         unset($action);
         return true;
-        
+
     }
-    
-    /**
-     * 移除指定的卡片
-     *
-     * @param $id
-     * @return bool|mixed
-     */
-    public function remove($id) {
-        
-        $tab = $this->find($id);
-        if (!isset($tab)) {
-            return false;
-        }
-        try {
-            $exception = DB::transaction(function () use ($id, $tab) {
-                # 删除指定的卡片记录
-                $tab->delete();
-                # 删除与指定卡片绑定的菜单记录
-                MenuTab::whereTabId($id)->delete();
-            });
-            
-            return is_null($exception) ? true : $exception;
-        } catch (Exception $e) {
-            return false;
-        }
-        
-    }
-    
-    private function getControllerComment(ReflectionClass $controller) {
-        
-        $comment = $controller->getDocComment();
-        $name = 'n/a';
-        preg_match_all("#\/\*\*\n\s{1}\*[^\*]*\*#", $comment, $matches);
-        if (isset($matches[0][0])) {
-            $name = str_replace(str_split("\r\n/* "), '', $matches[0][0]);
-        } else {
-            preg_match_all("#\/\*\*\r\n\s{1}\*[^\*]*\*#", $comment, $matches);
-            if (isset($matches[0][0])) {
-                $name = str_replace(str_split("\r\n/* "), '', $matches[0][0]);
-            }
-        }
-        
-        return $name;
-        
-    }
-    
-    private function getIndexActionId($ctlrName) {
-        
-        $action = new Action();
-        $a = $actionId = $action::whereEnabled(1)->
-        where('controller', $ctlrName)->
-        where('method', 'index')->first();
-        if (!$a) {
-            return 0;
-        }
-        
-        return $a->id;
-        
-    }
-    
-    public function datatable() {
-        
-        $columns = [
-            ['db' => 'Tab.id', 'dt' => 0],
-            [
-                'db' => 'Tab.name', 'dt' => 1,
-                'formatter' => function($d, $row) {
-                    $iconId = $this->find($row['id'])->icon_id;
-                    if ($iconId) {
-                        return '<i class="fa ' . Icon::find($iconId)->name .  '">&nbsp;' . $d;
-                    }
-                    return $d;
-                }
-            ],
-            [
-                'db' => 'Action.name as actionname', 'dt' => 2,
-                'formatter' => function($d) {
-                    return '<i class="fa fa-gears"></i>&nbsp;' . $d;
-                }
-            ],
-            ['db' => 'Tab.created_at', 'dt' => 3],
-            ['db' => 'Tab.updated_at', 'dt' => 4],
-            [
-                'db'        => 'Tab.enabled', 'dt' => 5,
-                'formatter' => function ($d, $row) {
-                    $id = $row['id'];
-                    $status = $d ? sprintf(self::DT_ON, '已启用') : sprintf(self::DT_OFF, '已禁用');
-                    $showLink = sprintf(self::DT_LINK_SHOW, 'show_' . $id);
-                    $editLink = sprintf(self::DT_LINK_EDIT, 'edit_' . $id);
-                    return $status . '&nbsp;' . $showLink . '&nbsp;' . $editLink;
-                },
-            ],
-        ];
-        $joins = [
-            [
-                'table'      => 'actions',
-                'alias'      => 'Action',
-                'type'       => 'LEFT',
-                'conditions' => [
-                    'Action.id = Tab.action_id',
-                ],
-            ],
-        ];
-        return Datatable::simple($this, $columns, $joins);
-        
-    }
-    
-    /**
-     * 保存卡片
-     *
-     * @param array $data
-     * @return bool|mixed
-     */
-    public function store(array $data) {
-        
-        try {
-            $exception = DB::transaction(function () use ($data) {
-                $t = $this->create($data);
-                $menuTab = new MenuTab();
-                $menuIds = $data['menu_ids'];
-                $menuTab->storeByTabId($t->id, $menuIds);
-            });
-            
-            return is_null($exception) ? true : $exception;
-        } catch (Exception $e) {
-            return false;
-        }
-        
-    }
-    
-    /**
-     * 更新指定的卡片
-     *
-     * @param array $data
-     * @param $id
-     * @return bool|mixed
-     */
-    public function modify(array $data, $id) {
-        
-        $tab = $this->find($id);
-        if (!isset($tab)) {
-            return false;
-        }
-        try {
-            $exception = DB::transaction(function () use ($data, $id, $tab) {
-                $tab->update($data);
-                $menuIds = $data['menu_ids'];
-                $menuTab = new MenuTab();
-                $menuTab::whereTabId($id)->delete();
-                $menuTab->storeByTabId($id, $menuIds);
-            });
-            return is_null($exception) ? true : $exception;
-        } catch (Exception $e) {
-            return false;
-        }
-        
-    }
-    
+
     /**
      * 返回所有控制器的完整路径
      *
@@ -308,7 +138,7 @@ HTML;
      * @return array
      */
     private function scanDirectories($rootDir, $allData = []) {
-        
+
         // set filenames invisible if you want
         $invisibleFileNames = [".", "..", ".htaccess", ".htpasswd"];
         // run through content of root directory
@@ -329,7 +159,167 @@ HTML;
             }
         }
         return $allData;
-        
+
     }
-    
+
+    /**
+     * 移除指定的卡片
+     *
+     * @param $id
+     * @return bool|mixed
+     * @throws Exception
+     */
+    public function remove($id) {
+
+        $tab = $this->find($id);
+        if (!isset($tab)) { return false; }
+        try {
+            DB::transaction(function () use ($id, $tab) {
+                # 删除指定的卡片记录
+                $tab->delete();
+                # 删除与指定卡片绑定的菜单记录
+                MenuTab::whereTabId($id)->delete();
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+        return true;
+
+    }
+
+    private function getControllerComment(ReflectionClass $controller) {
+
+        $comment = $controller->getDocComment();
+        $name = 'n/a';
+        preg_match_all("#\/\*\*\n\s{1}\*[^\*]*\*#", $comment, $matches);
+        if (isset($matches[0][0])) {
+            $name = str_replace(str_split("\r\n/* "), '', $matches[0][0]);
+        } else {
+            preg_match_all("#\/\*\*\r\n\s{1}\*[^\*]*\*#", $comment, $matches);
+            if (isset($matches[0][0])) {
+                $name = str_replace(str_split("\r\n/* "), '', $matches[0][0]);
+            }
+        }
+
+        return $name;
+
+    }
+
+    private function getIndexActionId($ctlrName) {
+
+        $action = new Action();
+        $a = $actionId = $action::whereEnabled(1)
+            ->where('controller', $ctlrName)
+            ->where('method', 'index')
+            ->first();
+        if (!$a) {
+            return 0;
+        }
+
+        return $a->id;
+
+    }
+
+    public function datatable() {
+
+        $columns = [
+            ['db' => 'Tab.id', 'dt' => 0],
+            [
+                'db' => 'Tab.name', 'dt' => 1,
+                'formatter' => function ($d, $row) {
+                    $iconId = $this->find($row['id'])->icon_id;
+                    if ($iconId) {
+                        return '<i class="' . Icon::find($iconId)->name . '"></i>&nbsp;' . $d;
+                    }
+                    return '<i class="fa fa-calendar-check-o"></i>&nbsp;' . $d;
+                }
+            ],
+            [
+                'db' => 'Action.name as actionname', 'dt' => 2,
+                'formatter' => function ($d) {
+                    return '<i class="fa fa-gears"></i>&nbsp;' . $d;
+                }
+            ],
+            ['db' => 'Tab.created_at', 'dt' => 3],
+            ['db' => 'Tab.updated_at', 'dt' => 4],
+            [
+                'db' => 'Tab.enabled', 'dt' => 5,
+                'formatter' => function ($d, $row) {
+                    $id = $row['id'];
+                    $status = $d ? Datatable::DT_ON : Datatable::DT_OFF;
+                    $showLink = sprintf(Datatable::DT_LINK_SHOW, 'show_' . $id);
+                    $editLink = sprintf(Datatable::DT_LINK_EDIT, 'edit_' . $id);
+                    return
+                        $status . str_repeat('&nbsp;', 3) .
+                        $showLink . str_repeat('&nbsp;', 3) .
+                        $editLink;
+                },
+            ],
+        ];
+        $joins = [
+            [
+                'table' => 'actions',
+                'alias' => 'Action',
+                'type' => 'LEFT',
+                'conditions' => [
+                    'Action.id = Tab.action_id',
+                ],
+            ],
+        ];
+        return Datatable::simple($this, $columns, $joins);
+
+    }
+
+    /**
+     * 保存卡片
+     *
+     * @param array $data
+     * @return bool|mixed
+     * @throws Exception
+     */
+    public function store(array $data) {
+
+        try {
+            DB::transaction(function () use ($data) {
+                $t = $this->create($data);
+                $menuTab = new MenuTab();
+                $menuIds = $data['menu_ids'];
+                $menuTab->storeByTabId($t->id, $menuIds);
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+        return true;
+
+    }
+
+    /**
+     * 更新指定的卡片
+     *
+     * @param array $data
+     * @param $id
+     * @return bool|mixed
+     * @throws Exception
+     */
+    public function modify(array $data, $id) {
+
+        $tab = $this->find($id);
+        if (!isset($tab)) { return false; }
+        try {
+            DB::transaction(function () use ($data, $id, $tab) {
+                $tab->update($data);
+                $menuIds = $data['menu_ids'];
+                $menuTab = new MenuTab();
+                $menuTab::whereTabId($id)->delete();
+                $menuTab->storeByTabId($id, $menuIds);
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        return true;
+
+    }
+
 }

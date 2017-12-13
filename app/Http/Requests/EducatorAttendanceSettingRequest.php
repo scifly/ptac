@@ -1,6 +1,8 @@
 <?php
 namespace App\Http\Requests;
 
+use App\Rules\Overlaid;
+use App\Rules\StartEnd;
 use Illuminate\Foundation\Http\FormRequest;
 
 class EducatorAttendanceSettingRequest extends FormRequest {
@@ -24,6 +26,9 @@ class EducatorAttendanceSettingRequest extends FormRequest {
                 'school_id,' . $this->input('school_id'),
             'start' => 'required',
             'end'   => 'required',
+            'startend' => [
+                'required', new StartEnd(), new Overlaid()
+            ]
         ];
     }
 
@@ -44,12 +49,15 @@ class EducatorAttendanceSettingRequest extends FormRequest {
     protected function prepareForValidation() {
 
         $input = $this->all();
-        if (isset($input['inorout']) && $input['inorout'] === 'on') {
-            $input['inorout'] = 1;
-        }
         if (!isset($input['inorout'])) {
             $input['inorout'] = 0;
         }
+        if (!isset($input['enabled'])) {
+            $input['enabled'] = 0;
+        }
+        $input['startend'] = [
+            $input['start'], $input['end'], 'educator', isset($input['id']) ? $input['id'] : null
+        ];
         $this->replace($input);
 
     }

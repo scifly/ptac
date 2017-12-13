@@ -6,11 +6,11 @@
         <table id="data-table" style="width: 100%"
                class="display nowrap table table-striped table-bordered table-hover table-condensed">
             <thead>
-            <tr>
+			<tr class="bg-info">
                 <th>#</th>
                 <th>名称</th>
                 <th>所属学校</th>
-                <th>是否为副科</th>
+                <th>副科</th>
                 <th>最高分数</th>
                 <th>及格分数</th>
                 <th>创建于</th>

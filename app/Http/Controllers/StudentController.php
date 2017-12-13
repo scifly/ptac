@@ -9,7 +9,11 @@ use App\Models\DepartmentUser;
 use App\Models\Group;
 use App\Models\Student;
 use App\Models\User;
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
+use Maatwebsite\Excel\Facades\Excel;
+use Throwable;
 
 /**
  * 学生
@@ -43,14 +47,14 @@ class StudentController extends Controller {
     /**
      * 学生记录列表
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function index() {
         
         if (Request::get('draw')) {
             return response()->json($this->student->datatable());
         }
-        
         return $this->output(__METHOD__);
         
     }
@@ -58,15 +62,19 @@ class StudentController extends Controller {
     /**
      * 创建学生记录
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Throwable
      */
     public function create() {
         
         if (Request::method() === 'POST') {
             return $this->department->tree();
         }
-        
-        return $this->output(__METHOD__);
+        $items = $this->student->getGradeClass();
+        return $this->output(__METHOD__, [
+            'grades'  => $items['grades'],
+            'classes' => $items['classes'],
+        ]);
         
     }
     
@@ -74,7 +82,8 @@ class StudentController extends Controller {
      * 保存学生记录
      *
      * @param StudentRequest $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function store(StudentRequest $request) {
         
@@ -87,12 +96,15 @@ class StudentController extends Controller {
      * 学生记录详情
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function show($id) {
         
         $student = $this->student->find($id);
-        if (!$student) { return $this->notFound(); }
+        if (!$student) {
+            return $this->notFound();
+        }
         return $this->output(__METHOD__, ['student' => $student]);
         
     }
@@ -101,28 +113,26 @@ class StudentController extends Controller {
      * 编辑学生记录\
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function edit($id) {
         
-        if (Request::method() === 'POST') {
-            return $this->department->tree();
-        }
-        $student = $this->student->find($id);
-        $student['student'] = $this->student->find($id);
-        $selectedDepartmentIds = [];
-        foreach ($student->user->departments as $department) {
-            $selectedDepartmentIds[] = $department->id;
-        }
-        $selectedDepartments = $this->department->selectedNodes($selectedDepartmentIds);
         # 查询学生信息
-        if (!$student) { return $this->notFound(); }
-
+        $student = $this->student->find($id);
+        if (!$student) {
+            return $this->notFound();
+        }
+        $user = $student->user;
+        // print_r($student->toArray());die;
+        $items = $this->student->getGradeClass($student->squad->grade_id);
+        $student->grade_id = $student->squad->grade_id;
         return $this->output(__METHOD__, [
-            'mobiles'               => $student->user->mobiles,
-            'student'               => $student,
-            'selectedDepartmentIds' => implode(',', $selectedDepartmentIds),
-            'selectedDepartments'   => $selectedDepartments,
+            'student' => $student,
+            // 'user'    => $user,
+            'mobiles' => $user->mobiles,
+            'grades'  => $items['grades'],
+            'classes' => $items['classes'],
         ]);
         
     }
@@ -132,7 +142,8 @@ class StudentController extends Controller {
      *
      * @param StudentRequest $request
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function update(StudentRequest $request, $id) {
         
@@ -145,12 +156,75 @@ class StudentController extends Controller {
      * 删除学生记录
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function destroy($id) {
         
         return $this->custodian->remove($id)
             ? $this->succeed() : $this->fail();
+        
+    }
+    
+    /**
+     * 导入学籍
+     * @throws \PHPExcel_Exception
+     */
+    public function import() {
+        
+        if (Request::isMethod('post')) {
+            $file = Request::file('file');
+            if (empty($file)) {
+                $result = [
+                    'statusCode' => 500,
+                    'message'    => '您还没选择文件！',
+                ];
+                return response()->json($result);
+            }
+            // 文件是否上传成功
+            if ($file->isValid()) {
+                $this->student->upload($file);
+            }
+        }
+    }
+    
+    /**
+     * 导出学籍
+     */
+    public function export() {
+        $id = Request::query('id');
+        if ($id) {
+            $data = $this->student->export($id);
+            /** @noinspection PhpMethodParametersCountMismatchInspection */
+            /** @noinspection PhpUndefinedMethodInspection */
+            Excel::create(iconv('UTF-8', 'GBK', '学生列表'), function ($excel) use ($data) {
+                /** @noinspection PhpUndefinedMethodInspection */
+                $excel->sheet('score', function ($sheet) use ($data) {
+                    /** @noinspection PhpUndefinedMethodInspection */
+                    $sheet->rows($data);
+                    /** @noinspection PhpUndefinedMethodInspection */
+                    $sheet->setColumnFormat([
+                        'E' => '@',//文本
+                        'H' => 'yyyy-mm-dd',
+                    ]);
+                    /** @noinspection PhpUndefinedMethodInspection */
+                    $sheet->setWidth([
+                        'A' => 20,
+                        'B' => 10,
+                        'C' => 25,
+                        'D' => 30,
+                        'E' => 30,
+                        'F' => 30,
+                        'G' => 20,
+                        'H' => 15,
+                        'I' => 30,
+                        'J' => 30,
+                        'K' => 15,
+                        'L' => 30,
+                    ]);
+                });
+            }, 'UTF-8')->export('xls');
+        }
         
     }
     

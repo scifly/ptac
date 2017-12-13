@@ -10,28 +10,19 @@ use Illuminate\Support\Facades\Request;
 
 class DatatableFacade extends Facade {
     
-    const DT_ON = '<span class="badge bg-green">%s</span>';
-    const DT_OFF = '<span class="badge bg-gray">%s</span>';
-    const DT_LINK_EDIT = <<<HTML
-        <a id="%s" href="javascript:void(0)" class="btn btn-success btn-icon btn-circle btn-xs">
-            <i class="fa fa-edit"></i>
-        </a>
-HTML;
-    const DT_LINK_DEL = <<<HTML
-        <a id="%s" href="javascript:void(0)" class="btn btn-danger btn-icon btn-circle btn-xs" data-toggle="modal">
-            <i class="fa fa-trash"></i>
-        </a>
-HTML;
-    const DT_LINK_SHOW = <<<HTML
-        <a id="%s" href="javascript:void(0)" class="btn btn-primary btn-icon btn-circle btn-xs"  data-toggle="modal">
-            <i class="fa fa-eye"></i>
-        </a>
-HTML;
-    const DT_LINK_RECHARGE = <<<HTML
-        <a id="%s" href="javascript:void(0)" class="btn btn-primary btn-icon btn-circle btn-xs"  >
-            <i class="fa fa-money"></i>
-        </a>
-HTML;
+    const DT_ON = '<i class="fa fa-circle text-green" title="已启用"></i>';
+    const DT_OFF = '<i class="fa fa-circle text-gray" title="未启用"></i>';
+    const BADGE_GRAY = '<span class="text-black">[n/a]</span>';
+    const BADGE_GREEN = '<span class="text-green">%s</span>';
+    const BADGE_YELLOW = '<span class="text-yellow">%s</span>';
+    const BADGE_RED = '<span class="text-red">%s</span>';
+    const BADGE_LIGHT_BLUE = '<span class="text-light-blue">%s</span>';
+    const BADGE_MAROON = '<span class="text-maroon">%s</span>';
+    const DT_LINK_EDIT = '<a id="%s" title="编辑" href="#"><i class="fa fa-pencil"></i></a>';
+    const DT_LINK_DEL = '<a id="%s" title="删除" data-toggle="modal"><i class="fa fa-remove"></i></a>';
+    const DT_LINK_SHOW = '<a id="%s" title="详情" data-toggle="modal"><i class="fa fa-bars"></i></a>';
+
+    const DT_LINK_RECHARGE = '<a id="%s" title="充值" href="#"><i class="fa fa-money"></i></a>';
     const DT_SPACE = '&nbsp;';
     const DT_PRIMARY = '<span class="badge badge-info">%s</span>';
     const DT_LOCK = '<i class="fa fa-lock"></i>&nbsp;已占用';
@@ -391,21 +382,25 @@ HTML;
     /**
      * Display data entry operations
      *
-     * @param Model $model
      * @param $active
      * @param $row
+     * @param bool $show
+     * @param bool $edit
      * @param bool|true $del - if set to false, do not show delete link
      * @return string
      */
-    static function dtOps(Model $model, $active, $row, $del = true) {
+    static function dtOps($active, $row, $show = true, $edit = true, $del = true) {
         
         $id = $row['id'];
-        $status = $active ? sprintf(self::DT_ON, '已启用') : sprintf(self::DT_OFF, '未启用');
+        $status = $active ? self::DT_ON : self::DT_OFF;
         $showLink = sprintf(self::DT_LINK_SHOW, 'show_' . $id);
         $editLink = sprintf(self::DT_LINK_EDIT, 'edit_' . $id);
         $delLink = sprintf(self::DT_LINK_DEL, $id);
-        return $status . self::DT_SPACE . $showLink . self::DT_SPACE .
-            $editLink . ($del ? self::DT_SPACE . $delLink : '');
+        return
+            $status .
+            ($show ? str_repeat(self::DT_SPACE, 3) . $showLink : '') .
+            ($edit ? str_repeat(self::DT_SPACE, 3) . $editLink : '') .
+            ($del ? str_repeat(self::DT_SPACE, 2) . $delLink : '');
         
     }
     

@@ -1,5 +1,6 @@
 <?php
 
+use App\Events\eventTrigger;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -12,9 +13,14 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
+// Route::get('/fireEvent', function() {
+//     event(new eventTrigger());
+// });
+
 Route::auth();
+# 关闭注册功能
+Route::any('register', function() { return redirect('login'); });
 Route::get('logout', 'Auth\LoginController@logout');
-// Route::get('/', function() { return 'Dashboard'; });
 Route::get('/', 'HomeController@index');
 Route::get('/home', 'HomeController@index')->name('home');
 /** 测试用路由 */
@@ -23,6 +29,7 @@ Route::get('test/create', 'TestController@create');
 Route::get('test', 'TestController@test');
 /** 菜单入口路由 */
 Route::get('pages/{id}', 'HomeController@menu');
+// Route::get('pages/{id}', 'MenuController@page');
 /** 用户/通讯录 */
 // 教职员工
 Route::group(['prefix' => 'educators'], routes('EducatorController'));
@@ -32,6 +39,8 @@ Route::group(['prefix' => 'educators'], function () {
     Route::put('rechargeStore/{id}', $ctlr . '@rechargeStore');
     Route::post('edit/{id}', $ctlr . '@edit');
     Route::post('create', $ctlr . '@create');
+    Route::get('export', $ctlr . '@export');
+    Route::post('import', $ctlr . '@import');
 });
 // 监护人
 Route::group(['prefix' => 'custodians'], routes('CustodianController'));
@@ -39,6 +48,8 @@ Route::group(['prefix' => 'custodians'], function () {
     $ctlr = 'CustodianController';
     Route::post('edit/{id}', $ctlr . '@edit');
     Route::post('create', $ctlr . '@create');
+    Route::get('export', $ctlr . '@export');
+    
     // Route::any('relationship', $ctlr . '@relationship');
 });
 // 学生
@@ -47,9 +58,15 @@ Route::group(['prefix' => 'students'], function () {
     $ctlr = 'StudentController';
     Route::post('edit/{id}', $ctlr . '@edit');
     Route::post('create', $ctlr . '@create');
+    Route::post('import', $ctlr . '@import');
+    Route::get('export', $ctlr . '@export');
 });
 // 用户
 Route::group(['prefix' => 'users'], routes('UserController'));
+Route::group(['prefix' => 'users'], function () {
+    $ctlr = 'UserController';
+    Route::get('event', $ctlr . '@event');
+});
 Route::post('users/upload_ava/{id}', 'UserController@uploadAvatar');
 /** 成绩管理 */
 // 考试管理 - 考试设置.考试类型设置
@@ -154,6 +171,11 @@ Route::group(['prefix' => 'conference_participants'], function () {
 });
 // 申诉
 /** 用户中心 */
+Route::get('users/profile','UserController@profile');
+Route::get('users/reset','UserController@reset');
+Route::post('users/reset','UserController@reset');
+Route::get('users/messages','UserController@messages');
+Route::get('users/events','UserController@events');
 // 个人通讯录
 // 消息中心
 Route::group(['prefix' => 'messages'], routes('MessageController'));
@@ -182,6 +204,11 @@ Route::group(['prefix' => 'combo_types'], routes('ComboTypeController'));
 /** 系统设置 */
 // 学校设置 - 学校管理.学期设置.教职员工组别设置.学校类型设置
 Route::group(['prefix' => 'schools'], routes('SchoolController'));
+Route::group(['prefix' => 'schools'], function (){
+    $ctrl = 'schoolController';
+    Route::get('show', $ctrl . '@show');
+});
+
 Route::group(['prefix' => 'semesters'], routes('SemesterController'));
 Route::group(['prefix' => 'teams'], routes('TeamController'));
 Route::group(['prefix' => 'school_types'], routes('SchoolTypeController'));

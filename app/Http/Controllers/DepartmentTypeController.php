@@ -3,7 +3,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\DepartmentTypeRequest;
 use App\Models\DepartmentType;
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
+use Throwable;
 
 /**
  * 部门类型
@@ -21,11 +24,12 @@ class DepartmentTypeController extends Controller {
         $this->departmentType = $departmentType;
 
     }
-
+    
     /**
      * 部门类型列表
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Throwable
      */
     public function index() {
 
@@ -36,11 +40,12 @@ class DepartmentTypeController extends Controller {
         return $this->output(__METHOD__);
 
     }
-
+    
     /**
      * 创建部门类型
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Throwable
      */
     public function create() {
 
@@ -52,28 +57,30 @@ class DepartmentTypeController extends Controller {
      * 保存部门类型
      *
      * @param DepartmentTypeRequest $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function store(DepartmentTypeRequest $request) {
 
-        return $this->departmentType->store($request->all()) ? $this->succeed() : $this->fail();
+        return $this->departmentType->store($request->all())
+            ? $this->succeed() : $this->fail();
 
     }
-
+    
     /**
      * 编辑部门类型
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Throwable
      */
     public function edit($id) {
 
         $departmentType = $this->departmentType->find($id);
-        if (!$departmentType) {
-            return $this->notFound();
-        }
+        if (!$departmentType) { return $this->notFound(); }
 
-        return $this->output(__METHOD__, ['departmentType' => $departmentType]);
+        return $this->output(__METHOD__, [
+            'departmentType' => $departmentType
+        ]);
 
     }
 
@@ -82,23 +89,23 @@ class DepartmentTypeController extends Controller {
      *
      * @param DepartmentTypeRequest $request
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function update(DepartmentTypeRequest $request, $id) {
 
-        if (!$this->departmentType->find($id)) {
-            return $this->notFound();
-        }
+        if (!$this->departmentType->find($id)) { return $this->notFound(); }
 
-        return $this->departmentType->modify($request->all(), $id) ? $this->succeed() : $this->fail();
+        return $this->departmentType->modify($request->all(), $id)
+            ? $this->succeed() : $this->fail();
 
     }
-
+    
     /**
      * 删除部门类型
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function destroy($id) {
 
@@ -106,7 +113,8 @@ class DepartmentTypeController extends Controller {
             return $this->notFound();
         }
 
-        return $this->departmentType->remove($id) ? $this->succeed() : $this->fail();
+        return $this->departmentType->remove($id)
+            ? $this->succeed() : $this->fail();
 
     }
 

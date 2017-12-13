@@ -6,7 +6,7 @@
         <table id="data-table" style="width: 100%"
                class="display nowrap table table-striped table-bordered table-hover table-condensed">
             <thead>
-            <tr>
+			<tr class="bg-info">
                 <th>#</th>
                 <th>科目名称</th>
                 <th>次分类名称</th>
