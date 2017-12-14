@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Events\eventTrigger;
 use App\Http\Requests\CompanyRequest;
 use App\Models\Company;
 use Exception;
@@ -36,8 +35,6 @@ class CompanyController extends Controller {
      */
     public function index() {
 
-        event(new eventTrigger(Auth::user()));
-        exit;
         if (Request::get('draw')) {
             return response()->json($this->company->datatable());
         }

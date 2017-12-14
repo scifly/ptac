@@ -30,7 +30,7 @@ class AppController extends Controller {
      * @throws \Throwable
      */
     public function index() {
-    
+
         if (Request::method() == 'POST') {
             return $this->app->store();
         }

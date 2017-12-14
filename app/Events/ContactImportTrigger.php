@@ -8,25 +8,28 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class eventTrigger implements ShouldBroadcast {
-    
+class ContactImportTrigger implements ShouldBroadcast
+{
     use Dispatchable, InteractsWithSockets, SerializesModels;
-    public $user;
-    
+    public $data;
+
     /**
      * Create a new event instance.
      *
-     * @param User $user
+     * @param $data
      */
-    public function __construct(User $user) {
-        $this->user = $user;
+    public function __construct($data)
+    {
+        $this->data = $data;
     }
-    
+
     /**
      * Get the channels the event should broadcast on.
      *
      */
-    public function broadcastOn() {
-        return new PrivateChannel('user.' . $this->user->id);
+    public function broadcastOn()
+    {
+//        return new Channel('channelDemoEvent');
+        return new PrivateChannel('user.' . $this->data['user']->id);
     }
 }

@@ -64,11 +64,9 @@ class GroupController extends Controller {
     public function create() {
 
         if (Request::method() === 'POST') {
-//            $schoolId = Request::query('schoolId');
-//            $schoolId = $this->school->;
+            $schoolId = Request::query('schoolId');
             $menuId = School::whereId($schoolId)->first()->menu_id;
-//            return $this->menu->getTree($menuId);
-            return $this->tab->getTree($schoolId);
+            return $this->menu->getTree($menuId);
         }
 
         return $this->output(__METHOD__);

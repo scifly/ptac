@@ -556,7 +556,10 @@ class Educator extends Model {
                         unset($educators[$key]);
                     }
                 }
-                $this->checkData($educators);
+                $rows = $this->checkData($educators);
+                if (!empty($rows)) {
+                    event(new EducatorImported($rows));
+                }
             }
             Storage::disk('uploads')->delete($filename);
             return [
@@ -596,8 +599,8 @@ class Educator extends Model {
             'mobile' => 'required', new Mobiles(),
             'grades' => 'string',
             'classes' => 'string',
-            'subjects' => 'string',
-            'educators_classes' => 'string',
+//            'subjects' => 'string',
+//            'educators_classes' => 'string',
             'departments' => 'required|string',
         ];
         // Validator::make($data,$rules);
@@ -621,7 +624,6 @@ class Educator extends Model {
             ];
 
             $status = Validator::make($user, $rules);
-
             if ($status->fails()) {
                 $invalidRows[] = $datum;
                 unset($data[$i]);
@@ -649,9 +651,7 @@ class Educator extends Model {
             unset($user);
         }
         // print_r($rows);die;
-        if (!empty($rows)) {
-            event(new EducatorImported($rows));
-        }
+        return $rows;
     }
 
     public function export($id) {
