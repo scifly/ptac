@@ -31,6 +31,7 @@
                     ]) !!}
                 </div>
             </div>
+            @if(!isset($show))
             @include('partials.single_select', [
                 'label' => '学校类型',
                 'id' => 'school_type_id',
@@ -41,6 +42,7 @@
                 'id' => 'corp_id',
                 'items' => $corps
             ])
+            @endif
             @if (isset($school['department_id']))
                 {!! Form::hidden('department_id', $school['department_id']) !!}
             @endif
