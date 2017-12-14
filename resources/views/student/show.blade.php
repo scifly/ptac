@@ -28,8 +28,7 @@
     </div>
     <div class="box box-primary" style="margin-top:10px; border-top:4px solid #00c0ef  !important">
         <div class="box-body box-profile" style="position: relative;padding: 20px;text-align: center;">
-            <img class="avater" src="../../dist/img/user4-128x128.jpg" alt="User profile picture">
-
+            <img class="avater" src='{{asset("../public/img/avatar5.png")}}' alt="User profile picture">
             <div class="maininfo">
                 <h3 class="profile-username">姓名 : {{$student->user->realname}}</h3>
 
@@ -51,18 +50,13 @@
         <div class="box-body" style="margin-left: 10px;">
             <div class="col-lg-6 otherinfo-con">
                 <strong class="title"><i class="fa fa-mobile"></i> 手机</strong>
-
                 <p class="text-muted">
-                    123123123123123
-                </p>
-                <p class="text-muted">
-                    123123123123123
+                    @foreach($student->user->mobiles as $mobile) {{ $mobile['mobile'] }}@endforeach
                 </p>
                 <hr>
-
                 <strong class="title"><i class="fa fa-phone"></i> 座机</strong>
 
-                <p class="text-muted">12312312312312</p>
+                <p class="text-muted">{{ $student->user->telephone }}</p>
 
                 <hr>
 
@@ -74,13 +68,13 @@
 
                 <strong class="title"><i class=" fa fa-object-group"></i> 所属年级</strong>
 
-                <p class="text-muted">2017</p>
+                <p class="text-muted">{{ $student->squad->grade->name }}</p>
 
                 <hr>
 
                 <strong class="title"><i class="fa fa-users"></i> 所属班级</strong>
 
-                <p class="text-muted">12312312312312</p>
+                <p class="text-muted">{{ $student->squad->name }}</p>
 
                 <hr>
             </div>
@@ -105,7 +99,7 @@
 
                 <strong class="title">是否住校</strong>
 
-                <p class="text-muted">12312312312312</p>
+                <p class="text-muted">{{ $student->oncampus == 1 ? '住校' : '未住校' }}</p>
 
                 <hr>
 

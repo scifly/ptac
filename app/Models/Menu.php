@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 /**
  * App\Models\Menu
@@ -592,7 +593,6 @@ HTML;
             'text' => '<i class="fa fa-university"></i>&nbsp;&nbsp;' . $menu['name'],
             'type' => 'school',
         ];
-
         return response()->json($this->menus($id, $data));
 
     }
@@ -609,6 +609,7 @@ HTML;
         $htmlDefaultIcon = '<i class="fa fa-circle-o"></i>';
         $htmlIcon = '<i class="%s"></i>';
         $children = $this->find($id)->children;
+
         foreach ($children as $child) {
             $name = $child['name'];
             if (isset($child['parent_id'])) {

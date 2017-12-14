@@ -110,7 +110,7 @@ class StudentController extends Controller {
     }
     
     /**
-     * 编辑学生记录
+     * 编辑学生记录\
      *
      * @param $id
      * @return bool|JsonResponse
@@ -183,7 +183,8 @@ class StudentController extends Controller {
             }
             // 文件是否上传成功
             if ($file->isValid()) {
-                $this->student->upload($file);
+                $result = $this->student->upload($file);
+                return response()->json($result);
             }
         }
     }

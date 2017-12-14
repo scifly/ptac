@@ -1,3 +1,4 @@
+<input type="hidden" id="userId" value="{{ $user->id }}"/>
 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
     <img src="{{ URL::asset('img/user2-160x160.jpg') }}" class="user-image" alt="用户头像">
     <span class="hidden-xs">{{ $user->realname }}</span>

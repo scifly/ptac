@@ -322,4 +322,7 @@ class Tab extends Model {
 
     }
 
+    public function getTree($schoolId) {
+
+    }
 }

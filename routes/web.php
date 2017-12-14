@@ -1,6 +1,4 @@
 <?php
-
-use App\Events\eventTrigger;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,9 +11,6 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
-// Route::get('/fireEvent', function() {
-//     event(new eventTrigger());
-// });
 
 Route::auth();
 # 关闭注册功能
@@ -49,7 +44,6 @@ Route::group(['prefix' => 'custodians'], function () {
     Route::post('edit/{id}', $ctlr . '@edit');
     Route::post('create', $ctlr . '@create');
     Route::get('export', $ctlr . '@export');
-    
     // Route::any('relationship', $ctlr . '@relationship');
 });
 // 学生
@@ -110,6 +104,10 @@ Route::group(['prefix' => 'attendance_machines'], routes('AttendanceMachineContr
 Route::group(['prefix' => 'educator_attendance_settings'], routes('EducatorAttendanceSettingController'));
 Route::group(['prefix' => 'student_attendance_settings'], routes('StudentAttendanceSettingController'));
 // 考勤查询/统计
+Route::group(['prefix' => 'student_attendances'], function (){
+    $ctrl = 'StudentAttendanceController';
+    Route::get('index', $ctrl . '@index');
+});
 /** 课程表管理 */
 // 课程表设置
 Route::group(['prefix' => 'events'], routes('EventController'));

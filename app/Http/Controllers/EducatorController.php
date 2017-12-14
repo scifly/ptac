@@ -107,7 +107,6 @@ class EducatorController extends Controller {
         if (!$educator) { return $this->notFound(); }
         return $this->output(__METHOD__, [
             'educator'  => $educator,
-            'educators' => $this->educator->teams(),
         ]);
         
     }
@@ -235,10 +234,11 @@ class EducatorController extends Controller {
             }
             // 文件是否上传成功
             if ($file->isValid()) {
-                $this->educator->upload($file);
+                $result = $this->educator->upload($file);
+                return response()->json($result);
+
             }
         }
-        return true;
     }
     
     /**

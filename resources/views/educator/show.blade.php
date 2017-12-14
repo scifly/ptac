@@ -29,7 +29,7 @@
     </div>
     <div class="box box-primary" style="margin-top:10px; border-top:4px solid #f39c12 !important">
         <div class="box-body box-profile" style="position: relative;padding: 20px;text-align: center;">
-            <img class="avater" src="" alt="User profile picture">
+            <img class="avater" src='{{asset("../public/img/avatar5.png")}}' alt="User profile picture">
 
             <div class="maininfo">
                 <h3 class="profile-username">姓名 : {{ $educator->user->realname }}</h3>
@@ -53,13 +53,11 @@
 
             <div class="col-lg-6 otherinfo-con">
                 <strong class="title"><i class="fa fa-mobile"></i> 手机</strong>
-
+                @foreach($educator->user->mobiles as $mobile)
                 <p class="text-muted">
-                    123123123123123
+                {{ $mobile['mobile'] }}
                 </p>
-                <p class="text-muted">
-                    123123123123123
-                </p>
+                @endforeach
                 <hr>
 
                 <strong class="title"><i class="fa fa-weixin"></i> 微信号</strong>
@@ -90,27 +88,16 @@
 
             <div class="col-lg-6 otherinfo-con">
                 <strong class="title">班级科目关系</strong>
-
-                <p class="text-muted">12312312312312</p>
-
+                <p class="text-muted">@foreach ($educator->educatorClasses as $edc){{ $edc->squad->name }} : {{ $edc->subject->name }} @endforeach</p>
                 <hr>
-
                 <strong class="title">所属部门</strong>
-
-                <p class="text-muted">12312312312312</p>
-
+                <p class="text-muted">  @foreach( $educator->user->departments as $department){{ $department['name'] . ' '}}@endforeach</p>
                 <hr>
-
                 <strong class="title">所属组</strong>
-
-                <p class="text-muted">12312312312312</p>
-
+                <p class="text-muted">  @foreach($educator->teams as $team){{ $team->name }}@endforeach</p>
                 <hr>
-
                 <strong class="title">状态</strong>
-
                 <p class="text-muted">{{ $educator->enabled == 1 ? '已启用' : '未启用' }}</p>
-
                 <hr>
             </div>
 

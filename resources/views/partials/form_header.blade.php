@@ -5,7 +5,9 @@
             {!! $button['html'] !!}
         @endforeach
     @endif
+    @if(!isset($show))
     <button id="record-list" type="button" class="btn btn-box-tool">
         <i class="fa fa-mail-reply text-blue"> 返回列表</i>
     </button>
+    @endif
 </div>
