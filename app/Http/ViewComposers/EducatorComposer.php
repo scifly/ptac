@@ -35,6 +35,8 @@ class EducatorComposer {
             ->pluck('name', 'id')
             ->toArray();
         $groups = Group::whereSchoolId($schoolId)
+            ->orWhere('name', '学校')
+            ->orWhere('name', '教职员工')
             ->where('enabled', 1)
             ->pluck('name', 'id')
             ->toArray();

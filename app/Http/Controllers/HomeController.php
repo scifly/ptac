@@ -13,6 +13,7 @@ use Exception;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
 use Illuminate\View\View;
@@ -74,15 +75,29 @@ class HomeController extends Controller {
                     $menuId = $this->menu
                         ->where('parent_id', $parentMenuId)
                         ->where('uri', ['home', '/'])
+                        ->first()
                         ->id;
                     break;
-                default:
+                case '学校':
                     $view = 'school';
                     $parentMenuId = School::whereDepartmentId($user->topDeptId($user))
                         ->first()->menu_id;
                     $menuId = $this->menu
                         ->where('parent_id', $parentMenuId)
                         ->where('uri', ['home', '/'])
+                        ->first()
+                        ->id;
+                    break;
+                default:
+                    $view = 'school';
+                    $toDeptId = $user->topDeptId($user);
+//                    Log::debug($user->getDeptSchoolId($toDeptId));
+                    $parentMenuId = School::whereDepartmentId($user->getDeptSchoolId($toDeptId))
+                        ->first()->menu_id;
+                    $menuId = $this->menu
+                        ->where('parent_id', $parentMenuId)
+                        ->where('uri', ['home', '/'])
+                        ->first()
                         ->id;
                     break;
             }

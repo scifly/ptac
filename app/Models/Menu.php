@@ -504,7 +504,12 @@ HTML;
 
         $menus = [];
         if ($disabled) {
-            if ($rootId == 1) {
+            if ($rootId == 0) {
+                $menuIds = GroupMenu::where('group_id', Auth::user()->group_id)->get(['id'])->toArray();
+                $data = $this->whereIn('id', $menuIds)
+                    ->orderBy('position')
+                    ->get();
+            } else if ($rootId == 1) {
                 $data = $this->where('id', '<>', 1)
                     ->orderBy('position')
                     ->get();
@@ -514,7 +519,13 @@ HTML;
                     ->get();
             }
         } else {
-            if ($rootId == 1) {
+            if ($rootId == 0) {
+                $menuIds = GroupMenu::where('group_id', Auth::user()->group_id)->get(['id'])->toArray();
+                $data = $this::whereEnabled(1)
+                    ->whereIn('id', $menuIds)
+                    ->orderBy('position')
+                    ->get();
+            } else if ($rootId == 1) {
                 $data = $this::whereEnabled(1)
                     ->where('id', '<>', 1)
                     ->orderBy('position')
@@ -789,6 +800,10 @@ HTML;
             $parents[] = $id;
             $this->getParent($id, $parents);
         }
+
+    }
+
+    public function getMenuTree() {
 
     }
 
