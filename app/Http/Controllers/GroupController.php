@@ -10,6 +10,7 @@ use App\Models\School;
 use App\Models\Tab;
 use Exception;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Throwable;
 
