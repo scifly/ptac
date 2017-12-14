@@ -16,6 +16,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Notifications\DatabaseNotificationCollection;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Log;
 
 /**
  * App\User 用户
@@ -234,7 +235,6 @@ class User extends Authenticatable {
      * @return mixed
      */
     public function topDeptId(User $user) {
-
         $departmentIds = $user->departments->pluck('id')->toArray();
         sort($departmentIds);
 
@@ -242,6 +242,25 @@ class User extends Authenticatable {
 
     }
 
+    /**
+     * 学校以下的部门获取所属学校部门id
+     *
+     * @param $deptId
+     * @return int|mixed
+     */
+    public function getDeptSchoolId(&$deptId) {
+
+        $dept = Department::find($deptId);
+
+        $typeId = DepartmentType::where('name', '学校')->first()->id;
+
+        if ($dept->department_type_id != $typeId) {
+            $deptId = $dept->parent_id;
+            return $this->getDeptSchoolId($deptId);
+        }else{
+            return $deptId;
+        }
+    }
     /**
      * 创建企业号会员
      *
