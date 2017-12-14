@@ -88,27 +88,16 @@
 
             <div class="col-lg-6 otherinfo-con">
                 <strong class="title">班级科目关系</strong>
-                @foreach ($educator->educatorClasses as $edc)
-                <p class="text-muted">{{ $edc->squad->name }} : {{ $edc->subject->name }}</p>
-                @endforeach
+                <p class="text-muted">@foreach ($educator->educatorClasses as $edc){{ $edc->squad->name }} : {{ $edc->subject->name }} @endforeach</p>
                 <hr>
-
                 <strong class="title">所属部门</strong>
-                @foreach( $educator->user->departments as $department)
-                <p class="text-muted">{{ $department['name'] }}</p>
-                @endforeach
+                <p class="text-muted">  @foreach( $educator->user->departments as $department){{ $department['name'] . ' '}}@endforeach</p>
                 <hr>
-
                 <strong class="title">所属组</strong>
-                @foreach($educator->teams as $team)
-                <p class="text-muted">{{ $team->name }}</p>
-                @endforeach
+                <p class="text-muted">  @foreach($educator->teams as $team){{ $team->name }}@endforeach</p>
                 <hr>
-
                 <strong class="title">状态</strong>
-
                 <p class="text-muted">{{ $educator->enabled == 1 ? '已启用' : '未启用' }}</p>
-
                 <hr>
             </div>
 

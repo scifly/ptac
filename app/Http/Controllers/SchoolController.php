@@ -7,6 +7,7 @@ use App\Models\Menu;
 use App\Models\School as School;
 use Exception;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 use Throwable;
 
@@ -35,13 +36,27 @@ class SchoolController extends Controller {
      * @throws Throwable
      */
     public function index() {
-        
         if (Request::get('draw')) {
             return response()->json($this->school->datatable());
         }
-        
-        return parent::output(__METHOD__);
-        
+        $user = Auth::user();
+        $menuId = Request::input('menuId');
+        if(!$menuId){
+            return parent::output(__METHOD__);
+        }
+        $schoolMenuId = $this->menu->getSchoolMenuId($menuId);
+        $show = true;
+        if($user->group->name == '运营' || $user->group->name == '企业'){
+            if ($schoolMenuId){
+                $school = $this->school->where('menu_id', $schoolMenuId)->first();
+                return parent::output('App\Http\Controllers\SchoolController::show', ['school' => $school, 'show' => $show]);
+            } else {
+                return parent::output(__METHOD__);
+            }
+         } else {
+            $school = $this->school->where('menu_id', $schoolMenuId)->first();
+            return parent::output('App\Http\Controllers\SchoolController::show', ['school' => $school, 'show' => $show]);
+        }
     }
     
     /**
@@ -77,22 +92,12 @@ class SchoolController extends Controller {
      * @throws Throwable
      */
     public function show($id = null) {
-        if ($id){
             $school = $this->school->find($id);
-            if (!$school) { return parent::notFound(); }
+            if (!$school) {
+                return parent::notFound();
+            }
+            
             return parent::output(__METHOD__, ['school' => $school]);
-        }else{
-            $menuId = Request::input('menuId');
-            $schoolMenuId = $this->menu->getSchoolMenuId($menuId);
-            $school = $this->school->where('menu_id', $schoolMenuId)->first();
-            return response()->json([
-                'statusCode' => 200,
-                'html'       => view('school.show', ['school' => $school])->render(),
-                // 'js'         => 'js/school/show',
-                'uri'        => Request::path(),
-                'title'      => '学校设置',
-            ]);
-        }
     }
     
     /**
@@ -103,12 +108,20 @@ class SchoolController extends Controller {
      * @throws Throwable
      */
     public function edit($id) {
-        
+    
+        $menuId = Request::input('menuId');
+        if(!$menuId){
+            return parent::output(__METHOD__);
+        }
         $school = $this->school->find($id);
         if (!$school) {
             return parent::notFound();
         }
-        
+        $schoolMenuId = $this->menu->getSchoolMenuId($menuId);
+        if ($schoolMenuId){
+            $show = true;
+            return parent::output(__METHOD__, ['school' => $school, 'show' => $show]);
+        }
         return parent::output(__METHOD__, ['school' => $school]);
         
     }

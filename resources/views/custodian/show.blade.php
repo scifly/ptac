@@ -44,11 +44,9 @@
         <div class="box-body" style="margin-left: 10px;">
             <div class="col-lg-6 otherinfo-con">
                 <strong class="title"><i class="fa fa-mobile"></i> 手机</strong>
-                @foreach($custodian->user->mobiles as $mobile)
                 <p class="text-muted">
-                {{ $mobile['mobile'] }}
+                    @foreach($custodian->user->mobiles as $mobile){{ $mobile['mobile'] }}@endforeach
                 </p>
-                @endforeach
                 <hr>
                 <strong class="title"><i class="fa fa-phone"></i> 座机</strong>
                 <p class="text-muted">{{ $custodian->user->telephone }}</p>
