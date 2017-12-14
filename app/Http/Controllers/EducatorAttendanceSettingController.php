@@ -58,7 +58,6 @@ class EducatorAttendanceSettingController extends Controller {
      * @return JsonResponse
      */
     public function store(EducatorAttendanceSettingRequest $request) {
-        
         return $this->eas->create($request->all())
             ? $this->succeed() : $this->fail();
         
