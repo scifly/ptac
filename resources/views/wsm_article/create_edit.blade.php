@@ -75,9 +75,8 @@
             </div>
                 @include('partials.enabled', [
                     'id' => 'enabled',
-                    'value' => isset($article['enabled']) ? $article['enabled'] : NULL
+                    'value' => $article['enabled'] ?? NULL
                 ])
-
         </div>
     </div>
     @include('partials.form_buttons')

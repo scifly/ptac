@@ -66,7 +66,7 @@
             ])
             @include('partials.enabled', [
                 'id' => 'enabled',
-                'value' => isset($comboType['enabled']) ? $comboType['enabled'] : NULL
+                'value' => $comboType['enabled'] ?? NULL
             ])
         </div>
     </div>

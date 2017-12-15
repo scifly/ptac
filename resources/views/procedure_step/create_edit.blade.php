@@ -50,7 +50,7 @@
             @include('partials.remark')
             @include('partials.enabled', [
                 'id' => 'enabled',
-                'value' => isset($procedureStep['enabled']) ? $procedureStep['enabled'] : NULL
+                'value' => $procedureStep['enabled'] ?? NULL
             ])
         </div>
     </div>

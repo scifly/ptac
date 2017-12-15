@@ -60,7 +60,7 @@
             {!! Form::hidden('subject_select_ids', $scoreRange['subject_ids'] or '') !!}
             @include('partials.enabled', [
                 'id' => 'enabled',
-                'value' => isset($subject['enabled']) ? $subject['enabled'] : NULL
+                'value' => $subject['enabled'] ?? NULL
             ])
         </div>
     </div>

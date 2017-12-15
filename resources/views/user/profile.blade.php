@@ -106,7 +106,7 @@
                     @include('partials.enabled', [
                         'id' => 'gender',
                         'label' => '性别',
-                        'value' => isset($user->gender) ? $user->gender : null,
+                        'value' => $user->gender ?? null,
                         'options' => ['男', '女']
                     ])
 
