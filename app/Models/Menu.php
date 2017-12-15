@@ -192,7 +192,7 @@ HTML;
      * @param $menuId
      * @return array
      */
-    private function getSubMenuIds($menuId) {
+    public function getSubMenuIds($menuId) {
 
         static $childrenIds;
         $firstIds = Menu::where('parent_id', $menuId)
@@ -206,6 +206,7 @@ HTML;
         }
 
         return $childrenIds;
+
     }
 
     /**

@@ -39,7 +39,7 @@ class HomeController extends Controller {
         Department $department
     ) {
         
-        $this->middleware(['auth']);
+        $this->middleware(['auth', 'checkrole']);
         $this->menu = $menu;
         $this->action = $action;
         $this->tab = $tab;

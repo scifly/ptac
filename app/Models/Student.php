@@ -592,7 +592,7 @@ class Student extends Model {
         return $data;
     }
 
-    public function datatable() {
+    public function datatable(array $uris) {
 
         $columns = [
             ['db' => 'Student.id', 'dt' => 0],

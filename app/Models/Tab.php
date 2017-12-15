@@ -27,6 +27,7 @@ use ReflectionClass;
  * @method static Builder|Tab whereName($value)
  * @method static Builder|Tab whereRemark($value)
  * @method static Builder|Tab whereUpdatedAt($value)
+ * @method static Builder|Tab whereGroupId($value)
  * @mixin \Eloquent
  * @property-read Collection|Action[] $actions
  * @property-read Collection|Menu[] $menus

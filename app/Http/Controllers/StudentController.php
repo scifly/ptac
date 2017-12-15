@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StudentRequest;
+use App\Models\Action;
 use App\Models\Custodian;
 use App\Models\CustodianStudent;
 use App\Models\Department;
@@ -51,11 +52,16 @@ class StudentController extends Controller {
      * @throws Throwable
      */
     public function index() {
-        
+
+        $uris = Action::whereController(class_basename($this))->pluck('route', 'method');
         if (Request::get('draw')) {
-            return response()->json($this->student->datatable());
+            return response()->json($this->student->datatable($uris));
         }
-        return $this->output(__METHOD__);
+        return $this->output(__METHOD__,[
+            'add' => Request::route()->uri(),
+            'uris' => $uris
+
+        ]);
         
     }
     
@@ -117,7 +123,7 @@ class StudentController extends Controller {
      * @throws Throwable
      */
     public function edit($id) {
-        
+
         # 查询学生信息
         $student = $this->student->find($id);
         if (!$student) {
