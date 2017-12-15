@@ -2,30 +2,36 @@
 namespace App\Http\ViewComposers;
 
 use App\Models\ExamType;
+use App\Models\School;
 use App\Models\Squad;
 use App\Models\Subject;
 use Illuminate\Contracts\View\View;
 
 class ExamComposer {
 
-    protected $examtypes;
-    protected $classes;
-    protected $subjects;
+    protected $examtypes, $classes, $subjects, $school;
 
-    public function __construct(ExamType $examtypes, Squad $classes, Subject $subjects) {
-
-        $this->examtypes = $examtypes;
+    public function __construct(Squad $classes, School $school) {
         $this->classes = $classes;
-        $this->subjects = $subjects;
-
+        $this->school = $school;
     }
 
     public function compose(View $view) {
-
+        $schoolId = $this->school->getSchoolId();
+        $school = School::find($schoolId);
+        $examtypes = ExamType::whereSchoolId($schoolId)
+            ->where('enabled',1)
+            ->pluck('name', 'id');
+        $squads = $school->classes
+            ->where('enabled',1)
+            ->pluck('name', 'id');
+        $subjects = Subject::whereSchoolId($schoolId)
+            ->where('enabled', 1)
+            ->pluck('name', 'id');
         $view->with([
-            'examtypes' => $this->examtypes->pluck('name', 'id'),
-            'classes'   => $this->classes->pluck('name', 'id'),
-            'subjects'  => $this->subjects->pluck('name', 'id'),
+            'examtypes' => $examtypes,
+            'classes'   => $squads,
+            'subjects'  => $subjects,
         ]);
     }
 

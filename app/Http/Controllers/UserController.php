@@ -145,11 +145,20 @@ class UserController extends Controller {
             return $this->notFound();
         }
 
-        return view('user.profile', [
-            'user' => $user,
-            'menu' => $this->menu->getMenuHtml($this->menu->rootMenuId()),
+        if (Request::ajax()) {
+            return response()->json([
+                'statusCode' => 200,
+                'title' => '首页',
+                'uri' => Request::path(),
+                'html' => view('user.profile',['user' => $user])->render()
+            ]);
+        }
 
-        ]);
+        // return view('user.profile', [
+        //     'user' => $user,
+        //     // 'menu' => $this->menu->getMenuHtml($this->menu->rootMenuId()),
+        //
+        // ]);
     }
 
     /**

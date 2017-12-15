@@ -6,14 +6,16 @@ use Illuminate\Foundation\Http\FormRequest;
 class ExamTypeRequest extends FormRequest {
     
     protected $strings_key = [
-        'name'   => '考试类型',
-        'remark' => '备注',
+        'name'      => '考试类型',
+        'remark'    => '备注',
+        'school_id' => '学校id',
     ];
     protected $strings_val = [
         'required' => '为必填项',
         'string'   => '为字符串',
         'max'      => '最大为:max',
         'unique'   => '不唯一',
+        'integer'  => '必须为整数',
     ];
     
     /**

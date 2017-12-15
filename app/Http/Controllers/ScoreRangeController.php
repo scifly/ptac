@@ -54,9 +54,7 @@ class ScoreRangeController extends Controller {
      */
     public function create() {
         
-        return $this->output(__METHOD__, [
-            'subjects' => $this->subject->subjects(1),
-        ]);
+        return $this->output(__METHOD__);
         
     }
     
@@ -109,7 +107,6 @@ class ScoreRangeController extends Controller {
         if (!$scoreRange) { return $this->notFound(); }
         return $this->output(__METHOD__, [
             'scoreRange'       => $scoreRange,
-            'subjects'         => $this->subject->subjects(1),
             'selectedSubjects' => $this->subject->selectedSubjects($scoreRange->subject_ids),
         ]);
         

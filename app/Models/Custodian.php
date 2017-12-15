@@ -412,11 +412,45 @@ class Custodian extends Model {
                 'type' => 'INNER',
                 'conditions' => [
                     'User.id = Custodian.user_id',
+                ]
+            ],
+            [
+                'table' => 'custodians_students',
+                'alias' => 'CustodianStudent',
+                'type' => 'INNER',
+                'conditions' => [
+                    'CustodianStudent.custodian_id = Custodian.id',
+                ]
+            ],
+            [
+                'table' => 'students',
+                'alias' => 'Student',
+                'type' => 'INNER',
+                'conditions' => [
+                    'Student.id = CustodianStudent.student_id',
+                ]
+            ],
+            [
+                'table' => 'classes',
+                'alias' => 'Squad',
+                'type' => 'INNER',
+                'conditions' => [
+                    'Squad.id = Student.class_id',
+                ],
+            ],
+            [
+                'table' => 'grades',
+                'alias' => 'Grade',
+                'type' => 'INNER',
+                'conditions' => [
+                    'Grade.id = Squad.grade_id',
                 ],
             ],
         ];
-
-        return Datatable::simple($this, $columns, $joins);
+        $school = new School();
+        $schoolId = $school->getSchoolId();
+        $condition = 'Grade.school_id = ' . $schoolId;
+        return Datatable::simple($this, $columns, $joins, $condition);
 
     }
 
