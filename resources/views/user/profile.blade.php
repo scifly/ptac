@@ -1,6 +1,7 @@
 
 {!! Form::model($user, [ 'method' => 'put', 'id' => 'formUser', 'data-parsley-validate' => 'true']) !!}
 <section class="content clearfix">
+    @include('partials.modal_dialog')
 <div class="col-lg-12">
     <div class="nav-tabs-custom">
         <div class="box box-default box-solid">
