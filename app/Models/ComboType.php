@@ -59,9 +59,9 @@ class ComboType extends Model {
             ['db' => 'ComboType.created_at', 'dt' => 6],
             ['db' => 'ComboType.updated_at', 'dt' => 7],
             [
-                'db' => 'ComboType.updated_at', 'dt' => 8,
+                'db' => 'ComboType.enabled', 'dt' => 8,
                 'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($d, $row);
+                    return Datatable::dtOps($d, $row, false);
                 },
             ],
         ];
@@ -75,8 +75,11 @@ class ComboType extends Model {
                 ],
             ],
         ];
-
-        return Datatable::simple($this, $columns, $joins);
+        $school = new School();
+        $schoolId = $school->getSchoolId();
+        $condition = 'ComboType.school_id = ' . $schoolId;
+        unset($school);
+        return Datatable::simple($this, $columns, $joins, $condition);
 
     }
 

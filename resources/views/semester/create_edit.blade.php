@@ -7,7 +7,8 @@
             @if (isset($semester['id']))
                 {!! Form::hidden('id', $semester['id'], ['id' => 'id']) !!}
             @endif
-            <div class="form-group">
+                {{ Form::hidden('school_id', $schoolId, ['id' => 'school_id']) }}
+                <div class="form-group">
                 {!! Form::label('name', '名称', [
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
@@ -20,11 +21,6 @@
                     ]) !!}
                 </div>
             </div>
-            @include('partials.single_select', [
-                'label' => '所属学校',
-                'id' => 'school_id',
-                'items' => $schools
-            ])
             <div class="form-group">
                 {!! Form::label('start_date', '起始日期', [
                     'class' => 'col-sm-3 control-label'

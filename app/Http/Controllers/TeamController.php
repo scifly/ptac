@@ -64,23 +64,6 @@ class TeamController extends Controller {
     }
     
     /**
-     * 教职员工组详情
-     *
-     * @param $id
-     * @return bool|JsonResponse
-     * @throws Throwable
-     */
-    public function show($id) {
-        $team = $this->team->find($id);
-        if (!$team) {
-            return $this->notFound();
-        }
-        
-        return $this->output(__METHOD__, ['team' => $team]);
-        
-    }
-    
-    /**
      * 编辑教职员工组
      *
      * @param $id

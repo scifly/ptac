@@ -16,10 +16,8 @@ class ExamTypeComposer {
     }
 
     public function compose(View $view) {
-
-        $view->with([
-            'schools' => $this->school->pluck('name', 'id'),
-        ]);
+        $schoolId = $this->school->getSchoolId();
+        $view->with(['schoolId' => $schoolId]);
     }
 
 }

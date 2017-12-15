@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ComboTypeRequest;
 use App\Http\Requests\CommTypeRequest;
 use App\Models\ComboType;
 use Exception;
@@ -56,10 +57,10 @@ class ComboTypeController extends Controller {
     /**
      * 保存套餐类型
      *
-     * @param CommTypeRequest $request
+     * @param ComboTypeRequest $request
      * @return JsonResponse
      */
-    public function store(CommTypeRequest $request) {
+    public function store(ComboTypeRequest $request) {
         
         return $this->comboType->create($request->all())
             ? $this->succeed() : $this->fail();
@@ -85,11 +86,11 @@ class ComboTypeController extends Controller {
     /**
      * 更新套餐类型
      *
-     * @param CommTypeRequest $request
+     * @param ComboTypeRequest $request
      * @param $id
      * @return JsonResponse
      */
-    public function update(CommTypeRequest $request, $id) {
+    public function update(ComboTypeRequest $request, $id) {
         
         $comboType = $this->comboType->find($id);
         if (!$comboType) { return $this->notFound(); }

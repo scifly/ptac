@@ -27,8 +27,8 @@ class EducatorRequest extends FormRequest {
     public function authorize() { return true; }
     
     public function rules() {
-        $input = $this->all();
-//        dd($input['mobile']);
+//        $input = $this->all();
+//        print_r($input);die;
         $rules = [
             'educator.school_id' => 'required|integer',
             'user.group_id'      => 'required|integer',
@@ -44,6 +44,7 @@ class EducatorRequest extends FormRequest {
             'mobile.*'           => [
                 'required', new Mobiles(),
             ],
+            'selectedDepartments' => 'required|array'
             //            'mobile.*.number' => 'required|string|size:11|regex:/^0?(13|14|15|17|18)[0-9]{9}$/|' .
             //                'unique:mobiles,mobile,' . $this->input('mobile.*.id') . ',id',
             //            'mobile.*.isdefault' => 'required|boolean',

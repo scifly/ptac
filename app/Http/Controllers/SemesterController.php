@@ -61,23 +61,7 @@ class SemesterController extends Controller {
         return $this->semester->create($request->all()) ? $this->succeed() : $this->fail();
         
     }
-    
-    /**
-     * 学期详情
-     *
-     * @param $id
-     * @return bool|JsonResponse
-     * @throws Throwable
-     */
-    public function show($id) {
-        $semester = $this->semester->find($id);
-        if (!$semester) {
-            return $this->notFound();
-        }
-        
-        return $this->output(__METHOD__, ['semester' => $semester]);
-    }
-    
+   
     /**
      * 编辑学期
      *

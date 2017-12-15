@@ -195,8 +195,11 @@ class Major extends Model {
                 ],
             ],
         ];
-
-        return DataTable::simple($this, $columns, $joins);
+        $school = new School();
+        $schoolId = $school->getSchoolId();
+        $condition = 'Major.school_id = ' . $schoolId;
+        unset($school);
+        return DataTable::simple($this, $columns, $joins, $condition);
 
     }
 

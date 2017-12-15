@@ -22,10 +22,10 @@ class ScoreRangeRequest extends FormRequest {
         return [
             'name'        => 'required|string|max:60|unique:score_ranges,name,' .
                 $this->input('id') . ',id,' .
-                'school_id,' . $this->input('school_id') . ',' .
-                'subject_ids,' . $this->input('subject_ids'),
+                'school_id,' . $this->input('school_id'),
+                // . ',' . 'subject_ids,' . $this->input('subject_ids') ,
             'school_id'   => 'required|integer|max:11',
-            'subject_ids' => 'required|array|max:11',
+            'subject_ids' => 'required|max:11',
             'start_score' => 'required|numeric|regex:/^\d+(\.\d{1,2})?$/',
             'end_score'   => 'required|numeric|regex:/^\d+(\.\d{1,2})?$/',
             'enabled'     => 'required|boolean',
@@ -45,7 +45,7 @@ class ScoreRangeRequest extends FormRequest {
         if (isset($input['subject_ids'])) {
             $input['subject_ids'] = implode(',', $input['subject_ids']);
         }
-
+        $this->replace($input);
     }
 
 }
