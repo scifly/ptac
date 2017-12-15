@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\AttendanceMachineRequest;
 use App\Models\AttendanceMachine;
+use App\Models\School;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
@@ -16,11 +17,12 @@ use Illuminate\Support\Facades\Request;
 class AttendanceMachineController extends Controller {
     
     protected $am;
-    
-    function __construct(AttendanceMachine $am) {
+    protected $school;
+    function __construct(AttendanceMachine $am, School $school) {
     
         $this->middleware(['auth']);
         $this->am = $am;
+        $this->school = $school;
     
     }
     
@@ -31,7 +33,8 @@ class AttendanceMachineController extends Controller {
      * @throws \Throwable
      */
     public function index() {
-        
+        print_r($this->school->getSchoolId());
+
         if (Request::get('draw')) {
             return response()->json($this->am->datatable());
         }
