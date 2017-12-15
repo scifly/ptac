@@ -90,13 +90,13 @@
             @include('partials.enabled', [
                 'label' => '是否为公用',
                 'id' => 'ispublic',
-                'value' => isset($sas['ispublic']) ? $sas['ispublic']: NULL,
+                'value' => $sas['ispublic'] ?? NULL,
                 'options' => ['是', '否']                
             ])
             @include('partials.enabled', [
               'label' => '进或出',
               'id' => 'inorout',
-              'value' => isset($sas['inorout']) ? $sas['ispublic']: NULL,
+              'value' => $sas['ispublic'] ?? NULL,
               'options' => ['进', '出']
           ])
         </div>

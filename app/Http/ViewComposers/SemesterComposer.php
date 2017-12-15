@@ -6,20 +6,18 @@ use Illuminate\Contracts\View\View;
 
 class SemesterComposer {
 
-    protected $schools;
+    protected $school;
 
-    public function __construct(School $schools) {
+    public function __construct(School $school) {
 
-        $this->schools = $schools;
+        $this->school = $school;
 
     }
 
     public function compose(View $view) {
-
-        // $view->with('schoolTypes', $this->schoolTypes->pluck('name', 'id'));
-        $view->with([
-            'schools' => $this->schools->pluck('name', 'id'),
-        ]);
+        
+        $schoolId = $this->school->getSchoolId();
+        $view->with(['schoolId' => $schoolId]);
     }
 
 }

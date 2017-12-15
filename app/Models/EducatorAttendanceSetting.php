@@ -97,9 +97,11 @@ class EducatorAttendanceSetting extends Model {
             ],
         ];
         $school = new School();
-        $condition = 'School.id = ' . $school->getSchoolId();
+        $schoolId = $school->getSchoolId();
+        $condition = 'EducatorAttendanceSetting.school_id = ' . $schoolId;
         unset($school);
-        return Datatable::simple($this, $columns, $joins,$condition);
+        
+        return Datatable::simple($this, $columns, $joins, $condition);
 
     }
 

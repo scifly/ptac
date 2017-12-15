@@ -30,8 +30,8 @@ class CheckRole {
         
         /** @var User $user */
         $user = $request->user();
+        $request->route()->uri();
         $user->group_id;
-        
         return $next($request);
         
     }

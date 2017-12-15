@@ -77,14 +77,14 @@
                 'id' => 'tab_ids',
                 'icon' => 'fa fa-calendar-check-o',
                 'items' => $tabs,
-                'selectedItems' => isset($selectedTabs) ? $selectedTabs : NULL
+                'selectedItems' => $selectedTabs ?? NULL
             ])
             <!-- 备注 -->
             @include('partials.remark')
             <!-- 状态 -->
             @include('partials.enabled', [
                 'id' => 'enabled',
-                'value' => isset($menu['enabled']) ? $menu['enabled'] : NULL
+                'value' => $menu['enabled'] ?? NULL
             ])
         </div>
     </div>

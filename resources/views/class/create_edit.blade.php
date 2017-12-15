@@ -35,14 +35,14 @@
                 'label' => '班级主任',
                 'id' => 'educator_ids',
                 'items' => $educators,
-                'selectedItems' => isset($selectedEducators) ? $selectedEducators : NULL
+                'selectedItems' => $selectedEducators ?? NULL
             ])
             @if (isset($class['department_id']))
                 {!! Form::hidden('department_id', $class['department_id']) !!}
             @endif
             @include('partials.enabled', [
                 'id' => 'enabled',
-                'value' => isset($class['enabled']) ? $class['enabled'] : NULL
+                'value' => $class['enabled'] ?? NULL
             ])
         </div>
     </div>

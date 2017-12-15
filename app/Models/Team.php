@@ -79,7 +79,7 @@ class Team extends Model {
             [
                 'db' => 'Team.enabled', 'dt' => 6,
                 'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($this, $d, $row);
+                    return Datatable::dtOps($d, $row, false);
                 },
             ],
         ];

@@ -61,7 +61,7 @@ class Semester extends Model {
         $columns = [
             ['db' => 'Semester.id', 'dt' => 0],
             ['db' => 'Semester.name as semestername', 'dt' => 1],
-            ['db' => 'Semester.name as schoolname', 'dt' => 2],
+            ['db' => 'School.name as schoolname', 'dt' => 2],
             ['db' => 'Semester.start_date', 'dt' => 3],
             ['db' => 'Semester.end_date', 'dt' => 4],
             ['db' => 'Semester.created_at', 'dt' => 5],
@@ -69,7 +69,7 @@ class Semester extends Model {
             [
                 'db' => 'Semester.enabled', 'dt' => 7,
                 'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($d, $row);
+                    return Datatable::dtOps($d, $row, false);
                 },
             ],
         ];
@@ -83,8 +83,12 @@ class Semester extends Model {
                 ],
             ],
         ];
-
-        return Datatable::simple($this, $columns, $joins);
+        $school = new School();
+        $schoolId = $school->getSchoolId();
+        $condition = 'Semester.school_id = ' . $schoolId;
+        unset($school);
+    
+        return Datatable::simple($this, $columns, $joins, $condition);
 
     }
 

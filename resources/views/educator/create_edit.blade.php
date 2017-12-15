@@ -74,7 +74,7 @@
             @include('partials.enabled', [
                 'id' => 'user[gender]',
                 'label' => '性别',
-                'value' => isset($educator->user->gender) ? $educator->user->gender : null,
+                'value' => $educator->user->gender ?? null,
                 'options' => ['男', '女']
             ])
             @include('partials.single_select', [
@@ -205,12 +205,12 @@
                'label' => '所属组',
                'id' => 'educator[team_id]',
                'items' => $teams,
-               'selectedItems' => isset($selectedTeams) ? $selectedTeams : []
+               'selectedItems' => $selectedTeams ?? []
 
            ])
             @include('partials.enabled', [
                 'id' => 'user[enabled]',
-                'value' => isset($educator['enabled']) ? $educator['enabled'] : NULL
+                'value' => $educator['enabled'] ?? NULL
             ])
         </div>
     </div>

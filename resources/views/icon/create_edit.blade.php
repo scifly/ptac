@@ -29,7 +29,7 @@
             @include('partials.remark')
             @include('partials.enabled', [
                 'id' => 'enabled',
-                'value' => isset($icon['enabled']) ? $icon['enabled'] : NULL
+                'value' => $icon['enabled'] ?? NULL
             ])
         </div>
     </div>

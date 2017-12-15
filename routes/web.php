@@ -1,4 +1,5 @@
 <?php
+include_once 'common.php';
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -202,11 +203,6 @@ Route::group(['prefix' => 'combo_types'], routes('ComboTypeController'));
 /** 系统设置 */
 // 学校设置 - 学校管理.学期设置.教职员工组别设置.学校类型设置
 Route::group(['prefix' => 'schools'], routes('SchoolController'));
-Route::group(['prefix' => 'schools'], function (){
-    $ctrl = 'schoolController';
-    Route::get('show', $ctrl . '@show');
-});
-
 Route::group(['prefix' => 'semesters'], routes('SemesterController'));
 Route::group(['prefix' => 'teams'], routes('TeamController'));
 Route::group(['prefix' => 'school_types'], routes('SchoolTypeController'));
@@ -267,22 +263,3 @@ Route::group(['prefix' => 'operators'], function() {
     Route::post('create', $ctlr . '@create');
     Route::post('edit/{id}', $ctlr . '@edit');
 });
-/**
- * routes - Helper function
- * 返回resource路由
- *
- * @param $ctlr
- * @return Closure
- */
-function routes($ctlr) {
-    return function () use ($ctlr) {
-        Route::get('index', $ctlr . '@index');
-        Route::get('create/{id?}', $ctlr . '@create');
-        Route::post('store', $ctlr . '@store');
-        Route::get('show/{id}', $ctlr . '@show');
-        Route::get('edit/{id}', $ctlr . '@edit');
-        Route::put('update/{id}', $ctlr . '@update');
-        Route::delete('delete/{id}', $ctlr . '@destroy');
-        Route::get('userInfo', $ctlr . '@getUserInfo');
-    };
-}

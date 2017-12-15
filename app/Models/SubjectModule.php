@@ -56,7 +56,7 @@ class SubjectModule extends Model {
             [
                 'db' => 'SubjectModule.enabled', 'dt' => 6,
                 'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($d, $row);
+                    return Datatable::dtOps($d, $row, false);
                 },
             ],
         ];
@@ -70,8 +70,12 @@ class SubjectModule extends Model {
                 ],
             ],
         ];
+        $school = new School();
+        $schoolId = $school->getSchoolId();
+        $condition = 'Subject.school_id = ' . $schoolId;
+        unset($school);
         
-        return Datatable::simple($this, $columns, $joins);
+        return Datatable::simple($this, $columns, $joins, $condition);
 
     }
 

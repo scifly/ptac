@@ -7,23 +7,22 @@ use Illuminate\Contracts\View\View;
 
 class ScoreRangeComposer {
 
-    protected $schools;
+    protected $school;
 
-    protected $subjects;
+    public function __construct(School $school) {
 
-    public function __construct(School $schools, Subject $subjects) {
-
-        $this->schools = $schools;
-        $this->subjects = $subjects;
+        $this->school = $school;
 
     }
 
     public function compose(View $view) {
-
+        $schoolId = $this->school->getSchoolId();
+        $subjects = Subject::whereSchoolId($schoolId)
+            ->where('enabled', 1)
+            ->pluck('name', 'id');
         $view->with([
-            'schools'  => $this->schools->pluck('name', 'id'),
-            'subjects' => $this->subjects->pluck('name', 'id'),
+            'schoolId'  => $schoolId,
+            'subjects' => $subjects,
         ]);
     }
-
 }

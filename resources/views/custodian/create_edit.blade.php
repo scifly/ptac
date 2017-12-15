@@ -54,7 +54,7 @@
         @include('partials.enabled', [
             'label' => '性别',
             'id' => 'user[gender]',
-            'value' => isset($custodian->user->gender) ? $custodian->user->gender : NULL,
+            'value' => $custodian->user->gender ?? NULL,
             'options' => ['男', '女']
         ])
         <!-- 监护人手机列表 -->
@@ -143,7 +143,7 @@
         <!-- 监护人状态 -->
             @include('partials.enabled', [
                 'id' => 'user[enabled]',
-                'value' => isset($custodian->user->enabled) ? $custodian->user->enabled : NULL
+                'value' => $custodian->user->enabled ?? NULL
             ])
         </div>
     </div>
