@@ -59,7 +59,7 @@ class ExamTypeController extends Controller {
      * @return JsonResponse
      */
     public function store(ExamTypeRequest $request) {
-        
+     
         return $this->examType->store($request->all())
             ? $this->succeed() : $this->fail();
         

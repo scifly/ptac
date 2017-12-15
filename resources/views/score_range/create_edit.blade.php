@@ -4,17 +4,18 @@
     </div>
     <div class="box-body">
         <div class="form-horizontal">
-            @if (!empty($scoreRange['id']))
+            @if (isset($scoreRange)&&!empty($scoreRange['id']))
                 {{ Form::hidden('id', $scoreRange['id'], ['id' => 'id']) }}
             @endif
-            <div class="form-group">
+                {{ Form::hidden('school_id', $schoolId, ['id' => 'school_id']) }}
+                <div class="form-group">
                 {!! Form::label('name', '成绩项名称', [
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
                     {!! Form::text('name', null, [
                         'class' => 'form-control',
-                        'placeholder' => '请输入成绩项名称(例：200-400)',
+                        'placeholder' => '请输入成绩项名称',
                         'required' => 'true',
                     ]) !!}
                 </div>
@@ -47,20 +48,15 @@
                     ]) !!}
                 </div>
             </div>
-            @include('partials.single_select', [
-                'label' => '所属学校',
-                'id' => 'school_id',
-                'items' => $schools
-            ])
             @include('partials.multiple_select', [
                 'label' => '统计科目',
                 'id' => 'subject_ids',
-                'items' => $subjects
+                'items' => $subjects,
+                'selectedItems' => isset($selectedSubjects) ? $selectedSubjects : []
             ])
-            {!! Form::hidden('subject_select_ids', $scoreRange['subject_ids'] or '') !!}
             @include('partials.enabled', [
                 'id' => 'enabled',
-                'value' => isset($subject['enabled']) ? $subject['enabled'] : NULL
+                'value' => isset($scoreRange['enabled']) ? $scoreRange['enabled'] : NULL
             ])
         </div>
     </div>

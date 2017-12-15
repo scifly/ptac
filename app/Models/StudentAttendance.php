@@ -109,6 +109,7 @@ class StudentAttendance extends Model {
         $school = new School();
         $schoolId = $school->getSchoolId();
         $condition = 'AttendanceMachine.school_id = ' . $schoolId;
+        unset($school);
         
         return Datatable::simple($this, $columns, $joins, $condition);
         

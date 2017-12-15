@@ -67,22 +67,6 @@ class SubjectModuleController extends Controller {
     }
     
     /**
-     * 科目次分类详情
-     *
-     * @param $id
-     * @return bool|JsonResponse
-     * @throws Throwable
-     */
-    public function show($id) {
-        
-        $subjectModule = $this->subjectModule->find($id);
-        if (!$subjectModule) { return $this->notFound(); }
-        
-        return $this->output(__METHOD__, ['subjectModule' => $subjectModule]);
-        
-    }
-    
-    /**
      * 编辑目次分类
      *
      * @param $id
