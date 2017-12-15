@@ -288,6 +288,21 @@ class Educator extends Model {
                         DepartmentUser::create($departmentData);
                     }
                 }
+                # 当选择了学校角色没有选择 学校部门时
+                if ($userData['group_id'] == Department::where('name', '学校')->first()->id) {
+                    $school = new School();
+                    $dataDept = Department::where('user_id', $u->id)
+                        ->where('department_id', School::find($school->getSchoolId())->department_id)
+                        ->first();
+                    if (empty($dataDept)) {
+                        $departmentData = [
+                            'user_id' => $u->id,
+                            'department_id' => School::find($school->getSchoolId())->department_id,
+                            'enabled' => $userInputData['enabled'],
+                        ];
+                        DepartmentUser::create($departmentData);
+                    }
+                }
                 # 班级科目
                 $classSubjectData = $request->input('classSubject');
                 if ($classSubjectData['class_ids'] && $classSubjectData['subject_ids']) {
@@ -307,41 +322,13 @@ class Educator extends Model {
                                 'subject_id' => $row['subject_id'],
                                 'enabled' => $userInputData['enabled'],
                             ];
-                            $educatorClass->create($educatorClassData);
+                            EducatorClass::create($educatorClassData);
 
                         }
 
                     }
                     unset($educatorClass);
                 }
-
-
-//
-//                $classIds = array_unique($classSubjectData['class_ids']);
-//                $departmentIds = [];
-//                foreach ($classIds as $classId) {
-//                    if ($classId == 0) break;
-//                    $departmentIds[] = Squad::find($classId)->department_id;
-//                }
-//                $selectedDepartments = array_unique(array_merge(
-//                    $departmentIds, $request->input('selectedDepartments')
-//                ));
-//                if (!empty($selectedDepartments)) {
-//                    $departmentUserModel = new DepartmentUser();
-//                    foreach ($selectedDepartments as $department) {
-//                        $departmentData = [
-//                            'user_id' => $u->id,
-//                            'department_id' => $department,
-//                            'enabled' => $userInputData['enabled'],
-//                        ];
-//                        $departmentUserModel->create($departmentData);
-//                    }
-//                    unset($departmentUserModel);
-//                }
-
-
-
-
 
                 if (isset($educatorInputData['team_id'])) {
                     $edTeam = new EducatorTeam();
@@ -464,6 +451,22 @@ class Educator extends Model {
                     }
                     unset($departmentUserModel);
                 }
+                # 当选择了学校角色没有选择 学校部门时
+                if ($userData['group_id'] == Department::where('name', '学校')->first()->id) {
+                    $school = new School();
+                    $dataDept = Department::where('user_id', $request->input('user_id'))
+                        ->where('department_id', School::find($school->getSchoolId())->department_id)
+                        ->first();
+                    if (empty($dataDept)) {
+                        $departmentData = [
+                            'user_id' => $request->input('user_id'),
+                            'department_id' => School::find($school->getSchoolId())->department_id,
+                            'enabled' => $userInputData['enabled'],
+                        ];
+                        DepartmentUser::create($departmentData);
+                    }
+                }
+
                 $educator = $request->input('educator');
                 $educatorData = [
                     'user_id' => $request->input('user_id'),
