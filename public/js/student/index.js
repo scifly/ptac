@@ -34,7 +34,6 @@ $import.on('click', function () {
         });
     })
 });
-
 /** 导出excel 选择班级 */
 var item = 'student';
 if (typeof custodian === 'undefined') {

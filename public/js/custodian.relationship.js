@@ -169,20 +169,22 @@ var custodian = {
         }
     },
     exportStudent: function () {
+        $(document).off('click', '#export');
         $(document).off('click', '#confirm-bind');
         $(document).on('click', '#confirm-bind', function () {
             var classId = custodian.$classId().val();
             //无法用ajax请求
-            window.location.href='../ptac/public/students/export/?id=' + classId;
+            window.location.href='../pppp/public/students/export/?id=' + classId;
             $("#export-pupils").modal('hide');
         });
     },
     exportEducator: function () {
+        $(document).off('click', '#export');
         $(document).off('click', '#confirm-bind');
         $(document).on('click', '#confirm-bind', function () {
             var schoolId = custodian.$schoolId().val();
             //无法用ajax请求
-            window.location.href='../ptac/public/educators/export/?id=' + schoolId;
+            window.location.href='../pppp/public/educators/export/?id=' + schoolId;
             $("#export-pupils").modal('hide');
         });
     }
