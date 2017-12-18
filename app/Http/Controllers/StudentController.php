@@ -10,6 +10,7 @@ use App\Models\DepartmentUser;
 use App\Models\Group;
 use App\Models\Student;
 use App\Models\User;
+use App\Policies\Route;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
@@ -26,7 +27,7 @@ class StudentController extends Controller {
     
     protected $custodian, $department, $group, $user;
     protected $departmentUser, $student, $custodianStudent;
-    
+
     function __construct(
         Custodian $custodian, Department $department,
         Group $group, User $user,
@@ -42,7 +43,7 @@ class StudentController extends Controller {
         $this->departmentUser = $departmentUser;
         $this->student = $student;
         $this->custodianStudent = $custodianStudent;
-        
+
     }
     
     /**
@@ -53,15 +54,10 @@ class StudentController extends Controller {
      */
     public function index() {
 
-        $uris = Action::whereController(class_basename($this))->pluck('route', 'method');
         if (Request::get('draw')) {
-            return response()->json($this->student->datatable($uris));
+            return response()->json($this->student->datatable());
         }
-        return $this->output(__METHOD__,[
-            'add' => Request::route()->uri(),
-            'uris' => $uris
-
-        ]);
+        return $this->output(__METHOD__);
         
     }
     

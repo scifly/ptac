@@ -1,9 +1,11 @@
 <?php
 namespace App\Helpers;
 
-
+use App\Models\Action;
 use App\Models\Media;
+use App\Policies\Route;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Storage;
 
 trait ControllerTrait {
@@ -57,7 +59,26 @@ trait ControllerTrait {
         return false;
         
     }
-    
+
+    /**
+     * 获取当前控制器包含的方法所对应的路由对象数组
+     *
+     * @return array
+     */
+    public static function uris() {
+
+        $controller = class_basename(Request::route()->controller);
+        $routes = Action::whereController(class_basename($controller))
+            ->pluck('route', 'method')
+            ->toArray();
+        $uris = [];
+        foreach ($routes as $key => $value) {
+            $uris[$key] = new Route($value);
+        }
+        return $uris;
+
+    }
+
     private function getMediaType($type) {
         
         switch (explode('/', $type)[0]) {

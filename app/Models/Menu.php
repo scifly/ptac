@@ -505,37 +505,48 @@ HTML;
 
         $menus = [];
         if ($disabled) {
-            if ($rootId == 0) {
-                $menuIds = GroupMenu::where('group_id', Auth::user()->group_id)->get(['id'])->toArray();
-                $data = $this->whereIn('id', $menuIds)
-                    ->orderBy('position')
-                    ->get();
-            } else if ($rootId == 1) {
+            if ($rootId == 1) {
                 $data = $this->where('id', '<>', 1)
                     ->orderBy('position')
                     ->get();
             } else {
-                $data = $this->whereIn('id', $childrenIds)
-                    ->orderBy('position')
-                    ->get();
+                $role = Auth::user()->group->name;
+                if ($role != '学校' && $role != '企业') {
+                    $menuIds = GroupMenu::whereGroupId(Auth::user()->group_id)
+                        ->get(['menu_id'])
+                        ->toArray();
+                    $data = $this::whereIn('id', $menuIds)
+                        ->orderBy('position')
+                        ->get();
+                }else{
+                    $data = $this::whereIn('id', $childrenIds)
+                        ->orderBy('position')
+                        ->get();
+                }
             }
         } else {
-            if ($rootId == 0) {
-                $menuIds = GroupMenu::where('group_id', Auth::user()->group_id)->get(['id'])->toArray();
-                $data = $this::whereEnabled(1)
-                    ->whereIn('id', $menuIds)
-                    ->orderBy('position')
-                    ->get();
-            } else if ($rootId == 1) {
+            if ($rootId == 1) {
                 $data = $this::whereEnabled(1)
                     ->where('id', '<>', 1)
                     ->orderBy('position')
                     ->get();
             } else {
-                $data = $this::whereEnabled(1)
-                    ->whereIn('id', $childrenIds)
-                    ->orderBy('position')
-                    ->get();
+
+                $role = Auth::user()->group->name;
+                if ($role != '学校' && $role != '企业') {
+                    $menuIds = GroupMenu::whereGroupId(Auth::user()->group_id)
+                        ->get(['menu_id'])
+                        ->toArray();
+                    $data = $this::whereEnabled(1)
+                        ->whereIn('id', $menuIds)
+                        ->orderBy('position')
+                        ->get();
+                }else{
+                    $data = $this::whereEnabled(1)
+                        ->whereIn('id', $childrenIds)
+                        ->orderBy('position')
+                        ->get();
+                }
             }
         }
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Models\Action;
 use App\Models\Menu;
 use App\Models\Tab;
+use App\Policies\Route;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
@@ -146,6 +147,5 @@ class Controller extends BaseController {
     
         return $code ? \redirect($url) : 'no code !';
     }
-    
-    
+
 }

@@ -12,6 +12,7 @@ use App\Models\Tab;
 use App\Models\WapSite;
 use Closure;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
@@ -43,13 +44,9 @@ class CheckRole {
         $menuId = session('menuId');
         $menu = new Menu();
         # 超级用户直接访问所有功能
-        if ($role == '运营') { return $next($request); }
+        if ($role == '运营' || $route == '/' || $route == '/home') { return $next($request); }
         # 菜单权限判断
-        if (
-            stripos($route, 'pages') ||
-            $route == '/' ||
-            stripos($route, '/home')
-        ) {
+        if (stripos($route, 'pages') > -1) {
             switch ($role) {
                 case '企业':
                     $menuIds = $menu->getSubMenuIds(
@@ -79,13 +76,13 @@ class CheckRole {
         switch ($role) {
             case '企业':
             case '学校':
-                $tab = Tab::whereGroupId($user->group_id)
+                $tab = Tab::whereGroupId($user->group_id)->orWhere('group_id', 0)
                     ->where('controller', Action::whereRoute($route)->first()->controller)
                     ->first();
-
                 $abort = !$tab ?? false;
                 break;
             default:
+                Log::debug('route'.$route);
                 # 校级以下角色 action权限判断
                 $groupAction = ActionGroup::whereActionId(
                     Action::whereRoute($route)->first()->id

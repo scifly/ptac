@@ -1,8 +1,8 @@
 <?php
+
 namespace App\Http\ViewComposers;
 
-use App\Models\Corp;
-use App\Models\Department;
+use App\Helpers\ControllerTrait;
 use App\Models\Grade;
 use App\Models\Group;
 use App\Models\School;
@@ -10,20 +10,19 @@ use App\Models\Squad;
 use App\Models\Student;
 use App\Models\User;
 use Illuminate\Contracts\View\View;
-use Illuminate\Support\Facades\Auth;
 
 class CustodianComposer {
-    
+    use ControllerTrait;
     protected $user;
-    
+
     public function __construct(User $user) {
-        
+
         $this->user = $user;
-        
+
     }
-    
+
     public function compose(View $view) {
-        
+
         $schools = null;
         $grades = null;
         $classes = null;
@@ -86,12 +85,14 @@ class CustodianComposer {
             }
         }
         $view->with([
-            'schools'  => $schools,
-            'grades'   => $grades,
-            'classes'  => $classes,
+            'schools' => $schools,
+            'grades' => $grades,
+            'classes' => $classes,
             'students' => $students,
-            'groupId'  => Group::whereName('监护人')->first()->id
+            'groupId' => Group::whereName('监护人')->first()->id,
+            'uris' => $this->uris()
+
         ]);
     }
-    
+
 }

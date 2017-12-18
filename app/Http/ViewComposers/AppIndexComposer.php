@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\ViewComposers;
 
 use App\Models\App;
@@ -8,11 +9,11 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 
 class AppIndexComposer {
-    
+
     public function __construct() { }
-    
+
     public function compose(View $view) {
-       
+
         $user = Auth::user();
         if ($user->group->name == '运营') {
             $corps = Corp::pluck('name', 'id')->toArray();
@@ -26,11 +27,11 @@ class AppIndexComposer {
             $this->formatDateTime($apps);
             $view->with(['corp' => $corp, 'apps' => $apps]);
         }
-        
+
     }
-    
+
     private function formatDateTime(&$apps) {
-        
+
         Carbon::setLocale('zh');
         for ($i = 0; $i < sizeof($apps); $i++) {
             if ($apps[$i]['created_at']) {
@@ -41,9 +42,9 @@ class AppIndexComposer {
                 $dt = Carbon::createFromFormat('Y-m-d H:i:s', $apps[$i]['updated_at']);
                 $apps[$i]['updated_at'] = $dt->diffForhumans();
             }
-            
+
         }
-        
+
     }
-    
+
 }
