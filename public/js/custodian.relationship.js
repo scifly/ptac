@@ -169,6 +169,7 @@ var custodian = {
         }
     },
     exportStudent: function () {
+        $(document).off('click', '#confirm-bind');
         $(document).on('click', '#confirm-bind', function () {
             var classId = custodian.$classId().val();
             //无法用ajax请求
@@ -177,6 +178,7 @@ var custodian = {
         });
     },
     exportEducator: function () {
+        $(document).off('click', '#confirm-bind');
         $(document).on('click', '#confirm-bind', function () {
             var schoolId = custodian.$schoolId().val();
             //无法用ajax请求

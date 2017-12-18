@@ -27,35 +27,7 @@ class CustodianComposer {
         $grades = null;
         $classes = null;
         $students = null;
-        // $user = Auth::user();
-        // if ($user->educator) {
-        //     $schools = School::whereId($user->educator->school_id)
-        //         ->where('enabled', 1)
-        //         ->pluck('name', 'id');
-        // } else {
-        //     $topDepartmentId = $this->user->topDeptId($user);
-        //     $departmentType = Department::whereId($topDepartmentId)->first()->departmentType;
-        //     switch ($departmentType->name) {
-        //         case '根':
-        //         case '运营':
-        //             $schools = School::all()
-        //                 ->where('enabled', 1)
-        //                 ->pluck('name', 'id');
-        //             break;
-        //         case '企业':
-        //             $corpId = Corp::whereDepartmentId($topDepartmentId)->first()->id;
-        //             $schools = School::whereCorpId($corpId)
-        //                 ->where('enabled', 1)
-        //                 ->pluck('name', 'id');
-        //             break;
-        //         case '学校':
-        //             $schools = School::whereDepartmentId($topDepartmentId)
-        //                 ->where('enabled', 1)
-        //                 ->pluck('name', 'id');
-        //             break;
-        //         default: break;
-        //     }
-        // }
+
         $school = new School();
         $schoolId = $school->getSchoolId();
         $schools = School::whereId($schoolId)

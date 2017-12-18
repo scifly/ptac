@@ -3,7 +3,7 @@
         @include('partials.list_header', [
             'buttons' => [
                 'export' => [
-                    'id' => 'export-custodian',
+                    'id' => 'export',
                     'label' => '批量导出',
                     'icon' => 'fa fa-arrow-circle-down'
                 ]

@@ -8,7 +8,7 @@
         @endcan
         @if(isset($buttons))
             @foreach($buttons as $button)
-                @can('act', $uris[$button['id']]))
+                @can('act', $uris[$button['id']])
                     <button id="{{$button['id']}}" type="button" class="btn btn-box-tool">
                         <i class="{{$button['icon']}} text-blue"> {{$button['label']}}</i>
                     </button>

@@ -18,93 +18,123 @@ class ComposerServiceProvider extends ServiceProvider {
         View::composer('educator.recharge', 'App\Http\ViewComposers\EducatorComposer');
         
         View::composer('educator_attendance_setting.create_edit', 'App\Http\ViewComposers\EducatorAttendanceSettingComposer');
-        
+        View::composer('educator_attendance_setting.index', 'App\Http\ViewComposers\EducatorAttendanceSettingIndexComposer');
+
         View::composer('student_attendance_setting.create_edit', 'App\Http\ViewComposers\StudentAttendanceSettingComposer');
-        
+        View::composer('student_attendance_setting.index', 'App\Http\ViewComposers\StudentAttendanceSettingIndexComposer');
+
         View::composer('student.index', 'App\Http\ViewComposers\StudentIndexComposer');
         // View::composer('student.create_edit', 'App\Http\ViewComposers\StudentComposer');
     
+        View::composer('custodian.index', 'App\Http\ViewComposers\CustodianIndexComposer');
         View::composer('custodian.create_edit', 'App\Http\ViewComposers\CustodianComposer');
         View::composer('custodian.relationship', 'App\Http\ViewComposers\CustodianRelationshipComposer');
 
         View::composer('subject.create_edit', 'App\Http\ViewComposers\SubjectComposer');
+        View::composer('subject.index', 'App\Http\ViewComposers\SubjectIndexComposer');
         View::composer('subject_module.create_edit', 'App\Http\ViewComposers\SubjectModuleComposer');
     
         View::composer('group.create_edit', 'App\Http\ViewComposers\GroupComposer');
         View::composer('group.create', 'App\Http\ViewComposers\GroupCreateComposer');
         View::composer('group.edit', 'App\Http\ViewComposers\GroupEditComposer');
-       
+        View::composer('group.index', 'App\Http\ViewComposers\GroupIndexComposer');
+
         View::composer('procedure.create_edit', 'App\Http\ViewComposers\ProcedureComposer');
+        View::composer('procedure.index', 'App\Http\ViewComposers\ProcedureIndexComposer');
 
         View::composer('procedure_step.create_edit', 'App\Http\ViewComposers\ProcedureStepComposer');
-       
+        View::composer('procedure_step.index', 'App\Http\ViewComposers\ProcedureStepIndexComposer');
+
         View::composer('poll_questionnaire.create_edit', 'App\Http\ViewComposers\PollQuestionnaireComposer');
-        
+        View::composer('poll_questionnaire.index', 'App\Http\ViewComposers\PollQuestionnaireIndexComposer');
+
         View::composer('pq_subject.create_edit', 'App\Http\ViewComposers\PqSubjectComposer');
-        
+        View::composer('pq_subject.index', 'App\Http\ViewComposers\PqSubjectIndexComposer');
+
         View::composer('pq_choice.create_edit', 'App\Http\ViewComposers\PqChoiceComposer');
-       
+        View::composer('pq_choice.index', 'App\Http\ViewComposers\PqChoiceIndexComposer');
+
         View::composer('score_range.create_edit', 'App\Http\ViewComposers\ScoreRangeComposer');
+        View::composer('score_range.index', 'App\Http\ViewComposers\ScoreRangeIndexComposer');
         View::composer('score_range.show_statistics', 'App\Http\ViewComposers\ScoreRangeShowStatisticsComposer');
         
         View::composer('score.create_edit', 'App\Http\ViewComposers\ScoreComposer');
-        
-        View::composer('event.index', 'App\Http\ViewComposers\EventComposer');
+        View::composer('score.index', 'App\Http\ViewComposers\ScoreIndexComposer');
+
+        View::composer('event.index', 'App\Http\ViewComposers\EventIndexComposer');
         View::composer('event.show', 'App\Http\ViewComposers\EventComposer');
         
         View::composer('exam.create_edit', 'App\Http\ViewComposers\ExamComposer');
-        
+        View::composer('exam.index', 'App\Http\ViewComposers\ExamIndexComposer');
+
         View::composer('exam_type.create_edit', 'App\Http\ViewComposers\ExamTypeComposer');
-        
+        View::composer('exam_type.index', 'App\Http\ViewComposers\ExamTypeIndexComposer');
+
         View::composer('operator.create', 'App\Http\ViewComposers\OperatorCreateComposer');
         View::composer('operator.edit', 'App\Http\ViewComposers\OperatorEditComposer');
-       
+        View::composer('operator.index', 'App\Http\ViewComposers\OperatorIndexComposer');
+
         View::composer('conference_room.create_edit', 'App\Http\ViewComposers\ConferenceRoomComposer');
-        
+        View::composer('conference_room.index', 'App\Http\ViewComposers\ConferenceRoomIndexComposer');
+
         View::composer('conference_queue.create_edit', 'App\Http\ViewComposers\ConferenceQueueComposer');
         View::composer('conference_queue.edit', 'App\Http\ViewComposers\ConferenceQueueEditComposer');
-        
-        View::composer('conference_participant.create_edit', 'App\Http\ViewComposers\ConferenceParticipantComposer');
+        View::composer('conference_queue.index', 'App\Http\ViewComposers\ConferenceQueueIndexComposer');
+
+        View::composer('conference_participant.index', 'App\Http\ViewComposers\ConferenceParticipantIndexComposer');
 
         View::composer('message.create_edit', 'App\Http\ViewComposers\MessageComposer');
-        
+        View::composer('message.index', 'App\Http\ViewComposers\MessageIndexComposer');
+
         View::composer('combo_type.create_edit', 'App\Http\ViewComposers\ComboTypeComposer');
-        
+        View::composer('combo_type.index', 'App\Http\ViewComposers\ComboTypeIndexComposer');
+
         View::composer('app.index', 'App\Http\ViewComposers\AppIndexComposer');
         
         View::composer('wap_site.create_edit', 'App\Http\ViewComposers\WapSiteComposer');
-        
+        View::composer('wap_site.index', 'App\Http\ViewComposers\WapSiteIndexComposer');
+
         View::composer('menu.create_edit', 'App\Http\ViewComposers\MenuComposer');
-        
+        View::composer('menu.index', 'App\Http\ViewComposers\MenuIndexComposer');
+
         View::composer('icon.create_edit', 'App\Http\ViewComposers\IconComposer');
-        
+        View::composer('icon.index', 'App\Http\ViewComposers\IconIndexComposer');
+
         View::composer('tab.create_edit', 'App\Http\ViewComposers\TabComposer');
-        
+
         View::composer('wap_site_module.create_edit', 'App\Http\ViewComposers\WapSiteModuleComposer');
-        
+        View::composer('wap_site_module.index', 'App\Http\ViewComposers\WapSiteModuleIndexComposer');
+
         View::composer('wsm_article.create_edit', 'App\Http\ViewComposers\WsmArticleComposer');
-        
+        View::composer('wsm_article.index', 'App\Http\ViewComposers\WsmArticleIndexComposer');
+
         View::composer('action.create_edit', 'App\Http\ViewComposers\ActionComposer');
         
         View::composer('school.create_edit', 'App\Http\ViewComposers\SchoolComposer');
-        
+        View::composer('school.index', 'App\Http\ViewComposers\SchoolIndexComposer');
+
         View::composer('corp.create_edit', 'App\Http\ViewComposers\CorpComposer');
         
         View::composer('grade.create_edit', 'App\Http\ViewComposers\GradeComposer');
-        
-        View::composer('class.create_edit', 'App\Http\ViewComposers\SquadComposer');
+        View::composer('grade.index', 'App\Http\ViewComposers\GradeIndexComposer');
 
+        View::composer('class.create_edit', 'App\Http\ViewComposers\SquadComposer');
         View::composer('class.index', 'App\Http\ViewComposers\SquadIndexComposer');
 
         View::composer('major.create_edit', 'App\Http\ViewComposers\MajorComposer');
-        
+        View::composer('major.index', 'App\Http\ViewComposers\MajorIndexComposer');
+
         View::composer('team.create_edit', 'App\Http\ViewComposers\TeamComposer');
-        
+        View::composer('team.index', 'App\Http\ViewComposers\TeamIndexComposer');
+
         View::composer('department.create_edit', 'App\Http\ViewComposers\DepartmentComposer');
-        
+        View::composer('department.index', 'App\Http\ViewComposers\DepartmentIndexComposer');
+
         View::composer('attendance_machine.create_edit', 'App\Http\ViewComposers\AttendanceMachineComposer');
-        
+        View::composer('attendance_machine.index', 'App\Http\ViewComposers\AttendanceMachineIndexComposer');
+
         View::composer('semester.create_edit', 'App\Http\ViewComposers\SemesterComposer');
+        View::composer('semester.index', 'App\Http\ViewComposers\SemesterIndexComposer');
 
     
     }
