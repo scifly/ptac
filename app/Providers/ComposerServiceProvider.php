@@ -93,7 +93,9 @@ class ComposerServiceProvider extends ServiceProvider {
         View::composer('grade.create_edit', 'App\Http\ViewComposers\GradeComposer');
         
         View::composer('class.create_edit', 'App\Http\ViewComposers\SquadComposer');
-        
+
+        View::composer('class.index', 'App\Http\ViewComposers\SquadIndexComposer');
+
         View::composer('major.create_edit', 'App\Http\ViewComposers\MajorComposer');
         
         View::composer('team.create_edit', 'App\Http\ViewComposers\TeamComposer');

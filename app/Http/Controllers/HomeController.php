@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Models\Action;
 use App\Models\Corp;
 use App\Models\Department;
+use App\Models\GroupTab;
 use App\Models\Menu;
 use App\Models\MenuTab;
 use App\Models\MenuType;
@@ -156,13 +157,26 @@ class HomeController extends Controller {
         } else {
             Session::forget('menuChanged');
         }
+        $user = Auth::user();
+        $role = $user->group->name;
+
         # 获取卡片列表
         $tabArray = [];
         $isTabLegit = true;
-        $tabRanks = MenuTab::whereMenuId($id)->get()->sortBy('tab_order')->toArray();
+        $tabRanks = MenuTab::whereMenuId($id)
+            ->get()
+            ->sortBy('tab_order')
+            ->toArray();
+        $allowedTabIds = GroupTab::whereGroupId($user->group_id)
+            ->pluck('tab_id')
+            ->toArray();
         if (empty($tabRanks)) { $isTabLegit = false; };
         foreach ($tabRanks as $rank) {
             $tab = Tab::whereId($rank['tab_id'])->first();
+            if (
+                !in_array($role, ['运营', '企业', '学校']) &&
+                !in_array($rank['tab_id'], $allowedTabIds)
+            ) { continue; }
             if (!empty($tab->action->route)) {
                 $tabArray[] = [
                     'id'     => 'tab_' . $tab->id,
