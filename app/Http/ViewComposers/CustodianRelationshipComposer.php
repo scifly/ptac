@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\ViewComposers;
 
 use App\Models\Corp;
@@ -12,17 +13,17 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 
 class CustodianRelationshipComposer {
-    
+
     protected $user;
-    
+
     public function __construct(User $user) {
-        
+
         $this->user = $user;
-        
+
     }
-    
+
     public function compose(View $view) {
-        
+
         $schools = null;
         $grades = null;
         $classes = null;
@@ -53,7 +54,8 @@ class CustodianRelationshipComposer {
                         ->where('enabled', 1)
                         ->pluck('name', 'id');
                     break;
-                default: break;
+                default:
+                    break;
             }
         }
         if ($schools) {
@@ -74,11 +76,11 @@ class CustodianRelationshipComposer {
                 ->pluck('realname', 'id');
         }
         $view->with([
-            'schools'  => $schools,
-            'grades'   => $grades,
-            'classes'  => $classes,
+            'schools' => $schools,
+            'grades' => $grades,
+            'classes' => $classes,
             'students' => $students,
         ]);
     }
-    
+
 }

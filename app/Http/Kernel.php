@@ -1,6 +1,7 @@
 <?php
 namespace App\Http;
 
+use App\Http\Middleware\CheckRole;
 use App\Http\Middleware\EncryptCookies;
 use App\Http\Middleware\RedirectIfAuthenticated;
 use App\Http\Middleware\TrimStrings;
@@ -69,5 +70,6 @@ class Kernel extends HttpKernel {
         'can'        => Authorize::class,
         'guest'      => RedirectIfAuthenticated::class,
         'throttle'   => ThrottleRequests::class,
+        'checkrole'  => CheckRole::class
     ];
 }

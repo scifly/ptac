@@ -1,15 +1,19 @@
 <?php
 namespace App\Facades;
 
+use App\Helpers\ControllerTrait;
 use Carbon\Carbon;
 use DateTime;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Facade;
 use Illuminate\Support\Facades\Request;
 
 class DatatableFacade extends Facade {
-    
+
+    use ControllerTrait;
+
     const DT_ON = '<i class="fa fa-circle text-green" title="已启用"></i>';
     const DT_OFF = '<i class="fa fa-circle text-gray" title="未启用"></i>';
     const BADGE_GRAY = '<span class="text-black">[n/a]</span>';
@@ -390,17 +394,21 @@ class DatatableFacade extends Facade {
      * @return string
      */
     static function dtOps($active, $row, $show = true, $edit = true, $del = true) {
-        
+
+        $user = Auth::user();
         $id = $row['id'];
         $status = $active ? self::DT_ON : self::DT_OFF;
-        $showLink = sprintf(self::DT_LINK_SHOW, 'show_' . $id);
-        $editLink = sprintf(self::DT_LINK_EDIT, 'edit_' . $id);
-        $delLink = sprintf(self::DT_LINK_DEL, $id);
+        $showLink = str_repeat(self::DT_SPACE, 3) .
+            sprintf(self::DT_LINK_SHOW, 'show_' . $id);
+        $editLink = str_repeat(self::DT_SPACE, 3) .
+            sprintf(self::DT_LINK_EDIT, 'edit_' . $id);
+        $delLink = str_repeat(self::DT_SPACE, 2) .
+            sprintf(self::DT_LINK_DEL, $id);
         return
             $status .
-            ($show ? str_repeat(self::DT_SPACE, 3) . $showLink : '') .
-            ($edit ? str_repeat(self::DT_SPACE, 3) . $editLink : '') .
-            ($del ? str_repeat(self::DT_SPACE, 2) . $delLink : '');
+            ($show ? ($user->can('act', self::uris()['show']) ? $showLink : '') : '') .
+            ($edit ? ($user->can('act', self::uris()['edit']) ? $editLink : '') : '') .
+            ($del ? ($user->can('act', self::uris()['destroy']) ? $delLink : '') : '');
         
     }
     

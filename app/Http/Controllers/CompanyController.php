@@ -22,7 +22,7 @@ class CompanyController extends Controller {
     
     function __construct(Company $company) {
     
-        $this->middleware(['auth']);
+        $this->middleware(['auth', 'checkrole']);
         $this->company = $company;
         
     }

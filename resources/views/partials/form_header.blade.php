@@ -6,8 +6,10 @@
         @endforeach
     @endif
     @if(!isset($show))
+    @can('act', $uris['index'])
     <button id="record-list" type="button" class="btn btn-box-tool">
         <i class="fa fa-mail-reply text-blue"> 返回列表</i>
     </button>
+    @endcan
     @endif
 </div>
