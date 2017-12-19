@@ -47,8 +47,20 @@ class MessageController extends Controller {
             return response()->json($this->message->datatable());
         }
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
+    }
+    
+    /**
+     * 发送消息
+     *
+     * @return bool|JsonResponse
+     * @throws Throwable
+     */
+    public function send() {
+    
+        return $this->output();
+    
     }
     
     /**
@@ -63,7 +75,7 @@ class MessageController extends Controller {
             return $this->department->tree();
         }
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -73,6 +85,7 @@ class MessageController extends Controller {
      * @param MessageRequest $request
      * @return bool|JsonResponse
      * @throws Exception
+     * @throws Throwable
      */
     public function store(MessageRequest $request) {
         
@@ -96,11 +109,9 @@ class MessageController extends Controller {
     public function show($id) {
         
         $message = $this->message->find($id);
-        if (!$message) {
-            return $this->notFound();
-        }
+        if (!$message) { return $this->notFound(); }
         
-        return $this->output(__METHOD__, [
+        return $this->output([
             'message' => $message,
             'users'   => $this->user->users($message->user_ids),
             'medias'  => $this->media->educators($message->media_ids),
@@ -118,11 +129,9 @@ class MessageController extends Controller {
     public function edit($id) {
         
         $message = $this->message->find($id);
-        if (!$message) {
-            return $this->notFound();
-        }
+        if (!$message) { return $this->notFound(); }
         
-        return $this->output(__METHOD__, [
+        return $this->output([
             'message'       => $message,
             'selectedUsers' => $this->user->users($message->user_ids),
             'medias'        => $this->media->medias($message->media_ids),
@@ -137,6 +146,7 @@ class MessageController extends Controller {
      * @param $id
      * @return JsonResponse
      * @throws Exception
+     * @throws Throwable
      */
     public function update(MessageRequest $request, $id) {
         

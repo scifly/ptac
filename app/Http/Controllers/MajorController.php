@@ -39,7 +39,7 @@ class MajorController extends Controller {
             return response()->json($this->major->datatable());
         }
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -51,7 +51,7 @@ class MajorController extends Controller {
      */
     public function create() {
         
-        return $this->output(__METHOD__, [
+        return $this->output([
             'subjects' => $this->subject->subjects(1),
         ]);
         
@@ -89,7 +89,7 @@ class MajorController extends Controller {
             $selectedSubjects[$subject->id] = $subject->name;
         }
         
-        return $this->output(__METHOD__, [
+        return $this->output([
             'major'            => $major,
 //            'subjects' => $this->subject->subjects(1),
             'selectedSubjects' => $selectedSubjects,

@@ -2,6 +2,7 @@
 
 namespace App\Http\ViewComposers;
 
+use App\Helpers\ControllerTrait;
 use App\Models\Action;
 use App\Models\School;
 use App\Models\Tab;
@@ -9,6 +10,8 @@ use Illuminate\Contracts\View\View;
 
 class GroupComposer {
 
+    use ControllerTrait;
+    
     protected $tab, $action, $corp, $school;
 //    protected $excludedTabs = [
 //        '功能', '微信企业应用', '运营者', '企业', '图标', '图标类型',
@@ -51,7 +54,10 @@ class GroupComposer {
                 'actions' => $actionList,
             ];
         }
-        $view->with(['tabActions' => $tabActions]);
+        $view->with([
+            'tabActions' => $tabActions,
+            'uris'       => $this->uris()
+        ]);
     }
 
 }

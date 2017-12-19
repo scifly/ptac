@@ -2,6 +2,7 @@
 
 namespace App\Http\ViewComposers;
 
+use App\Helpers\ControllerTrait;
 use App\Models\App;
 use App\Models\Corp;
 use Carbon\Carbon;
@@ -10,6 +11,8 @@ use Illuminate\Support\Facades\Auth;
 
 class AppIndexComposer {
 
+    use ControllerTrait;
+    
     public function __construct() { }
 
     public function compose(View $view) {
@@ -20,12 +23,12 @@ class AppIndexComposer {
             reset($corps);
             $apps = App::whereCorpId(key($corps))->get()->toArray();
             $this->formatDateTime($apps);
-            $view->with(['corps' => $corps, 'apps' => $apps]);
+            $view->with(['corps' => $corps, 'apps' => $apps, 'uris' => $this->uris()]);
         } else {
             $corp = Corp::whereDepartmentId($user->topDeptId($user))->first();
             $apps = App::whereCorpId($corp->id)->get();
             $this->formatDateTime($apps);
-            $view->with(['corp' => $corp, 'apps' => $apps]);
+            $view->with(['corp' => $corp, 'apps' => $apps, 'uris' => $this->uris()]);
         }
 
     }

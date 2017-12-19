@@ -46,7 +46,7 @@ class ScoreController extends Controller {
             return response()->json($this->score->datatable());
         }
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -57,7 +57,7 @@ class ScoreController extends Controller {
      * @throws Throwable
      */
     public function create() {
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -85,7 +85,7 @@ class ScoreController extends Controller {
             return $this->notFound();
         }
         
-        return $this->output(__METHOD__, [
+        return $this->output([
             'score'       => $score,
             'studentName' => $score->student->user->realname,
         ]);
@@ -105,7 +105,7 @@ class ScoreController extends Controller {
             return $this->notFound();
         }
         
-        return $this->output(__METHOD__, [
+        return $this->output([
             'score'       => $score,
             'studentName' => $score->student->user->realname,
         ]);

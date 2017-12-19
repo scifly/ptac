@@ -41,7 +41,7 @@ class EventController extends Controller {
             ->where('enabled', '0')
             ->get()->toArray();
         $show = true;
-        return $this->output(__METHOD__, [
+        return $this->output([
             'events'  => $events,
             'userId'  => $user->id,
             'isAdmin' => $isAdmin,

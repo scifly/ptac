@@ -53,7 +53,7 @@ class CustodianController extends Controller {
             return response()->json($this->custodian->datatable());
         }
 
-        return parent::output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -74,7 +74,7 @@ class CustodianController extends Controller {
     
         }
 
-        return parent::output(__METHOD__);
+        return $this->output();
 
     }
     
@@ -102,7 +102,7 @@ class CustodianController extends Controller {
     public function show($id){
         $custodian = $this->custodian->find($id);
         if (!$custodian) { return $this->notFound(); }
-        return $this->output(__METHOD__, [
+        return $this->output([
             'custodian'  => $custodian,
         ]);
     }
@@ -123,7 +123,7 @@ class CustodianController extends Controller {
         if (!$custodian) { return $this->notFound(); }
         $pupils = $custodian->custodianStudents;
 
-        return $this->output(__METHOD__, [
+        return $this->output([
             'mobiles'               => $custodian->user->mobiles,
             'custodian'             => $custodian,
             'pupils'                => $pupils,

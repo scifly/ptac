@@ -37,7 +37,7 @@ class ConferenceQueueController extends Controller {
             return response()->json($this->cq->datatable());
         }
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -49,7 +49,7 @@ class ConferenceQueueController extends Controller {
      */
     public function create() {
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -78,7 +78,7 @@ class ConferenceQueueController extends Controller {
         $cq = $this->cq->find($id);
         if (!$cq) { $this->notFound(); }
         
-        return $this->output(__METHOD__, ['cq' => $cq]);
+        return $this->output(['cq' => $cq]);
         
     }
     
@@ -94,7 +94,7 @@ class ConferenceQueueController extends Controller {
         $cq = $this->cq->find($id);
         if (!$cq) { $this->notFound(); }
         
-        return $this->output(__METHOD__, ['cq' => $cq]);
+        return $this->output(['cq' => $cq]);
         
     }
     

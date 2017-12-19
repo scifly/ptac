@@ -5,14 +5,13 @@ namespace App\Http\ViewComposers;
 use App\Helpers\ControllerTrait;
 use Illuminate\Contracts\View\View;
 
-class MenuIndexComposer {
-    
+class TabIndexComposer {
+
     use ControllerTrait;
-
+    
     public function compose(View $view) {
-
-        $view->with(['uris' => $this->uris()]);
         
+        $view->with(['uris' => $this->uris() ]);
     }
 
 }

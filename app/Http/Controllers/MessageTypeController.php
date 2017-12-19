@@ -36,7 +36,7 @@ class MessageTypeController extends Controller {
             return response()->json($this->messageType->datatable());
         }
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -48,7 +48,7 @@ class MessageTypeController extends Controller {
      */
     public function create() {
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -78,7 +78,7 @@ class MessageTypeController extends Controller {
             return $this->notFound();
         }
         
-        return $this->output(__METHOD__, ['messageType' => $messageType]);
+        return $this->output(['messageType' => $messageType]);
         
     }
     

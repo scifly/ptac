@@ -36,7 +36,7 @@ class SchoolTypeController extends Controller {
             return response()->json($this->schoolType->datatable());
         }
         
-        return parent::output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -48,7 +48,7 @@ class SchoolTypeController extends Controller {
      */
     public function create() {
         
-        return parent::output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -79,7 +79,7 @@ class SchoolTypeController extends Controller {
             return parent::notFound();
         }
         
-        return parent::output(__METHOD__, ['schoolType' => $schoolType]);
+        return $this->output(['schoolType' => $schoolType]);
         
     }
     

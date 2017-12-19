@@ -69,6 +69,7 @@ trait ControllerTrait {
 
         $controller = class_basename(Request::route()->controller);
         $routes = Action::whereController(class_basename($controller))
+            ->where('route', '<>', null)
             ->pluck('route', 'method')
             ->toArray();
         $uris = [];

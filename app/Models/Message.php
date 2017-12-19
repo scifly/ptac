@@ -100,11 +100,12 @@ class Message extends Model {
     public function messageSendinglogs() { return $this->belongsTo('App\Models\MessageSendingLog'); }
 
     public function commType() { return $this->belongsTo('App\Models\CommType'); }
-
+    
     /**
      * @param MessageRequest $request
      * @return bool
      * @throws Exception
+     * @throws \Throwable
      */
     public function store(MessageRequest $request) {
         $input = $request->all();
@@ -153,12 +154,13 @@ class Message extends Model {
             }
         }
     }
-
+    
     /**
      * @param MessageRequest $request
      * @param $id
      * @return bool
      * @throws Exception
+     * @throws \Throwable
      */
     public function modify(MessageRequest $request, $id) {
         $message = $this->find($id);
@@ -186,8 +188,8 @@ class Message extends Model {
             ['db' => 'App.name as appname', 'dt' => 2],
             ['db' => 'Message.msl_id', 'dt' => 3],
             ['db' => 'User.realname', 'dt' => 4],
-            ['db' => 'MessageType.name', 'dt' => 5],
-            ['db' => 'Message.readed', 'dt' => 6,
+            ['db' => 'MessageType.name as messagetypename', 'dt' => 5],
+            ['db' => 'Message.read', 'dt' => 6,
                 'formatter' => function ($d) {
                     return $d === 0 ? "否" : "是";
                 },

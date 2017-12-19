@@ -37,7 +37,7 @@ class IconController extends Controller {
             return response()->json($this->icon->datatable());
         }
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -49,7 +49,7 @@ class IconController extends Controller {
      */
     public function create() {
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -78,7 +78,7 @@ class IconController extends Controller {
         $icon = $this->icon->find($id);
         if (!$icon) { return $this->notFound(); }
         
-        return $this->output(__METHOD__, ['icon' => $icon]);
+        return $this->output(['icon' => $icon]);
         
     }
     
@@ -94,7 +94,7 @@ class IconController extends Controller {
         $icon = $this->icon->find($id);
         if (!$icon) { return $this->notFound(); }
         
-        return $this->output(__METHOD__, ['icon' => $icon]);
+        return $this->output(['icon' => $icon]);
         
     }
     
