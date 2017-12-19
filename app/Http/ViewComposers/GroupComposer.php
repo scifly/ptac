@@ -1,14 +1,14 @@
 <?php
+
 namespace App\Http\ViewComposers;
 
 use App\Models\Action;
 use App\Models\School;
 use App\Models\Tab;
 use Illuminate\Contracts\View\View;
-use Illuminate\Support\Facades\Log;
 
 class GroupComposer {
-    
+
     protected $tab, $action, $corp, $school;
 //    protected $excludedTabs = [
 //        '功能', '微信企业应用', '运营者', '企业', '图标', '图标类型',
@@ -19,15 +19,15 @@ class GroupComposer {
         '创建学校', '保存学校', '删除学校',
         '创建微网站', '保存微网站', '删除微网站'
     ];
-    
+
     public function __construct(Tab $tab, Action $action, School $school) {
-        
+
         $this->tab = $tab;
         $this->action = $action;
         $this->school = $school;
-        
+
     }
-    
+
     public function compose(View $view) {
 
         $tabActions = [];
@@ -40,18 +40,18 @@ class GroupComposer {
 
                 if (!in_array(trim($action->name), $this->excludedActions)) {
                     $actionList[] = [
-                        'id'   => $action->id,
+                        'id' => $action->id,
                         'name' => $action->name,
                         'method' => $action->method
                     ];
                 }
             }
             $tabActions[] = [
-                'tab'     => ['id' => $tab->id, 'name' => $tab->name],
+                'tab' => ['id' => $tab->id, 'name' => $tab->name],
                 'actions' => $actionList,
             ];
         }
         $view->with(['tabActions' => $tabActions]);
     }
-    
+
 }

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\ViewComposers;
 
 use App\Models\Action;
@@ -17,7 +18,7 @@ class ActionComposer {
     }
 
     public function compose(View $view) {
-    
+
         $actionTypeIds = explode(',', Action::find(Request::route('id'))->action_type_ids);
         $selectedActionTypes = [];
         foreach ($actionTypeIds as $actionTypeId) {

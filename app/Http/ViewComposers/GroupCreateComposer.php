@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\ViewComposers;
 
 use App\Models\Corp;
@@ -7,15 +8,15 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 
 class GroupCreateComposer {
-    
+
     protected $school;
-    
+
     public function __construct(School $school) {
-        
+
         $this->school = $school;
-        
+
     }
-    
+
     public function compose(View $view) {
 
         $user = Auth::user();
@@ -33,10 +34,11 @@ class GroupCreateComposer {
                 $schools = School::whereDepartmentId($user->topDeptId($user))
                     ->first()->pluck('id', 'name');
                 break;
-            default: break;
+            default:
+                break;
         }
         $view->with(['schools' => $schools]);
-        
+
     }
-    
+
 }
