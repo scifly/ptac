@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Events\EducatorImported;
 use App\Events\SchoolDeleted;
 use App\Facades\DatatableFacade as Datatable;
+use App\Helpers\ControllerTrait;
 use App\Helpers\ModelTrait;
 use App\Http\Requests\CustodianRequest;
 use App\Http\Requests\EducatorRequest;
@@ -17,6 +18,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -53,7 +55,7 @@ use PHPExcel_Exception;
  * @property-read Collection|EducatorClass[] $educatorClasses
  */
 class Educator extends Model {
-
+    use ControllerTrait;
     use ModelTrait;
     const EXCEL_FILE_TITLE = [
         '姓名', '性别', '生日', '学校',
@@ -186,7 +188,6 @@ class Educator extends Model {
     }
 
     public function datatable() {
-
         $columns = [
             ['db' => 'Educator.id', 'dt' => 0],
             ['db' => 'User.realname as username', 'dt' => 1],
@@ -199,16 +200,21 @@ class Educator extends Model {
                 'formatter' => function ($d, $row) {
                     $id = $row['id'];
                     $status = $d ? Datatable::DT_ON : Datatable::DT_OFF;
-                    $showLink = sprintf(Datatable::DT_LINK_SHOW, 'show_' . $id);
-                    $editLink = sprintf(Datatable::DT_LINK_EDIT, 'edit_' . $id);
-                    $delLink = sprintf(Datatable::DT_LINK_DEL, $id);
+                    $user = Auth::user();
+
+                    $showLink = sprintf(Datatable::DT_LINK_SHOW, 'show_' . $id) .
+                        str_repeat(Datatable::DT_SPACE, 3);
+                    $editLink = sprintf(Datatable::DT_LINK_EDIT, 'edit_' . $id) .
+                        str_repeat(Datatable::DT_SPACE, 2);
+                    $delLink = sprintf(Datatable::DT_LINK_DEL, $id) .
+                        str_repeat(Datatable::DT_SPACE, 2);
                     $rechargeLink = sprintf(Datatable::DT_LINK_RECHARGE, 'recharge_' . $id);
                     return
                         $status . str_repeat(Datatable::DT_SPACE, 3) .
-                        $showLink . str_repeat(Datatable::DT_SPACE, 3) .
-                        $editLink . str_repeat(Datatable::DT_SPACE, 2) .
-                        $delLink . str_repeat(Datatable::DT_SPACE, 2) .
-                        $rechargeLink;
+                        ($user->can('act', self::uris()['show']) ? $showLink : '') .
+                        ($user->can('act', self::uris()['edit']) ? $editLink : '') .
+                        ($user->can('act', self::uris()['destroy']) ? $delLink : '') .
+                        ($user->can('act', self::uris()['recharge']) ? $rechargeLink : '');
                 },
             ],
         ];
