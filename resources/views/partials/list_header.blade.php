@@ -17,5 +17,3 @@
         @endforeach
     @endif
 </div>
-
-
