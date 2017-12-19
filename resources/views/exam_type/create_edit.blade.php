@@ -24,7 +24,7 @@
             @include('partials.remark')
             @include('partials.enabled', [
                 'id' => 'enabled',
-                'value' => isset($examType['enabled']) ? $examType['enabled'] : NULL
+                'value' => $examType['enabled'] ?? NULL
             ])
         </div>
     </div>

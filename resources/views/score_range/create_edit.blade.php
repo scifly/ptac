@@ -52,11 +52,11 @@
                 'label' => '统计科目',
                 'id' => 'subject_ids',
                 'items' => $subjects,
-                'selectedItems' => isset($selectedSubjects) ? $selectedSubjects : []
+                'selectedItems' => $selectedSubjects ?? []
             ])
             @include('partials.enabled', [
                 'id' => 'enabled',
-                'value' => isset($scoreRange['enabled']) ? $scoreRange['enabled'] : NULL
+                'value' => $subject['enabled'] ?? NULL
             ])
         </div>
     </div>

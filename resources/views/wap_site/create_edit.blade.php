@@ -50,7 +50,7 @@
             </div>
             @include('partials.enabled', [
                 'id' => 'enabled',
-                'value' => isset($wapSite['enabled']) ? $wapSite['enabled'] : NULL
+                'value' => $wapSite['enabled'] ?? NULL
             ])
 
         </div>

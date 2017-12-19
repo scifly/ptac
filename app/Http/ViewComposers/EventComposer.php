@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\ViewComposers;
 
 use App\Models\Educator;
@@ -13,7 +14,7 @@ class EventComposer {
     public function __construct(School $school) {
         $this->school = $school;
     }
-    
+
     public function compose(View $view) {
         $schoolId = $this->school->getSchoolId();
         $educators = Educator::whereSchoolId($schoolId)

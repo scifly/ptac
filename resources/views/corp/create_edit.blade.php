@@ -53,7 +53,7 @@
             @endif
             @include('partials.enabled', [
                 'id' => 'enabled',
-                'value' => isset($corp['enabled']) ? $corp['enabled'] : NULL
+                'value' => $corp['enabled'] ?? NULL
             ])
         </div>
     </div>

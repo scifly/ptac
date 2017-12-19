@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\ViewComposers;
 
 use App\Models\Corp;
@@ -42,7 +43,8 @@ class OperatorCreateComposer {
                     ->where('name', '学校')->pluck('name', 'id');
                 $view->with(['groups' => $groups, 'rootId' => $user->topDeptId($user)]);
                 break;
-            default: break;
+            default:
+                break;
         }
 
     }

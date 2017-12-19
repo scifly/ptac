@@ -88,7 +88,7 @@
             </div>
             @include('partials.enabled', [
                 'id' => 'enabled',
-                'value' => $user['enabled']
+                'value' => $user['enabled'] ?? null
             ])
         </div>
     </div>

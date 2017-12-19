@@ -56,7 +56,7 @@
             @include('partials.enabled', [
                 'id' => 'user[gender]',
                 'label' => '性别',
-                'value' => isset($user['gender']) ? $user['gender'] : null,
+                'value' => $user['gender'] ?? null,
                 'options' => ['男', '女']
             ])
             <!-- 手机号码 -->
@@ -261,7 +261,7 @@
             @include('partials.enabled', [
                 'label' => '是否住校',
                 'id' => 'oncampus',
-                'value' => isset($student['oncampus']) ? $student['oncampus'] : NULL,
+                'value' => $student['oncampus'] ?? NULL,
                 'options' => ['住校', '走读']
             ])
             <!-- 备注 -->
@@ -272,7 +272,7 @@
             <!-- 状态 -->
             @include('partials.enabled', [
                 'id' => 'user[enabled]',
-                'value' => isset($student['enabled']) ? $student['enabled'] : NULL
+                'value' => $student['enabled'] ?? NULL
             ])
         </div>
     </div>

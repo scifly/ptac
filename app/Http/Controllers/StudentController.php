@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StudentRequest;
+use App\Models\Action;
 use App\Models\Custodian;
 use App\Models\CustodianStudent;
 use App\Models\Department;
@@ -9,6 +10,7 @@ use App\Models\DepartmentUser;
 use App\Models\Group;
 use App\Models\Student;
 use App\Models\User;
+use App\Policies\Route;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
@@ -25,7 +27,7 @@ class StudentController extends Controller {
     
     protected $custodian, $department, $group, $user;
     protected $departmentUser, $student, $custodianStudent;
-    
+
     function __construct(
         Custodian $custodian, Department $department,
         Group $group, User $user,
@@ -41,7 +43,7 @@ class StudentController extends Controller {
         $this->departmentUser = $departmentUser;
         $this->student = $student;
         $this->custodianStudent = $custodianStudent;
-        
+
     }
     
     /**
@@ -51,7 +53,7 @@ class StudentController extends Controller {
      * @throws Throwable
      */
     public function index() {
-        
+
         if (Request::get('draw')) {
             return response()->json($this->student->datatable());
         }
@@ -117,7 +119,7 @@ class StudentController extends Controller {
      * @throws Throwable
      */
     public function edit($id) {
-        
+
         # 查询学生信息
         $student = $this->student->find($id);
         if (!$student) {

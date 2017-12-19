@@ -156,21 +156,21 @@
             @include('partials.enabled', [
                 'label' => '是否打开地理位置上报',
                 'id' => 'report_location_flag',
-                'value' => isset($app['report_location_flag']) ? $app['report_location_flag'] : NULL
+                'value' => $app['report_location_flag'] ?? NULL
             ])
             @include('partials.enabled', [
                 'label' => '是否接收用户变更通知',
                 'id' => 'isreportuser',
-                'value' => isset($app['isreportuser']) ? $app['isreportuser'] : NULL 
+                'value' => $app['isreportuser'] ?? NULL
             ])
             @include('partials.enabled', [
                 'label' => '是否上报用户进入应用事件',
                 'id' => 'isreportenter',
-                'value' => isset($app['isreportenter']) ? $app['isreportenter'] : NULL, 
+                'value' => $app['isreportenter'] ?? NULL,
             ])
             @include('partials.enabled', [
                 'id' => 'enabled',
-                'value' => isset($app['enabled']) ? $app['enabled'] : NULL
+                'value' => $app['enabled'] ?? NULL
             ])
         </div>
     </div>
