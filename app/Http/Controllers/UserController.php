@@ -43,7 +43,7 @@ class UserController extends Controller {
             return response()->json($this->user->datatable());
         }
 
-        return $this->output(__METHOD__);
+        return $this->output();
 
     }
 
@@ -54,7 +54,7 @@ class UserController extends Controller {
      * @throws \Throwable
      */
     public function create() {
-        return $this->output(__METHOD__);
+        return $this->output();
 
     }
 
@@ -83,7 +83,7 @@ class UserController extends Controller {
             return $this->notFound();
         }
 
-        return $this->output(__METHOD__, ['user' => $user]);
+        return $this->output(['user' => $user]);
 
     }
 
@@ -100,7 +100,7 @@ class UserController extends Controller {
             return $this->notFound();
         }
 
-        return $this->output(__METHOD__, ['user' => $user]);
+        return $this->output(['user' => $user]);
 
     }
 

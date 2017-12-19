@@ -37,7 +37,7 @@ class OrderController extends Controller {
             return response()->json($this->order->datatable());
         }
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -67,7 +67,7 @@ class OrderController extends Controller {
             return $this->notFound();
         }
         
-        return $this->output(__METHOD__, ['order' => $order]);
+        return $this->output(['order' => $order]);
         
     }
     

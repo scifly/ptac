@@ -43,7 +43,7 @@ class SubjectController extends Controller {
             return response()->json($this->subject->datatable());
         }
         
-        return parent::output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -55,7 +55,7 @@ class SubjectController extends Controller {
      */
     public function create() {
         
-        return parent::output(__METHOD__, [
+        return $this->output([
             'majors' => $this->major->majors(1),
             'grades' => $this->grade->grades([1]),
         ]);
@@ -97,7 +97,7 @@ class SubjectController extends Controller {
         foreach ($subject->majors as $major) {
             $selectedMajors[$major->id] = $major->name;
         }
-        return parent::output(__METHOD__, [
+        return $this->output([
             'subject'        => $subject,
             'selectedGrades' => $selectedGrades,
             'selectedMajors' => $selectedMajors,

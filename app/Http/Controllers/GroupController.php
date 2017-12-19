@@ -51,7 +51,7 @@ class GroupController extends Controller {
             return response()->json($this->group->datatable());
         }
 
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -69,7 +69,7 @@ class GroupController extends Controller {
             return $this->menu->getTree($menuId);
         }
 
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -104,7 +104,7 @@ class GroupController extends Controller {
             return $this->menu->getTree($menuId);
         }
         
-        return $this->output(__METHOD__, ['group' => $group]);
+        return $this->output(['group' => $group]);
         
     }
     

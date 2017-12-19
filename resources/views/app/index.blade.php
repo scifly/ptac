@@ -1,6 +1,6 @@
 <div class="box box-default box-solid">
     <div class="box-header with-border">
-        @include('partials.list_header')
+        @include('partials.list_header', ['addBtn' => false])
     </div>
     <div class="box-body">
         {!! Form::open([

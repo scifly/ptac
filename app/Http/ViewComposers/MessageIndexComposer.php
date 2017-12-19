@@ -9,12 +9,14 @@ use App\Models\MessageType;
 use App\Models\User;
 use Illuminate\Contracts\View\View;
 
-class MessageComposer {
+class MessageIndexComposer {
+    
     use ControllerTrait;
 
     public function compose(View $view) {
 
         $view->with(['uris' => $this->uris()]);
+        
     }
 
 }

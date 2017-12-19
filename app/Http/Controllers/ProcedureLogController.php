@@ -49,7 +49,7 @@ class ProcedureLogController extends Controller {
             return response()->json($this->procedureLog->datatable($where));
         }
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -89,7 +89,7 @@ class ProcedureLogController extends Controller {
             
         }
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -109,7 +109,7 @@ class ProcedureLogController extends Controller {
             ->orderBy('id', 'asc')
             ->get();
         
-        return $this->output(__METHOD__, [
+        return $this->output([
             'js'      => 'js/procedure_log/show.js',
             'data'    => $data,
             'user_id' => $userId,
@@ -126,7 +126,7 @@ class ProcedureLogController extends Controller {
     public function create() {
         $procedureId = DB::table('procedures')->pluck('name', 'id');
         
-        return $this->output(__METHOD__, ['procedure_id' => $procedureId]);
+        return $this->output(['procedure_id' => $procedureId]);
         
     }
     

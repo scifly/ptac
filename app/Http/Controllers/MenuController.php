@@ -43,7 +43,7 @@ class MenuController extends Controller {
             return $this->menu->tree($this->menu->rootMenuId());
         }
 
-        return $this->output(__METHOD__);
+        return $this->output();
 
     }
     
@@ -56,7 +56,7 @@ class MenuController extends Controller {
      */
     public function create($id) {
 
-        return $this->output(__METHOD__, [
+        return $this->output([
             'parentId'   => $id,
             'menuTypeId' => MenuType::whereName('其他')->first()->id,
         ]);
@@ -95,7 +95,7 @@ class MenuController extends Controller {
             $selectedTabs[$tab->id] = $tab->name;
         }
 
-        return $this->output(__METHOD__, [
+        return $this->output([
             'menu'         => $menu,
             'selectedTabs' => $selectedTabs,
         ]);
@@ -199,7 +199,7 @@ class MenuController extends Controller {
             $tabs[] = $tab;
         }
 
-        return $this->output(__METHOD__, ['tabs' => $tabs]);
+        return $this->output(['tabs' => $tabs]);
 
     }
     

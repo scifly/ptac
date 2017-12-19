@@ -36,7 +36,7 @@ class ProcedureStepController extends Controller {
             return response()->json($this->procedureStep->datatable());
         }
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -47,7 +47,7 @@ class ProcedureStepController extends Controller {
      * @throws Throwable
      */
     public function create() {
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -76,7 +76,7 @@ class ProcedureStepController extends Controller {
             return $this->notFound();
         }
         
-        return $this->output(__METHOD__) ? $this->succeed() : $this->fail();
+        return $this->output() ? $this->succeed() : $this->fail();
         
     }
     
@@ -93,7 +93,7 @@ class ProcedureStepController extends Controller {
             return $this->notFound();
         }
         
-        return $this->output(__METHOD__, ['procedureStep' => $procedureStep]);
+        return $this->output(['procedureStep' => $procedureStep]);
         
     }
     

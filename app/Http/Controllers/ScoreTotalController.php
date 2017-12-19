@@ -39,7 +39,7 @@ class ScoreTotalController extends Controller {
             return response()->json($this->scoreTotal->datatable());
         }
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -56,7 +56,7 @@ class ScoreTotalController extends Controller {
         if (!$scoreTotal) {
             return $this->notFound();
         }
-        return $this->output(__METHOD__, [
+        return $this->output([
             'score_total' => $scoreTotal,
             'studentname' => $scoreTotal->student->user->realname,
             'subjects'    => $this->subject->subjects($scoreTotal->subject_ids),

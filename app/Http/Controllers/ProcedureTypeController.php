@@ -37,7 +37,7 @@ class ProcedureTypeController extends Controller {
             return response()->json($this->procedureType->datatable());
         }
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -49,7 +49,7 @@ class ProcedureTypeController extends Controller {
      */
     public function create() {
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -79,7 +79,7 @@ class ProcedureTypeController extends Controller {
             return $this->notFound();
         }
         
-        return $this->output(__METHOD__, ['procedureType' => $procedureType]);
+        return $this->output(['procedureType' => $procedureType]);
         
     }
     

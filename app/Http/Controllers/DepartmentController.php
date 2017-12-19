@@ -39,7 +39,7 @@ class DepartmentController extends Controller {
             return $this->department->tree();
         }
 
-        return parent::output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -54,7 +54,7 @@ class DepartmentController extends Controller {
         
         $departmentTypeId = DepartmentType::whereName('其他')->first()->id;
 
-        return $this->output(__METHOD__, [
+        return $this->output([
             'parentId' => $id,
             'departmentTypeId' => $departmentTypeId
         ]);
@@ -88,7 +88,7 @@ class DepartmentController extends Controller {
             return $this->notFound();
         }
 
-        return $this->output(__METHOD__, [
+        return $this->output([
             'department' => $department,
         ]);
         
@@ -108,7 +108,7 @@ class DepartmentController extends Controller {
             return $this->notFound();
         }
 
-        return $this->output(__METHOD__, [
+        return $this->output([
             'department' => $department,
         ]);
         

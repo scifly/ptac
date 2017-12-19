@@ -44,7 +44,7 @@ class TabController extends Controller {
         }
         if (!$this->tab->scan()) { return parent::notFound(); }
         
-        return parent::output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -56,7 +56,7 @@ class TabController extends Controller {
      */
     public function create() {
         
-        return parent::output(__METHOD__, [
+        return $this->output([
             'menus' => $this->menu->leaves(1),
         ]);
         
@@ -87,7 +87,7 @@ class TabController extends Controller {
         $tab = $this->tab->find($id);
         if (!$tab) { return parent::notFound(); };
         
-        return parent::output(__METHOD__, ['tab' => $tab]);
+        return $this->output(['tab' => $tab]);
         
     }
     
@@ -107,7 +107,7 @@ class TabController extends Controller {
         foreach ($tabMenus as $menu) {
             $selectedMenus[$menu->id] = $menu->name;
         }
-        return parent::output(__METHOD__, [
+        return $this->output([
             'tab'           => $tab,
             'menus'         => $this->menu->leaves(1),
             'selectedMenus' => $selectedMenus,
