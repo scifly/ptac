@@ -39,7 +39,7 @@ class AttendanceMachineController extends Controller {
             return response()->json($this->am->datatable());
         }
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -51,7 +51,7 @@ class AttendanceMachineController extends Controller {
      */
     public function create() {
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -80,7 +80,7 @@ class AttendanceMachineController extends Controller {
         $am = $this->am->find($id);
         if (!$am) { return $this->notFound(); }
         
-        return $this->output(__METHOD__, ['am' => $am]);
+        return $this->output(['am' => $am]);
         
     }
     
@@ -96,7 +96,7 @@ class AttendanceMachineController extends Controller {
         $am = $this->am->find($id);
         if (!$am) { return $this->notFound(); }
         
-        return $this->output(__METHOD__, ['am' => $am]);
+        return $this->output(['am' => $am]);
         
     }
     

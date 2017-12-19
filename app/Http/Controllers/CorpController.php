@@ -37,7 +37,7 @@ class CorpController extends Controller {
             return response()->json($this->corp->datatable());
         }
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -49,7 +49,7 @@ class CorpController extends Controller {
      */
     public function create() {
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -78,7 +78,7 @@ class CorpController extends Controller {
         $corp = $this->corp->find($id);
         if (!$corp) { return $this->notFound(); }
         
-        return $this->output(__METHOD__, ['corp' => $corp]);
+        return $this->output(['corp' => $corp]);
         
     }
     

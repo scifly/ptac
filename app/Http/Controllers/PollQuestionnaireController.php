@@ -37,7 +37,7 @@ class PollQuestionnaireController extends Controller {
             return response()->json($this->pollQuestionnaire->dataTable());
         }
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -49,7 +49,7 @@ class PollQuestionnaireController extends Controller {
      */
     public function create() {
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -81,7 +81,7 @@ class PollQuestionnaireController extends Controller {
         $pollQuestionnaire = $this->pollQuestionnaire->find($id);
         if (!$pollQuestionnaire) { return $this->notFound(); }
         
-        return $this->output(__METHOD__, [
+        return $this->output([
             'pollQuestionnaire' => $pollQuestionnaire,
         ]);
         
@@ -98,7 +98,7 @@ class PollQuestionnaireController extends Controller {
         $pollQuestionnaire = $this->pollQuestionnaire->find($id);
         if (!$pollQuestionnaire) { return $this->notFound(); }
         
-        return $this->output(__METHOD__, [
+        return $this->output([
             'pollQuestionnaire' => $pollQuestionnaire
         ]);
         

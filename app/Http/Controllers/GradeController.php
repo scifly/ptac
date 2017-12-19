@@ -38,7 +38,7 @@ class GradeController extends Controller {
             return response()->json($this->grade->datatable());
         }
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -50,7 +50,7 @@ class GradeController extends Controller {
      */
     public function create() {
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -80,7 +80,7 @@ class GradeController extends Controller {
     //         return $this->notFound();
     //     }
     //
-    //     return $this->output(__METHOD__, [
+    //     return $this->output([
     //         'grade'     => $grade,
     //         'educators' => $this->educator->educators($grade->educator_ids),
     //     ]);
@@ -103,7 +103,7 @@ class GradeController extends Controller {
         if ($grade->educator_ids != '0') {
             $selectedEducators = $this->educator->getEducatorListByIds(explode(",", $grade->educator_ids));
         }
-        return $this->output(__METHOD__, [
+        return $this->output([
             'grade'             => $grade,
             'selectedEducators' => $selectedEducators,
         ]);

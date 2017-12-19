@@ -58,7 +58,7 @@ class EducatorController extends Controller {
         if (Request::get('draw')) {
             return response()->json($this->educator->datatable());
         }
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -76,7 +76,7 @@ class EducatorController extends Controller {
             $school = $this->school->find($schoolId);
             return $this->department->tree($school->department_id);
         }
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -105,7 +105,7 @@ class EducatorController extends Controller {
         
         $educator = $this->educator->find($id);
         if (!$educator) { return $this->notFound(); }
-        return $this->output(__METHOD__, [
+        return $this->output([
             'educator'  => $educator,
         ]);
         
@@ -134,7 +134,7 @@ class EducatorController extends Controller {
             $selectedDepartmentIds[] = $department->id;
         }
         $selectedDepartments = $this->department->selectedNodes($selectedDepartmentIds);
-        return $this->output(__METHOD__, [
+        return $this->output([
             'mobiles'               => $educator->user->mobiles,
             'educator'              => $educator,
             'selectedTeams'         => $selectedTeams,
@@ -157,7 +157,7 @@ class EducatorController extends Controller {
         if (!$educator) {
             return $this->notFound();
         }
-        return $this->output(__METHOD__, [
+        return $this->output([
             'educator' => $educator,
         ]);
         

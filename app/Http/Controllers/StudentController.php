@@ -57,7 +57,7 @@ class StudentController extends Controller {
         if (Request::get('draw')) {
             return response()->json($this->student->datatable());
         }
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -73,7 +73,7 @@ class StudentController extends Controller {
             return $this->department->tree();
         }
         $items = $this->student->getGradeClass();
-        return $this->output(__METHOD__, [
+        return $this->output([
             'grades'  => $items['grades'],
             'classes' => $items['classes'],
         ]);
@@ -107,7 +107,7 @@ class StudentController extends Controller {
         if (!$student) {
             return $this->notFound();
         }
-        return $this->output(__METHOD__, ['student' => $student]);
+        return $this->output(['student' => $student]);
         
     }
     
@@ -129,7 +129,7 @@ class StudentController extends Controller {
         // print_r($student->toArray());die;
         $items = $this->student->getGradeClass($student->squad->grade_id);
         $student->grade_id = $student->squad->grade_id;
-        return $this->output(__METHOD__, [
+        return $this->output([
             'student' => $student,
             // 'user'    => $user,
             'mobiles' => $user->mobiles,

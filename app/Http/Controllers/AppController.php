@@ -35,7 +35,7 @@ class AppController extends Controller {
             return $this->app->store();
         }
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -47,7 +47,7 @@ class AppController extends Controller {
      */
     public function create() {
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -75,7 +75,7 @@ class AppController extends Controller {
         
         $app = $this->app->find($id);
         return $app
-            ? $this->output(__METHOD__, ['app' => $app])
+            ? $this->output(['app' => $app])
             : $this->notFound();
         
     }
@@ -91,7 +91,7 @@ class AppController extends Controller {
         
         $app = $this->app->find($id);
         return $app
-            ? $this->output(__METHOD__, ['app' => $app])
+            ? $this->output(['app' => $app])
             : $this->notFound();
         
     }
@@ -185,7 +185,7 @@ class AppController extends Controller {
             }
         ]";
         // $menus = $this->app->object_to_array($menu->button);
-        return $this->output(__METHOD__, ['menu' => json_decode($menu)]);
+        return $this->output(['menu' => json_decode($menu)]);
 
     }
 

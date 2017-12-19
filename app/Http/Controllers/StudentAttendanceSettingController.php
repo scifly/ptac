@@ -37,7 +37,7 @@ class StudentAttendanceSettingController extends Controller {
             return response()->json($this->sas->datatable());
         }
         
-        return parent::output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -49,7 +49,7 @@ class StudentAttendanceSettingController extends Controller {
      */
     public function create() {
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -78,7 +78,7 @@ class StudentAttendanceSettingController extends Controller {
         $sas = $this->sas->find($id);
         if (!$sas) { return $this->notFound(); }
         
-        return $this->output(__METHOD__, ['sas' => $sas]);
+        return $this->output(['sas' => $sas]);
         
     }
     

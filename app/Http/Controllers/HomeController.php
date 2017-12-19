@@ -92,7 +92,6 @@ class HomeController extends Controller {
                 default:
                     $view = 'school';
                     $toDeptId = $user->topDeptId($user);
-//                    Log::debug($user->getDeptSchoolId($toDeptId));
                     $parentMenuId = School::whereDepartmentId($user->getDeptSchoolId($toDeptId))
                         ->first()->menu_id;
                     $menuId = $this->menu

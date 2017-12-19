@@ -37,7 +37,7 @@ class PqSubjectController extends Controller {
             return response()->json($this->pqSubject->dataTable());
         }
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -49,7 +49,7 @@ class PqSubjectController extends Controller {
      */
     public function create() {
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -76,7 +76,7 @@ class PqSubjectController extends Controller {
         
         $pqSubject = $this->pqSubject->find($id);
         if (!$pqSubject) { return $this->notFound(); }
-        return $this->output(__METHOD__, [
+        return $this->output([
             'pqSubject' => $pqSubject,
         ]);
         
@@ -92,7 +92,7 @@ class PqSubjectController extends Controller {
         
         $pqSubject = $this->pqSubject->find($id);
         if (!$pqSubject) { return $this->notFound(); }
-        return $this->output(__METHOD__, ['pqSubject' => $pqSubject]);
+        return $this->output(['pqSubject' => $pqSubject]);
         
     }
     

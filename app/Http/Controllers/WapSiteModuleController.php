@@ -43,7 +43,7 @@ class WapSiteModuleController extends Controller {
             return response()->json($this->wapSiteModule->datatable());
         }
         
-        return $this->output(__METHOD__);
+        return $this->output();
     }
     
     /**
@@ -54,7 +54,7 @@ class WapSiteModuleController extends Controller {
      */
     public function create() {
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -82,7 +82,7 @@ class WapSiteModuleController extends Controller {
         $module = $this->wapSiteModule->find($id);
         if (!$module) { return parent::notFound(); }
         
-        return parent::output(__METHOD__, [
+        return $this->output([
             '$module' => $module,
             'media'   => $this->media->find($module->media_id),
         ]);
@@ -100,7 +100,7 @@ class WapSiteModuleController extends Controller {
         
         $wapSiteModule = $this->wapSiteModule->find($id);
         if (!$wapSiteModule) { return parent::notFound(); }
-        return parent::output(__METHOD__, [
+        return $this->output([
             'wapSiteModule' => $wapSiteModule,
             'media'         => $this->media->find($wapSiteModule->media_id),
         ]);

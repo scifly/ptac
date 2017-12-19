@@ -37,7 +37,7 @@ class SubjectModuleController extends Controller {
             return response()->json($this->subjectModule->datatable());
         }
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -49,7 +49,7 @@ class SubjectModuleController extends Controller {
      */
     public function create() {
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -78,7 +78,7 @@ class SubjectModuleController extends Controller {
         $subjectModule = $this->subjectModule->find($id);
         if (!$subjectModule) { return $this->notFound(); }
         
-        return $this->output(__METHOD__, ['subjectModules' => $subjectModule]);
+        return $this->output(['subjectModules' => $subjectModule]);
         
     }
     

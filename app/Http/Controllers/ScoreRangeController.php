@@ -42,7 +42,7 @@ class ScoreRangeController extends Controller {
             return response()->json($this->scoreRange->datatable());
         }
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -54,7 +54,7 @@ class ScoreRangeController extends Controller {
      */
     public function create() {
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -90,7 +90,7 @@ class ScoreRangeController extends Controller {
         }
         $scoreRange['subject_ids'] = substr($str, 1);
         
-        return $this->output(__METHOD__, ['scoreRange' => $scoreRange]);
+        return $this->output(['scoreRange' => $scoreRange]);
         
     }
     
@@ -105,7 +105,7 @@ class ScoreRangeController extends Controller {
         
         $scoreRange = $this->scoreRange->find($id);
         if (!$scoreRange) { return $this->notFound(); }
-        return $this->output(__METHOD__, [
+        return $this->output([
             'scoreRange'       => $scoreRange,
             'selectedSubjects' => $this->subject->selectedSubjects($scoreRange->subject_ids),
         ]);
@@ -154,7 +154,7 @@ class ScoreRangeController extends Controller {
      */
     public function showStatistics() {
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     

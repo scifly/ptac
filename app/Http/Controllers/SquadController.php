@@ -39,7 +39,7 @@ class SquadController extends Controller {
             return response()->json($this->class->datatable());
         }
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -51,7 +51,7 @@ class SquadController extends Controller {
      */
     public function create() {
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -81,7 +81,7 @@ class SquadController extends Controller {
     //         return $this->notFound();
     //     }
     //     $educatorIds = explode(",", $class->educator_ids);
-    //     return $this->output(__METHOD__, [
+    //     return $this->output([
     //         'class'     => $class,
     //         'educators' => $this->educator->educators($educatorIds),
     //     ]);
@@ -104,7 +104,7 @@ class SquadController extends Controller {
         if ($class->educator_ids != '0') {
             $selectedEducators = $this->educator->getEducatorListByIds(explode(",", $class->educator_ids));
         }
-        return $this->output(__METHOD__, [
+        return $this->output([
             'class'             => $class,
             'selectedEducators' => $selectedEducators
         ]);

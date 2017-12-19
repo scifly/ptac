@@ -40,7 +40,7 @@ class ExamController extends Controller {
             return response()->json($this->exam->datatable());
         }
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -52,7 +52,7 @@ class ExamController extends Controller {
      */
     public function create() {
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -80,7 +80,7 @@ class ExamController extends Controller {
         $exam = $this->exam->find($id);
         if (!$exam) { return $this->notFound(); }
         
-        return $this->output(__METHOD__, [
+        return $this->output([
             'exam'     => $exam,
             'classes'  => $this->exam->classes($exam->class_ids),
             'subjects' => $this->exam->subjects(),
@@ -99,7 +99,7 @@ class ExamController extends Controller {
         $exam = $this->exam->find($id);
         if (!$exam) { return $this->notFound(); }
         
-        return $this->output(__METHOD__, [
+        return $this->output([
             'exam'             => $exam,
             'selectedClasses'  => $this->exam->classes($exam->class_ids),
             'selectedSubjects' => $this->exam->subjects($exam->subject_ids),

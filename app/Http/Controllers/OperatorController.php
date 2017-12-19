@@ -44,7 +44,7 @@ class OperatorController extends Controller {
             return response()->json($this->operator->datatable());
         }
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -59,7 +59,7 @@ class OperatorController extends Controller {
         if (Request::method() === 'POST') {
             return $this->department->tree(Request::query('rootId'));
         }
-        return $this->output(__METHOD__, [
+        return $this->output([
             'role' => Auth::user()->group->name
         ]);
         
@@ -91,7 +91,7 @@ class OperatorController extends Controller {
         $operator = $this->operator->find($id);
         if (!$operator) { return $this->notFound();}
         
-        return $this->output(__METHOD__, [
+        return $this->output([
             'operator' => $operator,
             'role' => Auth::user()->group->name
         ]);
@@ -113,7 +113,7 @@ class OperatorController extends Controller {
         $operator = $this->operator->find($id);
         if (!$operator) { return $this->notFound(); }
         
-        return $this->output(__METHOD__, ['operator' => $operator]);
+        return $this->output(['operator' => $operator]);
         
     }
     

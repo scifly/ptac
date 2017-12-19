@@ -37,7 +37,7 @@ class DepartmentTypeController extends Controller {
             return response()->json($this->departmentType->datatable());
         }
 
-        return $this->output(__METHOD__);
+        return $this->output();
 
     }
     
@@ -49,7 +49,7 @@ class DepartmentTypeController extends Controller {
      */
     public function create() {
 
-        return $this->output(__METHOD__);
+        return $this->output();
 
     }
 
@@ -78,7 +78,7 @@ class DepartmentTypeController extends Controller {
         $departmentType = $this->departmentType->find($id);
         if (!$departmentType) { return $this->notFound(); }
 
-        return $this->output(__METHOD__, [
+        return $this->output([
             'departmentType' => $departmentType
         ]);
 

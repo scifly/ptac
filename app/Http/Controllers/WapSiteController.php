@@ -46,7 +46,7 @@ class WapSiteController extends Controller {
             return response()->json($this->wapSite->datatable());
         }
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -58,7 +58,7 @@ class WapSiteController extends Controller {
      */
     public function create() {
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -91,7 +91,7 @@ class WapSiteController extends Controller {
         }
         $mediaIds = explode(",", $wapsite->media_ids);
         
-        return parent::output(__METHOD__, [
+        return $this->output([
             'wapsite' => $wapsite,
             'medias'  => $this->media->medias($mediaIds),
         ]);
@@ -111,7 +111,7 @@ class WapSiteController extends Controller {
             return parent::notFound();
         }
         
-        return parent::output(__METHOD__, [
+        return $this->output([
             'wapSite' => $wapSite,
             'medias'  => $this->media->medias($wapSite->media_ids),
         ]);

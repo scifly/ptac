@@ -37,7 +37,7 @@ class ConferenceRoomController extends Controller {
             return response()->json($this->cr->datatable());
         }
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -49,7 +49,7 @@ class ConferenceRoomController extends Controller {
      */
     public function create() {
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -78,7 +78,7 @@ class ConferenceRoomController extends Controller {
         $cr = $this->cr->find($id);
         if (!$cr) { return $this->notFound(); }
         
-        return $this->output(__METHOD__, ['cr' => $cr]);
+        return $this->output(['cr' => $cr]);
         
     }
     
@@ -94,7 +94,7 @@ class ConferenceRoomController extends Controller {
         $cr = $this->cr->find($id);
         if (!$cr) { return $this->notFound(); }
         
-        return $this->output(__METHOD__, ['conferenceRoom' => $cr]);
+        return $this->output(['conferenceRoom' => $cr]);
         
     }
     

@@ -41,7 +41,7 @@ class PqChoiceController extends Controller {
             return response()->json($this->pqChoice->datatable());
         }
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -53,7 +53,7 @@ class PqChoiceController extends Controller {
      */
     public function create() {
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -83,7 +83,7 @@ class PqChoiceController extends Controller {
             return $this->notFound();
         }
         
-        return $this->output(__METHOD__, [
+        return $this->output([
             'pqChoice' => $pqChoice,
         ]);
         
@@ -101,7 +101,7 @@ class PqChoiceController extends Controller {
         if (!$pqChoice) {
             return $this->notFound();
         }
-        return $this->output(__METHOD__, [
+        return $this->output([
             'pqChoice' => $pqChoice,
         ]);
         

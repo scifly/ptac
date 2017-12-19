@@ -42,20 +42,20 @@ class SchoolController extends Controller {
         $user = Auth::user();
         $menuId = Request::input('menuId');
         if(!$menuId){
-            return parent::output(__METHOD__);
+            return $this->output();
         }
         $schoolMenuId = $this->menu->getSchoolMenuId($menuId);
         $show = true;
         if($user->group->name == '运营' || $user->group->name == '企业'){
             if ($schoolMenuId){
                 $school = $this->school->where('menu_id', $schoolMenuId)->first();
-                return parent::output('App\Http\Controllers\SchoolController::show', ['school' => $school, 'show' => $show]);
+                return $this->output('App\Http\Controllers\SchoolController::show', ['school' => $school, 'show' => $show]);
             } else {
-                return parent::output(__METHOD__);
+                return $this->output();
             }
          } else {
             $school = $this->school->where('menu_id', $schoolMenuId)->first();
-            return parent::output('App\Http\Controllers\SchoolController::show', ['school' => $school, 'show' => $show]);
+            return $this->output('App\Http\Controllers\SchoolController::show', ['school' => $school, 'show' => $show]);
         }
     }
     
@@ -67,7 +67,7 @@ class SchoolController extends Controller {
      */
     public function create() {
         
-        return parent::output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -97,7 +97,7 @@ class SchoolController extends Controller {
                 return parent::notFound();
             }
             
-            return parent::output(__METHOD__, ['school' => $school]);
+            return $this->output(['school' => $school]);
     }
     
     /**
@@ -111,7 +111,7 @@ class SchoolController extends Controller {
     
         $menuId = Request::input('menuId');
         if(!$menuId){
-            return parent::output(__METHOD__);
+            return $this->output();
         }
         $school = $this->school->find($id);
         if (!$school) {
@@ -120,9 +120,9 @@ class SchoolController extends Controller {
         $schoolMenuId = $this->menu->getSchoolMenuId($menuId);
         if ($schoolMenuId){
             $show = true;
-            return parent::output(__METHOD__, ['school' => $school, 'show' => $show]);
+            return $this->output(['school' => $school, 'show' => $show]);
         }
-        return parent::output(__METHOD__, ['school' => $school]);
+        return $this->output(['school' => $school]);
         
     }
     

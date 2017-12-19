@@ -39,7 +39,7 @@ class CompanyController extends Controller {
             return response()->json($this->company->datatable());
         }
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -51,7 +51,7 @@ class CompanyController extends Controller {
      */
     public function create() {
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -80,7 +80,7 @@ class CompanyController extends Controller {
         $company = $this->company->find($id);
         if (!$company) { return $this->notFound(); }
         
-        return $this->output(__METHOD__, ['company' => $company]);
+        return $this->output(['company' => $company]);
         
     }
     
