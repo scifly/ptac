@@ -452,6 +452,7 @@
 @isset($js)
     <script src="{{ URL::asset($js) }}"></script>
 @endisset
+
 {{--echarts--}}
 <script src="{{ URL::asset('js/plugins/echarts/echarts.common.min.js') }}"></script>
 <!-- fileinput-->

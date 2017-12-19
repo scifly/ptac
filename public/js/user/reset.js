@@ -1,5 +1,6 @@
-$('#save').on('click',function (e) {
+$('#reset').on('click',function (e) {
         e.preventDefault();
+
         var id = $('#user_id').val();
         var password=document.getElementsByName("password")[0];
         var pwd1=document.getElementsByName('password')[1];
