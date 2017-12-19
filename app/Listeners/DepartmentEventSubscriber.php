@@ -136,6 +136,7 @@ class DepartmentEventSubscriber {
      * @param $event
      * @param $model
      * @return bool|null
+     * @throws \Exception
      */
     private function deleteDepartment($event, $model) {
         $department = $this->department->find($event->{$model}->department_id);
@@ -174,6 +175,7 @@ class DepartmentEventSubscriber {
      *
      * @param $event
      * @return bool|null
+     * @throws \Exception
      */
     public function onCorpDeleted($event) {
         
@@ -210,6 +212,7 @@ class DepartmentEventSubscriber {
      *
      * @param $event
      * @return bool|null
+     * @throws \Exception
      */
     public function onSchoolDeleted($event) {
         
@@ -246,6 +249,7 @@ class DepartmentEventSubscriber {
      *
      * @param $event
      * @return bool|null
+     * @throws \Exception
      */
     public function onGradeDeleted($event) {
         
@@ -282,6 +286,7 @@ class DepartmentEventSubscriber {
      *
      * @param $event
      * @return bool|null
+     * @throws \Exception
      */
     public function onClassDeleted($event) {
         

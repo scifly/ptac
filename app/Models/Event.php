@@ -94,25 +94,29 @@ class Event extends Model {
     public function showCalendar($userId) {
         //通过userId找出educator_id
         $educator = Educator::where('user_id', $userId)->first();
-        //先选出公开事件中 非课程的事件
-        $pubNoCourseEvents = $this
-            ->where('ispublic', 1)
-            ->where('iscourse', 0)
-            ->get()->toArray();
-        //选出公开事件中 课程事件
-        $pubCourEvents = $this
-            ->where('ispublic', 1)
-            ->where('iscourse', 1)
-            ->where('educator_id', $educator->id)
-            ->get()->toArray();
-        //再选个人未公开事件
-        $perEvents = $this
-            ->where('User_id', $userId)
-            ->where('ispublic', 0)
-            ->where('enabled', '1')
-            ->get()->toArray();
         //全部公共事件
         $pubEvents = $this->where('ispublic', 1)->get()->toArray();
+        if(!empty($educator)) {
+            //先选出公开事件中 非课程的事件
+            $pubNoCourseEvents = $this
+                ->where('ispublic', 1)
+                ->where('iscourse', 0)
+                ->get()->toArray();
+            //选出公开事件中 课程事件
+            $pubCourEvents = $this
+                ->where('ispublic', 1)
+                ->where('iscourse', 1)
+                ->where('educator_id', $educator->id)
+                ->get()->toArray();
+            //再选个人未公开事件
+            $perEvents = $this
+                ->where('User_id', $userId)
+                ->where('ispublic', 0)
+                ->where('enabled', '1')
+                ->get()->toArray();
+        } else {
+            return response()->json($pubEvents);
+        }
         //如果是管理员
         if ($this->getRole($userId)) {
             return response()->json(array_merge($pubEvents, $perEvents));
@@ -121,16 +125,19 @@ class Event extends Model {
         //如果是用户
         return response()->json(array_merge($pubNoCourseEvents, $perEvents, $pubCourEvents));
     }
-
+    
     /**
      * 判断当前用户权限
-     * @param $userId
+     * @param $user
      * @return bool
      */
-    public function getRole($userId) {
-        $role = User::find($userId)->group;
-
-        return $role->name == '管理员' ? true : false;
+    public function getRole($user) {
+        $role = $user->group->name;
+        if ($role == '运营' || $role == '企业' || $role == '学校'){
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**

@@ -94,7 +94,7 @@ class ConferenceRoomController extends Controller {
         $cr = $this->cr->find($id);
         if (!$cr) { return $this->notFound(); }
         
-        return $this->output(__METHOD__, ['cr' => $cr]);
+        return $this->output(__METHOD__, ['conferenceRoom' => $cr]);
         
     }
     

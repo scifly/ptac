@@ -11,7 +11,7 @@ class CommTypeRequest extends FormRequest {
      * @return bool
      */
     public function authorize() {
-        return false;
+        return true;
     }
     
     /**
@@ -21,7 +21,8 @@ class CommTypeRequest extends FormRequest {
      */
     public function rules() {
         return [
-            //
+            'name'   => 'required|string|unique:comm_types,name,',
+            'remark' => 'required|string',
         ];
     }
 }

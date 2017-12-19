@@ -29,7 +29,7 @@
                 {!! Form::label('media_ids', '轮播图', [
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
-                <div class="col-sm-10">
+                <div class="col-sm-6">
                     <div class="preview">
                         @if(isset($medias))
                             @foreach($medias as $key => $value)

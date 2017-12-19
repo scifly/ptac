@@ -1,3 +1,5 @@
+page.loadCss(page.plugins.fullcalendar.css);
+$.getMultiScripts([page.plugins.fullcalendar.js, page.plugins.fullcalendar_moment.js, page.plugins.jqueryui.js], page.siteRoot()) .done(function() {
 $(function () {
     //后台传过来的user_id
     var id = $('input[name="user_id"]').val();
@@ -21,7 +23,6 @@ $(function () {
             });
         })
     }
-
     init_events($('#external-events li.external-event'));
 
     /**
@@ -363,4 +364,5 @@ $(function () {
             }
         })
     })
+});
 });

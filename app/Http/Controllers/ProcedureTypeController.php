@@ -66,24 +66,6 @@ class ProcedureTypeController extends Controller {
     }
     
     /**
-     * 审批流程类型详情
-     *
-     * @param $id
-     * @return bool|JsonResponse
-     * @throws Throwable
-     */
-    public function show($id) {
-        
-        $procedureType = $this->procedureType->find($id);
-        if (!$procedureType) {
-            return $this->notFound();
-        }
-        
-        return $this->output(__METHOD__, ['procedureType' => $procedureType]);
-        
-    }
-    
-    /**
      * 编辑审批流程类型
      *
      * @param $id

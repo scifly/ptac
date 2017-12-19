@@ -169,9 +169,21 @@ class WsmArticle extends Model {
                     'Wsm.id = WsmArticle.wsm_id',
                 ],
             ],
+            [
+                'table' => 'wap_sites',
+                'alias' => 'WapSite',
+                'type' => 'INNER',
+                'conditions' => [
+                    'WapSite.id = Wsm.wap_site_id',
+                ],
+            ],
         ];
+        $school = new School();
+        $schoolId = $school->getSchoolId();
+        $condition = 'WapSite.school_id = ' . $schoolId;
+        unset($school);
         
-        return Datatable::simple($this, $columns, $joins);
+        return Datatable::simple($this, $columns, $joins, $condition);
         
     }
 
