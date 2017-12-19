@@ -18,17 +18,17 @@
                     @if (isset($user['id']))
                         {{ Form::hidden('user_id', $user['id'], ['id' => 'user_id']) }}
                     @endif
-                        {{--<div class="form-group">--}}
-                            {{--{!! Form::label('avatar_url', '头像', [--}}
-                                {{--'class' => 'col-sm-3 control-label'--}}
-                            {{--]) !!}--}}
-                            {{--<div class="col-sm-6">--}}
-                                {{--<div class="input-group" style="height: 100px;">--}}
-                                    {{--<img src="{{$user['avatar_url']}}" style="height: 100px;">--}}
-
-                                {{--</div>--}}
-                            {{--</div>--}}
-                        {{--</div>--}}
+                        <div class="form-group">
+                            {!! Form::label('avatar_url', '头像', [
+                                'class' => 'col-sm-3 control-label',
+                                'style' =>'line-height:80px'
+                            ]) !!}
+                            <div class="col-sm-6">
+                                <div class="input-group">
+                                    <img src="{{Auth::user()->avatar_url}}" style="height: 80px;border-radius: 40px;">
+                                </div>
+                            </div>
+                        </div>
                     <div class="form-group">
                         {!! Form::label('realname', '姓名', [
                             'class' => 'col-sm-3 control-label'
@@ -168,10 +168,11 @@
 {!! Form::close() !!}
 
 <script src="{{ URL::asset('js/jquery.min.js') }}"></script>
+<script src="{{ URL::asset('js/plugins/gritter/js/jquery.gritter.js') }}"></script>
+
 <script>
     $form = $('#formUser');
     $('.edit_input').click(function () {
-
         var input_obj = $(this).prevAll('.form-control');
         input_obj.removeAttr("disabled");
         input_obj.focus();
@@ -182,8 +183,24 @@
     function save_input(input_obj) {
         input_obj.blur(function () {
             var telephone = document.getElementById('telephone').value;
-            if(!/^(\(\d{3,4}\)|\d{3,4}-|\s)?\d{7,14}$/.test(tel)){
-                alert('固定电话有误，请重填');
+            var email = document.getElementById('email').value;
+            const  reg = /^[A-Za-z\d]+([-_.][A-Za-z\d]+)*@([A-Za-z\d]+[-.])+[A-Za-z\d]{2,4}$/;
+
+            if(telephone.length !== 0 && !/^(\(\d{3,4}\)|\d{3,4}-|\s)?\d{7,14}$/.test(telephone)){
+                $.gritter.add({
+                    title: '操作结果',
+                    text: '座机号码格式有误,请重填!',
+                    image: '../img/error.png'
+                });
+                return false;
+            }
+
+            if(email.length !== 0 && !reg.test(email)){
+                $.gritter.add({
+                    title: '操作结果',
+                    text: '电子邮件格式有误,请重填!',
+                    image: '../img/error.png'
+                });
                 return false;
             }
             $.ajax({
@@ -191,8 +208,20 @@
                 dataType: 'json',
                 url: 'profile',
                 data:$form.serialize(),
-                success: function () {
-
+                success: function (result) {
+                    if(result.statusCode === 200){
+                        $.gritter.add({
+                            title: '操作结果',
+                            text: '更新成功',
+                            image: '../img/confirm.png'
+                        });
+                    }else{
+                        $.gritter.add({
+                            title: '操作结果',
+                            text: '更新失败',
+                            image: '../img/error.png'
+                        });
+                    }
                 }
             })
             input_obj.attr("disabled","true");

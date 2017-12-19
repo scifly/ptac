@@ -86,6 +86,71 @@ class Event extends Model {
      */
     public function subject() { return $this->belongsTo('App\Models\Subject'); }
 
+    public function datatable() {
+
+        $columns = [
+            ['db' => 'Event.id', 'dt' => 0],
+            ['db' => 'Event.title', 'dt' => 1],
+            ['db' => 'Event.remark', 'dt' => 2],
+            ['db' => 'Event.location', 'dt' => 3],
+            ['db' => 'Event.start', 'dt' => 4],
+            ['db' => 'Event.end', 'dt' => 5],
+            ['db' => 'Message.readed', 'dt' => 6,
+             'formatter' => function ($d) {
+                 return $d === 0 ? "否" : "是";
+             },
+            ],
+            ['db' => 'Message.sent', 'dt' => 7,
+             'formatter' => function ($d) {
+                 return $d === 0 ? "否" : "是";
+             },
+            ],
+            ['db' => 'Message.created_at', 'dt' => 8],
+            [
+                'db' => 'Message.updated_at', 'dt' => 9,
+                'formatter' => function ($d, $row) {
+                    return Datatable::dtOps($this, $d, $row);
+                },
+            ],
+        ];
+        $joins = [
+            [
+                'table' => 'comm_types',
+                'alias' => 'CommType',
+                'type' => 'INNER',
+                'conditions' => [
+                    'CommType.id = Message.comm_type_id',
+                ],
+            ],
+            [
+                'table' => 'apps',
+                'alias' => 'App',
+                'type' => 'INNER',
+                'conditions' => [
+                    'App.id = Message.app_id',
+                ],
+            ],
+            [
+                'table' => 'message_types',
+                'alias' => 'MessageType',
+                'type' => 'INNER',
+                'conditions' => [
+                    'MessageType.id = Message.message_type_id',
+                ],
+            ],
+            [
+                'table' => 'users',
+                'alias' => 'User',
+                'type' => 'INNER',
+                'conditions' => [
+                    'User.id = Message.s_user_id',
+                ],
+            ],
+        ];
+
+        return Datatable::simple($this, $columns, $joins);
+    }
+
     /**
      * 显示日历事件
      * @param $userId

@@ -141,15 +141,17 @@ class UserController extends Controller {
      *
      */
     public function profile(){
+        $user = Auth::user();
         if(Request::isMethod('post'))
         {
-
+            $data = Request::all();
+            return $user->update($data) ? response()->json(['statusCode' => 200]) :
+                response()->json(['statusCode' => 400]);
         }
 
         $menuId = Request::query('menuId');
         $menu = $this->menu->find($menuId);
         if (!$menu) {
-            $user = Auth::user();
             $menuId = $this->menu->where('uri', 'users/profile')->first()->id;
             session(['menuId' => $menuId]);
             return view('home.home', [
