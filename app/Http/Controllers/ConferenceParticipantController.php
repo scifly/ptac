@@ -36,7 +36,7 @@ class ConferenceParticipantController extends Controller {
             return response()->json($this->cp->datatable());
         }
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -65,7 +65,7 @@ class ConferenceParticipantController extends Controller {
         $cp = $this->cp->find($id);
         if (!$cp) { return $this->notFound(); }
         
-        return $this->output(__METHOD__, ['cp' => $cp]);
+        return $this->output(['cp' => $cp]);
         
     }
     

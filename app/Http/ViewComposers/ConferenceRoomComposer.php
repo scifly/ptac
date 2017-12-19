@@ -18,18 +18,10 @@ class ConferenceRoomComposer {
     }
 
     public function compose(View $view) {
-
-        $user = Auth::user();
-        $schoolId = $user->group->school_id;
-        if (!isset($schoolId)) {
-            $schoolId = School::whereDepartmentId($user->topDeptId($user))->first()->id;
-        }
+        $schoolId = $this->school->getSchoolId();
         $view->with([
             'schoolId' => $schoolId,
             'uris' => $this->uris()
-
         ]);
-
     }
-
 }

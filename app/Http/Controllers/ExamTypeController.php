@@ -36,7 +36,7 @@ class ExamTypeController extends Controller {
             return response()->json($this->examType->datatable());
         }
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -48,7 +48,7 @@ class ExamTypeController extends Controller {
      */
     public function create() {
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -77,7 +77,7 @@ class ExamTypeController extends Controller {
         $examType = $this->examType->find($id);
         if (!$examType) { return $this->notFound(); }
         
-        return $this->output(__METHOD__, [
+        return $this->output([
             'examType' => $examType
         ]);
         

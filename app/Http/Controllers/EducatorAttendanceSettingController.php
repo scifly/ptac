@@ -36,7 +36,7 @@ class EducatorAttendanceSettingController extends Controller {
             return response()->json($this->eas->datatable());
         }
         
-        return parent::output(__METHOD__);
+        return $this->output();
     }
     
     /**
@@ -47,7 +47,7 @@ class EducatorAttendanceSettingController extends Controller {
      */
     public function create() {
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -77,7 +77,7 @@ class EducatorAttendanceSettingController extends Controller {
             return $this->notFound();
         }
         
-        return $this->output(__METHOD__, ['eas' => $eas]);
+        return $this->output(['eas' => $eas]);
         
     }
     
@@ -93,7 +93,7 @@ class EducatorAttendanceSettingController extends Controller {
         if (!$eas) {
             return $this->notFound();
         }
-        return $this->output(__METHOD__, ['eas' => $eas]);
+        return $this->output(['eas' => $eas]);
     }
     
     /**

@@ -303,7 +303,7 @@ HTML;
         return false;
 
     }
-
+    
     /**
      * 删除菜单记录
      *
@@ -311,6 +311,7 @@ HTML;
      * @param bool $fireEvent
      * @return bool
      * @throws Exception
+     * @throws \Throwable
      */
     public function purge($id, $fireEvent = false) {
 
@@ -332,13 +333,14 @@ HTML;
         return false;
 
     }
-
+    
     /**
      * 删除Menu记录
      *
      * @param $menuId
      * @return bool|mixed
      * @throws Exception
+     * @throws \Throwable
      */
     public function remove($menuId) {
 
@@ -364,7 +366,7 @@ HTML;
         }
         return true;
     }
-
+    
     /**
      * 修改Menu记录
      *
@@ -372,6 +374,7 @@ HTML;
      * @param $menuId
      * @return bool|mixed
      * @throws Exception
+     * @throws \Throwable
      */
     public function modify(MenuRequest $request, $menuId) {
 

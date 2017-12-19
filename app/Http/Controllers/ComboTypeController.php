@@ -38,7 +38,7 @@ class ComboTypeController extends Controller {
             return response()->json($this->comboType->datatable());
         }
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -50,7 +50,7 @@ class ComboTypeController extends Controller {
      */
     public function create() {
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -79,7 +79,7 @@ class ComboTypeController extends Controller {
         $comboType = $this->comboType->find($id);
         if (!$comboType) { return $this->notFound(); }
         
-        return $this->output(__METHOD__, ['comboType' => $comboType]);
+        return $this->output(['comboType' => $comboType]);
         
     }
     

@@ -114,9 +114,9 @@ class ConferenceRoom extends Model {
             ['db' => 'ConferenceRoom.created_at', 'dt' => 5],
             ['db' => 'ConferenceRoom.updated_at', 'dt' => 6],
             [
-                'db' => 'ConferenceRoom.created_at', 'dt' => 7,
+                'db' => 'ConferenceRoom.enabled', 'dt' => 7,
                 'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($d, $row);
+                    return Datatable::dtOps($d, $row, false);
                 },
             ],
         ];
@@ -130,8 +130,12 @@ class ConferenceRoom extends Model {
                 ],
             ],
         ];
-
-        return Datatable::simple($this, $columns, $joins);
+        $school = new School();
+        $schoolId = $school->getSchoolId();
+        $condition = 'ConferenceRoom.school_id = ' . $schoolId;
+        unset($school);
+        
+        return Datatable::simple($this, $columns, $joins,$condition);
 
     }
 

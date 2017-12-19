@@ -2,12 +2,15 @@
 
 namespace App\Http\ViewComposers;
 
+use App\Helpers\ControllerTrait;
 use App\Models\Action;
 use App\Models\ActionType;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Request;
 
 class ActionComposer {
+    
+    use ControllerTrait;
 
     protected $action, $actionType;
 
@@ -27,7 +30,8 @@ class ActionComposer {
         }
         $view->with([
             'actionTypes' => $this->actionType->pluck('name', 'id'),
-            'selectedActionTypes' => !empty($selectedActionTypes) ? $selectedActionTypes : null
+            'selectedActionTypes' => $selectedActionTypes ?? null,
+            'uris' => $this->uris()
         ]);
 
     }

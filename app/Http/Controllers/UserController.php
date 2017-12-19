@@ -2,13 +2,17 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\UserRequest;
+use App\Models\Corp;
 use App\Models\Menu;
+use App\Models\MenuType;
+use App\Models\School;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\Session;
 
 /**
  * 用户
@@ -39,7 +43,7 @@ class UserController extends Controller {
             return response()->json($this->user->datatable());
         }
 
-        return $this->output(__METHOD__);
+        return $this->output();
 
     }
 
@@ -50,7 +54,7 @@ class UserController extends Controller {
      * @throws \Throwable
      */
     public function create() {
-        return $this->output(__METHOD__);
+        return $this->output();
 
     }
 
@@ -79,7 +83,7 @@ class UserController extends Controller {
             return $this->notFound();
         }
 
-        return $this->output(__METHOD__, ['user' => $user]);
+        return $this->output(['user' => $user]);
 
     }
 
@@ -96,7 +100,7 @@ class UserController extends Controller {
             return $this->notFound();
         }
 
-        return $this->output(__METHOD__, ['user' => $user]);
+        return $this->output(['user' => $user]);
 
     }
 
@@ -135,31 +139,40 @@ class UserController extends Controller {
     /**
      * 修改个人信息
      *
-     * @return bool|JsonResponse
      */
     public function profile(){
-        $id = Auth::id();
-
-        $user = $this->user->find($id);
-        if (!$user) {
-            return $this->notFound();
-        }
-
-        if (Request::ajax()) {
-            return response()->json([
-                'statusCode' => 200,
-                'title' => '首页',
-                'uri' => Request::path(),
-                'html' => view('user.profile',['user' => $user])->render()
+        $menuId = Request::query('menuId');
+        $menu = $this->menu->find($menuId);
+        if (!$menu) {
+            $user = Auth::user();
+            $menuId = $this->menu->where('uri', 'users/profile')->first()->id;
+            session(['menuId' => $menuId]);
+            return view('home.home', [
+                'menu' => $this->menu->getMenuHtml($this->menu->rootMenuId()),
+                'content' => view('home.' . 'school'),
+                'js' => 'js/home/page.js',
+                'user' => Auth::user()
             ]);
-        }
+        }else {
+            if (!session('menuId') || session('menuId') !== $menuId) {
+                session(['menuId' => $menuId]);
+                session(['menuChanged' => true]);
+            } else {
+                Session::forget('menuChanged');
+            }
 
-        // return view('user.profile', [
-        //     'user' => $user,
-        //     // 'menu' => $this->menu->getMenuHtml($this->menu->rootMenuId()),
-        //
-        // ]);
+            if (Request::ajax()) {
+                return response()->json([
+                    'statusCode' => 200,
+                    'title' => '首页',
+                    'uri' => Request::path(),
+                    'html' => view('user.profile',['user' => Auth::user()])->render()
+                ]);
+            }
+
+        }
     }
+
 
     /**
      * 重置密码
@@ -167,6 +180,7 @@ class UserController extends Controller {
      */
     public function reset(){
         $id = Auth::id();
+
         if(Request::isMethod('post'))
         {
            $password = Request::input('password') ;
@@ -182,15 +196,41 @@ class UserController extends Controller {
 
         }
 
-        $user = $this->user->find($id);
-        if(!$user) {
-            return $this->notFound();
+        $menuId = Request::query('menuId');
+        $menu = $this->menu->find($menuId);
+        if (!$menu) {
+            $user = Auth::user();
+            $menuId = $this->menu->where('uri', 'users/reset')->first()->id;
+            session(['menuId' => $menuId]);
+            return view('home.home', [
+                'menu' => $this->menu->getMenuHtml($this->menu->rootMenuId()),
+                'content' => view('user.' . 'reset'),
+                'js' => 'js/home/page.js',
+                'reset' => '../public/js/user/reset.js',
+                'user' => Auth::user()
+            ]);
+        }else {
+            if (!session('menuId') || session('menuId') !== $menuId) {
+                session(['menuId' => $menuId]);
+                session(['menuChanged' => true]);
+            } else {
+                Session::forget('menuChanged');
+            }
+
+            if (Request::ajax()) {
+                return response()->json([
+                    'statusCode' => 200,
+                    'title' => '首页',
+                    'uri' => Request::path(),
+                    'html' => view('user.reset',[
+                        'user' => Auth::user(),
+                        'reset' => '../public/js/user/reset.js',
+                    ])->render()
+                ]);
+            }
+
         }
-        return view('user.reset', [
-            'user' => $user,
-            'menu' => $this->menu->getMenuHtml($this->menu->rootMenuId()),
-            'js' => '../public/js/user/reset.js',
-        ]);
+
     }
 
     /**

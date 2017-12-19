@@ -37,7 +37,7 @@ class AlertTypeController extends Controller {
             return response()->json($this->alertType->datatable());
         }
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -49,7 +49,7 @@ class AlertTypeController extends Controller {
      */
     public function create() {
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -78,7 +78,7 @@ class AlertTypeController extends Controller {
         $alertType = $this->alertType->find($id);
         if (!$alertType) { return $this->notFound(); }
         
-        return $this->output(__METHOD__, ['alertType' => $alertType]);
+        return $this->output(['alertType' => $alertType]);
         
     }
     

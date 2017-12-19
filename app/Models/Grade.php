@@ -261,6 +261,7 @@ class Grade extends Model {
         $schoolId = $school->getSchoolId();
         $condition = 'Grade.school_id = ' . $schoolId;
         unset($school);
+        
         return Datatable::simple($this, $columns, $joins, $condition);
 
     }

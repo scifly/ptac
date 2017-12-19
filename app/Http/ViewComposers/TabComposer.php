@@ -2,13 +2,16 @@
 
 namespace App\Http\ViewComposers;
 
+use App\Helpers\ControllerTrait;
 use App\Models\Action;
 use App\Models\Icon;
 use App\Models\Menu;
 use Illuminate\Contracts\View\View;
 
 class TabComposer {
-
+    
+    use ControllerTrait;
+    
     protected $icon, $action, $menu;
 
     public function __construct(Icon $icon, Action $action, Menu $menu) {
@@ -28,7 +31,8 @@ class TabComposer {
                 1 => '运营',
                 2 => '企业',
                 3 => '学校'
-            ]
+            ],
+            'uris' => $this->uris()
         ]);
 
     }

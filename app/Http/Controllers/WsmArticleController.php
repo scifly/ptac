@@ -40,7 +40,7 @@ class WsmArticleController extends Controller {
             return response()->json($this->article->datatable());
         }
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -52,7 +52,7 @@ class WsmArticleController extends Controller {
      */
     public function create() {
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -82,7 +82,7 @@ class WsmArticleController extends Controller {
         $article = $this->article->find($id);
         if (!$article) { return parent::notFound(); }
         
-        return parent::output(__METHOD__, [
+        return $this->output([
             'article' => $article,
             'medias'  => $this->media->medias($article->media_ids),
         ]);
@@ -101,7 +101,7 @@ class WsmArticleController extends Controller {
         $article = $this->article->find($id);
         if (!$article) { return parent::notFound(); }
         
-        return parent::output(__METHOD__, [
+        return $this->output([
             'article' => $article,
             'medias'  => $this->media->medias($article->media_ids),
         ]);

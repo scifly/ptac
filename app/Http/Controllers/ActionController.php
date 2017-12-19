@@ -39,7 +39,7 @@ class ActionController extends Controller {
         }
         if (!$this->action->scan()) { return $this->notFound(); }
 
-        return parent::output(__METHOD__);
+        return $this->output();
 
     }
     
@@ -55,7 +55,7 @@ class ActionController extends Controller {
         $action = $this->action->find($id);
         if (!$action) { return parent::notFound(); }
 
-        return parent::output(__METHOD__, ['action' => $action]);
+        return $this->output(['action' => $action]);
 
     }
 

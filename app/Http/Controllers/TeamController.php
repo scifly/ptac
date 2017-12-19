@@ -37,7 +37,7 @@ class TeamController extends Controller {
             return response()->json($this->team->datatable());
         }
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -48,7 +48,7 @@ class TeamController extends Controller {
      * @throws Throwable
      */
     public function create() {
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -76,7 +76,7 @@ class TeamController extends Controller {
             return $this->notFound();
         }
         
-        return $this->output(__METHOD__, ['team' => $team]);
+        return $this->output(['team' => $team]);
         
     }
     

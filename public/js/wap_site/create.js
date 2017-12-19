@@ -1,5 +1,7 @@
 page.create('formWapSite', 'wap_sites');
-$(function () {
+page.loadCss(page.plugins.fileinput.css);
+$.getMultiScripts([page.plugins.fileinput.js], page.siteRoot())
+    .done(function() {
     var $pre = $('.preview');
     var $uploadFile = $('#uploadFile');
     // 初始化

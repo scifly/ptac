@@ -6,6 +6,7 @@ use App\Models\Event;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 use Throwable;
 
@@ -33,17 +34,18 @@ class EventController extends Controller {
      * @throws Throwable
      */
     public function index() {
-        $userId = 2;
-        $isAdmin = $this->event->getRole($userId) ? 1 : 0;
+        $user = Auth::user();
+        $isAdmin = $this->event->getRole($user) ? 1 : 0;
         $events = $this->event
-            ->where('User_id', $userId)
+            ->where('User_id', $user->id)
             ->where('enabled', '0')
             ->get()->toArray();
-        
-        return $this->output(__METHOD__, [
+        $show = true;
+        return $this->output([
             'events'  => $events,
-            'userId'  => $userId,
+            'userId'  => $user->id,
             'isAdmin' => $isAdmin,
+            'show' => $show,
         ]);
         
     }

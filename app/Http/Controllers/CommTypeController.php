@@ -37,7 +37,7 @@ class CommTypeController extends Controller {
             return response()->json($this->commType->datatable());
         }
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -49,7 +49,7 @@ class CommTypeController extends Controller {
      */
     public function create() {
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -78,7 +78,7 @@ class CommTypeController extends Controller {
         $commType = $this->commType->find($id);
         if (!$commType) { return $this->notFound(); }
         
-        return $this->output(__METHOD__, ['commType' => $commType]);
+        return $this->output(['commType' => $commType]);
         
     }
     

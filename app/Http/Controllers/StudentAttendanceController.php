@@ -42,7 +42,7 @@ class StudentAttendanceController extends Controller
             return response()->json($this->studentAttendance->datatable());
         }
         
-        return parent::output(__METHOD__);
+        return $this->output();
         
     }
     

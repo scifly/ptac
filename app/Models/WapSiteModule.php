@@ -151,8 +151,12 @@ class WapSiteModule extends Model {
                 ],
             ],
         ];
+        $school = new School();
+        $schoolId = $school->getSchoolId();
+        $condition = 'WapSite.school_id = ' . $schoolId;
+        unset($school);
         
-        return Datatable::simple($this, $columns, $joins);
+        return Datatable::simple($this, $columns, $joins, $condition);
         
     }
 
