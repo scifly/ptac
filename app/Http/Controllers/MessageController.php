@@ -51,6 +51,12 @@ class MessageController extends Controller {
         
     }
     
+    public function send() {
+    
+    
+    
+    }
+    
     /**
      * 创建消息
      *

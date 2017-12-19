@@ -18,7 +18,7 @@ use Throwable;
  * @package App\Http\Controllers
  */
 class MenuController extends Controller {
-
+    
     protected $menu, $menuType, $menuTab;
 
     function __construct(Menu $menu, MenuType $menuType, MenuTab $menuTab) {
@@ -109,6 +109,7 @@ class MenuController extends Controller {
      * @param integer $id 菜单ID
      * @return JsonResponse
      * @throws Exception
+     * @throws Throwable
      */
     public function update(MenuRequest $request, $id) {
 
@@ -152,6 +153,7 @@ class MenuController extends Controller {
      * @param $id
      * @return JsonResponse
      * @throws Exception
+     * @throws Throwable
      */
     public function destroy($id) {
 
@@ -186,17 +188,17 @@ class MenuController extends Controller {
     public function menuTabs($id) {
 
         $menu = $this->menu->find($id);
-        if (!$menu) {
-            return $this->notFound();
-        }
-        $tabRanks = MenuTab::whereMenuId($id)->get()->sortBy('tab_order')->toArray();
+        if (!$menu) { return $this->notFound(); }
+        $tabRanks = MenuTab::whereMenuId($id)
+            ->get()
+            ->sortBy('tab_order')
+            ->toArray();
         $tabs = [];
         foreach ($tabRanks as $rank) {
             $tab = Tab::whereId($rank['tab_id'])->first();
             $tabs[] = $tab;
         }
 
-        // $tabs = $menu->tabs;
         return $this->output(__METHOD__, ['tabs' => $tabs]);
 
     }

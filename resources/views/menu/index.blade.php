@@ -1,6 +1,6 @@
 <div class="box box-default box-solid">
     <div class="box-header with-border">
-        @include('partials.list_header', ['addBtn' => true])
+        @include('partials.list_header', ['addBtn' => false])
     </div>
     <div class="box-body">
         <div id="tree" class="col-md-12"></div>
