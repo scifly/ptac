@@ -1,3 +1,7 @@
+@isset($reset)
+    <script src="{{ URL::asset($reset) }}"></script>
+@endisset
+
 {!! Form::open([
 'method' => 'post','id' => 'formUser','class' => 'form-horizontal form-bordered','data-parsley-validate' => 'true']) !!}
 <section class="content clearfix">
@@ -75,13 +79,20 @@
 
                     </div>
                 </div>
-                @include('partials.form_buttons')
+                @include('partials.form_overlay')
+                <div class="box-footer">
+                    {{--button--}}
+                    <div class="form-group">
+                        <div class="col-sm-3 col-sm-offset-3">
+                            {!! Form::submit('保存', ['class' => 'btn btn-primary pull-left', 'id' => 'reset']) !!}
+                            {!! Form::reset('取消', ['class' => 'btn btn-default pull-right', 'id' => 'cancel']) !!}
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </section>
 {!! Form::close() !!}
-
-
 
 

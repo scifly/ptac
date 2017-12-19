@@ -204,8 +204,9 @@ class UserController extends Controller {
             session(['menuId' => $menuId]);
             return view('home.home', [
                 'menu' => $this->menu->getMenuHtml($this->menu->rootMenuId()),
-                'content' => view('home.' . 'school'),
+                'content' => view('user.' . 'reset'),
                 'js' => 'js/home/page.js',
+                'reset' => '../public/js/user/reset.js',
                 'user' => Auth::user()
             ]);
         }else {
@@ -223,7 +224,7 @@ class UserController extends Controller {
                     'uri' => Request::path(),
                     'html' => view('user.reset',[
                         'user' => Auth::user(),
-                        'js' => '../public/js/user/reset.js',
+                        'reset' => '../public/js/user/reset.js',
                     ])->render()
                 ]);
             }
