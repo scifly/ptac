@@ -141,6 +141,11 @@ class UserController extends Controller {
      *
      */
     public function profile(){
+        if(Request::isMethod('post'))
+        {
+
+        }
+
         $menuId = Request::query('menuId');
         $menu = $this->menu->find($menuId);
         if (!$menu) {
@@ -149,9 +154,10 @@ class UserController extends Controller {
             session(['menuId' => $menuId]);
             return view('home.home', [
                 'menu' => $this->menu->getMenuHtml($this->menu->rootMenuId()),
-                'content' => view('home.' . 'school'),
+                'content' => view('user.' . 'profile'),
                 'js' => 'js/home/page.js',
-                'user' => Auth::user()
+                'reset' => '../public/js/user/profile.js',
+                'user' => Auth::user(),
             ]);
         }else {
             if (!session('menuId') || session('menuId') !== $menuId) {
@@ -166,11 +172,15 @@ class UserController extends Controller {
                     'statusCode' => 200,
                     'title' => '首页',
                     'uri' => Request::path(),
-                    'html' => view('user.profile',['user' => Auth::user()])->render()
+                    'html' => view('user.profile',[
+                        'user' => Auth::user(),
+                        'reset' => '../public/js/user/profile.js',
+                    ])->render()
                 ]);
             }
 
         }
+
     }
 
 
@@ -195,7 +205,6 @@ class UserController extends Controller {
             }
 
         }
-
         $menuId = Request::query('menuId');
         $menu = $this->menu->find($menuId);
         if (!$menu) {

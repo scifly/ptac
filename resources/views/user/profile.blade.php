@@ -1,5 +1,4 @@
-
-{!! Form::model($user, [ 'method' => 'put', 'id' => 'formUser', 'data-parsley-validate' => 'true']) !!}
+{!! Form::model(Auth::user(), [ 'method' => 'post', 'id' => 'formUser', 'data-parsley-validate' => 'true']) !!}
 <section class="content clearfix">
     @include('partials.modal_dialog')
 <div class="col-lg-12">
@@ -16,10 +15,20 @@
             <div class="box-body">
                 <div class="form-horizontal">
 
-                    @if (isset($user['user_id']))
-                        {{ Form::hidden('user_id', $user['user_id'], ['id' => 'user_id']) }}
+                    @if (isset($user['id']))
+                        {{ Form::hidden('user_id', $user['id'], ['id' => 'user_id']) }}
                     @endif
+                        {{--<div class="form-group">--}}
+                            {{--{!! Form::label('avatar_url', '头像', [--}}
+                                {{--'class' => 'col-sm-3 control-label'--}}
+                            {{--]) !!}--}}
+                            {{--<div class="col-sm-6">--}}
+                                {{--<div class="input-group" style="height: 100px;">--}}
+                                    {{--<img src="{{$user['avatar_url']}}" style="height: 100px;">--}}
 
+                                {{--</div>--}}
+                            {{--</div>--}}
+                        {{--</div>--}}
                     <div class="form-group">
                         {!! Form::label('realname', '姓名', [
                             'class' => 'col-sm-3 control-label'
@@ -33,7 +42,8 @@
                                     'class' => 'form-control',
                                     'placeholder' => '(请输入真实姓名)',
                                     'required' => 'true',
-                                    'data-parsley-length' => '[2,10]'
+                                    'data-parsley-length' => '[2,10]',
+                                    'disabled' => 'true'
                                 ]) !!}
                             </div>
                         </div>
@@ -51,8 +61,12 @@
                                     'class' => 'form-control',
                                     'placeholder' => '请填写英文名(可选)',
                                     'data-parsley-type' => 'alphanum',
-                                    'data-parsley-length' => '[2, 255]'
+                                    'data-parsley-length' => '[2, 255]',
+                                    'disabled'=> 'true',
                                 ]) }}
+                                <a class="edit_input" style="position: absolute;top: 0;right: -25px;line-height:34px" title="编辑" href="#">
+                                    <i class="fa fa-pencil"></i>
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -94,8 +108,12 @@
                                     'class' => 'form-control',
                                     'placeholder' => '(请输入用户名)',
                                     'required' => 'true',
+                                     'disabled'=> 'true',
                                     'data-parsley-length' => '[6,20]'
                                 ]) !!}
+                                <a class="edit_input" style="position: absolute;top: 0;right: -25px;line-height:34px" title="编辑" href="#">
+                                    <i class="fa fa-pencil"></i>
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -111,7 +129,11 @@
                                 {{ Form::text('telephone', null, [
                                     'class' => 'form-control',
                                     'placeholder' => '请输入座机号码(可选}',
+                                     'disabled'=> 'true',
                                 ]) }}
+                                <a class="edit_input" style="position: absolute;top: 0;right: -25px;line-height:34px" title="编辑" href="#">
+                                    <i class="fa fa-pencil"></i>
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -127,8 +149,11 @@
                                 {!! Form::email('email', null, [
                                     'class' => 'form-control',
                                     'placeholder' => '(请输入电子邮件地址)',
-
+                                     'disabled'=> 'true',
                                 ]) !!}
+                                <a class="edit_input" style="position: absolute;top: 0;right: -25px;line-height:34px" title="编辑" href="#">
+                                    <i class="fa fa-pencil"></i>
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -142,4 +167,38 @@
 </section>
 {!! Form::close() !!}
 
+<script src="{{ URL::asset('js/jquery.min.js') }}"></script>
+<script>
+    $form = $('#formUser');
+    $('.edit_input').click(function () {
 
+        var input_obj = $(this).prevAll('.form-control');
+        input_obj.removeAttr("disabled");
+        input_obj.focus();
+        input_obj.unbind();
+        save_input(input_obj);
+    })
+
+    function save_input(input_obj) {
+        input_obj.blur(function () {
+            var telephone = document.getElementById('telephone').value;
+            if(!/^(\(\d{3,4}\)|\d{3,4}-|\s)?\d{7,14}$/.test(tel)){
+                alert('固定电话有误，请重填');
+                return false;
+            }
+            $.ajax({
+                type: 'post',
+                dataType: 'json',
+                url: 'profile',
+                data:$form.serialize(),
+                success: function () {
+
+                }
+            })
+            input_obj.attr("disabled","true");
+
+        })
+    }
+
+
+</script>
