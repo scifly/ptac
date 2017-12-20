@@ -273,13 +273,14 @@ class Department extends Model {
         return $updated ? $department : false;
 
     }
-
+    
     /**
      * 删除部门
      *
      * @param $id
      * @return bool|null
      * @throws Exception
+     * @throws \Throwable
      */
     public function remove($id) {
 
@@ -649,14 +650,40 @@ class Department extends Model {
         }
 
     }
-
+    
+    /**
+     * 返回指定部门所处的级别
+     *
+     * @param integer $id 部门ID
+     * @param integer $level 部门所处级别
+     * @return int|null
+     */
+    public static function level($id, &$level) {
+        
+        $department = self::find($id);
+        if (!$department) { return null; }
+        $parent = $department->parent;
+        if ($parent) {
+            $level += 1;
+            self::level($parent->id, $level);
+        }
+        
+        return $level;
+        
+    }
+    
+    /**
+     * 返回指定用户所处顶级部门的类型
+     *
+     * @param $userId
+     * @return null|string
+     */
     public function groupLevel($userId) {
 
-        $group = User::whereId($userId)->first()->group;
-        if (isset($group->school_id)) {
-            return 'school';
-        }
         $user = User::find($userId);
+        if (!$user) { return null; }
+        $group = $user->group;
+        if (isset($group->school_id)) { return 'school'; }
         $topDepartmentId = $user->topDeptId($user);
         $departmentType = $this->find($topDepartmentId)->departmentType->name;
         switch ($departmentType) {

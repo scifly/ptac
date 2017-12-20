@@ -6,6 +6,7 @@ use App\Events\UserCreated;
 use App\Events\UserDeleted;
 use App\Events\UserUpdated;
 use App\Facades\DatatableFacade as Datatable;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -16,7 +17,6 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Notifications\DatabaseNotificationCollection;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Facades\Log;
 
 /**
  * App\User 用户
@@ -32,8 +32,8 @@ use Illuminate\Support\Facades\Log;
  * @property string $realname 真实姓名
  * @property string $avatar_url 头像URL
  * @property string $wechatid 微信号
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property int $enabled
  * @property-read DatabaseNotificationCollection|DatabaseNotification[] $notifications
  * @property string $userid 成员userid
@@ -235,10 +235,19 @@ class User extends Authenticatable {
      * @return mixed
      */
     public function topDeptId(User $user) {
-        $departmentIds = $user->departments->pluck('id')->toArray();
-        sort($departmentIds);
+        
+        $departmentIds = $user->departments
+            ->pluck('id')
+            ->toArray();
+        $levels = [];
+        foreach ($departmentIds as $id) {
+            $level = 0;
+            $levels[$id] = Department::level($id, $level);
+        }
+        asort($levels);
+        reset($levels);
 
-        return !empty($departmentIds) ? $departmentIds[0] : 1;
+        return key($levels) ?? 1;
 
     }
 

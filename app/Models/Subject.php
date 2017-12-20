@@ -111,13 +111,14 @@ class Subject extends Model {
         return $selectedSubjects;
 
     }
-
+    
     /**
      * 保存新的科目记录
      *
      * @param SubjectRequest $request
      * @return bool
      * @throws Exception
+     * @throws \Throwable
      */
     public function store(SubjectRequest $request) {
         
@@ -144,7 +145,7 @@ class Subject extends Model {
         return true;
 
     }
-
+    
     /**
      * 更新指定的科目记录
      *
@@ -152,6 +153,7 @@ class Subject extends Model {
      * @param $id
      * @return bool|mixed
      * @throws Exception
+     * @throws \Throwable
      */
     public function modify(SubjectRequest $request, $id) {
         
@@ -180,13 +182,14 @@ class Subject extends Model {
         return true;
 
     }
-
+    
     /**
      * 删除指定的科目记录
      *
      * @param $subjectId
      * @return bool|mixed
      * @throws Exception
+     * @throws \Throwable
      */
     public function remove($subjectId) {
         

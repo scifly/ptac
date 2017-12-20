@@ -80,13 +80,14 @@ class Major extends Model {
         return $this->pluck('id', 'name');
 
     }
-
+    
     /**
      * 保存专业
      *
      * @param MajorRequest $request
      * @return bool|mixed
      * @throws Exception
+     * @throws \Throwable
      */
     public function store(MajorRequest $request) {
 
@@ -104,7 +105,7 @@ class Major extends Model {
         return true;
 
     }
-
+    
     /**
      * 更新专业
      *
@@ -112,6 +113,7 @@ class Major extends Model {
      * @param $id
      * @return bool|mixed
      * @throws Exception
+     * @throws \Throwable
      */
     public function modify(MajorRequest $request, $id) {
 
@@ -132,13 +134,14 @@ class Major extends Model {
         }
         return true;
     }
-
+    
     /**
      * 删除专业
      *
      * @param $id
      * @return bool|mixed
      * @throws Exception
+     * @throws \Throwable
      */
     public function remove($id) {
 

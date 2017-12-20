@@ -10,7 +10,7 @@
             @if (!empty($menu['position']))
                 {{ Form::hidden('position', $menu['position'], ['id' => 'position']) }}
             @endif
-            {{ Form::hidden('parent_id', isset($parentId) ? $parentId : null, ['id' => 'parent_id']) }}
+            {{ Form::hidden('parent_id', $parentId ?? null, ['id' => 'parent_id']) }}
             <!-- 名称 -->
             <div class="form-group">
                 {!! Form::label('name', '名称', [
@@ -32,7 +32,7 @@
                 </div>
             </div>
             <!-- 菜单类型ID -->
-            {{ Form::hidden('menu_type_id', isset($menuTypeId) ? $menuTypeId : null, [
+            {{ Form::hidden('menu_type_id', $menuTypeId ?? null, [
                 'id' => 'menu_type_id'
             ]) }}
             <!-- 图标ID -->

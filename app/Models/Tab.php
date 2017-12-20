@@ -162,13 +162,14 @@ class Tab extends Model {
         return $allData;
 
     }
-
+    
     /**
      * 移除指定的卡片
      *
      * @param $id
      * @return bool|mixed
      * @throws Exception
+     * @throws \Throwable
      */
     public function remove($id) {
 
@@ -271,13 +272,14 @@ class Tab extends Model {
         return Datatable::simple($this, $columns, $joins);
 
     }
-
+    
     /**
      * 保存卡片
      *
      * @param array $data
      * @return bool|mixed
      * @throws Exception
+     * @throws \Throwable
      */
     public function store(array $data) {
 
@@ -295,7 +297,7 @@ class Tab extends Model {
         return true;
 
     }
-
+    
     /**
      * 更新指定的卡片
      *
@@ -303,6 +305,7 @@ class Tab extends Model {
      * @param $id
      * @return bool|mixed
      * @throws Exception
+     * @throws \Throwable
      */
     public function modify(array $data, $id) {
 

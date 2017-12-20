@@ -45,13 +45,14 @@ class Operator extends Model {
      * @return BelongsTo
      */
     public function user() { return $this->belongsTo('App\Models\User'); }
-
+    
     /**
      * 保存系统管理员
      *
      * @param OperatorRequest $request
      * @return bool|mixed
      * @throws Exception
+     * @throws \Throwable
      */
     public function store(OperatorRequest $request) {
 
@@ -199,7 +200,7 @@ class Operator extends Model {
         return $departments;
 
     }
-
+    
     /**
      * 更新系统管理员
      *
@@ -207,6 +208,7 @@ class Operator extends Model {
      * @param $id
      * @return bool|mixed
      * @throws Exception
+     * @throws \Throwable
      */
     public function modify(OperatorRequest $request, $id) {
 

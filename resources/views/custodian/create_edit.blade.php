@@ -133,7 +133,7 @@
                     </table>
                     </div>
                     <button id="add-pupil" class="btn btn-box-tool" type="button">
-                        <i class="fa fa-user-plus text-blue">新增</i>
+                        <i class="fa fa-user-plus text-blue">&nbsp;新增</i>
                     </button>
                     {{--@endif--}}
                 </div>

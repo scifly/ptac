@@ -29,12 +29,13 @@ class GroupTab extends Model {
     protected $table = 'groups_tabs';
 
     protected $fillable = ['group_id', 'tab_id', 'enabled'];
-
+    
     /**
      * @param $groupId
      * @param array $ids
      * @return bool
      * @throws Exception
+     * @throws \Throwable
      */
     public function storeByGroupId($groupId, array $ids = []) {
         try {

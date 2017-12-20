@@ -71,13 +71,14 @@ class Custodian extends Model {
      * @return HasMany
      */
     public function custodianStudents() { return $this->hasMany('App\Models\CustodianStudent'); }
-
+    
     /**
      * 保存新创建的监护人记录
      *
      * @param CustodianRequest $request
      * @return bool|mixed
      * @throws Exception
+     * @throws \Throwable
      */
     public function store(CustodianRequest $request) {
 
@@ -151,7 +152,7 @@ class Custodian extends Model {
         return true;
 
     }
-
+    
     /**
      * 更新指定的监护人记录
      *
@@ -159,6 +160,7 @@ class Custodian extends Model {
      * @param $custodianId
      * @return bool|mixed
      * @throws Exception
+     * @throws \Throwable
      */
     public function modify(CustodianRequest $request, $custodianId) {
 
@@ -236,13 +238,14 @@ class Custodian extends Model {
         }
         return true;
     }
-
+    
     /**
      * 删除指定的监护人记录
      *
      * @param $custodianId
      * @return bool|mixed
      * @throws Exception
+     * @throws \Throwable
      */
     public function remove($custodianId) {
 

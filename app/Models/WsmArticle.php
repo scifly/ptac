@@ -65,13 +65,14 @@ class WsmArticle extends Model {
         return $this->belongsTo('App\Models\Media', 'thumbnail_media_id', 'id');
 
     }
-
+    
     /**
      * 保存新建的网站文章
      *
      * @param WsmArticleRequest $request
      * @return bool|mixed
      * @throws Exception
+     * @throws \Throwable
      */
     public function store(WsmArticleRequest $request) {
 
@@ -113,7 +114,7 @@ class WsmArticle extends Model {
         }
         
     }
-
+    
     /**
      * 更新网站文章
      *
@@ -121,6 +122,7 @@ class WsmArticle extends Model {
      * @param $id
      * @return bool|mixed
      * @throws Exception
+     * @throws \Throwable
      */
     public function modify(WsmArticleRequest $request, $id) {
         

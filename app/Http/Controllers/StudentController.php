@@ -86,6 +86,7 @@ class StudentController extends Controller {
      * @param StudentRequest $request
      * @return JsonResponse
      * @throws Exception
+     * @throws Throwable
      */
     public function store(StudentRequest $request) {
         
@@ -122,9 +123,7 @@ class StudentController extends Controller {
 
         # 查询学生信息
         $student = $this->student->find($id);
-        if (!$student) {
-            return $this->notFound();
-        }
+        if (!$student) { return $this->notFound(); }
         $user = $student->user;
         // print_r($student->toArray());die;
         $items = $this->student->getGradeClass($student->squad->grade_id);
@@ -146,6 +145,7 @@ class StudentController extends Controller {
      * @param $id
      * @return JsonResponse
      * @throws Exception
+     * @throws Throwable
      */
     public function update(StudentRequest $request, $id) {
         
@@ -160,6 +160,7 @@ class StudentController extends Controller {
      * @param $id
      * @return JsonResponse
      * @throws Exception
+     * @throws Throwable
      */
     public function destroy($id) {
         
