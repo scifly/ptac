@@ -88,10 +88,6 @@
 
         </div>
     </div>
-
 </div>
-@if(isset($js))
-<script src="{{asset($js)}}"></script>
-@endif
 
        
