@@ -370,7 +370,12 @@ class School extends Model {
         return $schoolList;
 
     }
-
+    
+    /**
+     * 根据菜单ID获取school_id
+     *
+     * @return int|mixed
+     */
     public function getSchoolId() {
 
         $user = Auth::user();
@@ -379,11 +384,7 @@ class School extends Model {
             case '企业':
                 $menu = new Menu();
                 $schoolMenuId = $menu->getSchoolMenuId(session('menuId'));
-                if ($schoolMenuId) {
-                    $schoolId = $this::whereMenuId($schoolMenuId)->first()->id;
-                } else {
-                    $schoolId = 0;
-                }
+                $schoolId = $schoolMenuId ? $this::whereMenuId($schoolMenuId)->first()->id : 0;
                 unset($menu);
                 break;
             case '学校':

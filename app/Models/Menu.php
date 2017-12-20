@@ -18,7 +18,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 /**
  * App\Models\Menu
@@ -231,13 +230,14 @@ HTML;
         return implode(' . ', $path);
 
     }
-
+    
     /**
      * 创建Menu记录, 及卡片绑定记录
      *
      * @param MenuRequest $request
      * @return bool|mixed
      * @throws Exception
+     * @throws \Throwable
      */
     public function store(MenuRequest $request) {
 
@@ -591,7 +591,6 @@ HTML;
                 $rootMenuId = School::whereDepartmentId($user->topDeptId($user))
                     ->first()
                     ->menu_id;
-
                 break;
             default:
                 $rootMenuId = School::find(Group::find($user->group->id)->school_id)
@@ -791,9 +790,7 @@ HTML;
         $menuType = $menu->menuType->name;
         while ($menuType != '学校') {
             $menu = $menu->parent;
-            if (!$menu) {
-                return null;
-            }
+            if (!$menu) { return null; }
             $menuType = $menu->menuType->name;
         }
 

@@ -30,12 +30,13 @@ class GroupMenu extends Model {
     protected $table = 'groups_menus';
 
     protected $fillable = ['group_id', 'menu_id', 'enabled'];
-
+    
     /**
      * @param $groupId
      * @param array $ids
      * @return bool
      * @throws Exception
+     * @throws \Throwable
      */
     public function storeByGroupId($groupId, array $ids = []) {
         

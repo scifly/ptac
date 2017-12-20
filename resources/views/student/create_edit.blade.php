@@ -15,6 +15,7 @@
                 {{ Form::hidden('user_id', $student['user_id'], ['id' => 'user_id']) }}
             @endif
             <!-- 学生姓名 -->
+            <!-- 真实姓名 -->
             <div class="form-group">
                 {{ Form::label('user[realname]', '姓名', [
                     'class' => 'col-sm-3 control-label'
@@ -99,69 +100,6 @@
                     </div>
                 </div>
             </div>
-            {{--<!-- 所属运营者 -->--}}
-            {{--@if (isset($companies))--}}
-                {{--@if(count($companies) > 1)--}}
-                    {{--@include('partials.single_select', [--}}
-                        {{--'label' => '所属运营者',--}}
-                        {{--'id' => 'company_id',--}}
-                        {{--'items' => $companies,--}}
-                        {{--'icon' => 'fa fa-building'--}}
-                    {{--])--}}
-                {{--@else--}}
-                    {{--<div class="form-group">--}}
-                        {{--{{ Form::label('student[class_id]', '所属运营者', [--}}
-                            {{--'class' => 'col-sm-3 control-label'--}}
-                        {{--]) }}--}}
-                        {{--<div class="col-sm-6" style="margin-top: 7px;">--}}
-                            {{--<i class="fa fa-building"></i>&nbsp;{{ $companies[array_keys($companies)[0]] }}--}}
-                            {{--{{ Form::hidden('company_id', array_keys($companies)[0], ['id' => 'company_id']) }}--}}
-                        {{--</div>--}}
-                    {{--</div>--}}
-                {{--@endif--}}
-            {{--@endif--}}
-            {{--<!-- 所属企业 -->--}}
-            {{--@if (isset($corps))--}}
-                {{--@if(count($corps) > 1)--}}
-                    {{--@include('partials.single_select', [--}}
-                        {{--'label' => '所属企业',--}}
-                        {{--'id' => 'corp_id',--}}
-                        {{--'items' => $corps,--}}
-                        {{--'icon' => 'fa fa-weixin'--}}
-                    {{--])--}}
-                {{--@else--}}
-                    {{--<div class="form-group">--}}
-                        {{--{{ Form::label('student[class_id]', '所属企业', [--}}
-                            {{--'class' => 'col-sm-3 control-label'--}}
-                        {{--]) }}--}}
-                        {{--<div class="col-sm-6" style="margin-top: 7px;">--}}
-                            {{--<i class="fa fa-weixin"></i>&nbsp;{{ $corps[array_keys($corps)[0]] }}--}}
-                            {{--{{ Form::hidden('corp_id', array_keys($corps)[0], ['id' => 'corp_id']) }}--}}
-                        {{--</div>--}}
-                    {{--</div>--}}
-                {{--@endif--}}
-            {{--@endif--}}
-            {{--<!-- 所属学校 -->--}}
-            {{--@if (isset($schools))--}}
-                {{--@if(count($schools) > 1)--}}
-                    {{--@include('partials.single_select', [--}}
-                        {{--'label' => '所属学校',--}}
-                        {{--'id' => 'school_id',--}}
-                        {{--'items' => $schools,--}}
-                        {{--'icon' => 'fa fa-university'--}}
-                    {{--])--}}
-                {{--@else--}}
-                    {{--<div class="form-group">--}}
-                        {{--{{ Form::label('student[class_id]', '所属学校', [--}}
-                            {{--'class' => 'col-sm-3 control-label'--}}
-                        {{--]) }}--}}
-                        {{--<div class="col-sm-6" style="margin-top: 7px;">--}}
-                            {{--<i class="fa fa-university"></i>&nbsp;{{ $schools[array_keys($schools)[0]] }}--}}
-                            {{--{{ Form::hidden('school_id', array_keys($schools)[0], ['id' => 'school_id']) }}--}}
-                        {{--</div>--}}
-                    {{--</div>--}}
-                {{--@endif--}}
-            {{--@endif--}}
             <!-- 所属年级 -->
             @if (isset($grades))
                 @if(count($grades) > 1)
@@ -184,7 +122,6 @@
                 @endif
             @endif
             <!-- 所属班级 -->
-{{--            @if(count($classes) > 1)--}}
             <div class="form-group">
                 {!! Form::label('class_id', '所属班级', [
                     'class' => 'col-sm-3 control-label',
@@ -202,17 +139,6 @@
                     </div>
                 </div>
             </div>
-            {{--@else--}}
-                {{--<div class="form-group">--}}
-                    {{--{{ Form::label('student[class_id]', '所属班级', [--}}
-                        {{--'class' => 'col-sm-3 control-label'--}}
-                    {{--]) }}--}}
-                    {{--<div class="col-sm-6" style="margin-top: 7px;">--}}
-                        {{--<i class="fa fa-users"></i>&nbsp;{{ $classes[array_keys($classes)[0]] }}--}}
-                        {{--{{ Form::hidden('student[class_id]', array_keys($classes)[0], ['id' => 'class_id']) }}--}}
-                    {{--</div>--}}
-                {{--</div>--}}
-            {{--@endif--}}
             <!-- 学号 -->
             <div class="form-group">
                 {!! Form::label('student_number', '学号', [
@@ -259,16 +185,15 @@
             </div>
             <!-- 是否住校 -->
             @include('partials.enabled', [
-                'label' => '是否住校',
+                'label' => '住校',
                 'id' => 'oncampus',
                 'value' => $student['oncampus'] ?? NULL,
-                'options' => ['住校', '走读']
+                'options' => ['是', '否']
             ])
             <!-- 备注 -->
             @include('partials.remark', [
                 'field' => 'user[remark]'
             ])
-
             <!-- 状态 -->
             @include('partials.enabled', [
                 'id' => 'user[enabled]',

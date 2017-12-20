@@ -242,13 +242,14 @@ class Educator extends Model {
         return Datatable::simple($this, $columns, $joins, $condition);
 
     }
-
+    
     /**
      * 保存新创建的教职员工记录
      *
      * @param EducatorRequest|CustodianRequest $request
      * @return bool|mixed
      * @throws Exception
+     * @throws \Throwable
      */
     public function store(EducatorRequest $request) {
 
@@ -412,13 +413,14 @@ class Educator extends Model {
         }
         return $csArray;
     }
-
+    
     /**
      * 修改教职员工
      *
      * @param EducatorRequest $request
      * @return bool|mixed
      * @throws Exception
+     * @throws \Throwable
      */
     public function modify(EducatorRequest $request) {
 

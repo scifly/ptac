@@ -141,12 +141,13 @@ class Student extends Model {
         return $studentList;
 
     }
-
+    
     /**
      * 保存新创建的学生记录
      * @param StudentRequest $request
      * @return bool|mixed
      * @throws Exception
+     * @throws \Throwable
      */
     public function store(StudentRequest $request) {
         try {

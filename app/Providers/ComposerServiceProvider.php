@@ -16,6 +16,7 @@ class ComposerServiceProvider extends ServiceProvider {
         View::composer('alert_type.index', 'App\Http\ViewComposers\AlertTypeIndexComposer');
         
         View::composer('company.index', 'App\Http\ViewComposers\CompanyIndexComposer');
+        View::composer('company.create_edit', 'App\Http\ViewComposers\CompanyComposer');
         
         View::composer('educator.index', 'App\Http\ViewComposers\EducatorIndexComposer');
         View::composer('educator.create_edit', 'App\Http\ViewComposers\EducatorComposer');
@@ -28,7 +29,7 @@ class ComposerServiceProvider extends ServiceProvider {
         View::composer('student_attendance_setting.index', 'App\Http\ViewComposers\StudentAttendanceSettingIndexComposer');
 
         View::composer('student.index', 'App\Http\ViewComposers\StudentIndexComposer');
-        // View::composer('student.create_edit', 'App\Http\ViewComposers\StudentComposer');
+        View::composer('student.create_edit', 'App\Http\ViewComposers\StudentComposer');
     
         View::composer('custodian.index', 'App\Http\ViewComposers\CustodianIndexComposer');
         View::composer('custodian.create_edit', 'App\Http\ViewComposers\CustodianComposer');
