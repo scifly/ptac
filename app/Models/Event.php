@@ -96,60 +96,43 @@ class Event extends Model {
             ['db' => 'Event.location', 'dt' => 3],
             ['db' => 'Event.start', 'dt' => 4],
             ['db' => 'Event.end', 'dt' => 5],
-            ['db' => 'Message.readed', 'dt' => 6,
-             'formatter' => function ($d) {
-                 return $d === 0 ? "否" : "是";
-             },
-            ],
-            ['db' => 'Message.sent', 'dt' => 7,
-             'formatter' => function ($d) {
-                 return $d === 0 ? "否" : "是";
-             },
-            ],
-            ['db' => 'Message.created_at', 'dt' => 8],
             [
-                'db' => 'Message.updated_at', 'dt' => 9,
-                'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($this, $d, $row);
+                'db' => 'Event.ispublic', 'dt' => 6,
+                'formatter' => function ( $d, $row ) {
+                    if (!empty($d)) {
+                       return  $d ? '是' : '否';
+                    }
+                    return '[n/a]';
                 },
             ],
+            ['db' => 'Subject.name', 'dt' => 7],
+            ['db' => 'Event.alertable', 'dt' => 8],
+            ['db' => 'User.realname', 'dt' => 9],
+            ['db' => 'Event.updated_at', 'dt' => 10],
         ];
         $joins = [
-            [
-                'table' => 'comm_types',
-                'alias' => 'CommType',
-                'type' => 'INNER',
-                'conditions' => [
-                    'CommType.id = Message.comm_type_id',
-                ],
-            ],
-            [
-                'table' => 'apps',
-                'alias' => 'App',
-                'type' => 'INNER',
-                'conditions' => [
-                    'App.id = Message.app_id',
-                ],
-            ],
-            [
-                'table' => 'message_types',
-                'alias' => 'MessageType',
-                'type' => 'INNER',
-                'conditions' => [
-                    'MessageType.id = Message.message_type_id',
-                ],
-            ],
             [
                 'table' => 'users',
                 'alias' => 'User',
                 'type' => 'INNER',
                 'conditions' => [
-                    'User.id = Message.s_user_id',
+                    'User.id = Event.user_id',
                 ],
             ],
-        ];
+            [
+                'table' => 'subjects',
+                'alias' => 'Subject',
+                'type' => 'INNER',
+                'conditions' => [
+                    'Subject.id = Event.subject_id',
+                ],
+            ],
 
-        return Datatable::simple($this, $columns, $joins);
+        ];
+        $condition = null;
+        $condition = 'Event.enabled = 1';
+
+        return Datatable::simple($this, $columns, $joins, $condition);
     }
 
     /**

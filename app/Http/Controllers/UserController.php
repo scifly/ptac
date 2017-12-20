@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\UserRequest;
 use App\Models\Corp;
+use App\Models\Event;
 use App\Models\Menu;
 use App\Models\MenuType;
 use App\Models\Message;
@@ -26,13 +27,15 @@ class UserController extends Controller {
     protected $user;
     protected $menu;
     protected $message;
+    protected $event;
 
-    function __construct(User $user, Menu $menu, Message $message) {
+    function __construct(User $user, Menu $menu, Message $message ,Event $event) {
 
         $this->middleware(['auth']);
         $this->user = $user;
         $this->menu = $menu;
         $this->message = $message;
+        $this->event = $event;
     }
 
     /**
@@ -267,7 +270,7 @@ class UserController extends Controller {
                 'menu' => $this->menu->getMenuHtml($this->menu->rootMenuId()),
                 'content' => view('user.' . 'message'),
                 'js' => 'js/home/page.js',
-                'reset' => '../public/js/user/message.js',
+                'message' => '../public/js/user/message.js',
                 'user' => Auth::user()
             ]);
         }else {
@@ -289,7 +292,7 @@ class UserController extends Controller {
                     'uri' => Request::path(),
                     'html' => view('user.message',[
                         'user' => Auth::user(),
-                        'reset' => '../public/js/user/message.js',
+                        'message' => '../public/js/user/message.js',
                     ])->render()
                 ]);
             }
@@ -306,18 +309,16 @@ class UserController extends Controller {
         $menuId = Request::query('menuId');
         $menu = $this->menu->find($menuId);
         if (!$menu) {
-            $user = Auth::user();
             $menuId = $this->menu->where('uri', 'users/events')->first()->id;
-
             session(['menuId' => $menuId]);
             if (Request::get('draw')) {
-                return response()->json($this->message->datatable());
+                return response()->json($this->event->datatable());
             }
             return view('home.home', [
                 'menu' => $this->menu->getMenuHtml($this->menu->rootMenuId()),
                 'content' => view('user.' . 'event'),
                 'js' => 'js/home/page.js',
-                'reset' => '../public/js/user/event.js',
+                'event' => '../public/js/user/event.js',
                 'user' => Auth::user()
             ]);
         }else {
@@ -329,7 +330,7 @@ class UserController extends Controller {
             }
 
             if (Request::get('draw')) {
-                return response()->json($this->message->datatable());
+                return response()->json($this->event->datatable());
             }
 
             if (Request::ajax()) {
@@ -339,7 +340,7 @@ class UserController extends Controller {
                     'uri' => Request::path(),
                     'html' => view('user.event',[
                         'user' => Auth::user(),
-                        'reset' => '../public/js/user/event.js',
+                        'event' => '../public/js/user/event.js',
                     ])->render()
                 ]);
             }

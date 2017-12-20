@@ -175,7 +175,7 @@ Route::post('users/profile','UserController@profile');
 Route::get('users/reset','UserController@reset');
 Route::post('users/reset','UserController@reset');
 Route::get('users/messages','UserController@messages');
-Route::get('users/events','UserController@events');
+Route::get('users/events','UserController@event');
 // 个人通讯录
 // 消息中心
 Route::group(['prefix' => 'messages'], routes('MessageController'));

@@ -1,4 +1,8 @@
+<link rel="stylesheet" href="{{ URL::asset('css/bootstrap.min.css') }}">
+<link rel="stylesheet" href="{{ URL::asset('js/plugins/parsley/parsley.css') }}">
 <link rel="stylesheet" href="{{ URL::asset('js/plugins/datatables/datatables.min.css') }}">
+<script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <section class="content clearfix">
     @include('partials.modal_dialog')
     <div class="col-lg-12">
@@ -33,28 +37,11 @@
     </div>
 </section>
 <script src="{{ URL::asset('js/jquery.min.js') }}"></script>
+<script src="{{ URL::asset('js/plugins/parsley/parsley.min.js') }}"></script>
 <script src="{{ URL::asset('js/plugins/parsley/i18n/zh_cn.js') }}"></script>
 <script src="{{ URL::asset('js/plugins/parsley/i18n/zh_cn.extra.js') }}"></script>
 <script src="{{ URL::asset('js/plugins/datatables/datatables.min.js') }}"></script>
 <script src="{{ URL::asset('js/plugins/datatables/dataTables.checkboxes.min.js') }}"></script>
-<script>
-    var table;
-    function initDatatable() {
-        table = $('#data-table').dataTable({
-            processing: true,
-            serverSide: true,
-            ajax: 'messages',
-            order: [[0, 'desc']],
-            stateSave: true,
-            autoWidth: true,
-            columnDefs: [
-                { className: 'text-center', targets: [0, 1, 2, 3, 4, 5, 6,7,8] },
-                // { className: 'text-right', targets: [9] }
-            ],
-            scrollX: true,
-            language: {url: '../files/ch.json'},
-            lengthMenu: [[15, 25, 50, -1], [15, 25, 50, '所有']]
-        });
-    }
-    initDatatable();
-</script>
+@isset($message)
+    <script src="{{ URL::asset($message) }}"></script>
+@endisset

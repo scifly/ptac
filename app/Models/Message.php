@@ -185,7 +185,7 @@ class Message extends Model {
         $columns = [
             ['db' => 'Message.id', 'dt' => 0],
             ['db' => 'CommType.name as commtypename', 'dt' => 1],
-            ['db' => 'App.name as appname', 'dt' => 2],
+            ['db' => 'Message.app_id', 'dt' => 2],
             ['db' => 'Message.msl_id', 'dt' => 3],
             ['db' => 'User.realname', 'dt' => 4],
             ['db' => 'MessageType.name as messagetypename', 'dt' => 5],
@@ -200,11 +200,7 @@ class Message extends Model {
                 },
             ],
             ['db' => 'Message.created_at', 'dt' => 8],
-            [
-                'db' => 'Message.updated_at', 'dt' => 9,
-                'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($this, $d, $row);
-                },
+            ['db' => 'Message.updated_at', 'dt' => 9
             ],
         ];
         $joins = [
@@ -216,14 +212,14 @@ class Message extends Model {
                     'CommType.id = Message.comm_type_id',
                 ],
             ],
-            [
-                'table' => 'apps',
-                'alias' => 'App',
-                'type' => 'INNER',
-                'conditions' => [
-                    'App.id = Message.app_id',
-                ],
-            ],
+            // [
+            //     'table' => 'apps',
+            //     'alias' => 'App',
+            //     'type' => 'INNER',
+            //     'conditions' => [
+            //         'App.id = Message.app_id',
+            //     ],
+            // ],
             [
                 'table' => 'message_types',
                 'alias' => 'MessageType',
