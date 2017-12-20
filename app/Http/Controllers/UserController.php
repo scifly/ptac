@@ -5,6 +5,7 @@ use App\Http\Requests\UserRequest;
 use App\Models\Corp;
 use App\Models\Menu;
 use App\Models\MenuType;
+use App\Models\Message;
 use App\Models\School;
 use App\Models\User;
 use Exception;
@@ -24,12 +25,14 @@ class UserController extends Controller {
 
     protected $user;
     protected $menu;
+    protected $message;
 
-    function __construct(User $user, Menu $menu) {
+    function __construct(User $user, Menu $menu, Message $message) {
 
         $this->middleware(['auth']);
         $this->user = $user;
         $this->menu = $menu;
+        $this->message = $message;
     }
 
     /**
@@ -158,8 +161,8 @@ class UserController extends Controller {
                 'menu' => $this->menu->getMenuHtml($this->menu->rootMenuId()),
                 'content' => view('user.' . 'profile'),
                 'js' => 'js/home/page.js',
-                'reset' => '../public/js/user/profile.js',
-                'user' => Auth::user(),
+                'profile' => '../public/js/user/profile.js',
+                'user' => Auth::user()
             ]);
         }else {
             if (!session('menuId') || session('menuId') !== $menuId) {
@@ -246,8 +249,53 @@ class UserController extends Controller {
 
     /**
      * 我的消息
+     * @throws \Throwable
      */
     public function messages(){
+
+        $menuId = Request::query('menuId');
+        $menu = $this->menu->find($menuId);
+        if (!$menu) {
+            $user = Auth::user();
+            $menuId = $this->menu->where('uri', 'users/messages')->first()->id;
+
+            session(['menuId' => $menuId]);
+            if (Request::get('draw')) {
+                return response()->json($this->message->datatable());
+            }
+            return view('home.home', [
+                'menu' => $this->menu->getMenuHtml($this->menu->rootMenuId()),
+                'content' => view('user.' . 'message'),
+                'js' => 'js/home/page.js',
+                'reset' => '../public/js/user/message.js',
+                'user' => Auth::user()
+            ]);
+        }else {
+            if (!session('menuId') || session('menuId') !== $menuId) {
+                session(['menuId' => $menuId]);
+                session(['menuChanged' => true]);
+            } else {
+                Session::forget('menuChanged');
+            }
+
+            if (Request::get('draw')) {
+                return response()->json($this->message->datatable());
+            }
+
+            if (Request::ajax()) {
+                return response()->json([
+                    'statusCode' => 200,
+                    'title' => '首页',
+                    'uri' => Request::path(),
+                    'html' => view('user.message',[
+                        'user' => Auth::user(),
+                        'reset' => '../public/js/user/message.js',
+                    ])->render()
+                ]);
+            }
+
+        }
+
 
     }
 
@@ -255,7 +303,48 @@ class UserController extends Controller {
      * 待办事项
      */
     public function event(){
+        $menuId = Request::query('menuId');
+        $menu = $this->menu->find($menuId);
+        if (!$menu) {
+            $user = Auth::user();
+            $menuId = $this->menu->where('uri', 'users/events')->first()->id;
 
+            session(['menuId' => $menuId]);
+            if (Request::get('draw')) {
+                return response()->json($this->message->datatable());
+            }
+            return view('home.home', [
+                'menu' => $this->menu->getMenuHtml($this->menu->rootMenuId()),
+                'content' => view('user.' . 'event'),
+                'js' => 'js/home/page.js',
+                'reset' => '../public/js/user/event.js',
+                'user' => Auth::user()
+            ]);
+        }else {
+            if (!session('menuId') || session('menuId') !== $menuId) {
+                session(['menuId' => $menuId]);
+                session(['menuChanged' => true]);
+            } else {
+                Session::forget('menuChanged');
+            }
+
+            if (Request::get('draw')) {
+                return response()->json($this->message->datatable());
+            }
+
+            if (Request::ajax()) {
+                return response()->json([
+                    'statusCode' => 200,
+                    'title' => '首页',
+                    'uri' => Request::path(),
+                    'html' => view('user.event',[
+                        'user' => Auth::user(),
+                        'reset' => '../public/js/user/event.js',
+                    ])->render()
+                ]);
+            }
+
+        }
     }
     /**
      * 上传用户头像

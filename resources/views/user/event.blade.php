@@ -43,7 +43,7 @@
         table = $('#data-table').dataTable({
             processing: true,
             serverSide: true,
-            ajax: 'messages',
+            ajax: 'events',
             order: [[0, 'desc']],
             stateSave: true,
             autoWidth: true,
