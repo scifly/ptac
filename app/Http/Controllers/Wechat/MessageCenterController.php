@@ -42,6 +42,6 @@ class MessageCenterController extends Controller {
             print_r($userInfo);
         }
     
-        return view('wechat.message_center.index');
+        // return view('wechat.message_center.index');
     }
 }
