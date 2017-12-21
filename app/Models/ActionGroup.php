@@ -29,13 +29,14 @@ class ActionGroup extends Model {
     protected $table = 'actions_groups';
 
     protected $fillable = ['action_id', 'group_id', 'enabled'];
-
+    
     /**
      * 根据groupId保存所有记录
      *
      * @param $groupId
      * @param array $ids
      * @throws Exception
+     * @throws \Throwable
      */
     public function storeByGroupId($groupId, array $ids = []) {
 

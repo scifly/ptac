@@ -13,7 +13,9 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 
 class EducatorIndexComposer {
+    
     use ControllerTrait;
+    
     protected $user;
 
     public function __construct(User $user) {

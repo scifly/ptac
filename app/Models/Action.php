@@ -73,7 +73,9 @@ class Action extends Model {
         'ResetPasswordController',
         'HomeController',
         'TestController',
-        'Score_SendController',
+        'HomeWorkController',
+        'MessageCenterController',
+        'MobileSiteController'
     ];
     protected $routes;
     # 控制器相对路径
@@ -225,12 +227,13 @@ class Action extends Model {
         return implode(', ', $actionTypes);
 
     }
-
+    
     /**
      * 扫描所有控制器中的方法
      *
      * @return bool
      * @throws Exception
+     * @throws Throwable
      */
     public function scan() {
 
@@ -422,7 +425,7 @@ class Action extends Model {
         return $action->delete();
 
     }
-
+    
     /**
      * 删除指定控制器中不存在的方法
      *
@@ -430,6 +433,7 @@ class Action extends Model {
      * @param $className
      * @return bool
      * @throws Exception
+     * @throws Throwable
      */
     private function delNonExistingMethods($methods, $className) {
 

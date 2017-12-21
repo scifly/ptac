@@ -150,7 +150,8 @@ class MessageController extends Controller {
      */
     public function update(MessageRequest $request, $id) {
         
-        return $this->message->modify($request, $id) ? $this->succeed() : $this->fail();
+        return $this->message->modify($request, $id)
+            ? $this->succeed() : $this->fail();
         
     }
     

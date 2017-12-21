@@ -119,6 +119,7 @@ class StudentAttendance extends Model {
      * @param $input
      * @return bool
      * @throws Exception
+     * @throws \Throwable
      */
     public function storeByFace($input) {
         #事务处理

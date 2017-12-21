@@ -29,7 +29,7 @@ class DepartmentUser extends Model {
     protected $table = 'departments_users';
 
     protected $fillable = ['department_id', 'user_id', 'enabled'];
-
+    
     /**
      * 按UserId保存记录
      *
@@ -37,6 +37,7 @@ class DepartmentUser extends Model {
      * @param array $departmentIds
      * @return bool
      * @throws Exception
+     * @throws \Throwable
      */
     public function storeByUserId($userId, array $departmentIds) {
         
@@ -57,7 +58,7 @@ class DepartmentUser extends Model {
         return true;
         
     }
-
+    
     /**
      * 按部门Id保存记录
      *
@@ -65,6 +66,7 @@ class DepartmentUser extends Model {
      * @param array $userIds
      * @return bool
      * @throws Exception
+     * @throws \Throwable
      */
     public function storeByDepartmentId($departmentId, array $userIds) {
         

@@ -2,6 +2,7 @@
 
 namespace App\Http\ViewComposers;
 
+use App\Helpers\ControllerTrait;
 use App\Models\Group;
 use App\Models\School;
 use App\Models\Subject;
@@ -10,6 +11,8 @@ use Illuminate\Contracts\View\View;
 
 class EducatorComposer {
 
+    use ControllerTrait;
+    
     protected $school;
 
     public function __construct(School $school) {
@@ -46,6 +49,7 @@ class EducatorComposer {
             'subjects' => $subjects,
             'groups' => $groups,
             'teams' => $teams,
+            'uris' => $this->uris()
         ]);
     }
 

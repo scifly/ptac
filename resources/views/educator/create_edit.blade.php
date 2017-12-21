@@ -1,9 +1,3 @@
-{!! Form::open([
-    'method' => 'post',
-    'id' => 'formEducator',
-    'class' => 'form-horizontal form-bordered',
-    'data-parsley-validate' => 'true'
-]) !!}
 <div class="box box-default box-solid">
     <div class="box-header with-border">
         @include('partials.form_header')
@@ -16,8 +10,9 @@
             @if (isset($educator['user_id']))
                 {{ Form::hidden('user_id', $educator['user_id'], ['id' => 'user_id']) }}
             @endif
-                {{ Form::hidden('educator[school_id]', $schoolId, ['id' => 'school_id']) }}
-                <div class="form-group">
+            {{ Form::hidden('educator[school_id]', $schoolId, ['id' => 'school_id']) }}
+            <!-- 真实姓名 -->
+            <div class="form-group">
                 {!! Form::label('user[realname]', '姓名', [
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
@@ -26,15 +21,16 @@
                         <div class="input-group-addon">
                             <i class= "fa fa-user"></i>
                         </div>
-                    {!! Form::text('user[realname]', null, [
-                        'class' => 'form-control',
-                        'placeholder' => '(请输入真实姓名)',
-                        'required' => 'true',
-                        'data-parsley-length' => '[2,10]'
-                    ]) !!}
+                        {!! Form::text('user[realname]', null, [
+                            'class' => 'form-control',
+                            'placeholder' => '(请输入真实姓名)',
+                            'required' => 'true',
+                            'data-parsley-length' => '[2,10]'
+                        ]) !!}
                     </div>
                 </div>
             </div>
+            <!-- 英文名 -->
             <div class="form-group">
                 {{ Form::label('user[english_name]', '英文名', [
                     'class' => 'col-sm-3 control-label'
@@ -44,15 +40,16 @@
                         <div class="input-group-addon">
                             <i class= "fa fa-language"></i>
                         </div>
-                    {{ Form::text('user[english_name]', null, [
-                        'class' => 'form-control',
-                        'placeholder' => '请填写英文名(可选)',
-                        'data-parsley-type' => 'alphanum',
-                        'data-parsley-length' => '[2, 255]'
-                    ]) }}
+                        {{ Form::text('user[english_name]', null, [
+                            'class' => 'form-control',
+                            'placeholder' => '请填写英文名(可选)',
+                            'data-parsley-type' => 'alphanum',
+                            'data-parsley-length' => '[2, 255]'
+                        ]) }}
                     </div>
                 </div>
             </div>
+            <!-- 微信号 -->
             <div class="form-group">
                 {{ Form::label('user[wechatid]', '微信号', [
                     'class' => 'col-sm-3 control-label'
@@ -62,11 +59,11 @@
                         <div class="input-group-addon">
                             <i class= "fa fa-weixin"></i>
                         </div>
-                    {{ Form::text('user[wechatid]', null, [
-                        'class' => 'form-control',
-                        'data-parsley-type' => 'alphanum',
-                        'data-parsley-length' => '[2, 255]'
-                    ]) }}
+                        {{ Form::text('user[wechatid]', null, [
+                            'class' => 'form-control',
+                            'data-parsley-type' => 'alphanum',
+                            'data-parsley-length' => '[2, 255]'
+                        ]) }}
                     </div>
                 </div>
             </div>
@@ -77,12 +74,14 @@
                 'value' => $educator->user->gender ?? null,
                 'options' => ['男', '女']
             ])
+            <!-- 角色 -->
             @include('partials.single_select', [
                 'label' => '角色',
                 'id' => 'user[group_id]',
                 'items' => $groups,
                 'icon' => 'fa fa-meh-o'
             ])
+            <!-- 用户名 -->
             <div class="form-group">
                 {!! Form::label('user[username]', '用户名', [
                     'class' => 'col-sm-3 control-label',
@@ -92,16 +91,17 @@
                         <div class="input-group-addon">
                             <i class= "fa fa-user-o"></i>
                         </div>
-                    {!! Form::text('user[username]', null, [
-                        'class' => 'form-control',
-                        'placeholder' => '(请输入用户名)',
-                        'required' => 'true',
-                        'data-parsley-length' => '[6,20]'
-                    ]) !!}
+                        {!! Form::text('user[username]', null, [
+                            'class' => 'form-control',
+                            'placeholder' => '(请输入用户名)',
+                            'required' => 'true',
+                            'data-parsley-length' => '[6,20]'
+                        ]) !!}
                     </div>
                 </div>
             </div>
-            @if ( !isset($educator['id']))
+            @if (!isset($educator['id']))
+                <!-- 密码 -->
                 <div class="form-group">
                     {!! Form::label('user[password]', '密码', [
                         'class' => 'col-sm-3 control-label'
@@ -111,15 +111,16 @@
                             <div class="input-group-addon">
                                 <i class= "fa fa-lock"></i>
                             </div>
-                        {!! Form::password('user[password]', [
-                            'class' => 'form-control',
-                            'placeholder' => '(请输入密码)',
-                            'required' => 'true',
-                            'minlength' => '8'
-                        ]) !!}
+                            {!! Form::password('user[password]', [
+                                'class' => 'form-control',
+                                'placeholder' => '(请输入密码)',
+                                'required' => 'true',
+                                'minlength' => '8'
+                            ]) !!}
                         </div>
                     </div>
                 </div>
+                <!-- 确认密码 -->
                 <div class="form-group">
                     {!! Form::label('user[password_confirmation]', '确认密码', [
                         'class' => 'col-sm-3 control-label'
@@ -129,16 +130,17 @@
                             <div class="input-group-addon">
                                 <i class= "fa fa-lock"></i>
                             </div>
-                        {!! Form::password('user[password_confirmation]', [
-                            'class' => 'form-control',
-                            'placeholder' => '(请确认密码)',
-                            'required' => 'true',
-                            'minlength' => '8'
-                        ]) !!}
+                            {!! Form::password('user[password_confirmation]', [
+                                'class' => 'form-control',
+                                'placeholder' => '(请确认密码)',
+                                'required' => 'true',
+                                'minlength' => '8'
+                            ]) !!}
                         </div>
                     </div>
                 </div>
             @endif
+            <!-- 座机号码 -->
             <div class="form-group">
                 {{ Form::label('user[telephone]', '座机', [
                     'class' => 'col-sm-3 control-label'
@@ -148,13 +150,14 @@
                         <div class="input-group-addon">
                             <i class= "fa fa-phone"></i>
                         </div>
-                    {{ Form::text('user[telephone]', null, [
-                        'class' => 'form-control',
-                        'placeholder' => '请输入座机号码(可选}',
-                    ]) }}
+                        {{ Form::text('user[telephone]', null, [
+                            'class' => 'form-control',
+                            'placeholder' => '请输入座机号码(可选}',
+                        ]) }}
                     </div>
                 </div>
             </div>
+            <!-- 电子邮箱 -->
             <div class="form-group">
                 {!! Form::label('user[email]', '电子邮箱', [
                     'class' => 'col-sm-3 control-label'
@@ -164,16 +167,18 @@
                         <div class="input-group-addon">
                             <i class= "fa fa-envelope-o"></i>
                         </div>
-                    {!! Form::email('user[email]', null, [
-                        'class' => 'form-control',
-                        'placeholder' => '(请输入电子邮件地址)',
-
-                    ]) !!}
+                        {!! Form::email('user[email]', null, [
+                            'class' => 'form-control',
+                            'placeholder' => '(请输入电子邮件地址)',
+                        ]) !!}
                     </div>
                 </div>
             </div>
+            <!-- 手机号码 -->
             @include('partials.mobile')
+            <!-- 所属班级 -->
             @include('educator.class_subject')
+            <!-- 所属部门 -->
             <div class="form-group">
                 {!! Form::label('departmentId', '所属部门', [
                     'class' => 'col-sm-3 control-label'
@@ -189,7 +194,6 @@
                                     <input type="hidden" name="selectedDepartments[]" value="{{$department['id']}}"/>
                                 </button>
                             @endforeach
-
                         @endif
                     </div>
                     @if(isset($selectedDepartmentIds))
@@ -200,14 +204,14 @@
                     <a id="add-department" class="btn btn-primary" style="margin-bottom: 5px">修改</a>
                 </div>
             </div>
-
+            <!-- 所属教职员工组 -->
             @include('partials.multiple_select', [
                'label' => '所属组',
                'id' => 'educator[team_id]',
                'items' => $teams,
                'selectedItems' => $selectedTeams ?? []
-
-           ])
+            ])
+            <!-- 状态 -->
             @include('partials.enabled', [
                 'id' => 'user[enabled]',
                 'value' => $educator['enabled'] ?? NULL
@@ -216,6 +220,4 @@
     </div>
     @include('partials.form_buttons')
 </div>
-{!! Form::close() !!}
-
 

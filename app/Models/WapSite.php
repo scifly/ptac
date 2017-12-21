@@ -59,11 +59,12 @@ class WapSite extends Model {
      * @return BelongsTo
      */
     public function school() { return $this->belongsTo('App\Models\School'); }
-
+    
     /**
      * @param WapSiteRequest $request
      * @return bool
      * @throws Exception
+     * @throws \Throwable
      */
     public function store(WapSiteRequest $request) {
         
@@ -103,7 +104,7 @@ class WapSite extends Model {
         }
         
     }
-
+    
     /**
      * 更新微网站
      *
@@ -111,6 +112,7 @@ class WapSite extends Model {
      * @param $id
      * @return bool|mixed
      * @throws Exception
+     * @throws \Throwable
      */
     public function modify(WapSiteRequest $request, $id) {
         

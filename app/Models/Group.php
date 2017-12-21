@@ -90,13 +90,14 @@ class Group extends Model {
      * @return BelongsTo
      */
     public function groupType() { return $this->belongsTo('App\Models\GroupType'); }
-
+    
     /**
      * 保存角色
      *
      * @param array $data
      * @return bool
      * @throws Exception
+     * @throws \Throwable
      */
     public function store(array $data) {
 

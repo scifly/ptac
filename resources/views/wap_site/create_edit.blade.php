@@ -4,8 +4,8 @@
     </div>
     <div class="box-body">
         <div class="form-horizontal">
-            @if (!empty($wapSite['id']))
-                {{ Form::hidden('id', $wapSite['id'], ['id' => 'id']) }}
+            @if (!empty($schoolId['id']))
+                {{ Form::hidden('id', $schoolId['id'], ['id' => 'id']) }}
             @endif
             <div class="form-group">
                 {!! Form::label('site_title', '首页抬头', [
@@ -20,11 +20,11 @@
                     ]) !!}
                 </div>
             </div>
-            @include('partials.single_select', [
-                'label' => '所属学校',
-                'id' => 'school_id',
-                'items' => $schools
-            ])
+            {{--@include('partials.single_select', [--}}
+                {{--'label' => '所属学校',--}}
+                {{--'id' => 'school_id',--}}
+                {{--'items' => $schools--}}
+            {{--])--}}
             <div class="form-group">
                 {!! Form::label('media_ids', '轮播图', [
                     'class' => 'col-sm-3 control-label'
@@ -35,7 +35,7 @@
                             @foreach($medias as $key => $value)
                                 @if(!empty($value))
                                     <div class="img-item">
-                                        <img src="../../{{$value->path}}" id="{{$value->id}}">
+                                        <img src="../..{{$value->path}}" id="{{$value->id}}">
                                         <input type="hidden" name="media_ids[]" value="{{$value->id}}"/>
                                         <div class="del-mask">
                                             <i class="delete fa fa-trash"></i>

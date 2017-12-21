@@ -55,11 +55,12 @@ class WapSiteModule extends Model {
     public function media() { return $this->belongsTo('App\Models\Media'); }
 
     public function wapsite() { return $this->belongsTo('App\Models\WapSite'); }
-
+    
     /**
      * @param WapSiteModuleRequest $request
      * @return bool|mixed
      * @throws Exception
+     * @throws \Throwable
      */
     public function store(WapSiteModuleRequest $request) {
         
@@ -99,12 +100,13 @@ class WapSiteModule extends Model {
         }
         
     }
-
+    
     /**
      * @param WapSiteModuleRequest $request
      * @param $id
      * @return bool
      * @throws Exception
+     * @throws \Throwable
      */
     public function modify(WapSiteModuleRequest $request, $id) {
         

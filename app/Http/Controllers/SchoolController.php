@@ -22,11 +22,11 @@ class SchoolController extends Controller {
     protected $school, $menu;
     
     function __construct(School $school, Menu $menu) {
-    
+        
         $this->middleware(['auth']);
         $this->school = $school;
         $this->menu = $menu;
-    
+        
     }
     
     /**
@@ -39,24 +39,28 @@ class SchoolController extends Controller {
         if (Request::get('draw')) {
             return response()->json($this->school->datatable());
         }
-        $user = Auth::user();
-        $menuId = Request::input('menuId');
-        if(!$menuId){
-            return $this->output();
-        }
-        $schoolMenuId = $this->menu->getSchoolMenuId($menuId);
-        $show = true;
-        if($user->group->name == '运营' || $user->group->name == '企业'){
-            if ($schoolMenuId){
-                $school = $this->school->where('menu_id', $schoolMenuId)->first();
-                return $this->output('App\Http\Controllers\SchoolController::show', ['school' => $school, 'show' => $show]);
-            } else {
-                return $this->output();
-            }
-         } else {
-            $school = $this->school->where('menu_id', $schoolMenuId)->first();
-            return $this->output('App\Http\Controllers\SchoolController::show', ['school' => $school, 'show' => $show]);
-        }
+    
+        return $this->output();
+    
+        // $user = Auth::user();
+        // $menuId = Request::input('menuId');
+        // if(!$menuId){
+        //     return $this->output();
+        // }
+        // $schoolMenuId = $this->menu->getSchoolMenuId($menuId);
+        // $show = true;
+        // if($user->group->name == '运营' || $user->group->name == '企业'){
+        //     if ($schoolMenuId){
+        //         $school = $this->school->where('menu_id', $schoolMenuId)->first();
+        //         return $this->output('App\Http\Controllers\SchoolController::show', ['school' => $school, 'show' => $show]);
+        //     } else {
+        //         return $this->output();
+        //     }
+        //  } else {
+        //     $school = $this->school->where('menu_id', $schoolMenuId)->first();
+        //     return $this->output('App\Http\Controllers\SchoolController::show', ['school' => $school, 'show' => $show]);
+        // }
+        
     }
     
     /**
@@ -91,13 +95,14 @@ class SchoolController extends Controller {
      * @return bool|JsonResponse
      * @throws Throwable
      */
-    public function show($id = null) {
-            $school = $this->school->find($id);
-            if (!$school) {
-                return parent::notFound();
-            }
-            
-            return $this->output(['school' => $school]);
+    public function show($id) {
+        $school = $this->school->find($id);
+        if (!$school) {
+        
+            return parent::notFound();
+        }
+    
+        return $this->output(['school' => $school]);
     }
     
     /**
@@ -108,20 +113,11 @@ class SchoolController extends Controller {
      * @throws Throwable
      */
     public function edit($id) {
-    
-        $menuId = Request::input('menuId');
-        if(!$menuId){
-            return $this->output();
-        }
         $school = $this->school->find($id);
         if (!$school) {
             return parent::notFound();
         }
-        $schoolMenuId = $this->menu->getSchoolMenuId($menuId);
-        if ($schoolMenuId){
-            $show = true;
-            return $this->output(['school' => $school, 'show' => $show]);
-        }
+    
         return $this->output(['school' => $school]);
         
     }
@@ -159,4 +155,33 @@ class SchoolController extends Controller {
         
     }
     
+    /**
+     * 学校设置详情
+     * @return \Illuminate\Contracts\View\Factory|JsonResponse|\Illuminate\View\View
+     * @throws Throwable
+     */
+    public function showInfo(){
+        $menuId = Request::input('menuId');
+        $menu = $this->menu->find($menuId);
+        if (!$menu) {
+            $menuId = $this->menu->where('uri', 'schools/show')->first()->id;
+            session(['menuId' => $menuId]);
+        
+            return view('home.home', [
+                'menu'    => $this->menu->getMenuHtml($this->menu->rootMenuId()),
+                'content' => view('home.' . 'school'),
+                'js'      => 'js/home/page.js',
+                'user'    => Auth::user(),
+            ]);
+        }
+        $schoolMenuId = $this->menu->getSchoolMenuId($menuId);
+        $school = $this->school->where('menu_id', $schoolMenuId)->first();
+        session(['menuId' => $menuId]);
+            return response()->json([
+                'statusCode' => 200,
+                'html'       => view('school.show_info', ['school' => $school, 'js' => 'js/school/show_info.js', 'breadcrumb' => '学校设置'])->render(),
+                'uri'        => Request::path(),
+                'title'      => '学校设置',
+            ]);
+    }
 }

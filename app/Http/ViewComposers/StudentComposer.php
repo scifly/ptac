@@ -11,7 +11,9 @@ use App\Models\User;
 use Illuminate\Contracts\View\View;
 
 class StudentComposer {
+    
     use ControllerTrait;
+    
     protected $user, $department;
 
     public function __construct(User $user, Department $department) {
@@ -33,13 +35,11 @@ class StudentComposer {
             ->where('grade_id', array_keys($grades)[0])
             ->pluck('name', 'id')
             ->toArray();
-
         $view->with([
             'schoolId' => $schoolId,
             'grades' => $grades,
             'classes' => $classes,
             'uris' => $this->uris()
-
         ]);
 
     }
