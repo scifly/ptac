@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use App\Events\AppMenuCreated;
@@ -8,6 +9,7 @@ use App\Facades\DatatableFacade as Datatable;
 use App\Facades\Wechat;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Request;
 
@@ -65,21 +67,22 @@ use Illuminate\Support\Facades\Request;
  * @method static Builder|App whereSquareLogoUrl($value)
  */
 class App extends Model {
-    
+
     protected $fillable = [
-        'corp_id','name', 'description', 'agentid',
+        'corp_id', 'name', 'description', 'agentid',
         'token', 'secret', 'report_location_flag',
         'square_logo_url', 'allow_userinfos',
         'allow_partys', 'allow_tags', 'redirect_domain',
         'isreportenter', 'home_url', 'menu',
         'access_token', 'expire_at', 'enabled',
     ];
+
     public function store() {
-        
+
         $secret = Request::input('secret');
         $agentid = Request::input('agentid');
         $corp_id = Request::input('corp_id');
-    
+
         $corp = new Corp();
         $corps = $corp::whereName('万浪软件')->first();
         $corpId = $corps->corpid;
@@ -87,7 +90,7 @@ class App extends Model {
         $path = substr($dir, 0, stripos($dir, 'app/Jobs'));
         $tokenFile = $path . 'public/token.txt';
         $token = Wechat::getAccessToken($tokenFile, $corpId, $secret);
-    
+
         $corpApp = json_decode(Wechat::getApp($token, $agentid));
         // dd($corp_id);
         $app = $this::whereAgentid($agentid)->where('corp_id', $corp_id)->first();
@@ -110,8 +113,8 @@ class App extends Model {
                 'enabled' => $corpApp->close,
             ];
             $a = $this->create($data);
-            
-            $response = response()->json(['app' => $this->formatDateTime($a->toArray()) , 'action' => 'create']);
+
+            $response = response()->json(['app' => $this->formatDateTime($a->toArray()), 'action' => 'create']);
         } else {
             $app->corp_id = intval($corp_id);
             $app->name = $corpApp->name;
@@ -129,54 +132,73 @@ class App extends Model {
             $app->allow_tags = isset($corpApp->allow_tags) ? json_encode($corpApp->allow_tags) : '';
             $app->enabled = $corpApp->close;
             $app->save();
-            $response = response()->json(['app' => $this->formatDateTime($app->toArray()) , 'action' => 'update']);
+            $response = response()->json(['app' => $this->formatDateTime($app->toArray()), 'action' => 'update']);
         }
-        
+
         return $response;
-        
+
     }
+
+    private function formatDateTime(&$app) {
+
+        Carbon::setLocale('zh');
+        if ($app['created_at']) {
+            $dt = Carbon::createFromFormat('Y-m-d H:i:s', $app['created_at']);
+            $app['created_at'] = $dt->diffForHumans();
+        }
+        if ($app['updated_at']) {
+            $dt = Carbon::createFromFormat('Y-m-d H:i:s', $app['updated_at']);
+            $app['updated_at'] = $dt->diffForHumans();
+        }
+
+    }
+
     /**
      * 更新App
      *
      * @param array $data
      * @param $id
-     * @return bool|\Illuminate\Database\Eloquent\Collection|Model|null|static|static[]
+     * @return bool|Collection|Model|null|static|static[]
      */
     public function modify(array $data, $id) {
-        
+
         $app = $this->find($id);
-        if (!$app) { return false; }
+        if (!$app) {
+            return false;
+        }
         $updated = $this->update($data);
         if ($updated) {
             event(new AppUpdated($app));
             return $app;
         }
         return $updated ? $app : false;
-        
+
     }
-    
+
     /**
      * 同步菜单
      *
      * @param array $data
      * @param $id
-     * @return bool|\Illuminate\Database\Eloquent\Collection|Model|null|static|static[]
+     * @return bool|Collection|Model|null|static|static[]
      */
     public function storeMenu(array $data, $id) {
-    
+
         $app = $this->find($id);
-        if (!$app) { return false; }
+        if (!$app) {
+            return false;
+        }
         $updated = $this->update($data);
         if ($updated) {
             event(new AppMenuUpdated($app));
             return $app;
         }
         return $updated ? $app : false;
-    
+
     }
-    
+
     public function datatable() {
-        
+
         $columns = [
             ['db' => 'App.id', 'dt' => 0],
             ['db' => 'App.name', 'dt' => 1],
@@ -187,25 +209,25 @@ class App extends Model {
             ['db' => 'App.created_at', 'dt' => 6],
             ['db' => 'App.updated_at', 'dt' => 7],
             [
-                'db'        => 'App.enabled', 'dt' => 8,
+                'db' => 'App.enabled', 'dt' => 8,
                 'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($this, $d, $row);
+                    return Datatable::dtOps($d, $row);
                 },
             ],
         ];
-        
+
         return Datatable::simple($this, $columns);
-        
+
     }
-    
+
     /**
      *  将对象转换为数组
      *
      * @param $obj
-     * @return array|void
+     * @return array|bool|void
      */
     public function object_to_array($obj) {
-        
+
         $obj = (array)$obj;
         foreach ($obj as $k => $v) {
             if (gettype($v) == 'resource') {
@@ -215,23 +237,9 @@ class App extends Model {
                 $obj[$k] = (array)$this->object_to_array($v);
             }
         }
-    
+
         return $obj;
-        
+
     }
-    
-    private function formatDateTime(&$app) {
-        
-        Carbon::setLocale('zh');
-        if ($app['created_at']) {
-            $dt = Carbon::createFromFormat('Y-m-d H:i:s', $app['created_at']);
-            $app['created_at'] = $dt->diffForHumans();
-        }
-        if ($app['updated_at']) {
-            $dt = Carbon::createFromFormat('Y-m-d H:i:s', $app['updated_at']);
-            $app['updated_at'] = $dt->diffForHumans();
-        }
-        
-    }
-    
+
 }

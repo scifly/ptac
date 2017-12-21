@@ -1,24 +1,28 @@
 <?php
+
 namespace App\Http\ViewComposers;
 
+use App\Helpers\ControllerTrait;
 use App\Models\School;
 use Illuminate\Contracts\View\View;
 
 class SemesterComposer {
+    use ControllerTrait;
+    protected $school;
 
-    protected $schools;
+    public function __construct(School $school) {
 
-    public function __construct(School $schools) {
-
-        $this->schools = $schools;
+        $this->school = $school;
 
     }
 
     public function compose(View $view) {
 
-        // $view->with('schoolTypes', $this->schoolTypes->pluck('name', 'id'));
+        $schoolId = $this->school->getSchoolId();
         $view->with([
-            'schools' => $this->schools->pluck('name', 'id'),
+            'schoolId' => $schoolId,
+            'uris' => $this->uris()
+
         ]);
     }
 

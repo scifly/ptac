@@ -1,9 +1,11 @@
 <?php
+
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -35,86 +37,102 @@ use Illuminate\Support\Facades\DB;
  * @property-read \App\Models\Subject $subject
  */
 class Score extends Model {
-    
+
     protected $fillable = [
         'student_id', 'subject_id', 'exam_id',
         'class_rank', 'grade_rank', 'score',
         'enabled',
     ];
     
+    /**
+     * 返回分数记录所属的学生对象
+     * 
+     * @return BelongsTo
+     */
     public function student() { return $this->belongsTo('App\Models\Student'); }
     
+    /**
+     * 返回分数记录所属的科目对象
+     * 
+     * @return BelongsTo
+     */
     public function subject() { return $this->belongsTo('App\Models\Subject'); }
     
+    /**
+     * 返回分数记录所述的考试对象
+     * 
+     * @return BelongsTo
+     */
     public function exam() { return $this->belongsTo('App\Models\Exam'); }
-    
+
     public function datatable() {
-        
+
         $columns = [
             ['db' => 'Score.id', 'dt' => 0],
             ['db' => 'Student.student_number', 'dt' => 1],
             ['db' => 'User.realname', 'dt' => 2],
             ['db' => 'Subject.name as subjectname', 'dt' => 3],
             ['db' => 'Exam.name as examname', 'dt' => 4],
-            ['db'        => 'Score.class_rank', 'dt' => 5,
-             'formatter' => function ($d) {
-                 return $d === 0 ? "未统计" : $d;
-             },
+            ['db' => 'Score.class_rank', 'dt' => 5,
+                'formatter' => function ($d) {
+                    return $d === 0 ? "未统计" : $d;
+                },
             ],
-            ['db'        => 'Score.grade_rank', 'dt' => 6,
-             'formatter' => function ($d) {
-                 return $d === 0 ? "未统计" : $d;
-             },
+            ['db' => 'Score.grade_rank', 'dt' => 6,
+                'formatter' => function ($d) {
+                    return $d === 0 ? "未统计" : $d;
+                },
             ],
             ['db' => 'Score.score', 'dt' => 7],
             ['db' => 'Score.created_at', 'dt' => 8],
             ['db' => 'Score.updated_at', 'dt' => 9],
             [
-                'db'        => 'Score.enabled', 'dt' => 10,
+                'db' => 'Score.enabled', 'dt' => 10,
                 'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($this, $d, $row);
+                    return Datatable::dtOps($d, $row);
                 },
             ],
         ];
         $joins = [
             [
-                'table'      => 'students',
-                'alias'      => 'Student',
-                'type'       => 'INNER',
+                'table' => 'students',
+                'alias' => 'Student',
+                'type' => 'INNER',
                 'conditions' => [
                     'Student.id = Score.student_id',
                 ],
             ],
             [
-                'table'      => 'subjects',
-                'alias'      => 'Subject',
-                'type'       => 'INNER',
+                'table' => 'subjects',
+                'alias' => 'Subject',
+                'type' => 'INNER',
                 'conditions' => [
                     'Subject.id = Score.subject_id',
                 ],
             ],
             [
-                'table'      => 'exams',
-                'alias'      => 'Exam',
-                'type'       => 'INNER',
+                'table' => 'exams',
+                'alias' => 'Exam',
+                'type' => 'INNER',
                 'conditions' => [
                     'Exam.id = Score.exam_id',
                 ],
             ],
             [
-                'table'      => 'users',
-                'alias'      => 'User',
-                'type'       => 'INNER',
+                'table' => 'users',
+                'alias' => 'User',
+                'type' => 'INNER',
                 'conditions' => [
                     'User.id = Student.user_id',
                 ],
             ],
         ];
-        
+
         return Datatable::simple($this, $columns, $joins);
     }
-    
+
     public function statistics($exam_id) {
+        
         $class_ids = DB::table('exams')->where('id', $exam_id)->value('class_ids');
         $class = DB::table('classes')
             ->whereIn('id', explode(',', $class_ids))
@@ -176,8 +194,8 @@ class Score extends Model {
                 }
             }
         }
-        
+
         return true;
     }
-    
+
 }

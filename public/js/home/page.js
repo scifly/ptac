@@ -82,7 +82,7 @@ var page = {
             ? window.location.origin + '/'
             : window.location.protocol + '/' + window.location.host + '/';
         if (window.location.href.indexOf('public') > -1) {
-            return siteRoot + 'ptac/public/';
+            return siteRoot + 'pppp/public/';
         }
         return siteRoot;
     },
@@ -93,6 +93,12 @@ var page = {
     formatState: function(state) {
         if (!state.id) { return state.text; }
         return $('<span><i class="' + state.text + '"> ' + state.text + '</span>');
+    },
+    formatStateImg: function(state) {
+        var paths = state.text.split('|');
+        if (!state.id) { return paths[0]; }
+        var style = "height: 18px; vertical-align: text-bottom; margin-right: 5px;";
+        return $('<span><img src="' + paths[1] + '" style="' + style + '">&nbsp;' + paths[0] + '</span>');
     },
     refreshMenus: function() {
         var $active = $('.sidebar-menu li.active');
@@ -208,6 +214,15 @@ var page = {
                             // 获取当前卡片中的HTML
                             page.getTabContent($tab, tabUri);
                         } else {
+
+                            $.getScript(page.siteRoot() + result.js, function () {
+                                $('#ajaxLoader').remove();
+                                $('.overlay').hide();
+                                // 移除当前页面的datatable.css
+                                // if (!$('#data-table').length) {
+                                //     $('link[href="' + page.siteRoot() + page.plugins.datatable.css +'"]').remove();
+                                // }
+                            });
                             // Wrapper中的Html不含卡片，更新浏览器History
                             document.title = docTitle + ' - ' + result['title'];
                             // 0 - tabId, 1 - menuId, 2 - menuUrl
@@ -405,7 +420,6 @@ var page = {
                 page.siteRoot() + table + '/delete/' + id,
                 {_token: $('#csrf_token').attr('content')},
                 table
-
             );
         });
     },
@@ -419,6 +433,15 @@ var page = {
     recharge: function (formId, table) {
         var id = $('#id').val();
         page.initForm(table, formId, table + '/rechargeStore/' + id, 'PUT');
+    },
+    show: function (table) {
+        var id = $('#id').val();
+        var url = 'edit/' + id;
+        var $activeTabPane = $('#tab_' + page.getActiveTabId());
+        page.initBackBtn(table);
+        $('.btn-bianji').on('click',function () {
+            page.getTabContent($activeTabPane,table + '/' + url);
+        });
     },
     loadCss: function(css) {
         if (!$('link[href="' + page.siteRoot() + css +'"]').length) {

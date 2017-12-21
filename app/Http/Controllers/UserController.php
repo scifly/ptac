@@ -2,9 +2,19 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\UserRequest;
+use App\Models\Corp;
+use App\Models\Event;
+use App\Models\Menu;
+use App\Models\MenuType;
+use App\Models\Message;
+use App\Models\School;
 use App\Models\User;
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\Session;
 
 /**
  * 用户
@@ -13,168 +23,327 @@ use Illuminate\Support\Facades\Request;
  * @package App\Http\Controllers
  */
 class UserController extends Controller {
-    
+
     protected $user;
-    
-    function __construct(User $user) {
-    
+    protected $menu;
+    protected $message;
+    protected $event;
+
+    function __construct(User $user, Menu $menu, Message $message ,Event $event) {
+
         $this->middleware(['auth']);
         $this->user = $user;
-    
+        $this->menu = $menu;
+        $this->message = $message;
+        $this->event = $event;
     }
-    
+
     /**
      * 用户列表
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws \Throwable
      */
     public function index() {
         if (Request::get('draw')) {
             return response()->json($this->user->datatable());
         }
 
-        return $this->output(__METHOD__);
-        
+        return $this->output();
+
     }
-    
+
     /**
      * 创建用户
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws \Throwable
      */
     public function create() {
-        return $this->output(__METHOD__);
-        
+        return $this->output();
+
     }
-    
+
     /**
      * 保存用户
      *
      * @param UserRequest $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function store(UserRequest $request) {
-        if ($this->user->existed($request)) {
-            return $this->fail('已经有此记录');
-        }
-        
+
         return $this->user->create($request->all()) ? $this->succeed() : $this->fail();
-        
+
     }
-    
+
     /**
      * 用户详情
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws \Throwable
      */
     public function show($id) {
         $user = $this->user->find($id);
         if (!$user) {
             return $this->notFound();
         }
-        
-        return $this->output(__METHOD__, ['user' => $user]);
-        
+
+        return $this->output(['user' => $user]);
+
     }
-    
+
     /**
      * 编辑用户
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws \Throwable
      */
     public function edit($id) {
         $user = $this->user->find($id);
         if (!$user) {
             return $this->notFound();
         }
-        
-        return $this->output(__METHOD__, ['user' => $user]);
-        
+
+        return $this->output(['user' => $user]);
+
     }
-    
+
     /**
      * 更新用户
      *
-     * @param UserRequest $request
+     * @param UserRequest $request ;
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function update(UserRequest $request, $id) {
         $user = $this->user->find($id);
         if (!$user) {
             return $this->notFound();
         }
-        if ($this->user->existed($request, $id)) {
-            return $this->fail('已经有此记录');
-        }
-        
-        return $user->update($request->all()) ? $this->succeed() : $this->fail();
-        
+        return $user->update($request->all()) ?
+            response(['statusCode'=> 200]) : response(['statusCode'=>400]);
+
     }
-    
+
     /**
      * 删除用户
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function destroy($id) {
         $user = $this->user->find($id);
-        if (!$user) {
-            return $this->notFound();
-        }
-        
+        if (!$user) { return $this->notFound(); }
+
         return $user->delete() ? $this->succeed() : $this->fail();
-        
+
     }
 
     /**
      * 修改个人信息
-     *
-     * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
      */
-    public function profile($id){
-        $user = $this->user->find($id);
-        if (!$user) {
-            return $this->notFound();
+    public function profile(){
+
+        $menuId = Request::query('menuId');
+        $menu = $this->menu->find($menuId);
+        if (!$menu) {
+            $menuId = $this->menu->where('uri', 'users/profile')->first()->id;
+            session(['menuId' => $menuId]);
+            return view('home.home', [
+                'menu' => $this->menu->getMenuHtml($this->menu->rootMenuId()),
+                'content' => view('user.' . 'profile'),
+                'js' => 'js/home/page.js',
+                'profile' => '../public/js/user/profile.js',
+                'user' => Auth::user()
+            ]);
+        }else {
+            if (!session('menuId') || session('menuId') !== $menuId) {
+                session(['menuId' => $menuId]);
+                session(['menuChanged' => true]);
+            } else {
+                Session::forget('menuChanged');
+            }
+
+            if (Request::ajax()) {
+                return response()->json([
+                    'statusCode' => 200,
+                    'title' => '首页',
+                    'uri' => Request::path(),
+                    'html' => view('user.profile',[
+                        'user' => Auth::user(),
+                        'profile' => '../public/js/user/profile.js',
+                    ])->render()
+                ]);
+            }
+
         }
 
-        return $this->output(__METHOD__, ['user' => $user]);
     }
+
 
     /**
      * 重置密码
-     * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
-    public function reset($id){
-        $user = $this->user->find($id);
-        if(!$user) {
-            return $this->notFound();
+    public function reset(){
+        $id = Auth::id();
+
+        if(Request::isMethod('post'))
+        {
+           $password = Request::input('password') ;
+           $pwd = bcrypt(Request::input('pwd'));
+           $user = User::find($id);
+            if (!Auth::attempt([ 'password' => $password])){
+                return response()->json(['statusCode' => 201 ]);
+            }
+            $res = $user->update(['password' => $pwd]);
+            if($res){
+                return response()->json(['statusCode' => 200]);
+            }
+
+        }
+        $menuId = Request::query('menuId');
+        $menu = $this->menu->find($menuId);
+        if (!$menu) {
+            $user = Auth::user();
+            $menuId = $this->menu->where('uri', 'users/reset')->first()->id;
+            session(['menuId' => $menuId]);
+            return view('home.home', [
+                'menu' => $this->menu->getMenuHtml($this->menu->rootMenuId()),
+                'content' => view('user.' . 'reset'),
+                'js' => 'js/home/page.js',
+                'reset' => '../public/js/user/reset.js',
+                'user' => Auth::user()
+            ]);
+        }else {
+            if (!session('menuId') || session('menuId') !== $menuId) {
+                session(['menuId' => $menuId]);
+                session(['menuChanged' => true]);
+            } else {
+                Session::forget('menuChanged');
+            }
+
+            if (Request::ajax()) {
+                return response()->json([
+                    'statusCode' => 200,
+                    'title' => '首页',
+                    'uri' => Request::path(),
+                    'html' => view('user.reset',[
+                        'user' => Auth::user(),
+                        'reset' => '../public/js/user/reset.js',
+                    ])->render()
+                ]);
+            }
+
         }
 
-        return $this->output(__METHOD__, ['user' => $user]);
     }
 
     /**
      * 我的消息
-     * @param $id
+     * @throws \Throwable
      */
-    public function messages($id){
+    public function messages(){
+
+        $menuId = Request::query('menuId');
+        $menu = $this->menu->find($menuId);
+        if (!$menu) {
+            $user = Auth::user();
+            $menuId = $this->menu->where('uri', 'users/messages')->first()->id;
+
+            session(['menuId' => $menuId]);
+            if (Request::get('draw')) {
+                return response()->json($this->message->datatable());
+            }
+            return view('home.home', [
+                'menu' => $this->menu->getMenuHtml($this->menu->rootMenuId()),
+                'content' => view('user.' . 'message'),
+                'js' => 'js/home/page.js',
+                'message' => '../public/js/user/message.js',
+                'user' => Auth::user()
+            ]);
+        }else {
+            if (!session('menuId') || session('menuId') !== $menuId) {
+                session(['menuId' => $menuId]);
+                session(['menuChanged' => true]);
+            } else {
+                Session::forget('menuChanged');
+            }
+
+            if (Request::get('draw')) {
+                return response()->json($this->message->datatable());
+            }
+
+            if (Request::ajax()) {
+                return response()->json([
+                    'statusCode' => 200,
+                    'title' => '首页',
+                    'uri' => Request::path(),
+                    'html' => view('user.message',[
+                        'user' => Auth::user(),
+                        'message' => '../public/js/user/message.js',
+                    ])->render()
+                ]);
+            }
+
+        }
+
 
     }
 
-    public function events(){
+    /**
+     * 待办事项
+     */
+    public function event(){
+        $menuId = Request::query('menuId');
+        $menu = $this->menu->find($menuId);
+        if (!$menu) {
+            $menuId = $this->menu->where('uri', 'users/events')->first()->id;
+            session(['menuId' => $menuId]);
+            if (Request::get('draw')) {
+                return response()->json($this->event->datatable());
+            }
+            return view('home.home', [
+                'menu' => $this->menu->getMenuHtml($this->menu->rootMenuId()),
+                'content' => view('user.' . 'event'),
+                'js' => 'js/home/page.js',
+                'event' => '../public/js/user/event.js',
+                'user' => Auth::user()
+            ]);
+        }else {
+            if (!session('menuId') || session('menuId') !== $menuId) {
+                session(['menuId' => $menuId]);
+                session(['menuChanged' => true]);
+            } else {
+                Session::forget('menuChanged');
+            }
 
+            if (Request::get('draw')) {
+                return response()->json($this->event->datatable());
+            }
+
+            if (Request::ajax()) {
+                return response()->json([
+                    'statusCode' => 200,
+                    'title' => '首页',
+                    'uri' => Request::path(),
+                    'html' => view('user.event',[
+                        'user' => Auth::user(),
+                        'event' => '../public/js/user/event.js',
+                    ])->render()
+                ]);
+            }
+
+        }
     }
     /**
      * 上传用户头像
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function uploadAvatar($id) {
         $file = Request::file('avatar');
@@ -202,14 +371,14 @@ class UserController extends Controller {
         if ($id < 1) {
             $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
             $this->result['fileName'] = $fileName;
-            
+
             return response()->json($this->result);
         }
-        
+
         return $this->saveImg($id, $fileName);
-        
+
     }
-    
+
     /**
      * 验证文件是否上传成功
      *
@@ -223,17 +392,17 @@ class UserController extends Controller {
         if ($file->getClientSize() > $file->getMaxFilesize()) {
             return ['status' => false, 'msg' => '图片过大'];
         }
-        
+
         return ['status' => true];
-        
+
     }
-    
+
     /**
      * 将图片路径存入数据库
      *
      * @param $id
      * @param $imgName
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     private function saveImg($id, $imgName) {
         $user = $this->user->find($id);

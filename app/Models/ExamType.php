@@ -1,10 +1,14 @@
 <?php
+
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * App\Models\ExamType 考试类型
@@ -29,25 +33,25 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|ExamType whereSchoolId($value)
  */
 class ExamType extends Model {
-    
+
     use ModelTrait;
-    
+
     protected $fillable = ['name', 'remark', 'school_id', 'enabled'];
-    
+
     /**
      * 返回所属的学校对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function school() { return $this->belongsTo('App\Models\School'); }
-    
+
     /**
      * 获取指定考试类型包含的所有考试对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function exams() { return $this->hasMany('App\Models\Exam'); }
-    
+
     /**
      * 保存考试类型
      *
@@ -55,12 +59,13 @@ class ExamType extends Model {
      * @return bool
      */
     public function store(array $data) {
+        
         $examType = $this->create($data);
-        
+
         return $examType ? true : false;
-        
+
     }
-    
+
     /**
      * 更新考试类型
      *
@@ -69,13 +74,12 @@ class ExamType extends Model {
      * @return bool
      */
     public function modify(array $data, $id) {
+        
         $examType = $this->find($id);
-        if (!$examType) {
-            return false;
-        }
-        
+        if (!$examType) { return false; }
+
         return $examType->update($data) ? true : false;
-        
+
     }
     
     /**
@@ -83,18 +87,19 @@ class ExamType extends Model {
      *
      * @param $id
      * @return bool
+     * @throws Exception
      */
     public function remove($id) {
+        
         $examType = $this->find($id);
-        if (!$examType) {
-            return false;
-        }
-        
+        if (!$examType) { return false; }
+
         return $this->removable($examType) ? $examType->delete() : false;
-        
+
     }
-    
+
     public function datatable() {
+        
         $columns = [
             ['db' => 'ExamType.id', 'dt' => 0],
             ['db' => 'ExamType.name', 'dt' => 1],
@@ -103,24 +108,26 @@ class ExamType extends Model {
             ['db' => 'ExamType.created_at', 'dt' => 4],
             ['db' => 'ExamType.updated_at', 'dt' => 5],
             [
-                'db'        => 'ExamType.enabled', 'dt' => 6,
+                'db' => 'ExamType.enabled', 'dt' => 6,
                 'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($this, $d, $row);
+                    return Datatable::dtOps($d, $row, false);
                 },
             ],
         ];
         $joins = [
             [
-                'table'      => 'schools',
-                'alias'      => 'School',
-                'type'       => 'INNER',
+                'table' => 'schools',
+                'alias' => 'School',
+                'type' => 'INNER',
                 'conditions' => [
                     'School.id = ExamType.school_id',
                 ],
             ],
         ];
-        
-        return Datatable::simple($this, $columns, $joins);
+        $school = new School();
+        $schoolId = $school->getSchoolId();
+        $condition = 'ExamType.school_id = ' . $schoolId;
+        return Datatable::simple($this, $columns, $joins, $condition);
     }
-    
+
 }

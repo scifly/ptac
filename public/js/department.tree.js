@@ -95,6 +95,8 @@ var dept = {
                         type: 'POST',
                         dataType: 'json',
                         data: function (node) {
+                            console.log(node);
+
                             return {id: node.id, _token: $('#csrf_token').attr('content')}
                         }
                     },

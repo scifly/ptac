@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\GradeRequest;
 use App\Models\Educator;
 use App\Models\Grade;
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 
 /**
@@ -27,7 +29,8 @@ class GradeController extends Controller {
     /**
      * 年级列表
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws \Throwable
      */
     public function index() {
         
@@ -35,18 +38,19 @@ class GradeController extends Controller {
             return response()->json($this->grade->datatable());
         }
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
     /**
      * 创建年级
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws \Throwable
      */
     public function create() {
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -54,7 +58,7 @@ class GradeController extends Controller {
      * 保存年级
      *
      * @param GradeRequest $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function store(GradeRequest $request) {
         
@@ -63,31 +67,31 @@ class GradeController extends Controller {
         
     }
     
-    /**
-     * 年级详情
-     *
-     * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
-     */
-    public function show($id) {
-        
-        $grade = $this->grade->find($id);
-        if (!$grade) {
-            return $this->notFound();
-        }
-        
-        return $this->output(__METHOD__, [
-            'grade'     => $grade,
-            'educators' => $this->educator->educators($grade->educator_ids),
-        ]);
-        
-    }
-    
+    // /**
+    //  * 年级详情
+    //  *
+    //  * @param $id
+    //  * @return bool|\Illuminate\Http\JsonResponse
+    //  */
+    // public function show($id) {
+    //
+    //     $grade = $this->grade->find($id);
+    //     if (!$grade) {
+    //         return $this->notFound();
+    //     }
+    //
+    //     return $this->output([
+    //         'grade'     => $grade,
+    //         'educators' => $this->educator->educators($grade->educator_ids),
+    //     ]);
+    //
+    // }
     /**
      * 编辑年级
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws \Throwable
      */
     public function edit($id) {
         
@@ -99,7 +103,7 @@ class GradeController extends Controller {
         if ($grade->educator_ids != '0') {
             $selectedEducators = $this->educator->getEducatorListByIds(explode(",", $grade->educator_ids));
         }
-        return $this->output(__METHOD__, [
+        return $this->output([
             'grade'             => $grade,
             'selectedEducators' => $selectedEducators,
         ]);
@@ -111,7 +115,7 @@ class GradeController extends Controller {
      *
      * @param GradeRequest $request
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function update(GradeRequest $request, $id) {
         
@@ -128,13 +132,12 @@ class GradeController extends Controller {
      * 删除年级
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function destroy($id) {
         
-        if (!$this->grade->find($id)) {
-            return $this->notFound();
-        }
+        if (!$this->grade->find($id)) { return $this->notFound(); }
         
         return $this->grade->remove($id, true)
             ? $this->succeed() : $this->fail();

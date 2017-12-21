@@ -1,9 +1,13 @@
 <?php
+
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * App\Models\Semester
@@ -13,8 +17,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $name 学期名称
  * @property string $start_date 学期开始日期
  * @property string $end_date 学期截止日期
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property int $enabled
  * @method static Builder|Semester whereCreatedAt($value)
  * @method static Builder|Semester whereEnabled($value)
@@ -29,57 +33,63 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $remark 备注
  * @property-read School $school
  * @method static Builder|Semester whereRemark($value)
- * @property-read \App\Models\StudentAttendanceSetting $studentAttendanceSetting
+ * @property-read StudentAttendanceSetting $studentAttendanceSetting
  */
 class Semester extends Model {
-    
+
     protected $fillable = [
-        'school_id',
-        'name',
-        'remark',
-        'start_date',
-        'end_date',
-        'enabled',
+        'school_id', 'name', 'remark',
+        'start_date', 'end_date', 'enabled',
     ];
     
-    public function school() {
-        return $this->belongsTo('App\Models\School');
-        
-    }
+    /**
+     * 返回学期记录所属的学校对象
+     * 
+     * @return BelongsTo
+     */
+    public function school() { return $this->belongsTo('App\Models\School'); }
     
-    public function studentAttendanceSetting() {
-        return $this->hasOne('App\Models\StudentAttendanceSetting', 'semester_id', 'id');
-    }
-    
+    /**
+     * 返回学期记录包含的所有学生考勤设置对象
+     * 
+     * @return HasMany
+     */
+    public function studentAttendanceSettings() { return $this->hasMany('App\Models\StudentAttendanceSetting'); }
+
     public function datatable() {
+        
         $columns = [
             ['db' => 'Semester.id', 'dt' => 0],
             ['db' => 'Semester.name as semestername', 'dt' => 1],
-            ['db' => 'Semester.name as schoolname', 'dt' => 2],
+            ['db' => 'School.name as schoolname', 'dt' => 2],
             ['db' => 'Semester.start_date', 'dt' => 3],
             ['db' => 'Semester.end_date', 'dt' => 4],
             ['db' => 'Semester.created_at', 'dt' => 5],
             ['db' => 'Semester.updated_at', 'dt' => 6],
             [
-                'db'        => 'Semester.enabled', 'dt' => 7,
+                'db' => 'Semester.enabled', 'dt' => 7,
                 'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($this, $d, $row);
+                    return Datatable::dtOps($d, $row, false);
                 },
             ],
         ];
         $joins = [
             [
-                'table'      => 'schools',
-                'alias'      => 'School',
-                'type'       => 'INNER',
+                'table' => 'schools',
+                'alias' => 'School',
+                'type' => 'INNER',
                 'conditions' => [
                     'School.id = Semester.school_id',
                 ],
             ],
         ];
-        
-        return Datatable::simple($this, $columns, $joins);
-        
-    }
+        $school = new School();
+        $schoolId = $school->getSchoolId();
+        $condition = 'Semester.school_id = ' . $schoolId;
+        unset($school);
     
+        return Datatable::simple($this, $columns, $joins, $condition);
+
+    }
+
 }

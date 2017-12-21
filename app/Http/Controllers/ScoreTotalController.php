@@ -3,7 +3,10 @@ namespace App\Http\Controllers;
 
 use App\Models\ScoreTotal;
 use App\Models\Subject;
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
+use Throwable;
 
 /**
  * 总成绩
@@ -27,7 +30,8 @@ class ScoreTotalController extends Controller {
     /**
      * 总成绩列表
      *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\JsonResponse|\Illuminate\View\View
+     * @return JsonResponse
+     * @throws Throwable
      */
     public function index() {
         
@@ -35,7 +39,7 @@ class ScoreTotalController extends Controller {
             return response()->json($this->scoreTotal->datatable());
         }
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -43,7 +47,8 @@ class ScoreTotalController extends Controller {
      * 总成绩详情
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function show($id) {
         
@@ -51,7 +56,7 @@ class ScoreTotalController extends Controller {
         if (!$scoreTotal) {
             return $this->notFound();
         }
-        return $this->output(__METHOD__, [
+        return $this->output([
             'score_total' => $scoreTotal,
             'studentname' => $scoreTotal->student->user->realname,
             'subjects'    => $this->subject->subjects($scoreTotal->subject_ids),
@@ -64,7 +69,8 @@ class ScoreTotalController extends Controller {
      * 总成绩统计
      *
      * @param $examId
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function statistics($examId) {
         

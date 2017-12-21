@@ -5,8 +5,11 @@ use App\Http\Requests\OperatorRequest;
 use App\Models\Department;
 use App\Models\Operator;
 use App\Models\School;
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
+use Throwable;
 
 /**
  * 系统管理员
@@ -32,7 +35,8 @@ class OperatorController extends Controller {
     /**
      * 系统管理员列表
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function index() {
         
@@ -40,21 +44,22 @@ class OperatorController extends Controller {
             return response()->json($this->operator->datatable());
         }
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
     /**
      * 创建系统管理员
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function create() {
         
         if (Request::method() === 'POST') {
             return $this->department->tree(Request::query('rootId'));
         }
-        return $this->output(__METHOD__, [
+        return $this->output([
             'role' => Auth::user()->group->name
         ]);
         
@@ -64,7 +69,8 @@ class OperatorController extends Controller {
      * 保存系统管理员
      *
      * @param OperatorRequest $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function store(OperatorRequest $request) {
         
@@ -77,14 +83,15 @@ class OperatorController extends Controller {
      * 系统管理员详情
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function show($id) {
         
         $operator = $this->operator->find($id);
         if (!$operator) { return $this->notFound();}
         
-        return $this->output(__METHOD__, [
+        return $this->output([
             'operator' => $operator,
             'role' => Auth::user()->group->name
         ]);
@@ -95,7 +102,8 @@ class OperatorController extends Controller {
      * 编辑系统管理员
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function edit($id) {
         
@@ -105,7 +113,7 @@ class OperatorController extends Controller {
         $operator = $this->operator->find($id);
         if (!$operator) { return $this->notFound(); }
         
-        return $this->output(__METHOD__, ['operator' => $operator]);
+        return $this->output(['operator' => $operator]);
         
     }
     
@@ -114,7 +122,8 @@ class OperatorController extends Controller {
      *
      * @param OperatorRequest $request
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function update(OperatorRequest $request, $id) {
         
@@ -130,7 +139,8 @@ class OperatorController extends Controller {
      * 删除系统管理员
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function destroy($id) {
         

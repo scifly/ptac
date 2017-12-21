@@ -1,6 +1,8 @@
 <?php
+
 namespace App\Http\ViewComposers;
 
+use App\Helpers\ControllerTrait;
 use App\Models\Corp;
 use App\Models\Department;
 use App\Models\Grade;
@@ -12,16 +14,18 @@ use Illuminate\Support\Facades\Auth;
 
 class EducatorIndexComposer {
     
+    use ControllerTrait;
+    
     protected $user;
-    
+
     public function __construct(User $user) {
-        
+
         $this->user = $user;
-        
+
     }
-    
+
     public function compose(View $view) {
-        
+
         $schools = null;
         $grades = null;
         $classes = null;
@@ -66,10 +70,11 @@ class EducatorIndexComposer {
                 ->pluck('name', 'id');
         }
         $view->with([
-            'schools'  => $schools,
-            'grades'   => $grades,
-            'classes'  => $classes,
+            'schools' => $schools,
+            'grades' => $grades,
+            'classes' => $classes,
+            'uris' => $this->uris()
         ]);
     }
-    
+
 }

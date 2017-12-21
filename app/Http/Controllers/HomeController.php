@@ -4,15 +4,21 @@ namespace App\Http\Controllers;
 use App\Models\Action;
 use App\Models\Corp;
 use App\Models\Department;
-use App\Models\DepartmentType;
+use App\Models\GroupTab;
 use App\Models\Menu;
 use App\Models\MenuTab;
 use App\Models\MenuType;
 use App\Models\School;
 use App\Models\Tab;
+use Exception;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
+use Illuminate\View\View;
+use Throwable;
 
 /**
  * 首页
@@ -34,7 +40,7 @@ class HomeController extends Controller {
         Department $department
     ) {
         
-        $this->middleware(['auth']);
+        $this->middleware(['auth', 'checkrole']);
         $this->menu = $menu;
         $this->action = $action;
         $this->tab = $tab;
@@ -44,6 +50,8 @@ class HomeController extends Controller {
     
     /**
      * 后台首页
+     *
+     * @throws Throwable
      */
     public function index() {
     
@@ -68,15 +76,28 @@ class HomeController extends Controller {
                     $menuId = $this->menu
                         ->where('parent_id', $parentMenuId)
                         ->where('uri', ['home', '/'])
+                        ->first()
                         ->id;
                     break;
-                default:
+                case '学校':
                     $view = 'school';
                     $parentMenuId = School::whereDepartmentId($user->topDeptId($user))
                         ->first()->menu_id;
                     $menuId = $this->menu
                         ->where('parent_id', $parentMenuId)
                         ->where('uri', ['home', '/'])
+                        ->first()
+                        ->id;
+                    break;
+                default:
+                    $view = 'school';
+                    $toDeptId = $user->topDeptId($user);
+                    $parentMenuId = School::whereDepartmentId($user->getDeptSchoolId($toDeptId))
+                        ->first()->menu_id;
+                    $menuId = $this->menu
+                        ->where('parent_id', $parentMenuId)
+                        ->where('uri', ['home', '/'])
+                        ->first()
                         ->id;
                     break;
             }
@@ -118,7 +139,15 @@ class HomeController extends Controller {
         }
 
     }
-
+    
+    /**
+     * 菜单入口
+     *
+     * @param $id
+     * @return Factory|JsonResponse|View
+     * @throws Exception
+     * @throws Throwable
+     */
     public function menu($id) {
 
         if (!session('menuId') || session('menuId') !== $id) {
@@ -127,13 +156,26 @@ class HomeController extends Controller {
         } else {
             Session::forget('menuChanged');
         }
+        $user = Auth::user();
+        $role = $user->group->name;
+
         # 获取卡片列表
         $tabArray = [];
         $isTabLegit = true;
-        $tabRanks = MenuTab::whereMenuId($id)->get()->sortBy('tab_order')->toArray();
+        $tabRanks = MenuTab::whereMenuId($id)
+            ->get()
+            ->sortBy('tab_order')
+            ->toArray();
+        $allowedTabIds = GroupTab::whereGroupId($user->group_id)
+            ->pluck('tab_id')
+            ->toArray();
         if (empty($tabRanks)) { $isTabLegit = false; };
         foreach ($tabRanks as $rank) {
             $tab = Tab::whereId($rank['tab_id'])->first();
+            if (
+                !in_array($role, ['运营', '企业', '学校']) &&
+                !in_array($rank['tab_id'], $allowedTabIds)
+            ) { continue; }
             if (!empty($tab->action->route)) {
                 $tabArray[] = [
                     'id'     => 'tab_' . $tab->id,
@@ -185,12 +227,15 @@ class HomeController extends Controller {
             ];
         }
         # 获取并返回wrapper-content层中的html内容
+        try {
+            $html = view('partials.site_content', ['tabs' => $tabArray])->render();
+        } catch (Exception $e) {
+            throw $e;
+        }
         if (Request::ajax()) {
             return response()->json([
                 'statusCode' => 200,
-                'html' => view('partials.site_content', [
-                    'tabs' => $tabArray
-                ])->render()
+                'html' => $html 
             ]);
         }
         # 获取菜单列表

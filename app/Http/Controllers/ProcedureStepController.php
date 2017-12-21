@@ -3,7 +3,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ProcedureStepRequest;
 use App\Models\ProcedureStep;
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
+use Throwable;
 
 /**
  * 审批流程步骤
@@ -25,24 +28,26 @@ class ProcedureStepController extends Controller {
     /**
      * 审批流程步骤列表
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function index() {
         if (Request::get('draw')) {
             return response()->json($this->procedureStep->datatable());
         }
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
     /**
      * 创建审批流程步骤
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function create() {
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -50,7 +55,7 @@ class ProcedureStepController extends Controller {
      * 保存审批流程步骤
      *
      * @param ProcedureStepRequest $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function store(ProcedureStepRequest $request) {
         return $this->procedureStep->store($request->all())
@@ -62,7 +67,8 @@ class ProcedureStepController extends Controller {
      * 审批流程步骤详情
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Throwable
      */
     public function show($id) {
         $procedureStep = $this->procedureStep->find($id);
@@ -70,7 +76,7 @@ class ProcedureStepController extends Controller {
             return $this->notFound();
         }
         
-        return $this->output(__METHOD__) ? $this->succeed() : $this->fail();
+        return $this->output() ? $this->succeed() : $this->fail();
         
     }
     
@@ -78,7 +84,8 @@ class ProcedureStepController extends Controller {
      * 编辑审批流程步骤
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Throwable
      */
     public function edit($id) {
         $procedureStep = $this->procedureStep->find($id);
@@ -86,7 +93,7 @@ class ProcedureStepController extends Controller {
             return $this->notFound();
         }
         
-        return $this->output(__METHOD__, ['procedureStep' => $procedureStep]);
+        return $this->output(['procedureStep' => $procedureStep]);
         
     }
     
@@ -95,7 +102,7 @@ class ProcedureStepController extends Controller {
      *
      * @param ProcedureStepRequest $request
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function update(ProcedureStepRequest $request, $id) {
         $procedureStep = $this->procedureStep->find($id);
@@ -112,16 +119,15 @@ class ProcedureStepController extends Controller {
      * 删除审批流程步骤
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function destroy($id) {
-        $procedureStep = $this->procedureStep->find($id);
-        if (!$procedureStep) {
-            return $this->notFound();
-        }
         
-        return $procedureStep->remove($id)
-            ? $this->succeed() : $this->fail();
+        $ps = $this->procedureStep->find($id);
+        if (!$ps) { return $this->notFound(); }
+        
+        return $ps->remove($id) ? $this->succeed() : $this->fail();
         
     }
     

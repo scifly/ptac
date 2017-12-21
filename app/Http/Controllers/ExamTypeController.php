@@ -3,7 +3,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ExamTypeRequest;
 use App\Models\ExamType;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
+use Throwable;
 
 /**
  * 考试类型
@@ -25,7 +27,8 @@ class ExamTypeController extends Controller {
     /**
      * 考试类型列表
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function index() {
         
@@ -33,18 +36,19 @@ class ExamTypeController extends Controller {
             return response()->json($this->examType->datatable());
         }
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
     /**
      * 创建考试类型
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function create() {
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -52,10 +56,10 @@ class ExamTypeController extends Controller {
      * 保存考试类型
      *
      * @param ExamTypeRequest $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function store(ExamTypeRequest $request) {
-        
+     
         return $this->examType->store($request->all())
             ? $this->succeed() : $this->fail();
         
@@ -65,14 +69,15 @@ class ExamTypeController extends Controller {
      * 编辑考试类型
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function edit($id) {
         
         $examType = $this->examType->find($id);
         if (!$examType) { return $this->notFound(); }
         
-        return $this->output(__METHOD__, [
+        return $this->output([
             'examType' => $examType
         ]);
         
@@ -83,7 +88,7 @@ class ExamTypeController extends Controller {
      *
      * @param ExamTypeRequest $request
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function update(ExamTypeRequest $request, $id) {
         
@@ -99,7 +104,8 @@ class ExamTypeController extends Controller {
      * 删除考试类型
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws \Exception
      */
     public function destroy($id) {
         

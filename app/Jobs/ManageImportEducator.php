@@ -1,6 +1,7 @@
 <?php
 namespace App\Jobs;
 
+use App\Events\ContactImportTrigger;
 use App\Models\Department;
 use App\Models\DepartmentUser;
 use App\Models\Educator;
@@ -16,6 +17,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Mockery\Exception;
@@ -202,6 +204,11 @@ class ManageImportEducator implements ShouldQueue {
                 }
                 
             });
+            $data['user'] = Auth::user();
+            $data['type'] = 'educator';
+
+            event(new ContactImportTrigger($data));
+
             return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
             return false;

@@ -7,8 +7,10 @@ use App\Models\PollQuestionnaireChoice;
 use App\Models\PollQuestionnaireParticipant;
 use App\Models\PollQuestionnaireSubject;
 use App\Models\User;
+use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Input;
+use Illuminate\View\View;
 
 /**
  * 投票问卷参与者
@@ -51,7 +53,7 @@ class PqParticipantController extends Controller {
     }
     
     /**
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return Factory|View
      */
     public function index() {
         

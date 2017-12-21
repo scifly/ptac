@@ -35,7 +35,7 @@
             </div>
             @include('partials.enabled', [
                 'id' => 'enabled',
-                'value' => isset($alertType['enabled']) ? $alertType['enabled'] : NULL
+                'value' => $alertType['enabled'] ?? NULL
             ])
         </div>
     </div>

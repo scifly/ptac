@@ -1,8 +1,10 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * App\Models\CustodianStudent
@@ -25,45 +27,67 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read \App\Models\Student $student
  * @method static Builder|CustodianStudent whereEnabled($value)
  * @property string|null $expiration
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\CustodianStudent whereExpiration($value)
+ * @method static Builder|CustodianStudent whereExpiration($value)
  */
 class CustodianStudent extends Model {
-    
+
     protected $table = 'custodians_students';
-    
+
     protected $fillable = [
         'custodian_id', 'student_id', 'relationship',
         'expiration', 'enabled',
     ];
     
+    /**
+     * 返回所属的监护人对象
+     * 
+     * @return BelongsTo
+     */
     public function custodian() { return $this->belongsTo('App\Models\Custodian'); }
     
+    /**
+     * 返回所属的学生对象
+     * 
+     * @return BelongsTo
+     */
     public function student() { return $this->belongsTo('App\Models\Student'); }
     
+    /**
+     * 按监护人ID保存记录
+     * 
+     * @param $custodianId
+     * @param array $studentIds
+     */
     public function storeByCustodianId($custodianId, array $studentIds) {
-        
+
         foreach ($studentIds as $studentId => $relationship) {
             $this->create([
                 'custodian_id' => $custodianId,
-                'student_id'   => $studentId,
-                'enabled'      => 1,
+                'student_id' => $studentId,
+                'enabled' => 1,
                 'relationship' => $relationship,
             ]);
         }
-        
+
     }
     
+    /**
+     * 按学生ID保存记录
+     * 
+     * @param $studentId
+     * @param array $custodianIds
+     */
     public function storeByStudentId($studentId, array $custodianIds) {
-        
+
         foreach ($custodianIds as $custodianId => $relationship) {
             $this->create([
-                'student_id'   => $studentId,
+                'student_id' => $studentId,
                 'custodian_id' => $custodianId,
                 'relationship' => $relationship,
-                'enabled'      => 1,
+                'enabled' => 1,
             ]);
         }
-        
+
     }
-    
+
 }

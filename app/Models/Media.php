@@ -1,10 +1,15 @@
 <?php
+
 namespace App\Models;
 
 use App\Helpers\ModelTrait;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
  * App\Models\Media 媒体
@@ -32,33 +37,43 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read WsmArticle $wsmArticle
  */
 class Media extends Model {
-    
+
     use ModelTrait;
-    
+
     protected $table = 'medias';
-    
+
     protected $fillable = [
         'path', 'remark', 'media_type_id', 'enabled',
     ];
-    
+
     /**
      * 返回指定媒体所属的媒体类型对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function mediaType() { return $this->belongsTo('App\Models\MediaType'); }
     
+    /**
+     * 返回对应的网站模块对象
+     *
+     * @return HasOne
+     */
     public function wapSiteModule() { return $this->hasOne('App\Models\WapSiteModule'); }
     
+    /**
+     * 返回对应的网站文章对象
+     *
+     * @return HasOne
+     */
     public function wsmArticle() { return $this->hasOne('App\Models\WsmArticle'); }
-    
+
     /**
      * 获取指定媒体所包含的所有菜单对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function menus() { return $this->hasMany('App\Models\Menu'); }
-    
+
     /**
      * 根据媒体ID返回媒体对象
      *
@@ -66,16 +81,16 @@ class Media extends Model {
      * @return array
      */
     public function medias(array $ids) {
-        
+
         $medias = [];
         foreach ($ids as $mediaId) {
             $medias[] = $this->find($mediaId);
         }
-        
+
         return $medias;
-        
+
     }
-    
+
     /**
      * 保存媒体
      *
@@ -83,13 +98,13 @@ class Media extends Model {
      * @return bool
      */
     public function store(array $data) {
-        
+
         $media = $this->create($data);
-        
+
         return $media ? true : false;
-        
+
     }
-    
+
     /**
      * 更新媒体
      *
@@ -98,14 +113,14 @@ class Media extends Model {
      * @return bool
      */
     public function modify(array $data, $id) {
-        
+
         $media = $this->find($id);
         if (!$media) {
             return false;
         }
-        
+
         return $media->update($data) ? true : false;
-        
+
     }
     
     /**
@@ -113,13 +128,15 @@ class Media extends Model {
      *
      * @param $id
      * @return bool|null
+     * @throws Exception
      */
     public function remove($id) {
-        
+
         $media = $this->find($id);
         if (!$media) { return false; }
-        return $media->removable($media) ? $media->delete() : false;
         
+        return $media->removable($media) ? $media->delete() : false;
+
     }
-    
+
 }

@@ -3,7 +3,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ProcedureTypeRequest;
 use App\Models\ProcedureType;
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
+use Throwable;
 
 /**
  * 审批流程类型
@@ -25,7 +28,8 @@ class ProcedureTypeController extends Controller {
     /**
      * 审批流程类型列表
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function index() {
         
@@ -33,18 +37,19 @@ class ProcedureTypeController extends Controller {
             return response()->json($this->procedureType->datatable());
         }
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
     /**
      * 创建审批流程类型
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function create() {
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -52,7 +57,7 @@ class ProcedureTypeController extends Controller {
      * 创建审批流程类型
      *
      * @param ProcedureTypeRequest $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function store(ProcedureTypeRequest $request) {
         
@@ -61,27 +66,11 @@ class ProcedureTypeController extends Controller {
     }
     
     /**
-     * 审批流程类型详情
-     *
-     * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
-     */
-    public function show($id) {
-        
-        $procedureType = $this->procedureType->find($id);
-        if (!$procedureType) {
-            return $this->notFound();
-        }
-        
-        return $this->output(__METHOD__, ['procedureType' => $procedureType]);
-        
-    }
-    
-    /**
      * 编辑审批流程类型
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function edit($id) {
         
@@ -90,7 +79,7 @@ class ProcedureTypeController extends Controller {
             return $this->notFound();
         }
         
-        return $this->output(__METHOD__, ['procedureType' => $procedureType]);
+        return $this->output(['procedureType' => $procedureType]);
         
     }
     
@@ -99,7 +88,7 @@ class ProcedureTypeController extends Controller {
      *
      * @param ProcedureTypeRequest $request
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function update(ProcedureTypeRequest $request, $id) {
         
@@ -116,7 +105,8 @@ class ProcedureTypeController extends Controller {
      * 删除审批流程类型
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function destroy($id) {
         

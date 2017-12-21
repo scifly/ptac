@@ -1,8 +1,10 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * App\Models\Attachment 附件
@@ -29,7 +31,7 @@ class Attachment extends Model {
     /**
      * 返回所属附件类型对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function attachmentType() { return $this->belongsTo('App\Models\AttachmentType'); }
 

@@ -3,7 +3,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ConferenceParticipantRequest;
 use App\Models\ConferenceParticipant;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
+use Throwable;
 
 /**
  * 与会者
@@ -25,7 +27,8 @@ class ConferenceParticipantController extends Controller {
     /**
      * 与会者列表
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Throwable
      */
     public function index() {
         
@@ -33,7 +36,7 @@ class ConferenceParticipantController extends Controller {
             return response()->json($this->cp->datatable());
         }
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -41,7 +44,7 @@ class ConferenceParticipantController extends Controller {
      * 保存与会者参会记录
      *
      * @param ConferenceParticipantRequest $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function store(ConferenceParticipantRequest $request) {
         
@@ -54,14 +57,15 @@ class ConferenceParticipantController extends Controller {
      * 与会者参会详情
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Throwable
      */
     public function show($id) {
         
         $cp = $this->cp->find($id);
         if (!$cp) { return $this->notFound(); }
         
-        return $this->output(__METHOD__, ['cp' => $cp]);
+        return $this->output(['cp' => $cp]);
         
     }
     

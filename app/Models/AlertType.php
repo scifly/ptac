@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
@@ -23,11 +24,11 @@ use Illuminate\Database\Eloquent\Model;
  * @mixin \Eloquent
  */
 class AlertType extends Model {
-    
+
     protected $fillable = ['name', 'english_name', 'enabled'];
-    
+
     public function datatable() {
-        
+
         $columns = [
             ['db' => 'AlertType.id', 'dt' => 0],
             ['db' => 'AlertType.name', 'dt' => 1],
@@ -35,22 +36,15 @@ class AlertType extends Model {
             ['db' => 'AlertType.created_at', 'dt' => 3],
             ['db' => 'AlertType.updated_at', 'dt' => 4],
             [
-                'db'        => 'AlertType.enabled', 'dt' => 5,
+                'db' => 'AlertType.enabled', 'dt' => 5,
                 'formatter' => function ($d, $row) {
-                    $id = $row['id'];
-                    $status = $d ? Datatable::DT_ON : Datatable::DT_OFF;
-                    $editLink = sprintf(Datatable::DT_LINK_EDIT, 'edit_' . $id);
-                    $delLink = sprintf(Datatable::DT_LINK_DEL, $id);
-                    return
-                        $status . str_repeat(Datatable::DT_SPACE, 3) .
-                        $editLink . str_repeat(Datatable::DT_SPACE, 2) .
-                        $delLink;
-                },
+                    return Datatable::dtOps($d, $row, false);
+                }
             ],
         ];
-        
+
         return Datatable::simple($this, $columns);
-        
+
     }
-    
+
 }

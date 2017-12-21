@@ -1,11 +1,13 @@
 <?php
+
 namespace App\Http\ViewComposers;
 
+use App\Helpers\ControllerTrait;
 use App\Models\School;
 use Illuminate\Contracts\View\View;
 
 class ComboTypeComposer {
-
+    use ControllerTrait;
     protected $school;
 
     public function __construct(School $school) {
@@ -16,10 +18,11 @@ class ComboTypeComposer {
 
     public function compose(View $view) {
 
+        $schoolId = $this->school->getSchoolId();
         $view->with([
-            'schools' => $this->school->pluck('name', 'id'),
+            'schoolId' => $schoolId,
+            'uris' => $this->uris()
         ]);
-
     }
 
 }

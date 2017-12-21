@@ -1,6 +1,5 @@
 <?php
-
-use App\Events\eventTrigger;
+include_once 'common.php';
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,10 +12,14 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
+<<<<<<< HEAD
 // Route::get('/fireEvent', function() {
 //     event(new eventTrigger());
 // });
 Route::get('/messages/send', 'MessageController@send');
+=======
+
+>>>>>>> origin/master
 Route::auth();
 # 关闭注册功能
 Route::any('register', function() { return redirect('login'); });
@@ -49,7 +52,6 @@ Route::group(['prefix' => 'custodians'], function () {
     Route::post('edit/{id}', $ctlr . '@edit');
     Route::post('create', $ctlr . '@create');
     Route::get('export', $ctlr . '@export');
-    
     // Route::any('relationship', $ctlr . '@relationship');
 });
 // 学生
@@ -63,6 +65,10 @@ Route::group(['prefix' => 'students'], function () {
 });
 // 用户
 Route::group(['prefix' => 'users'], routes('UserController'));
+Route::group(['prefix' => 'users'], function () {
+    $ctlr = 'UserController';
+    Route::get('event', $ctlr . '@event');
+});
 Route::post('users/upload_ava/{id}', 'UserController@uploadAvatar');
 /** 成绩管理 */
 // 考试管理 - 考试设置.考试类型设置
@@ -106,6 +112,10 @@ Route::group(['prefix' => 'attendance_machines'], routes('AttendanceMachineContr
 Route::group(['prefix' => 'educator_attendance_settings'], routes('EducatorAttendanceSettingController'));
 Route::group(['prefix' => 'student_attendance_settings'], routes('StudentAttendanceSettingController'));
 // 考勤查询/统计
+Route::group(['prefix' => 'student_attendances'], function (){
+    $ctrl = 'StudentAttendanceController';
+    Route::get('index', $ctrl . '@index');
+});
 /** 课程表管理 */
 // 课程表设置
 Route::group(['prefix' => 'events'], routes('EventController'));
@@ -167,16 +177,20 @@ Route::group(['prefix' => 'conference_participants'], function () {
 });
 // 申诉
 /** 用户中心 */
-Route::get('users/profile/{id}','UserController@profile');
-Route::get('users/reset/{id}','UserController@reset');
-Route::get('users/messages/{id}','UserController@messages');
-Route::get('users/events/{id}','UserController@events');
+Route::get('users/profile','UserController@profile');
+// Route::put('users/profile','UserController@profile');
+Route::get('users/reset','UserController@reset');
+Route::post('users/reset','UserController@reset');
+Route::get('users/messages','UserController@messages');
+Route::get('users/events','UserController@event');
 // 个人通讯录
 // 消息中心
 Route::group(['prefix' => 'messages'], routes('MessageController'));
 Route::group(['prefix' => 'messages'], function () {
     $ctlr = 'MessageController';
     Route::post('get_depart_users', $ctlr . '@getDepartmentUsers');
+    Route::post('index', $ctlr . '@index');
+    Route::get('send', $ctlr . '@send');
 });
 // 日历
 // 个人信息
@@ -199,6 +213,10 @@ Route::group(['prefix' => 'combo_types'], routes('ComboTypeController'));
 /** 系统设置 */
 // 学校设置 - 学校管理.学期设置.教职员工组别设置.学校类型设置
 Route::group(['prefix' => 'schools'], routes('SchoolController'));
+Route::group(['prefix' => 'schools'], function (){
+    $ctrl = 'SchoolController';
+    Route::get('show', $ctrl . '@showInfo');
+});
 Route::group(['prefix' => 'semesters'], routes('SemesterController'));
 Route::group(['prefix' => 'teams'], routes('TeamController'));
 Route::group(['prefix' => 'school_types'], routes('SchoolTypeController'));
@@ -259,22 +277,11 @@ Route::group(['prefix' => 'operators'], function() {
     Route::post('create', $ctlr . '@create');
     Route::post('edit/{id}', $ctlr . '@edit');
 });
-/**
- * routes - Helper function
- * 返回resource路由
- *
- * @param $ctlr
- * @return Closure
- */
-function routes($ctlr) {
-    return function () use ($ctlr) {
-        Route::get('index', $ctlr . '@index');
-        Route::get('create/{id?}', $ctlr . '@create');
-        Route::post('store', $ctlr . '@store');
-        Route::get('show/{id}', $ctlr . '@show');
-        Route::get('edit/{id}', $ctlr . '@edit');
-        Route::put('update/{id}', $ctlr . '@update');
-        Route::delete('delete/{id}', $ctlr . '@destroy');
-        Route::get('userInfo', $ctlr . '@getUserInfo');
-    };
-}
+
+# --------------------------------------------------------------------------------
+// 消息中心
+Route::get('message_center', 'Wechat\MessageCenterController@index');
+//布置作业
+Route::get('homework', 'Wechat\HomeWorkController@index');
+//微网站
+Route::get('wapsite', 'Wechat\MobileSiteController@index');

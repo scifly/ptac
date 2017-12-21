@@ -3,7 +3,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\PqChoiceRequest;
 use App\Models\PollQuestionnaireChoice;
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
+use Throwable;
 
 /**
  * 题目选项
@@ -29,7 +32,8 @@ class PqChoiceController extends Controller {
     /**
      * 选项列表
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function index() {
         
@@ -37,7 +41,7 @@ class PqChoiceController extends Controller {
             return response()->json($this->pqChoice->datatable());
         }
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -45,10 +49,11 @@ class PqChoiceController extends Controller {
      * 创建选项
      *
      * @return bool|\Illuminate\Http\JsonResponse
+     * @throws \Throwable
      */
     public function create() {
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -69,6 +74,7 @@ class PqChoiceController extends Controller {
      *
      * @param $id
      * @return bool|\Illuminate\Http\JsonResponse
+     * @throws \Throwable
      */
     public function show($id) {
         
@@ -77,7 +83,7 @@ class PqChoiceController extends Controller {
             return $this->notFound();
         }
         
-        return $this->output(__METHOD__, [
+        return $this->output([
             'pqChoice' => $pqChoice,
         ]);
         
@@ -87,6 +93,7 @@ class PqChoiceController extends Controller {
      * 编辑选项
      * @param $id
      * @return bool|\Illuminate\Http\JsonResponse
+     * @throws \Throwable
      */
     public function edit($id) {
         
@@ -94,7 +101,7 @@ class PqChoiceController extends Controller {
         if (!$pqChoice) {
             return $this->notFound();
         }
-        return $this->output(__METHOD__, [
+        return $this->output([
             'pqChoice' => $pqChoice,
         ]);
         
@@ -122,13 +129,12 @@ class PqChoiceController extends Controller {
      *
      * @param $id
      * @return \Illuminate\Http\JsonResponse
+     * @throws Exception
      */
     public function destroy($id) {
         
         $pqChoice = $this->pqChoice->find($id);
-        if (!$pqChoice) {
-            return $this->notFound();
-        }
+        if (!$pqChoice) { return $this->notFound(); }
         
         return $pqChoice->delete() ? $this->succeed() : $this->fail();
         

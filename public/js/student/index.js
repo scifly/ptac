@@ -1,3 +1,5 @@
+//# sourceURL=index.js
+
 var options = [
     { className: 'text-center', targets: [0, 1, 2, 4, 5, 6, 7, 8, 9, 10]}
 ];
@@ -20,15 +22,18 @@ $import.on('click', function () {
             contentType: false,
             processData: false,
             success: function (result) {
-                console.log(result);
+                if (result.error !== 0) {
+                    page.inform("操作失败",result.message, page.failure);
+                }
             },
             error: function (result) {
                 console.log(result);
+                page.inform("操作失败",result.message, page.failure);
+
             }
         });
     })
 });
-
 /** 导出excel 选择班级 */
 var item = 'student';
 if (typeof custodian === 'undefined') {

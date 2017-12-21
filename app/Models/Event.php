@@ -1,8 +1,12 @@
 <?php
+
 namespace App\Models;
 
+use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Http\JsonResponse;
 
 /**
  * App\Models\Event
@@ -51,7 +55,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|Event whereTitle($value)
  */
 class Event extends Model {
-    
+
     protected $table = 'events';
     protected $fillable = [
         'title', 'remark', 'location',
@@ -61,75 +65,130 @@ class Event extends Model {
         'alert_mins', 'user_id', 'created_at',
         'updated_at', 'enabled',
     ];
-    
+
     /**
      * 返回事件创建者的用户对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function user() { return $this->belongsTo('App\Models\User'); }
-    
+
     /**
      * 返回课程表事件对应的教职员工对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function educator() { return $this->belongsTo('App\Models\Educator'); }
-    
+
     /**
      * 返回课程表事件对应的科目对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function subject() { return $this->belongsTo('App\Models\Subject'); }
-    
+
+    public function datatable() {
+
+        $columns = [
+            ['db' => 'Event.id', 'dt' => 0],
+            ['db' => 'Event.title', 'dt' => 1],
+            ['db' => 'Event.remark', 'dt' => 2],
+            ['db' => 'Event.location', 'dt' => 3],
+            ['db' => 'Event.start', 'dt' => 4],
+            ['db' => 'Event.end', 'dt' => 5],
+            [
+                'db' => 'Event.ispublic', 'dt' => 6,
+                'formatter' => function ( $d, $row ) {
+                    if (!empty($d)) {
+                       return  $d ? '是' : '否';
+                    }
+                    return '[n/a]';
+                },
+            ],
+            ['db' => 'Subject.name', 'dt' => 7],
+            ['db' => 'Event.alertable', 'dt' => 8],
+            ['db' => 'User.realname', 'dt' => 9],
+            ['db' => 'Event.updated_at', 'dt' => 10],
+        ];
+        $joins = [
+            [
+                'table' => 'users',
+                'alias' => 'User',
+                'type' => 'INNER',
+                'conditions' => [
+                    'User.id = Event.user_id',
+                ],
+            ],
+            [
+                'table' => 'subjects',
+                'alias' => 'Subject',
+                'type' => 'INNER',
+                'conditions' => [
+                    'Subject.id = Event.subject_id',
+                ],
+            ],
+
+        ];
+        $condition = null;
+        $condition = 'Event.enabled = 1';
+
+        return Datatable::simple($this, $columns, $joins, $condition);
+    }
+
     /**
      * 显示日历事件
      * @param $userId
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function showCalendar($userId) {
         //通过userId找出educator_id
         $educator = Educator::where('user_id', $userId)->first();
-        //先选出公开事件中 非课程的事件
-        $pubNoCourseEvents = $this
-            ->where('ispublic', 1)
-            ->where('iscourse', 0)
-            ->get()->toArray();
-        //选出公开事件中 课程事件
-        $pubCourEvents = $this
-            ->where('ispublic', 1)
-            ->where('iscourse', 1)
-            ->where('educator_id', $educator->id)
-            ->get()->toArray();
-        //再选个人未公开事件
-        $perEvents = $this
-            ->where('User_id', $userId)
-            ->where('ispublic', 0)
-            ->where('enabled', '1')
-            ->get()->toArray();
         //全部公共事件
         $pubEvents = $this->where('ispublic', 1)->get()->toArray();
+        if(!empty($educator)) {
+            //先选出公开事件中 非课程的事件
+            $pubNoCourseEvents = $this
+                ->where('ispublic', 1)
+                ->where('iscourse', 0)
+                ->get()->toArray();
+            //选出公开事件中 课程事件
+            $pubCourEvents = $this
+                ->where('ispublic', 1)
+                ->where('iscourse', 1)
+                ->where('educator_id', $educator->id)
+                ->get()->toArray();
+            //再选个人未公开事件
+            $perEvents = $this
+                ->where('User_id', $userId)
+                ->where('ispublic', 0)
+                ->where('enabled', '1')
+                ->get()->toArray();
+        } else {
+            return response()->json($pubEvents);
+        }
         //如果是管理员
         if ($this->getRole($userId)) {
             return response()->json(array_merge($pubEvents, $perEvents));
         }
-        
+
         //如果是用户
         return response()->json(array_merge($pubNoCourseEvents, $perEvents, $pubCourEvents));
     }
     
     /**
      * 判断当前用户权限
-     * @param $userId
+     * @param $user
      * @return bool
      */
-    public function getRole($userId) {
-        $role = User::find($userId)->group;
-        
-        return $role->name == '管理员' ? true : false;
+    public function getRole($user) {
+        $role = $user->group->name;
+        if ($role == '运营' || $role == '企业' || $role == '学校'){
+            return true;
+        } else {
+            return false;
+        }
     }
-    
+
     /**
      * 根据角色验证时间冲突
      *
@@ -148,10 +207,10 @@ class Event extends Model {
                 return $this->isRepeatTimeAdmin($educator_id, $start, $end, $id);
             }
         }
-        
+
         return false;
     }
-    
+
     /**
      * 验证用户添加事件是否有重复
      * @param $userId
@@ -161,6 +220,7 @@ class Event extends Model {
      * @return bool
      */
     public function isRepeatTimeUser($userId, $start, $end, $id = null) {
+        
         //通过userId 找到educator_id
         $educator = Educator::where('user_id', $userId)->first();
         //验证是否和课表时间有冲突
@@ -213,10 +273,11 @@ class Event extends Model {
                 ->where('start', '<', $end)
                 ->first();
         }
-        
+
         return !empty($event);
+        
     }
-    
+
     /**
      * 验证管理员添加事件是否有重复
      * 未判断管理员个人事件重复
@@ -227,6 +288,7 @@ class Event extends Model {
      * @return bool
      */
     public function isRepeatTimeAdmin($educatorId, $start, $end, $id = null) {
+        
         $event = $this
             ->where('id', '<>', $id)
             ->where('educator_id', $educatorId)
@@ -259,10 +321,11 @@ class Event extends Model {
                 ->where('start', '<', $start)
                 ->first();
         }
-        
+
         return !empty($event);
+        
     }
-    
+
     /**
      * 计算拖动后的时间差
      * @param $day
@@ -271,11 +334,13 @@ class Event extends Model {
      * @return int
      */
     public function timeDiff($day, $hour, $minute) {
+        
         $days = $day * 24 * 60 * 60;
         $hours = $hour * 60 * 60;
         $minutes = $minute * 60;
-        
+
         return $diffTime = $days + $hours + $minutes;
+        
     }
-    
+
 }

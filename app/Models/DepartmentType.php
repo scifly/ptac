@@ -1,11 +1,14 @@
 <?php
+
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * App\Models\DepartmentType 部门类型
@@ -26,18 +29,18 @@ use Illuminate\Database\Eloquent\Model;
  * @mixin \Eloquent
  */
 class DepartmentType extends Model {
-    
+
     use ModelTrait;
-    
+
     protected $fillable = ['name', 'remark', 'enabled'];
-    
+
     /**
      * 获取指定部门类型包含的所有部门对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function departments() { return $this->hasMany('App\Models\Department'); }
-    
+
     /**
      * 创建部门类型
      *
@@ -45,11 +48,11 @@ class DepartmentType extends Model {
      * @return $this|Model
      */
     public function store(array $data) {
-        
+
         return $this->create($data);
-        
+
     }
-    
+
     /**
      * 更新不猛类型
      *
@@ -58,9 +61,9 @@ class DepartmentType extends Model {
      * @return bool
      */
     public function modify(array $data, $id) {
-        
+
         return $this->find($id)->update($data);
-        
+
     }
     
     /**
@@ -68,21 +71,20 @@ class DepartmentType extends Model {
      *
      * @param $id
      * @return bool|null
+     * @throws Exception
      */
     public function remove($id) {
-        
+
         $departmentType = $this->find($id);
-        if (!$departmentType) {
-            return false;
-        }
+        if (!$departmentType) { return false; }
         $removed = $this->removable($departmentType) ? $departmentType->delete() : false;
-        
+
         return $removed ? true : false;
-        
+
     }
-    
+
     public function datatable() {
-        
+
         $columns = [
             ['db' => 'DepartmentType.id', 'dt' => 0],
             ['db' => 'DepartmentType.name', 'dt' => 1],
@@ -90,22 +92,15 @@ class DepartmentType extends Model {
             ['db' => 'DepartmentType.created_at', 'dt' => 3],
             ['db' => 'DepartmentType.updated_at', 'dt' => 4],
             [
-                'db'        => 'DepartmentType.enabled', 'dt' => 5,
+                'db' => 'DepartmentType.enabled', 'dt' => 5,
                 'formatter' => function ($d, $row) {
-                    $id = $row['id'];
-                    $status = $d ? Datatable::DT_ON : Datatable::DT_OFF;
-                    $editLink = sprintf(Datatable::DT_LINK_EDIT, 'edit_' . $id);
-                    $delLink = sprintf(Datatable::DT_LINK_DEL, $id);
-                    return
-                        $status . str_repeat(Datatable::DT_SPACE, 3) .
-                        $editLink . str_repeat(Datatable::DT_SPACE, 2) .
-                        $delLink;
+                    return Datatable::dtOps($d, $row, false);
                 },
             ],
         ];
-        
+
         return Datatable::simple($this, $columns);
-        
+
     }
-    
+
 }

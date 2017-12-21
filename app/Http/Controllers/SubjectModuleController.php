@@ -3,7 +3,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\SubjectModuleRequest;
 use App\Models\SubjectModule;
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
+use Throwable;
 
 /**
  * 科目次分类
@@ -25,7 +28,8 @@ class SubjectModuleController extends Controller {
     /**
      * 科目次分类列表
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function index() {
         
@@ -33,18 +37,19 @@ class SubjectModuleController extends Controller {
             return response()->json($this->subjectModule->datatable());
         }
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
     /**
      * 创建科目次分类
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function create() {
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -52,7 +57,7 @@ class SubjectModuleController extends Controller {
      * 保存科目次分类
      *
      * @param SubjectModuleRequest $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function store(SubjectModuleRequest $request) {
         
@@ -62,32 +67,18 @@ class SubjectModuleController extends Controller {
     }
     
     /**
-     * 科目次分类详情
-     *
-     * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
-     */
-    public function show($id) {
-        
-        $subjectModule = $this->subjectModule->find($id);
-        if (!$subjectModule) { return $this->notFound(); }
-        
-        return $this->output(__METHOD__, ['subjectModule' => $subjectModule]);
-        
-    }
-    
-    /**
      * 编辑目次分类
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws \Throwable
      */
     public function edit($id) {
         
         $subjectModule = $this->subjectModule->find($id);
         if (!$subjectModule) { return $this->notFound(); }
         
-        return $this->output(__METHOD__, ['subjectModules' => $subjectModule]);
+        return $this->output(['subjectModules' => $subjectModule]);
         
     }
     
@@ -96,14 +87,13 @@ class SubjectModuleController extends Controller {
      *
      * @param SubjectModuleRequest $request
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function update(SubjectModuleRequest $request, $id) {
         
         $subjectModule = $this->subjectModule->find($id);
-        if (!$subjectModule) {
-            return $this->notFound();
-        }
+        if (!$subjectModule) { return $this->notFound(); }
+        
         return $subjectModule->update($request->all()) ? $this->succeed() : $this->fail();
         
     }
@@ -112,14 +102,13 @@ class SubjectModuleController extends Controller {
      * 删除科目次分类
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function destroy($id) {
         
         $subjectModule = $this->subjectModule->find($id);
-        if (!$subjectModule) {
-            return $this->notFound();
-        }
+        if (!$subjectModule) { return $this->notFound(); }
         
         return $subjectModule->delete() ? $this->succeed() : $this->fail();
         

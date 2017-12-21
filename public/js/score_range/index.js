@@ -1,1 +1,1 @@
-page.index('score_ranges')c;
+page.index('score_ranges');

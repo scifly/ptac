@@ -54,7 +54,7 @@
         @include('partials.enabled', [
             'label' => '性别',
             'id' => 'user[gender]',
-            'value' => isset($custodian->user->gender) ? $custodian->user->gender : NULL,
+            'value' => $custodian->user->gender ?? NULL,
             'options' => ['男', '女']
         ])
         <!-- 监护人手机列表 -->
@@ -99,20 +99,9 @@
             <div class="form-group">
                 <label class="col-sm-3 control-label">被监护人</label>
                 <div class="col-sm-6" style="padding-top: 3px;">
-                    {{--@if(!isset($pupils))--}}
-                    {{--<button id="add-pupil" class="btn btn-box-tool" type="button">--}}
-                    {{--<i class="fa fa-user-plus text-blue"> 添加</i>--}}
-                    {{--</button>--}}
-                    {{--@else--}}
-                    {{--<div id="department-nodes-checked">--}}
-                    {{--<button type="button" class="btn btn-flat" style="margin-right: 5px;margin-bottom: 5px">--}}
-                    {{--<i class=""></i>--}}
-                    {{--张三--}}
-                    {{--<i class="fa fa-close close-selected"></i>--}}
-                    {{--<input type="hidden" name="selectedStudents[]" value="1"/>--}}
-                    {{--</button>--}}
-                    {{--</div>--}}
-                    <table class="table table-striped table-bordered table-hover table-condensed">
+                    <div style="display: block; overflow-x: auto; clear: both; width: 100%; margin-top: 10px;">
+                        <table class="table table-striped table-bordered table-hover table-condensed"
+                               style="white-space: nowrap; width: 100%;">
                         <thead>
                         <tr class="bg-info">
                             <th>学生</th>
@@ -142,8 +131,9 @@
 
                         </tbody>
                     </table>
+                    </div>
                     <button id="add-pupil" class="btn btn-box-tool" type="button">
-                        <i class="fa fa-user-plus text-blue">新增</i>
+                        <i class="fa fa-user-plus text-blue">&nbsp;新增</i>
                     </button>
                     {{--@endif--}}
                 </div>
@@ -153,7 +143,7 @@
         <!-- 监护人状态 -->
             @include('partials.enabled', [
                 'id' => 'user[enabled]',
-                'value' => isset($custodian->user->enabled) ? $custodian->user->enabled : NULL
+                'value' => $custodian->user->enabled ?? NULL
             ])
         </div>
     </div>

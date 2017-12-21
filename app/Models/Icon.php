@@ -1,11 +1,15 @@
 <?php
+
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * App\Models\Icon 图标
@@ -30,48 +34,48 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read Collection|Tab[] $tabs
  */
 class Icon extends Model {
-    
+
     use ModelTrait;
-    
+
     protected $fillable = ['name', 'remark', 'icon_type_id', 'enabled'];
-    
+
     /**
      * 返回指定图标所属的图标类型对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function iconType() { return $this->belongsTo('App\Models\IconType'); }
-    
+
     /**
      * 返回Icon包含的菜单对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function menus() { return $this->hasMany('App\Models\Menu'); }
-    
+
     /**
      * 返回指定图标包含的所有卡片对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function tabs() { return $this->hasMany('App\Models\Tab'); }
-    
+
     /**
      * 返回Icon列表
      *
      * @return array
      */
     public function icons() {
-        
+
         $data = $this->whereEnabled(1)->get();
         $icons = [];
         foreach ($data as $icon) {
             $icons[$icon->iconType->name][$icon->id] = $icon->name;
         }
         return $icons;
-        
+
     }
-    
+
     /**
      * 保存图标
      *
@@ -79,13 +83,13 @@ class Icon extends Model {
      * @return bool
      */
     public function store(array $data) {
-        
+
         $icon = $this->create($data);
-        
+
         return $icon ? true : false;
-        
+
     }
-    
+
     /**
      * 更新图标
      *
@@ -94,14 +98,14 @@ class Icon extends Model {
      * @return bool
      */
     public function modify(array $data, $id) {
-        
+
         $icon = $this->find($id);
         if (!$icon) {
             return false;
         }
-        
+
         return $icon->update($data) ? true : false;
-        
+
     }
     
     /**
@@ -109,21 +113,23 @@ class Icon extends Model {
      *
      * @param $id
      * @return bool|null
+     * @throws Exception
      */
     public function remove($id) {
-        
+
         $icon = $this->find($id);
         if (!$icon) { return false; }
+        
         return $icon->removable($icon) ? $icon->delete() : false;
-        
+
     }
-    
+
     public function datatable() {
-        
+
         $columns = [
             ['db' => 'Icon.id', 'dt' => 0],
             [
-                'db'        => 'Icon.name', 'dt' => 1,
+                'db' => 'Icon.name', 'dt' => 1,
                 'formatter' => function ($d) {
                     return '<i class="' . $d . '"></i>&nbsp;' . $d;
                 },
@@ -132,25 +138,25 @@ class Icon extends Model {
             ['db' => 'Icon.created_at', 'dt' => 3],
             ['db' => 'Icon.updated_at', 'dt' => 4],
             [
-                'db'        => 'Icon.enabled', 'dt' => 5,
+                'db' => 'Icon.enabled', 'dt' => 5,
                 'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($this, $d, $row);
+                    return Datatable::dtOps($d, $row);
                 },
             ],
         ];
         $joins = [
             [
-                'table'      => 'icon_types',
-                'alias'      => 'IconType',
-                'type'       => 'INNER',
+                'table' => 'icon_types',
+                'alias' => 'IconType',
+                'type' => 'INNER',
                 'conditions' => [
                     'IconType.id = Icon.icon_type_id',
                 ],
             ],
         ];
-        
+
         return Datatable::simple($this, $columns, $joins);
-        
+
     }
-    
+
 }

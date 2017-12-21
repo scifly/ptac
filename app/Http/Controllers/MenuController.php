@@ -6,7 +6,10 @@ use App\Models\Menu;
 use App\Models\MenuTab;
 use App\Models\MenuType;
 use App\Models\Tab;
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
+use Throwable;
 
 /**
  * 菜单
@@ -15,7 +18,7 @@ use Illuminate\Support\Facades\Request;
  * @package App\Http\Controllers
  */
 class MenuController extends Controller {
-
+    
     protected $menu, $menuType, $menuTab;
 
     function __construct(Menu $menu, MenuType $menuType, MenuTab $menuTab) {
@@ -26,11 +29,13 @@ class MenuController extends Controller {
         $this->menuTab = $menuTab;
 
     }
-
+    
     /**
      * 菜单列表
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
+     * @throws Throwable
      */
     public function index() {
         
@@ -38,30 +43,32 @@ class MenuController extends Controller {
             return $this->menu->tree($this->menu->rootMenuId());
         }
 
-        return $this->output(__METHOD__);
+        return $this->output();
 
     }
-
+    
     /**
      * 创建菜单
      *
      * @param $id integer 上级菜单ID
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function create($id) {
 
-        return $this->output(__METHOD__, [
+        return $this->output([
             'parentId'   => $id,
             'menuTypeId' => MenuType::whereName('其他')->first()->id,
         ]);
 
     }
-
+    
     /**
      * 保存菜单
      *
      * @param MenuRequest $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function store(MenuRequest $request) {
 
@@ -69,12 +76,13 @@ class MenuController extends Controller {
             ? $this->succeed() : $this->fail();
 
     }
-
+    
     /**
      * 编辑菜单
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function edit($id) {
 
@@ -87,19 +95,21 @@ class MenuController extends Controller {
             $selectedTabs[$tab->id] = $tab->name;
         }
 
-        return $this->output(__METHOD__, [
+        return $this->output([
             'menu'         => $menu,
             'selectedTabs' => $selectedTabs,
         ]);
 
     }
-
+    
     /**
      * 更新菜单
      *
      * @param MenuRequest $request
      * @param integer $id 菜单ID
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
+     * @throws Throwable
      */
     public function update(MenuRequest $request, $id) {
 
@@ -116,7 +126,7 @@ class MenuController extends Controller {
      *
      * @param $id
      * @param $parentId
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function move($id, $parentId = null) {
 
@@ -136,12 +146,14 @@ class MenuController extends Controller {
         return $this->fail('非法操作');
 
     }
-
+    
     /**
      * 删除菜单
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
+     * @throws Throwable
      */
     public function destroy($id) {
 
@@ -165,36 +177,38 @@ class MenuController extends Controller {
         }
 
     }
-
+    
     /**
      * 菜单包含的卡片
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Throwable
      */
     public function menuTabs($id) {
 
         $menu = $this->menu->find($id);
-        if (!$menu) {
-            return $this->notFound();
-        }
-        $tabRanks = MenuTab::whereMenuId($id)->get()->sortBy('tab_order')->toArray();
+        if (!$menu) { return $this->notFound(); }
+        $tabRanks = MenuTab::whereMenuId($id)
+            ->get()
+            ->sortBy('tab_order')
+            ->toArray();
         $tabs = [];
         foreach ($tabRanks as $rank) {
             $tab = Tab::whereId($rank['tab_id'])->first();
             $tabs[] = $tab;
         }
 
-        // $tabs = $menu->tabs;
-        return $this->output(__METHOD__, ['tabs' => $tabs]);
+        return $this->output(['tabs' => $tabs]);
 
     }
-
+    
     /**
      * 保存菜单卡片排列顺序
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function rankTabs($id) {
 

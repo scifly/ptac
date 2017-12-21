@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\AppRequest;
 use App\Models\App;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 
 /**
@@ -25,26 +26,28 @@ class AppController extends Controller {
     /**
      * 微信应用列表
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws \Throwable
      */
     public function index() {
-    
+
         if (Request::method() == 'POST') {
             return $this->app->store();
         }
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
     /**
      * 创建微信应用
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws \Throwable
      */
     public function create() {
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -52,7 +55,7 @@ class AppController extends Controller {
      * 保存微信应用
      *
      * @param AppRequest $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function store(AppRequest $request) {
         
@@ -65,13 +68,14 @@ class AppController extends Controller {
      * 微信应用详情
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws \Throwable
      */
     public function show($id) {
         
         $app = $this->app->find($id);
         return $app
-            ? $this->output(__METHOD__, ['app' => $app])
+            ? $this->output(['app' => $app])
             : $this->notFound();
         
     }
@@ -80,13 +84,14 @@ class AppController extends Controller {
      * 编辑微信应用
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws \Throwable
      */
     public function edit($id) {
         
         $app = $this->app->find($id);
         return $app
-            ? $this->output(__METHOD__, ['app' => $app])
+            ? $this->output(['app' => $app])
             : $this->notFound();
         
     }
@@ -96,7 +101,7 @@ class AppController extends Controller {
      *
      * @param AppRequest $request
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function update(AppRequest $request, $id) {
         
@@ -112,7 +117,8 @@ class AppController extends Controller {
      * 获取指定应用的menu
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws \Throwable
      */
     public function menu($id) {
         
@@ -179,7 +185,7 @@ class AppController extends Controller {
             }
         ]";
         // $menus = $this->app->object_to_array($menu->button);
-        return $this->output(__METHOD__, ['menu' => json_decode($menu)]);
+        return $this->output(['menu' => json_decode($menu)]);
 
     }
 

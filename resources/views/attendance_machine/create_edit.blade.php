@@ -50,7 +50,7 @@
             </div>
             @include('partials.enabled', [
                 'id' => 'enabled',
-                'value' => isset($am['enabled']) ? $am['enabled'] : null
+                'value' => $am['enabled'] ?? null
             ])
         </div>
     </div>

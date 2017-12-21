@@ -1,12 +1,14 @@
 page.create('formWapSite', 'wap_sites');
-$(function () {
+page.loadCss(page.plugins.fileinput.css);
+$.getMultiScripts([page.plugins.fileinput.js], page.siteRoot())
+    .done(function() {
     var $pre = $('.preview');
     var $uploadFile = $('#uploadFile');
     // 初始化
     $uploadFile.fileinput({
         language: 'zh',
         theme: 'explorer',
-        uploadUrl: "/wap_sites/uploadImages",
+        uploadUrl: page.siteRoot() + "wap_sites/uploadImages",
         uploadAsync: false,
         maxFileCount: 5,
         minImageWidth: 50, //图片的最小宽度

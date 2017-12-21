@@ -3,7 +3,11 @@ var $mContainer = $("#mobiles").find("tbody");
 var id = $('#id').val();
 var size = $('#mobile-size').val();
 /** 学生手机号管理 */
-$(crud.mobile('formStudent',size, 'PUT', 'students/update/'+id));
+// 手机号
+if (typeof crud === 'undefined') {
+    $.getMultiScripts(['js/admin.crud.js'], page.siteRoot())
+        .done(function() { crud.mobile('formStudent', size, 'PUT', 'students/update/'+id); })
+} else { crud.mobile('formStudent', size, 'PUT', 'students/update/'+id); }
 // var $formEducator = $('#formStudent');
 // $(document).off('click','.btn-mobile-add');
 // // 手机号

@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 use App\Http\Requests\WsmArticleRequest;
 use App\Models\Media;
 use App\Models\WsmArticle;
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
+use Throwable;
 
 /**
  * 微网站文章
@@ -28,7 +31,8 @@ class WsmArticleController extends Controller {
     /**
      * 微网站文章列表
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function index() {
         
@@ -36,18 +40,19 @@ class WsmArticleController extends Controller {
             return response()->json($this->article->datatable());
         }
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
     /**
      * 创建微网站文章
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function create() {
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -55,7 +60,8 @@ class WsmArticleController extends Controller {
      * 保存微网站文章
      *
      * @param WsmArticleRequest $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function store(WsmArticleRequest $request) {
         
@@ -68,14 +74,15 @@ class WsmArticleController extends Controller {
      * 微网站文章详情
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function show($id) {
         
         $article = $this->article->find($id);
         if (!$article) { return parent::notFound(); }
         
-        return parent::output(__METHOD__, [
+        return $this->output([
             'article' => $article,
             'medias'  => $this->media->medias($article->media_ids),
         ]);
@@ -86,14 +93,15 @@ class WsmArticleController extends Controller {
      * 编辑微网站文章
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function edit($id) {
         
         $article = $this->article->find($id);
         if (!$article) { return parent::notFound(); }
         
-        return parent::output(__METHOD__, [
+        return $this->output([
             'article' => $article,
             'medias'  => $this->media->medias($article->media_ids),
         ]);
@@ -105,7 +113,8 @@ class WsmArticleController extends Controller {
      *
      * @param WsmArticleRequest $request
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function update(WsmArticleRequest $request, $id) {
         
@@ -118,7 +127,8 @@ class WsmArticleController extends Controller {
      * 删除微网站文章
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function destroy($id) {
         

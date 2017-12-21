@@ -6,8 +6,12 @@ use App\Models\CommType;
 use App\Models\Department;
 use App\Models\Media;
 use App\Models\Message;
+use App\Models\School;
 use App\Models\User;
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
+use Throwable;
 
 /**
  * 消息
@@ -35,29 +39,51 @@ class MessageController extends Controller {
     /**
      * 消息列表
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function index() {
         
         if (Request::get('draw')) {
             return response()->json($this->message->datatable());
         }
+        if (Request::method() == 'POST') {
+            return $this->department->contacts();
+//            $school = School::find(1);
+//            return $this->department->tree($school->department_id);
+        }
+
+
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
+    }
+    
+    /**
+     * 发送消息
+     *
+     * @return bool|JsonResponse
+     * @throws Throwable
+     */
+    public function send() {
+    
+        return $this->output();
+    
     }
     
     /**
      * 创建消息
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function create() {
+        
         if (Request::method() === 'POST') {
             return $this->department->tree();
         }
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -65,15 +91,19 @@ class MessageController extends Controller {
      * 保存消息
      *
      * @param MessageRequest $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Exception
+     * @throws Throwable
      */
     public function store(MessageRequest $request) {
-        $commTypeName = ['微信', '短信', '应用'];
+        
+//        $commTypeName = ['微信', '短信', '应用'];
         $input = $request->all();
-        $commType = CommType::whereId($input['comm_type_id'])->first();
-        if ($commType->name == $commTypeName[0]) {
-            return $this->message->store($request) ? $this->succeed() : $this->fail();
-        }
+//        $commType = CommType::whereId($input['comm_type_id'])->first();
+//        if ($commType->name == $commTypeName[0]) {
+//            return $this->message->store($request) ? $this->succeed() : $this->fail();
+//        }
+        return $this->message->sendText($input);
         
     }
     
@@ -81,16 +111,15 @@ class MessageController extends Controller {
      * 消息详情
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function show($id) {
         
         $message = $this->message->find($id);
-        if (!$message) {
-            return $this->notFound();
-        }
+        if (!$message) { return $this->notFound(); }
         
-        return $this->output(__METHOD__, [
+        return $this->output([
             'message' => $message,
             'users'   => $this->user->users($message->user_ids),
             'medias'  => $this->media->educators($message->media_ids),
@@ -102,17 +131,15 @@ class MessageController extends Controller {
      * 编辑消息
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
-     *
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function edit($id) {
         
         $message = $this->message->find($id);
-        if (!$message) {
-            return $this->notFound();
-        }
+        if (!$message) { return $this->notFound(); }
         
-        return $this->output(__METHOD__, [
+        return $this->output([
             'message'       => $message,
             'selectedUsers' => $this->user->users($message->user_ids),
             'medias'        => $this->media->medias($message->media_ids),
@@ -125,11 +152,14 @@ class MessageController extends Controller {
      *
      * @param MessageRequest $request
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
+     * @throws Throwable
      */
     public function update(MessageRequest $request, $id) {
         
-        return $this->message->modify($request, $id) ? $this->succeed() : $this->fail();
+        return $this->message->modify($request, $id)
+            ? $this->succeed() : $this->fail();
         
     }
     
@@ -137,7 +167,8 @@ class MessageController extends Controller {
      * 删除消息
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function destroy($id) {
         
@@ -222,10 +253,13 @@ class MessageController extends Controller {
             ->where('message_type_id', $messageType)->get();
     }
     
+<<<<<<< HEAD
     private function userSendMessages() {
         //当前用户发送消息
     }
     public function send() {
     	return view('message.main');
     }
+=======
+>>>>>>> origin/master
 }

@@ -3,6 +3,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\AttendanceMachineRequest;
 use App\Models\AttendanceMachine;
+use App\Models\School;
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 
 /**
@@ -14,37 +17,41 @@ use Illuminate\Support\Facades\Request;
 class AttendanceMachineController extends Controller {
     
     protected $am;
-    
-    function __construct(AttendanceMachine $am) {
+    protected $school;
+    function __construct(AttendanceMachine $am, School $school) {
     
         $this->middleware(['auth']);
         $this->am = $am;
+        $this->school = $school;
     
     }
     
     /**
      * 考勤机列表
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws \Throwable
      */
     public function index() {
-        
+        print_r($this->school->getSchoolId());
+
         if (Request::get('draw')) {
             return response()->json($this->am->datatable());
         }
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
     /**
      * 创建考勤机记录
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws \Throwable
      */
     public function create() {
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -52,7 +59,7 @@ class AttendanceMachineController extends Controller {
      * 保存考勤机记录
      *
      * @param AttendanceMachineRequest $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function store(AttendanceMachineRequest $request) {
 
@@ -65,14 +72,15 @@ class AttendanceMachineController extends Controller {
      * 考勤机详情
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws \Throwable
      */
     public function show($id) {
         
         $am = $this->am->find($id);
         if (!$am) { return $this->notFound(); }
         
-        return $this->output(__METHOD__, ['am' => $am]);
+        return $this->output(['am' => $am]);
         
     }
     
@@ -80,14 +88,15 @@ class AttendanceMachineController extends Controller {
      * 编辑考勤机记录
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws \Throwable
      */
     public function edit($id) {
         
         $am = $this->am->find($id);
         if (!$am) { return $this->notFound(); }
         
-        return $this->output(__METHOD__, ['am' => $am]);
+        return $this->output(['am' => $am]);
         
     }
     
@@ -96,7 +105,7 @@ class AttendanceMachineController extends Controller {
      *
      * @param AttendanceMachineRequest $request
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function update(AttendanceMachineRequest $request, $id) {
         
@@ -112,7 +121,8 @@ class AttendanceMachineController extends Controller {
      * 删除考勤机记录
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function destroy($id) {
         

@@ -1,0 +1,1 @@
+page.index('student_attendances');

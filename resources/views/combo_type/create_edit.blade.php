@@ -7,7 +7,8 @@
             @if (!empty($comboType['id']))
                 {{ Form::hidden('id', $comboType['id'], ['id' => 'id']) }}
             @endif
-            <div class="form-group">
+                {{ Form::hidden('school_id', $schoolId, ['id' => 'school_id']) }}
+                <div class="form-group">
                 {!! Form::label('name', '套餐名称', [
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
@@ -59,14 +60,9 @@
                     ]) !!}
                 </div>
             </div>
-            @include('partials.single_select', [
-                'label' => '所属学校',
-                'id' => 'school_id',
-                'items' => $schools,
-            ])
             @include('partials.enabled', [
                 'id' => 'enabled',
-                'value' => isset($comboType['enabled']) ? $comboType['enabled'] : NULL
+                'value' => $comboType['enabled'] ?? NULL
             ])
         </div>
     </div>

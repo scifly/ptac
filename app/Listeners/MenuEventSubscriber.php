@@ -1,6 +1,8 @@
 <?php
 namespace App\Listeners;
 
+use App\Events\MenuCreated;
+use App\Jobs\ManageCreateMenu;
 use App\Models\Company;
 use App\Models\Corp;
 use App\Models\Department;
@@ -61,7 +63,14 @@ class MenuEventSubscriber {
             'position'     => $this->menu->all()->max('position') + 1,
             'enabled'      => $$model->enabled,
         ];
-        
+        if($type == '学校'){
+            $parentMenu = $this->menu->create($data);
+            ManageCreateMenu::dispatch($parentMenu);
+            if ($parentMenu) {
+                event(new MenuCreated($parentMenu));
+                return true;
+            }
+        }
         return $this->menu->preserve($data, true);
         
     }

@@ -88,7 +88,7 @@
             @include('partials.remark')
             @include('partials.enabled', [
                 'id' => 'enabled',
-                'value' => isset($exam['enabled']) ? $exam['enabled'] : NULL
+                'value' => $exam['enabled'] ?? NULL
             ])
         </div>
     </div>

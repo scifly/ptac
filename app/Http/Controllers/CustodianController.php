@@ -4,13 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CustodianRequest;
 use App\Models\Custodian;
+use App\Models\CustodianStudent;
 use App\Models\Department;
 use App\Models\DepartmentUser;
 use App\Models\Group;
 use App\Models\Student;
-use App\Models\CustodianStudent;
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 use Maatwebsite\Excel\Facades\Excel;
+use Throwable;
 
 /**
  * 监护人
@@ -37,11 +40,12 @@ class CustodianController extends Controller {
         $this->custodianStudent = $custodianStudent;
 
     }
-
+    
     /**
      * 监护人列表
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function index() {
         
@@ -49,14 +53,15 @@ class CustodianController extends Controller {
             return response()->json($this->custodian->datatable());
         }
 
-        return parent::output(__METHOD__);
+        return $this->output();
         
     }
-
+    
     /**
      * 创建监护人
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function create() {
 
@@ -69,15 +74,16 @@ class CustodianController extends Controller {
     
         }
 
-        return parent::output(__METHOD__);
+        return $this->output();
 
     }
-
+    
     /**
      * 保存监护人
      *
      * @param CustodianRequest $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function store(CustodianRequest $request) {
 
@@ -85,12 +91,28 @@ class CustodianController extends Controller {
             ? $this->succeed() : $this->fail();
 
     }
-
+    
+    /**
+     * 监护人详情
+     *
+     * @param $id
+     * @return bool|JsonResponse
+     * @throws Throwable
+     */
+    public function show($id){
+        $custodian = $this->custodian->find($id);
+        if (!$custodian) { return $this->notFound(); }
+        return $this->output([
+            'custodian'  => $custodian,
+        ]);
+    }
+    
     /**
      * 编辑监护人
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function edit($id) {
 
@@ -101,19 +123,20 @@ class CustodianController extends Controller {
         if (!$custodian) { return $this->notFound(); }
         $pupils = $custodian->custodianStudents;
 
-        return $this->output(__METHOD__, [
+        return $this->output([
             'mobiles'               => $custodian->user->mobiles,
             'custodian'             => $custodian,
             'pupils'                => $pupils,
         ]);
 
     }
-
+    
     /**
      * 更新监护人.
      * @param CustodianRequest $request
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function update(CustodianRequest $request, $id) {
 
@@ -121,12 +144,13 @@ class CustodianController extends Controller {
             ? $this->succeed() : $this->fail();
 
     }
-
+    
     /**
      * 删除指定的监护人
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function destroy($id) {
         
@@ -134,9 +158,10 @@ class CustodianController extends Controller {
             ? $this->succeed() : $this->fail();
         
     }
+    
     /**
      * 导出监护人
-     * @return \Illuminate\Http\JsonResponse
+     * @return void
      */
     public function export() {
         $data = $this->custodian->export();

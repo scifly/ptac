@@ -1,12 +1,14 @@
 <?php
+
 namespace App\Http\ViewComposers;
 
+use App\Helpers\ControllerTrait;
 use App\Models\School;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 
 class ConferenceRoomComposer {
-
+    use ControllerTrait;
     protected $school;
 
     public function __construct(School $school) {
@@ -16,14 +18,10 @@ class ConferenceRoomComposer {
     }
 
     public function compose(View $view) {
-
-        $user = Auth::user();
-        $schoolId = $user->group->school_id;
-        if (!isset($schoolId)) {
-            $schoolId = School::whereDepartmentId($user->topDeptId($user))->first()->id;
-        }
-        $view->with(['schoolId' => $schoolId]);
-
+        $schoolId = $this->school->getSchoolId();
+        $view->with([
+            'schoolId' => $schoolId,
+            'uris' => $this->uris()
+        ]);
     }
-
 }

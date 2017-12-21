@@ -3,7 +3,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CorpRequest;
 use App\Models\Corp;
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
+use Throwable;
 
 /**
  * 企业
@@ -25,7 +28,8 @@ class CorpController extends Controller {
     /**
      * 企业列表
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function index() {
         
@@ -33,18 +37,19 @@ class CorpController extends Controller {
             return response()->json($this->corp->datatable());
         }
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
     /**
      * 创建企业
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function create() {
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -52,7 +57,7 @@ class CorpController extends Controller {
      * 保存企业
      *
      * @param CorpRequest $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function store(CorpRequest $request) {
         
@@ -62,31 +67,18 @@ class CorpController extends Controller {
     }
     
     /**
-     * 企业详情
-     *
-     * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
-     */
-    public function show($id) {
-        
-        $corp = $this->corp->find($id);
-        if (!$corp) { return $this->notFound(); }
-        return $this->output(__METHOD__, ['corp' => $corp]);
-        
-    }
-    
-    /**
      * 编辑企业
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function edit($id) {
         
         $corp = $this->corp->find($id);
         if (!$corp) { return $this->notFound(); }
         
-        return $this->output(__METHOD__, ['corp' => $corp]);
+        return $this->output(['corp' => $corp]);
         
     }
     
@@ -95,7 +87,7 @@ class CorpController extends Controller {
      *
      * @param CorpRequest $request
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function update(CorpRequest $request, $id) {
         
@@ -109,11 +101,13 @@ class CorpController extends Controller {
      * 删除企业
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function destroy($id) {
         
         if (!$this->corp->find($id)) { return $this->notFound(); }
+        
         return $this->corp->remove($id, true)
             ? $this->succeed() : $this->fail();
         

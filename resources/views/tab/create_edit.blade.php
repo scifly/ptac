@@ -18,6 +18,12 @@
                     ]) !!}
                 </div>
             </div>
+            @include('partials.single_select', [
+                'label' => '所属角色',
+                'id' => 'group_id',
+                'items' => $groups,
+                'icon' => 'fa fa-meh-o'
+            ])
             <div class="form-group">
                 {!! Form::label('icon_id', '图标', [
                     'class' => 'col-sm-3 control-label'
@@ -43,12 +49,12 @@
                 'label' => '所属菜单',
                 'id' => 'menu_ids',
                 'items' => $menus,
-                'selectedItems' => isset($selectedMenus) ? $selectedMenus : NULL
+                'selectedItems' => $selectedMenus ?? NULL
             ])
             @include('partials.remark')
             @include('partials.enabled', [
                 'id' => 'enabled',
-                'value' => isset($tab['enabled']) ? $tab['enabled'] : NULL
+                'value' => $tab['enabled'] ?? NULL
             ])
         </div>
     </div>

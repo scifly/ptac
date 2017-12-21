@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StudentRequest;
+use App\Models\Action;
 use App\Models\Custodian;
 use App\Models\CustodianStudent;
 use App\Models\Department;
@@ -9,8 +10,12 @@ use App\Models\DepartmentUser;
 use App\Models\Group;
 use App\Models\Student;
 use App\Models\User;
+use App\Policies\Route;
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 use Maatwebsite\Excel\Facades\Excel;
+use Throwable;
 
 /**
  * 学生
@@ -22,7 +27,7 @@ class StudentController extends Controller {
     
     protected $custodian, $department, $group, $user;
     protected $departmentUser, $student, $custodianStudent;
-    
+
     function __construct(
         Custodian $custodian, Department $department,
         Group $group, User $user,
@@ -38,27 +43,29 @@ class StudentController extends Controller {
         $this->departmentUser = $departmentUser;
         $this->student = $student;
         $this->custodianStudent = $custodianStudent;
-        
+
     }
     
     /**
      * 学生记录列表
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function index() {
-        
+
         if (Request::get('draw')) {
             return response()->json($this->student->datatable());
         }
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
     /**
      * 创建学生记录
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Throwable
      */
     public function create() {
         
@@ -66,7 +73,7 @@ class StudentController extends Controller {
             return $this->department->tree();
         }
         $items = $this->student->getGradeClass();
-        return $this->output(__METHOD__, [
+        return $this->output([
             'grades'  => $items['grades'],
             'classes' => $items['classes'],
         ]);
@@ -77,7 +84,9 @@ class StudentController extends Controller {
      * 保存学生记录
      *
      * @param StudentRequest $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
+     * @throws Throwable
      */
     public function store(StudentRequest $request) {
         
@@ -90,7 +99,8 @@ class StudentController extends Controller {
      * 学生记录详情
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function show($id) {
         
@@ -98,28 +108,27 @@ class StudentController extends Controller {
         if (!$student) {
             return $this->notFound();
         }
-        return $this->output(__METHOD__, ['student' => $student]);
+        return $this->output(['student' => $student]);
         
     }
     
     /**
-     * 编辑学生记录
+     * 编辑学生记录\
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function edit($id) {
-        
+
         # 查询学生信息
         $student = $this->student->find($id);
-        if (!$student) {
-            return $this->notFound();
-        }
+        if (!$student) { return $this->notFound(); }
         $user = $student->user;
         // print_r($student->toArray());die;
         $items = $this->student->getGradeClass($student->squad->grade_id);
         $student->grade_id = $student->squad->grade_id;
-        return $this->output(__METHOD__, [
+        return $this->output([
             'student' => $student,
             // 'user'    => $user,
             'mobiles' => $user->mobiles,
@@ -134,7 +143,9 @@ class StudentController extends Controller {
      *
      * @param StudentRequest $request
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
+     * @throws Throwable
      */
     public function update(StudentRequest $request, $id) {
         
@@ -147,7 +158,9 @@ class StudentController extends Controller {
      * 删除学生记录
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
+     * @throws Throwable
      */
     public function destroy($id) {
         
@@ -158,6 +171,7 @@ class StudentController extends Controller {
     
     /**
      * 导入学籍
+     * @throws \PHPExcel_Exception
      */
     public function import() {
         
@@ -172,7 +186,8 @@ class StudentController extends Controller {
             }
             // 文件是否上传成功
             if ($file->isValid()) {
-                $this->student->upload($file);
+                $result = $this->student->upload($file);
+                return response()->json($result);
             }
         }
     }

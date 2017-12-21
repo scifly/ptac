@@ -38,7 +38,7 @@
             </div>
             @include('partials.enabled', [
                 'id' => 'enabled',
-                'value' => isset($score['enabled']) ? $score['enabled'] : NULL
+                'value' => $score['enabled'] ?? NULL
             ])
         </div>
     </div>

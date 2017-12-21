@@ -49,7 +49,7 @@
             @endif
             @include('partials.enabled', [
                 'id' => 'enabled',
-                'value' => isset($school['enabled']) ? $school['enabled'] : NULL
+                'value' => $school['enabled'] ?? NULL
             ])
         </div>
     </div>

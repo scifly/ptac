@@ -1,10 +1,13 @@
 <?php
+
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * App\Models\EducatorAttendanceSetting 教职员工考勤设置
@@ -34,29 +37,30 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|EducatorAttendanceSetting whereEnabled($value)
  */
 class EducatorAttendanceSetting extends Model {
-    
+
     protected $table = 'educator_attendance_settings';
-    
+
     protected $fillable = [
         'name', 'school_id', 'start',
-        'end', 'inorout','enabled'
+        'end', 'inorout', 'enabled'
     ];
-    
+
     /**
      * 获取对应的所有教职员工考勤记录对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function educatorAttendances() { return $this->hasMany('App\Models\EducatorAttendance', 'eas_id'); }
-    
+
     /**
      * 返回所属的学校对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function school() { return $this->belongsTo('App\Models\School'); }
-    
+
     public function datatable() {
+        
         $columns = [
             ['db' => 'EducatorAttendanceSetting.id', 'dt' => 0],
             ['db' => 'EducatorAttendanceSetting.name', 'dt' => 1],
@@ -69,32 +73,36 @@ class EducatorAttendanceSetting extends Model {
             ['db' => 'EducatorAttendanceSetting.start', 'dt' => 3],
             ['db' => 'EducatorAttendanceSetting.end', 'dt' => 4],
             [
-                'db'        => 'EducatorAttendanceSetting.inorout', 'dt' => 5,
+                'db' => 'EducatorAttendanceSetting.inorout', 'dt' => 5,
                 'formatter' => function ($d) {
                     return $d ? '进' : '出';
                 },
             ],
             ['db' => 'EducatorAttendanceSetting.created_at', 'dt' => 6],
             [
-                'db'        => 'EducatorAttendanceSetting.enabled', 'dt' => 7,
+                'db' => 'EducatorAttendanceSetting.enabled', 'dt' => 7,
                 'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($this, $d, $row);
+                    return Datatable::dtOps($d, $row);
                 },
             ],
         ];
         $joins = [
             [
-                'table'      => 'schools',
-                'alias'      => 'School',
-                'type'       => 'INNER',
+                'table' => 'schools',
+                'alias' => 'School',
+                'type' => 'INNER',
                 'conditions' => [
                     'School.id = EducatorAttendanceSetting.school_id',
                 ],
             ],
         ];
+        $school = new School();
+        $schoolId = $school->getSchoolId();
+        $condition = 'EducatorAttendanceSetting.school_id = ' . $schoolId;
+        unset($school);
         
-        return Datatable::simple($this, $columns, $joins);
-        
+        return Datatable::simple($this, $columns, $joins, $condition);
+
     }
-    
+
 }

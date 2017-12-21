@@ -10,6 +10,7 @@ use App\Models\Menu;
 use App\Models\School;
 use Illuminate\Events\Dispatcher;
 use Illuminate\Foundation\Bus\DispatchesJobs;
+use Illuminate\Support\Facades\Log;
 
 class DepartmentEventSubscriber {
     
@@ -58,6 +59,7 @@ class DepartmentEventSubscriber {
             'enabled'            => $$model->enabled,
         ];
         $department = $this->department->store($data, true);
+        Log::debug('department:'. json_encode($department));
         ManageWechatDepartment::dispatch($department, 'create');
         
         return $department ? true : false;
@@ -134,10 +136,10 @@ class DepartmentEventSubscriber {
      * @param $event
      * @param $model
      * @return bool|null
+     * @throws \Exception
      */
     private function deleteDepartment($event, $model) {
         $department = $this->department->find($event->{$model}->department_id);
-        // $result = $this->department->remove($event->{$model}->department_id);
         ManageWechatDepartment::dispatch($department, 'delete');
         $result = $this->department->remove($event->{$model}->department_id);
         return $result;
@@ -173,6 +175,7 @@ class DepartmentEventSubscriber {
      *
      * @param $event
      * @return bool|null
+     * @throws \Exception
      */
     public function onCorpDeleted($event) {
         
@@ -209,6 +212,7 @@ class DepartmentEventSubscriber {
      *
      * @param $event
      * @return bool|null
+     * @throws \Exception
      */
     public function onSchoolDeleted($event) {
         
@@ -245,6 +249,7 @@ class DepartmentEventSubscriber {
      *
      * @param $event
      * @return bool|null
+     * @throws \Exception
      */
     public function onGradeDeleted($event) {
         
@@ -281,6 +286,7 @@ class DepartmentEventSubscriber {
      *
      * @param $event
      * @return bool|null
+     * @throws \Exception
      */
     public function onClassDeleted($event) {
         

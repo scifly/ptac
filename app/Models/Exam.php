@@ -1,10 +1,12 @@
 <?php
+
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * App\Models\Exam 考试
@@ -39,25 +41,25 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read ExamType $examType
  */
 class Exam extends Model {
-    
+
     use ModelTrait;
-    
+
     protected $table = 'exams';
-    
+
     protected $fillable = [
         'name', 'remark', 'exam_type_id',
         'class_ids', 'subject_ids', 'max_scores',
         'pass_scores', 'start_date', 'end_date',
         'enabled',
     ];
-    
+
     /**
      * 返回指定考试所属的考试类型对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function examType() { return $this->belongsTo('App\models\ExamType'); }
-    
+
     /**
      * 获取参与指定考试的所有班级列表
      *
@@ -72,9 +74,9 @@ class Exam extends Model {
             $selectedClasses[$classId] = $class['name'];
         }
         return $selectedClasses;
-        
+
     }
-    
+
     /**
      * 获取指定考试包含的所有科目列表
      *
@@ -82,28 +84,34 @@ class Exam extends Model {
      * @return array
      */
     public function subjects($subjectIds = null) {
-        
+
         $subjectIds = explode(",", $subjectIds);
         $selectedSubjects = [];
         foreach ($subjectIds as $subjectId) {
             $selectedSubjects[$subjectId] = Subject::whereId($subjectId)->value('name');
         }
         return $selectedSubjects;
-        
+
     }
     
-    //获取当前考试班级
+    /**
+     * 获取当前考试班级
+     *
+     * @param $classIds
+     * @return array
+     */
     public function examClasses($classIds) {
+        
         $class_ids = explode(',', $classIds);
         $classes = [];
         foreach ($class_ids as $class_id) {
             $classes[] = Squad::whereId($class_id)->first();
         }
-        
+
         return $classes;
-        
+
     }
-    
+
     /**
      * 返回班级相关的所有考试
      *
@@ -111,6 +119,7 @@ class Exam extends Model {
      * @return array
      */
     public function examsByClassId($class_id) {
+        
         $exams = $this::all();
         $_exams = [];
         foreach ($exams as $exam) {
@@ -119,10 +128,11 @@ class Exam extends Model {
                 $_exams[] = $exam;
             }
         }
-        return $_exams;
         
+        return $_exams;
+
     }
-    
+
     /**
      * 获取指定考试包含的的所有科目列表
      *
@@ -131,16 +141,18 @@ class Exam extends Model {
      * @internal param $subjectIds
      */
     public function subjectsByExamId($examId) {
+        
         $subjectIds = self::whereid($examId)->first(["subject_ids"])->toArray();
         $subject_ids = explode(',', $subjectIds['subject_ids']);
         $subjects = [];
         foreach ($subject_ids as $subject_id) {
             $subjects[] = Subject::whereId($subject_id)->first(['id', 'name']);
         }
-        return $subjects;
         
+        return $subjects;
+
     }
-    
+
     /**
      * 保存考试
      *
@@ -148,12 +160,13 @@ class Exam extends Model {
      * @return bool
      */
     public function store(array $data) {
+        
         $exam = $this->create($data);
-        
+
         return $exam ? true : false;
-        
+
     }
-    
+
     /**
      * 更新考试
      *
@@ -162,15 +175,14 @@ class Exam extends Model {
      * @return bool
      */
     public function modify(array $data, $id) {
+        
         $exam = $this->find($id);
-        if (!$exam) {
-            return false;
-        }
-        
+        if (!$exam) { return false; }
+
         return $exam->update($data) ? true : false;
-        
+
     }
-    
+
     /**
      * 删除考试
      *
@@ -178,16 +190,16 @@ class Exam extends Model {
      * @return bool
      */
     public function remove($id) {
+        
         $exam = $this->find($id);
-        if (!$exam) {
-            return false;
-        }
-        
+        if (!$exam) { return false; }
+
         return $exam->removable($exam) ? true : false;
-        
+
     }
-    
+
     public function datatable() {
+        
         $columns = [
             ['db' => 'Exam.id', 'dt' => 0],
             ['db' => 'Exam.name', 'dt' => 1],
@@ -200,24 +212,27 @@ class Exam extends Model {
             ['db' => 'Exam.created_at', 'dt' => 8],
             ['db' => 'Exam.updated_at', 'dt' => 9],
             [
-                'db'        => 'Exam.enabled', 'dt' => 10,
+                'db' => 'Exam.enabled', 'dt' => 10,
                 'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($this, $d, $row);
+                    return Datatable::dtOps($d, $row);
                 },
             ],
         ];
         $joins = [
             [
-                'table'      => 'exam_types',
-                'alias'      => 'ExamType',
-                'type'       => 'INNER',
+                'table' => 'exam_types',
+                'alias' => 'ExamType',
+                'type' => 'INNER',
                 'conditions' => [
                     'ExamType.id = Exam.exam_type_id',
                 ],
             ],
         ];
-        return Datatable::simple($this, $columns, $joins);
-        
+        $school = new School();
+        $schoolId = $school->getSchoolId();
+        $condition = 'ExamType.school_id = ' . $schoolId;
+        return Datatable::simple($this, $columns, $joins, $condition);
+
     }
-    
+
 }

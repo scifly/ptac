@@ -1,9 +1,11 @@
 <?php
+
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * App\Models\SubjectModule
@@ -31,19 +33,19 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read \App\Models\Subject $subject
  */
 class SubjectModule extends Model {
-    
-    //
+
     protected $table = 'subject_modules';
-    protected $fillable = [
-        'subject_id',
-        'name',
-        'weight',
-        'enabled',
-    ];
+    protected $fillable = ['subject_id', 'name', 'weight', 'enabled'];
     
+    /**
+     * 返回科目次分类所属的科目对象
+     * 
+     * @return BelongsTo
+     */
     public function subject() { return $this->belongsTo('App\Models\Subject'); }
-    
+
     public function datatable() {
+        
         $columns = [
             ['db' => 'SubjectModule.id', 'dt' => 0],
             ['db' => 'Subject.name as subjectname', 'dt' => 1],
@@ -52,24 +54,29 @@ class SubjectModule extends Model {
             ['db' => 'SubjectModule.created_at', 'dt' => 4],
             ['db' => 'SubjectModule.updated_at', 'dt' => 5],
             [
-                'db'        => 'SubjectModule.enabled', 'dt' => 6,
+                'db' => 'SubjectModule.enabled', 'dt' => 6,
                 'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($this, $d, $row);
+                    return Datatable::dtOps($d, $row, false);
                 },
             ],
         ];
         $joins = [
             [
-                'table'      => 'subjects',
-                'alias'      => 'Subject',
-                'type'       => 'INNER',
+                'table' => 'subjects',
+                'alias' => 'Subject',
+                'type' => 'INNER',
                 'conditions' => [
                     'Subject.id = SubjectModule.subject_id',
                 ],
             ],
         ];
-        return Datatable::simple($this, $columns, $joins);
+        $school = new School();
+        $schoolId = $school->getSchoolId();
+        $condition = 'Subject.school_id = ' . $schoolId;
+        unset($school);
         
+        return Datatable::simple($this, $columns, $joins, $condition);
+
     }
-    
+
 }

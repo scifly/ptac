@@ -3,6 +3,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\SchoolTypeRequest;
 use App\Models\SchoolType;
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 
 /**
@@ -25,7 +27,8 @@ class SchoolTypeController extends Controller {
     /**
      * 学校类型列表
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws \Throwable
      */
     public function index() {
         
@@ -33,7 +36,7 @@ class SchoolTypeController extends Controller {
             return response()->json($this->schoolType->datatable());
         }
         
-        return parent::output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -41,10 +44,11 @@ class SchoolTypeController extends Controller {
      * 创建学校类型
      *
      * @return bool|\Illuminate\Http\JsonResponse
+     * @throws \Throwable
      */
     public function create() {
         
-        return parent::output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -62,28 +66,11 @@ class SchoolTypeController extends Controller {
     }
     
     /**
-     * 学校类型详情
-     *
-     * @param $id
-     * @internal param SchoolType $schoolType
-     * @return bool|\Illuminate\Http\JsonResponse
-     */
-    public function show($id) {
-        
-        $schoolType = $this->schoolType->find($id);
-        if (!$schoolType) {
-            return parent::notFound();
-        }
-        
-        return parent::output(__METHOD__, ['schoolType' => $schoolType]);
-        
-    }
-    
-    /**
      * 编辑学校类型
      *
      * @param $id
      * @return bool|\Illuminate\Http\JsonResponse
+     * @throws \Throwable
      */
     public function edit($id) {
         
@@ -92,7 +79,7 @@ class SchoolTypeController extends Controller {
             return parent::notFound();
         }
         
-        return parent::output(__METHOD__, ['schoolType' => $schoolType]);
+        return $this->output(['schoolType' => $schoolType]);
         
     }
     
@@ -119,13 +106,12 @@ class SchoolTypeController extends Controller {
      *
      * @param $id
      * @return \Illuminate\Http\JsonResponse
+     * @throws Exception
      */
     public function destroy($id) {
         
         $schoolType = $this->schoolType->find($id);
-        if (!$schoolType) {
-            return parent::notFound();
-        }
+        if (!$schoolType) { return parent::notFound(); }
         
         return $schoolType->delete() ? parent::succeed() : parent::fail();
         

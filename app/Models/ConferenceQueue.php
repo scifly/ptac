@@ -1,11 +1,15 @@
 <?php
+
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * App\Models\ConferenceQueue 会议队列
@@ -41,31 +45,31 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read ConferenceRoom $conferenceRoom
  */
 class ConferenceQueue extends Model {
-    
+
     use ModelTrait;
-    
+
     protected $table = 'conference_queues';
-    
+
     protected $fillable = [
         'name', 'remark', 'start', 'end',
         'educator_id', 'educator_ids', 'attended_educator_ids',
         'conference_room_id', 'attendance_qrcode_url', 'event_id',
     ];
-    
+
     /**
      * 返回举行指定会议的会议室对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function conferenceRoom() { return $this->belongsTo('App\Models\ConferenceRoom'); }
-    
+
     /**
      * 获取参与指定会议的所有教职员工对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function conferenceParticipants() { return $this->hasMany('App\Models\ConferenceParticipant'); }
-    
+
     /**
      * 保存会议
      *
@@ -73,12 +77,12 @@ class ConferenceQueue extends Model {
      * @return bool
      */
     public function store(array $data) {
-        
+
         $cq = $this->create($data);
         return $cq ? true : false;
-        
+
     }
-    
+
     /**
      * 更新会议
      *
@@ -89,9 +93,11 @@ class ConferenceQueue extends Model {
     public function modify(array $data, $id) {
 
         $cq = $this->find($id);
-        if (!$cq) { return false; }
+        if (!$cq) {
+            return false;
+        }
         return $cq->update($data) ? true : false;
-        
+
     }
     
     /**
@@ -99,17 +105,19 @@ class ConferenceQueue extends Model {
      *
      * @param $id
      * @return bool
+     * @throws Exception
      */
     public function remove($id) {
-      
+
         $cq = $this->find($id);
         if (!$cq) { return false; }
+        
         return $cq->removable($id) ? $cq->delete() : false;
-        
+
     }
-    
+
     public function datatable() {
-        
+
         $columns = [
             ['db' => 'ConferenceQueue.id', 'dt' => 0],
             ['db' => 'ConferenceQueue.name', 'dt' => 1],
@@ -119,7 +127,7 @@ class ConferenceQueue extends Model {
             ['db' => 'User.realname', 'dt' => 5],
             ['db' => 'ConferenceRoom.name as conferenceroomname', 'dt' => 6],
             [
-                'db'        => 'ConferenceQueue.end', 'dt' => 7,
+                'db' => 'ConferenceQueue.end', 'dt' => 7,
                 'formatter' => function ($d, $row) {
                     // 进行中, 已结束, 已取消; 查看, 编辑, 删除
                 },
@@ -127,33 +135,33 @@ class ConferenceQueue extends Model {
         ];
         $joins = [
             [
-                'table'      => 'conference_rooms',
-                'alias'      => 'ConferenceRoom',
-                'type'       => 'INNER',
+                'table' => 'conference_rooms',
+                'alias' => 'ConferenceRoom',
+                'type' => 'INNER',
                 'conditions' => [
                     'ConferenceRoom.id = ConferenceQueue.conference_room_id',
                 ],
             ],
             [
-                'table'      => 'educators',
-                'alias'      => 'Educator',
-                'type'       => 'INNER',
+                'table' => 'educators',
+                'alias' => 'Educator',
+                'type' => 'INNER',
                 'conditions' => [
                     'Educator.id = ConferenceQueue.educator_id',
                 ],
             ],
             [
-                'table'      => 'users',
-                'alias'      => 'User',
-                'type'       => 'INNER',
+                'table' => 'users',
+                'alias' => 'User',
+                'type' => 'INNER',
                 'conditions' => [
                     'User.id = Educator.user_id',
                 ],
             ],
         ];
-        
+
         return Datatable::simple($this, $columns, $joins);
-        
+
     }
-    
+
 }

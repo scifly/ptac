@@ -3,7 +3,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\IconRequest;
 use App\Models\Icon;
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request as Request;
+use Throwable;
 
 /**
  * 图标
@@ -25,7 +28,8 @@ class IconController extends Controller {
     /**
      * 图标列表
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function index() {
         
@@ -33,18 +37,19 @@ class IconController extends Controller {
             return response()->json($this->icon->datatable());
         }
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
     /**
      * 创建图标
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function create() {
         
-        return $this->output(__METHOD__);
+        return $this->output();
         
     }
     
@@ -52,7 +57,7 @@ class IconController extends Controller {
      * 保存图标
      *
      * @param IconRequest $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function store(IconRequest $request) {
         
@@ -65,14 +70,15 @@ class IconController extends Controller {
      * 图标详情
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function show($id) {
         
         $icon = $this->icon->find($id);
         if (!$icon) { return $this->notFound(); }
         
-        return $this->output(__METHOD__, ['icon' => $icon]);
+        return $this->output(['icon' => $icon]);
         
     }
     
@@ -80,14 +86,15 @@ class IconController extends Controller {
      * 编辑图标
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function edit($id) {
         
         $icon = $this->icon->find($id);
         if (!$icon) { return $this->notFound(); }
         
-        return $this->output(__METHOD__, ['icon' => $icon]);
+        return $this->output(['icon' => $icon]);
         
     }
     
@@ -96,7 +103,7 @@ class IconController extends Controller {
      *
      * @param IconRequest $request
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function update(IconRequest $request, $id) {
         
@@ -112,7 +119,8 @@ class IconController extends Controller {
      * 删除图标
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws Exception
      */
     public function destroy($id) {
         

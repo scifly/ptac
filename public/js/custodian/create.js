@@ -6,6 +6,8 @@ var id = $('#id').val();
 var $formCustodian = $('#formCustodian');
 $(document).off('click', '.btn-mobile-add');
 $(document).off('click', '.btn-remove');
+$(document).off('click', '#relationship');
+$(document).off('click', '#confirm-bind');
 
 /** 监护人手机号管理 */
 if (typeof crud === 'undefined') {

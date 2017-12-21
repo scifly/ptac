@@ -23,7 +23,7 @@
             @include('partials.remark')
             @include('partials.enabled', [
                 'id' => 'enabled',
-                'value' => isset($schoolType['enabled']) ? $schoolType['enabled'] : NULL
+                'value' => $schoolType['enabled'] ?? NULL
             ])
         </div>
     </div>
