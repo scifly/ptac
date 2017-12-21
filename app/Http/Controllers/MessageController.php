@@ -252,14 +252,10 @@ class MessageController extends Controller {
         $messages = $this->message->where('r_user_id', $userId)
             ->where('message_type_id', $messageType)->get();
     }
-    
-<<<<<<< HEAD
+
     private function userSendMessages() {
         //当前用户发送消息
     }
-    public function send() {
-    	return view('message.main');
-    }
-=======
->>>>>>> origin/master
+
+
 }

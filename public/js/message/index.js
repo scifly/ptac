@@ -44,10 +44,41 @@ if (typeof contacts === 'undefined') {
         .done(function() { contacts.init('messages/index'); });
 } else { contacts.init('messages/index'); }
 
+$("input[type=file]").change(function(e){alert("aaa");})
+
 $send.on('click', function() {
     var appIds = $('#app_ids').val();
     var selectedDepartmentIds = $('#selectedDepartmentIds').val();
-    var content = $('#messageText').val();
+    var type = $('#message-content .tab-pane.active').attr('id');
+    type = type.substring('8');
+    switch(type)
+	{
+	case 'text':
+	//文本
+		var content = $('#messageText').val();
+		break;
+	case 'imagetext':
+	//图文
+	  	console.log(2);
+	 	break;
+	case 'image':
+	//图片
+	  	console.log(3);
+	 	break;
+	case 'audio':
+	//音频
+	  	console.log(4);
+	 	break;
+	case 'video':
+	//视频
+	  	console.log(5);
+	 	break;
+	case 'sms':
+	//短信
+	  	console.log(6);
+	 	break;
+	}
+    
     // if (appIds.toString() === '') {
     //     alert('应用不能为空');
     //     return false
@@ -60,25 +91,25 @@ $send.on('click', function() {
     //     alert('内容不能为空');
     //     return false
     // }
-    $.ajax({
-        url: page.siteRoot() + "messages/store",
-        type: 'POST',
-        dataType: 'json',
-        data:  {
-            app_ids: appIds,
-            departIds: selectedDepartmentIds,
-            content: content,
-            _token: $('#csrf_token').attr('content')},
-
-        success: function (result) {
-            if (result.error !== 0) {
-                page.inform("操作成功",result.message, page.success);
-            }
-        },
-        error: function (result) {
-            console.log(result);
-            page.inform("操作失败",result.message, page.failure);
-
-        }
-    });
+//  $.ajax({
+//      url: page.siteRoot() + "messages/store",
+//      type: 'POST',
+//      dataType: 'json',
+//      data:  {
+//          app_ids: appIds,
+//          departIds: selectedDepartmentIds,
+//          content: content,
+//          _token: $('#csrf_token').attr('content')},
+//
+//      success: function (result) {
+//          if (result.error !== 0) {
+//              page.inform("操作成功",result.message, page.success);
+//          }
+//      },
+//      error: function (result) {
+//          console.log(result);
+//          page.inform("操作失败",result.message, page.failure);
+//
+//      }
+//  });
 });
