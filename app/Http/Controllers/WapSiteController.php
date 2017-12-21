@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\WapSiteRequest;
 use App\Models\Media;
 use App\Models\Menu;
+use App\Models\School;
 use App\Models\WapSite;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -23,13 +24,15 @@ class WapSiteController extends Controller {
     protected $wapSite;
     protected $media;
     protected $menu;
+    protected $school;
     
-    public function __construct(WapSite $wapSite, Media $media, Menu $menu) {
+    public function __construct(WapSite $wapSite, Media $media, Menu $menu, School $school) {
         
         $this->middleware(['auth', 'checkrole']);
         $this->wapSite = $wapSite;
         $this->media = $media;
         $this->menu = $menu;
+        $this->school = $school;
         
     }
     
@@ -39,22 +42,9 @@ class WapSiteController extends Controller {
      * @return bool|JsonResponse
      * @throws Throwable
      */
-    // public function index() {
-    //
-    //     if (Request::get('draw')) {
-    //         return response()->json($this->wapSite->datatable());
-    //     }
-    //
-    //     return $this->output();
-    //
-    // }
     public function index() {
-        $menuId = Request::input('menuId');
-        $schoolId = $this->menu->getSchoolMenuId($menuId);
-        dd($schoolId);
-        // $wapSite = $this->wapSite->where('school_id',$schoolId)->first();
-        // print_r($wapSite);
-        // die;
+        $schoolId = $this->school->getSchoolId();
+        $wapSite = $this->wapSite->where('school_id',$schoolId)->first();
         if (empty($wapSite)) {
             return parent::notFound();
         }
@@ -74,11 +64,11 @@ class WapSiteController extends Controller {
      * @return bool|JsonResponse
      * @throws Throwable
      */
-    public function create() {
-    
-        return $this->output();
-    
-    }
+    // public function create() {
+    //
+    //     return $this->output();
+    //
+    // }
     
     /**
      * 保存微网站
@@ -102,21 +92,21 @@ class WapSiteController extends Controller {
      * @return bool|JsonResponse
      * @throws Throwable
      */
-    public function show($id) {
-        
-        $wapSite = $this->wapSite->find($id);
-        if (!$wapSite) {
-            return parent::notFound();
-        }
-        $mediaIds = explode(",", $wapSite->media_ids);
-        
-        return $this->output([
-            'wapSite' => $wapSite,
-            'medias'  => $this->media->medias($mediaIds),
-            'show'    => true,
-        ]);
-        
-    }
+    // public function show($id) {
+    //
+    //     $wapSite = $this->wapSite->find($id);
+    //     if (!$wapSite) {
+    //         return parent::notFound();
+    //     }
+    //     $mediaIds = explode(",", $wapSite->media_ids);
+    //
+    //     return $this->output([
+    //         'wapSite' => $wapSite,
+    //         'medias'  => $this->media->medias($mediaIds),
+    //         'show'    => true,
+    //     ]);
+    //
+    // }
     
     /**
      * 编辑微网站
