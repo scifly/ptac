@@ -73,7 +73,9 @@ class Action extends Model {
         'ResetPasswordController',
         'HomeController',
         'TestController',
-        'Score_SendController',
+        'HomeWorkController',
+        'MessageCenterController',
+        'MobileSiteController'
     ];
     protected $routes;
     # 控制器相对路径

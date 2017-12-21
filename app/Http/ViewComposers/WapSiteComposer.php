@@ -8,18 +8,19 @@ use Illuminate\Contracts\View\View;
 
 class WapSiteComposer {
     use ControllerTrait;
-    protected $schools;
+    protected $school;
 
-    public function __construct(School $schools) {
+    public function __construct(School $school) {
 
-        $this->schools = $schools;
+        $this->school = $school;
 
     }
 
     public function compose(View $view) {
+        $schoolId = $this->school->getSchoolId();
 
         $view->with([
-            'schools' => $this->schools->pluck('name', 'id'),
+            'schoolId' => $schoolId,
             'uris' => $this->uris()
 
         ]);

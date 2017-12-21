@@ -204,6 +204,10 @@ Route::group(['prefix' => 'combo_types'], routes('ComboTypeController'));
 /** 系统设置 */
 // 学校设置 - 学校管理.学期设置.教职员工组别设置.学校类型设置
 Route::group(['prefix' => 'schools'], routes('SchoolController'));
+Route::group(['prefix' => 'schools'], function (){
+    $ctrl = 'SchoolController';
+    Route::get('show', $ctrl . '@showInfo');
+});
 Route::group(['prefix' => 'semesters'], routes('SemesterController'));
 Route::group(['prefix' => 'teams'], routes('TeamController'));
 Route::group(['prefix' => 'school_types'], routes('SchoolTypeController'));
@@ -264,3 +268,11 @@ Route::group(['prefix' => 'operators'], function() {
     Route::post('create', $ctlr . '@create');
     Route::post('edit/{id}', $ctlr . '@edit');
 });
+
+# --------------------------------------------------------------------------------
+// 消息中心
+Route::get('message_center', 'Wechat\MessageCenterController@index');
+//布置作业
+Route::get('homework', 'Wechat\HomeWorkController@index');
+//微网站
+Route::get('wapsite', 'Wechat\MobileSiteController@index');
