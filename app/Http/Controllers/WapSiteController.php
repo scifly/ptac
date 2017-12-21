@@ -1,12 +1,9 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Facades\Wechat;
 use App\Http\Requests\WapSiteRequest;
-use App\Models\Corp;
-use App\Models\Department;
 use App\Models\Media;
-use App\Models\User;
+use App\Models\Menu;
 use App\Models\WapSite;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -25,12 +22,14 @@ class WapSiteController extends Controller {
     
     protected $wapSite;
     protected $media;
+    protected $menu;
     
-    public function __construct(WapSite $wapSite, Media $media) {
+    public function __construct(WapSite $wapSite, Media $media, Menu $menu) {
         
-        $this->middleware(['auth','checkrole']);
+        $this->middleware(['auth', 'checkrole']);
         $this->wapSite = $wapSite;
         $this->media = $media;
+        $this->menu = $menu;
         
     }
     
@@ -40,14 +39,33 @@ class WapSiteController extends Controller {
      * @return bool|JsonResponse
      * @throws Throwable
      */
+    // public function index() {
+    //
+    //     if (Request::get('draw')) {
+    //         return response()->json($this->wapSite->datatable());
+    //     }
+    //
+    //     return $this->output();
+    //
+    // }
     public function index() {
-        
-        if (Request::get('draw')) {
-            return response()->json($this->wapSite->datatable());
+        $menuId = Request::input('menuId');
+        $schoolId = $this->menu->getSchoolMenuId($menuId);
+        dd($schoolId);
+        // $wapSite = $this->wapSite->where('school_id',$schoolId)->first();
+        // print_r($wapSite);
+        // die;
+        if (empty($wapSite)) {
+            return parent::notFound();
         }
-        
-        return $this->output();
-        
+        $mediaIds = explode(",", $wapSite->media_ids);
+    
+        return $this->output([
+            'wapSite' => $wapSite,
+            'medias'  => $this->media->medias($mediaIds),
+            'show'    => true,
+        ]);
+    
     }
     
     /**
@@ -57,9 +75,9 @@ class WapSiteController extends Controller {
      * @throws Throwable
      */
     public function create() {
-        
+    
         return $this->output();
-        
+    
     }
     
     /**
@@ -68,6 +86,7 @@ class WapSiteController extends Controller {
      * @param WapSiteRequest $request
      * @return JsonResponse
      * @throws Exception
+     * @throws Throwable
      */
     public function store(WapSiteRequest $request) {
         
@@ -85,15 +104,16 @@ class WapSiteController extends Controller {
      */
     public function show($id) {
         
-        $wapsite = $this->wapSite->find($id);
-        if (!$wapsite) {
+        $wapSite = $this->wapSite->find($id);
+        if (!$wapSite) {
             return parent::notFound();
         }
-        $mediaIds = explode(",", $wapsite->media_ids);
+        $mediaIds = explode(",", $wapSite->media_ids);
         
         return $this->output([
-            'wapsite' => $wapsite,
+            'wapSite' => $wapSite,
             'medias'  => $this->media->medias($mediaIds),
+            'show'    => true,
         ]);
         
     }
@@ -113,7 +133,7 @@ class WapSiteController extends Controller {
         
         return $this->output([
             'wapSite' => $wapSite,
-            'medias'  => $this->media->medias($wapSite->media_ids),
+            'medias'  => $this->media->medias(explode(',',$wapSite->media_ids)),
         ]);
         
     }
@@ -125,6 +145,7 @@ class WapSiteController extends Controller {
      * @param $id
      * @return JsonResponse
      * @throws Exception
+     * @throws Throwable
      */
     public function update(WapSiteRequest $request, $id) {
         
@@ -143,7 +164,9 @@ class WapSiteController extends Controller {
     public function destroy($id) {
         
         $wapsite = $this->wapSite->find($id);
-        if (!$wapsite) { return parent::notFound(); }
+        if (!$wapsite) {
+            return parent::notFound();
+        }
         
         return $wapsite->delete() ? parent::succeed() : parent::fail();
         
@@ -177,6 +200,10 @@ class WapSiteController extends Controller {
         
     }
     
+    /**
+     * @param UploadedFile $file
+     * @param array $filePaths
+     */
     private function validateFile(UploadedFile $file, array &$filePaths) {
         
         if ($file->isValid()) {
@@ -266,6 +293,5 @@ class WapSiteController extends Controller {
 //         }
 //
 //     }
-    
 }
 

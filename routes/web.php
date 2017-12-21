@@ -268,3 +268,11 @@ Route::group(['prefix' => 'operators'], function() {
     Route::post('create', $ctlr . '@create');
     Route::post('edit/{id}', $ctlr . '@edit');
 });
+
+# --------------------------------------------------------------------------------
+// 消息中心
+Route::get('message_center', 'Wechat\MessageCenterController@index');
+//布置作业
+Route::get('homework', 'Wechat\HomeWorkController@index');
+//微网站
+Route::get('wapsite', 'Wechat\MobileSiteController@index');
