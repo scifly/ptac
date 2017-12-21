@@ -60,14 +60,13 @@ class MessageController extends Controller {
     }
     
     /**
-     * 发送消息
+     * 消息中心 (应用)
      *
-     * @return bool|JsonResponse
-     * @throws Throwable
+     * @return void
      */
-    public function send() {
+    public function message() {
     
-        return $this->output();
+        // return $this->output();
     
     }
     
