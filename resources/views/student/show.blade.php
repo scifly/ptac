@@ -34,6 +34,7 @@
                     科目详情
                 </h4>
             </div>
+            1111111111
             <div class="modal-body">
                 <div class="row">
                     <div class="col-xs-12">

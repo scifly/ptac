@@ -225,4 +225,7 @@ class MessageController extends Controller {
     private function userSendMessages() {
         //当前用户发送消息
     }
+    public function send() {
+    	return view('message.main');
+    }
 }
