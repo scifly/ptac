@@ -251,6 +251,7 @@ class User extends Authenticatable {
 
     }
 
+
     /**
      * 学校以下的部门获取所属学校部门id
      *

@@ -1,15 +1,17 @@
-var dept = {
+//# sourceURL=contacts.js
+
+var contacts = {
     to: 0,
     $tree: function () {
         // 树形图 jstree 左边
-        return $('#department-tree');
+        return $('#contacts-tree');
     },
     $form: function () {
-        // 教职员工 编辑表单
-        return $('.form-horizontal');
+        // 消息中心 编辑表单
+        return $('#message');
     },
     $footer: function () {
-        //教职员工 编辑表单 保存取消按钮
+        //部门树的 保存取消按钮
         return $('.box-footer');
     },
     $treeBox: function () {
@@ -27,18 +29,20 @@ var dept = {
     unbindEvents: function() {
         $(document).off('click', '.remove-node');
         $(document).off('click', '.close-selected');
-        $(document).off('click', '#save-nodes');
-        $(document).off('click', '#cancel-nodes');
+        $(document).off('click', '#save-attachment');
+        $(document).off('click', '#cancel-attachment');
         $('#search_node').unbind('keyup');
-        $('#add-department').unbind('click');
+        $('#add-attachment').unbind('click');
     },
+    //部门树 右侧删除按钮 删除后左侧取消选中
     remove: function () {
         $(document).on('click', '.remove-node', function () {
             var nodeId = $(this).parents('li').find('input').val();
             $(this).parents('li').remove();
-            dept.$tree().jstree().deselect_node([nodeId]);
+            contacts.$tree().jstree().deselect_node([nodeId]);
         });
     },
+    //表单上 删除节点方法 待定
     purge: function () {
         $(document).on('click', '.close-selected', function () {
             var $selectedDepartmentIds = $('#selectedDepartmentIds');
@@ -63,8 +67,6 @@ var dept = {
             var treeNodeId = '#tree' + nodeId;
             var deselectNode = $(treeNodeId);
             deselectNode.remove();
-            // 让某一个节点取消选中
-            // department.$tree.jstree().deselect_node([nodeId]);
         });
     },
     tree: function (uri) {
@@ -72,14 +74,15 @@ var dept = {
         // 获取 后台传过来的 已选择的部门 input 数组
         var selectedNodes = $selectedDepartmentIds.val();
         var selectedDepartmentIds = selectedNodes.split(',');
-        dept.$footer().hide();
-        dept.$form().hide();
-        dept.$treeBox().show();
+
+        contacts.$footer().hide();
+        contacts.$form().hide();
+        contacts.$treeBox().show();
         //部门树形图中的保存取消按钮
         $('.tree-box .box-footer').show();
-        dept.$tree().data('jstree', false).empty();
+        contacts.$tree().data('jstree', false).empty();
         var loadTree = function() {
-            dept.$tree().jstree({
+            contacts.$tree().jstree({
                 selectedNodes: selectedNodes,
                 core: {
                     themes: {
@@ -95,8 +98,6 @@ var dept = {
                         type: 'POST',
                         dataType: 'json',
                         data: function (node) {
-                            console.log(node);
-
                             return {id: node.id, _token: $('#csrf_token').attr('content')}
                         }
                     },
@@ -109,32 +110,35 @@ var dept = {
                     three_state: false
                 },
                 plugins: ['types', 'search', 'checkbox', 'wholerow'],
-                types: tree.nodeTypes
+                types: {
+                    '#': {"icon": 'fa fa-tree'},
+                    'dept': {"icon": 'fa fa-folder'},
+                    'user': {"icon": 'fa fa-user'},
+                }
             }).on('select_node.jstree', function (node, selected) {
+
                 //选中事件 将选中的节点增|加到右边列表
-                // console.log(selected);
-                var nodeHtml = '<li id="tree' + selected.node.id + '">' +
+                var nodeHtml = '<li id="tree' + selected.node.original.id + '">' +
                     '<span class="handle ui-sortable-handle">' +
                     '<i class="' + selected.node.icon + '"></i>' +
                     '</span>' +
                     '<span class="text">' + selected.node.text + '</span>' +
                     '<div class="tools">' +
                     '<i class="fa fa-close remove-node"></i>' +
-                    '<input type="hidden" value="' + selected.node.id + '"/>' +
+                    '<input type="hidden" value="' + selected.node.original.id + '"/>' +
                     '</div>' +
                     '</li>';
-                dept.$todoList().append(nodeHtml);
+                contacts.$todoList().append(nodeHtml);
             }).on('deselect_node.jstree', function (node, selected) {
                 //取消选中事件 将列表中的 节点 移除
                 var nodeId = '#tree' + selected.node.id;
                 var deselectNode = $(nodeId);
                 deselectNode.remove();
             }).on('loaded.jstree', function () {
-                console.log(selectedDepartmentIds);
                 //展开所有节点
-                dept.$tree().jstree('open_all');
+                contacts.$tree().jstree('open_all');
                 //初始化 根据后台数据节点数组 选中
-                dept.$tree().jstree().select_node(selectedDepartmentIds);
+                contacts.$tree().jstree().select_node(selectedDepartmentIds);
             })
         };
         if (typeof tree === 'undefined') {
@@ -143,83 +147,85 @@ var dept = {
         } else { loadTree(); }
     },
     modify: function (uri) {
-        $('#add-department').on('click', function () {
-            dept.tree(uri);
+        $('#add-attachment').on('click', function () {
+            contacts.tree(uri);
         });
     },
     search: function () {
         $('#search_node').keyup(function () {
-            if (dept.to) {
-                clearTimeout(dept.to);
+            if (contacts.to) {
+                clearTimeout(contacts.to);
             }
-            dept.to = setTimeout(function () {
+            contacts.to = setTimeout(function () {
                 var v = $('#search_node').val();
-                dept.$tree.jstree(true).search(v);
+                contacts.$tree.jstree(true).search(v);
             }, 250);
         });
     },
     save: function () {
-        $(document).on('click', '#save-nodes', function () {
+        $(document).on('click', '#save-attachment', function () {
             var nodeArray = [];
             var $selectedDepartmentIds = $('#selectedDepartmentIds');
+
             //点击保存时获取所有选中的节点 返回数组
-            var selectedNodes = dept.$tree().jstree().get_selected();
-            dept.$checkedTreeNodes().empty();
+            var selectedNodes = contacts.$tree().jstree().get_selected();
+            contacts.$checkedTreeNodes().empty();
             for (var i = 0; i < selectedNodes.length; i++) {
                 //通过id查找节点
-                var node = dept.$tree().jstree("get_node", selectedNodes[i]);
-                console.log('save--' + node);
+                var node = contacts.$tree().jstree("get_node", selectedNodes[i]);
+                console.log(node);
+
                 var checkedNode = '<button type="button" class="btn btn-flat" style="margin-right: 5px;margin-bottom: 5px">' +
                     '<i class="' + node.icon + '"></i>' + node.text +
                     '<i class="fa fa-close close-selected"></i>' +
-                    '<input type="hidden" name="selectedDepartments[]" value="' + node.id + '"/>' +
+                    '<input type="hidden" name="selectedDepartments[' + node.original.role + '][]" value="' + node.id + '"/>' +
                     '</button>';
-                // $("#add-department").after(checkedNode);
-                dept.$checkedTreeNodes().append(checkedNode);
+                contacts.$checkedTreeNodes().append(checkedNode);
                 nodeArray[i] = node.id;
             }
             //更新隐藏域的 选中的id数组input 方便 弹出树形页面时默认选中
             $selectedDepartmentIds.val(nodeArray.toString());
+
             //保存后清空右侧 选中的节点列表
-            dept.$todoList().empty();
-            dept.$tree().empty();
-            dept.$tree().jstree('destroy');
-            dept.$footer().show();
-            dept.$form().show();
-            dept.$treeBox().hide();
+            contacts.$todoList().empty();
+            contacts.$tree().empty();
+            contacts.$tree().jstree('destroy');
+            contacts.$footer().show();
+            contacts.$form().show();
+            contacts.$treeBox().hide();
             //部门树形图中的保存取消按钮
             $('.tree-box .box-footer').hide();
         });
     },
     cancel: function () {
-        $(document).on('click', '#cancel-nodes', function () {
-            dept.$footer().show();
-            dept.$form().show();
-            dept.$treeBox().hide();
+        $(document).on('click', '#cancel-attachment', function () {
+            contacts.$footer().show();
+            contacts.$form().show();
+            contacts.$treeBox().hide();
             $('.tree-box .box-footer').hide();
-            dept.$tree().jstree('destroy');
-            dept.$todoList().empty();
+            contacts.$tree().jstree('destroy');
+            contacts.$todoList().empty();
         });
     },
     init: function (uri) {
         // 取消所有事件绑定
-        dept.unbindEvents();
+        contacts.unbindEvents();
         // 部门树页面 的取消按钮
-        dept.cancel();
+        contacts.cancel();
         // 点击 教职员工编辑表单中的 删除部门
-        dept.purge();
+        contacts.purge();
         // 点击表单中的部门修改按钮
-        dept.$tree().empty();
-        dept.$todoList().empty();
+        contacts.$tree().empty();
+        contacts.$todoList().empty();
         var init = function() {
             // 初始化“修改按钮”
-            dept.modify(uri);
+            contacts.modify(uri);
             // 初始化节点搜索功能
-            dept.search();
+            contacts.search();
             // 右侧选中节点中的 删除图标 点击后移除本身并且将左侧取消选中
-            dept.remove();
+            contacts.remove();
             // 初始化保存选中节点的功能
-            dept.save();
+            contacts.save();
         };
         if (!($.fn.jstree) || !($.fn.select2) || !($.fn.iCheck)) {
             var scripts = [

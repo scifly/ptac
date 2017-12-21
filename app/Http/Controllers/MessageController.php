@@ -6,6 +6,7 @@ use App\Models\CommType;
 use App\Models\Department;
 use App\Models\Media;
 use App\Models\Message;
+use App\Models\School;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -46,6 +47,13 @@ class MessageController extends Controller {
         if (Request::get('draw')) {
             return response()->json($this->message->datatable());
         }
+        if (Request::method() == 'POST') {
+            return $this->department->contacts();
+//            $school = School::find(1);
+//            return $this->department->tree($school->department_id);
+        }
+
+
         
         return $this->output();
         
@@ -89,13 +97,13 @@ class MessageController extends Controller {
      */
     public function store(MessageRequest $request) {
         
-        $commTypeName = ['微信', '短信', '应用'];
+//        $commTypeName = ['微信', '短信', '应用'];
         $input = $request->all();
-        $commType = CommType::whereId($input['comm_type_id'])->first();
-        if ($commType->name == $commTypeName[0]) {
-            return $this->message->store($request) ? $this->succeed() : $this->fail();
-        }
-        return true;
+//        $commType = CommType::whereId($input['comm_type_id'])->first();
+//        if ($commType->name == $commTypeName[0]) {
+//            return $this->message->store($request) ? $this->succeed() : $this->fail();
+//        }
+        return $this->message->sendText($input);
         
     }
     

@@ -181,6 +181,7 @@ Route::group(['prefix' => 'messages'], routes('MessageController'));
 Route::group(['prefix' => 'messages'], function () {
     $ctlr = 'MessageController';
     Route::post('get_depart_users', $ctlr . '@getDepartmentUsers');
+    Route::post('index', $ctlr . '@index');
     Route::get('send', $ctlr . '@send');
 });
 // 日历

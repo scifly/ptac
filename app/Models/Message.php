@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Facades\Wechat;
 use App\Http\Requests\MessageRequest;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
@@ -244,4 +245,65 @@ class Message extends Model {
 
         return Datatable::simple($this, $columns, $joins);
     }
+
+    public function sendText($data) {
+        $result = [
+            'statusCode' => 200,
+            'message' => '',
+        ];
+
+        $obj = explode(',', $data['departIds']);
+        if ($obj) {
+            $depts = [];
+            $users = [];
+            foreach ($obj as $o) {
+                $item = explode('-', $o);
+                if ($item[1]) {
+                    $users[] = User::find($item[1])->userid;
+                } else {
+                    $depts[] = $o;
+                }
+            }
+            $touser = implode('|', $users);
+            $toparty = implode('|', $depts);
+            $apps = App::whereIn('id', $data['app_ids'])->get()->toArray();
+            if (!$apps) {
+                $result = [
+                    'statusCode' => 202,
+                    'message' => '应用不存在，请刷新页面！',
+                ];
+            }
+            $corp = Corp::where('name', '万浪软件')->first();
+            if (!$corp) {
+                $result = [
+                    'statusCode' => 202,
+                    'message' => '企业号不存在，请刷新页面！',
+                ];
+            }
+            foreach ($apps as $app) {
+                $token = Wechat::getAccessToken($corp->corpid, $app['secret']);
+                $message = [
+                    'touser' => $touser,
+                    'toparty' => $toparty,
+                    'msgtype' => 'text',
+                    'agentid' => $app['agentid'],
+                    'text' => ['content' => $data['content']],
+                ];
+                $status = json_decode(Wechat::sendMessage($token, $message));
+                if ($status->errcode == 0) {
+                    $result = [
+                        'statusCode' => 200,
+                        'message' => '消息已发送！',
+                    ];
+                }else{
+                    $result = [
+                        'statusCode' => 202,
+                        'message' => '出错！',
+                    ];
+                }
+            }
+        }
+        return response()->json($result);
+    }
 }
+
