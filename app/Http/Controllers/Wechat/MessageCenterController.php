@@ -14,6 +14,6 @@ class MessageCenterController extends Controller
      */
     public function index(){
     
-        return '建设中';
+        return view('wechat.message_center.index');
     }
 }
