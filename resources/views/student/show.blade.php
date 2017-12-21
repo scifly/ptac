@@ -36,6 +36,26 @@
 
                 <h3 class="profile-username">英文名 : {{$student->user->english_name}}</h3>
             </div>
+<<<<<<< HEAD
+            1111111111
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <dl class="dl-horizontal">
+                            <dt>学生姓名：</dt>
+                            <dt>性别：</dt>
+                            <dt>班级名称：</dt>
+                            <dt>学号：</dt>
+                            <dt>卡号：</dt>
+                            <dt>是否住校：</dt>
+                            <dt>手机号码：</dt>
+                            <dt>生日：</dt>
+                            <dt>备注：</dt>
+                            <dt>状态：</dt>
+                        </dl>
+                    </div>
+                </div>
+=======
 
             <a href="#" class="btn btn-primary btn-block btn-bianji" style=""><b>编辑</b></a>
         </div>
@@ -77,6 +97,7 @@
                 <p class="text-muted">{{ $student->squad->name }}</p>
 
                 <hr>
+>>>>>>> origin/master
             </div>
             <div class="col-lg-6 otherinfo-con">
                 <strong class="title">学号</strong>
