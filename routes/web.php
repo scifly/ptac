@@ -171,16 +171,18 @@ Route::group(['prefix' => 'conference_participants'], function () {
 // 申诉
 /** 用户中心 */
 Route::get('users/profile','UserController@profile');
+// Route::put('users/profile','UserController@profile');
 Route::get('users/reset','UserController@reset');
 Route::post('users/reset','UserController@reset');
 Route::get('users/messages','UserController@messages');
-Route::get('users/events','UserController@events');
+Route::get('users/events','UserController@event');
 // 个人通讯录
 // 消息中心
 Route::group(['prefix' => 'messages'], routes('MessageController'));
 Route::group(['prefix' => 'messages'], function () {
     $ctlr = 'MessageController';
     Route::post('get_depart_users', $ctlr . '@getDepartmentUsers');
+    Route::post('index', $ctlr . '@index');
     Route::get('send', $ctlr . '@send');
 });
 // 日历

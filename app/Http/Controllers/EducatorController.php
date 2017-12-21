@@ -73,19 +73,20 @@ class EducatorController extends Controller {
         if (Request::method() === 'POST') {
             $schoolId = $this->school->getSchoolId();
             /** @var School $school */
-            $school = $this->school->find($schoolId);
+            $school = $this->school->find(1);
             return $this->department->tree($school->department_id);
         }
         return $this->output();
         
     }
-    
+
     /**
      * 保存教职员工
      *
      * @param EducatorRequest $request
      * @return JsonResponse
      * @throws Exception
+     * @throws \Throwable
      */
     public function store(EducatorRequest $request) {
         

@@ -42,13 +42,18 @@
                         'items' => $apps,
                         'selectedItems' => null
                     ])
+
                     <!-- 发送对象 -->
                         <div class="form-group">
-                            {!! Form::label('departmentId', '发送对象', [
+                            {!! Form::label('objects', '发送对象', [
                                 'class' => 'col-sm-3 control-label'
                             ]) !!}
                             <div class="col-sm-6">
-                                <div id="department-nodes-checked"></div>
+                                <div id="department-nodes-checked">
+
+                                </div>
+
+                                <input type="hidden" id="selectedDepartmentIds" value=""/>
                                 <button id="add-attachment" class="btn btn-box-tool" type="button"
                                         style="margin-top: 3px;">
                                     <i class="fa fa-user-plus text-blue">&nbsp;选择</i>
@@ -96,7 +101,8 @@
                                     <div class="tab-content">
                                         <div class="active tab-pane" id="content_text">
                                             {!! Form::textarea('content', null, [
-                                                'id' => 'content',
+                                                'id' => 'messageText',
+                                                'name' => 'content',
                                                 'class' => 'form-control',
                                             ]) !!}
                                         </div>
