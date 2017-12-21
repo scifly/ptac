@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -85,6 +86,54 @@ class Event extends Model {
      * @return BelongsTo
      */
     public function subject() { return $this->belongsTo('App\Models\Subject'); }
+
+    public function datatable() {
+
+        $columns = [
+            ['db' => 'Event.id', 'dt' => 0],
+            ['db' => 'Event.title', 'dt' => 1],
+            ['db' => 'Event.remark', 'dt' => 2],
+            ['db' => 'Event.location', 'dt' => 3],
+            ['db' => 'Event.start', 'dt' => 4],
+            ['db' => 'Event.end', 'dt' => 5],
+            [
+                'db' => 'Event.ispublic', 'dt' => 6,
+                'formatter' => function ( $d, $row ) {
+                    if (!empty($d)) {
+                       return  $d ? '是' : '否';
+                    }
+                    return '[n/a]';
+                },
+            ],
+            ['db' => 'Subject.name', 'dt' => 7],
+            ['db' => 'Event.alertable', 'dt' => 8],
+            ['db' => 'User.realname', 'dt' => 9],
+            ['db' => 'Event.updated_at', 'dt' => 10],
+        ];
+        $joins = [
+            [
+                'table' => 'users',
+                'alias' => 'User',
+                'type' => 'INNER',
+                'conditions' => [
+                    'User.id = Event.user_id',
+                ],
+            ],
+            [
+                'table' => 'subjects',
+                'alias' => 'Subject',
+                'type' => 'INNER',
+                'conditions' => [
+                    'Subject.id = Event.subject_id',
+                ],
+            ],
+
+        ];
+        $condition = null;
+        $condition = 'Event.enabled = 1';
+
+        return Datatable::simple($this, $columns, $joins, $condition);
+    }
 
     /**
      * 显示日历事件

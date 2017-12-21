@@ -6,7 +6,7 @@ use App\Helpers\ControllerTrait;
 use App\Models\PollQuestionnaire;
 use Illuminate\Contracts\View\View;
 
-class PqSubjectComposer {
+class PqSubjectIndexComposer {
     use ControllerTrait;
 
     public function compose(View $view) {

@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Think\Auth;
 
 /**
  * App\Models\Message
@@ -190,7 +191,7 @@ class Message extends Model {
             ['db' => 'Message.msl_id', 'dt' => 3],
             ['db' => 'User.realname', 'dt' => 4],
             ['db' => 'MessageType.name as messagetypename', 'dt' => 5],
-            ['db' => 'Message.read', 'dt' => 6,
+            ['db' => 'Message.readed', 'dt' => 6,
                 'formatter' => function ($d) {
                     return $d === 0 ? "否" : "是";
                 },
@@ -201,11 +202,7 @@ class Message extends Model {
                 },
             ],
             ['db' => 'Message.created_at', 'dt' => 8],
-            [
-                'db' => 'Message.updated_at', 'dt' => 9,
-                'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($this, $d, $row);
-                },
+            ['db' => 'Message.updated_at', 'dt' => 9
             ],
         ];
         $joins = [
@@ -242,8 +239,8 @@ class Message extends Model {
                 ],
             ],
         ];
-
-        return Datatable::simple($this, $columns, $joins);
+        $condition = null;
+        return Datatable::simple($this, $columns, $joins,$condition);
     }
 
     public function sendText($data) {

@@ -9,7 +9,7 @@
         <div class="nav-tabs-custom">
             <div class="box box-default box-solid">
                 <div class="box-header with-border">
-                    <span id="breadcrumb" style="color: #999; font-size: 13px;">用户中心/信息列表</span>
+                    <span id="breadcrumb" style="color: #999; font-size: 13px;">用户中心/我的待办事项</span>
                 </div>
                 <div class="box-body">
                     <table id="data-table" style="width: 100%"
@@ -17,14 +17,15 @@
                         <thead>
                         <tr class="bg-info">
                             <th>#</th>
-                            <th>通信方式</th>
-                            <th>应用</th>
-                            <th>消息批次</th>
-                            <th>发送者</th>
-                            <th>类型</th>
-                            <th>已读</th>
-                            <th>已发</th>
-                            <th>创建于</th>
+                            <th>名称</th>
+                            <th>备注</th>
+                            <th>相关地点</th>
+                            <th>开始时间</th>
+                            <th>结束时间</th>
+                            <th>是否公开</th>
+                            <th>科目名称</th>
+                            <th>是否提醒</th>
+                            <th>创建者姓名</th>
                             <th>更新于</th>
                         </tr>
                         </thead>
@@ -42,6 +43,6 @@
 <script src="{{ URL::asset('js/plugins/parsley/i18n/zh_cn.extra.js') }}"></script>
 <script src="{{ URL::asset('js/plugins/datatables/datatables.min.js') }}"></script>
 <script src="{{ URL::asset('js/plugins/datatables/dataTables.checkboxes.min.js') }}"></script>
-@isset($message)
-    <script src="{{ URL::asset($message) }}"></script>
+@isset($event)
+    <script src="{{ URL::asset($event) }}"></script>
 @endisset
