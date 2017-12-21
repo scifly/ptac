@@ -184,6 +184,8 @@ Route::group(['prefix' => 'messages'], function () {
     Route::post('get_depart_users', $ctlr . '@getDepartmentUsers');
     Route::post('index', $ctlr . '@index');
     Route::get('send', $ctlr . '@send');
+    Route::any('uploadFile', $ctlr . '@uploadFile');
+
 });
 // 日历
 // 个人信息

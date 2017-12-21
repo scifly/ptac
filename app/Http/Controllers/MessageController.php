@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Helpers\ControllerTrait;
 use App\Http\Requests\MessageRequest;
 use App\Models\CommType;
 use App\Models\Department;
@@ -20,7 +21,7 @@ use Throwable;
  * @package App\Http\Controllers
  */
 class MessageController extends Controller {
-    
+    use ControllerTrait;
     protected $message;
     protected $user;
     protected $media;
@@ -252,5 +253,22 @@ class MessageController extends Controller {
         $messages = $this->message->where('r_user_id', $userId)
             ->where('message_type_id', $messageType)->get();
     }
-    
+
+    public function uploadFile() {
+        $file = Request::file('uploadFile');
+        if (empty($file)) {
+            $result['statusCode'] = 0;
+            $result['message'] = '您还未选择文件！';
+
+            return $result;
+        } else {
+            $result['data'] = [];
+            $mes = $this->uploadedMedias($file, '消息中心');
+            $result['statusCode'] = 1;
+            $result['message'] = '上传成功！';
+            $result['data'] = $mes;
+        }
+
+        return response()->json($result);
+    }
 }
