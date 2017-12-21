@@ -12,14 +12,10 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
-<<<<<<< HEAD
 // Route::get('/fireEvent', function() {
 //     event(new eventTrigger());
 // });
 Route::get('/messages/send', 'MessageController@send');
-=======
-
->>>>>>> origin/master
 Route::auth();
 # 关闭注册功能
 Route::any('register', function() { return redirect('login'); });
