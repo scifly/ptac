@@ -113,7 +113,7 @@ class UserController extends Controller {
     /**
      * 更新用户
      *
-     * @param UserRequest $request;
+     * @param UserRequest $request ;
      * @param $id
      * @return JsonResponse
      */
@@ -122,8 +122,8 @@ class UserController extends Controller {
         if (!$user) {
             return $this->notFound();
         }
-
-        return $user->update($request->all()) ? $this->succeed() : $this->fail();
+        return $user->update($request->all()) ?
+            response(['statusCode'=> 200]) : response(['statusCode'=>400]);
 
     }
 
@@ -144,19 +144,8 @@ class UserController extends Controller {
 
     /**
      * 修改个人信息
-     * @param UserRequest $request
-     * @return \Illuminate\Contracts\View\Factory|JsonResponse|\Illuminate\View\View|\think\response\View
      */
-    public function profile(UserRequest $request){
-        $user = Auth::user();
-        if(Request::isMethod('post'))
-        {
-            $data = $request->all();
-            echo '<pre>';
-            print_r($data);exit;
-            return $user->update($data) ? response()->json(['statusCode' => 200]) :
-                response()->json(['statusCode' => 400]);
-        }
+    public function profile(){
 
         $menuId = Request::query('menuId');
         $menu = $this->menu->find($menuId);

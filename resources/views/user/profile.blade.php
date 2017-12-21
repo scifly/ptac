@@ -1,5 +1,5 @@
 <link rel="stylesheet" href="{{ URL::asset('js/plugins/parsley/parsley.css') }}">
-{!! Form::model(Auth::user(), [ 'method' => 'post', 'id' => 'formUser', 'data-parsley-validate' => 'true']) !!}
+{!! Form::model(Auth::user(), [ 'method' => 'PUT', 'id' => 'formUser', 'data-parsley-validate' => 'true']) !!}
 <section class="content clearfix">
     @include('partials.modal_dialog')
     <div class="col-lg-12">
@@ -17,7 +17,7 @@
                     <div class="form-horizontal">
 
                         @if (isset($user['id']))
-                            {{ Form::hidden('user_id', $user['id'], ['id' => 'user_id']) }}
+                            {{ Form::hidden('id', $user['id'], ['id' => 'id']) }}
                         @endif
                         <div class="form-group">
                             {!! Form::label('avatar_url', '头像', [
@@ -173,7 +173,6 @@
                                 </div>
                             </div>
                         </div>
-
 
                     </div>
                 </div>

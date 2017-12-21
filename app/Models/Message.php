@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Think\Auth;
 
 /**
  * App\Models\Message
@@ -237,7 +238,7 @@ class Message extends Model {
                 ],
             ],
         ];
-
-        return Datatable::simple($this, $columns, $joins);
+        $condition = null;
+        return Datatable::simple($this, $columns, $joins,$condition);
     }
 }

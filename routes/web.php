@@ -171,7 +171,7 @@ Route::group(['prefix' => 'conference_participants'], function () {
 // 申诉
 /** 用户中心 */
 Route::get('users/profile','UserController@profile');
-Route::post('users/profile','UserController@profile');
+// Route::put('users/profile','UserController@profile');
 Route::get('users/reset','UserController@reset');
 Route::post('users/reset','UserController@reset');
 Route::get('users/messages','UserController@messages');

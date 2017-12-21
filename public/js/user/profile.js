@@ -10,23 +10,9 @@ $('.edit_input').click(function () {
 
 function save_input(input_obj) {
     input_obj.blur(function () {
-        var user_id = document.getElementById('user_id').value;
+        var id = document.getElementById('id').value;
         var telephone = document.getElementById('telephone').value;
         var email = document.getElementById('email').value;
-        var username = document.getElementById('username').value;
-        var wechatid = document.getElementById('wechatid').value;
-        var gender = document.getElementById('gender').value;
-        var english_name = $('#english_name').val();
-        var data = {
-            user_id: user_id,
-            telephone: telephone,
-            email: email,
-            username: username,
-            wechatid: wechatid,
-            gender: gender,
-            english_name: english_name,
-            _token: $('#csrf_token').attr('content')
-        }
         const  reg = /^[A-Za-z\d]+([-_.][A-Za-z\d]+)*@([A-Za-z\d]+[-.])+[A-Za-z\d]{2,4}$/;
 
         if(telephone.length !== 0 && !/^(\(\d{3,4}\)|\d{3,4}-|\s)?\d{7,14}$/.test(telephone)){
@@ -47,10 +33,10 @@ function save_input(input_obj) {
             return false;
         }
         $.ajax({
-            type: 'post',
+            type: 'PUT',
             dataType: 'json',
-            url: 'profile',
-            data:data,
+            url: 'update/' + id,
+            data:$form.serialize(),
             success: function (result) {
                 if(result.statusCode === 200){
                     $.gritter.add({

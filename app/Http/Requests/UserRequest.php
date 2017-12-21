@@ -42,8 +42,24 @@ class UserRequest extends FormRequest {
      */
     public function authorize() { return true; }
     
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array
+     */
+    public function rules() {
+        return [
+            'username'           => 'required|string|between:6,20|unique:users,username,' .
+                $this->input('id') . ',id',
+            'english_name' => 'nullable|string|between:2,64',
+            'wechatid' => 'nullable|string|between:2,255',
+            'email' => 'nullable|string|between:2,255',
+            'telephone' => 'nullable|string|between:2,64',
+        ];
+    }
+
     public function messages() {
-        
+
         // $rules = $this->rules();
         // $k_array = $this->strings_key;
         // $v_array = $this->strings_val;
@@ -61,33 +77,13 @@ class UserRequest extends FormRequest {
         // return $array;
         return [
             'username.required'   => '用户名不能为空',
-
+            'username.string'   => '用户名类型必须为字符串',
+            'username.between'   => '用户名长度应该在6~20个字符之间',
         ];
 
-    }
-    
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array
-     */
-    public function rules() {
-        return [
-            // 'username'   => 'required|string|between:6,20|unique:users,username,' .
-            //     $this->input('user_id') . ',id',
-            'english_name' => 'nullable|string|between:2,64',
-            'wechatid' => 'nullable|string|between:2,255',
-            'email' => 'nullable|string|between:2,255',
-            'telephone' => 'nullable|string|between:2,64',
-        ];
     }
     
     public function wantsJson() { return true; }
-    
-    protected function prepareForValidation() {
 
-        $input = $this->all();
 
-    }
-    
 }
