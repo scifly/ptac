@@ -144,13 +144,16 @@ class UserController extends Controller {
 
     /**
      * 修改个人信息
-     *
+     * @param UserRequest $request
+     * @return \Illuminate\Contracts\View\Factory|JsonResponse|\Illuminate\View\View|\think\response\View
      */
-    public function profile(){
+    public function profile(UserRequest $request){
         $user = Auth::user();
         if(Request::isMethod('post'))
         {
-            $data = Request::all();
+            $data = $request->all();
+            echo '<pre>';
+            print_r($data);exit;
             return $user->update($data) ? response()->json(['statusCode' => 200]) :
                 response()->json(['statusCode' => 400]);
         }
@@ -182,7 +185,7 @@ class UserController extends Controller {
                     'uri' => Request::path(),
                     'html' => view('user.profile',[
                         'user' => Auth::user(),
-                        'reset' => '../public/js/user/profile.js',
+                        'profile' => '../public/js/user/profile.js',
                     ])->render()
                 ]);
             }

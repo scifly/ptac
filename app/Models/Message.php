@@ -185,7 +185,7 @@ class Message extends Model {
         $columns = [
             ['db' => 'Message.id', 'dt' => 0],
             ['db' => 'CommType.name as commtypename', 'dt' => 1],
-            ['db' => 'Message.app_id', 'dt' => 2],
+            ['db' => 'App.name as appname', 'dt' => 2],
             ['db' => 'Message.msl_id', 'dt' => 3],
             ['db' => 'User.realname', 'dt' => 4],
             ['db' => 'MessageType.name as messagetypename', 'dt' => 5],
@@ -212,14 +212,14 @@ class Message extends Model {
                     'CommType.id = Message.comm_type_id',
                 ],
             ],
-            // [
-            //     'table' => 'apps',
-            //     'alias' => 'App',
-            //     'type' => 'INNER',
-            //     'conditions' => [
-            //         'App.id = Message.app_id',
-            //     ],
-            // ],
+            [
+                'table' => 'apps',
+                'alias' => 'App',
+                'type' => 'INNER',
+                'conditions' => [
+                    'App.id = Message.app_id',
+                ],
+            ],
             [
                 'table' => 'message_types',
                 'alias' => 'MessageType',
