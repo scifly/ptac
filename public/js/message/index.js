@@ -44,102 +44,99 @@ if (typeof contacts === 'undefined') {
         .done(function() { contacts.init('messages/index'); });
 } else { contacts.init('messages/index'); }
 
-//$("input[type=file]").change("propertychange", function(e) {
-//	var type = $(this).prev().val();
-//	var filename = e.currentTarget.files[0].name;
-//	var html = '<div class="showfile" style="color: #787878;margin-left: 5px;">';
-//	switch(type)
-//	{
-//	case 'image':
-//	//图片
-//	  	html+='<i class="fa fa-file-image-o"></i>';
-//	 	break;
-//	case 'audio':
-//	//音频
-//	  	html+='<i class="fa fa-file-sound-o"></i>';
-//	 	break;
-//	case 'video':
-//	//视频
-//	  	html+='<i class="fa fa-file-movie-o"></i>';
-//	 	break;
-//	}
-//	html+='<span style="margin-left: 5px;position:relative;cursor:pointer;">'+filename+'<input type="hidden" value="image" name="type" /><input id="file-'+type+'" type="file" name="uploadFile" accept="image/*" style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/></span>'+
-//      	'<i class="fa fa-close" style="margin-left: 20px;cursor:pointer;"></i>'+
-//      '</div>';
-//  $('#message-content .tab-pane.active').html(html);
-//  removefile();
-//  $('#file-'+type).on("change", function(e){  
-//      type = $(this).prev().val();
-//		filename = e.currentTarget.files[0].name;
-//		html = '<div class="showfile" style="color: #787878;margin-left: 5px;">';
-//		switch(type)
-//		{
-//		case 'image':
-//		//图片
-//		  	html+='<i class="fa fa-file-image-o"></i>';
-//		 	break;
-//		case 'audio':
-//		//音频
-//		  	html+='<i class="fa fa-file-sound-o"></i>';
-//		 	break;
-//		case 'video':
-//		//视频
-//		  	html+='<i class="fa fa-file-movie-o"></i>';
-//		 	break;
-//		}
-//		html+='<span style="margin-left: 5px;position:relative;cursor:pointer;">'+filename+'<input type="hidden" value="image" name="type" /><input id="file-'+type+'" type="file" name="uploadFile" accept="image/*" style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/></span>'+
-//	        	'<i class="fa fa-close" style="margin-left: 20px;cursor:pointer;"></i>'+
-//	        '</div>';
-//	    $('#message-content .tab-pane.active').html(html);
-//	    removefile();
-//	    console.log(1);
-//  });  
-//})
-
 
 function uploadfile(obj){
 	var $this = $(obj);
 	var type = $this.prev().val();
-	var filename = $this[0].files[0].name;
-	var html = '<div class="showfile" style="color: #787878;margin-left: 5px;">';
-	switch(type)
-	{
-	case 'image':
-	//图片
-	  	html+='<i class="fa fa-file-image-o"></i>';
-	 	break;
-	case 'audio':
-	//音频
-	  	html+='<i class="fa fa-file-sound-o"></i>';
-	 	break;
-	case 'video':
-	//视频
-	  	html+='<i class="fa fa-file-movie-o"></i>';
-	 	break;
-	}
-	html+='<span style="margin-left: 5px;position:relative;cursor:pointer;">'+filename+'<input type="hidden" value="image" name="type" /><input onchange="uploadfile(this)" id="file-'+type+'" type="file" name="uploadFile" accept="image/*" style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/></span>'+
-        	'<i class="fa fa-close" style="margin-left: 20px;cursor:pointer;"></i>'+
-        '</div>';
-    $('#message-content .tab-pane.active').html(html);
-    removefile(type);
+//  removefile(type);
+    page.inform("温馨提示", '正在上传中...', page.info);
+    var formData = new FormData();
+    formData.append('uploadFile', $('#file-image')[0].files[0]);
+    formData.append('_token', $('#csrf_token').attr('content'));
+    formData.append('type', type);
     //请求接口
     $.ajax({
-    	type:"POST",
-    	url:"",
-    });
+        url: page.siteRoot() + "messages/uploadFile",
+        type: 'POST',
+        cache: false,
+        data: formData,
+        processData: false,
+        contentType: false,
+		success: function (result) {
+			if(result.statusCode){
+				var html = '<form id="uploadForm" enctype="multipart/form-data">';
+				switch(type)
+				{
+				case 'image':
+				//图片
+				  	html+='<div class="fileshow" style="display: inline-block;width: auto;position: relative;">'+
+                            	'<img src="/ptac/'+result.data.path+'" style="height: 200px;">'+
+                            	'<input type="hidden" value="'+result.data.type+'" name="type" />'+
+                            	'<input type="hidden" value="'+result.data.media_id+'" name="media_id" />'+
+                                '<input type="file" id="file-image" onchange="uploadfile(this)" name="uploadFile" accept="image/*" style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/>'+
+                            	'<i class="fa fa-close file-del" style="position: absolute;top: 10px;right: 15px;font-size: 20px;z-index: 2;cursor: pointer;"></i>'+
+                            '</div>'+
+                            '</form>';
+				 	break;
+				case 'audio':
+				//音频
+				  	html+='<i class="fa fa-file-sound-o"></i>';
+				 	break;
+				case 'video':
+				//视频
+				  	html+='<i class="fa fa-file-movie-o"></i>';
+				 	break;
+				}
+				$('#message-content .tab-pane.active').html(html);
+				removefile(type);
+			}else{
+				alert('上传失败');
+			}
+			//result.data = '
+			// filename
+             //    :
+             //    "QQ截图20171027140941.png"
+            // id
+             //    :
+             //    18
+            // media_id
+             //    :
+             //    "3AQYLJxtAkw86jYgwBXdTgIN5_VTmXG1nMionRYiOmQQ"
+            // path
+             //    :
+             //    "storage/app/uploads/2017/12/22/5a3c81bb9ef29.png"
+            // type
+             //    :
+             //    "png"
+			// '
+        }
+    })
 }
 
-
 function removefile(type){
-	
-	$('.tab-pane.active .fa-close').click(function(){
+	$('.tab-pane.active .file-del').click(function(){
 		$(this).parent().remove();
-		var html = '<button id="add-'+type+'" class="btn btn-box-tool" type="button" style="margin-top: 3px;">'+
-                        '<i class="fa fa-plus text-blue" style="position: relative;">&nbsp;添加图片'+
-                        	'<input type="hidden" value="'+type+'" name="type" />'+
-                        	'<input type="file" onchange="uploadfile(this)" id="file-'+type+'" name="uploadFile" accept="image/*" style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/>'+
-                        '</i>'+
-                    '</button>';
+		switch(type)
+		{
+		case 'image':
+		var btntxt = '添加图片';
+			break;
+		case 'audio':
+		var btntxt = '添加音频';
+		 	break;
+		case 'video':
+		var btntxt = '添加视频';
+		 	break;
+		}
+		var html = '<form id="uploadForm" enctype="multipart/form-data">'+
+                       ' <button id="add-image" class="btn btn-box-tool" type="button" style="margin-top: 3px;position: relative;border: 0;">'+
+                            '<i class="fa fa-plus text-blue">'+
+                                '&nbsp;'+btntxt+''+
+                                    '<input type="hidden" value="image" name="type" />'+
+                                    '<input type="file" id="file-image" onchange="uploadfile(this)" name="uploadFile" accept="image/*" style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/>'+
+                            '</i>'+
+                        '</button>'+
+                    '</form>';
         $('#message-content .tab-pane.active').html(html);
 	});
 }

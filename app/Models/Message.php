@@ -247,7 +247,7 @@ class Message extends Model {
         return Datatable::simple($this, $columns, $joins,$condition);
     }
 
-    public function sendText($data) {
+    public function sendMessage($data) {
         $result = [
             'statusCode' => 200,
             'message' => '',
@@ -286,10 +286,18 @@ class Message extends Model {
                 $message = [
                     'touser' => $touser,
                     'toparty' => $toparty,
-                    'msgtype' => 'text',
                     'agentid' => $app['agentid'],
-                    'text' => ['content' => $data['content']],
                 ];
+                switch ($data['type']) {
+                    case 'text' :
+                        $message['text'] = ['content' => $data['content']['text']];
+                        $message['msgtype'] = $data['type'];
+                        break;
+                    case 'image' :
+                        $message['image'] = ['media_id' => $data['content']['media_id']];
+                        $message['msgtype'] = $data['type'];
+                        break;
+                }
                 $status = json_decode(Wechat::sendMessage($token, $message));
                 if ($status->errcode == 0) {
                     $result = [
