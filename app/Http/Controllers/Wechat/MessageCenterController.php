@@ -31,6 +31,9 @@ class MessageCenterController extends Controller {
         $secret = 'qv_kkW2S3zmMWIUrV3u2nydcyIoLknTvuDMq7ja4TYE';
         $agentId = 3;
         $code = Request::input('code');
+        $accessToken = Wechat::getAccessToken($corpId,$secret);
+        print_r($accessToken);
+        die;
         if (empty($code)) {
             $codeUrl = Wechat::getCodeUrl($corpId,$agentId,'http://weixin.028lk.com/message_center');
             return redirect($codeUrl);
