@@ -279,6 +279,7 @@ Route::group(['prefix' => 'operators'], function() {
 # --------------------------------------------------------------------------------
 // 消息中心
 Route::get('message_center', 'Wechat\MessageCenterController@index');
+Route::post('message_center', 'Wechat\MessageCenterController@index');
 Route::get('message_create', 'Wechat\MessageCenterController@create');
 Route::get('message_show/{id}', 'Wechat\MessageCenterController@show');
 //布置作业

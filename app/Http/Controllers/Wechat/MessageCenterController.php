@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Wechat;
 use App\Facades\Wechat;
 use App\Http\Controllers\Controller;
 use App\Models\Message;
+use App\Models\MessageType;
 use App\Models\User;
 use Illuminate\Support\Facades\Request;
 
@@ -40,18 +41,53 @@ class MessageCenterController extends Controller {
         $user = User::whereUserid($userId)->first();
         $role = $user->group->name;
         if($role == '教职员工'){
+            $messageType = MessageType::all();
             $receiveMessages = $sendMessages = [];
+            $count = 0;
+            if(Request::isMethod('post')){
+                $typeId = Request::input('id');
+                $receiveMessages = Message::whereMessageTypeId($typeId)->where('r_user_id',$user->id)->get();
+                $sendMessages = Message::whereMessageTypeId($typeId)->where('s_user_id',$user->id)->get();
+                if( sizeof($receiveMessages) != 0){
+                    $count = 0;
+                    foreach ($receiveMessages as $k=>$r){
+                        $receiveMessages[$k]->s_user_id = User::whereId($r['s_user_id'])->first()->realname;
+                    }
+                    $count = $receiveMessages->where('readed','0')->count();
+                }
+                if( sizeof($sendMessages) != 0){
+                    foreach ($sendMessages as $k=>$s){
+                        $sendMessages[$k]->r_user_id = User::whereId($s['r_user_id'])->first()->realname;
+                    }
+                }
+
+                return response()->json([
+                    'receiveMessages' => $receiveMessages,
+                    'sendMessages' => $sendMessages,
+                    'count' => $count,
+                ]);
+            }
+
             $receiveMessages = $this->message->where('r_user_id',$user->id)->get();
             $sendMessages = $this->message->where('s_user_id',$user->id)->get();
-            foreach ($receiveMessages as $k=>$r){
-                $receiveMessages[$k]->s_user_id = User::whereId($r['s_user_id'])->first()->realname;
+            if( sizeof($receiveMessages) != 0){
+
+                foreach ($receiveMessages as $k=>$r){
+                    $receiveMessages[$k]->s_user_id = User::whereId($r['s_user_id'])->first()->realname;
+                }
+                $count = $receiveMessages->where('readed','0')->count();
             }
-            foreach ($sendMessages as $k=>$s){
-                $sendMessages[$k]->r_user_id = User::whereId($s['r_user_id'])->first()->realname;
+            if( sizeof($sendMessages) != 0){
+                foreach ($sendMessages as $k=>$s){
+                    $sendMessages[$k]->r_user_id = User::whereId($s['r_user_id'])->first()->realname;
+                }
             }
+
             return view('wechat.message_center.index',[
                 'receiveMessages' => $receiveMessages,
-                'sendMessages' => $sendMessages
+                'sendMessages' => $sendMessages,
+                'count' => $count,
+                'messageType' => $messageType
             ]);
         }
     }
@@ -70,7 +106,7 @@ class MessageCenterController extends Controller {
      */
     public function show($id) {
         // $userId = $this->getRole('http://weixin.028lk.com/message_show');
-        $userId = "yuanhongbin";
+        $userId = "kobe";
         $user = $this->user->where('userid',$userId)->first();
         $edit = $user->group->name == '教职员工' ? true : '';
         if (!$this->message->find($id)) {

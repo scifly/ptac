@@ -19,8 +19,16 @@
                         已发送
                     </a>
                     <a class="weui-navbar__item" href="#tab2">
-                        已接收<span
-                                style="display: inline-block;height: 18px;line-height:18px;font-weight:700;margin-left:10px;width: 20px;border-radius: 50%;background-color:red !important;color: #fff;">1</span>
+                        已接收<span style="display:
+                        inline-block;height: 18px;
+                        line-height:18px;
+                        font-weight:700;
+                        margin-left:10px;
+                        width: 20px;
+                        border-radius: 50%;
+                        background-color:red !important;color: #fff;">
+                            {{$count}}
+                        </span>
                     </a>
                 </div>
                 <div class="weui-tab__bd ">
@@ -37,13 +45,14 @@
 
                             <div class="selectlist-layout">
                                 <div class="selectlist-box">
-                                    <span class="select-box c-green b-bottom">作业 <i
+                                    <span class="select-box c-green b-bottom">全部 <i
                                                 class="icon iconfont icon-arrLeft-fill"></i> </span>
                                 </div>
                             </div>
                             <ul class="select-ul" style="display: none;">
-                                <li class="c-green"> 作业</li>
-                                <li class=""> 草稿</li>
+                                @foreach($messageType as $m)
+                                    <li class="c-green" data-id="{{$m->id}}"> {{$m->name}}</li>
+                                @endforeach
                             </ul>
                             <div class="select-container" style="display: none;"></div>
                         </div>
