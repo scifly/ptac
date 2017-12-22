@@ -100,6 +100,7 @@ if (typeof contacts === 'undefined') {
 function uploadfile(obj){
 	var $this = $(obj);
 	var type = $this.prev().val();
+    var fileObj = $this[0].files[0];
 	var filename = $this[0].files[0].name;
 	var html = '<div class="showfile" style="color: #787878;margin-left: 5px;">';
 	switch(type)
@@ -117,16 +118,45 @@ function uploadfile(obj){
 	  	html+='<i class="fa fa-file-movie-o"></i>';
 	 	break;
 	}
-	html+='<span style="margin-left: 5px;position:relative;cursor:pointer;">'+filename+'<input type="hidden" value="image" name="type" /><input onchange="uploadfile(this)" id="file-'+type+'" type="file" name="uploadFile" accept="image/*" style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/></span>'+
-        	'<i class="fa fa-close" style="margin-left: 20px;cursor:pointer;"></i>'+
-        '</div>';
-    $('#message-content .tab-pane.active').html(html);
+    // html+='<span style="margin-left: 5px;position:relative;cursor:pointer;">'+filename+'<input type="hidden" value="image" name="type" /><input onchange="uploadfile(this)" id="file-'+type+'" type="file" name="uploadFile" accept="image/*" style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/></span>'+
+    //     	'<i class="fa fa-close" style="margin-left: 20px;cursor:pointer;"></i>'+
+    //     '</div>';
+    // $('#message-content .tab-pane.active').html(html);
     removefile(type);
+    page.inform("温馨提示", '正在上传中...', page.info);
+    var formData = new FormData();
+    formData.append('uploadFile', $('#file-image')[0].files[0]);
+    // console.log($('#uploadForm')[0]);
+    formData.append('_token', $('#csrf_token').attr('content'));
+    formData.append('type', type);
     //请求接口
     $.ajax({
-    	type:"POST",
-    	url:"",
-    });
+        url: page.siteRoot() + "messages/uploadFile",
+        type: 'POST',
+        cache: false,
+        data: formData,
+        processData: false,
+        contentType: false,
+		success: function (result) {
+			//result.data = '
+			// filename
+             //    :
+             //    "QQ截图20171027140941.png"
+            // id
+             //    :
+             //    18
+            // media_id
+             //    :
+             //    "3AQYLJxtAkw86jYgwBXdTgIN5_VTmXG1nMionRYiOmQQ"
+            // path
+             //    :
+             //    "storage/app/uploads/2017/12/22/5a3c81bb9ef29.png"
+            // type
+             //    :
+             //    "png"
+			// '
+        }
+    })
 }
 
 
