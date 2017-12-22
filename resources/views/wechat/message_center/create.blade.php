@@ -1,6 +1,6 @@
 @extends('wechat.layouts.master')
 @section('css')
-    <link rel="stylesheet" href="{{ asset('/css/wechat/message_center/add.css') }}">
+    <link rel="stylesheet" href="{{ asset('/css/wechat/message_center/create.css') }}">
 @endsection
 @section('content')
 		<div class="msg-send-wrap">
