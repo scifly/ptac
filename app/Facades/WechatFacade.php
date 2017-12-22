@@ -938,5 +938,10 @@ class Wechat extends Facade {
         return self::curlGet(sprintf(self::URL_DEL_MENU, $accessToken, $agentId));
         
     }
-    
+
+    static function uploadMedia($accessToken, $type, $data) {
+
+
+        return self::curlPost(sprintf(self::URL_UPLOAD_MEDIA, $accessToken, $type), $data);
+    }
 }

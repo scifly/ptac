@@ -1,9 +1,12 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Facades\Wechat;
 use App\Helpers\ControllerTrait;
 use App\Http\Requests\MessageRequest;
+use App\Models\App;
 use App\Models\CommType;
+use App\Models\Corp;
 use App\Models\Department;
 use App\Models\Media;
 use App\Models\Message;
@@ -267,7 +270,16 @@ class MessageController extends Controller {
             $result['statusCode'] = 1;
             $result['message'] = '上传成功！';
             $result['data'] = $mes;
+            $data=array(
+                "media" => "@" . $mes['path']
+            ); //PHP>5.5
+            $crop = Corp::whereName('万浪软件')->first();
+            $app = App::whereAgentid('999')->first();
+            $token = Wechat::getAccessToken($crop->corpid, $app->secret);
+            $status = Wechat::uploadMedia($token, 'image', $data);
+            print_r($status);die;
         }
+
 
         return response()->json($result);
     }

@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Facades\Wechat;
 use App\Http\Requests\WapSiteRequest;
 use App\Models\Media;
 use App\Models\Menu;
@@ -170,6 +171,7 @@ class WapSiteController extends Controller {
     public function uploadImages() {
         
         $files = Request::file('img');
+        $type = Request::query('type');
         if (empty($files)) {
             $result['statusCode'] = 0;
             $result['message'] = '您还未选择图片！';
@@ -184,6 +186,8 @@ class WapSiteController extends Controller {
             $result['statusCode'] = 1;
             $result['message'] = '上传成功！';
             $result['data'] = $mes;
+            $token = '';
+            $result = Wechat::uploadMedia($token, $type,$data);
         }
         
         return response()->json($result);
