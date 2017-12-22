@@ -107,7 +107,7 @@ class MessageController extends Controller {
 //        if ($commType->name == $commTypeName[0]) {
 //            return $this->message->store($request) ? $this->succeed() : $this->fail();
 //        }
-        return $this->message->sendText($input);
+        return $this->message->sendMessage($input);
         
     }
     
