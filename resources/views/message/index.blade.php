@@ -98,7 +98,7 @@
                                             </a>
                                         </li>
                                     </ul>
-                                    <div class="tab-content">
+                                    <div class="tab-content" id="message-content">
                                         <div class="active tab-pane" id="content_text">
                                             {!! Form::textarea('content', null, [
                                                 'id' => 'messageText',
@@ -115,19 +115,31 @@
                                         <div class="tab-pane" id="content_image">
                                             <button id="add-image" class="btn btn-box-tool" type="button"
                                                     style="margin-top: 3px;">
-                                                <i class="fa fa-plus text-blue">&nbsp;添加图片</i>
+                                                <i class="fa fa-plus text-blue">
+                                                	&nbsp;添加图片
+                                                	<input type="hidden" value="image" name="type" />
+                                                	<input type="file" name="uploadFile" style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/>
+                                                </i>
                                             </button>
                                         </div>
                                         <div class="tab-pane" id="content_audio">
                                             <button id="add-audio" class="btn btn-box-tool" type="button"
                                                     style="margin-top: 3px;">
-                                                <i class="fa fa-plus text-blue">&nbsp;添加音频</i>
+                                                <i class="fa fa-plus text-blue">
+                                                	&nbsp;添加音频
+                                                	<input type="hidden" value="audio" name="type" />
+                                                	<input type="file" name="uploadFile" style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/>
+                                                </i>
                                             </button>
                                         </div>
                                         <div class="tab-pane" id="content_video">
                                             <button id="add-video" class="btn btn-box-tool" type="button"
                                                     style="margin-top: 3px;">
-                                                <i class="fa fa-plus text-blue">&nbsp;添加视频</i>
+                                                <i class="fa fa-plus text-blue">
+                                                	&nbsp;添加视频
+                                                	<input type="hidden" value="video" name="type" />
+                                                	<input type="file" name="uploadFile" style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/>
+                                                </i>
                                             </button>
                                         </div>
                                         <div class="tab-pane" id="content_sms">
