@@ -9,9 +9,9 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use Think\Auth;
 
 /**
  * App\Models\Message
@@ -239,6 +239,10 @@ class Message extends Model {
             ],
         ];
         $condition = null;
+        $role = Auth::user()->group->name;
+        if($role == '教职员工'){
+            $condition = 'Message.r_user_id='.Auth::id();
+        }
         return Datatable::simple($this, $columns, $joins,$condition);
     }
 }
