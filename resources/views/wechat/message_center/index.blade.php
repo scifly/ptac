@@ -9,7 +9,7 @@
 					<div class="switchschool-head"> 
 						<div class="title-name" > 消息中心 </div>
 						<span class="addworkicon"> 
-							<a class="icon iconfont icon-add c-green" href="../public/message_create"></a>
+							<a class="icon iconfont icon-add c-green" href="../message_create"></a>
 						</span> 
 					</div>
 				</div>
@@ -226,7 +226,7 @@
 		
 		$('.teacher-list-box').click(function(){
 			console.log(1);
-			window.location.href = '../public/message_show';
+			window.location.href = '../message_show';
 		});	
 //		$('#searchCancel').click(function(){
 //			
