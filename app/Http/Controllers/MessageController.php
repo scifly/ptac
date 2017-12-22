@@ -64,14 +64,13 @@ class MessageController extends Controller {
     }
     
     /**
-     * 发送消息
+     * 消息中心 (应用)
      *
-     * @return bool|JsonResponse
-     * @throws Throwable
+     * @return void
      */
-    public function send() {
+    public function message() {
     
-        return $this->output();
+        // return $this->output();
     
     }
     
@@ -256,7 +255,6 @@ class MessageController extends Controller {
         $messages = $this->message->where('r_user_id', $userId)
             ->where('message_type_id', $messageType)->get();
     }
-
     public function uploadFile() {
         $file = Request::file('uploadFile');
         if (empty($file)) {
