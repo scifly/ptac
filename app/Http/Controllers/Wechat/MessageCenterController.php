@@ -36,13 +36,10 @@ class MessageCenterController extends Controller {
             return redirect($codeUrl);
         } else {
             $code = Request::get('code');
-            print_r($code . '<br/>');
             $accessToken = Wechat::getAccessToken($corpId,$secret);
-            print_r($accessToken);
-            die;
-            // $userInfo = Wechat::getUserInfo($accessToken,$code);
-            // echo '<pre>';
-            // print_r($userInfo);
+            $userInfo = Wechat::getUserInfo($accessToken,$code);
+            echo '<pre>';
+            print_r($userInfo);
         }
     
         // return view('wechat.message_center.index');
