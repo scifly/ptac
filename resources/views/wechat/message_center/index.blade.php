@@ -226,7 +226,7 @@
 		
 		$('.teacher-list-box').click(function(){
 			console.log(1);
-			window.location.href = 'content.html';
+			window.location.href = 'page.html';
 		});	
 //		$('#searchCancel').click(function(){
 //			

@@ -1,5 +1,7 @@
 @extends('wechat.layouts.master')
-
+@section('css')
+    <link rel="stylesheet" href="{{ asset('/css/wechat/message_center/add.css') }}">
+@endsection
 @section('content')
 		<div class="msg-send-wrap">
 			<div class="scui-choose js-scui-choose-container3 js-scui-choose scui-form-group">

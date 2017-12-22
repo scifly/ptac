@@ -1,4 +1,7 @@
 @extends('wechat.layouts.master')
+@section('css')
+    <link rel="stylesheet" href="{{ asset('/css/wechat/message_center/content.css') }}">
+@endsection
 @section('content')
 <div style="height: 100%;" id="app">
     <div class="weui_tab">
