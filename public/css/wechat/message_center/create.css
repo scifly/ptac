@@ -1,0 +1,324 @@
+body, html {
+    height: 100%;
+    width: 100%;
+    overflow-x: hidden;
+}
+body{
+    margin: 0;
+    padding:0;
+    background-color: #fff;
+    font-family: "微软雅黑";
+}
+body {
+    width: 100%;
+    font-size: 16px;
+    overflow-x: hidden;
+    color: #686868;
+    -webkit-text-size-adjust: none;
+}
+#app {
+    background: #f8f8f8;
+    height: 100%;
+}
+.msg-send-wrap {
+    background-color: #f8f8f8;
+    overflow-x: hidden;
+}
+.scui-choose {
+    padding: 6px 12px;
+    background-color: #fff;
+    overflow: hidden;
+    vertical-align: middle;
+    position: relative;
+}
+.scui-choose .scui-control-label {
+    padding: 7px 7px 7px 0;
+    float: left;
+}
+.scui-choose .choose-results {
+    white-space: nowrap;
+    overflow-x: auto;
+    margin-right: 35px;
+    position: relative;
+    top: 4px;
+    min-height: 39px;
+}
+.choose-results-item {
+    display: inline-block;
+    vertical-align: middle;
+    background-color: #f5f5f5;
+    margin-right: 5px;
+    height: 29px;
+}
+.choose-results-item img {
+    width: 29px;
+    height: 29px;
+}
+.scui-choose .icons-choose {
+    text-align: center;
+    color: #1aad19;
+    cursor: pointer;
+    margin: -1px;
+    position: absolute;
+    right: 15px;
+    top: 10px;
+}
+.scui-choose .icons-choose a{
+    font-size: 20px;
+}
+.c-green {
+    color: #1aad19;
+}
+.msg-send-bg {
+    background: #fff;
+}
+.b-bottom, .pz {
+    position: relative;
+}
+.mt5px {
+    margin-top: 5px;
+}
+.weui-cell {
+    padding: 10px 15px;
+    position: relative;
+    display: -webkit-box;
+    display: flex;
+    -webkit-box-align: center;
+    align-items: center;
+}
+.hw-title .weui-cell {
+    padding: 10px 12px;
+}
+.weui-cell__bd {
+    -webkit-box-flex: 1;
+    flex: 1;
+}
+.one-line {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+.weui-input {
+    width: 100%;
+    border: 0;
+    outline: 0;
+    -webkit-appearance: none;
+    background-color: transparent;
+    font-size: inherit;
+    color: inherit;
+    height: 1.41176471em;
+    line-height: 1.41176471;
+}
+.b-bottom:after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    border-bottom: 1px solid #ececec;
+    width: 100%;
+    height: 1px;
+    -webkit-transform: scaleY(.5);
+    transform: scaleY(.5);
+    -webkit-transform-origin: 0 0;
+    transform-origin: 0 0;
+    z-index: 1;
+}
+.msg-send-conwrap {
+    width: 100%;
+    position: relative;
+}
+.wangEditor-mobile-txt {
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    padding: 10px;
+    overflow-y: auto;
+    position: relative;
+    outline: 0;
+}
+.wangEditor-mobile-txt {
+    min-height: 200px;
+    padding: 10px 13px;
+}
+.msg-zw {
+    position: absolute;
+    top: 9px;
+    left: 11px;
+    color: #999;
+}
+.fs18 {
+    font-size: 21px;
+}
+
+.msg-send-conicon {
+    padding: 5px 0;
+}
+.b-top {
+    position: relative;
+}
+.b-top:after, .b-top:before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    border-top: 1px solid #ececec;
+    width: 100%;
+    height: 1px;
+    -webkit-transform: scaleY(.5);
+    transform: scaleY(.5);
+    -webkit-transform-origin: 0 0;
+    transform-origin: 0 0;
+}
+.msg-send-conicon .weui-flex {
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+}
+.msg-send-conicon ul li {
+    float: left;
+    text-align: center;
+}
+.weui-flex__item {
+    -webkit-box-flex: 1;
+    flex: 1;
+}
+.msg-send-conicon .icon-attach, .msg-send-conicon i {
+    position: relative;
+    top: -1px;
+}
+.c-999 {
+    color: #999;
+}
+.fs15 {
+    font-size: 22px;
+}
+.choose-container {
+    height: 100%;
+    background-color: #fff;
+}
+.choose-container .choose-container-fixed {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 49px;
+    left: 0;
+    -webkit-overflow-scrolling: touch;
+    background-color: #fff;
+    overflow-y: hidden;
+}
+
+.choose-container .choose-header {
+    padding-top: 8px;
+    padding-bottom: 8px;
+    background-color: #fff;
+    overflow: hidden;
+}
+.choose-container .choose-header-result {
+    max-width: 50%;
+    display: inline-block;
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+    height: 29px;
+    vertical-align: middle;
+    float: left;
+}
+.choose-container .common-left-search {
+    width: 45%;
+    color: #969696;
+    position: relative;
+    padding-left: 15px;
+    float: left;
+    font-size: 16px;
+}
+.choose-results-item {
+    display: inline-block;
+    vertical-align: middle;
+    background-color: #f5f5f5;
+    margin-right: 5px;
+    height: 29px;
+}
+.choose-container .common-left-search .search-logo {
+    position: absolute;
+    line-height: 30px;
+}
+.icons2x-search {
+    background-position: 0 -94px;
+    width: 15px;
+    height: 15px;
+    display: inline-block;
+    background-size: 29px 109px;
+    background-repeat: no-repeat;
+}
+.choose-container .common-left-search input {
+    outline: none;
+    border-radius: 0;
+    border: 0;
+    padding-left: 30px;
+    -webkit-appearance: none;
+    display: inline-block;
+    height: 30px;
+    font-size: 16px;
+}
+.choose-container .choose-breadcrumb {
+    background-color: #f5f5f5;
+    padding-top: 10px;
+}
+.choose-container .choose-breadcrumb .breadcrumb {
+    padding: 15px 15px 0;
+    list-style: none;
+    border-radius: 4px;
+    background-color: #fff;
+    overflow-x: auto;
+    white-space: nowrap;
+}
+.choose-container .choose-breadcrumb .breadcrumb li {
+    cursor: pointer;
+    display: inline-block;
+}
+.choose-container .choose-breadcrumb .breadcrumb>.active a {
+    color: #666;
+}
+.choose-container .choose-items {
+    background-color: #fff;
+    overflow-y: auto;
+    padding-bottom: 49px;
+    height: 100%;
+}
+.choose-container .choose-items img {
+    height: 35px;
+    width: 35px;
+    border-radius: 50%;
+    vertical-align: middle;
+}
+.weui-cells:after, .weui-cells:before{
+    position: relative;
+}
+.choose-container .choose-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 12px 15px;
+    border-top: 1px solid #eaeaea;
+    background-color: hsla(0,0%,100%,.7);
+}
+.choose-container .choose-footer .choose-enable {
+    color: #6bd767;
+    font-size: 16px;
+    position: relative;
+}
+.choose-container .choose-footer .choose-num {
+    font-size: 12px;
+    color: #999;
+    float: right;
+    margin: 3px 10px 0 0;
+}
+.scui-pull-right {
+    float: right!important;
+}
+.choose-footer .weui-cells {
+    position: absolute !important;
+    top: 2px !important;
+    height: auto;
+}

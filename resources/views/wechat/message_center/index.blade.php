@@ -9,7 +9,7 @@
 					<div class="switchschool-head"> 
 						<div class="title-name" > 消息中心 </div>
 						<span class="addworkicon"> 
-							<a class="icon iconfont icon-add c-green" href="add.html"></a> 
+							<a class="icon iconfont icon-add c-green" href="../public/message_create"></a>
 						</span> 
 					</div>
 				</div>
@@ -191,6 +191,23 @@
 			</div>
 		</div>
 @endsection
+@section('search')
+    <div id="search" class='weui-popup__container'>
+    <div class="weui-popup__overlay"></div>
+    <div class="weui-popup__modal">
+    <div class="weui-search-bar weui-search-bar_focusing" id="searchBar">
+    <form class="weui-search-bar__form" action="#">
+    <div class="weui-search-bar__box">
+    <i class="weui-icon-search"></i>
+    <input type="search" class="weui-search-bar__input" id="searchInput" placeholder="请输入搜索内容" required="">
+    <a href="javascript:" class="weui-icon-clear" id="searchClear"></a>
+    </div>
+    </form>
+    <a href="javascript:" class="weui-search-bar__cancel-btn close-popup" id="searchCancel" style="display: block;">取消</a>
+    </div>
+    </div>
+    </div>
+@endsection
 @section('script')
 	<script>
 		$('.selectlist-layout').click(function(){
@@ -209,7 +226,7 @@
 		
 		$('.teacher-list-box').click(function(){
 			console.log(1);
-			window.location.href = 'content.html';
+			window.location.href = '../public/message_show';
 		});	
 //		$('#searchCancel').click(function(){
 //			
