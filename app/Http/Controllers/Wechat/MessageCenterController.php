@@ -16,10 +16,7 @@ class MessageCenterController extends Controller
      * @return string
      */
     public function index() {
-        $imgurl = 'http://weixin.028lk.com/img/user3-128x128.jpg';
-        $data = ['media' => curl_file_create($imgurl)]; //PHP>5.5
-        $result = Wechat::curlPost($imgurl, $data);
-        print_r($result);
+
         // $corpId = 'wxe75227cead6b8aec';
         // $secret = 'qv_kkW2S3zmMWIUrV3u2nydcyIoLknTvuDMq7ja4TYE';
         // $agentId = 3;
@@ -35,11 +32,13 @@ class MessageCenterController extends Controller
         //     $user = User::whereUserid($userId)->first();
         //     Auth::loginUsingId($userId);
         // }
-        // $role = $user->group->name;
-        // if($role == '教职员工'){
-        //     $sendMessage = Message::whereMslId($userId)->get();
-        //     return view('wechat.message_center.index');
-        // }
+        $userId = 'educator_5a2f991358ca9';
+        $user = User::whereUserid($userId)->first();
+        $role = $user->group->name;
+        if($role == '教职员工'){
+            $sendMessage = Message::whereMslId($userId)->get();
+            return view('wechat.message_center.index');
+        }
     }
 
 }
