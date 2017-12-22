@@ -290,7 +290,7 @@ class Message extends Model {
                 ];
                 switch ($data['type']) {
                     case 'text' :
-                        $message['text'] = ['content' => $data['content']];
+                        $message['text'] = ['content' => $data['content']['text']];
                         $message['msgtype'] = $data['type'];
                         break;
                     case 'image' :
