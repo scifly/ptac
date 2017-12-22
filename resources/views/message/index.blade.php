@@ -114,7 +114,6 @@
                                         </div>
                                         <div class="tab-pane" id="content_image">
                                             <form id="uploadForm" enctype="multipart/form-data">
-
                                                 <button id="add-image" class="btn btn-box-tool" type="button" style="margin-top: 3px;position: relative;border: 0;">
                                                     <i class="fa fa-plus text-blue">
                                                         &nbsp;添加图片
@@ -123,8 +122,6 @@
                                                     </i>
                                                 </button>
                                             </form>
-
-
                                         </div>
                                         <div class="tab-pane" id="content_audio">
                                             <button id="add-audio" class="btn btn-box-tool" type="button" style="margin-top: 3px;position: relative;border: 0;">
