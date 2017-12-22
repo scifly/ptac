@@ -120,7 +120,6 @@
                                                 	<input type="file" id="file-image" onchange="uploadfile(this)" name="uploadFile" accept="image/*" style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/>
                                                 </i>
                                             </button>
-                                            
                                         </div>
                                         <div class="tab-pane" id="content_audio">
                                             <button id="add-audio" class="btn btn-box-tool" type="button" style="margin-top: 3px;">
