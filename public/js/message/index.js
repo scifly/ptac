@@ -44,7 +44,105 @@ if (typeof contacts === 'undefined') {
         .done(function() { contacts.init('messages/index'); });
 } else { contacts.init('messages/index'); }
 
-$("input[type=file]").change(function(e){alert("aaa");})
+//$("input[type=file]").change("propertychange", function(e) {
+//	var type = $(this).prev().val();
+//	var filename = e.currentTarget.files[0].name;
+//	var html = '<div class="showfile" style="color: #787878;margin-left: 5px;">';
+//	switch(type)
+//	{
+//	case 'image':
+//	//图片
+//	  	html+='<i class="fa fa-file-image-o"></i>';
+//	 	break;
+//	case 'audio':
+//	//音频
+//	  	html+='<i class="fa fa-file-sound-o"></i>';
+//	 	break;
+//	case 'video':
+//	//视频
+//	  	html+='<i class="fa fa-file-movie-o"></i>';
+//	 	break;
+//	}
+//	html+='<span style="margin-left: 5px;position:relative;cursor:pointer;">'+filename+'<input type="hidden" value="image" name="type" /><input id="file-'+type+'" type="file" name="uploadFile" accept="image/*" style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/></span>'+
+//      	'<i class="fa fa-close" style="margin-left: 20px;cursor:pointer;"></i>'+
+//      '</div>';
+//  $('#message-content .tab-pane.active').html(html);
+//  removefile();
+//  $('#file-'+type).on("change", function(e){  
+//      type = $(this).prev().val();
+//		filename = e.currentTarget.files[0].name;
+//		html = '<div class="showfile" style="color: #787878;margin-left: 5px;">';
+//		switch(type)
+//		{
+//		case 'image':
+//		//图片
+//		  	html+='<i class="fa fa-file-image-o"></i>';
+//		 	break;
+//		case 'audio':
+//		//音频
+//		  	html+='<i class="fa fa-file-sound-o"></i>';
+//		 	break;
+//		case 'video':
+//		//视频
+//		  	html+='<i class="fa fa-file-movie-o"></i>';
+//		 	break;
+//		}
+//		html+='<span style="margin-left: 5px;position:relative;cursor:pointer;">'+filename+'<input type="hidden" value="image" name="type" /><input id="file-'+type+'" type="file" name="uploadFile" accept="image/*" style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/></span>'+
+//	        	'<i class="fa fa-close" style="margin-left: 20px;cursor:pointer;"></i>'+
+//	        '</div>';
+//	    $('#message-content .tab-pane.active').html(html);
+//	    removefile();
+//	    console.log(1);
+//  });  
+//})
+
+
+function uploadfile(obj){
+	var $this = $(obj);
+	var type = $this.prev().val();
+	var filename = $this[0].files[0].name;
+	var html = '<div class="showfile" style="color: #787878;margin-left: 5px;">';
+	switch(type)
+	{
+	case 'image':
+	//图片
+	  	html+='<i class="fa fa-file-image-o"></i>';
+	 	break;
+	case 'audio':
+	//音频
+	  	html+='<i class="fa fa-file-sound-o"></i>';
+	 	break;
+	case 'video':
+	//视频
+	  	html+='<i class="fa fa-file-movie-o"></i>';
+	 	break;
+	}
+	html+='<span style="margin-left: 5px;position:relative;cursor:pointer;">'+filename+'<input type="hidden" value="image" name="type" /><input onchange="uploadfile(this)" id="file-'+type+'" type="file" name="uploadFile" accept="image/*" style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/></span>'+
+        	'<i class="fa fa-close" style="margin-left: 20px;cursor:pointer;"></i>'+
+        '</div>';
+    $('#message-content .tab-pane.active').html(html);
+    removefile(type);
+    //请求接口
+    $.ajax({
+    	type:"POST",
+    	url:"",
+    });
+}
+
+
+function removefile(type){
+	
+	$('.tab-pane.active .fa-close').click(function(){
+		$(this).parent().remove();
+		var html = '<button id="add-'+type+'" class="btn btn-box-tool" type="button" style="margin-top: 3px;">'+
+                        '<i class="fa fa-plus text-blue" style="position: relative;">&nbsp;添加图片'+
+                        	'<input type="hidden" value="'+type+'" name="type" />'+
+                        	'<input type="file" onchange="uploadfile(this)" id="file-'+type+'" name="uploadFile" accept="image/*" style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/>'+
+                        '</i>'+
+                    '</button>';
+        $('#message-content .tab-pane.active').html(html);
+	});
+}
 
 $send.on('click', function() {
     var appIds = $('#app_ids').val();
