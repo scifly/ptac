@@ -12,7 +12,10 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
-
+// Route::get('/fireEvent', function() {
+//     event(new eventTrigger());
+// });
+Route::get('/messages/send', 'MessageController@send');
 Route::auth();
 # 关闭注册功能
 Route::any('register', function() { return redirect('login'); });
@@ -182,7 +185,10 @@ Route::group(['prefix' => 'messages'], routes('MessageController'));
 Route::group(['prefix' => 'messages'], function () {
     $ctlr = 'MessageController';
     Route::post('get_depart_users', $ctlr . '@getDepartmentUsers');
+    Route::post('index', $ctlr . '@index');
     Route::get('send', $ctlr . '@send');
+    Route::any('uploadFile', $ctlr . '@uploadFile');
+
 });
 // 日历
 // 个人信息

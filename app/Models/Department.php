@@ -63,6 +63,10 @@ class Department extends Model {
         'remark', 'order', 'enabled',
     ];
 
+    protected $roles = [
+        '运营', '企业', '学校'
+    ];
+
     /**
      * 返回所属的部门类型对象
      *
@@ -742,5 +746,84 @@ class Department extends Model {
         return $department ? ['type' => $type, 'department' => $department] : null;
 
     }
+    public function contacts() {
+        $user = Auth::user();
+        $role = $user->group->name;
+        $school = new School();
+        $schoolId = $school->getSchoolId();
+        $departmentId = $school::find($schoolId)->first()->department_id;
+        if (in_array($role, $this->roles)) {
+            return $this->tree($departmentId);
+        } else {
+            $departmentId = $this->topDeptId();
+            $nodes = $this->nodes($departmentId);
 
+            $data = [];
+            $belongedDeptIds = $user->departments
+                ->pluck('id')
+                ->toArray();
+            for ($i = 0; $i < sizeof($nodes); $i++) {
+                $parentId = $i == 0 ? '#' : $nodes[$i]['parent_id'];
+                $type = $i == 0 ? '#' : 'dept';
+                $text = $nodes[$i]['name'];
+                if (in_array($nodes[$i]['id'], $belongedDeptIds)) {
+                    $seletable = 1;
+                } else {
+                    $seletable = 0;
+                    foreach ($belongedDeptIds as $pId) {
+                        if ($this->find($nodes[$i]['id'])->parent_id == $pId) {
+                            $seletable = 1;
+                            break;
+                        };
+                    }
+                }
+
+                $data[] = [
+                    'id' => $nodes[$i]['id'],
+                    'parent' => $parentId,
+                    'text' => $text,
+                    'seletable' => $seletable,
+                    'type' => $type, //0->部门；1->用户
+                    'role' => 'dept', //0->部门；1->用户
+                ];
+
+            }
+            $contacts = [];
+            foreach ($data as $datum) {
+                if ($datum['seletable']) {
+                    # 读取当前部门下的所有用户
+                    $users = $this->find($datum['id'])->users;
+                    foreach ($users as $u) {
+                        $contacts[] = [
+                            'id' => 'user-' . $u->id,
+                            'parent' => $datum['id'],
+                            'text' => $u->realname,
+                            'seletable' => 1,
+                            'type' => 'user',
+                            'role' => 'user',
+                        ];
+                    }
+                }
+            }
+
+            return response()->json(array_merge($data, $contacts));
+        }
+
+    }
+    public function topDeptId() {
+
+        $departmentIds = Auth::user()->departments
+            ->pluck('id')
+            ->toArray();
+        $levels = [];
+        foreach ($departmentIds as $id) {
+            $level = 0;
+            $levels[$id] = $this::level($id, $level);
+        }
+        asort($levels);
+        reset($levels);
+        $topLevelId = key($levels);
+        return $this::find($topLevelId)->parent->id;
+
+    }
 }

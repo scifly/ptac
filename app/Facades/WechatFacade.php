@@ -190,8 +190,8 @@ class Wechat extends Facade {
             self::SCOPE_USERINFO,
             $agentId
         );
-        
-        return "window.location = \"{$url}\"";
+        return $url;
+        // return "window.location = \"{$url}\"";
         
     }
     
@@ -938,5 +938,10 @@ class Wechat extends Facade {
         return self::curlGet(sprintf(self::URL_DEL_MENU, $accessToken, $agentId));
         
     }
-    
+
+    static function uploadMedia($accessToken, $type, $data) {
+
+
+        return self::curlPost(sprintf(self::URL_UPLOAD_MEDIA, $accessToken, $type), $data);
+    }
 }

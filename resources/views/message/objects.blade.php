@@ -13,7 +13,7 @@
             <div class="input-group">
                 {!! Form::text('search_node', null, ['id' => 'search_node']) !!}
             </div>
-            <div id="department-tree"></div>
+            <div id="contacts-tree"></div>
         </div>
         <div class="col-xs-6">
             <h4>已选择的发送对象</h4>

@@ -11,20 +11,20 @@ class MessageRequest extends FormRequest {
         //'serviceid' => 'required|string|max:255',
         //'message_id' => 'required|integer',
         //'url' => 'required|string|max:255',
-        'message_type_id' => 'required|integer',
+//        'message_type_id' => 'required|integer',
     ];
     protected $strings_key = [
         'content'         => '消息内容',
         //'serviceid' => '业务id',
         //'message_id' => '消息id',
         //'url' => '网页地址',
-        'message_type_id' => '消息类型',
+//        'message_type_id' => '消息类型',
     ];
     protected $strings_val = [
         'required' => '为必填项',
         'string'   => '为字符串',
         'max'      => '最大为:max',
-        'integer'  => '必须为整数',
+//        'integer'  => '必须为整数',
     ];
     
     /**

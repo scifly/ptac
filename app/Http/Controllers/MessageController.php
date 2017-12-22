@@ -1,11 +1,16 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Facades\Wechat;
+use App\Helpers\ControllerTrait;
 use App\Http\Requests\MessageRequest;
+use App\Models\App;
 use App\Models\CommType;
+use App\Models\Corp;
 use App\Models\Department;
 use App\Models\Media;
 use App\Models\Message;
+use App\Models\School;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -19,7 +24,7 @@ use Throwable;
  * @package App\Http\Controllers
  */
 class MessageController extends Controller {
-    
+    use ControllerTrait;
     protected $message;
     protected $user;
     protected $media;
@@ -46,20 +51,26 @@ class MessageController extends Controller {
         if (Request::get('draw')) {
             return response()->json($this->message->datatable());
         }
+        if (Request::method() == 'POST') {
+            return $this->department->contacts();
+//            $school = School::find(1);
+//            return $this->department->tree($school->department_id);
+        }
+
+
         
         return $this->output();
         
     }
     
     /**
-     * 发送消息
+     * 消息中心 (应用)
      *
-     * @return bool|JsonResponse
-     * @throws Throwable
+     * @return void
      */
-    public function send() {
+    public function message() {
     
-        return $this->output();
+        // return $this->output();
     
     }
     
@@ -89,13 +100,13 @@ class MessageController extends Controller {
      */
     public function store(MessageRequest $request) {
         
-        $commTypeName = ['微信', '短信', '应用'];
+//        $commTypeName = ['微信', '短信', '应用'];
         $input = $request->all();
-        $commType = CommType::whereId($input['comm_type_id'])->first();
-        if ($commType->name == $commTypeName[0]) {
-            return $this->message->store($request) ? $this->succeed() : $this->fail();
-        }
-        return true;
+//        $commType = CommType::whereId($input['comm_type_id'])->first();
+//        if ($commType->name == $commTypeName[0]) {
+//            return $this->message->store($request) ? $this->succeed() : $this->fail();
+//        }
+        return $this->message->sendText($input);
         
     }
     
@@ -244,5 +255,31 @@ class MessageController extends Controller {
         $messages = $this->message->where('r_user_id', $userId)
             ->where('message_type_id', $messageType)->get();
     }
-    
+    public function uploadFile() {
+        $file = Request::file('uploadFile');
+        if (empty($file)) {
+            $result['statusCode'] = 0;
+            $result['message'] = '您还未选择文件！';
+
+            return $result;
+        } else {
+            $result['data'] = [];
+            $mes = $this->uploadedMedias($file, '消息中心');
+            $result['statusCode'] = 1;
+            $result['message'] = '上传成功！';
+            $result['data'] = $mes;
+            $data=array(
+                "media" => "@" . $mes['path']
+            ); //PHP>5.5
+            $crop = Corp::whereName('万浪软件')->first();
+            $app = App::whereAgentid('999')->first();
+            $token = Wechat::getAccessToken($crop->corpid, $app->secret);
+            $status = Wechat::uploadMedia($token, 'image', $data);
+            print_r($status);die;
+        }
+
+
+        return response()->json($result);
+    }
+
 }
