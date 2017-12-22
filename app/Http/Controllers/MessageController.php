@@ -12,6 +12,7 @@ use App\Models\Media;
 use App\Models\Message;
 use App\Models\School;
 use App\Models\User;
+use CURLFile;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
@@ -106,7 +107,7 @@ class MessageController extends Controller {
 //        if ($commType->name == $commTypeName[0]) {
 //            return $this->message->store($request) ? $this->succeed() : $this->fail();
 //        }
-        return $this->message->sendText($input);
+        return $this->message->sendMessage($input);
         
     }
     
@@ -257,29 +258,70 @@ class MessageController extends Controller {
     }
     public function uploadFile() {
         $file = Request::file('uploadFile');
+        $type = Request::input('type');
         if (empty($file)) {
             $result['statusCode'] = 0;
             $result['message'] = '您还未选择文件！';
 
             return $result;
         } else {
+
             $result['data'] = [];
             $mes = $this->uploadedMedias($file, '消息中心');
             $result['statusCode'] = 1;
             $result['message'] = '上传成功！';
-            $result['data'] = $mes;
-            $data=array(
-                "media" => "@" . $mes['path']
-            ); //PHP>5.5
+
+            $path = dirname(public_path()) . '/' .$mes['path'];
+            $data= array("media"=>curl_file_create($path));
             $crop = Corp::whereName('万浪软件')->first();
             $app = App::whereAgentid('999')->first();
             $token = Wechat::getAccessToken($crop->corpid, $app->secret);
-            $status = Wechat::uploadMedia($token, 'image', $data);
-            print_r($status);die;
+            $status = Wechat::uploadMedia($token, $type, $data);
+            $message = json_decode($status);
+
+            if ($message->errcode ==0) {
+                $mes['media_id'] = $message->media_id;
+                $result['data'] = $mes;
+
+            }else{
+                $result['statusCode'] = 0;
+                $result['message'] = '微信服务器上传失败！';
+            }
+
         }
 
 
         return response()->json($result);
     }
-
+//    public function curl_upload($file='/images/2.jpg'){
+//        $this -> access_token($GLOBALS['db']);
+//        $access_token = $GLOBALS['db']->getOne("SELECT `access_token` FROM `wxch_config` where id=1");
+//        $url="https://api.weixin.qq.com/cgi-bin/media/upload?access_token={$access_token}&type=image";
+//        $ch1 = curl_init ();
+//        $timeout = 10;
+//        $real_path=$_SERVER['DOCUMENT_ROOT'].$file;
+//        $file_info=array(
+//            'filename'=>$file,  //国片相对于网站根目录的路径
+//            'content-type'=>'image/jpeg',  //文件类型
+//            'filelength'=>filesize($real_path)         //图文大小
+//        );
+//        $data= array("media"=>"@{$real_path}",'form-data'=>$file_info);
+//        curl_setopt ( $ch1, CURLOPT_URL, $url );
+//        curl_setopt ( $ch1, CURLOPT_POST, 1 );
+//        curl_setopt ( $ch1, CURLOPT_RETURNTRANSFER, 1 );
+//        curl_setopt ( $ch1, CURLOPT_CONNECTTIMEOUT, $timeout );
+//        curl_setopt ( $ch1, CURLOPT_SSL_VERIFYPEER, FALSE );
+//        curl_setopt ( $ch1, CURLOPT_SSL_VERIFYHOST, false );
+//        curl_setopt ( $ch1, CURLOPT_POSTFIELDS, $data );
+//        $result = curl_exec ( $ch1 );
+//        curl_close ( $ch1 );
+//        if(curl_errno()==0){
+//            $result=json_decode($result,true);
+//            //var_dump($result);
+//            return $result['media_id'];
+//        }
+//        else {
+//            return false;
+//        }
+//    }
 }
