@@ -89,7 +89,7 @@ class Message extends Model {
      *
      * @return BelongsTo
      */
-    public function user() { return $this->belongsTo('App\Models\User'); }
+    public function user() { return $this->belongsTo('App\Models\User','s_user_id','id'); }
     
     /**
      * 获取

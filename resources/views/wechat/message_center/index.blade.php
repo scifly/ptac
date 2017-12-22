@@ -164,7 +164,5 @@
     </div>
 @endsection
 @section('script')
-    <script>
-       
-    </script>
+    <script src="{{ asset('/js/wechat/message_center/index.js') }}"></script>
 @endsection
