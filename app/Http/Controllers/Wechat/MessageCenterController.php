@@ -31,16 +31,15 @@ class MessageCenterController extends Controller {
         $secret = 'qv_kkW2S3zmMWIUrV3u2nydcyIoLknTvuDMq7ja4TYE';
         $agentId = 3;
         $code = Request::input('code');
-        $accessToken = Wechat::getAccessToken($corpId,$secret);
         if (empty($code)) {
             $codeUrl = Wechat::getCodeUrl($corpId,$agentId,'http://weixin.028lk.com/message_center');
             return redirect($codeUrl);
         } else {
             $code = Request::get('code');
             print_r($code . '<br/>');
+            $accessToken = Wechat::getAccessToken($corpId,$secret);
+            print_r($accessToken);
             die;
-            // $accessToken = Wechat::getAccessToken($corpId,$secret);
-            // print_r($accessToken);
             // $userInfo = Wechat::getUserInfo($accessToken,$code);
             // echo '<pre>';
             // print_r($userInfo);
