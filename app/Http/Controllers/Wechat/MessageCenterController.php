@@ -50,6 +50,12 @@ class MessageCenterController extends Controller {
             $receiveMessages = $sendMessages = [];
             $receiveMessages = $this->message->where('r_user_id',$user->id)->get();
             $sendMessages = $this->message->where('s_user_id',$user->id)->get();
+            foreach ($receiveMessages as $k=>$r){
+                $receiveMessages[$k]->s_user_id = User::whereId($r['s_user_id'])->first()->realname;
+            }
+            foreach ($sendMessages as $k=>$s){
+                $sendMessages[$k]->r_user_id = User::whereId($s['r_user_id'])->first()->realname;
+            }
             return view('wechat.message_center.index',[
                 'receiveMessages' => $receiveMessages,
                 'sendMessages' => $sendMessages

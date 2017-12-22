@@ -24,7 +24,7 @@
                     </a>
                 </div>
                 <div class="weui-tab__bd ">
-
+                    <!-- 已发送-->
                     <div id="tab1" class="weui-tab__bd-item weui-tab__bd-item--active">
                         <div class="tea-head">
 								<span class="tea-select-list-icon"> 
@@ -50,16 +50,16 @@
 
                         <div class="list-layout">
                             @if(sizeof($sendMessages) != 0)
-                                <div class="line"></div>
                                 @foreach($sendMessages as $s)
-                                    <div class="teacher-list-box glayline">
+                                    <div class="line"></div>
+                                    <div class="teacher-list-box glayline" id="{{$s->id}}">
                                         <div class="teacher-work-box">
                                             <a class="teacher-work-head" style="color:#000" href="javascript:">
                                                 <div class="titleinfo">
                                                     <div class="titleinfo-head">
                                                         <div class="titleinfo-head-left fl">
-                                                            <div class="title ml12">{{$s->content}}</div>
-                                                            <div class="title-info ml12">学生 - c2016级3班等26人</div>
+                                                            <div class="title ml12">{{$s->title}}</div>
+                                                            <div class="title-info ml12">{{$s->r_user_id}}</div>
                                                         </div>
                                                         <span class="worktime">
 														{{substr($s->created_at,0,-8)}}
@@ -75,12 +75,17 @@
                                         </div>
                                     </div>
                                 @endforeach
+                                @else
+                                <div class="weui-loadmore weui-loadmore_line">
+                                    <span class="weui-loadmore__tips">暂无数据</span>
+                                </div>
                             @endif
-                            <div class="weui-loadmore weui-loadmore_line">
-                                <span class="weui-loadmore__tips">暂无数据</span>
-                            </div>
+
                         </div>
                     </div>
+                    <!-- 已发送结束-->
+
+                    <!--已接收-->
                     <div id="tab2" class="weui-tab__bd-item">
                         <div class="tea-head">
 								<span class="tea-select-list-icon"> 
@@ -101,63 +106,39 @@
                             </ul>
                             <div class="select-container" style="display: none;"></div>
                         </div>
+
                         <div class="list-layout">
-                            <div class="line"></div>
-                            <div class="teacher-list-box glayline">
-                                <div class="teacher-work-box">
-                                    <a class="teacher-work-head" style="color:#000" href="javascript:">
-                                        <div class="titleinfo">
-                                            <div class="titleinfo-head">
-                                                <div class="titleinfo-head-left fl">
-                                                    <div class="title ml12">嘿嘿</div>
-                                                    <div class="title-info ml12">学生 - c2016级3班等26人</div>
+
+                            @if( sizeof($receiveMessages) != 0)
+                                @foreach($receiveMessages as $r)
+                                    <div class="line"></div>
+                                    <div class="teacher-list-box glayline" id="{{$r->id}}">
+                                        <div class="teacher-work-box">
+                                            <a class="teacher-work-head" style="color:#000" href="javascript:">
+                                                <div class="titleinfo">
+                                                    <div class="titleinfo-head">
+                                                        <div class="titleinfo-head-left fl">
+                                                            <div class="title ml12">{{$r->title}}</div>
+                                                            <div class="title-info ml12">{{$r->s_user_id}}</div>
+                                                        </div>
+                                                        <span class="worktime">{{substr($r->created_at,0,-8)}}</span>
+                                                    </div>
                                                 </div>
-                                                <span class="worktime">2017-12-18 16:36</span>
-                                            </div>
+                                            </a>
                                         </div>
-                                    </a>
+                                    </div>
+                                @endforeach
+                            @else
+                                <div class="line"></div>
+                                <div class="weui-loadmore weui-loadmore_line">
+                                    <span class="weui-loadmore__tips">暂无数据</span>
                                 </div>
-                            </div>
-                            <div class="line"></div>
-                            <div class="teacher-list-box glayline">
-                                <div class="teacher-work-box">
-                                    <a class="teacher-work-head" style="color:#000" href="javascript:">
-                                        <div class="titleinfo">
-                                            <div class="titleinfo-head">
-                                                <div class="titleinfo-head-left fl">
-                                                    <div class="title ml12">嘿嘿</div>
-                                                    <div class="title-info ml12">学生 - c2016级3班等26人</div>
-                                                </div>
-                                                <span class="worktime">2017-12-18 16:36</span>
-                                            </div>
-                                        </div>
-                                    </a>
-                                </div>
-                            </div>
-                            <div class="line"></div>
-                            <div class="teacher-list-box glayline">
-                                <div class="teacher-work-box">
-                                    <a class="teacher-work-head" style="color:#000" href="javascript:">
-                                        <div class="titleinfo">
-                                            <div class="titleinfo-head">
-                                                <div class="titleinfo-head-left fl">
-                                                    <div class="title ml12">嘿嘿</div>
-                                                    <div class="title-info ml12">学生 - c2016级3班等26人</div>
-                                                </div>
-                                                <span class="worktime">2017-12-18 16:36</span>
-                                            </div>
-                                        </div>
-                                    </a>
-                                </div>
-                            </div>
-                            <div class="line"></div>
-                            <div class="weui-loadmore weui-loadmore_line">
-                                <span class="weui-loadmore__tips">暂无数据</span>
-                            </div>
+                            @endif
 
                         </div>
 
                     </div>
+                    <!--已接收结束-->
                 </div>
             </div>
         </div>
@@ -199,7 +180,7 @@
         });
 
         $('.teacher-list-box').click(function () {
-            console.log(1);
+            alert()
             window.location.href = '../public/message_show';
         });
         //		$('#searchCancel').click(function(){
