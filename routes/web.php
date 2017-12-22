@@ -280,7 +280,7 @@ Route::group(['prefix' => 'operators'], function() {
 // 消息中心
 Route::get('message_center', 'Wechat\MessageCenterController@index');
 Route::get('message_create', 'Wechat\MessageCenterController@create');
-Route::get('message_show', 'Wechat\MessageCenterController@show');
+Route::get('message_show/{id}', 'Wechat\MessageCenterController@show');
 //布置作业
 Route::get('homework', 'Wechat\HomeWorkController@index');
 //微网站

@@ -89,7 +89,7 @@ class Message extends Model {
      *
      * @return BelongsTo
      */
-    public function user() { return $this->belongsTo('App\Models\User'); }
+    public function user() { return $this->belongsTo('App\Models\User','s_user_id','id'); }
     
     /**
      * 获取
@@ -290,7 +290,7 @@ class Message extends Model {
                 ];
                 switch ($data['type']) {
                     case 'text' :
-                        $message['text'] = ['content' => $data['content']];
+                        $message['text'] = ['content' => $data['content']['text']];
                         $message['msgtype'] = $data['type'];
                         break;
                     case 'image' :

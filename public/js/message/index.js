@@ -51,7 +51,7 @@ function uploadfile(obj){
 //  removefile(type);
     page.inform("温馨提示", '正在上传中...', page.info);
     var formData = new FormData();
-    formData.append('uploadFile', $('#file-image')[0].files[0]);
+    formData.append('uploadFile', $('#file-'+type)[0].files[0]);
     formData.append('_token', $('#csrf_token').attr('content'));
     formData.append('type', type);
     //请求接口
@@ -63,8 +63,9 @@ function uploadfile(obj){
         processData: false,
         contentType: false,
 		success: function (result) {
-			if(result.statusCode){
+			if(result.statusCode == 1){
 				var html = '<form id="uploadForm" enctype="multipart/form-data">';
+				
 				switch(type)
 				{
 				case 'image':
@@ -91,6 +92,17 @@ function uploadfile(obj){
 				removefile(type);
 			}else{
 				alert('上传失败');
+				var btntxt = $(this).parent().text();
+				var html = '<form id="uploadForm" enctype="multipart/form-data">'+
+		                       ' <button id="add-'+type+'" class="btn btn-box-tool" type="button" style="margin-top: 3px;position: relative;border: 0;">'+
+		                            '<i class="fa fa-plus text-blue">'+
+		                                '&nbsp;'+btntxt+''+
+		                                    '<input type="hidden" value="'+type+'" name="type" />'+
+		                                    '<input type="file" id="file-'+type+'" onchange="uploadfile(this)" name="uploadFile" style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/>'+
+		                            '</i>'+
+		                        '</button>'+
+		                    '</form>';
+        		$('#message-content .tab-pane.active').html(html);
 			}
 			//result.data = '
 			// filename
@@ -129,11 +141,11 @@ function removefile(type){
 		 	break;
 		}
 		var html = '<form id="uploadForm" enctype="multipart/form-data">'+
-                       ' <button id="add-image" class="btn btn-box-tool" type="button" style="margin-top: 3px;position: relative;border: 0;">'+
+                       ' <button id="add-'+type+'" class="btn btn-box-tool" type="button" style="margin-top: 3px;position: relative;border: 0;">'+
                             '<i class="fa fa-plus text-blue">'+
                                 '&nbsp;'+btntxt+''+
-                                    '<input type="hidden" value="image" name="type" />'+
-                                    '<input type="file" id="file-image" onchange="uploadfile(this)" name="uploadFile" accept="image/*" style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/>'+
+                                    '<input type="hidden" value="'+type+'" name="type" />'+
+                                    '<input type="file" id="file-'+type+'" onchange="uploadfile(this)" name="uploadFile" style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/>'+
                             '</i>'+
                         '</button>'+
                     '</form>';
