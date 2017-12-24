@@ -17,15 +17,15 @@
 			<div class="mt5px msg-send-bg b-bottom hw-title">
 				<div class="weui-cell">
 					<div class="weui-cell__bd">
-						<input type="text" placeholder="信息名称" maxlength="30" class="weui-input fs18 one-line title">
+						<input id="title" name="title" type="text" placeholder="信息名称" maxlength="30" @if(isset($message)) value="{{ $message->title }}" @else value="" @endif  class="weui-input fs18 one-line title">
 					</div>
 				</div>
 			</div>
 			
 			<div class="msg-send-conwrap msg-send-bg">
-				<div contenteditable="true" id="emojiInput" class="wangEditor-mobile-txt"></div> 
+				<div contenteditable="true" id="emojiInput" class="wangEditor-mobile-txt">@if(isset($message)) {!! $message->content !!}@endif</div>
 			</div>
-			
+
 			<div class="msg-send-conicon msg-send-bg b-top">
 				<ul class="weui-flex">
 					<li class="weui-flex__item addImg">
@@ -47,7 +47,7 @@
 						<label for="" class="weui-label">发送日期</label>
 					</div> 
 					<div class="weui-cell__bd">
-						<input readonly="readonly" type="text" name="" placeholder="请选择日期" class="weui-input ma_expect_date" data-toggle='datetime-picker'>
+						<input id="time" name="time" readonly="readonly" type="text" placeholder="请选择日期" class="weui-input ma_expect_date" data-toggle='datetime-picker'>
 					</div>
 				</div>
 			</div>
@@ -55,7 +55,7 @@
 			<div class="weui-flex mt5px">
 				<div class="weui-flex__item">
 					<div class="placeholder msg-send-btn" style="padding: 15px;">
-						<a href="javascript:;" class="weui-btn weui-btn_primary">发布信息</a>
+						<a href="javascript:" class="weui-btn weui-btn_primary release">发布信息</a>
 					</div>
 				</div>
 			</div>

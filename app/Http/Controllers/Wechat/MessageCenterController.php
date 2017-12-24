@@ -24,36 +24,34 @@ class MessageCenterController extends Controller {
     }
     
     /**
-     * @return string
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\JsonResponse|\Illuminate\View\View
+     * @throws \Throwable
      */
     public function index() {
         // $userId = $this->getRole('http://weixin.028lk.com/message_center');
         // $user = $this->user->where('userid',$userId)->first();
         // if ($user->group->name == '教职员工'){
         //     $sendMessages = $this->message->where('s_user_id', $user->id)->get();
-        //
         //     $receiveMessages = $this->message->where('r_user_id',$user->id)->get();
         // return view('wechat.message_center.index');
         // }
-
         $userId = 'abcd456456';
         $user = User::whereUserid($userId)->first();
-        $role = $user->group->name;
-        if($role == '教职员工'){
-            $receiveMessages = $sendMessages = [];
-            $receiveMessages = $this->message->where('r_user_id',$user->id)->get();
-            $sendMessages = $this->message->where('s_user_id',$user->id)->get();
-            foreach ($receiveMessages as $k=>$r){
-                $receiveMessages[$k]->s_user_id = User::whereId($r['s_user_id'])->first()->realname;
-            }
-            foreach ($sendMessages as $k=>$s){
-                $sendMessages[$k]->r_user_id = User::whereId($s['r_user_id'])->first()->realname;
-            }
-            return view('wechat.message_center.index',[
-                'receiveMessages' => $receiveMessages,
-                'sendMessages' => $sendMessages
-            ]);
-        }
+        //判断是否为教职工
+        $educator = true;
+        // if($user->group->name == '教职工'){
+        //     $educator = true;
+        // }
+        $sendMessages = $this->message->where('s_user_id', $user->id)->get()->groupBy('message_type_id');
+        $receiveMessages = $this->message->where('r_user_id', $user->id)->get()->groupBy('message_type_id');
+        $count = $this->message->where('r_user_id', $user->id)->where('readed', '0')->count();
+        
+        return view('wechat.message_center.index', [
+            'receiveMessages' => $receiveMessages,
+            'sendMessages'    => $sendMessages,
+            'count'           => $count,
+            'educator'        => $educator,
+        ]);
     }
     
     /**
@@ -62,6 +60,27 @@ class MessageCenterController extends Controller {
     public function create() {
         
         return view('wechat.message_center.create');
+    }
+    
+    /**
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function store() {
+        dd(Request::all());
+        return view('wechat.message_center.create');
+    }
+    
+    /**
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function edit($id) {
+        
+        $message = $this->message->find($id);
+        if (!$message) {
+            return $this->notFound();
+        }
+        
+        return view('wechat.message_center.create', ['message' => $message]);
     }
     
     /**
@@ -81,7 +100,7 @@ class MessageCenterController extends Controller {
             return $this->notFound();
         }
         $message->readed = 1;
-    
+        
         return $message->save() ? self::succeed() : self::fail();
     }
     
@@ -91,14 +110,12 @@ class MessageCenterController extends Controller {
      */
     public function show($id) {
         // $userId = $this->getRole('http://weixin.028lk.com/message_show');
-        if (!$this->message->find($id)) {
-            return $this->notFound();
-        }
         $userId = "abcd456456";
-        $user = $this->user->where('userid',$userId)->first();
+        $user = $this->user->where('userid', $userId)->first();
         $message = $this->message->find($id);
-        $edit =  $user->id == $message->s_user_id ? true : false;
-        return view('wechat.message_center.show', ['message' => $this->message->find($id),'edit' => $edit]);
+        $edit = $user->id == $message->s_user_id ? true : false;
+        
+        return view('wechat.message_center.show', ['message' => $this->message->find($id), 'edit' => $edit]);
     }
     
     /**
@@ -106,9 +123,12 @@ class MessageCenterController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse|null
      * @throws \Exception
      */
-    public function destory($id){
+    public function destory($id) {
         $message = $this->message->find($id);
-        if (!$message) { return $this->notFound(); }
+        if (!$message) {
+            return $this->notFound();
+        }
+        
         //只能删除查看的记录 不能删除多媒体文件 多媒体文件路径被多个记录存入
         return $message->delete() ? self::succeed() : self::fail();
     }
@@ -126,13 +146,13 @@ class MessageCenterController extends Controller {
         $code = Request::input('code');
         if (empty($code)) {
             $codeUrl = Wechat::getCodeUrl($corpId, $agentId, $calbackUrl);
-        
+            
             return redirect($codeUrl);
         } else {
             $code = Request::get('code');
             $accessToken = Wechat::getAccessToken($corpId, $secret);
             $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
-        
+            
             return $userInfo['userId'];
             //{
             //"UserId":"yuanhongbin",
@@ -144,7 +164,7 @@ class MessageCenterController extends Controller {
             //}
             // }
         }
-   
+        
     }
     
 }

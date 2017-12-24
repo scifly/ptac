@@ -149,8 +149,8 @@ class ComposerServiceProvider extends ServiceProvider {
 
         View::composer('semester.create_edit', 'App\Http\ViewComposers\SemesterComposer');
         View::composer('semester.index', 'App\Http\ViewComposers\SemesterIndexComposer');
-
     
+        View::composer('wechat.message_center.index', 'App\Http\ViewComposers\MessageCenterComposer');
     }
     
     /**

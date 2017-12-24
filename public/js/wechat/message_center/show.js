@@ -26,3 +26,7 @@ $('.icon-lajixiang').on('click',function () {
         }
     });
 });
+$('.icon-bianji').on('click',function () {
+    var id = $('#id').val();
+    window.location.href = '../message_edit/' + id;
+});
