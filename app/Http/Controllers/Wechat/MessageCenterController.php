@@ -36,7 +36,7 @@ class MessageCenterController extends Controller {
         // return view('wechat.message_center.index');
         // }
 
-        $userId = 'kobe';
+        $userId = 'abcd456456';
         $user = User::whereUserid($userId)->first();
         $role = $user->group->name;
         if($role == '教职员工'){
@@ -66,17 +66,38 @@ class MessageCenterController extends Controller {
     
     /**
      * @param $id
+     */
+    public function update($id) {
+    
+    }
+    
+    /**
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function updateStatus($id) {
+        $message = $this->message->find($id);
+        if (!$message) {
+            return $this->notFound();
+        }
+        $message->readed = 1;
+    
+        return $message->save() ? self::succeed() : self::fail();
+    }
+    
+    /**
+     * @param $id
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function show($id) {
         // $userId = $this->getRole('http://weixin.028lk.com/message_show');
-        $userId = "yuanhongbin";
-        $user = $this->user->where('userid',$userId)->first();
-        $edit = $user->group->name == '教职员工' ? true : '';
         if (!$this->message->find($id)) {
             return $this->notFound();
         }
-        
+        $userId = "abcd456456";
+        $user = $this->user->where('userid',$userId)->first();
+        $message = $this->message->find($id);
+        $edit =  $user->id == $message->s_user_id ? true : false;
         return view('wechat.message_center.show', ['message' => $this->message->find($id),'edit' => $edit]);
     }
     
@@ -88,9 +109,8 @@ class MessageCenterController extends Controller {
     public function destory($id){
         $message = $this->message->find($id);
         if (!$message) { return $this->notFound(); }
-
         //只能删除查看的记录 不能删除多媒体文件 多媒体文件路径被多个记录存入
-        return $message->delete();
+        return $message->delete() ? self::succeed() : self::fail();
     }
     
     /**

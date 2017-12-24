@@ -14,5 +14,14 @@ $('.select-ul li').click(function () {
 
 $('.teacher-list-box').click(function () {
     var id = $(this).attr('id');
-    window.location.href = '../public/message_show/' + id;
+    $.ajax({
+        type: 'GET',
+        dataType: 'json',
+        url: '../public/message_update/' + id,
+        success: function (result) {
+            if(result.statusCode === 200) {
+                window.location.href = '../public/message_show/' + id;
+            }
+        }
+    });
 });

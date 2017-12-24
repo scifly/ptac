@@ -281,6 +281,9 @@ Route::group(['prefix' => 'operators'], function() {
 Route::get('message_center', 'Wechat\MessageCenterController@index');
 Route::get('message_create', 'Wechat\MessageCenterController@create');
 Route::get('message_show/{id}', 'Wechat\MessageCenterController@show');
+Route::get('message_update/{id}', 'Wechat\MessageCenterController@updateStatus');
+Route::post('message_update/{id}', 'Wechat\MessageCenterController@update');
+Route::delete('message_delete/{id}', 'Wechat\MessageCenterController@destory');
 //布置作业
 Route::get('homework', 'Wechat\HomeWorkController@index');
 //微网站
