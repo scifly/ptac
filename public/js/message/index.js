@@ -180,13 +180,12 @@ $send.on('click', function() {
     var type = $('#message-content .tab-pane.active').attr('id');
     type = type.substring('8');
     // alert(type);
-	var content = "";
+	var content = '';
     switch(type)
 	{
 		case 'text':
 	//文本
-		content = '{ "text": "' +$('#messageText').val()+ '"}' ;
-
+		content = {text: $('#messageText').val()};
         break;
 	case 'imagetext':
 	//图文
@@ -194,8 +193,8 @@ $send.on('click', function() {
 	 	break;
 	case 'image':
 	//图片
-	  	console.log(3);
-	 	break;
+        content = {media_id: $('#media_id').val()};
+        break;
 	case 'voice':
 	//音频
 	  	console.log(4);
@@ -218,7 +217,7 @@ $send.on('click', function() {
         alert('对象不能为空');
         return false
     }
-    if (content === '') {
+    if (content['text'] === '') {
         alert('内容不能为空');
         return false
     }
@@ -229,12 +228,15 @@ $send.on('click', function() {
      data:  {
          app_ids: appIds,
          departIds: selectedDepartmentIds,
+         type: type,
          content: content,
          _token: $('#csrf_token').attr('content')},
 
      success: function (result) {
          if (result.error !== 0) {
              page.inform("操作成功",result.message, page.success);
+         }else {
+             page.inform("操作失败",result.message, page.failure);
          }
      },
      error: function (result) {
