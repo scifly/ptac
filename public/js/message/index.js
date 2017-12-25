@@ -51,7 +51,15 @@ function uploadfile(obj){
 //  removefile(type);
     page.inform("温馨提示", '正在上传中...', page.info);
     var formData = new FormData();
-    formData.append('uploadFile', $('#file-image')[0].files[0]);
+    switch (type) {
+		case 'image':
+			formData.append('uploadFile', $('#file-image')[0].files[0]);
+			break;
+		case 'voice':// 上传语音文件仅支持AMR格式
+            formData.append('uploadFile', $('#file-voice')[0].files[0]);
+            break;
+    }
+
     formData.append('_token', $('#csrf_token').attr('content'));
     formData.append('type', type);
     //请求接口
@@ -64,7 +72,8 @@ function uploadfile(obj){
         contentType: false,
 		success: function (result) {
 			if(result.statusCode){
-				var html = '<form id="uploadForm" enctype="multipart/form-data">';
+                page.inform("操作结果", result.message, page.success);
+                var html = '<form id="uploadForm" enctype="multipart/form-data">';
 				switch(type)
 				{
 				case 'image':
@@ -78,7 +87,7 @@ function uploadfile(obj){
                             '</div>'+
                             '</form>';
 				 	break;
-				case 'audio':
+				case 'voice':
 				//音频
 				  	html+='<i class="fa fa-file-sound-o"></i>';
 				 	break;
@@ -90,25 +99,9 @@ function uploadfile(obj){
 				$('#message-content .tab-pane.active').html(html);
 				removefile(type);
 			}else{
-				alert('上传失败');
-			}
-			//result.data = '
-			// filename
-             //    :
-             //    "QQ截图20171027140941.png"
-            // id
-             //    :
-             //    18
-            // media_id
-             //    :
-             //    "3AQYLJxtAkw86jYgwBXdTgIN5_VTmXG1nMionRYiOmQQ"
-            // path
-             //    :
-             //    "storage/app/uploads/2017/12/22/5a3c81bb9ef29.png"
-            // type
-             //    :
-             //    "png"
-			// '
+                page.inform("操作结果", result.message, page.failure);
+
+            }
         }
     })
 }
@@ -121,7 +114,7 @@ function removefile(type){
 		case 'image':
 		var btntxt = '添加图片';
 			break;
-		case 'audio':
+		case 'voice':
 		var btntxt = '添加音频';
 		 	break;
 		case 'video':
@@ -146,12 +139,15 @@ $send.on('click', function() {
     var selectedDepartmentIds = $('#selectedDepartmentIds').val();
     var type = $('#message-content .tab-pane.active').attr('id');
     type = type.substring('8');
+    // alert(type);
+	var content = "";
     switch(type)
 	{
-	case 'text':
+		case 'text':
 	//文本
-		var content = $('#messageText').val();
-		break;
+		content = '{ "text": "' +$('#messageText').val()+ '"}' ;
+
+        break;
 	case 'imagetext':
 	//图文
 	  	console.log(2);
@@ -160,7 +156,7 @@ $send.on('click', function() {
 	//图片
 	  	console.log(3);
 	 	break;
-	case 'audio':
+	case 'voice':
 	//音频
 	  	console.log(4);
 	 	break;
@@ -174,37 +170,37 @@ $send.on('click', function() {
 	 	break;
 	}
     
-    // if (appIds.toString() === '') {
-    //     alert('应用不能为空');
-    //     return false
-    // }
-    // if (selectedDepartmentIds === '') {
-    //     alert('对象不能为空');
-    //     return false
-    // }
-    // if (content === '') {
-    //     alert('内容不能为空');
-    //     return false
-    // }
-//  $.ajax({
-//      url: page.siteRoot() + "messages/store",
-//      type: 'POST',
-//      dataType: 'json',
-//      data:  {
-//          app_ids: appIds,
-//          departIds: selectedDepartmentIds,
-//          content: content,
-//          _token: $('#csrf_token').attr('content')},
-//
-//      success: function (result) {
-//          if (result.error !== 0) {
-//              page.inform("操作成功",result.message, page.success);
-//          }
-//      },
-//      error: function (result) {
-//          console.log(result);
-//          page.inform("操作失败",result.message, page.failure);
-//
-//      }
-//  });
+    if (appIds.toString() === '') {
+        alert('应用不能为空');
+        return false
+    }
+    if (selectedDepartmentIds === '') {
+        alert('对象不能为空');
+        return false
+    }
+    if (content === '') {
+        alert('内容不能为空');
+        return false
+    }
+ $.ajax({
+     url: page.siteRoot() + "messages/store",
+     type: 'POST',
+     dataType: 'json',
+     data:  {
+         app_ids: appIds,
+         departIds: selectedDepartmentIds,
+         content: content,
+         _token: $('#csrf_token').attr('content')},
+
+     success: function (result) {
+         if (result.error !== 0) {
+             page.inform("操作成功",result.message, page.success);
+         }
+     },
+     error: function (result) {
+         console.log(result);
+         page.inform("操作失败",result.message, page.failure);
+
+     }
+ });
 });
