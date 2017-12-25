@@ -111,6 +111,11 @@
                                                     style="margin-top: 3px;">
                                                 <i class="fa fa-plus text-blue">&nbsp;添加图文</i>
                                             </button>
+                                            <!--<div class="show_imagetext" style="width: 270px;border:1px solid #E4E6E9;border-radius: 4px;padding: 10px;position: relative;cursor: pointer;">
+                                            	<div class="show_imagetext_title" style="font-size: 16px;line-height: 24px;overflow: hidden;text-overflow:ellipsis;-webkit-line-clamp:2;margin-bottom: 8px;">123</div>
+                                            	<div class="show_imagetext_pic" style="height: 125px;width: 250px;background-repeat: no-repeat;background-size:cover;background-image: url({{ URL::asset('img/photo1.png') }});"></div>
+                                            	<div class="show_imagetext_content" style="font-size: 12px;margin-top:12px;color:#787878;line-height: 20px;overflow: hidden;text-overflow:ellipsis;-webkit-line-clamp:4;">123123</div>
+                                            </div>-->
                                         </div>
                                         <div class="tab-pane" id="content_image">
 

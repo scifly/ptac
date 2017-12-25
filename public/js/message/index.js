@@ -46,8 +46,6 @@ if (typeof contacts === 'undefined') {
 
 
 function uploadfile(obj){
-	
-	
 	var $this = $(obj);
 	var type = $this.prev().val();
 	var extension = $('#file-'+type)[0].files[0].name.split('.');
@@ -107,7 +105,7 @@ function uploadfile(obj){
 				//图片
 				  	html+='<div class="fileshow" style="display: inline-block;width: auto;position: relative;">'+
                             	'<img src="/ptac/'+result.data.path+'" style="height: 200px;">'+
-                            	'<input type="hidden" value="'+result.data.media_id+'" name="media_id" />'+
+                            	'<input type="hidden" id="media_id" value="'+result.data.media_id+'" name="media_id" />'+
                             	'<input type="hidden" value="image" name="type" />'+
                                 '<input type="file" id="file-image" onchange="uploadfile(this)" name="uploadFile" accept="image/*" style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/>'+
                             	'<i class="fa fa-close file-del" style="position: absolute;top: 10px;right: 15px;font-size: 20px;z-index: 2;cursor: pointer;"></i>'+
@@ -119,7 +117,7 @@ function uploadfile(obj){
 					html+='<div class="fileshow" style="color: #787878;margin-left: 5px;">'+
 								'<i class="fa fa-file-sound-o">'+
 					  				'<span style="margin-left: 5px;position:relative;cursor:pointer;">'+result.data.filename+''+
-						  				'<input type="hidden" value="'+result.data.media_id+'" name="media_id" />'+
+						  				'<input id="media_id" type="hidden" value="'+result.data.media_id+'" name="media_id" />'+
 										'<input type="hidden" value="voice" name="type" />'+
 										'<input id="file-voice" type="file" onchange="uploadfile(this)" name="uploadFile" style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/>'+
 					  				'</span>'+
@@ -145,7 +143,6 @@ function uploadfile(obj){
 
 function removefile(type){
 	$('.tab-pane.active .file-del').click(function(){
-		$(this).parent().remove();
 		switch(type)
 		{
 		case 'image':
@@ -174,6 +171,113 @@ function removefile(type){
 	});
 }
 
+$('#add-article-url').click(function(){
+	$(this).next().slideToggle('fast');
+	$(this).next().val('');
+});
+
+function upload_cover(obj){
+	var $this = $(obj);
+	var type = 'image';
+	var extension = $('#file-cover')[0].files[0].name.split('.');
+	extension = extension[extension.length-1];
+	extension = extension.toUpperCase();
+	if(extension != 'JPG' && extension != 'PNG'){
+		alert('请上传JPG或PNG格式的图片');
+		return false;
+	}
+    page.inform("温馨提示", '正在上传中...', page.info);
+    var formData = new FormData();
+	
+	formData.append('uploadFile', $('#file-cover')[0].files[0]);
+	
+    formData.append('_token', $('#csrf_token').attr('content'));
+    formData.append('type', type);
+    //请求接口
+    $.ajax({
+        url: page.siteRoot() + "messages/uploadFile",
+        type: 'POST',
+        cache: false,
+        data: formData,
+        processData: false,
+        contentType: false,
+		success: function (result) {
+			if(result.statusCode){
+                page.inform("操作结果", result.message, page.success);
+                var html = '<form id="uploadForm" enctype="multipart/form-data">'+
+	                			'<div class="show-cover" style="position: relative;height: 130px;width: 130px;background-image: url(/ptac/'+result.data.path+');background-size: cover;">'+
+			                		'<input type="hidden" value="'+result.data.media_id+'" name="media_id" />'+
+			                		'<input type="hidden" value="image" name="type" />'+
+			                        '<input type="file" id="file-cover" onchange="upload_cover(this)" name="input-cover" accept="image/*" style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/>'+
+			                		'<i class="fa fa-close cover-del" style="position: absolute;top: 10px;right: 15px;font-size: 20px;z-index: 2;cursor: pointer;"></i>'+
+			                	'</div>'+
+                			'</form>';
+				$('#cover').html(html);
+				removecover();
+			}else{
+                page.inform("操作结果", result.message, page.failure);
+            }
+        }
+    })
+}
+
+function removecover(){
+	$('.cover-del').click(function(){
+		var html = '<form id="form-cover" enctype="multipart/form-data">'+
+	                	'<a href="#" style="position: relative;">'+
+	                		'添加封面图'+
+	                		'<input type="hidden" value="image" name="type" />'+
+	                        '<input type="file" id="file-cover" onchange="upload_cover(this)" name="input-cover" accept="image/*" style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/>'+
+	                	'</a>'+
+	                	'&nbsp;&nbsp;<span class="text-gray">建议尺寸:1068*534</span>'+
+	               '</form>';
+        $('#cover').html(html);
+	});
+}
+
+$('#save-imagetext').click(function(){
+	var title = $('.imagetext-title').val();
+	if(title == ''){
+		alert('请输入标题');
+		return false;
+	}
+	var content = $('.imagetext-content').val();
+	if(content == ''){
+		alert('请编辑内容');
+		return false;
+	}
+	var picurl = $('#cover .show-cover').css("backgroundImage");
+	if(!picurl){
+		alert('请添加封面图');
+		return false;
+	}else{
+		picurl = picurl.replace('url("','').replace('")','');
+		var picid = $('#cover .show-cover input').eq(0).val();
+	}
+	
+	var content_source_url = $('.imagetext-content_source_url').val();
+	var author = $('.imagetext-author').val();
+	var html = '<div class="show_imagetext" style="width: 270px;border:1px solid #E4E6E9;border-radius: 4px;padding: 10px;position: relative;cursor: pointer;">'+
+                	'<div class="show_imagetext_title" style="font-size: 16px;line-height: 24px;overflow: hidden;text-overflow:ellipsis;-webkit-line-clamp:2;margin-bottom: 8px;">'+title+'</div>'+
+                	'<div class="show_imagetext_pic" style="height: 125px;width: 250px;background-repeat: no-repeat;background-size:cover;background-image: url('+picurl+');"></div>'+
+                	'<div class="show_imagetext_content" style="font-size: 12px;margin-top:12px;color:#787878;line-height: 20px;overflow: hidden;text-overflow:ellipsis;-webkit-line-clamp:4;">'+content+'</div>'+
+                	'<input type="hidden" class="show_imagetext_pic_media_id" value="'+picid+'">'+
+                	'<input type="hidden" class="show_imagetext_author" value="'+author+'">'+
+                	'<input type="hidden" class="show_imagetext_content_source_url" value="'+content_source_url+'">'+
+                '</div>';
+    $('.tab-pane.active#content_imagetext').html(html);
+    $message.show();
+    $imageText.hide();
+    show_imageText();
+});
+
+function show_imageText(){
+	$('.show_imagetext').click(function(){
+		$message.hide();
+   		$imageText.show();
+	})
+}
+
 $send.on('click', function() {
     var appIds = $('#app_ids').val();
     var selectedDepartmentIds = $('#selectedDepartmentIds').val();
@@ -189,7 +293,14 @@ $send.on('click', function() {
         break;
 	case 'imagetext':
 	//图文
-	  	console.log(2);
+	  	var articles = [{
+	  		title : $('.show_imagetext_title').text(),
+	  		content : $('.show_imagetext_content').html(),
+	  		author : $('.show_imagetext_author').val(),
+	  		content_source_url : $('.show_imagetext_content_source_url').val(),
+	  		thumb_media_id : $('.show_imagetext_pic_media_id').val(),
+	  	}];
+	  	content = {articles : articles};
 	 	break;
 	case 'image':
 	//图片
@@ -197,7 +308,7 @@ $send.on('click', function() {
         break;
 	case 'voice':
 	//音频
-	  	console.log(4);
+	  	content = {media_id: $('#media_id').val()};
 	 	break;
 	case 'video':
 	//视频
@@ -221,7 +332,7 @@ $send.on('click', function() {
         alert('内容不能为空');
         return false
     }
- $.ajax({
+   $.ajax({
      url: page.siteRoot() + "messages/store",
      type: 'POST',
      dataType: 'json',
@@ -244,5 +355,5 @@ $send.on('click', function() {
          page.inform("操作失败",result.message, page.failure);
 
      }
- });
+   });
 });
