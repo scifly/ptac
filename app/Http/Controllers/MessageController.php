@@ -277,6 +277,7 @@ class MessageController extends Controller {
             $app = App::whereAgentid('999')->first();
             $token = Wechat::getAccessToken($crop->corpid, $app->secret);
             $status = Wechat::uploadMedia($token, $type, $data);
+//            print_r($status);die;
             $message = json_decode($status);
 
             if ($message->errcode ==0) {
