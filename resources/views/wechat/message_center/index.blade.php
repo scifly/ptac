@@ -105,7 +105,7 @@
                     <!-- 已发送结束-->
 
                     <!--已接收-->
-                    <div id="tab2" class="weui-tab__bd-item">
+                    <div id="tab2" class="weui-tab__bd-item @if(!$educator) weui-tab__bd-item--active @endif ">
                         <div class="tea-head">
                 <span class="tea-select-list-icon">
                 <span class="searchicon">
@@ -185,6 +185,7 @@
                 <a href="javascript:" class="weui-search-bar__cancel-btn close-popup" id="searchCancel"
                    style="display: block;">取消</a>
             </div>
+            <div></div>
         </div>
     </div>
 @endsection

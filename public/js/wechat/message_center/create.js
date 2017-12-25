@@ -150,9 +150,9 @@ $(function () {
     $('.release').on('click',function () {
 
         var title = $('#title').val();
-        var content = $('#emojiInput').val();
+        var content = $('#emojiInput').html();
         var time = $('#time').val();
-        var send = $('#homeWorkChoose').val();
+        var send = $('#homeWorkChoose').html();
         alert(title);
         alert(content);
         alert(time);
