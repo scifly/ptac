@@ -146,7 +146,7 @@
                                                     <i class="fa fa-plus text-blue">
                                                         &nbsp;添加视频
                                                         <input type="hidden" value="video" name="type" />
-                                                        <input type="file" id="file-video" onchange="uploadfile(this)" name="uploadFile" style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/>
+                                                        <input type="file" id="file-video" onchange="uploadfile(this)" name="uploadFile" accept="video/mp4"  style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/>
                                                     </i>
                                                 </button>
                                             </form>

@@ -46,20 +46,47 @@ if (typeof contacts === 'undefined') {
 
 
 function uploadfile(obj){
+	
+	
 	var $this = $(obj);
 	var type = $this.prev().val();
-//  removefile(type);
+	var extension = $('#file-'+type)[0].files[0].name.split('.');
+	extension = extension[extension.length-1];
+	extension = extension.toUpperCase();
+		switch (type) {
+			case 'image':
+				if(extension != 'JPG' && extension != 'PNG'){
+					alert('请上传JPG或PNG格式的图片');
+					return false;
+				}
+				break;
+			case 'voice':// 上传语音文件仅支持AMR格式
+				if(extension != 'AMR'){
+					alert('请上传AMR格式的文件');
+					return false;
+				}
+	            break;
+	        case 'video':// 上传视频文件仅支持MP4格式
+				if(extension != 'MP4'){
+					alert('请上传MP4格式的视频');
+					return false;
+				}
+	            break;    
+	    }
+		
     page.inform("温馨提示", '正在上传中...', page.info);
     var formData = new FormData();
-    switch (type) {
-		case 'image':
-			formData.append('uploadFile', $('#file-image')[0].files[0]);
-			break;
-		case 'voice':// 上传语音文件仅支持AMR格式
-            formData.append('uploadFile', $('#file-voice')[0].files[0]);
-            break;
-    }
-
+//  switch (type) {
+//		case 'image':
+//			formData.append('uploadFile', $('#file-image')[0].files[0]);
+//			break;
+//		case 'voice':// 上传语音文件仅支持AMR格式
+//          formData.append('uploadFile', $('#file-voice')[0].files[0]);
+//          break;
+//  }
+	
+	formData.append('uploadFile', $('#file-'+type)[0].files[0]);
+	
     formData.append('_token', $('#csrf_token').attr('content'));
     formData.append('type', type);
     //请求接口
@@ -80,16 +107,26 @@ function uploadfile(obj){
 				//图片
 				  	html+='<div class="fileshow" style="display: inline-block;width: auto;position: relative;">'+
                             	'<img src="/ptac/'+result.data.path+'" style="height: 200px;">'+
-                            	'<input type="hidden" value="'+result.data.type+'" name="type" />'+
                             	'<input type="hidden" value="'+result.data.media_id+'" name="media_id" />'+
+                            	'<input type="hidden" value="image" name="type" />'+
                                 '<input type="file" id="file-image" onchange="uploadfile(this)" name="uploadFile" accept="image/*" style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/>'+
                             	'<i class="fa fa-close file-del" style="position: absolute;top: 10px;right: 15px;font-size: 20px;z-index: 2;cursor: pointer;"></i>'+
                             '</div>'+
                             '</form>';
 				 	break;
 				case 'voice':
-				//音频
-				  	html+='<i class="fa fa-file-sound-o"></i>';
+				//音频	
+					html+='<div class="fileshow" style="color: #787878;margin-left: 5px;">'+
+								'<i class="fa fa-file-sound-o">'+
+					  				'<span style="margin-left: 5px;position:relative;cursor:pointer;">'+result.data.filename+''+
+						  				'<input type="hidden" value="'+result.data.media_id+'" name="media_id" />'+
+										'<input type="hidden" value="voice" name="type" />'+
+										'<input id="file-voice" type="file" onchange="uploadfile(this)" name="uploadFile" style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/>'+
+					  				'</span>'+
+							    '<i class="fa fa-close file-del" style="margin-left: 35px;cursor:pointer;"></i>'+
+						    '</div>'+
+						    '</form>';
+				  			
 				 	break;
 				case 'video':
 				//视频
@@ -113,20 +150,23 @@ function removefile(type){
 		{
 		case 'image':
 		var btntxt = '添加图片';
+		var fileaccept = 'image/*';
 			break;
 		case 'voice':
 		var btntxt = '添加音频';
+		var fileaccept = '';
 		 	break;
 		case 'video':
 		var btntxt = '添加视频';
+		var fileaccept = 'video/mp4';
 		 	break;
 		}
 		var html = '<form id="uploadForm" enctype="multipart/form-data">'+
-                       ' <button id="add-image" class="btn btn-box-tool" type="button" style="margin-top: 3px;position: relative;border: 0;">'+
+                       ' <button id="add-'+type+'" class="btn btn-box-tool" type="button" style="margin-top: 3px;position: relative;border: 0;">'+
                             '<i class="fa fa-plus text-blue">'+
                                 '&nbsp;'+btntxt+''+
-                                    '<input type="hidden" value="image" name="type" />'+
-                                    '<input type="file" id="file-image" onchange="uploadfile(this)" name="uploadFile" accept="image/*" style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/>'+
+                                    '<input type="hidden" value="'+type+'" name="type" />'+
+                                    '<input type="file" id="file-'+type+'" onchange="uploadfile(this)" name="uploadFile" accept="'+fileaccept+'" style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/>'+
                             '</i>'+
                         '</button>'+
                     '</form>';
