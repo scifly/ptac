@@ -153,9 +153,9 @@ $(function () {
         var content = $('#emojiInput').html();
         var time = $('#time').val();
         var send = $('#homeWorkChoose').html();
-        alert(title);
+        // alert(title);
         alert(content);
-        alert(time);
-        alert(send);
+        // alert(time);
+        // alert(send);
     });
 });

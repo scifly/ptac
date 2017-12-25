@@ -230,3 +230,7 @@ div.weui_tab_bd {
     width: 0;
     height: 0;
 }
+.weui-tab__bd-item{
+    min-height: 400px !important;
+}
+
