@@ -146,4 +146,16 @@ $(function () {
             reader.readAsDataURL(file);
         }
     });
+
+    $('.release').on('click',function () {
+
+        var title = $('#title').val();
+        var content = $('#emojiInput').html();
+        var time = $('#time').val();
+        var send = $('#homeWorkChoose').html();
+        alert(title);
+        alert(content);
+        alert(time);
+        alert(send);
+    });
 });
