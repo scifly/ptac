@@ -36,3 +36,8 @@ $('.teacher-list-box').click(function () {
         }
     });
 });
+
+$('.weui-navbar__item').click(function(){
+    $('.select-ul').hide();
+    $('.select-container').hide();
+});
