@@ -79,9 +79,9 @@ function uploadfile(obj){
 				case 'image':
 				//图片
 				  	html+='<div class="fileshow" style="display: inline-block;width: auto;position: relative;">'+
-                            	'<img src="/ptac/'+result.data.path+'" style="height: 200px;">'+
+                            	'<img src="../../'+result.data.path+'" style="height: 200px;">'+
                             	'<input type="hidden" value="'+result.data.type+'" name="type" />'+
-                            	'<input type="hidden" value="'+result.data.media_id+'" name="media_id" />'+
+                            	'<input type="hidden" id="media_id" value="'+result.data.media_id+'" />'+
                                 '<input type="file" id="file-image" onchange="uploadfile(this)" name="uploadFile" accept="image/*" style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/>'+
                             	'<i class="fa fa-close file-del" style="position: absolute;top: 10px;right: 15px;font-size: 20px;z-index: 2;cursor: pointer;"></i>'+
                             '</div>'+
@@ -140,13 +140,12 @@ $send.on('click', function() {
     var type = $('#message-content .tab-pane.active').attr('id');
     type = type.substring('8');
     // alert(type);
-	var content = "";
+	var content = '';
     switch(type)
 	{
 		case 'text':
 	//文本
-		content = '{ "text": "' +$('#messageText').val()+ '"}' ;
-
+		content = {text: $('#messageText').val()};
         break;
 	case 'imagetext':
 	//图文
@@ -154,8 +153,8 @@ $send.on('click', function() {
 	 	break;
 	case 'image':
 	//图片
-	  	console.log(3);
-	 	break;
+        content = {media_id: $('#media_id').val()};
+        break;
 	case 'voice':
 	//音频
 	  	console.log(4);
@@ -178,7 +177,7 @@ $send.on('click', function() {
         alert('对象不能为空');
         return false
     }
-    if (content === '') {
+    if (content['text'] === '') {
         alert('内容不能为空');
         return false
     }
@@ -189,12 +188,15 @@ $send.on('click', function() {
      data:  {
          app_ids: appIds,
          departIds: selectedDepartmentIds,
+         type: type,
          content: content,
          _token: $('#csrf_token').attr('content')},
 
      success: function (result) {
          if (result.error !== 0) {
              page.inform("操作成功",result.message, page.success);
+         }else {
+             page.inform("操作失败",result.message, page.failure);
          }
      },
      error: function (result) {

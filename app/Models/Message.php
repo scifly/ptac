@@ -270,14 +270,14 @@ class Message extends Model {
             $apps = App::whereIn('id', $data['app_ids'])->get()->toArray();
             if (!$apps) {
                 $result = [
-                    'statusCode' => 202,
+                    'statusCode' => 0,
                     'message' => '应用不存在，请刷新页面！',
                 ];
             }
             $corp = Corp::where('name', '万浪软件')->first();
             if (!$corp) {
                 $result = [
-                    'statusCode' => 202,
+                    'statusCode' => 0,
                     'message' => '企业号不存在，请刷新页面！',
                 ];
             }
@@ -306,7 +306,7 @@ class Message extends Model {
                     ];
                 }else{
                     $result = [
-                        'statusCode' => 202,
+                        'statusCode' => 0,
                         'message' => '出错！',
                     ];
                 }

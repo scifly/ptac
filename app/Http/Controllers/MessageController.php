@@ -84,7 +84,7 @@ class MessageController extends Controller {
     public function create() {
         
         if (Request::method() === 'POST') {
-            return $this->department->tree();
+            return response()->json($this->department->tree());
         }
         
         return $this->output();
