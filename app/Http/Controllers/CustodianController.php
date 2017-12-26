@@ -117,7 +117,7 @@ class CustodianController extends Controller {
     public function edit($id) {
 
         if (Request::method() === 'POST') {
-            return $this->department->tree();
+            return response()->json($this->department->tree());
         }
         $custodian = $this->custodian->find($id);
         if (!$custodian) { return $this->notFound(); }

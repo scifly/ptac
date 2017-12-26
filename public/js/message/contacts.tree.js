@@ -114,6 +114,13 @@ var contacts = {
                     '#': {"icon": 'fa fa-tree'},
                     'dept': {"icon": 'fa fa-folder'},
                     'user': {"icon": 'fa fa-user'},
+                    'root': {"icon": 'fa fa-sitemap'},
+                    'company': {"icon": 'fa fa-building'},
+                    'corp': {"icon": 'fa fa-weixin'},
+                    'school': {"icon": 'fa fa-university'},
+                    'grade': {"icon": 'fa fa-object-group'},
+                    'class': {"icon": 'fa fa-users'},
+                    'other': {"icon": 'fa fa-list'}
                 }
             }).on('select_node.jstree', function (node, selected) {
 

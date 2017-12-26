@@ -270,14 +270,14 @@ class Message extends Model {
             $apps = App::whereIn('id', $data['app_ids'])->get()->toArray();
             if (!$apps) {
                 $result = [
-                    'statusCode' => 202,
+                    'statusCode' => 0,
                     'message' => '应用不存在，请刷新页面！',
                 ];
             }
             $corp = Corp::where('name', '万浪软件')->first();
             if (!$corp) {
                 $result = [
-                    'statusCode' => 202,
+                    'statusCode' => 0,
                     'message' => '企业号不存在，请刷新页面！',
                 ];
             }
@@ -291,13 +291,16 @@ class Message extends Model {
                 switch ($data['type']) {
                     case 'text' :
                         $message['text'] = ['content' => $data['content']['text']];
-                        $message['msgtype'] = $data['type'];
                         break;
                     case 'image' :
+                    case 'voice' :
                         $message['image'] = ['media_id' => $data['content']['media_id']];
-                        $message['msgtype'] = $data['type'];
                         break;
+                    case 'imagetext' :
+                        $message['mpnews'] = ['articles' => $data['content']['articles']];
+
                 }
+                $message['msgtype'] = $data['type'];
                 $status = json_decode(Wechat::sendMessage($token, $message));
                 if ($status->errcode == 0) {
                     $result = [
@@ -306,7 +309,7 @@ class Message extends Model {
                     ];
                 }else{
                     $result = [
-                        'statusCode' => 202,
+                        'statusCode' => 0,
                         'message' => '出错！',
                     ];
                 }
