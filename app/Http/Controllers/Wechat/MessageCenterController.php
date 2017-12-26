@@ -43,7 +43,7 @@ class MessageCenterController extends Controller {
         // return view('wechat.message_center.index');
         // }
 
-        $userId = 'kobe';
+        $userId = 'abcd456456';
         $user = User::whereUserid($userId)->first();
         if(Request::isMethod('post')){
             $keywords = Request::get('keywords');
@@ -159,7 +159,7 @@ class MessageCenterController extends Controller {
      */
     public function show($id) {
         // $userId = $this->getRole('http://weixin.028lk.com/message_show');
-        $userId = "kobe";
+        $userId = "abcd456456";
         $user = $this->user->where('userid', $userId)->first();
         $message = $this->message->find($id);
         $edit = $user->id == $message->s_user_id ? true : false;
