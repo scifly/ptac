@@ -296,11 +296,12 @@ class Message extends Model {
                     case 'voice' :
                         $message['image'] = ['media_id' => $data['content']['media_id']];
                         break;
-                    case 'imagetext' :
+                    case 'mpnews' :
                         $message['mpnews'] = ['articles' => $data['content']['articles']];
 
                 }
                 $message['msgtype'] = $data['type'];
+
                 $status = json_decode(Wechat::sendMessage($token, $message));
                 if ($status->errcode == 0) {
                     $result = [

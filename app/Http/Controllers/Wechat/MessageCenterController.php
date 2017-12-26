@@ -2,12 +2,19 @@
 namespace App\Http\Controllers\Wechat;
 
 use App\Facades\Wechat;
+use App\Helpers\ControllerTrait;
 use App\Http\Controllers\Controller;
+use App\Models\Media;
 use App\Models\Message;
+use App\Models\MessageSendingLog;
 use App\Models\User;
+use Exception;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
 
 class MessageCenterController extends Controller {
+    
+    use ControllerTrait;
     
     protected $message, $user;
     
@@ -29,7 +36,7 @@ class MessageCenterController extends Controller {
      */
     public function index() {
 
-        $userId = 'kobe';
+        $userId = 'abcd456456';
         $user = User::whereUserid($userId)->first();
         if(Request::isMethod('post')){
             $keywords = Request::get('keywords');
@@ -77,7 +84,7 @@ class MessageCenterController extends Controller {
         // if($user->group->name == '教职工'){
         //     $educator = true;
         // }
-        $sendMessages = $this->message->where('s_user_id', $user->id)->get()->groupBy('message_type_id');
+        $sendMessages = $this->message->where('s_user_id', $user->id)->get()->unique('msl_id')->groupBy('message_type_id');
         $receiveMessages = $this->message->where('r_user_id', $user->id)->get()->groupBy('message_type_id');
         $count = $this->message->where('r_user_id', $user->id)->where('readed', '0')->count();
         
@@ -101,11 +108,14 @@ class MessageCenterController extends Controller {
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function store() {
-        dd(Request::all());
+        print_r(Request::all());
+        die;
+        
         return view('wechat.message_center.create');
     }
     
     /**
+     * @param $id
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function edit($id) {
@@ -128,15 +138,12 @@ class MessageCenterController extends Controller {
     /**
      * @param $id
      * @return \Illuminate\Http\JsonResponse
+     * @throws \Exception
+     * @throws \Throwable
      */
     public function updateStatus($id) {
-        $message = $this->message->find($id);
-        if (!$message) {
-            return $this->notFound();
-        }
-        $message->readed = 1;
-        
-        return $message->save() ? self::succeed() : self::fail();
+        //操作 msl表 和 message表 暂时放在控制器
+        return $this->modifyReaded($id) ? $this->succeed() : $this->fail();
     }
     
     /**
@@ -145,7 +152,7 @@ class MessageCenterController extends Controller {
      */
     public function show($id) {
         // $userId = $this->getRole('http://weixin.028lk.com/message_show');
-        $userId = "kobe";
+        $userId = "abcd456456";
         $user = $this->user->where('userid', $userId)->first();
         $message = $this->message->find($id);
         $edit = $user->id == $message->s_user_id ? true : false;
@@ -165,7 +172,30 @@ class MessageCenterController extends Controller {
         }
         
         //只能删除查看的记录 不能删除多媒体文件 多媒体文件路径被多个记录存入
-        return $message->delete() ? self::succeed() : self::fail();
+        return $message->delete() ? $this->succeed() : $this->fail();
+    }
+    
+    /**
+     *
+     * @param null $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function upload($id = null) {
+        if ($id) {
+        //删除已上传的图片
+            $media = Media::whereId($id)->first();
+            if ($media->path) {
+                $removeFile = public_path('uploads/') . $media->path;
+                if (is_file($removeFile)) {
+                    unlink($removeFile);
+                }
+            }
+            return $media->delete() ? $this->succeed() : $this->fail();
+        }
+        //上传图片
+        $data = $this->uploadedMedias(Request::file('file'), '前端消息中心');
+        
+        return $data ? $this->succeed($data) : $this->fail();
     }
     
     /**
@@ -199,7 +229,34 @@ class MessageCenterController extends Controller {
             //}
             // }
         }
-        
     }
     
+    /**
+     * 更新是否已读并且更新对应msl记录
+     *
+     * @param $id
+     * @return bool
+     * @throws Exception
+     * @throws \Throwable
+     */
+    private function modifyReaded($id) {
+        $message = $this->message->find($id);
+        if (!$message) {
+            return false;
+        }
+        try {
+            DB::transaction(function () use ($message, $id) {
+                $message->readed = 1;
+                $message->save();
+                $msl = MessageSendingLog::whereId($message->msl_id)->first();
+                $msl->read_count = $msl->read_count + 1;
+                
+                return $msl->save() ? true : false;
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+        return true;
+    }
 }

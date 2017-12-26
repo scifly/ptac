@@ -25,16 +25,14 @@
 			<div class="msg-send-conwrap msg-send-bg">
 				<div contenteditable="true" id="emojiInput" class="wangEditor-mobile-txt">@if(isset($message)) {!! $message->content !!}@endif</div>
 			</div>
-
 			<div class="msg-send-conicon msg-send-bg b-top">
 				<ul class="weui-flex">
 					<li class="weui-flex__item addImg">
 						<i class="icon iconfont icon-tupian placeholder fs15 c-999"></i>
-						 <input id="uploaderInput" class="weui-uploader__input js_file" type="file" accept="image/*" multiple="">
-					</li>
+						 <input id="uploaderInput" class="weui-uploader__input js_file" type="file" accept="image/*" multiple="multiple">
+                    </li>
 				</ul>
 			</div>
-			
 			<div class="weui-cell weui-cell_switch b-top weui-cells_form mt5px msg-send-bg">
 				<div class="weui-cell__bd">定时发送</div> 
 				<div class="weui-cell__ft">
