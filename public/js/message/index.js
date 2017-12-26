@@ -74,15 +74,7 @@ function uploadfile(obj){
 		
     page.inform("温馨提示", '正在上传中...', page.info);
     var formData = new FormData();
-//  switch (type) {
-//		case 'image':
-//			formData.append('uploadFile', $('#file-image')[0].files[0]);
-//			break;
-//		case 'voice':// 上传语音文件仅支持AMR格式
-//          formData.append('uploadFile', $('#file-voice')[0].files[0]);
-//          break;
-//  }
-	
+
 	formData.append('uploadFile', $('#file-'+type)[0].files[0]);
 	
     formData.append('_token', $('#csrf_token').attr('content'));
