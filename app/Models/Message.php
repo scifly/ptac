@@ -296,7 +296,8 @@ class Message extends Model {
                     case 'voice' :
                         $message['image'] = ['media_id' => $data['content']['media_id']];
                         break;
-
+                    case 'imagetext' :
+                        $message['mpnews'] = ['articles' => $data['content']['articles']];
 
                 }
                 $message['msgtype'] = $data['type'];
