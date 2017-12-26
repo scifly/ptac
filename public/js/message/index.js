@@ -74,15 +74,7 @@ function uploadfile(obj){
 		
     page.inform("温馨提示", '正在上传中...', page.info);
     var formData = new FormData();
-//  switch (type) {
-//		case 'image':
-//			formData.append('uploadFile', $('#file-image')[0].files[0]);
-//			break;
-//		case 'voice':// 上传语音文件仅支持AMR格式
-//          formData.append('uploadFile', $('#file-voice')[0].files[0]);
-//          break;
-//  }
-	
+
 	formData.append('uploadFile', $('#file-'+type)[0].files[0]);
 	
     formData.append('_token', $('#csrf_token').attr('content'));
@@ -267,7 +259,7 @@ $('#save-imagetext').click(function(){
                 	'<input type="hidden" class="show_imagetext_author" value="'+author+'">'+
                 	'<input type="hidden" class="show_imagetext_content_source_url" value="'+content_source_url+'">'+
                 '</div>';
-    $('.tab-pane.active#content_imagetext').html(html);
+    $('.tab-pane.active#content_mpnews').html(html);
     $message.show();
     $imageText.hide();
     show_imageText();
@@ -293,7 +285,7 @@ $send.on('click', function() {
 	//文本
 		content = {text: $('#messageText').val()};
         break;
-	case 'imagetext':
+	case 'mpnews':
 	//图文
 	  	var articles = [{
 	  		title : $('.show_imagetext_title').text(),

@@ -258,6 +258,7 @@ class MessageController extends Controller {
     }
     public function uploadFile() {
         $file = Request::file('uploadFile');
+
         $type = Request::input('type');
         if (empty($file)) {
             $result['statusCode'] = 0;
@@ -268,26 +269,32 @@ class MessageController extends Controller {
 
             $result['data'] = [];
             $mes = $this->uploadedMedias($file, '消息中心');
-            $result['statusCode'] = 1;
-            $result['message'] = '上传成功！';
+            if ($mes) {
+                $result['statusCode'] = 1;
+                $result['message'] = '上传成功！';
 
-            $path = dirname(public_path()) . '/' .$mes['path'];
-            $data= array("media"=>curl_file_create($path));
-            $crop = Corp::whereName('万浪软件')->first();
-            $app = App::whereAgentid('999')->first();
-            $token = Wechat::getAccessToken($crop->corpid, $app->secret);
-            $status = Wechat::uploadMedia($token, $type, $data);
+                $path = dirname(public_path()) . '/' .$mes['path'];
+                $data= array("media"=>curl_file_create($path));
+                $crop = Corp::whereName('万浪软件')->first();
+                $app = App::whereAgentid('999')->first();
+                $token = Wechat::getAccessToken($crop->corpid, $app->secret);
+                $status = Wechat::uploadMedia($token, $type, $data);
 //            print_r($status);die;
-            $message = json_decode($status);
+                $message = json_decode($status);
 
-            if ($message->errcode ==0) {
-                $mes['media_id'] = $message->media_id;
-                $result['data'] = $mes;
+                if ($message->errcode ==0) {
+                    $mes['media_id'] = $message->media_id;
+                    $result['data'] = $mes;
 
+                }else{
+                    $result['statusCode'] = 0;
+                    $result['message'] = '微信服务器上传失败！';
+                }
             }else{
                 $result['statusCode'] = 0;
-                $result['message'] = '微信服务器上传失败！';
+                $result['message'] = '文件上传失败！';
             }
+
 
         }
 
