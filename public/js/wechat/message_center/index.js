@@ -15,7 +15,7 @@ $('.select-ul li').click(function () {
 });
 
 function message(type_id) {
-    if (type_id == 0) {
+    if (type_id === '0') {
         $('.table-list').show();
     } else {
         $('.table-list').hide();
