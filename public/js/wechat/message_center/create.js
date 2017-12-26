@@ -2,85 +2,112 @@ var token = $('#csrf_token').attr('content');
 
 $(".ma_expect_date").datetimePicker();
 
-$('.js-search-input').bind("input propertychange change", function (event) {
+$('.js-search-input').bind("input propertychange change",function(event){
     var txt = $(this).val();
-    if (txt == '') {
+    if(txt == ''){
         $('.js-choose-items .weui-check__label').show();
         $('.js-choose-breadcrumb-li').text('全部');
-    } else {
+    }else{
         $('.js-choose-breadcrumb-li').text('搜索结果');
         $('.js-choose-items .weui-check__label').hide();
-        $('.js-choose-items .weui-check__label').each(function () {
+        $('.js-choose-items .weui-check__label').each(function(){
             var uname = $(this).find('.contacts-text').text();
-            if (uname.indexOf(txt) >= 0) {
+            if(uname.indexOf(txt) >= 0){
                 $(this).show();
             }
         });
     }
 });
 
-$('#choose-btn-ok').click(function () {
+$('.show-group').click(function(){
+    //展示下一个分组
+    alert(1);
+});
+
+$('#choose-btn-ok').click(function(){
     var html = $('.js-choose-header-result').html();
     $('#homeWorkChoose').html(html);
     $.closePopup();
 });
 
-$(".choose-item-btn").change(function () {
+$(".choose-item-btn").change(function() {
     var $this = $(this).parents('.weui-check__label');
     var num = $this.attr('data-item');
-    if ($(this).is(':checked')) {
+    var type = $this.attr('data-type');
+    if($(this).is(':checked')){
         var imgsrc = $this.find('img').attr('src');
         var uid = $this.attr('data-uid');
-        var html = '<a class="choose-results-item js-choose-results-item" id="list-' + num + '" data-list="' + num + '" data-uid="' + uid + '">' +
-            '<img src="' + imgsrc + '">' +
-            '</a>';
+        if(type == 'group'){
+            var html = '<a class="choose-results-item js-choose-results-item choose-item-type-group" id="list-'+num+'" data-list="'+num+'" data-uid="'+uid+'" data-type="'+type+'">'+
+                '<img src="'+imgsrc+'">'+
+                '</a>';
+        }else{
+            var html = '<a class="choose-results-item js-choose-results-item choose-item-type-person" id="list-'+num+'" data-list="'+num+'" data-uid="'+uid+'" data-type="'+type+'">'+
+                '<img src="'+imgsrc+'" style="border-radius:50%">'+
+                '</a>';
+        }
+
         $('.js-choose-header-result').prepend(html);
+
         remove_choose_result();
-        var total = $('.js-choose-header-result .js-choose-results-item').length;
-        $('.js-choose-num').text('已选' + total + '名用户');
-    } else {
-        $('.js-choose-header-result').find('#list-' + num).remove();
+        count_result();
+    }else{
+        $('.js-choose-header-result').find('#list-'+num).remove();
+        $('.air-choose-group').removeClass('air-checkall');
+        $('#checkall').prop('checked',false);
+        count_result();
     }
 });
 
-$('#checkall').change(function () {
-    if ($(this).is(':checked')) {
-        $('.choose-item-btn').prop('checked', true);
+$('#checkall').change(function() {
+    if($(this).is(':checked')){
+        $('.choose-item-btn').prop('checked',true);
         var html = '';
-        $('.js-choose-items .weui-check__label').each(function (i, vo) {
+        $('.js-choose-items .weui-check__label').each(function(i,vo){
+            var type = $(vo).attr('data-type');
             var num = $(vo).attr('data-item');
             var uid = $(vo).attr('data-uid');
             var imgsrc = $(vo).find('img').attr('src');
-            html += '<a class="choose-results-item js-choose-results-item" id="list-' + num + '" data-list="' + num + '" data-uid="' + uid + '">' +
-                '<img src="' + imgsrc + '">' +
-                '</a>';
+            if(type == 'group'){
+                html += '<a class="choose-results-item js-choose-results-item choose-item-type-group" id="list-'+num+'" data-list="'+num+'" data-uid="'+uid+'" data-type="'+type+'">'+
+                    '<img src="'+imgsrc+'">'+
+                    '</a>';
+            }else{
+                html += '<a class="choose-results-item js-choose-results-item choose-item-type-person" id="list-'+num+'" data-list="'+num+'" data-uid="'+uid+'" data-type="'+type+'">'+
+                    '<img src="'+imgsrc+'" style="border-radius:50%">'+
+                    '</a>';
+            }
         });
         $('.js-choose-header-result').html(html);
         remove_choose_result();
-        var total = $('.js-choose-header-result .js-choose-results-item').length;
-        $('.js-choose-num').text('已选' + total + '名用户');
-    } else {
-        $('.choose-item-btn').prop('checked', false);
+        $('.air-choose-group').addClass('air-checkall');
+        count_result();
+    }else{
+        $('.choose-item-btn').prop('checked',false);
         $('.js-choose-header-result').html('');
-        var total = $('.js-choose-header-result .js-choose-results-item').length;
-        $('.js-choose-num').text('已选' + total + '名用户');
+        $('.air-choose-group').removeClass('air-checkall');
+        count_result();
     }
 });
 
-function remove_choose_result() {
-    $('.js-choose-results-item').click(function () {
-        var num = $(this).attr('data-list');
-        $(this).remove();
-        $('#item-' + num).find('.choose-item-btn').prop('checked', false);
-        var total = $('.js-choose-header-result .js-choose-results-item').length;
-        $('.js-choose-num').text('已选' + total + '名用户');
-    });
+function count_result(){
+    var grouptotal = $('.js-choose-header-result .js-choose-results-item.choose-item-type-group').length;
+    var persontotal = $('.js-choose-header-result .js-choose-results-item.choose-item-type-person').length;
+    $('.js-choose-num').text('已选'+grouptotal+'个分组,'+persontotal+'名用户');
 }
 
-$(".weui-switch").change(function () {
-    if ($(this).is(':checked')) {
+function remove_choose_result(){
+    $('.js-choose-results-item').click(function(){
+        var num = $(this).attr('data-list');
+        $(this).remove();
+        $('#item-'+num).find('.choose-item-btn').prop('checked',false);
+        count_result();
+    });
+}
+$(".weui-switch").change(function() {
+    if($(this).is(':checked')){
         $('.hw-time').slideToggle('fast');
-    } else {
+    }else{
         $('.hw-time').slideToggle('fast');
     }
 });
