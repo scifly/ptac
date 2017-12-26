@@ -35,8 +35,50 @@ class MessageCenterController extends Controller {
         //     $receiveMessages = $this->message->where('r_user_id',$user->id)->get();
         // return view('wechat.message_center.index');
         // }
-        $userId = 'abcd456456';
+
+        $userId = 'kobe';
         $user = User::whereUserid($userId)->first();
+        if(Request::isMethod('post')){
+            $keywords = Request::get('keywords');
+            $type = Request::get('type');
+            if(!empty($keywords)){
+                switch ($type){
+                    case 'send':
+                        $sendMessages = [];
+                        $sendMessages = Message::whereSUserId($user->id)
+                            ->Where('content', 'like', '%'.$keywords.'%')
+                            ->orWhere('title', 'like', '%' . $keywords . '%')
+                            ->get();
+
+                        if(sizeof($sendMessages) != 0){
+                            foreach ($sendMessages as $s){
+                                  $s['r_user_id'] = User::whereId($s['r_user_id'])->first()->realname;
+                            }
+                        }
+
+                        return response(['sendMessages' => $sendMessages,'type'=> $type]);
+                        break;
+                    case 'receive':
+                        $receiveMessages = [];
+                        $receiveMessages = Message::whereRUserId($user->id)
+                            ->where('content', 'like', '%' . $keywords . '%')
+                            ->orWhere('title', 'like', '%' . $keywords . '%')
+                            ->get();
+                        if(sizeof($receiveMessages) != 0){
+                            foreach ($receiveMessages as $r){
+                                $r['s_user_id'] = User::whereId($r['s_user_id'])->first()->realname;
+                            }
+                        }
+                        return response(['type' => $type, 'receiveMessages' => $receiveMessages]);
+                        break;
+                    default:
+                        break;
+                }
+
+            }
+
+
+        }
         //判断是否为教职工
         $educator = true;
         // if($user->group->name == '教职工'){
@@ -110,7 +152,7 @@ class MessageCenterController extends Controller {
      */
     public function show($id) {
         // $userId = $this->getRole('http://weixin.028lk.com/message_show');
-        $userId = "abcd456456";
+        $userId = "kobe";
         $user = $this->user->where('userid', $userId)->first();
         $message = $this->message->find($id);
         $edit = $user->id == $message->s_user_id ? true : false;

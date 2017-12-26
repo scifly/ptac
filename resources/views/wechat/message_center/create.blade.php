@@ -61,8 +61,7 @@
 			</div>
 			
 		</div>
-	</div>
-	<div id="choose" class='weui-popup__container'>
+		<div id="choose" class='weui-popup__container'>
     	<div class="weui-popup__overlay"></div>
     	<div class="weui-popup__modal">
 			<div class="choose-container js-scui-choose-layer">
