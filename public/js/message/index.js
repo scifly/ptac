@@ -68,21 +68,18 @@ function uploadfile(obj){
 				if(extension !== 'MP4'){
 					alert('请上传MP4格式的视频');
 					return false;
+				}else{
+					if($('#file-'+type)[0].files[0].size > 10485760){
+						alert('请上传10MB以内的视频');
+						return false;
+					}
 				}
 	            break;    
 	    }
 		
     page.inform("温馨提示", '正在上传中...', page.info);
     var formData = new FormData();
-//  switch (type) {
-//		case 'image':
-//			formData.append('uploadFile', $('#file-image')[0].files[0]);
-//			break;
-//		case 'voice':// 上传语音文件仅支持AMR格式
-//          formData.append('uploadFile', $('#file-voice')[0].files[0]);
-//          break;
-//  }
-	
+
 	formData.append('uploadFile', $('#file-'+type)[0].files[0]);
 	
     formData.append('_token', $('#csrf_token').attr('content'));
@@ -128,7 +125,17 @@ function uploadfile(obj){
 				 	break;
 				case 'video':
 				//视频
-				  	html+='<i class="fa fa-file-movie-o"></i>';
+				  	html+=	'<video src="../../'+result.data.path+'" controls="controls" style="height:180px">'+
+							'</video>'+                             
+							'<div class="btns">'+
+							'<a class="changefile" style="position: relative;margin-left: 10px;">'+
+								'更改'+
+								'<input  id="media_id"  type="hidden" value="'+result.data.media_id+'"/>'+
+								'<input type="hidden" value="video" name="type" />'+
+								'<input type="file" id="file-video" onchange="uploadfile(this)" name="uploadFile" accept="video/mp4" style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/>'+
+							'</a>'+
+							'<a class="delfile file-del" style="margin-left: 45px;display: inline-block;cursor: pointer;">删除</a>'+
+							'</form>';
 				 	break;
 				}
 				$('#message-content .tab-pane.active').html(html);
@@ -267,7 +274,7 @@ $('#save-imagetext').click(function(){
                 	'<input type="hidden" class="show_imagetext_author" value="'+author+'">'+
                 	'<input type="hidden" class="show_imagetext_content_source_url" value="'+content_source_url+'">'+
                 '</div>';
-    $('.tab-pane.active#content_imagetext').html(html);
+    $('.tab-pane.active#content_mpnews').html(html);
     $message.show();
     $imageText.hide();
     show_imageText();
@@ -293,7 +300,7 @@ $send.on('click', function() {
 	//文本
 		content = {text: $('#messageText').val()};
         break;
-	case 'imagetext':
+	case 'mpnews':
 	//图文
 	  	var articles = [{
 	  		title : $('.show_imagetext_title').text(),
