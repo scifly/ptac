@@ -305,7 +305,8 @@ $send.on('click', function() {
 	case 'video':
 	//视频
 	  	console.log(5);
-	 	break;
+        content = {text: $('#messageText').val()};
+        break;
 	case 'sms':
 	//短信
 	  	console.log(6);
