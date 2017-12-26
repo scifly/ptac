@@ -20,9 +20,9 @@ class CorpRequest extends FormRequest {
     public function rules() {
 
         return [
-            'name'          => 'required|string|between:3,120|unique:corps,name,' .
-                $this->input('id') . ',id,' .
-                'company_id,' . $this->input('company_id'),
+            'name'          => 'required|string|between:3,120|unique:corps,name,'
+                . $this->input('id') . ',id,'
+                . 'company_id,' . $this->input('company_id'),
             'department_id' => 'required|integer',
             'menu_id'       => 'required|integer',
             'corpid'        => 'required|string|alpha_num|max:18',
@@ -34,7 +34,7 @@ class CorpRequest extends FormRequest {
 
         return [
             'name.required'   => '企业名称不能为空',
-            'name.between'    => ' 企业名称应该在3~120个字符之间',
+            'name.between'    => '企业名称应该在3~60个字符之间',
             'name.unique'     => '已有该记录',
             'corpid.required' => '企业号ID不能为空',
             'corpid.max'      => '36个小写字母与阿拉伯数字',

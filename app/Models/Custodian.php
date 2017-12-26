@@ -80,7 +80,7 @@ class Custodian extends Model {
      * @throws Exception
      * @throws \Throwable
      */
-    public function store(CustodianRequest $request) {
+    static function store(CustodianRequest $request) {
 
         try {
             DB::transaction(function () use ($request) {
@@ -90,11 +90,11 @@ class Custodian extends Model {
                 # 与学生之间的关系
                 $relationships = $request->input('relationships');
                 $studentId_relationship = [];
-
                 foreach ($studentIds as $key => $studentId) {
                     $studentId_relationship[$studentId] = $relationships[$key];
                 }
-                $userData = [
+                # 创建用户
+                $u = User::create([
                     'username' => uniqid('custodian_'),
                     'group_id' => $user['group_id'],
                     'password' => bcrypt('custodian8888'),
@@ -108,42 +108,31 @@ class Custodian extends Model {
                     'telephone' => $user['telephone'],
                     'wechatid' => '',
                     'enabled' => $user['enabled'],
-                ];
-                $user = new User();
-                $u = $user->create($userData);
-                $custodianData = [
-                    'user_id' => $u->id,
-                ];
-                # 向mobile表中添加工具
+                ]);
+                # 保存手机号码
                 $mobiles = $request->input('mobile');
                 if ($mobiles) {
-                    $mobileModel = new Mobile();
                     foreach ($mobiles as $k => $mobile) {
-                        $mobileData = [
+                        Mobile::create([
                             'user_id' => $u->id,
                             'mobile' => $mobile['mobile'],
                             'isdefault' => $mobile['isdefault'],
                             'enabled' => $mobile['enabled'],
-                        ];
-                        $mobileModel->create($mobileData);
+                        ]);
                     }
-                    unset($mobileModel);
                 }
-                $c = $this->create($custodianData);
+                $c = self::create(['user_id' => $u->id]);
                 # 向部门用户表添加数据
                 // $departmentUser = new DepartmentUser();
                 // $departmentIds = $request->input('selectedDepartments');
                 // $departmentUser->storeByUserId($u->id, $departmentIds);
                 // unset($departmentUser);
                 # 向监护人学生表中添加数据
-                $custodianStudent = new CustodianStudent();
-                if ($studentId_relationship != null) {
-                    $custodianStudent->storeByCustodianId($c->id, $studentId_relationship);
+                if (isset($studentId_relationship)) {
+                    CustodianStudent::storeByCustodianId($c->id, $studentId_relationship);
                 }
-                unset($custodianStudent);
                 # 创建企业号成员
-                $user->createWechatUser($u->id);
-                unset($user);
+                User::createWechatUser($u->id);
             });
         } catch (Exception $e) {
             throw $e;
@@ -162,15 +151,12 @@ class Custodian extends Model {
      * @throws Exception
      * @throws \Throwable
      */
-    public function modify(CustodianRequest $request, $custodianId) {
+    static function modify(CustodianRequest $request, $custodianId) {
 
-        $custodian = $this->find($custodianId);
-        if (!isset($custodian)) {
-            return false;
-        }
+        $custodian = self::find($custodianId);
+        if (!isset($custodian)) { return false; }
         try {
             DB::transaction(function () use ($request, $custodianId, $custodian) {
-
                 $userId = $request->input('user_id');
                 $userData = $request->input('user');
                 # 包含学生的Id
@@ -183,28 +169,22 @@ class Custodian extends Model {
                         $studentId_Relationship[$studentId] = $relationships[$key];
                     }
                 }
-
-                $user = new User();
-                $user->where('id', $userId)
-                    ->update([
-                        'group_id' => $userData['group_id'],
-                        'email' => $userData['email'],
-                        'realname' => $userData['realname'],
-                        'gender' => $userData['gender'],
-                        'isleader' => 0,
-                        'english_name' => $userData['english_name'],
-                        'telephone' => $userData['telephone'],
-                        'enabled' => $userData['enabled'],
-                    ]);
-                $custodian->update([
-                    'user_id' => $userId,
+                User::find($userId)->update([
+                    'group_id' => $userData['group_id'],
+                    'email' => $userData['email'],
+                    'realname' => $userData['realname'],
+                    'gender' => $userData['gender'],
+                    'isleader' => 0,
+                    'english_name' => $userData['english_name'],
+                    'telephone' => $userData['telephone'],
+                    'enabled' => $userData['enabled'],
                 ]);
+                $custodian->update(['user_id' => $userId]);
                 $mobiles = $request->input('mobile');
                 if ($mobiles) {
                     $mobileModel = new Mobile();
                     $delMobile = $mobileModel->where('user_id', $userId)->delete();
                     if ($delMobile) {
-//                        dd($mobiles);
                         foreach ($mobiles as $k => $mobile) {
                             $mobileData = [
                                 'user_id' => $request->input('user_id'),
@@ -225,17 +205,14 @@ class Custodian extends Model {
                 // $departmentUser->storeByUserId($userId, $departmentIds);
                 // unset($departmentUser);
                 # 向监护人学生表中添加数据
-                $custodianStudent = new CustodianStudent();
-//                $custodianStudent::whereCustodianId($custodianId)->delete();
-                $custodianStudent::where('custodian_id', $custodianId)->delete();
-                $custodianStudent->storeByCustodianId($custodianId, $studentId_Relationship);
-                unset($custodianStudent);
-                $user->UpdateWechatUser($userId);
-                unset($user);
+                CustodianStudent::whereCustodianId($custodianId)->delete();
+                CustodianStudent::storeByCustodianId($custodianId, $studentId_Relationship);
+                User::UpdateWechatUser($userId);
             });
         } catch (Exception $e) {
             throw $e;
         }
+        
         return true;
     }
     
@@ -247,12 +224,10 @@ class Custodian extends Model {
      * @throws Exception
      * @throws \Throwable
      */
-    public function remove($custodianId) {
+    static function remove($custodianId) {
 
-        $custodian = $this->find($custodianId);
-        if (!isset($custodian)) {
-            return false;
-        }
+        $custodian = self::find($custodianId);
+        if (!isset($custodian)) { return false; }
         try {
             DB::transaction(function () use ($custodianId, $custodian) {
                 # 删除指定的监护人记录
@@ -263,13 +238,13 @@ class Custodian extends Model {
                 DepartmentUser::where('user_id', $custodian['user_id'])->delete();
                 # 删除与指定监护人绑定的手机记录
                 Mobile::where('user_id', $custodian['user_id'])->delete();
-
             });
-
         } catch (Exception $e) {
             throw $e;
         }
+        
         return true;
+        
     }
 
     /**
@@ -279,14 +254,13 @@ class Custodian extends Model {
      * @param $id
      * @return array
      */
-    public function getFieldList($field, $id) {
+    static function getFieldList($field, $id) {
 
         $grades = [];
         $classes = [];
         $students = [];
         switch ($field) {
             case 'school':
-
                 $grades = Grade::whereSchoolId($id)
                     ->where('enabled', 1)
                     ->pluck('name', 'id');
@@ -296,7 +270,6 @@ class Custodian extends Model {
                 $students = Student::whereClassId($classes->keys()->first())
                     ->where('enabled', 1)
                     ->pluck('student_number', 'id');
-
                 break;
             case 'grade':
                 $classes = Squad::whereGradeId($id)
@@ -315,10 +288,6 @@ class Custodian extends Model {
                         $students[$s->id] = $s->user->realname . "-" . $s->student_number;
                     }
                 }
-
-                // $students = Student::whereClassId($id)
-                //     ->where('enabled', 1)
-                //     ->pluck('student_number', 'id');
                 break;
             default:
                 break;
@@ -340,11 +309,12 @@ class Custodian extends Model {
             'classes' => sprintf($htmls[1], 'classId', 'classId'),
             'students' => sprintf($htmls[2], 'studentId', 'studentId')
         ];
+        
     }
 
-    public function export() {
+    static function export() {
 
-        $custodians = $this::all();
+        $custodians = self::all();
         $data = array(self::EXCEL_EXPORT_TITLE);
         foreach ($custodians as $custodian) {
             if (!empty($custodian->user)) {
@@ -376,7 +346,7 @@ class Custodian extends Model {
      *
      * @return array
      */
-    public function datatable() {
+    static function datatable() {
 
         $columns = [
             ['db' => 'Custodian.id', 'dt' => 0],
@@ -450,10 +420,9 @@ class Custodian extends Model {
                 ],
             ],
         ];
-        $school = new School();
-        $schoolId = $school->getSchoolId();
-        $condition = 'Grade.school_id = ' . $schoolId;
-        return Datatable::simple($this, $columns, $joins, $condition);
+        $condition = 'Grade.school_id = ' . School::id();
+        
+        return Datatable::simple(Custodian::getModel(), $columns, $joins, $condition);
 
     }
 

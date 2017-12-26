@@ -87,11 +87,11 @@ class Squad extends Model {
      * @param bool $fireEvent
      * @return bool
      */
-    public function store(array $data, $fireEvent = false) {
-        $class = $this->create($data);
+    static function store(array $data, $fireEvent = false) {
+        
+        $class = self::create($data);
         if ($class && $fireEvent) {
             event(new ClassCreated($class));
-
             return true;
         }
 
@@ -107,12 +107,12 @@ class Squad extends Model {
      * @param bool $fireEvent
      * @return bool
      */
-    public function modify(array $data, $id, $fireEvent = false) {
-        $class = $this->find($id);
+    static function modify(array $data, $id, $fireEvent = false) {
+        
+        $class = self::find($id);
         $updated = $class->update($data);
         if ($updated && $fireEvent) {
             event(new ClassUpdated($class));
-
             return true;
         }
 
@@ -130,7 +130,7 @@ class Squad extends Model {
      */
     public function remove($id, $fireEvent = false) {
         
-        $class = $this->find($id);
+        $class = self::find($id);
         if (!$class) { return false; }
         $removed = $this->removable($class) ? $class->delete() : false;
         if ($removed && $fireEvent) {
@@ -141,8 +141,13 @@ class Squad extends Model {
         return $removed ? true : false;
 
     }
-
-    public function datatable() {
+    
+    /**
+     * 班级列表
+     *
+     * @return array
+     */
+    static function datatable() {
         
         $columns = [
             ['db' => 'Squad.id', 'dt' => 0],
@@ -173,7 +178,7 @@ class Squad extends Model {
                     $educatorIds = explode(',', $d);
                     $educators = [];
                     foreach ($educatorIds as $id) {
-                        $educator = Educator::whereId($id)->first();
+                        $educator = Educator::find($id);
                         if ($educator) {
                             if ($educator->user) {
                                 $educators[] = $educator->user->realname;
@@ -211,11 +216,9 @@ class Squad extends Model {
                 ],
             ],
         ];
-        $school = new School();
-        $schoolId = $school->getSchoolId();
-        $condition = 'Grade.school_id = ' . $schoolId;
+        $condition = 'Grade.school_id = ' . School::id();
         
-        return Datatable::simple($this, $columns, $joins, $condition);
+        return Datatable::simple(self::getModel(), $columns, $joins, $condition);
 
     }
 

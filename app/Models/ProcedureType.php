@@ -41,8 +41,14 @@ class ProcedureType extends Model {
      * @return HasMany
      */
     public function procedures() { return $this->hasMany('App\Models\Procedure'); }
-
-    public function datatable() {
+    
+    /**
+     * 流程种类列表
+     *
+     * @return array
+     */
+    static function datatable() {
+        
         $columns = [
             ['db' => 'ProcedureType.id', 'dt' => 0],
             ['db' => 'ProcedureType.name', 'dt' => 1],
@@ -57,7 +63,7 @@ class ProcedureType extends Model {
             ],
         ];
 
-        return Datatable::simple($this, $columns);
+        return Datatable::simple(self::getModel(), $columns);
 
     }
 }

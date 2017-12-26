@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\SubjectModuleRequest;
+use App\Models\Subject;
 use App\Models\SubjectModule;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -34,7 +35,7 @@ class SubjectModuleController extends Controller {
     public function index() {
         
         if (Request::get('draw')) {
-            return response()->json($this->subjectModule->datatable());
+            return response()->json(SubjectModule::datatable());
         }
         
         return $this->output();
@@ -61,8 +62,7 @@ class SubjectModuleController extends Controller {
      */
     public function store(SubjectModuleRequest $request) {
         
-        return $this->subjectModule->create($request->all())
-            ? $this->succeed() : $this->fail();
+        return $this->result(SubjectModule::create($request->all()));
         
     }
     
@@ -75,10 +75,10 @@ class SubjectModuleController extends Controller {
      */
     public function edit($id) {
         
-        $subjectModule = $this->subjectModule->find($id);
-        if (!$subjectModule) { return $this->notFound(); }
+        $sm = SubjectModule::find($id);
+        if (!$sm) { return $this->notFound(); }
         
-        return $this->output(['subjectModules' => $subjectModule]);
+        return $this->output(['subjectModules' => $sm]);
         
     }
     
@@ -91,10 +91,10 @@ class SubjectModuleController extends Controller {
      */
     public function update(SubjectModuleRequest $request, $id) {
         
-        $subjectModule = $this->subjectModule->find($id);
-        if (!$subjectModule) { return $this->notFound(); }
+        $sm = SubjectModule::find($id);
+        if (!$sm) { return $this->notFound(); }
         
-        return $subjectModule->update($request->all()) ? $this->succeed() : $this->fail();
+        return $this->result($sm->update($request->all()));
         
     }
     
@@ -107,10 +107,10 @@ class SubjectModuleController extends Controller {
      */
     public function destroy($id) {
         
-        $subjectModule = $this->subjectModule->find($id);
-        if (!$subjectModule) { return $this->notFound(); }
+        $sm = $this->subjectModule->find($id);
+        if (!$sm) { return $this->notFound(); }
         
-        return $subjectModule->delete() ? $this->succeed() : $this->fail();
+        return $this->result($sm->delete());
         
     }
     

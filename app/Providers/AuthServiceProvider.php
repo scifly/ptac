@@ -2,7 +2,10 @@
 namespace App\Providers;
 
 use App\Policies\ActionPolicy;
+use App\Policies\CreatePolicy;
+use App\Policies\SchoolPolicy;
 use App\Policies\Route;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
 class AuthServiceProvider extends ServiceProvider {
@@ -13,8 +16,8 @@ class AuthServiceProvider extends ServiceProvider {
      * @var array
      */
     protected $policies = [
-        // 'App\Model' => 'App\Policies\ModelPolicy',
-        Route::class => ActionPolicy::class
+        Route::class => ActionPolicy::class,
+        Model::class => SchoolPolicy::class,
     ];
     
     /**

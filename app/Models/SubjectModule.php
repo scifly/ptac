@@ -43,8 +43,13 @@ class SubjectModule extends Model {
      * @return BelongsTo
      */
     public function subject() { return $this->belongsTo('App\Models\Subject'); }
-
-    public function datatable() {
+    
+    /**
+     * 科目次分类列表
+     *
+     * @return array
+     */
+    static function datatable() {
         
         $columns = [
             ['db' => 'SubjectModule.id', 'dt' => 0],
@@ -70,12 +75,9 @@ class SubjectModule extends Model {
                 ],
             ],
         ];
-        $school = new School();
-        $schoolId = $school->getSchoolId();
-        $condition = 'Subject.school_id = ' . $schoolId;
-        unset($school);
+        $condition = 'Subject.school_id = ' . School::id();
         
-        return Datatable::simple($this, $columns, $joins, $condition);
+        return Datatable::simple(self::getModel(), $columns, $joins, $condition);
 
     }
 

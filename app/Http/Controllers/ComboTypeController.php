@@ -2,9 +2,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ComboTypeRequest;
-use App\Http\Requests\CommTypeRequest;
 use App\Models\ComboType;
 use Exception;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 use Throwable;
@@ -17,12 +17,9 @@ use Throwable;
  */
 class ComboTypeController extends Controller {
     
-    protected $comboType;
+    function __construct() {
     
-    function __construct(ComboType $comboType) {
-    
-        $this->middleware(['auth']);
-        $this->comboType = $comboType;
+        $this->middleware(['auth', 'checkrole']);
         
     }
     
@@ -35,7 +32,7 @@ class ComboTypeController extends Controller {
     public function index() {
         
         if (Request::get('draw')) {
-            return response()->json($this->comboType->datatable());
+            return response()->json(ComboType::datatable());
         }
         
         return $this->output();
@@ -50,6 +47,8 @@ class ComboTypeController extends Controller {
      */
     public function create() {
         
+        $this->authorize('c', ComboType::class);
+        
         return $this->output();
         
     }
@@ -59,11 +58,13 @@ class ComboTypeController extends Controller {
      *
      * @param ComboTypeRequest $request
      * @return JsonResponse
+     * @throws AuthorizationException
      */
     public function store(ComboTypeRequest $request) {
         
-        return $this->comboType->create($request->all())
-            ? $this->succeed() : $this->fail();
+        $this->authorize('c', ComboType::class);
+        
+        return $this->result(ComboType::create($request->all()));
         
     }
     
@@ -76,8 +77,8 @@ class ComboTypeController extends Controller {
      */
     public function edit($id) {
         
-        $comboType = $this->comboType->find($id);
-        if (!$comboType) { return $this->notFound(); }
+        $comboType = ComboType::find($id);
+        $this->authorize('rud', $comboType);
         
         return $this->output(['comboType' => $comboType]);
         
@@ -89,14 +90,14 @@ class ComboTypeController extends Controller {
      * @param ComboTypeRequest $request
      * @param $id
      * @return JsonResponse
+     * @throws AuthorizationException
      */
     public function update(ComboTypeRequest $request, $id) {
         
-        $comboType = $this->comboType->find($id);
-        if (!$comboType) { return $this->notFound(); }
+        $comboType = ComboType::find($id);
+        $this->authorize('rud', $comboType);
         
-        return $comboType->update($request->all())
-            ? $this->succeed() : $this->fail();
+        return $this->result($comboType->update($request->all()));
         
     }
     
@@ -109,11 +110,10 @@ class ComboTypeController extends Controller {
      */
     public function destroy($id) {
         
-        $comboType = $this->comboType->find($id);
-        if (!$comboType) { return $this->notFound(); }
+        $comboType = ComboType::find($id);
+        $this->authorize('rud', $comboType);
         
-        return $comboType->delete()
-            ? $this->succeed() : $this->fail();
+        return $this->result($comboType->delete());
         
     }
     

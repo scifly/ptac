@@ -74,8 +74,13 @@ class ScoreTotal extends Model {
      * @return BelongsTo
      */
     function subject() { return $this->belongsTo('App\Models\Subject'); }
-
-    public function datatable() {
+    
+    /**
+     * 总分记录列表
+     *
+     * @return array
+     */
+    static function datatable() {
         
         $columns = [
             ['db' => 'ScoreTotal.id', 'dt' => 0],
@@ -123,7 +128,7 @@ class ScoreTotal extends Model {
             ],
         ];
 
-        return Datatable::simple($this, $columns, $joins);
+        return Datatable::simple(self::getModel(), $columns, $joins);
         
     }
 
@@ -134,11 +139,11 @@ class ScoreTotal extends Model {
      * @return bool
      * @throws Exception
      */
-    public function statistics($exam_id) {
+    static function statistics($exam_id) {
         
         //删除之前这场考试的统计
         try {
-            $this->where('exam_id', $exam_id)->delete();
+            self::whereExamId($exam_id)->delete();
         } catch (Exception $e) {
             throw $e;
         }
@@ -224,7 +229,7 @@ class ScoreTotal extends Model {
                     unset($class_v['class_id']);
                     $inserts [] = $class_v;
                 }
-                $this->insert($inserts);
+                self::insert($inserts);
             }
         }
 

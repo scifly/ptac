@@ -46,9 +46,9 @@ class IconType extends Model {
      * @param array $data
      * @return bool
      */
-    public function store(array $data) {
+    static function store(array $data) {
 
-        $iconType = $this->create($data);
+        $iconType = self::create($data);
 
         return $iconType ? true : false;
 
@@ -61,12 +61,10 @@ class IconType extends Model {
      * @param $id
      * @return bool
      */
-    public function modify(array $data, $id) {
+    static function modify(array $data, $id) {
 
-        $iconType = $this->find($id);
-        if (!$iconType) {
-            return false;
-        }
+        $iconType = self::find($id);
+        if (!$iconType) { return false; }
 
         return $iconType->update($data) ? true : false;
 
@@ -79,16 +77,21 @@ class IconType extends Model {
      * @return bool|null
      * @throws Exception
      */
-    public function remove($id) {
+    static function remove($id) {
 
-        $iconType = $this->find($id);
+        $iconType = self::find($id);
         if (!$iconType) { return false; }
 
         return $iconType->removable($iconType) ? $iconType->delete() : false;
 
     }
-
-    public function datatable() {
+    
+    /**
+     * 图标类型列表
+     *
+     * @return array
+     */
+    static function datatable() {
 
         $columns = [
             ['db' => 'IconType.id', 'dt' => 0],
@@ -104,7 +107,7 @@ class IconType extends Model {
             ],
         ];
         
-        return Datatable::simple($this, $columns);
+        return Datatable::simple(self::getModel(), $columns);
         
     }
 

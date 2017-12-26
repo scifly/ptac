@@ -16,12 +16,9 @@ use Throwable;
  */
 class ProcedureTypeController extends Controller {
     
-    protected $procedureType;
+    function __construct() {
     
-    function __construct(ProcedureType $procedureType) {
-    
-        $this->middleware(['auth']);
-        $this->procedureType = $procedureType;
+        $this->middleware(['auth', 'checkrole']);
         
     }
     
@@ -34,7 +31,9 @@ class ProcedureTypeController extends Controller {
     public function index() {
         
         if (Request::get('draw')) {
-            return response()->json($this->procedureType->datatable());
+            return response()->json(
+                ProcedureType::datatable()
+            );
         }
         
         return $this->output();
@@ -61,7 +60,9 @@ class ProcedureTypeController extends Controller {
      */
     public function store(ProcedureTypeRequest $request) {
         
-        return $this->procedureType->create($request->all()) ? $this->succeed() : $this->fail();
+        return $this->result(
+            ProcedureType::create($request->all())
+        );
         
     }
     
@@ -74,7 +75,7 @@ class ProcedureTypeController extends Controller {
      */
     public function edit($id) {
         
-        $procedureType = $this->procedureType->find($id);
+        $procedureType = ProcedureType::find($id);
         if (!$procedureType) {
             return $this->notFound();
         }
@@ -92,12 +93,10 @@ class ProcedureTypeController extends Controller {
      */
     public function update(ProcedureTypeRequest $request, $id) {
         
-        $procedureType = $this->procedureType->find($id);
-        if (!$procedureType) {
-            return $this->notFound();
-        }
+        $pt = ProcedureType::find($id);
+        if (!$pt) { return $this->notFound(); }
         
-        return $procedureType->update($request->all()) ? $this->succeed() : $this->fail();
+        return $this->result($pt->update($request->all()));
         
     }
     
@@ -110,12 +109,10 @@ class ProcedureTypeController extends Controller {
      */
     public function destroy($id) {
         
-        $procedureType = $this->procedureType->find($id);
-        if (!$procedureType) {
-            return $this->notFound();
-        }
+        $pt = ProcedureType::find($id);
+        if (!$pt) { return $this->notFound(); }
         
-        return $procedureType->delete() ? $this->succeed() : $this->fail();
+        return $this->result($pt->delete());
         
     }
     

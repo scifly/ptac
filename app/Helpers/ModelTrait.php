@@ -6,7 +6,7 @@ use ReflectionClass;
 
 trait ModelTrait {
     
-    public function removable(Model $model) {
+    static function removable(Model $model) {
         
         $relations = [];
         $class = get_class($model);

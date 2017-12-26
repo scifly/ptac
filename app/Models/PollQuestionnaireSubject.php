@@ -30,10 +30,10 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @mixin \Eloquent
  * @property-read PollQuestionnaireAnswer $pollquestionnaireAnswer
  * @property-read PollQuestionnaire $pollquestionnaire
- * @property-read Collection|PollQuestionnaireChoice[] $pollquestionnairechoice
+ * @property-read Collection|PollQuestionnaireSubjectChoice[] $pollquestionnairechoice
  * @property-read PollQuestionnaire $poll_questionnaire
  * @property-read PollQuestionnaireAnswer $poll_questionnaire_answer
- * @property-read Collection|PollQuestionnaireChoice[] $poll_questionnaire_choice
+ * @property-read Collection|PollQuestionnaireSubjectChoice[] $poll_questionnaire_choice
  */
 class PollQuestionnaireSubject extends Model {
 
@@ -46,7 +46,7 @@ class PollQuestionnaireSubject extends Model {
     /**
      * @return HasOne
      */
-    public function poll_questionnaire_answer() {
+    public function pollQuestionnaireAnswer() {
         
         return $this->hasOne('App\Models\PollQuestionnaireAnswer', 'pqs_id', 'id');
         
@@ -55,7 +55,7 @@ class PollQuestionnaireSubject extends Model {
     /**
      * @return HasMany
      */
-    public function poll_questionnaire_choice() {
+    public function pollQuestionnaireSubjectChoice() {
         
         return $this->hasMany("App\Models\PollQuestionnaireChoice", 'pqs_id', 'id');
         
@@ -64,7 +64,7 @@ class PollQuestionnaireSubject extends Model {
     /**
      * @return BelongsTo
      */
-    public function poll_questionnaire() {
+    public function pollQuestionnaire() {
         
         return $this->belongsTo('App\Models\PollQuestionnaire', 'pq_id');
         
@@ -77,16 +77,21 @@ class PollQuestionnaireSubject extends Model {
      * @return bool|null
      * @throws Exception
      */
-    public function remove($id) {
+    static function remove($id) {
 
-        $pqSubject = $this->find($id);
+        $pqSubject = self::find($id);
         if (!$pqSubject) { return false; }
         
-        return $this->removable($pqSubject) ? $pqSubject->delete() : false;
+        return self::removable($pqSubject) ? $pqSubject->delete() : false;
 
     }
-
-    public function dataTable() {
+    
+    /**
+     * 投票问卷问题列表
+     *
+     * @return array
+     */
+    static function dataTable() {
 
         $columns = [
             ['db' => 'PollQuestionnaireSubject.id', 'dt' => 0],
@@ -95,7 +100,7 @@ class PollQuestionnaireSubject extends Model {
             [
                 'db' => 'PollQuestionnaireSubject.subject_type', 'dt' => 3,
                 'formatter' => function ($d) {
-                    return $this->getType($d);
+                    return self::subjectType($d);
                 },
             ],
             [
@@ -104,7 +109,6 @@ class PollQuestionnaireSubject extends Model {
                     $showLink = sprintf(Datatable::DT_LINK_SHOW, 'show_' . $d);
                     $editLink = sprintf(Datatable::DT_LINK_EDIT, 'edit_' . $d);
                     $delLink = sprintf(Datatable::DT_LINK_DEL, $d);
-
                     return $showLink . Datatable::DT_SPACE .
                         $editLink . Datatable::DT_SPACE . $delLink;
                 },
@@ -120,10 +124,16 @@ class PollQuestionnaireSubject extends Model {
                 ],
             ],
         ];
-        return Datatable::simple($this, $columns, $joins);
+        return Datatable::simple(self::getModel(), $columns, $joins);
     }
-
-    public function getType($type) {
+    
+    /**
+     * 获取问题类型
+     *
+     * @param $type
+     * @return string
+     */
+    private static function subjectType($type) {
 
         switch ($type) {
             case 0:
@@ -137,4 +147,5 @@ class PollQuestionnaireSubject extends Model {
         }
 
     }
+    
 }

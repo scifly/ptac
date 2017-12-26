@@ -27,7 +27,7 @@ class AlertType extends Model {
 
     protected $fillable = ['name', 'english_name', 'enabled'];
 
-    public function datatable() {
+    static function datatable() {
 
         $columns = [
             ['db' => 'AlertType.id', 'dt' => 0],
@@ -43,7 +43,7 @@ class AlertType extends Model {
             ],
         ];
 
-        return Datatable::simple($this, $columns);
+        return Datatable::simple(AlertType::getModel(), $columns);
 
     }
 

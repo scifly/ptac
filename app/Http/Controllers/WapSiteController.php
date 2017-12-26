@@ -3,7 +3,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\WapSiteRequest;
 use App\Models\Media;
-use App\Models\Menu;
+use App\Models\School;
 use App\Models\WapSite;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -20,16 +20,9 @@ use Throwable;
  */
 class WapSiteController extends Controller {
     
-    protected $wapSite;
-    protected $media;
-    protected $menu;
-    
-    public function __construct(WapSite $wapSite, Media $media, Menu $menu) {
+    public function __construct() {
         
         $this->middleware(['auth', 'checkrole']);
-        $this->wapSite = $wapSite;
-        $this->media = $media;
-        $this->menu = $menu;
         
     }
     
@@ -39,30 +32,15 @@ class WapSiteController extends Controller {
      * @return bool|JsonResponse
      * @throws Throwable
      */
-    // public function index() {
-    //
-    //     if (Request::get('draw')) {
-    //         return response()->json($this->wapSite->datatable());
-    //     }
-    //
-    //     return $this->output();
-    //
-    // }
     public function index() {
-        $menuId = Request::input('menuId');
-        $schoolId = $this->menu->getSchoolMenuId($menuId);
-        dd($schoolId);
-        // $wapSite = $this->wapSite->where('school_id',$schoolId)->first();
-        // print_r($wapSite);
-        // die;
-        if (empty($wapSite)) {
-            return parent::notFound();
-        }
+
+        $wapSite = WapSite::whereSchoolId(School::id())->first();
+        $this->authorize('rud', $wapSite);
         $mediaIds = explode(",", $wapSite->media_ids);
     
         return $this->output([
             'wapSite' => $wapSite,
-            'medias'  => $this->media->medias($mediaIds),
+            'medias'  => Media::medias($mediaIds),
             'show'    => true,
         ]);
     
@@ -76,6 +54,8 @@ class WapSiteController extends Controller {
      */
     public function create() {
     
+        $this->authorize('c', WapSite::class);
+        
         return $this->output();
     
     }
@@ -90,8 +70,9 @@ class WapSiteController extends Controller {
      */
     public function store(WapSiteRequest $request) {
         
-        return $this->wapSite->store($request)
-            ? $this->succeed() : $this->fail();
+        $this->authorize('c', WapSite::class);
+        
+        return $this->result(WapSite::store($request));
         
     }
     
@@ -104,15 +85,13 @@ class WapSiteController extends Controller {
      */
     public function show($id) {
         
-        $wapSite = $this->wapSite->find($id);
-        if (!$wapSite) {
-            return parent::notFound();
-        }
+        $wapSite = WapSite::find($id);
+        $this->authorize('rud', $wapSite);
         $mediaIds = explode(",", $wapSite->media_ids);
         
         return $this->output([
             'wapSite' => $wapSite,
-            'medias'  => $this->media->medias($mediaIds),
+            'medias'  => Media::medias($mediaIds),
             'show'    => true,
         ]);
         
@@ -126,14 +105,13 @@ class WapSiteController extends Controller {
      * @throws Throwable
      */
     public function edit($id) {
-        $wapSite = $this->wapSite->find($id);
-        if (!$wapSite) {
-            return parent::notFound();
-        }
+        
+        $wapSite = WapSite::find($id);
+        $this->authorize('rud', $wapSite);
         
         return $this->output([
             'wapSite' => $wapSite,
-            'medias'  => $this->media->medias(explode(',',$wapSite->media_ids)),
+            'medias'  => Media::medias(explode(',', $wapSite->media_ids)),
         ]);
         
     }
@@ -149,8 +127,10 @@ class WapSiteController extends Controller {
      */
     public function update(WapSiteRequest $request, $id) {
         
-        return $this->wapSite->modify($request, $id)
-            ? $this->succeed() : $this->fail();
+        $wapSite = WapSite::find($id);
+        $this->authorize('rud', $wapSite);
+        
+        return $this->result($wapSite->modify($request, $id));
         
     }
     
@@ -163,12 +143,10 @@ class WapSiteController extends Controller {
      */
     public function destroy($id) {
         
-        $wapsite = $this->wapSite->find($id);
-        if (!$wapsite) {
-            return parent::notFound();
-        }
+        $wapSite = WapSite::find($id);
+        $this->authorize('rud', $wapSite);
         
-        return $wapsite->delete() ? parent::succeed() : parent::fail();
+        return $this->result($wapSite->delete());
         
     }
     
@@ -183,7 +161,6 @@ class WapSiteController extends Controller {
         if (empty($files)) {
             $result['statusCode'] = 0;
             $result['message'] = '您还未选择图片！';
-            
             return $result;
         } else {
             $result['data'] = [];
@@ -220,8 +197,13 @@ class WapSiteController extends Controller {
             $filename = uniqid() . '.' . $ext;
             // 使用新建的uploads本地存储空间（目录）
             if (Storage::disk('public')->put($filename, file_get_contents($realPath))) {
-                // $filePath = 'storage/app/uploads/' . date('Y') . '/' . date('m') . '/' . date('d') . '/' . $filename;
-                $filePath = Storage::url('public/' . date('Y') . '/' . date('m') . '/' . date('d') . '/' . $filename);
+                $filePath = Storage::url(
+                    'public/'
+                    . date('Y')
+                    . '/' . date('m')
+                    . '/' . date('d')
+                    . '/' . $filename
+                );
                 $mediaId = Media::insertGetId([
                     'path'          => $filePath,
                     'remark'        => '微网站轮播图',

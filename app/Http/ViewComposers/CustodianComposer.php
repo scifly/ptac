@@ -8,18 +8,11 @@ use App\Models\Group;
 use App\Models\School;
 use App\Models\Squad;
 use App\Models\Student;
-use App\Models\User;
 use Illuminate\Contracts\View\View;
 
 class CustodianComposer {
+    
     use ControllerTrait;
-    protected $user;
-
-    public function __construct(User $user) {
-
-        $this->user = $user;
-
-    }
 
     public function compose(View $view) {
 
@@ -28,8 +21,7 @@ class CustodianComposer {
         $classes = null;
         $students = null;
 
-        $school = new School();
-        $schoolId = $school->getSchoolId();
+        $schoolId = School::id();
         $schools = School::whereId($schoolId)
             ->where('enabled', 1)
             ->pluck('name', 'id');
@@ -44,9 +36,6 @@ class CustodianComposer {
                 ->pluck('name', 'id');
         }
         if ($classes) {
-            // $students = Student::where('class_id', $classes->keys()->first())
-            //     ->where('enabled', 1)
-            //     ->pluck('student_number', 'id');
             $list = Student::whereClassId($classes->keys()->first())
                 ->where('enabled', 1)
                 ->get();
@@ -56,6 +45,7 @@ class CustodianComposer {
                 }
             }
         }
+        
         $view->with([
             'schools' => $schools,
             'grades' => $grades,
@@ -63,8 +53,8 @@ class CustodianComposer {
             'students' => $students,
             'groupId' => Group::whereName('监护人')->first()->id,
             'uris' => $this->uris()
-
         ]);
+        
     }
 
 }

@@ -25,7 +25,7 @@ class AppIndexComposer {
             $this->formatDateTime($apps);
             $view->with(['corps' => $corps, 'apps' => $apps, 'uris' => $this->uris()]);
         } else {
-            $corp = Corp::whereDepartmentId($user->topDeptId($user))->first();
+            $corp = Corp::whereDepartmentId($user->topDeptId())->first();
             $apps = App::whereCorpId($corp->id)->get();
             $this->formatDateTime($apps);
             $view->with(['corp' => $corp, 'apps' => $apps, 'uris' => $this->uris()]);

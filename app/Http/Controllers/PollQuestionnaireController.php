@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\PqRequest;
 use App\Models\PollQuestionnaire;
 use Exception;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 use Throwable;
@@ -16,12 +17,9 @@ use Throwable;
  */
 class PollQuestionnaireController extends Controller {
     
-    protected $pollQuestionnaire;
-    
-    function __construct(PollQuestionnaire $pollQuestionnaire) {
+    function __construct() {
         
-        $this->middleware(['auth']);
-        $this->pollQuestionnaire = $pollQuestionnaire;
+        $this->middleware(['auth', 'checkrole']);
         
     }
     
@@ -34,7 +32,7 @@ class PollQuestionnaireController extends Controller {
     public function index() {
         
         if (Request::get('draw')) {
-            return response()->json($this->pollQuestionnaire->dataTable());
+            return response()->json(PollQuestionnaire::dataTable());
         }
         
         return $this->output();
@@ -49,6 +47,8 @@ class PollQuestionnaireController extends Controller {
      */
     public function create() {
         
+        $this->authorize('c', PollQuestionnaire::class);
+        
         return $this->output();
         
     }
@@ -58,14 +58,13 @@ class PollQuestionnaireController extends Controller {
      *
      * @param PqRequest $request
      * @return JsonResponse
+     * @throws AuthorizationException
      */
     public function store(PqRequest $request) {
+    
+        $this->authorize('c', PollQuestionnaire::class);
         
-        $data = $request->all();
-        $data['user_id'] = 6;
-        
-        return $this->pollQuestionnaire->create($data)
-            ? $this->succeed() : $this->fail();
+        return $this->result(PollQuestionnaire::create($request->all()));
         
     }
     
@@ -78,11 +77,11 @@ class PollQuestionnaireController extends Controller {
      */
     public function show($id) {
         
-        $pollQuestionnaire = $this->pollQuestionnaire->find($id);
-        if (!$pollQuestionnaire) { return $this->notFound(); }
+        $pq = PollQuestionnaire::find($id);
+        $this->authorize('rud', $pq);
         
         return $this->output([
-            'pollQuestionnaire' => $pollQuestionnaire,
+            'pollQuestionnaire' => $pq,
         ]);
         
     }
@@ -95,12 +94,10 @@ class PollQuestionnaireController extends Controller {
      */
     public function edit($id) {
         
-        $pollQuestionnaire = $this->pollQuestionnaire->find($id);
-        if (!$pollQuestionnaire) { return $this->notFound(); }
+        $pq = PollQuestionnaire::find($id);
+        $this->authorize('rud', $pq);
         
-        return $this->output([
-            'pollQuestionnaire' => $pollQuestionnaire
-        ]);
+        return $this->output(['pollQuestionnaire' => $pq]);
         
     }
     
@@ -110,14 +107,14 @@ class PollQuestionnaireController extends Controller {
      * @param PqRequest $request
      * @param $id
      * @return JsonResponse
+     * @throws AuthorizationException
      */
     public function update(PqRequest $request, $id) {
         
-        $pollQuestionnaire = $this->pollQuestionnaire->find($id);
-        if (!$pollQuestionnaire) { return $this->notFound(); }
+        $pq = PollQuestionnaire::find($id);
+        $this->authorize('rud', $pq);
         
-        return $pollQuestionnaire->update($request->all())
-            ? $this->succeed() : $this->fail();
+        return $this->result($pq->update($request->all()));
         
     }
     
@@ -130,11 +127,10 @@ class PollQuestionnaireController extends Controller {
      */
     public function destroy($id) {
         
-        $pq = $this->pollQuestionnaire->find($id);
-        if (!$pq) { return $this->notFound(); }
+        $pq = PollQuestionnaire::find($id);
+        $this->authorize('rud', $pq);
         
-        return $pq->remove($id)
-            ? $this->succeed() : $this->fail('失败：该问卷存在有效关联数据，不能删除');
+        return $this->result($pq->remove($id));
         
     }
     

@@ -2,7 +2,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StudentRequest;
-use App\Models\Action;
 use App\Models\Custodian;
 use App\Models\CustodianStudent;
 use App\Models\Department;
@@ -10,7 +9,6 @@ use App\Models\DepartmentUser;
 use App\Models\Group;
 use App\Models\Student;
 use App\Models\User;
-use App\Policies\Route;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
@@ -25,25 +23,10 @@ use Throwable;
  */
 class StudentController extends Controller {
     
-    protected $custodian, $department, $group, $user;
-    protected $departmentUser, $student, $custodianStudent;
-
-    function __construct(
-        Custodian $custodian, Department $department,
-        Group $group, User $user,
-        DepartmentUser $departmentUser, Student $student,
-        CustodianStudent $custodianStudent
-    ) {
+    function __construct() {
         
-        $this->middleware(['auth']);
-        $this->custodian = $custodian;
-        $this->department = $department;
-        $this->group = $group;
-        $this->user = $user;
-        $this->departmentUser = $departmentUser;
-        $this->student = $student;
-        $this->custodianStudent = $custodianStudent;
-
+        $this->middleware(['auth', 'checkrole']);
+        
     }
     
     /**
@@ -55,8 +38,9 @@ class StudentController extends Controller {
     public function index() {
 
         if (Request::get('draw')) {
-            return response()->json($this->student->datatable());
+            return response()->json(Student::datatable());
         }
+        
         return $this->output();
         
     }
@@ -69,10 +53,9 @@ class StudentController extends Controller {
      */
     public function create() {
         
-        if (Request::method() === 'POST') {
-            return $this->department->tree();
-        }
-        $items = $this->student->getGradeClass();
+        if (Request::method() === 'POST') { return Department::tree(); }
+        $items = Student::gradeClasses();
+        
         return $this->output([
             'grades'  => $items['grades'],
             'classes' => $items['classes'],
@@ -90,8 +73,7 @@ class StudentController extends Controller {
      */
     public function store(StudentRequest $request) {
         
-        return $this->student->store($request)
-            ? $this->succeed() : $this->fail();
+        return $this->result(Student::store($request));
         
     }
     
@@ -104,10 +86,9 @@ class StudentController extends Controller {
      */
     public function show($id) {
         
-        $student = $this->student->find($id);
-        if (!$student) {
-            return $this->notFound();
-        }
+        $student = Student::find($id);
+        if (!$student) { return $this->notFound(); }
+        
         return $this->output(['student' => $student]);
         
     }
@@ -122,15 +103,15 @@ class StudentController extends Controller {
     public function edit($id) {
 
         # 查询学生信息
-        $student = $this->student->find($id);
+        $student = Student::find($id);
         if (!$student) { return $this->notFound(); }
         $user = $student->user;
-        // print_r($student->toArray());die;
-        $items = $this->student->getGradeClass($student->squad->grade_id);
+        $items = Student::gradeClasses(
+            $student->squad->grade_id
+        );
         $student->grade_id = $student->squad->grade_id;
         return $this->output([
             'student' => $student,
-            // 'user'    => $user,
             'mobiles' => $user->mobiles,
             'grades'  => $items['grades'],
             'classes' => $items['classes'],
@@ -149,8 +130,7 @@ class StudentController extends Controller {
      */
     public function update(StudentRequest $request, $id) {
         
-        return $this->student->modify($request, $id)
-            ? $this->succeed() : $this->fail();
+        return $this->result(Student::modify($request, $id));
         
     }
     
@@ -164,8 +144,10 @@ class StudentController extends Controller {
      */
     public function destroy($id) {
         
-        return $this->custodian->remove($id)
-            ? $this->succeed() : $this->fail();
+        $student = Student::find($id);
+        if (!$student) { return $this->notFound(); }
+        
+        return $this->result(Student::remove($id));
         
     }
     
@@ -186,10 +168,13 @@ class StudentController extends Controller {
             }
             // 文件是否上传成功
             if ($file->isValid()) {
-                $result = $this->student->upload($file);
+                $result = Student::upload($file);
                 return response()->json($result);
             }
         }
+        
+        return null;
+        
     }
     
     /**
@@ -198,7 +183,7 @@ class StudentController extends Controller {
     public function export() {
         $id = Request::query('id');
         if ($id) {
-            $data = $this->student->export($id);
+            $data = Student::export($id);
             /** @noinspection PhpMethodParametersCountMismatchInspection */
             /** @noinspection PhpUndefinedMethodInspection */
             Excel::create(iconv('UTF-8', 'GBK', '学生列表'), function ($excel) use ($data) {

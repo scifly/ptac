@@ -16,12 +16,9 @@ use Throwable;
  */
 class CommTypeController extends Controller {
     
-    protected $commType;
+    function __construct() {
     
-    function __construct(CommType $commType) {
-    
-        $this->middleware(['auth']);
-        $this->commType = $commType;
+        $this->middleware(['auth', 'checkrole']);
         
     }
     
@@ -34,7 +31,7 @@ class CommTypeController extends Controller {
     public function index() {
         
         if (Request::get('draw')) {
-            return response()->json($this->commType->datatable());
+            return response()->json(CommType::datatable());
         }
         
         return $this->output();
@@ -61,8 +58,7 @@ class CommTypeController extends Controller {
      */
     public function store(CommTypeRequest $request) {
         
-        return $this->commType->create($request->all())
-            ? $this->succeed() : $this->fail();
+        return $this->result(CommType::create($request->all()));
         
     }
     
@@ -75,7 +71,7 @@ class CommTypeController extends Controller {
      */
     public function edit($id) {
         
-        $commType = $this->commType->find($id);
+        $commType = CommType::find($id);
         if (!$commType) { return $this->notFound(); }
         
         return $this->output(['commType' => $commType]);
@@ -91,11 +87,10 @@ class CommTypeController extends Controller {
      */
     public function update(CommTypeRequest $request, $id) {
         
-        $commType = $this->commType->find($id);
+        $commType = CommType::find($id);
         if (!$commType) { return $this->notFound(); }
         
-        return $commType->update($request->all())
-            ? $this->succeed() : $this->fail();
+        return $this->result($commType->update($request->all()));
         
     }
     
@@ -108,10 +103,10 @@ class CommTypeController extends Controller {
      */
     public function destroy($id) {
         
-        $commType = $this->commType->find($id);
+        $commType = CommType::find($id);
         if (!$commType) { return $this->notFound(); }
         
-        return $commType->delete() ? $this->succeed() : $this->fail();
+        return $this->result($commType->delete());
         
     }
     

@@ -5,7 +5,9 @@ use App\Http\Requests\SchoolTypeRequest;
 use App\Models\SchoolType;
 use Exception;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Request;
+use Throwable;
 
 /**
  * 学校类型
@@ -15,12 +17,9 @@ use Illuminate\Support\Facades\Request;
  */
 class SchoolTypeController extends Controller {
     
-    protected $schoolType;
+    function __construct() {
     
-    function __construct(SchoolType $schoolType) {
-    
-        $this->middleware(['auth']);
-        $this->schoolType = $schoolType;
+        $this->middleware(['auth', 'checkrole']);
         
     }
     
@@ -28,12 +27,12 @@ class SchoolTypeController extends Controller {
      * 学校类型列表
      *
      * @return bool|JsonResponse
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function index() {
         
         if (Request::get('draw')) {
-            return response()->json($this->schoolType->datatable());
+            return response()->json(SchoolType::datatable());
         }
         
         return $this->output();
@@ -44,7 +43,7 @@ class SchoolTypeController extends Controller {
      * 创建学校类型
      *
      * @return bool|\Illuminate\Http\JsonResponse
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function create() {
         
@@ -56,12 +55,11 @@ class SchoolTypeController extends Controller {
      * 保存学校类型
      *
      * @param SchoolTypeRequest|\Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function store(SchoolTypeRequest $request) {
         
-        return $this->schoolType->create($request->all())
-            ? parent::succeed() : parent::fail();
+        return $this->result(SchoolType::create($request->all()));
         
     }
     
@@ -70,14 +68,12 @@ class SchoolTypeController extends Controller {
      *
      * @param $id
      * @return bool|\Illuminate\Http\JsonResponse
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function edit($id) {
         
-        $schoolType = $this->schoolType->find($id);
-        if (!$schoolType) {
-            return parent::notFound();
-        }
+        $schoolType = SchoolType::find($id);
+        if (!$schoolType) { return $this->notFound(); }
         
         return $this->output(['schoolType' => $schoolType]);
         
@@ -92,12 +88,10 @@ class SchoolTypeController extends Controller {
      */
     public function update(SchoolTypeRequest $request, $id) {
         
-        $schoolType = $this->schoolType->find($id);
-        if (!$schoolType) {
-            return parent::notFound();
-        }
+        $schoolType = SchoolType::find($id);
+        if (!$schoolType) { return $this->notFound(); }
         
-        return $schoolType->update($request->all()) ? parent::succeed() : parent::fail();
+        return $this->result($schoolType->update($request->all()));
         
     }
     
@@ -110,10 +104,10 @@ class SchoolTypeController extends Controller {
      */
     public function destroy($id) {
         
-        $schoolType = $this->schoolType->find($id);
-        if (!$schoolType) { return parent::notFound(); }
+        $schoolType = SchoolType::find($id);
+        if (!$schoolType) { return $this->notFound(); }
         
-        return $schoolType->delete() ? parent::succeed() : parent::fail();
+        return $this->result($schoolType->delete());
         
     }
     

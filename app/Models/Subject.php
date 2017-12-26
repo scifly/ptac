@@ -89,9 +89,9 @@ class Subject extends Model {
      * @param $schoolId
      * @return Collection
      */
-    public function subjects($schoolId) {
+    static function subjects($schoolId) {
         
-        return $this->where('school_id', $schoolId)->get()->pluck('id', 'name');
+        return self::whereSchoolId($schoolId)->get()->pluck('id', 'name');
 
     }
 
@@ -101,11 +101,12 @@ class Subject extends Model {
      * @param $ids
      * @return array
      */
-    public function selectedSubjects($ids) {
+    static function selectedSubjects($ids) {
+        
         $ids = explode(',', $ids);
         $selectedSubjects = [];
         foreach ($ids as $id) {
-            $selectedSubjects[$id] = $this->find($id)->name;
+            $selectedSubjects[$id] = self::find($id)->name;
         }
 
         return $selectedSubjects;
@@ -120,11 +121,11 @@ class Subject extends Model {
      * @throws Exception
      * @throws \Throwable
      */
-    public function store(SubjectRequest $request) {
+    static function store(SubjectRequest $request) {
         
         try {
             DB::transaction(function () use ($request) {
-                $subjectData = [
+                $subject = self::create([
                     'name' => $request->input('name'),
                     'school_id' => $request->input('school_id'),
                     'max_score' => $request->input('max_score'),
@@ -132,10 +133,10 @@ class Subject extends Model {
                     'grade_ids' => $request->input('grade_ids'),
                     'isaux' => $request->input('isaux'),
                     'enabled' => $request->input('enabled'),
-                ];
-                $subject = $this->create($subjectData);
-                $majorSubject = new MajorSubject();
-                $majorSubject->storeBySubjectId($subject->id, $request->input('major_ids'));
+                ]);
+                MajorSubject::storeBySubjectId(
+                    $subject->id, $request->input('major_ids')
+                );
             });
 
         } catch (Exception $e) {
@@ -155,9 +156,9 @@ class Subject extends Model {
      * @throws Exception
      * @throws \Throwable
      */
-    public function modify(SubjectRequest $request, $id) {
+    static function modify(SubjectRequest $request, $id) {
         
-        $subject = $this->find($id);
+        $subject = self::find($id);
         if (!isset($subject)) { return false; }
         try {
             DB::transaction(function () use ($request, $id, $subject) {
@@ -170,9 +171,8 @@ class Subject extends Model {
                     'isaux' => $request->input('isaux'),
                     'enabled' => $request->input('enabled'),
                 ]);
-                $majorSubject = new MajorSubject();
-                $majorSubject::whereSubjectId($id)->delete();
-                $majorSubject->storeBySubjectId($id, $request->input('major_ids'));
+                MajorSubject::whereSubjectId($id)->delete();
+                MajorSubject::storeBySubjectId($id, $request->input('major_ids'));
             });
 
         } catch (Exception $e) {
@@ -186,21 +186,21 @@ class Subject extends Model {
     /**
      * 删除指定的科目记录
      *
-     * @param $subjectId
+     * @param $id
      * @return bool|mixed
      * @throws Exception
      * @throws \Throwable
      */
-    public function remove($subjectId) {
+    static function remove($id) {
         
-        $subject = $this->find($subjectId);
+        $subject = self::find($id);
         if (!isset($subject)) { return false; }
         try {
-            DB::transaction(function () use ($subjectId, $subject) {
+            DB::transaction(function () use ($id, $subject) {
                 # 删除指定的科目记录
                 $subject->delete();
                 # 删除与科目绑定的专业记录
-                MajorSubject::where('subject_id', $subjectId)->delete();
+                MajorSubject::where('subject_id', $id)->delete();
             });
 
         } catch (Exception $e) {
@@ -210,18 +210,30 @@ class Subject extends Model {
         return true;
 
     }
-
-    public function getId(array $subjects) {
+    
+    /**
+     * 获取科目ids
+     *
+     * @param array $subjects
+     * @return array
+     */
+    static function ids(array $subjects) {
         
         $result = [];
         foreach ($subjects as $v) {
-            $result[$v] = $this->whereName($v)->value('id');
+            $result[$v] = self::whereName($v)->value('id');
         }
 
         return $result;
+        
     }
-
-    public function datatable() {
+    
+    /**
+     * 科目列表
+     *
+     * @return array
+     */
+    static function datatable() {
         
         $columns = [
             ['db' => 'Subject.id', 'dt' => 0],
@@ -240,9 +252,7 @@ class Subject extends Model {
             [
                 'db' => 'Subject.isaux', 'dt' => 3,
                 'formatter' => function ($d) {
-                    $subject = Subject::whereId($d)->first();
-
-                    return $subject->isaux == 1 ? '是' : '否';
+                    return $d == 1 ? '是' : '否';
                 },
             ],
             ['db' => 'Subject.max_score', 'dt' => 4],
@@ -271,13 +281,9 @@ class Subject extends Model {
                 'conditions' => ['School.id = Subject.school_id'],
             ],
         ];
-
-        $school = new School();
-        $schoolId = $school->getSchoolId();
-        $condition = 'Subject.school_id = ' . $schoolId;
-        unset($school);
+        $condition = 'Subject.school_id = ' . School::id();
         
-        return Datatable::simple($this, $columns, $joins, $condition);
+        return Datatable::simple(self::getModel(), $columns, $joins, $condition);
 
     }
 

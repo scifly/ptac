@@ -27,11 +27,11 @@ class GroupCreateComposer {
                 $schools = School::whereEnabled(1)->pluck('id', 'name');
                 break;
             case '企业':
-                $corpId = Corp::whereDepartmentId($user->topDeptId($user))->first()->id;
+                $corpId = Corp::whereDepartmentId($user->topDeptId())->first()->id;
                 $schools = School::whereCorpId($corpId)->where('enabled', 1)->pluck('id', 'name');
                 break;
             case '学校':
-                $schools = School::whereDepartmentId($user->topDeptId($user))
+                $schools = School::whereDepartmentId($user->topDeptId())
                     ->first()->pluck('id', 'name');
                 break;
             default:

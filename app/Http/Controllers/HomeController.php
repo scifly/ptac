@@ -14,7 +14,6 @@ use Exception;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
 use Illuminate\View\View;
@@ -70,7 +69,7 @@ class HomeController extends Controller {
                     break;
                 case '企业':
                     $view = 'corp';
-                    $parentMenuId = Corp::whereDepartmentId($user->topDeptId($user))
+                    $parentMenuId = Corp::whereDepartmentId($user->topDeptId())
                         ->first()
                         ->menu_id;
                     $menuId = $this->menu
@@ -81,7 +80,7 @@ class HomeController extends Controller {
                     break;
                 case '学校':
                     $view = 'school';
-                    $parentMenuId = School::whereDepartmentId($user->topDeptId($user))
+                    $parentMenuId = School::whereDepartmentId($user->topDeptId())
                         ->first()->menu_id;
                     $menuId = $this->menu
                         ->where('parent_id', $parentMenuId)
@@ -91,7 +90,7 @@ class HomeController extends Controller {
                     break;
                 default:
                     $view = 'school';
-                    $toDeptId = $user->topDeptId($user);
+                    $toDeptId = $user->topDeptId();
                     $parentMenuId = School::whereDepartmentId($user->getDeptSchoolId($toDeptId))
                         ->first()->menu_id;
                     $menuId = $this->menu
@@ -103,7 +102,7 @@ class HomeController extends Controller {
             }
             session(['menuId' => $menuId]);
             return view('home.home', [
-                'menu' => $this->menu->getMenuHtml($this->menu->rootMenuId()),
+                'menu' => $this->menu->menuHtml($this->menu->rootMenuId()),
                 'content' => view('home.' . $view),
                 'js' => 'js/home/page.js',
                 'user' => Auth::user()
@@ -131,7 +130,7 @@ class HomeController extends Controller {
                 ]);
             }
             return view('home.home', [
-                'menu' => $this->menu->getMenuHtml($this->menu->rootMenuId()),
+                'menu' => $this->menu->menuHtml($this->menu->rootMenuId()),
                 'menuId' => $menuId,
                 'js' => 'js/home/page.js',
                 'user' => Auth::user()
@@ -239,7 +238,7 @@ class HomeController extends Controller {
             ]);
         }
         # 获取菜单列表
-        $menu = $this->menu->getMenuHtml($this->menu->rootMenuId());
+        $menu = $this->menu->menuHtml($this->menu->rootMenuId());
         return view('home.page', [
             'menu'   => $menu,
             'tabs'   => $tabArray,

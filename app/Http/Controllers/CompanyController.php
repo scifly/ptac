@@ -5,9 +5,7 @@ use App\Http\Requests\CompanyRequest;
 use App\Models\Company;
 use Exception;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
-use Pusher\Pusher;
 use Throwable;
 
 /**
@@ -18,12 +16,9 @@ use Throwable;
  */
 class CompanyController extends Controller {
     
-    protected $company;
-    
-    function __construct(Company $company) {
+    function __construct() {
     
         $this->middleware(['auth', 'checkrole']);
-        $this->company = $company;
         
     }
     
@@ -36,7 +31,7 @@ class CompanyController extends Controller {
     public function index() {
 
         if (Request::get('draw')) {
-            return response()->json($this->company->datatable());
+            return response()->json(Company::datatable());
         }
         
         return $this->output();
@@ -63,8 +58,7 @@ class CompanyController extends Controller {
      */
     public function store(CompanyRequest $request) {
         
-        return $this->company->store($request->all(), true)
-            ? $this->succeed() : $this->fail();
+        return $this->result(Company::store($request->all(), true));
         
     }
     
@@ -77,7 +71,7 @@ class CompanyController extends Controller {
      */
     public function edit($id) {
         
-        $company = $this->company->find($id);
+        $company = Company::find($id);
         if (!$company) { return $this->notFound(); }
         
         return $this->output(['company' => $company]);
@@ -93,11 +87,10 @@ class CompanyController extends Controller {
      */
     public function update(CompanyRequest $request, $id) {
         
-        $company = $this->company->find($id);
+        $company = Company::find($id);
         if (!$company) { return $this->notFound(); }
         
-        return $company->modify($request->all(), $id, true)
-            ? $this->succeed() : $this->fail();
+        return $this->result($company->modify($request->all(), $id, true));
         
     }
     
@@ -110,11 +103,10 @@ class CompanyController extends Controller {
      */
     public function destroy($id) {
     
-        $company = $this->company->find($id);
+        $company = Company::find($id);
         if (!$company) { return $this->notFound(); }
         
-        return $company->remove($id, true)
-            ? $this->succeed() : $this->fail();
+        return $this->result($company->remove($id, true));
         
     }
     

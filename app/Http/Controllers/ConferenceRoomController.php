@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ConferenceRoomRequest;
 use App\Models\ConferenceRoom;
 use Exception;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 use Throwable;
@@ -16,12 +17,9 @@ use Throwable;
  */
 class ConferenceRoomController extends Controller {
     
-    protected $cr;
+    function __construct() {
     
-    function __construct(ConferenceRoom $cr) {
-    
-        $this->middleware(['auth']);
-        $this->cr = $cr;
+        $this->middleware(['auth', 'checkrole']);
         
     }
     
@@ -34,7 +32,7 @@ class ConferenceRoomController extends Controller {
     public function index() {
         
         if (Request::get('draw')) {
-            return response()->json($this->cr->datatable());
+            return response()->json(ConferenceRoom::datatable());
         }
         
         return $this->output();
@@ -49,6 +47,8 @@ class ConferenceRoomController extends Controller {
      */
     public function create() {
         
+        $this->authorize('c', ConferenceRoom::class);
+        
         return $this->output();
         
     }
@@ -58,11 +58,13 @@ class ConferenceRoomController extends Controller {
      *
      * @param ConferenceRoomRequest $request
      * @return JsonResponse
+     * @throws AuthorizationException
      */
     public function store(ConferenceRoomRequest $request) {
         
-        return $this->cr->store($request->all())
-            ? $this->succeed() : $this->fail();
+        $this->authorize('c', ConferenceRoom::class);
+        
+        return $this->result(ConferenceRoom::store($request->all()));
         
     }
     
@@ -75,8 +77,8 @@ class ConferenceRoomController extends Controller {
      */
     public function show($id) {
         
-        $cr = $this->cr->find($id);
-        if (!$cr) { return $this->notFound(); }
+        $cr = ConferenceRoom::find($id);
+        $this->authorize('rud', $cr);
         
         return $this->output(['cr' => $cr]);
         
@@ -91,8 +93,8 @@ class ConferenceRoomController extends Controller {
      */
     public function edit($id) {
         
-        $cr = $this->cr->find($id);
-        if (!$cr) { return $this->notFound(); }
+        $cr = ConferenceRoom::find($id);
+        $this->authorize('rud', $cr);
         
         return $this->output(['conferenceRoom' => $cr]);
         
@@ -104,14 +106,14 @@ class ConferenceRoomController extends Controller {
      * @param ConferenceRoomRequest $request
      * @param $id
      * @return JsonResponse
+     * @throws AuthorizationException
      */
     public function update(ConferenceRoomRequest $request, $id) {
         
-        $cr = $this->cr->find($id);
-        if (!$cr) { return $this->notFound(); }
+        $cr = ConferenceRoom::find($id);
+        $this->authorize('rud', $cr);
         
-        return $cr->modify($request->all(), $id)
-            ? $this->succeed() : $this->fail();
+        return $this->result($cr->modify($request->all(), $id));
         
     }
     
@@ -124,11 +126,10 @@ class ConferenceRoomController extends Controller {
      */
     public function destroy($id) {
         
-        $cr = $this->cr->find($id);
-        if (!$cr) { return $this->notFound(); }
+        $cr = ConferenceRoom::find($id);
+        $this->authorize('rud', $cr);
         
-        return $cr->remove($id)
-            ? $this->succeed() : $this->fail();
+        return $this->result($cr->remove($id));
         
     }
     

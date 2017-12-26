@@ -50,11 +50,11 @@ class MessageSendingLog extends Model {
      * @throws Exception
      * @throws \Throwable
      */
-    public function store($recipientCount) {
+    static function store($recipientCount) {
         
         try {
             DB::transaction(function () use ($recipientCount) {
-                $log = $this->create([
+                $log = self::create([
                     'read_count' => 0,
                     'received_count' => 0,
                     'recipient_count' => $recipientCount,

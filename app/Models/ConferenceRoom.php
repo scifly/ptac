@@ -63,9 +63,9 @@ class ConferenceRoom extends Model {
      * @param array $data
      * @return bool
      */
-    public function store(array $data) {
+    static function store(array $data) {
 
-        $cr = $this->create($data);
+        $cr = self::create($data);
         
         return $cr ? true : false;
 
@@ -78,9 +78,9 @@ class ConferenceRoom extends Model {
      * @param $id
      * @return bool
      */
-    public function modify(array $data, $id) {
+    static function modify(array $data, $id) {
 
-        $cr = $this->find($id);
+        $cr = self::find($id);
         if (!$cr) { return false; }
         
         return $cr->update($data) ? true : false;
@@ -94,16 +94,16 @@ class ConferenceRoom extends Model {
      * @return bool
      * @throws Exception
      */
-    public function remove($id) {
+    static function remove($id) {
 
-        $cr = $this->find($id);
+        $cr = self::find($id);
         if (!$cr) { return false; }
         
-        return $this->removable($id) ? $cr->delete() : false;
+        return self::removable($id) ? $cr->delete() : false;
 
     }
 
-    public function datatable() {
+    static function datatable() {
 
         $columns = [
             ['db' => 'ConferenceRoom.id', 'dt' => 0],
@@ -130,12 +130,9 @@ class ConferenceRoom extends Model {
                 ],
             ],
         ];
-        $school = new School();
-        $schoolId = $school->getSchoolId();
-        $condition = 'ConferenceRoom.school_id = ' . $schoolId;
-        unset($school);
+        $condition = 'ConferenceRoom.school_id = ' . School::id();
         
-        return Datatable::simple($this, $columns, $joins,$condition);
+        return Datatable::simple(ConferenceRoom::getModel(), $columns, $joins,$condition);
 
     }
 

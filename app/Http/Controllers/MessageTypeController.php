@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\MessageTypeRequest;
+use App\Models\Media;
 use App\Models\MessageType;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -15,12 +16,9 @@ use Illuminate\Support\Facades\Request;
  */
 class MessageTypeController extends Controller {
     
-    protected $messageType;
+    function __construct() {
     
-    function __construct(MessageType $messageType) {
-    
-        $this->middleware(['auth']);
-        $this->messageType = $messageType;
+        $this->middleware(['auth', 'checkrole']);
     
     }
     
@@ -33,7 +31,7 @@ class MessageTypeController extends Controller {
     public function index() {
         
         if (Request::get('draw')) {
-            return response()->json($this->messageType->datatable());
+            return response()->json(MessageType::datatable());
         }
         
         return $this->output();
@@ -60,7 +58,7 @@ class MessageTypeController extends Controller {
      */
     public function store(MessageTypeRequest $request) {
         
-        return $this->messageType->create($request->all()) ? $this->succeed() : $this->fail();
+        return $this->result(MessageType::create($request->all()));
         
     }
     
@@ -73,10 +71,8 @@ class MessageTypeController extends Controller {
      */
     public function edit($id) {
         
-        $messageType = $this->messageType->find($id);
-        if (!$messageType) {
-            return $this->notFound();
-        }
+        $messageType = MessageType::find($id);
+        if (!$messageType) { return $this->notFound(); }
         
         return $this->output(['messageType' => $messageType]);
         
@@ -91,12 +87,10 @@ class MessageTypeController extends Controller {
      */
     public function update(MessageTypeRequest $request, $id) {
         
-        $messageType = $this->messageType->find($id);
-        if (!$messageType) {
-            return $this->notFound();
-        }
+        $messageType = MessageType::find($id);
+        if (!$messageType) { return $this->notFound(); }
         
-        return $messageType->update($request->all()) ? $this->succeed() : $this->fail();
+        return $this->result($messageType->update($request->all()));
         
     }
     
@@ -109,10 +103,10 @@ class MessageTypeController extends Controller {
      */
     public function destroy($id) {
         
-        $messageType = $this->messageType->find($id);
+        $messageType = MessageType::find($id);
         if (!$messageType) { return $this->notFound(); }
         
-        return $messageType->delete() ? $this->succeed() : $this->fail();
+        return $this->result($messageType->delete());
         
     }
     

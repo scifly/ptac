@@ -57,9 +57,9 @@ class ProcedureStep extends Model {
      * @param array $data
      * @return bool
      */
-    public function store(array $data) {
+    static function store(array $data) {
 
-        $ps = $this->create($data);
+        $ps = self::create($data);
 
         return $ps ? true : false;
 
@@ -72,12 +72,12 @@ class ProcedureStep extends Model {
      * @param $id
      * @return bool
      */
-    public function modify(array $data, $id) {
+    static function modify(array $data, $id) {
 
-        $ps = $this->find($id);
-        if (!$ps) { return false; }
+        $p = self::find($id);
+        if (!$p) { return false; }
 
-        return $ps->update($data) ? true : false;
+        return $p->update($data) ? true : false;
 
     }
     
@@ -88,16 +88,21 @@ class ProcedureStep extends Model {
      * @return bool|null
      * @throws Exception
      */
-    public function remove($id) {
+    static function remove($id) {
 
-        $ps = $this->find($id);
-        if (!$ps) { return false; }
+        $p = self::find($id);
+        if (!$p) { return false; }
         
-        return $ps->removable($ps) ? $ps->delete() : false;
+        return $p->removable($p) ? $p->delete() : false;
 
     }
-
-    public function datatable() {
+    
+    /**
+     * 审批流程步骤列表
+     *
+     * @return array
+     */
+    static function datatable() {
 
         $columns = [
             ['db' => 'ProcedureStep.id', 'dt' => 0],
@@ -105,13 +110,13 @@ class ProcedureStep extends Model {
             [
                 'db' => 'ProcedureStep.approver_user_ids', 'dt' => 2,
                 'formatter' => function ($row) {
-                    return $this->approverUsers($row['id']);
+                    return self::approverUsers($row['id']);
                 },
             ],
             [
                 'db' => 'ProcedureStep.related_user_ids', 'dt' => 3,
                 'formatter' => function ($row) {
-                    return $this->relatedUsers($row['id']);
+                    return self::relatedUsers($row['id']);
                 },
             ],
             ['db' => 'ProcedureStep.name', 'dt' => 4],
@@ -136,7 +141,7 @@ class ProcedureStep extends Model {
             ],
         ];
 
-        return Datatable::simple($this, $columns, $joins);
+        return Datatable::simple(self::getModel(), $columns, $joins);
         
     }
 
@@ -146,9 +151,9 @@ class ProcedureStep extends Model {
      * @param $id
      * @return string
      */
-    public function approverUsers($id) {
+    private static function approverUsers($id) {
 
-        return $this->getUserList($id, 'approver_user_ids');
+        return self::userList($id, 'approver_user_ids');
 
     }
 
@@ -159,11 +164,10 @@ class ProcedureStep extends Model {
      * @param $field string (用户ID)字段名称
      * @return string
      */
-    private function getUserList($id, $field) {
+    private static function userList($id, $field) {
 
-        $ps = $this->find($id);
-        $user = new User();
-        $userIds = $user->users(explode(',', $ps->{$field}));
+        $ps = self::find($id);
+        $userIds = User::users(explode(',', $ps->{$field}));
         $userList = collect($userIds)->flatten()->toArray();
 
         return implode(',', $userList);
@@ -176,9 +180,9 @@ class ProcedureStep extends Model {
      * @param $id
      * @return string
      */
-    public function relatedUsers($id) {
+    private static function relatedUsers($id) {
 
-        return $this->getUserList($id, 'related_user_ids');
+        return self::userList($id, 'related_user_ids');
 
     }
 

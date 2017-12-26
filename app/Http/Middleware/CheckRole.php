@@ -12,13 +12,13 @@ use App\Models\Tab;
 use App\Models\WapSite;
 use Closure;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class CheckRole {
     
     protected $group, $action, $actionGroup;
+    
     function __construct(Group $group, Action $action, ActionGroup $actionGroup) {
         
         $this->group = $group;
@@ -35,29 +35,33 @@ class CheckRole {
      * @return mixed
      */
     public function handle($request, Closure $next) {
-
+        
         $route = $request->route()->uri();
-        if (!Session::exists('menuId') && $route != '/') { $this->abort(); };
+        if (!Session::exists('menuId') && $route != '/') {
+            $this->abort();
+        };
         $user = Auth::user();
         $groupId = $user->group_id;
         $role = $user->group->name;
         $menuId = session('menuId');
         $menu = new Menu();
         # 超级用户直接访问所有功能
-        if ($role == '运营' || $route == '/' || $route == '/home') { return $next($request); }
+        if ($role == '运营' || $route == '/' || $route == '/home') {
+            return $next($request);
+        }
         # 菜单权限判断
         if (stripos($route, 'pages') > -1) {
             switch ($role) {
                 case '企业':
-                    $menuIds = $menu->getSubMenuIds(
-                        Corp::whereDepartmentId($user->topDeptId($user))
+                    $menuIds = $menu->subMenuIds(
+                        Corp::whereDepartmentId($user->topDeptId())
                             ->first()->menu_id
                     );
                     $abort = !in_array($menuId, $menuIds) ?? false;
                     break;
                 case '学校':
-                    $menuIds = $menu->getSubMenuIds(
-                        School::whereDepartmentId($user->topDeptId($user))
+                    $menuIds = $menu->subMenuIds(
+                        School::whereDepartmentId($user->topDeptId())
                             ->first()->menu_id
                     );
                     $abort = !in_array($menuId, $menuIds) ?? false;
@@ -69,7 +73,10 @@ class CheckRole {
                     $abort = !$groupMenu ?? false;
                     break;
             }
-            if ($abort) { $this->abort(); }
+            if ($abort) {
+                $this->abort();
+            }
+            
             return $next($request);
         }
         # 功能权限判断
@@ -82,7 +89,6 @@ class CheckRole {
                 $abort = !$tab ?? false;
                 break;
             default:
-                Log::debug('route'.$route);
                 # 校级以下角色 action权限判断
                 $groupAction = ActionGroup::whereActionId(
                     Action::whereRoute($route)->first()->id
@@ -92,11 +98,11 @@ class CheckRole {
         }
         # 企业本身 企业管理模块权限
         if ($role == '企业') {
-            $corpId = Corp::whereDepartmentId($user->topDeptId($user))->first()->id;
+            $corpId = Corp::whereDepartmentId($user->topDeptId())->first()->id;
             $allowedCorpActions = [
                 '/corps/show/' . $corpId,
                 '/corps/edit/' . $corpId,
-                '/corps/update/' . $corpId
+                '/corps/update/' . $corpId,
             ];
             if (in_array($request->path(), $allowedCorpActions)) {
                 return $next($request);
@@ -104,27 +110,30 @@ class CheckRole {
         }
         # 学校级角色  学校模块、微网站模块权限
         if ($role == '学校') {
-            $schoolId = School::whereDepartmentId($user->topDeptId($user))->first()->id;
+            $schoolId = School::whereDepartmentId($user->topDeptId())->first()->id;
             $wapsiteId = WapSite::whereSchoolId($schoolId)->first()->id;
             $allowedSchoolActions = [
                 '/schools/show/' . $schoolId,
                 '/schools/edit/' . $schoolId,
                 '/schools/update/' . $schoolId,
-                '/wap_sites/show/'.$wapsiteId,
-                '/wap_sites/edit/'.$wapsiteId,
-                '/wap_sites/update/'.$wapsiteId,
+                '/wap_sites/show/' . $wapsiteId,
+                '/wap_sites/edit/' . $wapsiteId,
+                '/wap_sites/update/' . $wapsiteId,
             ];
             if (in_array($request->path(), $allowedSchoolActions)) {
                 return $next($request);
             }
         }
-
-
         if ($abort) { $this->abort(); }
+        
         return $next($request);
+        
     }
-
+    
     private function abort() {
+        
         throw new HttpException(403);
+        
     }
+    
 }

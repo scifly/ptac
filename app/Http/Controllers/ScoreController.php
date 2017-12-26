@@ -20,18 +20,9 @@ use Throwable;
  */
 class ScoreController extends Controller {
     
-    protected $score;
-    protected $exam;
-    protected $student;
-    protected $subject;
-    
-    function __construct(Score $score, Exam $exam, Student $student, Subject $subject) {
+    function __construct() {
         
-        $this->middleware(['auth']);
-        $this->score = $score;
-        $this->exam = $exam;
-        $this->student = $student;
-        $this->subject = $subject;
+        $this->middleware(['auth', 'checkrole']);
         
     }
     
@@ -42,8 +33,9 @@ class ScoreController extends Controller {
      * @throws Throwable
      */
     public function index() {
+        
         if (Request::get('draw')) {
-            return response()->json($this->score->datatable());
+            return response()->json(Score::datatable());
         }
         
         return $this->output();
@@ -57,6 +49,7 @@ class ScoreController extends Controller {
      * @throws Throwable
      */
     public function create() {
+        
         return $this->output();
         
     }
@@ -68,7 +61,8 @@ class ScoreController extends Controller {
      * @return JsonResponse
      */
     public function store(ScoreRequest $request) {
-        return $this->score->create($request->all()) ? $this->succeed() : $this->fail();
+        
+        return $this->result(Score::create($request->all()));
         
     }
     
@@ -80,10 +74,9 @@ class ScoreController extends Controller {
      * @throws Throwable
      */
     public function show($id) {
-        $score = $this->score->find($id);
-        if (!$score) {
-            return $this->notFound();
-        }
+        
+        $score = Score::find($id);
+        if (!$score) { return $this->notFound(); }
         
         return $this->output([
             'score'       => $score,
@@ -100,10 +93,9 @@ class ScoreController extends Controller {
      * @throws Throwable
      */
     public function edit($id) {
-        $score = $this->score->find($id);
-        if (!$score) {
-            return $this->notFound();
-        }
+        
+        $score = Score::find($id);
+        if (!$score) { return $this->notFound(); }
         
         return $this->output([
             'score'       => $score,
@@ -120,12 +112,11 @@ class ScoreController extends Controller {
      * @return JsonResponse
      */
     public function update(ScoreRequest $request, $id) {
-        $score = $this->score->find($id);
-        if (!$score) {
-            return $this->notFound();
-        }
         
-        return $score->update($request->all()) ? $this->succeed() : $this->fail();
+        $score = Score::find($id);
+        if (!$score) { return $this->notFound(); }
+        
+        return $this->result($score->update($request->all()));
         
     }
     
@@ -138,10 +129,10 @@ class ScoreController extends Controller {
      */
     public function destroy($id) {
         
-        $score = $this->score->find($id);
+        $score = Score::find($id);
         if (!$score) { return $this->notFound(); }
         
-        return $score->delete() ? $this->succeed() : $this->fail();
+        return $this->result($score->delete());
         
     }
     
@@ -152,8 +143,8 @@ class ScoreController extends Controller {
      * @return JsonResponse
      */
     public function statistics($examId) {
-        return $this->score->statistics($examId) ? $this->succeed() : $this->fail();
         
+        return $this->result(Score::statistics($examId));
     }
     
     /**
@@ -187,7 +178,7 @@ class ScoreController extends Controller {
         $insert = [];
         Excel::load($filePath, function ($reader) use (&$insert) {
             $exam_id = $reader->getTitle();
-            $subjects = $this->subject->getId(array_slice(array_keys($reader->toArray()[0]), 2));
+            $subjects = $this->subject->ids(array_slice(array_keys($reader->toArray()[0]), 2));
             $reader->each(function ($sheet) use ($exam_id, $subjects, &$insert) {
                 $studentNum = '';
                 foreach ($sheet as $key => $row) {

@@ -33,7 +33,7 @@ class CommType extends Model {
 
     public function messages() { return $this->hasMany('App\Models\Message'); }
 
-    public function datatable() {
+    static function datatable() {
 
         $columns = [
             ['db' => 'CommType.id', 'dt' => 0],
@@ -49,7 +49,7 @@ class CommType extends Model {
             ],
         ];
 
-        return Datatable::simple($this, $columns);
+        return Datatable::simple(CommType::getModel(), $columns);
 
     }
 

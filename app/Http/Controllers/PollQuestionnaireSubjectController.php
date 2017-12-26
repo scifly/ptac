@@ -14,14 +14,11 @@ use Throwable;
  * Class PqSubjectController
  * @package App\Http\Controllers
  */
-class PqSubjectController extends Controller {
+class PollQuestionnaireSubjectController extends Controller {
     
-    protected $pqSubject;
+    function __construct() {
     
-    function __construct(PollQuestionnaireSubject $pqSubject) {
-    
-        $this->middleware(['auth']);
-        $this->pqSubject = $pqSubject;
+        $this->middleware(['auth', 'checkrole']);
         
     }
     
@@ -34,7 +31,9 @@ class PqSubjectController extends Controller {
     public function index() {
         
         if (Request::get('draw')) {
-            return response()->json($this->pqSubject->dataTable());
+            return response()->json(
+                PollQuestionnaireSubject::dataTable()
+            );
         }
         
         return $this->output();
@@ -61,7 +60,9 @@ class PqSubjectController extends Controller {
      */
     public function store(PqSubjectRequest $request) {
         
-        return $this->pqSubject->create($request->all()) ? $this->succeed() : $this->fail();
+        return $this->result(
+            PollQuestionnaireSubject::create($request->all())
+        );
         
     }
     
@@ -74,11 +75,10 @@ class PqSubjectController extends Controller {
      */
     public function show($id) {
         
-        $pqSubject = $this->pqSubject->find($id);
-        if (!$pqSubject) { return $this->notFound(); }
-        return $this->output([
-            'pqSubject' => $pqSubject,
-        ]);
+        $pqs = PollQuestionnaireSubject::find($id);
+        if (!$pqs) { return $this->notFound(); }
+        
+        return $this->output(['pqSubject' => $pqs]);
         
     }
     
@@ -90,9 +90,10 @@ class PqSubjectController extends Controller {
      */
     public function edit($id) {
         
-        $pqSubject = $this->pqSubject->find($id);
-        if (!$pqSubject) { return $this->notFound(); }
-        return $this->output(['pqSubject' => $pqSubject]);
+        $pqs = PollQuestionnaireSubject::find($id);
+        if (!$pqs) { return $this->notFound(); }
+        
+        return $this->output(['pqSubject' => $pqs]);
         
     }
     
@@ -104,10 +105,12 @@ class PqSubjectController extends Controller {
      * @return JsonResponse
      */
     public function update(PqSubjectRequest $request, $id) {
+    
+        $pqs = PollQuestionnaireSubject::find($id);
+        if (!$pqs) { return $this->notFound(); }
+    
+        return $this->result($pqs->update($request->all()));
         
-        $pqSubject = $this->pqSubject->find($id);
-        if (!$pqSubject) { return $this->notFound(); }
-        return $pqSubject->update($request->all()) ? $this->succeed() : $this->fail();
     }
     
     /**
@@ -119,10 +122,11 @@ class PqSubjectController extends Controller {
      */
     public function destroy($id) {
         
-        $pqSubject = $this->pqSubject->find($id);
-        if (!$pqSubject) { return $this->notFound(); }
-        return $pqSubject->remove($id) 
-            ? $this->succeed() : $this->fail('失败：该题目存在有效关联数据，不能删除');
+        $pqs = PollQuestionnaireSubject::find($id);
+        if (!$pqs) { return $this->notFound(); }
+        
+        return $this->result($pqs->remove($id));
         
     }
+    
 }

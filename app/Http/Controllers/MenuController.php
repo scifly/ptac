@@ -19,14 +19,9 @@ use Throwable;
  */
 class MenuController extends Controller {
     
-    protected $menu, $menuType, $menuTab;
+    function __construct() {
 
-    function __construct(Menu $menu, MenuType $menuType, MenuTab $menuTab) {
-
-        $this->middleware(['auth']);
-        $this->menu = $menu;
-        $this->menuType = $menuType;
-        $this->menuTab = $menuTab;
+        $this->middleware(['auth', 'checkrole']);
 
     }
     
@@ -35,12 +30,11 @@ class MenuController extends Controller {
      *
      * @return bool|JsonResponse
      * @throws Throwable
-     * @throws Throwable
      */
     public function index() {
         
         if (Request::method() === 'POST') {
-            return $this->menu->tree($this->menu->rootMenuId());
+            return Menu::tree(Menu::rootMenuId());
         }
 
         return $this->output();
@@ -69,11 +63,11 @@ class MenuController extends Controller {
      * @param MenuRequest $request
      * @return JsonResponse
      * @throws Exception
+     * @throws Throwable
      */
     public function store(MenuRequest $request) {
 
-        return $this->menu->store($request)
-            ? $this->succeed() : $this->fail();
+        return $this->result(Menu::store($request));
 
     }
     
@@ -86,7 +80,7 @@ class MenuController extends Controller {
      */
     public function edit($id) {
 
-        $menu = $this->menu->find($id);
+        $menu = Menu::find($id);
         if (!$menu) { return $this->notFound(); }
         # 获取已选定的卡片
         $menuTabs = $menu->tabs;
@@ -113,11 +107,10 @@ class MenuController extends Controller {
      */
     public function update(MenuRequest $request, $id) {
 
-        $menu = $this->menu->find($id);
+        $menu = Menu::find($id);
         if (!$menu) { return $this->notFound(); }
 
-        return $this->menu->modify($request, $id)
-            ? $this->succeed() : $this->fail();
+        return $this->result($menu->modify($request, $id));
 
     }
 
@@ -130,17 +123,12 @@ class MenuController extends Controller {
      */
     public function move($id, $parentId = null) {
 
-        if (!$parentId) {
-            return $this->fail('非法操作');
-        }
-        $menu = $this->menu->find($id);
-        $parentMenu = $this->menu->find($parentId);
-        if (!$menu || !$parentMenu) {
-            return $this->notFound();
-        }
-        if ($this->menu->movable($id, $parentId)) {
-            return $this->menu->move($id, $parentId, true)
-                ? $this->succeed() : $this->fail();
+        if (!$parentId) { return $this->fail('非法操作'); }
+        $menu = Menu::find($id);
+        $parentMenu = Menu::find($parentId);
+        if (!$menu || !$parentMenu) { return $this->notFound(); }
+        if (Menu::movable($id, $parentId)) {
+            return $this->result($menu::move($id, $parentId, true));
         }
 
         return $this->fail('非法操作');
@@ -157,10 +145,10 @@ class MenuController extends Controller {
      */
     public function destroy($id) {
 
-        $menu = $this->menu->find($id);
+        $menu = Menu::find($id);
         if (!$menu) { return $this->notFound(); }
 
-        return $this->menu->remove($id) ? $this->succeed() : $this->fail();
+        return $this->result($menu->remove($id));
 
     }
 
@@ -169,7 +157,7 @@ class MenuController extends Controller {
 
         $positions = Request::get('data');
         foreach ($positions as $id => $pos) {
-            $menu = $this->menu->find($id);
+            $menu = Menu::find($id);
             if (isset($menu)) {
                 $menu->position = $pos;
                 $menu->save();
@@ -187,7 +175,7 @@ class MenuController extends Controller {
      */
     public function menuTabs($id) {
 
-        $menu = $this->menu->find($id);
+        $menu = Menu::find($id);
         if (!$menu) { return $this->notFound(); }
         $tabRanks = MenuTab::whereMenuId($id)
             ->get()
@@ -209,16 +197,15 @@ class MenuController extends Controller {
      * @param $id
      * @return JsonResponse
      * @throws Exception
+     * @throws Throwable
      */
     public function rankTabs($id) {
 
-        $menu = $this->menu->find($id);
-        if (!$menu) {
-            return $this->notFound();
-        }
+        $menu = Menu::find($id);
+        if (!$menu) { return $this->notFound(); }
         $ranks = Request::get('data');
 
-        return $this->menuTab->storeTabRanks($id, $ranks)
+        return MenuTab::storeTabRanks($id, $ranks)
             ? $this->succeed() : $this->fail();
 
     }

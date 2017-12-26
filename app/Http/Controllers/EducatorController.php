@@ -27,15 +27,13 @@ class EducatorController extends Controller {
     protected $educatorClass;
     protected $team;
     protected $department;
-    protected $school;
     
     public function __construct(
         Educator $educator,
         Mobile $mobile,
         EducatorClass $educatorClass,
         Team $team,
-        Department $department,
-        School $school
+        Department $department
     ) {
     
         $this->middleware(['auth']);
@@ -44,7 +42,7 @@ class EducatorController extends Controller {
         $this->educatorClass = $educatorClass;
         $this->team = $team;
         $this->department = $department;
-        $this->school = $school;
+        
     }
     
     /**
@@ -71,11 +69,10 @@ class EducatorController extends Controller {
     public function create() {
         
         if (Request::method() === 'POST') {
-            $schoolId = $this->school->getSchoolId();
-            /** @var School $school */
-            $school = $this->school->find($schoolId);
+            $school = School::find(School::id());
             return $this->department->tree($school->department_id);
         }
+        
         return $this->output();
         
     }
@@ -85,7 +82,7 @@ class EducatorController extends Controller {
      *
      * @param EducatorRequest $request
      * @return JsonResponse
-     * @throws Exception
+     * @throws \Throwable
      */
     public function store(EducatorRequest $request) {
         
@@ -170,14 +167,15 @@ class EducatorController extends Controller {
      * @param $id
      * @return JsonResponse
      * @throws Exception
+     * @throws \Throwable
      */
     public function update(EducatorRequest $request, $id) {
         
         $educator = $this->educator->find($id);
-        if (!$educator) {
-            return $this->notFound();
-        }
-        return $educator->modify($request) ? $this->succeed() : $this->fail();
+        if (!$educator) { return $this->notFound(); }
+        
+        return $educator->modify($request)
+            ? $this->succeed() : $this->fail();
         
     }
     
@@ -190,11 +188,10 @@ class EducatorController extends Controller {
     public function rechargeStore($id) {
         
         $educator = $this->educator->find($id);
-        if (!$educator) {
-            return $this->notFound();
-        }
+        if (!$educator) { return $this->notFound(); }
         $recharge = Request::get('recharge');
         $educator->sms_quote += $recharge;
+        
         return $educator->save() ? $this->succeed() : $this->fail();
         
     }
@@ -236,9 +233,11 @@ class EducatorController extends Controller {
             if ($file->isValid()) {
                 $result = $this->educator->upload($file);
                 return response()->json($result);
-
             }
         }
+        
+        return null;
+        
     }
     
     /**

@@ -47,7 +47,7 @@ class ConferenceParticipant extends Model {
      */
     public function conferenceQueue() { return $this->belongsTo('App\Models\ConferenceQueue'); }
 
-    public function datatable() {
+    static function datatable() {
         
         $columns = [
             ['db' => 'ConferenceParticipant.id', 'dt' => 0],
@@ -91,7 +91,7 @@ class ConferenceParticipant extends Model {
             ],
         ];
 
-        return Datatable::simple($this, $columns, $joins);
+        return Datatable::simple(ConferenceParticipant::getModel(), $columns, $joins);
 
     }
 

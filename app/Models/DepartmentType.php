@@ -47,22 +47,22 @@ class DepartmentType extends Model {
      * @param array $data
      * @return $this|Model
      */
-    public function store(array $data) {
+    static function store(array $data) {
 
-        return $this->create($data);
+        return self::create($data);
 
     }
 
     /**
-     * 更新不猛类型
+     * 更新部门类型
      *
      * @param array $data
      * @param $id
      * @return bool
      */
-    public function modify(array $data, $id) {
+    static function modify(array $data, $id) {
 
-        return $this->find($id)->update($data);
+        return self::find($id)->update($data);
 
     }
     
@@ -73,17 +73,17 @@ class DepartmentType extends Model {
      * @return bool|null
      * @throws Exception
      */
-    public function remove($id) {
+    static function remove($id) {
 
-        $departmentType = $this->find($id);
+        $departmentType = self::find($id);
         if (!$departmentType) { return false; }
-        $removed = $this->removable($departmentType) ? $departmentType->delete() : false;
+        $removed = self::removable($departmentType) ? $departmentType->delete() : false;
 
         return $removed ? true : false;
 
     }
 
-    public function datatable() {
+    static function datatable() {
 
         $columns = [
             ['db' => 'DepartmentType.id', 'dt' => 0],
@@ -99,7 +99,7 @@ class DepartmentType extends Model {
             ],
         ];
 
-        return Datatable::simple($this, $columns);
+        return Datatable::simple(DepartmentType::getModel(), $columns);
 
     }
 

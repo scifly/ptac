@@ -65,13 +65,14 @@ class Icon extends Model {
      *
      * @return array
      */
-    public function icons() {
+    static function icons() {
 
-        $data = $this->whereEnabled(1)->get();
+        $data = self::whereEnabled(1)->get();
         $icons = [];
-        foreach ($data as $icon) {
-            $icons[$icon->iconType->name][$icon->id] = $icon->name;
+        foreach ($data as $datum) {
+            $icons[$datum->iconType->name][$datum->id] = $datum->name;
         }
+        
         return $icons;
 
     }
@@ -82,9 +83,9 @@ class Icon extends Model {
      * @param array $data
      * @return bool
      */
-    public function store(array $data) {
+    static function store(array $data) {
 
-        $icon = $this->create($data);
+        $icon = self::create($data);
 
         return $icon ? true : false;
 
@@ -97,9 +98,9 @@ class Icon extends Model {
      * @param $id
      * @return bool
      */
-    public function modify(array $data, $id) {
+    static function modify(array $data, $id) {
 
-        $icon = $this->find($id);
+        $icon = self::find($id);
         if (!$icon) {
             return false;
         }
@@ -115,16 +116,21 @@ class Icon extends Model {
      * @return bool|null
      * @throws Exception
      */
-    public function remove($id) {
+    static function remove($id) {
 
-        $icon = $this->find($id);
+        $icon = self::find($id);
         if (!$icon) { return false; }
         
         return $icon->removable($icon) ? $icon->delete() : false;
 
     }
-
-    public function datatable() {
+    
+    /**
+     * 图标列表
+     *
+     * @return array
+     */
+    static function datatable() {
 
         $columns = [
             ['db' => 'Icon.id', 'dt' => 0],
@@ -155,7 +161,7 @@ class Icon extends Model {
             ],
         ];
 
-        return Datatable::simple($this, $columns, $joins);
+        return Datatable::simple(self::getModel(), $columns, $joins);
 
     }
 
