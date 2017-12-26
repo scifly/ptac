@@ -291,13 +291,15 @@ class Message extends Model {
                 switch ($data['type']) {
                     case 'text' :
                         $message['text'] = ['content' => $data['content']['text']];
-                        $message['msgtype'] = $data['type'];
                         break;
                     case 'image' :
+                    case 'voice' :
                         $message['image'] = ['media_id' => $data['content']['media_id']];
-                        $message['msgtype'] = $data['type'];
                         break;
+
+
                 }
+                $message['msgtype'] = $data['type'];
                 $status = json_decode(Wechat::sendMessage($token, $message));
                 if ($status->errcode == 0) {
                     $result = [
