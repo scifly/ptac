@@ -154,23 +154,8 @@ function uploadfile(obj){
 				 	break;
 				}
 				
-				
 			}else{
                 page.inform("操作结果", result.message, page.failure);
-				var html ='<form id="uploadForm" enctype="multipart/form-data"><video src="../img/2.mp4" controls="controls" style="height:180px">'+
-						'</video>'+                             
-						'<div class="btns">'+
-						'<a class="changefile" style="position: relative;margin-left: 10px;">'+
-							'更改'+
-							'<input  id="video_media_id"  type="hidden" value="1"/>'+
-							'<input type="hidden" value="video" name="type" />'+
-							'<input type="file" id="file-video" onchange="uploadfile(this)" name="uploadFile" accept="video/mp4" style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/>'+
-						'</a>'+
-						'<a class="video-del" style="margin-left: 45px;display: inline-block;cursor: pointer;">删除</a>'+
-						'</form>';
-						console.log(html);
-				$('#filevideo').html(html);
-				removevideo();
             }
         }
     })
