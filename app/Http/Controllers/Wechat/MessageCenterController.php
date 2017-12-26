@@ -36,7 +36,7 @@ class MessageCenterController extends Controller {
      */
     public function index() {
 
-        $userId = 'abcd456456';
+        $userId = 'kobe';
         $user = User::whereUserid($userId)->first();
         if(Request::isMethod('post')){
             $keywords = Request::get('keywords');
@@ -84,7 +84,7 @@ class MessageCenterController extends Controller {
         // if($user->group->name == '教职工'){
         //     $educator = true;
         // }
-        $sendMessages = $this->message->where('s_user_id', $user->id)->get()->unique('msl_id')->groupBy('message_type_id');
+        $sendMessages = $this->message->where('s_user_id', $user->id)->get()->groupBy('message_type_id');
         $receiveMessages = $this->message->where('r_user_id', $user->id)->get()->groupBy('message_type_id');
         $count = $this->message->where('r_user_id', $user->id)->where('readed', '0')->count();
         
