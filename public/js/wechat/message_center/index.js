@@ -98,7 +98,7 @@ $("#searchInput").bind("input propertychange change",function(event){
                           '<div class="title-info ml12">'+ data.s_user_id+'</div>'+
                           '</div>'+
                           '<span class="worktime">'+ data.created_at.substr(0,10)+
-                         '</span> </div> </div> </a> </div> </div> </div>';
+                         '</span></div></div></a></div></div></div>';
 
                   }
                   $('.weui-popup__container .weui-tab__bd-item .list-layout').html(str);
