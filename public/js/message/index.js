@@ -267,7 +267,7 @@ $('#save-imagetext').click(function(){
                 	'<input type="hidden" class="show_imagetext_author" value="'+author+'">'+
                 	'<input type="hidden" class="show_imagetext_content_source_url" value="'+content_source_url+'">'+
                 '</div>';
-    $('.tab-pane.active#content_imagetext').html(html);
+    $('.tab-pane.active#content_mpnews').html(html);
     $message.show();
     $imageText.hide();
     show_imageText();
@@ -293,7 +293,7 @@ $send.on('click', function() {
 	//文本
 		content = {text: $('#messageText').val()};
         break;
-	case 'imagetext':
+	case 'mpnews':
 	//图文
 	  	var articles = [{
 	  		title : $('.show_imagetext_title').text(),

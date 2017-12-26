@@ -17,7 +17,7 @@ trait ControllerTrait {
      * @param int $remark
      * @return array|bool
      */
-    public function uploadedMedias(UploadedFile $file, $remark = 0) {
+    public function uploadedMedias($file, $remark = 0) {
         
         if ($file->isValid()) {
             // 获取文件相关信息

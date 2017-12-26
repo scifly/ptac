@@ -73,7 +73,7 @@
                                             </a>
                                         </li>
                                         <li>
-                                            <a href="#content_imagetext" data-toggle="tab" class="tab">
+                                            <a href="#content_mpnews" data-toggle="tab" class="tab">
                                                 <i class="fa fa-th-list"></i>&nbsp;图文
                                             </a>
                                         </li>
@@ -106,7 +106,7 @@
                                                 'class' => 'form-control',
                                             ]) !!}
                                         </div>
-                                        <div class="tab-pane" id="content_imagetext">
+                                        <div class="tab-pane" id="content_mpnews">
                                             <button id="add-imagetext" class="btn btn-box-tool" type="button"
                                                     style="margin-top: 3px;">
                                                 <i class="fa fa-plus text-blue">&nbsp;添加图文</i>
