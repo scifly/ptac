@@ -102,7 +102,7 @@ function uploadfile(obj){
 				//图片
 				  	html+='<div class="fileshow" style="display: inline-block;width: auto;position: relative;">'+
                             	'<img src="../../'+result.data.path+'" style="height: 200px;">'+
-                            	'<input id="media_id" type="hidden" value="'+result.data.media_id+'"/>'+
+                            	'<input id="image_media_id" type="hidden" value="'+result.data.media_id+'"/>'+
                             	'<input type="hidden" value="image" name="type" />'+
                                 '<input type="file" id="file-image" onchange="uploadfile(this)" name="uploadFile" accept="image/*" style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/>'+
                             	'<i class="fa fa-close file-del" style="position: absolute;top: 10px;right: 15px;font-size: 20px;z-index: 2;cursor: pointer;"></i>'+
@@ -114,7 +114,7 @@ function uploadfile(obj){
 					html+='<div class="fileshow" style="color: #787878;margin-left: 5px;">'+
 								'<i class="fa fa-file-sound-o">'+
 					  				'<span style="margin-left: 5px;position:relative;cursor:pointer;">'+result.data.filename+''+
-						  				'<input  id="media_id"  type="hidden" value="'+result.data.media_id+'"/>'+
+						  				'<input  id="voice_media_id"  type="hidden" value="'+result.data.media_id+'"/>'+
 										'<input type="hidden" value="voice" name="type" />'+
 										'<input id="file-voice" type="file" onchange="uploadfile(this)" name="uploadFile" style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/>'+
 					  				'</span>'+
@@ -130,7 +130,7 @@ function uploadfile(obj){
 							'<div class="btns">'+
 							'<a class="changefile" style="position: relative;margin-left: 10px;">'+
 								'更改'+
-								'<input  id="media_id"  type="hidden" value="'+result.data.media_id+'"/>'+
+								'<input  id="video_media_id"  type="hidden" value="'+result.data.media_id+'"/>'+
 								'<input type="hidden" value="video" name="type" />'+
 								'<input type="file" id="file-video" onchange="uploadfile(this)" name="uploadFile" accept="video/mp4" style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/>'+
 							'</a>'+
@@ -312,15 +312,16 @@ $send.on('click', function() {
 	  	content = {articles : articles};
 	 	break;
 	case 'image':
+		//图片
+        content = {media_id: $('#image_media_id').val()};
+        break;
 	case 'voice':
-	//图片
 	//音频
-	  	content = {media_id: $('#media_id').val()};
+	  	content = {media_id: $('#voice_media_id').val()};
 	 	break;
 	case 'video':
 	//视频
-	  	console.log(5);
-        content = {text: $('#messageText').val()};
+        content = {media_id: $('#video_media_id').val()};
         break;
 	case 'sms':
 	//短信
