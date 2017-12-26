@@ -14,6 +14,7 @@
                 'placeholder' => '(请输入标题)',
                 'required' => 'true',
                 'data-parsley-length' => '[2,10]',
+                'maxlength' => '128',
             ]) !!}
         </div>
     </div>
@@ -24,7 +25,8 @@
         <div class="col-sm-6">
             {!! Form::textarea('content', null, [
                 'id' => 'content',
-                'class' => 'form-control imagetext-description',
+                'class' => 'form-control imagetext-content',
+                'maxlength' => '666',
             ]) !!}
         </div>
     </div>
@@ -34,7 +36,7 @@
             <!--<a href="#"><i class="fa fa-paperclip text-blue"></i>&nbsp;添加附件</a>-->
             <a href="#" id="add-article-url"><i class="fa fa-link text-blue"></i>&nbsp;添加原文链接</a>
             {!! Form::text('content_image', null, [
-                'class' => 'form-control imagetext-contenturl',
+                'class' => 'form-control imagetext-content_source_url',
                 'placeholder' => '(原文链接)',
                 'style' => 'display:none',
             ]) !!}
@@ -51,6 +53,7 @@
                         <input type="file" id="file-cover" onchange="upload_cover(this)" name="input-cover" accept="image/*" style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/>
                 	</a>
                 	&nbsp;&nbsp;<span class="text-gray">建议尺寸:1068*534</span>
+                	
                </form>
             </p>
         </div>

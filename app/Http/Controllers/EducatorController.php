@@ -74,7 +74,7 @@ class EducatorController extends Controller {
             $schoolId = $this->school->getSchoolId();
             /** @var School $school */
             $school = $this->school->find(1);
-            return $this->department->tree($school->department_id);
+            return response()->json($this->department->tree($school->department_id));
         }
         return $this->output();
         
@@ -122,7 +122,7 @@ class EducatorController extends Controller {
     public function edit($id) {
         
         if (Request::method() === 'POST') {
-            return $this->department->tree();
+            return response()->json($this->department->tree());
         }
         $educator = $this->educator->find($id);
         if (!$educator) { return $this->notFound(); }

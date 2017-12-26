@@ -343,7 +343,7 @@ class Department extends Model {
      * 获取用于显示jstree的部门数据
      *
      * @param null $rootId
-     * @return \Illuminate\Http\JsonResponse
+     * @return array
      */
     public function tree($rootId = null) {
 
@@ -392,7 +392,7 @@ class Department extends Model {
             ];
         }
 
-        return response()->json($data);
+        return ($data);
 
     }
 
@@ -752,8 +752,28 @@ class Department extends Model {
         $school = new School();
         $schoolId = $school->getSchoolId();
         $departmentId = $school::find($schoolId)->first()->department_id;
+        $contacts = [];
         if (in_array($role, $this->roles)) {
-            return $this->tree($departmentId);
+//            print_r($this->tree($departmentId));die;
+            $tree = $this->tree($departmentId);
+            foreach ($tree as &$t) {
+                $t['seletable'] =1;
+                $t['role'] ='dept';
+                $t['type'] = $t['id'] == 0 ? '#' : 'dept';
+                # 读取当前部门下的所有用户
+                $users = $this->find($t['id'])->users;
+                foreach ($users as $u) {
+                    $contacts[] = [
+                        'id' => 'user-' . $u->id,
+                        'parent' => $t['id'],
+                        'text' => $u->realname,
+                        'seletable' => 1,
+                        'type' => 'user',
+                        'role' => 'user',
+                    ];
+                }
+            }
+            return  array_merge($tree, $contacts);
         } else {
             $departmentId = $this->topDeptId();
             $nodes = $this->nodes($departmentId);
