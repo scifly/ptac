@@ -298,7 +298,10 @@ class Message extends Model {
                         break;
                     case 'mpnews' :
                         $message['mpnews'] = ['articles' => $data['content']['articles']];
-
+                        break;
+                    case 'video' :
+                        $message['video'] = ['media_id' => $data['content']['media_id']];
+                        break;
                 }
                 $message['msgtype'] = $data['type'];
 
