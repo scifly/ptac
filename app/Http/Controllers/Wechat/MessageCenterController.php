@@ -28,13 +28,6 @@ class MessageCenterController extends Controller {
      * @throws \Throwable
      */
     public function index() {
-        // $userId = $this->getRole('http://weixin.028lk.com/message_center');
-        // $user = $this->user->where('userid',$userId)->first();
-        // if ($user->group->name == '教职员工'){
-        //     $sendMessages = $this->message->where('s_user_id', $user->id)->get();
-        //     $receiveMessages = $this->message->where('r_user_id',$user->id)->get();
-        // return view('wechat.message_center.index');
-        // }
 
         $userId = 'kobe';
         $user = User::whereUserid($userId)->first();
@@ -46,7 +39,7 @@ class MessageCenterController extends Controller {
                     case 'send':
                         $sendMessages = [];
                         $sendMessages = Message::whereSUserId($user->id)
-                            ->Where('content', 'like', '%'.$keywords.'%')
+                            ->where('content', 'like', '%'.$keywords.'%')
                             ->orWhere('title', 'like', '%' . $keywords . '%')
                             ->get();
 
