@@ -214,7 +214,7 @@ function upload_cover(obj){
 			if(result.statusCode){
                 page.inform("操作结果", result.message, page.success);
                 var html = '<form id="uploadForm" enctype="multipart/form-data">'+
-	                			'<div class="show-cover" style="position: relative;height: 130px;width: 130px;background-image: url(/pppp/'+result.data.path+');background-size: cover;">'+
+	                			'<div class="show-cover" style="position: relative;height: 130px;width: 130px;background-image: url(../../'+result.data.path+');background-size: cover;">'+
 			                		'<input type="hidden" value="'+result.data.media_id+'" name="media_id" />'+
 			                		'<input type="hidden" value="image" name="type" />'+
 			                        '<input type="file" id="file-cover" onchange="upload_cover(this)" name="input-cover" accept="image/*" style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/>'+
