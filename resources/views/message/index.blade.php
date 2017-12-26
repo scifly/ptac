@@ -28,6 +28,8 @@
                 <div class="tab-pane active" id="tab01">
                     @include('message.objects')
                     @include('message.imagetext')
+                    @include('message.upload_video')
+                    
                     <div class="form-horizontal" id="message">
                     {!! Form::open([
                         'method' => 'post',
@@ -145,7 +147,11 @@
 
                                         </div>
                                         <div class="tab-pane" id="content_video">
-                                            <form id="uploadVideoForm" enctype="multipart/form-data">
+                                        	<button id="add-video" class="btn btn-box-tool" type="button"
+                                                    style="margin-top: 3px;">
+                                                <i class="fa fa-plus text-blue">&nbsp;添加视频</i>
+                                            </button>
+                                            <!--<form id="uploadVideoForm" enctype="multipart/form-data">
 
                                                 <button id="add-video" class="btn btn-box-tool" type="button" style="margin-top: 3px;position: relative;border: 0;">
                                                     <i class="fa fa-plus text-blue">
@@ -154,7 +160,7 @@
                                                         <input type="file" id="file-video" onchange="uploadfile(this)" name="uploadFile" accept="video/mp4"  style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/>
                                                     </i>
                                                 </button>
-                                            </form>
+                                            </form>-->
                                         </div>
                                         <div class="tab-pane" id="content_sms">
                                             {!! Form::textarea('content', null, [

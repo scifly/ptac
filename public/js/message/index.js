@@ -12,6 +12,9 @@ var $cancelAttachment = $('#cancel-attachment');
 var $addImageText = $('#add-imagetext');
 var $saveImageText = $('#save-imagetext');
 var $cancelImageText = $('#cancel-imagetext');
+var $video = $('#upload_video');
+var $addVideo = $('#add-video');
+var $cancelVideo = $('#cancel-video');
 var $send = $('#send');
 
 // 附件管理
@@ -37,7 +40,14 @@ $cancelImageText.on('click',function () {
     $message.show();
     $imageText.hide();
 });
-
+$addVideo.on('click', function() {
+    $message.hide();
+    $video.show();
+});
+$cancelVideo.on('click',function () {
+    $message.show();
+    $video.hide();
+});
 //部门树以及联系人加载
 if (typeof contacts === 'undefined') {
     $.getMultiScripts(['js/message/contacts.tree.js'], page.siteRoot())
@@ -108,6 +118,8 @@ function uploadfile(obj){
                             	'<i class="fa fa-close file-del" style="position: absolute;top: 10px;right: 15px;font-size: 20px;z-index: 2;cursor: pointer;"></i>'+
                             '</div>'+
                             '</form>';
+                    $('#message-content .tab-pane.active').html(html);
+                    removefile(type);
 				 	break;
 				case 'voice':
 				//音频	
@@ -121,7 +133,8 @@ function uploadfile(obj){
 							    '<i class="fa fa-close file-del" style="margin-left: 35px;cursor:pointer;"></i>'+
 						    '</div>'+
 						    '</form>';
-				  			
+				  	$('#message-content .tab-pane.active').html(html);	
+				  	removefile(type);
 				 	break;
 				case 'video':
 				//视频
@@ -136,13 +149,28 @@ function uploadfile(obj){
 							'</a>'+
 							'<a class="delfile file-del" style="margin-left: 45px;display: inline-block;cursor: pointer;">删除</a>'+
 							'</form>';
+				 	$('#filevideo').html(html);
+				 	removevideo();
 				 	break;
 				}
-				$('#message-content .tab-pane.active').html(html);
-				removefile(type);
+				
+				
 			}else{
                 page.inform("操作结果", result.message, page.failure);
-
+				var html ='<form id="uploadForm" enctype="multipart/form-data"><video src="../img/2.mp4" controls="controls" style="height:180px">'+
+						'</video>'+                             
+						'<div class="btns">'+
+						'<a class="changefile" style="position: relative;margin-left: 10px;">'+
+							'更改'+
+							'<input  id="video_media_id"  type="hidden" value="1"/>'+
+							'<input type="hidden" value="video" name="type" />'+
+							'<input type="file" id="file-video" onchange="uploadfile(this)" name="uploadFile" accept="video/mp4" style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/>'+
+						'</a>'+
+						'<a class="video-del" style="margin-left: 45px;display: inline-block;cursor: pointer;">删除</a>'+
+						'</form>';
+						console.log(html);
+				$('#filevideo').html(html);
+				removevideo();
             }
         }
     })
@@ -214,7 +242,7 @@ function upload_cover(obj){
 			if(result.statusCode){
                 page.inform("操作结果", result.message, page.success);
                 var html = '<form id="uploadForm" enctype="multipart/form-data">'+
-	                			'<div class="show-cover" style="position: relative;height: 130px;width: 130px;background-image: url(/pppp/'+result.data.path+');background-size: cover;">'+
+	                			'<div class="show-cover" style="position: relative;height: 130px;width: 130px;background-image: url(../../'+result.data.path+');background-size: cover;">'+
 			                		'<input type="hidden" value="'+result.data.media_id+'" name="media_id" />'+
 			                		'<input type="hidden" value="image" name="type" />'+
 			                        '<input type="file" id="file-cover" onchange="upload_cover(this)" name="input-cover" accept="image/*" style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/>'+
@@ -284,6 +312,56 @@ function show_imageText(){
 	$('.show_imagetext').click(function(){
 		$message.hide();
    		$imageText.show();
+	})
+}
+
+function removevideo(){
+	$('.video-del').click(function(){
+		var html = '<form id="form-cover" enctype="multipart/form-data">'+
+	                	'<a href="#" style="position: relative;">'+
+	                		'添加视频'+
+	                		'<input type="hidden" value="video" name="type" />'+
+	                        '<input type="file" id="file-video" onchange="uploadfile(this)" name="input-video" accept="video/mp4" style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/>'+
+	                	'</a>'+
+	                	'&nbsp;&nbsp;<span class="text-gray">(支持MP4)</span>'+
+	               '</form>';
+        $('#filevideo').html(html);
+	});
+}
+
+$('#save-video').click(function(){
+	var title = $('.video-title').val();
+	if(title === ''){
+		alert('请输入标题');
+		return false;
+	}
+	var videourl = $('#filevideo video').attr("src");
+	if(!videourl){
+		alert('请上传视频');
+		return false;
+	}else{
+		var videoid = $('#filevideo .changefile input').eq(0).val();
+	}
+	
+	var description = $('.imagetext-description').val();
+	var html = '<div class="show_video" style="width: 270px;border:1px solid #E4E6E9;border-radius: 4px;padding: 10px;position: relative;cursor: pointer;">'+
+                	'<div class="show_video_title" style="font-size: 16px;line-height: 24px;overflow: hidden;text-overflow:ellipsis;-webkit-line-clamp:2;margin-bottom: 8px;">'+title+'</div>'+
+                	'<video controls="controls" class="show_video_main" style="height: 125px;width: 250px;" src="'+videourl+'"></video>'+
+                	'<div class="show_video_description" style="font-size: 12px;margin-top:12px;color:#787878;line-height: 20px;overflow: hidden;text-overflow:ellipsis;-webkit-line-clamp:4;">'+description+'</div>'+
+                	'<input type="hidden" class="show_video_media_id" value="'+videoid+'">'+
+                '</div>';
+    $('.tab-pane.active#content_video').html(html);
+    $message.show();
+    $video.hide();
+    $('#filevideo video')[0].pause();
+    show_video();
+});
+
+function show_video(){
+	$('.show_video').click(function(){
+		$message.hide();
+   		$video.show();
+    	$('.tab-pane.active#content_video video')[0].pause();
 	})
 }
 
