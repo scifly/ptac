@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Wechat;
 use App\Facades\Wechat;
 use App\Helpers\ControllerTrait;
 use App\Http\Controllers\Controller;
+use App\Models\Department;
 use App\Models\Media;
 use App\Models\Message;
 use App\Models\MessageSendingLog;
@@ -42,28 +43,26 @@ class MessageCenterController extends Controller {
         //     $receiveMessages = $this->message->where('r_user_id',$user->id)->get();
         // return view('wechat.message_center.index');
         // }
-
         $userId = 'abcd456456';
         $user = User::whereUserid($userId)->first();
-        if(Request::isMethod('post')){
+        if (Request::isMethod('post')) {
             $keywords = Request::get('keywords');
             $type = Request::get('type');
-            if(!empty($keywords)){
-                switch ($type){
+            if (!empty($keywords)) {
+                switch ($type) {
                     case 'send':
                         $sendMessages = [];
                         $sendMessages = Message::whereSUserId($user->id)
-                            ->Where('content', 'like', '%'.$keywords.'%')
+                            ->Where('content', 'like', '%' . $keywords . '%')
                             ->orWhere('title', 'like', '%' . $keywords . '%')
                             ->get();
-
-                        if(sizeof($sendMessages) != 0){
-                            foreach ($sendMessages as $s){
-                                  $s['r_user_id'] = User::whereId($s['r_user_id'])->first()->realname;
+                        if (sizeof($sendMessages) != 0) {
+                            foreach ($sendMessages as $s) {
+                                $s['r_user_id'] = User::whereId($s['r_user_id'])->first()->realname;
                             }
                         }
-
-                        return response(['sendMessages' => $sendMessages,'type'=> $type]);
+                        
+                        return response(['sendMessages' => $sendMessages, 'type' => $type]);
                         break;
                     case 'receive':
                         $receiveMessages = [];
@@ -71,20 +70,20 @@ class MessageCenterController extends Controller {
                             ->where('content', 'like', '%' . $keywords . '%')
                             ->orWhere('title', 'like', '%' . $keywords . '%')
                             ->get();
-                        if(sizeof($receiveMessages) != 0){
-                            foreach ($receiveMessages as $r){
+                        if (sizeof($receiveMessages) != 0) {
+                            foreach ($receiveMessages as $r) {
                                 $r['s_user_id'] = User::whereId($r['s_user_id'])->first()->realname;
                             }
                         }
+                        
                         return response(['type' => $type, 'receiveMessages' => $receiveMessages]);
                         break;
                     default:
                         break;
                 }
-
+                
             }
-
-
+            
         }
         //判断是否为教职工
         $educator = true;
@@ -107,18 +106,24 @@ class MessageCenterController extends Controller {
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function create() {
+        $userId = "abcd456456";
+        $user = $this->user->where('userid', $userId)->first();
+        $departmentId = $this->user->topDeptId($user);
+        $departments = Department::where('parent_id', $departmentId)->get();
+        $department = Department::whereId($departmentId)->first();
+        $users = $department->users;
         
-        return view('wechat.message_center.create');
+        return view('wechat.message_center.create', ['departments' => $departments, 'users' => $users]);
     }
     
     /**
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return \Illuminate\Http\JsonResponse
+     * @throws Exception
+     * @throws \Throwable
      */
     public function store() {
-        print_r(Request::all());
-        die;
         
-        return view('wechat.message_center.create');
+        return $this->frontStore() ? $this->succeed() : $this->fail();
     }
     
     /**
@@ -189,7 +194,7 @@ class MessageCenterController extends Controller {
      */
     public function upload($id = null) {
         if ($id) {
-        //删除已上传的图片
+            //删除已上传的图片
             $media = Media::whereId($id)->first();
             if ($media->path) {
                 $removeFile = public_path('uploads/') . $media->path;
@@ -197,12 +202,29 @@ class MessageCenterController extends Controller {
                     unlink($removeFile);
                 }
             }
+            
             return $media->delete() ? $this->succeed() : $this->fail();
         }
         //上传图片
         $data = $this->uploadedMedias(Request::file('file'), '前端消息中心');
         
         return $data ? $this->succeed($data) : $this->fail();
+    }
+    
+    /**
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Throwable
+     */
+    public function getNextDept($id) {
+        
+        $department = Department::whereId($id)->first();
+        $users = $department->users;
+        $nextDepts = Department::where('parent_id', $id)->get();
+        $data = view('wechat.message_center.select', ['departments' => $nextDepts, 'users' => $users])->render();
+        
+        return $data ? $this->succeed($data) : $this->fail();
+        
     }
     
     /**
@@ -259,6 +281,67 @@ class MessageCenterController extends Controller {
                 $msl->read_count = $msl->read_count + 1;
                 
                 return $msl->save() ? true : false;
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+        return true;
+    }
+    
+    /**
+     * @return bool
+     * @throws Exception
+     * @throws \Throwable
+     */
+    private function frontStore() {
+        
+        $input = Request::all();
+        $userIds = [];
+        #处理接收者 这里先处理了一层
+        if (!empty($input['department_ids'])) {
+            foreach ($input['department_ids'] as $departmentId) {
+                $department = Department::whereId($departmentId)->first();
+                $users = $department->users;
+                foreach ($users as $user) {
+                    $userIds[] = $user->id;
+                }
+            }
+        }
+        $receiveUserIds = array_merge($input['user_ids'], $userIds);
+        try {
+            DB::transaction(function () use ($receiveUserIds, $input) {
+                $messageSendingLog = new MessageSendingLog();
+                #新增一条日志记录（指定批次）
+                $input['msl_id'] = $messageSendingLog->store(count($receiveUserIds));
+                dd($input['msl_id']);
+                
+                $msl = $messageSendingLog->whereId($input['msl_id'])->first();
+                $input['media_ids'] = implode(',', $input['media_ids']);
+                foreach ($receiveUserIds as $receiveUserId) {
+                    $messageData = [
+                        'title'           => $input['title'],
+                        'comm_type_id'    => 1,
+                        'app_id'          => 1,
+                        'msl_id'          => $input['msl_id'],
+                        'content'         => $input['content'],
+                        'serviceid'       => 0,
+                        'message_id'      => 0,
+                        'url'             => '0',
+                        'media_ids'       => $input['media_ids'],
+                        's_user_id'       => 3,
+                        'r_user_id'       => $receiveUserId,
+                        'message_type_id' => 1,
+                        'readed'          => 0,
+                        'sent'            => 0,
+                    ];
+                    $message = $this->message->create($messageData);
+                    $message->sent = 1;
+                    $message->save();
+                    #更新msl表
+                    $msl->received_count = $msl->received_count + 1;
+                    $msl->save();
+                }
             });
         } catch (Exception $e) {
             throw $e;
