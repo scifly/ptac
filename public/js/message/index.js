@@ -384,7 +384,11 @@ $send.on('click', function() {
 	 	break;
 	case 'video':
 	//视频
-        content = {media_id: $('#video_media_id').val()};
+        content = {
+        	media_id: $('#video_media_id').val(),
+        	title:$('.show_video_title').text(),
+        	description:$('.show_video_description').text(),
+        	};
         break;
 	case 'sms':
 	//短信
