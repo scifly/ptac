@@ -89,8 +89,8 @@ class Message extends Model {
      *
      * @return BelongsTo
      */
-    public function user() { return $this->belongsTo('App\Models\User','s_user_id','id'); }
-    
+    public function user() { return $this->belongsTo('App\Models\User', 's_user_id', 'id'); }
+
     /**
      * 获取
      *
@@ -102,7 +102,7 @@ class Message extends Model {
     public function messageSendinglogs() { return $this->belongsTo('App\Models\MessageSendingLog'); }
 
     public function commType() { return $this->belongsTo('App\Models\CommType'); }
-    
+
     /**
      * @param MessageRequest $request
      * @return bool
@@ -133,13 +133,13 @@ class Message extends Model {
         }
         return true;
     }
-    
+
     /**
      * @param $request
      * @throws Exception
      */
     private function removeMedias(MessageRequest $request) {
-        
+
         //删除原有的图片
         $mediaIds = $request->input('del_ids');
         if ($mediaIds) {
@@ -156,7 +156,7 @@ class Message extends Model {
             }
         }
     }
-    
+
     /**
      * @param MessageRequest $request
      * @param $id
@@ -241,10 +241,10 @@ class Message extends Model {
         ];
         $condition = null;
         $role = Auth::user()->group->name;
-        if($role == '教职员工'){
-            $condition = 'Message.r_user_id='.Auth::id();
+        if ($role == '教职员工') {
+            $condition = 'Message.r_user_id=' . Auth::id();
         }
-        return Datatable::simple($this, $columns, $joins,$condition);
+        return Datatable::simple($this, $columns, $joins, $condition);
     }
 
     public function sendMessage($data) {
@@ -298,7 +298,10 @@ class Message extends Model {
                         break;
                     case 'mpnews' :
                         $message['mpnews'] = ['articles' => $data['content']['articles']];
-
+                        break;
+                    case 'video' :
+                        $message['video'] = $data['content']['video'];
+                        break;
                 }
                 $message['msgtype'] = $data['type'];
 
@@ -308,7 +311,7 @@ class Message extends Model {
                         'statusCode' => 200,
                         'message' => '消息已发送！',
                     ];
-                }else{
+                } else {
                     $result = [
                         'statusCode' => 0,
                         'message' => '出错！',
