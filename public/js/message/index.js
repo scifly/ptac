@@ -81,7 +81,6 @@ function uploadfile(obj){
     var formData = new FormData();
 
 	formData.append('uploadFile', $('#file-'+type)[0].files[0]);
-	
     formData.append('_token', $('#csrf_token').attr('content'));
     formData.append('type', type);
     //请求接口
@@ -191,7 +190,7 @@ function upload_cover(obj){
 	var extension = $('#file-cover')[0].files[0].name.split('.');
 	extension = extension[extension.length-1];
 	extension = extension.toUpperCase();
-	if(extension != 'JPG' && extension != 'PNG'){
+	if(extension !== 'JPG' && extension !== 'PNG'){
 		alert('请上传JPG或PNG格式的图片');
 		return false;
 	}
