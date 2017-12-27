@@ -155,6 +155,11 @@ class Company extends Model {
 
     }
 
+    /**
+     * 运营者列表
+     *
+     * @return array
+     */
     static function datatable() {
 
         $columns = [
