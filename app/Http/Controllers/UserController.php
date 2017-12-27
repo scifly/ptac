@@ -224,18 +224,101 @@ class UserController extends Controller {
     
     /**
      * 我的消息
+     * @throws \Throwable
      */
-    public function messages() {
-    
+    public function messages(){
+
+        $menuId = Request::query('menuId');
+        $menu = $this->menu->find($menuId);
+        if (!$menu) {
+            $user = Auth::user();
+            $menuId = $this->menu->where('uri', 'users/messages')->first()->id;
+
+            session(['menuId' => $menuId]);
+            if (Request::get('draw')) {
+                return response()->json($this->message->datatable());
+            }
+            return view('home.home', [
+                'menu' => $this->menu->getMenuHtml($this->menu->rootMenuId()),
+                'content' => view('user.' . 'message'),
+                'js' => 'js/home/page.js',
+                'message' => '../public/js/user/message.js',
+                'user' => Auth::user()
+            ]);
+        }else {
+            if (!session('menuId') || session('menuId') !== $menuId) {
+                session(['menuId' => $menuId]);
+                session(['menuChanged' => true]);
+            } else {
+                Session::forget('menuChanged');
+            }
+
+            if (Request::get('draw')) {
+                return response()->json($this->message->datatable());
+            }
+
+            if (Request::ajax()) {
+                return response()->json([
+                    'statusCode' => 200,
+                    'title' => '首页',
+                    'uri' => Request::path(),
+                    'html' => view('user.message',[
+                        'user' => Auth::user(),
+                        'message' => '../public/js/user/message.js',
+                    ])->render()
+                ]);
+            }
+
+        }
+
+
     }
     
     /**
      * 待办事项
      */
-    public function event() {
-    
+    public function event(){
+        $menuId = Request::query('menuId');
+        $menu = $this->menu->find($menuId);
+        if (!$menu) {
+            $menuId = $this->menu->where('uri', 'users/events')->first()->id;
+            session(['menuId' => $menuId]);
+            if (Request::get('draw')) {
+                return response()->json($this->event->datatable());
+            }
+            return view('home.home', [
+                'menu' => $this->menu->getMenuHtml($this->menu->rootMenuId()),
+                'content' => view('user.' . 'event'),
+                'js' => 'js/home/page.js',
+                'event' => '../public/js/user/event.js',
+                'user' => Auth::user()
+            ]);
+        }else {
+            if (!session('menuId') || session('menuId') !== $menuId) {
+                session(['menuId' => $menuId]);
+                session(['menuChanged' => true]);
+            } else {
+                Session::forget('menuChanged');
+            }
+
+            if (Request::get('draw')) {
+                return response()->json($this->event->datatable());
+            }
+
+            if (Request::ajax()) {
+                return response()->json([
+                    'statusCode' => 200,
+                    'title' => '首页',
+                    'uri' => Request::path(),
+                    'html' => view('user.event',[
+                        'user' => Auth::user(),
+                        'event' => '../public/js/user/event.js',
+                    ])->render()
+                ]);
+            }
+
+        }
     }
-    
     /**
      * 上传用户头像
      *

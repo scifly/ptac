@@ -12,7 +12,10 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
-
+// Route::get('/fireEvent', function() {
+//     event(new eventTrigger());
+// });
+Route::get('/messages/send', 'MessageController@send');
 Route::auth();
 # 关闭注册功能
 Route::any('register', function() { return redirect('login'); });
@@ -171,17 +174,21 @@ Route::group(['prefix' => 'conference_participants'], function () {
 // 申诉
 /** 用户中心 */
 Route::get('users/profile','UserController@profile');
+// Route::put('users/profile','UserController@profile');
 Route::get('users/reset','UserController@reset');
 Route::post('users/reset','UserController@reset');
 Route::get('users/messages','UserController@messages');
-Route::get('users/events','UserController@events');
+Route::get('users/events','UserController@event');
 // 个人通讯录
 // 消息中心
 Route::group(['prefix' => 'messages'], routes('MessageController'));
 Route::group(['prefix' => 'messages'], function () {
     $ctlr = 'MessageController';
     Route::post('get_depart_users', $ctlr . '@getDepartmentUsers');
+    Route::post('index', $ctlr . '@index');
     Route::get('send', $ctlr . '@send');
+    Route::any('uploadFile', $ctlr . '@uploadFile');
+
 });
 // 日历
 // 个人信息
@@ -272,6 +279,8 @@ Route::group(['prefix' => 'operators'], function() {
 # --------------------------------------------------------------------------------
 // 消息中心
 Route::get('message_center', 'Wechat\MessageCenterController@index');
+Route::get('message_create', 'Wechat\MessageCenterController@create');
+Route::get('message_show', 'Wechat\MessageCenterController@show');
 //布置作业
 Route::get('homework', 'Wechat\HomeWorkController@index');
 //微网站

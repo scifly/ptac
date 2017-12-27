@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Facades\Wechat;
 use App\Http\Requests\MessageRequest;
 use Carbon\Carbon;
 use Exception;
@@ -10,6 +11,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
@@ -196,7 +198,7 @@ class Message extends Model {
             ['db' => 'Message.msl_id', 'dt' => 3],
             ['db' => 'User.realname', 'dt' => 4],
             ['db' => 'MessageType.name as messagetypename', 'dt' => 5],
-            ['db' => 'Message.read', 'dt' => 6,
+            ['db' => 'Message.readed', 'dt' => 6,
                 'formatter' => function ($d) {
                     return $d === 0 ? "否" : "是";
                 },
@@ -207,6 +209,7 @@ class Message extends Model {
                 },
             ],
             ['db' => 'Message.created_at', 'dt' => 8],
+            ['db' => 'Message.updated_at', 'dt' => 9
             [
                 'db' => 'Message.updated_at', 'dt' => 9,
                 'formatter' => function ($d, $row) {
@@ -248,9 +251,75 @@ class Message extends Model {
                 ],
             ],
         ];
+        $condition = null;
+        $role = Auth::user()->group->name;
+        if($role == '教职员工'){
+            $condition = 'Message.r_user_id='.Auth::id();
+        }
+        return Datatable::simple(self::getModel(), $columns, $joins,$condition);
+    }
 
-        return Datatable::simple(self::getModel(), $columns, $joins);
+    public function sendText($data) {
+        $result = [
+            'statusCode' => 200,
+            'message' => '',
+        ];
+
+        // return Datatable::simple(self::getModel(), $columns, $joins);
         
+        $obj = explode(',', $data['departIds']);
+        if ($obj) {
+            $depts = [];
+            $users = [];
+            foreach ($obj as $o) {
+                $item = explode('-', $o);
+                if ($item[1]) {
+                    $users[] = User::find($item[1])->userid;
+                } else {
+                    $depts[] = $o;
+                }
+            }
+            $touser = implode('|', $users);
+            $toparty = implode('|', $depts);
+            $apps = App::whereIn('id', $data['app_ids'])->get()->toArray();
+            if (!$apps) {
+                $result = [
+                    'statusCode' => 202,
+                    'message' => '应用不存在，请刷新页面！',
+                ];
+            }
+            $corp = Corp::where('name', '万浪软件')->first();
+            if (!$corp) {
+                $result = [
+                    'statusCode' => 202,
+                    'message' => '企业号不存在，请刷新页面！',
+                ];
+            }
+            foreach ($apps as $app) {
+                $token = Wechat::getAccessToken($corp->corpid, $app['secret']);
+                $message = [
+                    'touser' => $touser,
+                    'toparty' => $toparty,
+                    'msgtype' => 'text',
+                    'agentid' => $app['agentid'],
+                    'text' => ['content' => $data['content']],
+                ];
+                $status = json_decode(Wechat::sendMessage($token, $message));
+                if ($status->errcode == 0) {
+                    $result = [
+                        'statusCode' => 200,
+                        'message' => '消息已发送！',
+                    ];
+                }else{
+                    $result = [
+                        'statusCode' => 202,
+                        'message' => '出错！',
+                    ];
+                }
+            }
+        }
+        return response()->json($result);
     }
     
 }
+

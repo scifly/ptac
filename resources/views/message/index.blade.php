@@ -42,13 +42,18 @@
                         'items' => $apps,
                         'selectedItems' => null
                     ])
+
                     <!-- 发送对象 -->
                         <div class="form-group">
-                            {!! Form::label('departmentId', '发送对象', [
+                            {!! Form::label('objects', '发送对象', [
                                 'class' => 'col-sm-3 control-label'
                             ]) !!}
                             <div class="col-sm-6">
-                                <div id="department-nodes-checked"></div>
+                                <div id="department-nodes-checked">
+
+                                </div>
+
+                                <input type="hidden" id="selectedDepartmentIds" value=""/>
                                 <button id="add-attachment" class="btn btn-box-tool" type="button"
                                         style="margin-top: 3px;">
                                     <i class="fa fa-user-plus text-blue">&nbsp;选择</i>
@@ -93,10 +98,11 @@
                                             </a>
                                         </li>
                                     </ul>
-                                    <div class="tab-content">
+                                    <div class="tab-content" id="message-content">
                                         <div class="active tab-pane" id="content_text">
                                             {!! Form::textarea('content', null, [
-                                                'id' => 'content',
+                                                'id' => 'messageText',
+                                                'name' => 'content',
                                                 'class' => 'form-control',
                                             ]) !!}
                                         </div>
@@ -107,21 +113,31 @@
                                             </button>
                                         </div>
                                         <div class="tab-pane" id="content_image">
-                                            <button id="add-image" class="btn btn-box-tool" type="button"
-                                                    style="margin-top: 3px;">
-                                                <i class="fa fa-plus text-blue">&nbsp;添加图片</i>
+                                            <button id="add-image" class="btn btn-box-tool" type="button" style="margin-top: 3px;">
+                                                <i class="fa fa-plus text-blue" style="position: relative;">
+                                                	&nbsp;添加图片
+                                                	<input type="hidden" value="image" name="type" />
+                                                	<input type="file" id="file-image" onchange="uploadfile(this)" name="uploadFile" accept="image/*" style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/>
+                                                </i>
                                             </button>
+                                            
                                         </div>
                                         <div class="tab-pane" id="content_audio">
-                                            <button id="add-audio" class="btn btn-box-tool" type="button"
-                                                    style="margin-top: 3px;">
-                                                <i class="fa fa-plus text-blue">&nbsp;添加音频</i>
+                                            <button id="add-audio" class="btn btn-box-tool" type="button" style="margin-top: 3px;">
+                                                <i class="fa fa-plus text-blue" style="position: relative;">
+                                                	&nbsp;添加音频
+                                                	<input type="hidden" value="audio" name="type" />
+                                                	<input type="file" id="file-audio" onchange="uploadfile(this)" name="uploadFile" style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/>
+                                                </i>
                                             </button>
                                         </div>
                                         <div class="tab-pane" id="content_video">
-                                            <button id="add-video" class="btn btn-box-tool" type="button"
-                                                    style="margin-top: 3px;">
-                                                <i class="fa fa-plus text-blue">&nbsp;添加视频</i>
+                                            <button id="add-video" class="btn btn-box-tool" type="button" style="margin-top: 3px;">
+                                                <i class="fa fa-plus text-blue" style="position: relative;">
+                                                	&nbsp;添加视频
+                                                	<input type="hidden" value="video" name="type" />
+                                                	<input type="file" id="file-video" onchange="uploadfile(this)" name="uploadFile" style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/>
+                                                </i>
                                             </button>
                                         </div>
                                         <div class="tab-pane" id="content_sms">

@@ -1,8 +1,10 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Facades\Wechat;
 use App\Http\Requests\WapSiteRequest;
 use App\Models\Media;
+use App\Models\Menu;
 use App\Models\School;
 use App\Models\WapSite;
 use Exception;
@@ -20,9 +22,18 @@ use Throwable;
  */
 class WapSiteController extends Controller {
     
-    public function __construct() {
+    protected $wapSite;
+    protected $media;
+    protected $menu;
+    protected $school;
+    
+    public function __construct(WapSite $wapSite, Media $media, Menu $menu, School $school) {
         
         $this->middleware(['auth', 'checkrole']);
+        $this->wapSite = $wapSite;
+        $this->media = $media;
+        $this->menu = $menu;
+        $this->school = $school;
         
     }
     
@@ -33,14 +44,16 @@ class WapSiteController extends Controller {
      * @throws Throwable
      */
     public function index() {
-
-        $wapSite = WapSite::whereSchoolId(School::id())->first();
-        $this->authorize('rud', $wapSite);
+        $schoolId = $this->school->getSchoolId();
+        $wapSite = $this->wapSite->where('school_id',$schoolId)->first();
+        if (empty($wapSite)) {
+            return parent::notFound();
+        }
         $mediaIds = explode(",", $wapSite->media_ids);
     
         return $this->output([
             'wapSite' => $wapSite,
-            'medias'  => Media::medias($mediaIds),
+            'medias'  => $this->media->medias($mediaIds),
             'show'    => true,
         ]);
     
@@ -52,13 +65,11 @@ class WapSiteController extends Controller {
      * @return bool|JsonResponse
      * @throws Throwable
      */
-    public function create() {
-    
-        $this->authorize('c', WapSite::class);
-        
-        return $this->output();
-    
-    }
+    // public function create() {
+    //
+    //     return $this->output();
+    //
+    // }
     
     /**
      * 保存微网站
@@ -70,9 +81,8 @@ class WapSiteController extends Controller {
      */
     public function store(WapSiteRequest $request) {
         
-        $this->authorize('c', WapSite::class);
-        
-        return $this->result(WapSite::store($request));
+        return $this->wapSite->store($request)
+            ? $this->succeed() : $this->fail();
         
     }
     
@@ -83,19 +93,21 @@ class WapSiteController extends Controller {
      * @return bool|JsonResponse
      * @throws Throwable
      */
-    public function show($id) {
-        
-        $wapSite = WapSite::find($id);
-        $this->authorize('rud', $wapSite);
-        $mediaIds = explode(",", $wapSite->media_ids);
-        
-        return $this->output([
-            'wapSite' => $wapSite,
-            'medias'  => Media::medias($mediaIds),
-            'show'    => true,
-        ]);
-        
-    }
+    // public function show($id) {
+    //
+    //     $wapSite = $this->wapSite->find($id);
+    //     if (!$wapSite) {
+    //         return parent::notFound();
+    //     }
+    //     $mediaIds = explode(",", $wapSite->media_ids);
+    //
+    //     return $this->output([
+    //         'wapSite' => $wapSite,
+    //         'medias'  => $this->media->medias($mediaIds),
+    //         'show'    => true,
+    //     ]);
+    //
+    // }
     
     /**
      * 编辑微网站
@@ -105,13 +117,14 @@ class WapSiteController extends Controller {
      * @throws Throwable
      */
     public function edit($id) {
-        
-        $wapSite = WapSite::find($id);
-        $this->authorize('rud', $wapSite);
+        $wapSite = $this->wapSite->find($id);
+        if (!$wapSite) {
+            return parent::notFound();
+        }
         
         return $this->output([
             'wapSite' => $wapSite,
-            'medias'  => Media::medias(explode(',', $wapSite->media_ids)),
+            'medias'  => $this->media->medias(explode(',',$wapSite->media_ids)),
         ]);
         
     }
@@ -127,10 +140,8 @@ class WapSiteController extends Controller {
      */
     public function update(WapSiteRequest $request, $id) {
         
-        $wapSite = WapSite::find($id);
-        $this->authorize('rud', $wapSite);
-        
-        return $this->result($wapSite->modify($request, $id));
+        return $this->wapSite->modify($request, $id)
+            ? $this->succeed() : $this->fail();
         
     }
     
@@ -143,10 +154,12 @@ class WapSiteController extends Controller {
      */
     public function destroy($id) {
         
-        $wapSite = WapSite::find($id);
-        $this->authorize('rud', $wapSite);
+        $wapsite = $this->wapSite->find($id);
+        if (!$wapsite) {
+            return parent::notFound();
+        }
         
-        return $this->result($wapSite->delete());
+        return $wapsite->delete() ? parent::succeed() : parent::fail();
         
     }
     
@@ -158,9 +171,11 @@ class WapSiteController extends Controller {
     public function uploadImages() {
         
         $files = Request::file('img');
+        $type = Request::query('type');
         if (empty($files)) {
             $result['statusCode'] = 0;
             $result['message'] = '您还未选择图片！';
+            
             return $result;
         } else {
             $result['data'] = [];
@@ -171,6 +186,8 @@ class WapSiteController extends Controller {
             $result['statusCode'] = 1;
             $result['message'] = '上传成功！';
             $result['data'] = $mes;
+            $token = '';
+            $result = Wechat::uploadMedia($token, $type,$data);
         }
         
         return response()->json($result);
@@ -197,13 +214,8 @@ class WapSiteController extends Controller {
             $filename = uniqid() . '.' . $ext;
             // 使用新建的uploads本地存储空间（目录）
             if (Storage::disk('public')->put($filename, file_get_contents($realPath))) {
-                $filePath = Storage::url(
-                    'public/'
-                    . date('Y')
-                    . '/' . date('m')
-                    . '/' . date('d')
-                    . '/' . $filename
-                );
+                // $filePath = 'storage/app/uploads/' . date('Y') . '/' . date('m') . '/' . date('d') . '/' . $filename;
+                $filePath = Storage::url('public/' . date('Y') . '/' . date('m') . '/' . date('d') . '/' . $filename);
                 $mediaId = Media::insertGetId([
                     'path'          => $filePath,
                     'remark'        => '微网站轮播图',
