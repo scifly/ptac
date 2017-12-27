@@ -54,7 +54,7 @@ class Operator extends Model {
      * @throws Exception
      * @throws \Throwable
      */
-    public function store(OperatorRequest $request) {
+    static function store(OperatorRequest $request) {
 
         try {
             DB::transaction(function () use ($request) {
@@ -79,11 +79,10 @@ class Operator extends Model {
 
                 # step 2: 创建部门用户对应关系记录
                 $departments = $request->input('selectedDepartments');
-                $departments = $this->filterDepartments($departments, $u);
+                $departments = self::filterDepartments($departments, $u);
                 if (!$departments) {
                     throw new Exception('部门数据错误');
                 }
-
                 foreach ($departments as $d) {
                     $data = [
                         'user_id' => $u->id,
@@ -94,7 +93,7 @@ class Operator extends Model {
                 }
 
                 # step 3: 创建Operator记录
-                $this->create(['user_id' => $u->id, 'type' => 0]);
+                self::create(['user_id' => $u->id, 'type' => 0]);
 
                 # step 4: 创建Mobile记录
                 $mobiles = $request->input('mobile');
@@ -128,7 +127,7 @@ class Operator extends Model {
      * @param User $user 已创建的用户对象
      * @return array|bool
      */
-    private function filterDepartments(array $departments, User $user) {
+    private static function filterDepartments(array $departments, User $user) {
 
         $companyDepartmentIds = Company::pluck('department_id')->toArray();
         $corpDepartmentIds = Corp::pluck('department_id')->toArray();
@@ -142,7 +141,7 @@ class Operator extends Model {
             case '企业':
                 $o = Auth::user();
                 if ($o->group->name == '企业') {
-                    $departments[] = $o->topDeptId($o);
+                    $departments[] = $o->topDeptId();
                     $departments = array_unique($departments);
                 } else {
                     # 所属企业的数量
@@ -167,7 +166,7 @@ class Operator extends Model {
             case '学校':
                 $o = Auth::user();
                 if ($o->group->name == '学校') {
-                    $departments[] = $o->topDeptId($o);
+                    $departments[] = $o->topDeptId();
                     $departments = array_unique($departments);
                 } else {
                     # 所属学校的数量
@@ -210,17 +209,15 @@ class Operator extends Model {
      * @throws Exception
      * @throws \Throwable
      */
-    public function modify(OperatorRequest $request, $id) {
+    static function modify(OperatorRequest $request, $id) {
 
-        $operator = $this->find($id);
-        if (!$operator) {
-            return false;
-        }
+        $operator = self::find($id);
+        if (!$operator) { return false; }
         try {
             DB::transaction(function () use ($request, $id, $operator) {
                 # step 1: 更新对应的User记录
                 $user = $request->input('user');
-                $data = [
+                $operator->user->update([
                     'username' => $user['username'],
                     'group_id' => $user['group_id'],
                     'email' => $user['email'],
@@ -233,12 +230,11 @@ class Operator extends Model {
                     'telephone' => $user['telephone'],
                     'wechatid' => '',
                     'enabled' => $user['enabled'],
-                ];
-                $operator->user->update($data);
+                ]);
 
                 # step 2: 更新部门用户对应关系
                 $departments = $request->input('selectedDepartments');
-                $departments = $this->filterDepartments($departments, $operator->user);
+                $departments = self::filterDepartments($departments, $operator->user);
                 if (!$departments) {
                     throw new Exception('部门数据错误');
                 }
@@ -279,6 +275,7 @@ class Operator extends Model {
         } catch (Exception $e) {
             throw $e;
         }
+        
         return true;
 
     }
@@ -290,16 +287,21 @@ class Operator extends Model {
      * @return bool
      * @throws Exception
      */
-    public function remove($id) {
+    static function remove($id) {
 
-        $operator = $this->find($id);
+        $operator = self::find($id);
         if (!$operator) { return false; }
         
-        return $this->removable($id) ? $operator->delete() : false;
+        return self::removable($id) ? $operator->delete() : false;
 
     }
-
-    public function datatable() {
+    
+    /**
+     * 操作员列表
+     *
+     * @return array
+     */
+    static function datatable() {
 
         $columns = [
             ['db' => 'Operator.id', 'dt' => 0],
@@ -340,7 +342,8 @@ class Operator extends Model {
                 ],
             ],
         ];
-        return Datatable::simple($this, $columns, $joins);
+        
+        return Datatable::simple(self::getModel(), $columns, $joins);
 
     }
 

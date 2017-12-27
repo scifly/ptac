@@ -6,6 +6,7 @@ use App\Facades\DatatableFacade as Datatable;
 use App\Facades\Wechat;
 use App\Http\Requests\MessageRequest;
 use Carbon\Carbon;
+use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -32,6 +33,14 @@ use Illuminate\Support\Facades\Storage;
  * @property int $recipient_count 接收者数量
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property int $comm_type_id 通信方式id
+ * @property int $app_id 应用id
+ * @property int $msl_id 消息发送批次id
+ * @property int $s_user_id 发送者用户ID
+ * @property int $r_user_id 接收者用户IDs
+ * @property int $readed 是否已读
+ * @property int $sent 消息发送是否成功
+ * @mixin Eloquent
  * @method static Builder|Message whereContent($value)
  * @method static Builder|Message whereCreatedAt($value)
  * @method static Builder|Message whereId($value)
@@ -46,16 +55,6 @@ use Illuminate\Support\Facades\Storage;
  * @method static Builder|Message whereUrl($value)
  * @method static Builder|Message whereUserId($value)
  * @method static Builder|Message whereUserIds($value)
- * @mixin \Eloquent
- * @property-read MessageType $messageType
- * @property-read User $user
- * @property int $comm_type_id 通信方式id
- * @property int $app_id 应用id
- * @property int $msl_id 消息发送批次id
- * @property int $s_user_id 发送者用户ID
- * @property int $r_user_id 接收者用户IDs
- * @property int $readed 是否已读
- * @property int $sent 消息发送是否成功
  * @method static Builder|Message whereAppId($value)
  * @method static Builder|Message whereCommTypeId($value)
  * @method static Builder|Message whereMslId($value)
@@ -63,7 +62,9 @@ use Illuminate\Support\Facades\Storage;
  * @method static Builder|Message whereReaded($value)
  * @method static Builder|Message whereSUserId($value)
  * @method static Builder|Message whereSent($value)
- * @property-read \App\Models\CommType $commType
+ * @property-read MessageType $messageType
+ * @property-read User $user
+ * @property-read CommType $commType
  * @property-read MessageSendingLog $messageSendinglog
  * @property-read MessageSendingLog $messageSendinglogs
  */
@@ -103,7 +104,7 @@ class Message extends Model {
     public function messageSendinglogs() { return $this->belongsTo('App\Models\MessageSendingLog'); }
 
     public function commType() { return $this->belongsTo('App\Models\CommType'); }
-    
+
     /**
      * @param MessageRequest $request
      * @return bool
@@ -135,13 +136,13 @@ class Message extends Model {
         return true;
         
     }
-    
+
     /**
      * @param $request
      * @throws Exception
      */
     private static function removeMedias(MessageRequest $request) {
-        
+
         //删除原有的图片
         $mediaIds = $request->input('del_ids');
         if ($mediaIds) {
@@ -158,7 +159,7 @@ class Message extends Model {
             }
         }
     }
-    
+
     /**
      * @param MessageRequest $request
      * @param $id
@@ -209,7 +210,6 @@ class Message extends Model {
                 },
             ],
             ['db' => 'Message.created_at', 'dt' => 8],
-            ['db' => 'Message.updated_at', 'dt' => 9
             [
                 'db' => 'Message.updated_at', 'dt' => 9,
                 'formatter' => function ($d, $row) {
@@ -253,20 +253,21 @@ class Message extends Model {
         ];
         $condition = null;
         $role = Auth::user()->group->name;
-        if($role == '教职员工'){
-            $condition = 'Message.r_user_id='.Auth::id();
+        if ($role == '教职员工') {
+            $condition = 'Message.r_user_id=' . Auth::id();
         }
-        return Datatable::simple(self::getModel(), $columns, $joins,$condition);
+        
+        return Datatable::simple(self::getModel(), $columns, $joins, $condition);
+        
     }
 
-    public function sendText($data) {
+    static function sendMessage($data) {
+        
         $result = [
             'statusCode' => 200,
             'message' => '',
         ];
 
-        // return Datatable::simple(self::getModel(), $columns, $joins);
-        
         $obj = explode(',', $data['departIds']);
         if ($obj) {
             $depts = [];
@@ -284,14 +285,14 @@ class Message extends Model {
             $apps = App::whereIn('id', $data['app_ids'])->get()->toArray();
             if (!$apps) {
                 $result = [
-                    'statusCode' => 202,
+                    'statusCode' => 0,
                     'message' => '应用不存在，请刷新页面！',
                 ];
             }
             $corp = Corp::where('name', '万浪软件')->first();
             if (!$corp) {
                 $result = [
-                    'statusCode' => 202,
+                    'statusCode' => 0,
                     'message' => '企业号不存在，请刷新页面！',
                 ];
             }
@@ -300,25 +301,42 @@ class Message extends Model {
                 $message = [
                     'touser' => $touser,
                     'toparty' => $toparty,
-                    'msgtype' => 'text',
                     'agentid' => $app['agentid'],
-                    'text' => ['content' => $data['content']],
                 ];
+                switch ($data['type']) {
+                    case 'text' :
+                        $message['text'] = ['content' => $data['content']['text']];
+                        break;
+                    case 'image' :
+                    case 'voice' :
+                        $message['image'] = ['media_id' => $data['content']['media_id']];
+                        break;
+                    case 'mpnews' :
+                        $message['mpnews'] = ['articles' => $data['content']['articles']];
+                        break;
+                    case 'video' :
+                        $message['video'] = $data['content']['video'];
+                        break;
+                }
+                $message['msgtype'] = $data['type'];
+
                 $status = json_decode(Wechat::sendMessage($token, $message));
                 if ($status->errcode == 0) {
                     $result = [
                         'statusCode' => 200,
                         'message' => '消息已发送！',
                     ];
-                }else{
+                } else {
                     $result = [
-                        'statusCode' => 202,
+                        'statusCode' => 0,
                         'message' => '出错！',
                     ];
                 }
             }
         }
+        
         return response()->json($result);
+        
     }
     
 }

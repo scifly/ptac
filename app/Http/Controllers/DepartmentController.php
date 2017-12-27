@@ -32,7 +32,7 @@ class DepartmentController extends Controller {
     public function index() {
         
         if (Request::method() === 'POST') {
-            return Department::tree();
+            return response()->json(Department::tree());
         }
 
         return $this->output();
@@ -48,11 +48,9 @@ class DepartmentController extends Controller {
      */
     public function create($id) {
         
-        $departmentTypeId = DepartmentType::whereName('其他')->first()->id;
-
         return $this->output([
             'parentId' => $id,
-            'departmentTypeId' => $departmentTypeId
+            'departmentTypeId' => DepartmentType::whereName('其他')->first()->id
         ]);
         
     }
@@ -65,7 +63,9 @@ class DepartmentController extends Controller {
      */
     public function store(DepartmentRequest $request) {
         
-        return $this->result(Department::store($request->all(), true));
+        return $this->result(
+            Department::store($request->all(), true)
+        );
         
     }
     
@@ -110,7 +110,9 @@ class DepartmentController extends Controller {
         
         $department = Department::find($id);
 
-        return $this->result($department::modify($request->all(), $id, true));
+        return $this->result(
+            $department::modify($request->all(), $id, true)
+        );
         
     }
     
@@ -146,7 +148,9 @@ class DepartmentController extends Controller {
             return $this->notFound();
         }
         if ($department::movable($id, $parentId)) {
-            return $this->result($department::move($id, $parentId, true));
+            return $this->result(
+                $department::move($id, $parentId, true)
+            );
         }
 
         return $this->fail('非法操作');

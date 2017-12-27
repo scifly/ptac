@@ -10,10 +10,11 @@
         ]) !!}
         <div class="col-sm-6">
             {!! Form::text('content_image', null, [
-                'class' => 'form-control',
+                'class' => 'form-control imagetext-title',
                 'placeholder' => '(请输入标题)',
                 'required' => 'true',
                 'data-parsley-length' => '[2,10]',
+                'maxlength' => '128',
             ]) !!}
         </div>
     </div>
@@ -24,43 +25,47 @@
         <div class="col-sm-6">
             {!! Form::textarea('content', null, [
                 'id' => 'content',
-                'class' => 'form-control',
+                'class' => 'form-control imagetext-content',
+                'maxlength' => '666',
             ]) !!}
         </div>
     </div>
     <div class="form-group">
         <label for="" class="col-sm-3"></label>
         <div class="col-sm-6">
-            <a href="#"><i class="fa fa-paperclip text-blue"></i>&nbsp;添加附件</a>
-            <a href="#"><i class="fa fa-link text-blue"></i>&nbsp;添加原文链接</a>
+            <!--<a href="#"><i class="fa fa-paperclip text-blue"></i>&nbsp;添加附件</a>-->
+            <a href="#" id="add-article-url"><i class="fa fa-link text-blue"></i>&nbsp;添加原文链接</a>
+            {!! Form::text('content_image', null, [
+                'class' => 'form-control imagetext-content_source_url',
+                'placeholder' => '(原文链接)',
+                'style' => 'display:none',
+            ]) !!}
         </div>
     </div>
     <div class="form-group">
         <label for="" class="col-sm-3"></label>
         <div class="col-sm-6">
-            <p>
-                <a href="#">添加封面图</a>&nbsp;&nbsp;<span class="text-gray">建议尺寸:1068*534</span>
+            <p id="cover">
+            	<form id="form-cover" enctype="multipart/form-data">
+                	<a href="#" style="position: relative;">
+                		添加封面图
+                		<input type="hidden" value="image" name="type" />
+                        <input type="file" id="file-cover" onchange="upload_cover(this)" name="input-cover" accept="image/*" style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/>
+                	</a>
+                	&nbsp;&nbsp;<span class="text-gray">建议尺寸:1068*534</span>
+                	
+               </form>
             </p>
         </div>
     </div>
-    <div class="form-group">
-        {!! Form::label('title', '摘要', [
-            'class' => 'col-sm-3 control-label'
-        ]) !!}
-        <div class="col-sm-6">
-            {!! Form::text('content_image', null, [
-                'class' => 'form-control',
-                'placeholder' => '(如不填会自动抓取正文前54字)',
-            ]) !!}
-        </div>
-    </div>
+
     <div class="form-group">
         {!! Form::label('title', '作者', [
             'class' => 'col-sm-3 control-label'
         ]) !!}
         <div class="col-sm-6">
             {!! Form::text('content_image', null, [
-                'class' => 'form-control',
+                'class' => 'form-control imagetext-author',
                 'placeholder' => '(选填)',
             ]) !!}
         </div>

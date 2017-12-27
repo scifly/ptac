@@ -9,10 +9,12 @@ use App\Models\Mobile;
 use App\Models\School;
 use App\Models\Team;
 use Exception;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use PHPExcel_Exception;
+use Throwable;
 
 /**
  * 教职员工
@@ -22,26 +24,9 @@ use PHPExcel_Exception;
  */
 class EducatorController extends Controller {
     
-    protected $educator;
-    protected $mobile;
-    protected $educatorClass;
-    protected $team;
-    protected $department;
+    public function __construct() {
     
-    public function __construct(
-        Educator $educator,
-        Mobile $mobile,
-        EducatorClass $educatorClass,
-        Team $team,
-        Department $department
-    ) {
-    
-        $this->middleware(['auth']);
-        $this->educator = $educator;
-        $this->mobile = $mobile;
-        $this->educatorClass = $educatorClass;
-        $this->team = $team;
-        $this->department = $department;
+        $this->middleware(['auth', 'checkrole']);
         
     }
     
@@ -54,8 +39,9 @@ class EducatorController extends Controller {
     public function index() {
         
         if (Request::get('draw')) {
-            return response()->json($this->educator->datatable());
+            return response()->json(Educator::datatable());
         }
+        
         return $this->output();
         
     }
@@ -68,9 +54,12 @@ class EducatorController extends Controller {
      */
     public function create() {
         
+        $this->authorize('c', Educator::class);
         if (Request::method() === 'POST') {
             $school = School::find(School::id());
-            return $this->department->tree($school->department_id);
+            return response()->json(
+                Department::tree($school->department_id)
+            );
         }
         
         return $this->output();
@@ -86,8 +75,9 @@ class EducatorController extends Controller {
      */
     public function store(EducatorRequest $request) {
         
-        return $this->educator->store($request)
-            ? $this->succeed() : $this->fail();
+        $this->authorize('c', Educator::class);
+        
+        return $this->result(Educator::store($request));
         
     }
     
@@ -100,11 +90,10 @@ class EducatorController extends Controller {
      */
     public function show($id) {
         
-        $educator = $this->educator->find($id);
-        if (!$educator) { return $this->notFound(); }
-        return $this->output([
-            'educator'  => $educator,
-        ]);
+        $educator = Educator::find($id);
+        $this->authorize('rud', $educator);
+        
+        return $this->output(['educator'  => $educator]);
         
     }
     
@@ -116,12 +105,12 @@ class EducatorController extends Controller {
      * @throws \Throwable
      */
     public function edit($id) {
-        
+    
+        $educator = Educator::find($id);
+        $this->authorize('rud', $educator);
         if (Request::method() === 'POST') {
-            return $this->department->tree();
+            return response()->json(Department::tree());
         }
-        $educator = $this->educator->find($id);
-        if (!$educator) { return $this->notFound(); }
         $selectedTeams = [];
         foreach ($educator->teams as $v) {
             $selectedTeams[$v->id] = $v->name;
@@ -130,7 +119,7 @@ class EducatorController extends Controller {
         foreach ($educator->user->departments as $department) {
             $selectedDepartmentIds[] = $department->id;
         }
-        $selectedDepartments = $this->department->selectedNodes($selectedDepartmentIds);
+        $selectedDepartments = Department::selectedNodes($selectedDepartmentIds);
         return $this->output([
             'mobiles'               => $educator->user->mobiles,
             'educator'              => $educator,
@@ -150,13 +139,10 @@ class EducatorController extends Controller {
      */
     public function recharge($id) {
         
-        $educator = $this->educator->find($id);
-        if (!$educator) {
-            return $this->notFound();
-        }
-        return $this->output([
-            'educator' => $educator,
-        ]);
+        $educator = Educator::find($id);
+        $this->authorize('rud', $educator);
+        
+        return $this->output(['educator' => $educator]);
         
     }
     
@@ -166,16 +152,15 @@ class EducatorController extends Controller {
      * @param EducatorRequest $request
      * @param $id
      * @return JsonResponse
-     * @throws Exception
-     * @throws \Throwable
+     * @throws AuthorizationException
+     * @throws Throwable
      */
     public function update(EducatorRequest $request, $id) {
         
-        $educator = $this->educator->find($id);
-        if (!$educator) { return $this->notFound(); }
+        $educator = Educator::find($id);
+        $this->authorize('rud', $educator);
         
-        return $educator->modify($request)
-            ? $this->succeed() : $this->fail();
+        return $this->result($educator->modify($request));
         
     }
     
@@ -184,11 +169,13 @@ class EducatorController extends Controller {
      *
      * @param $id
      * @return JsonResponse
+     * @throws AuthorizationException
      */
     public function rechargeStore($id) {
         
-        $educator = $this->educator->find($id);
-        if (!$educator) { return $this->notFound(); }
+        $educator = Educator::find($id);
+        $this->authorize('rud', $educator);
+        
         $recharge = Request::get('recharge');
         $educator->sms_quote += $recharge;
         
@@ -205,17 +192,17 @@ class EducatorController extends Controller {
      */
     public function destroy($id) {
         
-        $educator = $this->educator->find($id);
-        if (!$educator) { return $this->notFound(); }
+        $educator = Educator::find($id);
+        $this->authorize('rud', $educator);
         
-        return $this->educator->remove($id, true)
-            ? parent::succeed() : parent::fail();
+        return $this->result($educator->remove($id, true));
         
     }
     
     /**
      * 导入教职员工
      *
+     * @return JsonResponse|null
      * @throws PHPExcel_Exception
      */
     public function import() {
@@ -231,7 +218,7 @@ class EducatorController extends Controller {
             }
             // 文件是否上传成功
             if ($file->isValid()) {
-                $result = $this->educator->upload($file);
+                $result = Educator::upload($file);
                 return response()->json($result);
             }
         }
@@ -249,7 +236,7 @@ class EducatorController extends Controller {
         
         $id = Request::query('id');
         if ($id) {
-            $data = $this->educator->export($id);
+            $data = Educator::export($id);
             /** @noinspection PhpMethodParametersCountMismatchInspection */
             /** @noinspection PhpUndefinedMethodInspection */
             Excel::create(iconv('UTF-8', 'GBK', '教职员工列表'), function ($excel) use ($data) {
@@ -267,7 +254,6 @@ class EducatorController extends Controller {
                         'F'     =>  30,
                     ));
                 });
-                
             },'UTF-8')->export('xls');
         }
     }

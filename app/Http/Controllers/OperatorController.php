@@ -57,7 +57,7 @@ class OperatorController extends Controller {
     public function create() {
         
         if (Request::method() === 'POST') {
-            return $this->department->tree(Request::query('rootId'));
+            return response()->json($this->department->tree(Request::query('rootId')));
         }
         return $this->output([
             'role' => Auth::user()->group->name
@@ -109,7 +109,7 @@ class OperatorController extends Controller {
     public function edit($id) {
         
         if (Request::method() === 'POST') {
-            return $this->department->tree();
+            return response()->json($this->department->tree());
         }
         $operator = $this->operator->find($id);
         if (!$operator) { return $this->notFound(); }

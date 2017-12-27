@@ -565,7 +565,6 @@ class Educator extends Model {
                     $id = $row['id'];
                     $status = $d ? Datatable::DT_ON : Datatable::DT_OFF;
                     $user = Auth::user();
-
                     $showLink = sprintf(Datatable::DT_LINK_SHOW, 'show_' . $id) .
                         str_repeat(Datatable::DT_SPACE, 3);
                     $editLink = sprintf(Datatable::DT_LINK_EDIT, 'edit_' . $id) .
@@ -606,18 +605,26 @@ class Educator extends Model {
 
     }
     
-    //二维数组去掉重复值
+    /**
+     * 去掉二维数组中的重复值
+     *
+     * @param $array2D
+     * @return array
+     */
     private static function array_unique_fb($array2D) {
         
         $temp = [];
         foreach ($array2D as $v) {
-            $v = join(',', $v); //降维,也可以用implode,将一维数组转换为用逗号连接的字符串
+            # 降维,也可以用implode,将一维数组转换为用逗号连接的字符串
+            $v = join(',', $v);
             $temp[] = $v;
         }
-        $tempUnique = array_unique($temp); //去掉重复的字符串,也就是重复的一维数组
+        # 去掉重复的字符串,也就是重复的一维数组
+        $tempUnique = array_unique($temp);
         $csArray = [];
         foreach ($tempUnique as $k => $v) {
-            $tempArray = explode(',', $v); //再将拆开的数组重新组装
+            # 再将拆开的数组重新组装
+            $tempArray = explode(',', $v);
             $csArray[$k]['class_id'] = $tempArray[0];
             $csArray[$k]['subject_id'] = $tempArray[1];
         }
@@ -628,6 +635,7 @@ class Educator extends Model {
 
     /**
      * 检查表头是否合法
+     *
      * @param array $fileTitle
      * @return bool
      */
@@ -641,17 +649,14 @@ class Educator extends Model {
         
         $rules = [
             'name' => 'required|string|between:2,6',
-            'gender' => [
-                'required',
-                Rule::in(['男', '女']),
-            ],
+            'gender' => ['required', Rule::in(['男', '女'])],
             'birthday' => ['required', 'string', 'regex:/^((19\d{2})|(20\d{2}))-([1-12])-([1-31])$/'],
             'school' => 'required|string|between:4,20',
             'mobile' => 'required', new Mobiles(),
             'grades' => 'string',
             'classes' => 'string',
-//            'subjects' => 'string',
-//            'educators_classes' => 'string',
+            'subjects' => 'string',
+            'educators_classes' => 'string',
             'departments' => 'required|string',
         ];
         // Validator::make($data,$rules);
@@ -673,7 +678,6 @@ class Educator extends Model {
                 'educators_classes' => $datum[8],
                 'departments' => $datum[9],
             ];
-
             $status = Validator::make($user, $rules);
             if ($status->fails()) {
                 $invalidRows[] = $datum;
@@ -687,7 +691,6 @@ class Educator extends Model {
                 continue;
             }
             $departments = explode(',', $user['departments']);
-
             foreach ($departments as $d) {
                 $department = Department::whereName($d)->first();
                 if (empty($department)) {
@@ -701,8 +704,9 @@ class Educator extends Model {
             $rows[] = $user;
             unset($user);
         }
-        // print_r($rows);die;
+        
         return $rows;
+        
     }
     
 }

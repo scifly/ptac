@@ -1,0 +1,242 @@
+var token = $('#csrf_token').attr('content');
+
+$(".ma_expect_date").datetimePicker();
+
+$('.js-search-input').bind("input propertychange change",function(event){
+    var txt = $(this).val();
+    if(txt == ''){
+        $('.js-choose-items .weui-check__label').show();
+        $('.js-choose-breadcrumb-li').text('全部');
+    }else{
+        $('.js-choose-breadcrumb-li').text('搜索结果');
+        $('.js-choose-items .weui-check__label').hide();
+        $('.js-choose-items .weui-check__label').each(function(){
+            var uname = $(this).find('.contacts-text').text();
+            if(uname.indexOf(txt) >= 0){
+                $(this).show();
+            }
+        });
+    }
+});
+
+$('.show-group').click(function(){
+    //展示下一个分组
+    alert(1);
+});
+
+$('#choose-btn-ok').click(function(){
+    var html = $('.js-choose-header-result').html();
+    $('#homeWorkChoose').html(html);
+    $.closePopup();
+});
+
+$(".choose-item-btn").change(function() {
+    var $this = $(this).parents('.weui-check__label');
+    var num = $this.attr('data-item');
+    var type = $this.attr('data-type');
+    if($(this).is(':checked')){
+        var imgsrc = $this.find('img').attr('src');
+        var uid = $this.attr('data-uid');
+        if(type == 'group'){
+            var html = '<a class="choose-results-item js-choose-results-item choose-item-type-group" id="list-'+num+'" data-list="'+num+'" data-uid="'+uid+'" data-type="'+type+'">'+
+                '<img src="'+imgsrc+'">'+
+                '</a>';
+        }else{
+            var html = '<a class="choose-results-item js-choose-results-item choose-item-type-person" id="list-'+num+'" data-list="'+num+'" data-uid="'+uid+'" data-type="'+type+'">'+
+                '<img src="'+imgsrc+'" style="border-radius:50%">'+
+                '</a>';
+        }
+
+        $('.js-choose-header-result').prepend(html);
+
+        remove_choose_result();
+        count_result();
+    }else{
+        $('.js-choose-header-result').find('#list-'+num).remove();
+        $('.air-choose-group').removeClass('air-checkall');
+        $('#checkall').prop('checked',false);
+        count_result();
+    }
+});
+
+$('#checkall').change(function() {
+    if($(this).is(':checked')){
+        $('.choose-item-btn').prop('checked',true);
+        var html = '';
+        $('.js-choose-items .weui-check__label').each(function(i,vo){
+            var type = $(vo).attr('data-type');
+            var num = $(vo).attr('data-item');
+            var uid = $(vo).attr('data-uid');
+            var imgsrc = $(vo).find('img').attr('src');
+            if(type == 'group'){
+                html += '<a class="choose-results-item js-choose-results-item choose-item-type-group" id="list-'+num+'" data-list="'+num+'" data-uid="'+uid+'" data-type="'+type+'">'+
+                    '<img src="'+imgsrc+'">'+
+                    '</a>';
+            }else{
+                html += '<a class="choose-results-item js-choose-results-item choose-item-type-person" id="list-'+num+'" data-list="'+num+'" data-uid="'+uid+'" data-type="'+type+'">'+
+                    '<img src="'+imgsrc+'" style="border-radius:50%">'+
+                    '</a>';
+            }
+        });
+        $('.js-choose-header-result').html(html);
+        remove_choose_result();
+        $('.air-choose-group').addClass('air-checkall');
+        count_result();
+    }else{
+        $('.choose-item-btn').prop('checked',false);
+        $('.js-choose-header-result').html('');
+        $('.air-choose-group').removeClass('air-checkall');
+        count_result();
+    }
+});
+
+function count_result(){
+    var grouptotal = $('.js-choose-header-result .js-choose-results-item.choose-item-type-group').length;
+    var persontotal = $('.js-choose-header-result .js-choose-results-item.choose-item-type-person').length;
+    $('.js-choose-num').text('已选'+grouptotal+'个分组,'+persontotal+'名用户');
+}
+
+function remove_choose_result(){
+    $('.js-choose-results-item').click(function(){
+        var num = $(this).attr('data-list');
+        $(this).remove();
+        $('#item-'+num).find('.choose-item-btn').prop('checked',false);
+        count_result();
+    });
+}
+$(".weui-switch").change(function() {
+    if($(this).is(':checked')){
+        $('.hw-time').slideToggle('fast');
+    }else{
+        $('.hw-time').slideToggle('fast');
+    }
+});
+
+$(function () {
+    // 允许上传的图片类型
+    var allowTypes = ['image/jpg', 'image/jpeg', 'image/png', 'image/gif'];
+    // 1024KB，也就是 1MB
+    var maxSize = 1024 * 1024;
+    // 图片最大宽度
+    var maxWidth = 300;
+    // 最大上传图片数量
+    var maxCount = 6;
+    var tmp = 1;
+    $('.js_file').on('change', function (event) {
+        var files = event.target.files;
+
+        // 如果没有选中文件，直接返回
+        if (files.length === 0) {
+            return;
+        }
+
+        for (var i = 0, len = files.length; i < len; i++) {
+            var file = files[i];
+            var reader = new FileReader();
+
+            // 如果类型不在允许的类型范围内
+            if (allowTypes.indexOf(file.type) === -1) {
+                $.weui.alert({text: '该类型不允许上传'});
+                continue;
+            }
+
+            if (file.size > maxSize) {
+                $.weui.alert({text: '图片太大，不允许上传'});
+                continue;
+            }
+
+            if ($('.weui_uploader_file').length >= maxCount) {
+                $.weui.alert({text: '最多只能上传' + maxCount + '张图片'});
+                return;
+            }
+
+            reader.onload = function (e) {
+                var img = new Image();
+                img.onload = function () {
+                    // 不要超出最大宽度
+                    var w = Math.min(maxWidth, img.width);
+                    // 高度按比例计算
+                    var h = img.height * (w / img.width);
+                    var canvas = document.createElement('canvas');
+                    var ctx = canvas.getContext('2d');
+                    // 设置 canvas 的宽度和高度
+                    canvas.width = w;
+                    canvas.height = h;
+                    ctx.drawImage(img, 0, 0, w, h);
+                    var base64 = canvas.toDataURL('image/png');
+
+                    // console.log(base64);
+                    var html = '<img class="uploadimg-item" src="' + base64 + '" id="uploadimg-'+tmp+'">';
+                    $('#emojiInput').append(html);
+                    // 然后假装在上传，可以post base64格式，也可以构造blob对象上传，也可以用微信JSSDK上传
+
+                    // function dataURItoBlob(dataURI) {
+                    //     var byteString = atob(dataURI.split(',')[1]);
+                    //     var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+                    //     var ab = new ArrayBuffer(byteString.length);
+                    //     var ia = new Uint8Array(ab);
+                    //     for (var i = 0; i < byteString.length; i++) {
+                    //         ia[i] = byteString.charCodeAt(i);
+                    //     }
+                    //     return new Blob([ab], {type: mimeString});
+                    // }
+                    //
+                    // imgaeBlob = dataURItoBlob(base64);
+
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+        var formData = new FormData();
+        formData.append('file', $('#uploaderInput')[0].files[0]);
+        formData.append('_token', token);
+        $.ajax({
+            url: '../public/message_upload',
+            type: 'POST',
+            cache: false,
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (result) {
+                if (result.statusCode === 200) {
+                    $('#uploadimg-'+tmp).attr('data-media-id',result.message.id);
+                }
+            }
+        });
+        tmp++;
+    });
+
+    $('.release').on('click', function () {
+        var media_ids = [];
+        var title = $('#title').val();
+        var content = $('#emojiInput').html();
+        var time = $('#time').val();
+        var send = $('#homeWorkChoose').html();
+        $('.uploadimg-item').each(function () {
+            media_ids.push($(this).attr('data-media-id'));
+        });
+        // alert(title);
+        // alert(content);
+        // alert(time);
+        // alert(send);
+        // console.log(media_ids);
+
+        //前端验证
+        $.ajax({
+            type: 'POST',
+            data: {
+                '_token': token, 'title': title, 'content': content,
+                'time': time, 'send_ids': send, 'media_ids': media_ids
+            },
+            url: '../public/message_store',
+            success: function (result) {
+                if (result.statusCode === 200) {
+
+                }
+            }
+        });
+
+    });
+})
+;

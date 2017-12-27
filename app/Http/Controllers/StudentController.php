@@ -53,7 +53,9 @@ class StudentController extends Controller {
      */
     public function create() {
         
-        if (Request::method() === 'POST') { return Department::tree(); }
+        if (Request::method() === 'POST') {
+            return response()->json(Department::tree());
+        }
         $items = Student::gradeClasses();
         
         return $this->output([

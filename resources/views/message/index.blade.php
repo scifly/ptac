@@ -28,6 +28,8 @@
                 <div class="tab-pane active" id="tab01">
                     @include('message.objects')
                     @include('message.imagetext')
+                    @include('message.upload_video')
+                    
                     <div class="form-horizontal" id="message">
                     {!! Form::open([
                         'method' => 'post',
@@ -73,7 +75,7 @@
                                             </a>
                                         </li>
                                         <li>
-                                            <a href="#content_imagetext" data-toggle="tab" class="tab">
+                                            <a href="#content_mpnews" data-toggle="tab" class="tab">
                                                 <i class="fa fa-th-list"></i>&nbsp;图文
                                             </a>
                                         </li>
@@ -83,7 +85,7 @@
                                             </a>
                                         </li>
                                         <li>
-                                            <a href="#content_audio" data-toggle="tab" class="tab">
+                                            <a href="#content_voice" data-toggle="tab" class="tab">
                                                 <i class="fa fa-file-sound-o"></i>&nbsp;音频
                                             </a>
                                         </li>
@@ -106,39 +108,59 @@
                                                 'class' => 'form-control',
                                             ]) !!}
                                         </div>
-                                        <div class="tab-pane" id="content_imagetext">
+                                        <div class="tab-pane" id="content_mpnews">
                                             <button id="add-imagetext" class="btn btn-box-tool" type="button"
                                                     style="margin-top: 3px;">
                                                 <i class="fa fa-plus text-blue">&nbsp;添加图文</i>
                                             </button>
+                                            <!--<div class="show_imagetext" style="width: 270px;border:1px solid #E4E6E9;border-radius: 4px;padding: 10px;position: relative;cursor: pointer;">
+                                            	<div class="show_imagetext_title" style="font-size: 16px;line-height: 24px;overflow: hidden;text-overflow:ellipsis;-webkit-line-clamp:2;margin-bottom: 8px;">123</div>
+                                            	<div class="show_imagetext_pic" style="height: 125px;width: 250px;background-repeat: no-repeat;background-size:cover;background-image: url({{ URL::asset('img/photo1.png') }});"></div>
+                                            	<div class="show_imagetext_content" style="font-size: 12px;margin-top:12px;color:#787878;line-height: 20px;overflow: hidden;text-overflow:ellipsis;-webkit-line-clamp:4;">123123</div>
+                                            </div>-->
                                         </div>
                                         <div class="tab-pane" id="content_image">
-                                            <button id="add-image" class="btn btn-box-tool" type="button" style="margin-top: 3px;">
-                                                <i class="fa fa-plus text-blue" style="position: relative;">
-                                                	&nbsp;添加图片
-                                                	<input type="hidden" value="image" name="type" />
-                                                	<input type="file" id="file-image" onchange="uploadfile(this)" name="uploadFile" accept="image/*" style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/>
-                                                </i>
-                                            </button>
-                                            
+
+                                            <form id="uploadImageForm" enctype="multipart/form-data">
+
+                                                <button id="add-image" class="btn btn-box-tool" type="button" style="margin-top: 3px;position: relative;border: 0;">
+                                                    <i class="fa fa-plus text-blue">
+                                                        &nbsp;添加图片
+                                                            <input type="hidden" value="image" name="type" />
+                                                            <input type="file" id="file-image" onchange="uploadfile(this)" name="uploadFile" accept="image/*" style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/>
+                                                    </i>
+                                                </button>
+                                            </form>
+
                                         </div>
-                                        <div class="tab-pane" id="content_audio">
-                                            <button id="add-audio" class="btn btn-box-tool" type="button" style="margin-top: 3px;">
-                                                <i class="fa fa-plus text-blue" style="position: relative;">
+                                        <div class="tab-pane" id="content_voice">
+                                            <form id="uploadVoiceForm" enctype="multipart/form-data">
+
+                                            <button id="add-voice" class="btn btn-box-tool" type="button" style="margin-top: 3px;position: relative;border: 0;">
+                                                <i class="fa fa-plus text-blue">
                                                 	&nbsp;添加音频
-                                                	<input type="hidden" value="audio" name="type" />
-                                                	<input type="file" id="file-audio" onchange="uploadfile(this)" name="uploadFile" style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/>
+                                                	<input type="hidden" value="voice" name="type" />
+                                                	<input type="file" id="file-voice" onchange="uploadfile(this)" name="uploadFile" style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/>
                                                 </i>
                                             </button>
+                                            </form>
+
                                         </div>
                                         <div class="tab-pane" id="content_video">
-                                            <button id="add-video" class="btn btn-box-tool" type="button" style="margin-top: 3px;">
-                                                <i class="fa fa-plus text-blue" style="position: relative;">
-                                                	&nbsp;添加视频
-                                                	<input type="hidden" value="video" name="type" />
-                                                	<input type="file" id="file-video" onchange="uploadfile(this)" name="uploadFile" style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/>
-                                                </i>
+                                        	<button id="add-video" class="btn btn-box-tool" type="button"
+                                                    style="margin-top: 3px;">
+                                                <i class="fa fa-plus text-blue">&nbsp;添加视频</i>
                                             </button>
+                                            <!--<form id="uploadVideoForm" enctype="multipart/form-data">
+
+                                                <button id="add-video" class="btn btn-box-tool" type="button" style="margin-top: 3px;position: relative;border: 0;">
+                                                    <i class="fa fa-plus text-blue">
+                                                        &nbsp;添加视频
+                                                        <input type="hidden" value="video" name="type" />
+                                                        <input type="file" id="file-video" onchange="uploadfile(this)" name="uploadFile" accept="video/mp4"  style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/>
+                                                    </i>
+                                                </button>
+                                            </form>-->
                                         </div>
                                         <div class="tab-pane" id="content_sms">
                                             {!! Form::textarea('content', null, [

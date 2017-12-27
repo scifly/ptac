@@ -4,11 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CustodianRequest;
 use App\Models\Custodian;
-use App\Models\CustodianStudent;
 use App\Models\Department;
-use App\Models\DepartmentUser;
-use App\Models\Group;
-use App\Models\Student;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
@@ -39,7 +35,9 @@ class CustodianController extends Controller {
     public function index() {
         
         if (Request::get('draw')) {
-            return response()->json(Custodian::datatable());
+            return response()->json(
+                Custodian::datatable()
+            );
         }
 
         return $this->output();
@@ -108,7 +106,7 @@ class CustodianController extends Controller {
     public function edit($id) {
 
         if (Request::method() === 'POST') {
-            return Department::tree();
+            return response()->json(Department::tree());
         }
         $custodian = Custodian::find($id);
         // $this->authorize('rud', $custodian);
@@ -176,7 +174,6 @@ class CustodianController extends Controller {
                 ));
                 
             });
-            
         },'UTF-8')->export('xls');
         
     }
