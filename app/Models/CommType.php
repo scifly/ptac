@@ -32,7 +32,12 @@ class CommType extends Model {
     protected $fillable = ['name', 'remark', 'enabled'];
 
     public function messages() { return $this->hasMany('App\Models\Message'); }
-
+    
+    /**
+     * 通信方式列表
+     *
+     * @return array
+     */
     static function datatable() {
 
         $columns = [
@@ -49,7 +54,7 @@ class CommType extends Model {
             ],
         ];
 
-        return Datatable::simple(CommType::getModel(), $columns);
+        return Datatable::simple(self::getModel(), $columns);
 
     }
 

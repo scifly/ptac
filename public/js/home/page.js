@@ -214,24 +214,11 @@ var page = {
                             // 获取当前卡片中的HTML
                             page.getTabContent($tab, tabUri);
                         } else {
-
-                            // $.getScript(page.siteRoot() + result.js, function () {
-                            //     $('#ajaxLoader').remove();
-                            //     $('.overlay').hide();
-                            //     // 移除当前页面的datatable.css
-                            //     // if (!$('#data-table').length) {
-                            //     //     $('link[href="' + page.siteRoot() + page.plugins.datatable.css +'"]').remove();
-                            //     // }
-                            // });
-                            // Wrapper中的Html不含卡片，更新浏览器History
                             $.getScript(page.siteRoot() + result.js, function () {
 		                        $('#ajaxLoader').remove();
 		                        $('.overlay').hide();
-		                        // 移除当前页面的datatable.css
-		                        // if (!$('#data-table').length) {
-		                        //     $('link[href="' + page.siteRoot() + page.plugins.datatable.css +'"]').remove();
-		                        // }
 		                    });
+                            // Wrapper中的Html不含卡片，更新浏览器History
                             document.title = docTitle + ' - ' + result['title'];
                             // 0 - tabId, 1 - menuId, 2 - menuUrl
                             oPage.title = '0,' + page.getActiveMenuId() + ',' + page.getMenuUrl();

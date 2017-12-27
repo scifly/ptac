@@ -82,7 +82,12 @@ class DepartmentType extends Model {
         return $removed ? true : false;
 
     }
-
+    
+    /**
+     * 部门类型列表
+     *
+     * @return array
+     */
     static function datatable() {
 
         $columns = [
@@ -99,7 +104,7 @@ class DepartmentType extends Model {
             ],
         ];
 
-        return Datatable::simple(DepartmentType::getModel(), $columns);
+        return Datatable::simple(self::getModel(), $columns);
 
     }
 

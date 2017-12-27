@@ -180,7 +180,7 @@ class Company extends Model {
                 }],
         ];
 
-        return Datatable::simple(CommType::getModel(), $columns);
+        return Datatable::simple(self::getModel(), $columns);
 
     }
 
