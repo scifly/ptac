@@ -102,7 +102,12 @@ class ConferenceRoom extends Model {
         return self::removable($id) ? $cr->delete() : false;
 
     }
-
+    
+    /**
+     * 会议室列表
+     *
+     * @return array
+     */
     static function datatable() {
 
         $columns = [
@@ -132,7 +137,7 @@ class ConferenceRoom extends Model {
         ];
         $condition = 'ConferenceRoom.school_id = ' . School::id();
         
-        return Datatable::simple(ConferenceRoom::getModel(), $columns, $joins,$condition);
+        return Datatable::simple(self::getModel(), $columns, $joins,$condition);
 
     }
 

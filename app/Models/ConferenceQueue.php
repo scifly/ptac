@@ -115,7 +115,12 @@ class ConferenceQueue extends Model {
         return $cq->removable($id) ? $cq->delete() : false;
 
     }
-
+    
+    /**
+     * 会议列表
+     *
+     * @return array
+     */
     static function datatable() {
 
         $columns = [

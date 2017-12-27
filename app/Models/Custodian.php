@@ -422,7 +422,7 @@ class Custodian extends Model {
         ];
         $condition = 'Grade.school_id = ' . School::id();
         
-        return Datatable::simple(Custodian::getModel(), $columns, $joins, $condition);
+        return Datatable::simple(self::getModel(), $columns, $joins, $condition);
 
     }
 

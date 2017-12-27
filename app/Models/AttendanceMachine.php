@@ -53,7 +53,12 @@ class AttendanceMachine extends Model {
      * @return HasMany
      */
     public function studentAttendances() { return $this->hasMany('App\Models\StudentAttendance'); }
-
+    
+    /**
+     * 考勤机列表
+     *
+     * @return array
+     */
     static function datatable() {
         
         $columns = [
@@ -88,7 +93,7 @@ class AttendanceMachine extends Model {
         ];
         $condition = 'School.id = ' . School::id();
 
-        return Datatable::simple(AttendanceMachine::getModel(), $columns, $joins, $condition);
+        return Datatable::simple(self::getModel(), $columns, $joins, $condition);
         
     }
 
