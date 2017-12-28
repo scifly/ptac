@@ -84,11 +84,11 @@
                                                 <i class="fa fa-file-image-o"></i>&nbsp;图片
                                             </a>
                                         </li>
-                                        <li>
+                                        <!--<li>
                                             <a href="#content_voice" data-toggle="tab" class="tab">
                                                 <i class="fa fa-file-sound-o"></i>&nbsp;音频
                                             </a>
-                                        </li>
+                                        </li>-->
                                         <li>
                                             <a href="#content_video" data-toggle="tab" class="tab">
                                                 <i class="fa fa-file-movie-o"></i>&nbsp;视频
@@ -133,7 +133,7 @@
                                             </form>
 
                                         </div>
-                                        <div class="tab-pane" id="content_voice">
+                                        <!--<div class="tab-pane" id="content_voice">
                                             <form id="uploadVoiceForm" enctype="multipart/form-data">
 
                                             <button id="add-voice" class="btn btn-box-tool" type="button" style="margin-top: 3px;position: relative;border: 0;">
@@ -145,7 +145,7 @@
                                             </button>
                                             </form>
 
-                                        </div>
+                                        </div>-->
                                         <div class="tab-pane" id="content_video">
                                         	<button id="add-video" class="btn btn-box-tool" type="button"
                                                     style="margin-top: 3px;">
