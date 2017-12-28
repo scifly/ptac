@@ -5,7 +5,7 @@
 @section('content')
 		<div class="msg-send-wrap">
 			<div class="scui-choose js-scui-choose-container3 js-scui-choose scui-form-group">
-				<label class="scui-control-label mr4">作业发布对象</label> 
+				<label class="scui-control-label mr4">发布对象</label>
 				<div id="homeWorkChoose" class="choose-results js-choose-results"> <!-- /* eslint-disable */  -->
 					
 				</div> 
@@ -13,7 +13,15 @@
 					<a class="icon iconfont icon-add c-green open-popup" href="javascript:;" data-target="#choose"></a>
 				</span>
 			</div>
-			
+
+			<div class="weui-cell" style="background-color: #fff;">
+				<div class="weui-cell__hd"><label for="name" class="weui-label">信息类型</label></div>
+				<div class="weui-cell__bd">
+					<input class="weui-input" id="type" type="text" value="文本" readonly="" data-values="text">
+				</div>
+			</div>
+            <div style="height: 5px;"></div>
+
 			<div class="mt5px msg-send-bg b-bottom hw-title">
 				<div class="weui-cell">
 					<div class="weui-cell__bd">
@@ -22,10 +30,11 @@
 				</div>
 			</div>
 			
-			<div class="msg-send-conwrap msg-send-bg">
+			<div class="msg-send-conwrap msg-send-bg js-content js-content-item">
 				<div contenteditable="true" id="emojiInput" class="wangEditor-mobile-txt">@if(isset($message)) {!! $message->content !!}@endif</div>
 			</div>
-			<div class="msg-send-conicon msg-send-bg b-top">
+
+			<div class="msg-send-conicon msg-send-bg b-top js-upload-img js-content-item">
 				<ul class="weui-flex">
 					<li class="weui-flex__item addImg">
 						<i class="icon iconfont icon-tupian placeholder fs15 c-999"></i>
@@ -33,6 +42,85 @@
                     </li>
 				</ul>
 			</div>
+            <div style="height: 5px;"></div>
+
+            <div class="weui-cells weui-cells_form js-mpnews-cover js-content-item" style="margin: 0;display: none;">
+                <div class="weui-cell">
+                    <div class="weui-cell__bd">
+                        <div class="weui-uploader">
+                            <div class="weui-uploader__hd">
+                                <p class="weui-uploader__title">封面上传</p>
+                            </div>
+                            <div class="weui-uploader__bd">
+                                <div class="weui-uploader__input-box">
+                                    <input id="uploaderInput" class="weui-uploader__input" type="file" accept="image/*" multiple="">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="weui-cells weui-cells_form js-image js-content-item" style="margin: 0;display: none;">
+                <div class="weui-cell">
+                    <div class="weui-cell__bd">
+                        <div class="weui-uploader">
+                            <div class="weui-uploader__hd">
+                                <p class="weui-uploader__title">图片上传</p>
+                            </div>
+                            <div class="weui-uploader__bd">
+
+                                <div class="weui-uploader__input-box">
+                                    <input id="uploaderInput" class="weui-uploader__input" type="file" accept="image/*" multiple="">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="weui-cells weui-cells_form js-video js-content-item" style="margin: 0;display: none;">
+                <div class="weui-cell">
+                    <div class="weui-cell__bd">
+                        <div class="weui-uploader">
+                            <div class="weui-uploader__hd">
+                                <p class="weui-uploader__title">视频上传</p>
+                            </div>
+                            <div class="weui-uploader__bd">
+
+                                <div class="weui-uploader__input-box">
+                                    <input id="uploaderInput" class="weui-uploader__input" type="file" accept="video/mp4" multiple="">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class=" msg-send-bg b-bottom hw-title js-content_source_url js-content-item" style="display: none;">
+                <div class="weui-cell">
+                    <div class="weui-cell__bd">
+                        <input type="text" placeholder="原文链接(选填)" maxlength="30" class="weui-input one-line title">
+                    </div>
+                </div>
+            </div>
+
+            <div class="msg-send-bg b-bottom hw-title js-author js-content-item" style="display: none;">
+                <div class="weui-cell">
+                    <div class="weui-cell__bd">
+                        <input type="text" placeholder="作者(选填)" maxlength="10" class="weui-input one-line title">
+                    </div>
+                </div>
+            </div>
+
+            <div class="msg-send-bg b-bottom hw-title js-description js-content-item" style="display: none;">
+                <div class="weui-cell">
+                    <div class="weui-cell__bd">
+                        <input type="text" placeholder="描述(选填)" maxlength="30" class="weui-input one-line title">
+                    </div>
+                </div>
+            </div>
+
 			<div class="weui-cell weui-cell_switch b-top weui-cells_form mt5px msg-send-bg">
 				<div class="weui-cell__bd">定时发送</div> 
 				<div class="weui-cell__ft">
@@ -78,7 +166,7 @@
 
 						<div class="choose-breadcrumb js-choose-breadcrumb">
 							<ol class="breadcrumb js-choose-breadcrumb-ol">
-								<li data-id="0" class="js-choose-breadcrumb-li headclick"><a>希望小学</a></li>
+								<li data-id="0" class="js-choose-breadcrumb-li headclick"><a>学校</a></li>
 								{{-->--}}
 								{{--<li data-id="2" class="js-choose-breadcrumb-li headclick"><a>一年级</a></li>--}}
 								{{-->--}}
