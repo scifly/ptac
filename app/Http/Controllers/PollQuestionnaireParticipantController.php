@@ -53,6 +53,8 @@ class PollQuestionnaireParticipantController extends Controller {
     }
     
     /**
+     * 投票问卷参与者列表
+     *
      * @return Factory|View
      */
     public function index() {
@@ -70,7 +72,7 @@ class PollQuestionnaireParticipantController extends Controller {
     
     public function update(Request $q) {
         
-        #先获取项和题转换数组操作
+        # 先获取项和题转换数组操作
         $json = json_decode($this->show($q->get('pollQuestion')));
         foreach ($json as $item) {
             $var = '';
@@ -126,7 +128,7 @@ class PollQuestionnaireParticipantController extends Controller {
      */
     public function show($id) {
         
-        #先获取投票问卷列
+        # 先获取投票问卷列
         $this->pollQuestionnaireSubject
             ->where('pq_id', $id)
             ->orderBy('id', 'asc')

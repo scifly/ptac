@@ -17,16 +17,6 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class CheckRole {
     
-    protected $group, $action, $actionGroup;
-    
-    function __construct(Group $group, Action $action, ActionGroup $actionGroup) {
-        
-        $this->group = $group;
-        $this->action = $action;
-        $this->actionGroup = $actionGroup;
-        
-    }
-    
     /**
      * Handle an incoming request.
      *

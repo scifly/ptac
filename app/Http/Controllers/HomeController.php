@@ -3,7 +3,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Action;
 use App\Models\Corp;
-use App\Models\Department;
 use App\Models\GroupTab;
 use App\Models\Menu;
 use App\Models\MenuTab;
@@ -27,23 +26,9 @@ use Throwable;
  */
 class HomeController extends Controller {
 
-    protected $menu;
-    protected $department;
-    protected $action;
-    protected $tab;
-
-    public function __construct(
-        Menu $menu,
-        Action $action,
-        Tab $tab,
-        Department $department
-    ) {
+    public function __construct() {
         
         $this->middleware(['auth', 'checkrole']);
-        $this->menu = $menu;
-        $this->action = $action;
-        $this->tab = $tab;
-        $this->department = $department;
 
     }
     
@@ -55,54 +40,38 @@ class HomeController extends Controller {
     public function index() {
     
         $menuId = Request::query('menuId');
-        $menu = $this->menu->find($menuId);
+        $menu = Menu::find($menuId);
         if (!$menu) {
             $user = Auth::user();
             switch ($user->group->name) {
                 case '运营':
                     $view = 'company';
-                    $menuId = $this->menu
-                        ->where('parent_id', 1)
-                        ->whereIn('uri', ['home', '/'])
-                        ->first()
-                        ->id;
+                    $parentMenuId = 1;
                     break;
                 case '企业':
                     $view = 'corp';
                     $parentMenuId = Corp::whereDepartmentId($user->topDeptId())
-                        ->first()
-                        ->menu_id;
-                    $menuId = $this->menu
-                        ->where('parent_id', $parentMenuId)
-                        ->where('uri', ['home', '/'])
-                        ->first()
-                        ->id;
+                        ->first()->menu_id;
                     break;
                 case '学校':
                     $view = 'school';
                     $parentMenuId = School::whereDepartmentId($user->topDeptId())
                         ->first()->menu_id;
-                    $menuId = $this->menu
-                        ->where('parent_id', $parentMenuId)
-                        ->where('uri', ['home', '/'])
-                        ->first()
-                        ->id;
                     break;
                 default:
                     $view = 'school';
                     $toDeptId = $user->topDeptId();
                     $parentMenuId = School::whereDepartmentId($user->getDeptSchoolId($toDeptId))
                         ->first()->menu_id;
-                    $menuId = $this->menu
-                        ->where('parent_id', $parentMenuId)
-                        ->where('uri', ['home', '/'])
-                        ->first()
-                        ->id;
                     break;
             }
+            $menuId = Menu::whereParentId($parentMenuId)
+                ->whereIn('uri', ['home', '/'])
+                ->first()
+                ->id;
             session(['menuId' => $menuId]);
             return view('home.home', [
-                'menu' => $this->menu->menuHtml($this->menu->rootMenuId()),
+                'menu' => Menu::menuHtml(Menu::rootMenuId()),
                 'content' => view('home.' . $view),
                 'js' => 'js/home/page.js',
                 'user' => Auth::user()
@@ -130,7 +99,7 @@ class HomeController extends Controller {
                 ]);
             }
             return view('home.home', [
-                'menu' => $this->menu->menuHtml($this->menu->rootMenuId()),
+                'menu' => Menu::menuHtml(Menu::rootMenuId()),
                 'menuId' => $menuId,
                 'js' => 'js/home/page.js',
                 'user' => Auth::user()
@@ -170,7 +139,7 @@ class HomeController extends Controller {
             ->toArray();
         if (empty($tabRanks)) { $isTabLegit = false; };
         foreach ($tabRanks as $rank) {
-            $tab = Tab::whereId($rank['tab_id'])->first();
+            $tab = Tab::find($rank['tab_id']);
             if (
                 !in_array($role, ['运营', '企业', '学校']) &&
                 !in_array($rank['tab_id'], $allowedTabIds)
@@ -238,7 +207,8 @@ class HomeController extends Controller {
             ]);
         }
         # 获取菜单列表
-        $menu = $this->menu->menuHtml($this->menu->rootMenuId());
+        $menu = Menu::menuHtml(Menu::rootMenuId());
+
         return view('home.page', [
             'menu'   => $menu,
             'tabs'   => $tabArray,

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\CorpRequest;
 use App\Models\Corp;
 use Exception;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 use Throwable;
@@ -16,13 +17,10 @@ use Throwable;
  */
 class CorpController extends Controller {
     
-    protected $corp;
-    
-    function __construct(Corp $corp) {
+    function __construct() {
         
         $this->middleware(['auth', 'checkrole']);
-        $this->corp = $corp;
-        
+
     }
     
     /**
@@ -48,21 +46,26 @@ class CorpController extends Controller {
      * @throws Throwable
      */
     public function create() {
-        
+
+        $this->authorize('create', Corp::class);
+
         return $this->output();
         
     }
-    
+
     /**
      * 保存企业
      *
      * @param CorpRequest $request
      * @return JsonResponse
+     * @throws AuthorizationException
      */
     public function store(CorpRequest $request) {
-        
+
+        $this->authorize('create', Corp::class);
+
         return $this->result(
-            $this->corp->store($request->all(), true)
+            Corp::store($request->all(), true)
         );
         
     }
@@ -76,27 +79,28 @@ class CorpController extends Controller {
      */
     public function edit($id) {
         
-        $corp = $this->corp->find($id);
-        if (!$corp) { return $this->notFound(); }
-        
+        $corp = Corp::find($id);
+        $this->authorize('veud', $corp);
+
         return $this->output(['corp' => $corp]);
         
     }
-    
+
     /**
      * 更新企业
      *
      * @param CorpRequest $request
      * @param $id
      * @return JsonResponse
+     * @throws AuthorizationException
      */
     public function update(CorpRequest $request, $id) {
         
         $corp = Corp::find($id);
-        if (!$corp) { return $this->notFound(); }
-        
+        $this->authorize('veud', $corp);
+
         return $this->result(
-            $this->corp->modify($request->all(), $id, true)
+            Corp::modify($request->all(), $id, true)
         );
         
     }
@@ -111,10 +115,10 @@ class CorpController extends Controller {
     public function destroy($id) {
         
         $corp = Corp::find($id);
-        if (!$corp) { return $this->notFound(); }
-        
+        $this->authorize('veud', $corp);
+
         return $this->result(
-            $this->corp->remove($id, true)
+            $corp::remove($id, true)
         );
         
     }

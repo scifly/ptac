@@ -7,8 +7,8 @@
             @if (!empty($comboType['id']))
                 {{ Form::hidden('id', $comboType['id'], ['id' => 'id']) }}
             @endif
-                {{ Form::hidden('school_id', $schoolId, ['id' => 'school_id']) }}
-                <div class="form-group">
+            {{ Form::hidden('school_id', $schoolId, ['id' => 'school_id']) }}
+            <div class="form-group">
                 {!! Form::label('name', '套餐名称', [
                     'class' => 'col-sm-3 control-label'
                 ]) !!}

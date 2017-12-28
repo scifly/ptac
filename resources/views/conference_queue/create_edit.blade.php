@@ -55,7 +55,7 @@
                 'label' => '与会者',
                 'id' => 'educator_ids[]',
                 'items' => $educators,
-                'selectedItems' => isset($selectedEducators) ? $selectedEducators : NULL
+                'selectedItems' => $selectedEducators ?? NULL
             ])
             @include('partials.remark')
         </div>
