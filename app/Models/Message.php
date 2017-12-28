@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Facades\Wechat;
+use App\Helpers\ControllerTrait;
 use App\Http\Requests\MessageRequest;
 use Carbon\Carbon;
 use Eloquent;
@@ -70,13 +71,12 @@ use Illuminate\Support\Facades\Storage;
  */
 class Message extends Model {
 
-    //
     protected $table = 'messages';
 
     protected $fillable = [
         'comm_type_id', 'app_id', 'msl_id', 'content',
         'serviceid', 'message_id', 'url', 'media_ids',
-        's_user_id', 'r_user_id', 'message_type_id', 'readed', 'sent',
+        's_user_id', 'r_user_id', 'message_type_id', 'readed', 'sent','title'
     ];
 
     /**
@@ -261,7 +261,7 @@ class Message extends Model {
         
     }
 
-    static function sendMessage($data) {
+    public function sendMessage($data) {
         
         $result = [
             'statusCode' => 200,
@@ -317,11 +317,17 @@ class Message extends Model {
                     case 'video' :
                         $message['video'] = $data['content']['video'];
                         break;
+                    case 'sms':
+                        $this->sendSms($touser, $toparty, $data['content']['sms']);
+                        break;
                 }
                 $message['msgtype'] = $data['type'];
 
                 $status = json_decode(Wechat::sendMessage($token, $message));
                 if ($status->errcode == 0) {
+                    $item = [
+                        ''
+                    ];
                     $result = [
                         'statusCode' => 200,
                         'message' => '消息已发送！',
@@ -338,6 +344,53 @@ class Message extends Model {
         return response()->json($result);
         
     }
-    
+
+    /**
+     * 发送短信
+     *
+     * @param $touser
+     * @param $toparty
+     * @param $content
+     */
+    private function sendSms($touser, $toparty, $content) {
+        $mobiles = $this->getMobiles($touser, $toparty);
+//        $autograph = School::find(School::id())->autograph;
+        $autograph = '【成都外国语】';
+        $result = Wechat::batchSend('LKJK004923', '654321@', implode(',', $mobiles), $content . $autograph);
+        
+
+    }
+
+    /**
+     * 获取所有发送短信对象的电话
+     *
+     * @param $touser
+     * @param $toparty
+     * @return array
+     */
+    public function getMobiles($touser, $toparty) {
+        $mobiles = [];
+        if ($touser) {
+            $userIds = explode('|', $touser);
+            foreach ($userIds as $i) {
+                $m = Mobile::where('user_id', $i)->where('enabled', 1)->first();
+                if ($m) { $mobiles[] = $m->mobile; }
+            }
+        }
+        if ($toparty) {
+            $topartyIds = explode('|', $toparty);
+            $dept = new Department();
+            $users = $dept->getPartyUser($topartyIds);
+            if ($users) {
+                foreach ($users as $u) {
+                    $m = Mobile::where('user_id', $u->id)->where('enabled', 1)->first();
+                    if ($m) { $mobiles[] = $m->mobile; }
+                }
+            }
+
+        }
+        return $mobiles;
+    }
+
 }
 

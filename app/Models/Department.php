@@ -158,7 +158,83 @@ class Department extends Model {
         }
         
         return $leaves;
-        
+
+    }
+
+    /**
+     * 根据根部门ID返回所有下级部门对象
+     *
+     * @param null $rootId
+     * @return Collection|static[]
+     */
+    private function nodes($rootId = null) {
+
+        $nodes = new Collection();
+        if (!isset($rootId)) {
+            $nodes = $this->all();
+        } else {
+            $root = $this->find($rootId);
+            $nodes->push($root);
+            $this->getChildren($rootId, $nodes);
+        }
+
+        return $nodes;
+
+    }
+
+    /**
+     * 根据Department ID返回所有下级部门
+     *
+     * @param $id
+     * @param Collection $nodes
+     */
+    private function getChildren($id, Collection &$nodes) {
+
+        $node = $this->find($id);
+        foreach ($node->children as $child) {
+            $nodes->push($child);
+            $this->getChildren($child->id, $nodes);
+        }
+
+    }
+    /**
+     * 根据Department ID返回所有下级部门 含本身
+     *
+     * @param $id
+     * @param Collection $nodes
+     */
+    private function getChildrenNode($id, Collection &$nodes) {
+
+        $node = $this->find($id);
+        $nodes->push($node);
+        foreach ($node->children as $child) {
+            $nodes->push($child);
+            $this->getChildren($child->id, $nodes);
+        }
+
+    }
+
+    /**
+     * 获取指定部门的完整路径
+     *
+     * @param $id
+     * @param array $path
+     * @return string
+     */
+    private function leafPath($id, array &$path) {
+
+        $department = $this->find($id);
+        if (!isset($department)) {
+            return '';
+        }
+        $path[] = $department->name;
+        if (isset($department->parent_id)) {
+            $this->leafPath($department->parent_id, $path);
+        }
+        krsort($path);
+
+        return implode(' . ', $path);
+
     }
     
     /**
@@ -601,6 +677,7 @@ class Department extends Model {
         $user = Auth::user();
         $role = $user->group->name;
         $school = new School();
+
         $departmentId = $school::find(School::id())->department_id;
         $contacts = [];
         if (in_array($role, self::ROLES)) {
@@ -695,64 +772,25 @@ class Department extends Model {
         return self::find($topLevelId)->parent->id;
         
     }
-    
-    
-    /**
-     * 根据根部门ID返回所有下级部门对象
-     *
-     * @param null $rootId
-     * @return Collection|static[]
-     */
-    private static function nodes($rootId = null) {
-        
-        $nodes = new Collection();
-        if (!isset($rootId)) {
-            $nodes = self::all();
-        } else {
-            $root = self::find($rootId);
-            $nodes->push($root);
-            self::getChildren($rootId, $nodes);
+    public function getPartyUser ($toparty) {
+        $users = [];
+        $depts = new Collection();
+        foreach ($toparty as $p) {
+            $this->getChildrenNode($p, $depts);
         }
-        
-        return $nodes;
-        
-    }
-    
-    /**
-     * 获取指定部门的完整路径
-     *
-     * @param $id
-     * @param array $path
-     * @return string
-     */
-    private static function leafPath($id, array &$path) {
-        
-        $department = self::find($id);
-        if (!isset($department)) { return ''; }
-        $path[] = $department->name;
-        if (isset($department->parent_id)) {
-            self::leafPath($department->parent_id, $path);
+        $items = $depts->toArray();
+        if (empty($items)) { return $users; }
+        foreach ($items as $i) {
+            $deptUsers = DepartmentUser::whereDepartmentId($i['id'])->get();
+            if ($deptUsers) {
+                foreach ($deptUsers as $d) {
+                    $user = User::find($d->user_id);
+                    if ($user) { $users[] = $user; }
+                }
+            }
         }
-        krsort($path);
-        
-        return implode(' . ', $path);
-        
+        return $users;
     }
-    
-    /**
-     * 根据Department ID返回所有下级部门
-     *
-     * @param $id
-     * @param Collection $nodes
-     */
-    private static function getChildren($id, Collection &$nodes) {
-        
-        $node = self::find($id);
-        foreach ($node->children as $child) {
-            $nodes->push($child);
-            self::getChildren($child->id, $nodes);
-        }
-        
-    }
-    
+
+
 }

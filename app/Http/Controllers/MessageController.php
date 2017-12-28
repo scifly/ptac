@@ -87,8 +87,8 @@ class MessageController extends Controller {
     public function store(MessageRequest $request) {
         
         $input = $request->all();
-        
-        return Message::sendMessage($input);
+        $message = new Message();
+        return $message->sendMessage($input);
         
     }
     
