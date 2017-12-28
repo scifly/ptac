@@ -299,7 +299,7 @@ class Message extends Model {
                 ];
             }
             # 推送的所有用户以及电话
-            $userDatas = $this->getMobiles($userItems, $toparty);
+            $userDatas = $this->getMobiles($us, $depts);
 
             $msl = [
                 'read_count' => 0,
@@ -439,17 +439,17 @@ class Message extends Model {
         $mobiles = [];
         $userDatas = [];
         if ($touser) {
-            $userIds = explode('|', $touser);
-            foreach ($userIds as $i) {
+            // $userIds = explode('|', $touser);
+            foreach ($touser as $i) {
                 $user = User::where('id', $i)->first();
                 $m = Mobile::where('user_id', $i)->where('enabled', 1)->first();
                 if ($m) { $mobiles[] = $m->mobile; $userDatas[] = $user;}
             }
         }
         if ($toparty) {
-            $topartyIds = explode('|', $toparty);
+            // $topartyIds = explode('|', $toparty);
             $dept = new Department();
-            $users = $dept->getPartyUser($topartyIds);
+            $users = $dept->getPartyUser($toparty);
             if ($users) {
                 foreach ($users as $u) {
                     $m = Mobile::where('user_id', $u->id)->where('enabled', 1)->first();

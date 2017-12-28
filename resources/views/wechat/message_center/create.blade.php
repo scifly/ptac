@@ -10,7 +10,7 @@
 					
 				</div> 
 				<span class="icons-choose choose-icon js-choose-icon">
-					<a class="icon iconfont icon-add c-green open-popup" href="javascript:;" data-target="#choose"></a>
+					<a class="icon iconfont icon-add c-green open-popup" href="javascript:" data-target="#choose"></a>
 				</span>
 			</div>
 
@@ -24,8 +24,8 @@
 
 			<div class="mt5px msg-send-bg b-bottom hw-title">
 				<div class="weui-cell">
-					<div class="weui-cell__bd">
-						<input id="title" name="title" type="text" placeholder="信息名称" maxlength="30" @if(isset($message)) value="{{ $message->title }}" @else value="" @endif  class="weui-input fs18 one-line title">
+					<div class="weui-cell__bd js-title">
+						<input id="title" name="title" type="text" placeholder="标题" maxlength="30" @if(isset($message)) value="{{ $message->title }}" @else value="" @endif  class="weui-input fs18 one-line title">
 					</div>
 				</div>
 			</div>
@@ -34,7 +34,7 @@
 				<div contenteditable="true" id="emojiInput" class="wangEditor-mobile-txt">@if(isset($message)) {!! $message->content !!}@endif</div>
 			</div>
 
-			<div class="msg-send-conicon msg-send-bg b-top js-upload-img js-content-item">
+			<div class="msg-send-conicon msg-send-bg b-top js-upload-img js-content-item" style="display: none">
 				<ul class="weui-flex">
 					<li class="weui-flex__item addImg">
 						<i class="icon iconfont icon-tupian placeholder fs15 c-999"></i>
@@ -71,7 +71,7 @@
                             <div class="weui-uploader__bd">
 
                                 <div class="weui-uploader__input-box">
-                                    <input id="uploaderInput" class="weui-uploader__input" type="file" accept="image/*" multiple="">
+                                    <input id="upload_image" class="weui-uploader__input" type="file" accept="image/*" multiple="">
                                 </div>
                             </div>
                         </div>
@@ -87,9 +87,8 @@
                                 <p class="weui-uploader__title">视频上传</p>
                             </div>
                             <div class="weui-uploader__bd">
-
                                 <div class="weui-uploader__input-box">
-                                    <input id="uploaderInput" class="weui-uploader__input" type="file" accept="video/mp4" multiple="">
+                                    <input id="upload_video" class="weui-uploader__input" type="file" accept="video/mp4" multiple="">
                                 </div>
                             </div>
                         </div>
@@ -116,27 +115,27 @@
             <div class="msg-send-bg b-bottom hw-title js-description js-content-item" style="display: none;">
                 <div class="weui-cell">
                     <div class="weui-cell__bd">
-                        <input type="text" placeholder="描述(选填)" maxlength="30" class="weui-input one-line title">
+                        <input type="text" id="description-video" placeholder="描述" maxlength="30" class="weui-input one-line title" value="">
                     </div>
                 </div>
             </div>
 
-			<div class="weui-cell weui-cell_switch b-top weui-cells_form mt5px msg-send-bg">
-				<div class="weui-cell__bd">定时发送</div> 
-				<div class="weui-cell__ft">
-					<input type="checkbox" title="开启评论" name="openCom" class="weui-switch"></div>
-			</div>
-			
-			<div class="hw-time b-top" style="display: none;">
-				<div class="weui-cell msg-send-bg">
-					<div class="weui-cell__hd">
-						<label for="" class="weui-label">发送日期</label>
-					</div> 
-					<div class="weui-cell__bd">
-						<input id="time" name="time" readonly="readonly" type="text" placeholder="请选择日期" class="weui-input ma_expect_date" data-toggle='datetime-picker'>
-					</div>
-				</div>
-			</div>
+			{{--<div class="weui-cell weui-cell_switch b-top weui-cells_form mt5px msg-send-bg">--}}
+				{{--<div class="weui-cell__bd">定时发送</div> --}}
+				{{--<div class="weui-cell__ft">--}}
+					{{--<input type="checkbox" title="开启评论" name="openCom" class="weui-switch"></div>--}}
+			{{--</div>--}}
+			{{----}}
+			{{--<div class="hw-time b-top" style="display: none;">--}}
+				{{--<div class="weui-cell msg-send-bg">--}}
+					{{--<div class="weui-cell__hd">--}}
+						{{--<label for="" class="weui-label">发送日期</label>--}}
+					{{--</div> --}}
+					{{--<div class="weui-cell__bd">--}}
+						{{--<input id="time" name="time" readonly="readonly" type="text" placeholder="请选择日期" class="weui-input ma_expect_date" data-toggle='datetime-picker'>--}}
+					{{--</div>--}}
+				{{--</div>--}}
+			{{--</div>--}}
 			
 			<div class="weui-flex mt5px">
 				<div class="weui-flex__item">
@@ -244,6 +243,13 @@
 
 			</div>
 		</div>
+        <div id="upload-wait" style="display:none;position: fixed;top: 0;height: 100%;width: 100%;z-index:999;background-color: #000;opacity: 0.4">
+            <div class="weui-loadmore" style="margin-top: 50%;">
+                <i class="weui-loading"></i>
+                <span class="weui-loadmore__tips">正在加载</span>
+            </div>
+        </div>
+
 @endsection
 @section('script')
     <script src="{{asset('/js/wechat/message_center/create.js')}}"></script>
