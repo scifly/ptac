@@ -9,21 +9,12 @@ use App\Models\School;
 use Illuminate\Contracts\View\View;
 
 class SquadComposer {
+    
     use ControllerTrait;
-    protected $grades;
-    protected $educators;
-    protected $school;
-
-    public function __construct(Grade $grades, Educator $educators, School $school) {
-
-        $this->grades = $grades;
-        $this->educators = $educators;
-        $this->school = $school;
-
-    }
 
     public function compose(View $view) {
-        $schoolId = $this->school->getSchoolId();
+        
+        $schoolId = School::id();
         $grades = Grade::whereSchoolId($schoolId)
             ->where('enabled', 1)
             ->pluck('name', 'id');
@@ -36,12 +27,13 @@ class SquadComposer {
                 $educators[$v['id']] = $v['user']['realname'];
             }
         }
+        
         $view->with([
             'grades' => $grades,
             'educators' => $educators,
             'uris' => $this->uris()
-
         ]);
+        
     }
 
 }

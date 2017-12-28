@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\TeamRequest;
 use App\Models\Team;
 use Exception;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 use Throwable;
@@ -16,12 +17,9 @@ use Throwable;
  */
 class TeamController extends Controller {
     
-    protected $team;
+    public function __construct() {
     
-    public function __construct(Team $team) {
-    
-        $this->middleware(['auth']);
-        $this->team = $team;
+        $this->middleware(['auth', 'checkrole']);
     
     }
     
@@ -34,7 +32,7 @@ class TeamController extends Controller {
     public function index() {
         
         if (Request::get('draw')) {
-            return response()->json($this->team->datatable());
+            return response()->json(Team::datatable());
         }
         
         return $this->output();
@@ -48,6 +46,9 @@ class TeamController extends Controller {
      * @throws Throwable
      */
     public function create() {
+        
+        $this->authorize('c', Team::class);
+        
         return $this->output();
         
     }
@@ -57,9 +58,13 @@ class TeamController extends Controller {
      *
      * @param TeamRequest $request
      * @return JsonResponse
+     * @throws AuthorizationException
      */
     public function store(TeamRequest $request) {
-        return $this->team->create($request->all()) ? $this->succeed() : $this->fail();
+        
+        $this->authorize('c', Team::class);
+        
+        return $this->result(Team::create($request->all()));
         
     }
     
@@ -71,10 +76,9 @@ class TeamController extends Controller {
      * @throws Throwable
      */
     public function edit($id) {
-        $team = $this->team->find($id);
-        if (!$team) {
-            return $this->notFound();
-        }
+        
+        $team = Team::find($id);
+        $this->authorize('rud', $team);
         
         return $this->output(['team' => $team]);
         
@@ -86,13 +90,14 @@ class TeamController extends Controller {
      * @param TeamRequest $request
      * @param $id
      * @return JsonResponse
+     * @throws AuthorizationException
      */
     public function update(TeamRequest $request, $id) {
         
-        $team = $this->team->find($id);
-        if (!$team) { return $this->notFound(); }
+        $team = Team::find($id);
+        $this->authorize('rud', $team);
         
-        return $team->update($request->all()) ? $this->succeed() : $this->fail();
+        return $this->result($team->update($request->all()));
         
     }
     
@@ -105,10 +110,10 @@ class TeamController extends Controller {
      */
     public function destroy($id) {
         
-        $team = $this->team->find($id);
-        if (!$team) { return $this->notFound(); }
+        $team = Team::find($id);
+        $this->authorize('rud', $team);
         
-        return $team->delete() ? $this->succeed() : $this->fail();
+        return $this->result($team->delete());
         
     }
     

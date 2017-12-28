@@ -97,9 +97,9 @@ class Company extends Model {
      * @param bool $fireEvent
      * @return bool
      */
-    public function store(array $data, $fireEvent = false) {
+    static function store(array $data, $fireEvent = false) {
 
-        $company = $this->create($data);
+        $company = self::create($data);
         if ($company && $fireEvent) {
             event(new CompanyCreated($company));
 
@@ -118,9 +118,9 @@ class Company extends Model {
      * @param bool $fireEvent
      * @return bool
      */
-    public function modify(array $data, $id, $fireEvent = false) {
+    static function modify(array $data, $id, $fireEvent = false) {
 
-        $company = $this->find($id);
+        $company = self::find($id);
         $updated = $company->update($data);
         if ($updated && $fireEvent) {
             event(new CompanyUpdated($company));
@@ -140,11 +140,11 @@ class Company extends Model {
      * @return bool
      * @throws Exception
      */
-    public function remove($id, $fireEvent = false) {
+    static function remove($id, $fireEvent = false) {
 
-        $company = $this->find($id);
+        $company = Company::find($id);
         if (!$company) { return false; }
-        $removed = $this->removable($company) ? $company->delete() : false;
+        $removed = Company::removable($company) ? $company->delete() : false;
         if ($removed && $fireEvent) {
             event(new CompanyDeleted($company));
 
@@ -155,7 +155,7 @@ class Company extends Model {
 
     }
 
-    function datatable() {
+    static function datatable() {
 
         $columns = [
             ['db' => 'Company.id', 'dt' => 0],
@@ -175,7 +175,7 @@ class Company extends Model {
                 }],
         ];
 
-        return Datatable::simple($this, $columns);
+        return Datatable::simple(self::getModel(), $columns);
 
     }
 

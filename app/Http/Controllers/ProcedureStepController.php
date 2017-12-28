@@ -16,12 +16,9 @@ use Throwable;
  */
 class ProcedureStepController extends Controller {
     
-    protected $procedureStep;
+    function __construct() {
     
-    function __construct(ProcedureStep $procedureStep) {
-    
-        $this->middleware(['auth']);
-        $this->procedureStep = $procedureStep;
+        $this->middleware(['auth', 'checkrole']);
     
     }
     
@@ -32,8 +29,9 @@ class ProcedureStepController extends Controller {
      * @throws Throwable
      */
     public function index() {
+        
         if (Request::get('draw')) {
-            return response()->json($this->procedureStep->datatable());
+            return response()->json(ProcedureStep::datatable());
         }
         
         return $this->output();
@@ -47,6 +45,7 @@ class ProcedureStepController extends Controller {
      * @throws Throwable
      */
     public function create() {
+        
         return $this->output();
         
     }
@@ -58,8 +57,8 @@ class ProcedureStepController extends Controller {
      * @return JsonResponse
      */
     public function store(ProcedureStepRequest $request) {
-        return $this->procedureStep->store($request->all())
-            ? $this->succeed() : $this->fail();
+        
+        return $this->result(ProcedureStep::store($request->all()));
         
     }
     
@@ -71,12 +70,11 @@ class ProcedureStepController extends Controller {
      * @throws Throwable
      */
     public function show($id) {
-        $procedureStep = $this->procedureStep->find($id);
-        if (!$procedureStep) {
-            return $this->notFound();
-        }
         
-        return $this->output() ? $this->succeed() : $this->fail();
+        $ps = ProcedureStep::find($id);
+        if (!$ps) { return $this->notFound(); }
+        
+        return $this->output();
         
     }
     
@@ -88,12 +86,11 @@ class ProcedureStepController extends Controller {
      * @throws Throwable
      */
     public function edit($id) {
-        $procedureStep = $this->procedureStep->find($id);
-        if (!$procedureStep) {
-            return $this->notFound();
-        }
         
-        return $this->output(['procedureStep' => $procedureStep]);
+        $ps = ProcedureStep::find($id);
+        if (!$ps) { return $this->notFound(); }
+        
+        return $this->output(['procedureStep' => $ps]);
         
     }
     
@@ -105,13 +102,11 @@ class ProcedureStepController extends Controller {
      * @return JsonResponse
      */
     public function update(ProcedureStepRequest $request, $id) {
-        $procedureStep = $this->procedureStep->find($id);
-        if (!$procedureStep) {
-            return $this->notFound();
-        }
         
-        return $procedureStep->modify($request->all(), $id)
-            ? $this->succeed() : $this->fail();
+        $ps = ProcedureStep::find($id);
+        if (!$ps) { return $this->notFound(); }
+        
+        return $this->result($ps->modify($request->all(), $id));
         
     }
     
@@ -124,10 +119,10 @@ class ProcedureStepController extends Controller {
      */
     public function destroy($id) {
         
-        $ps = $this->procedureStep->find($id);
+        $ps = ProcedureStep::find($id);
         if (!$ps) { return $this->notFound(); }
         
-        return $ps->remove($id) ? $this->succeed() : $this->fail();
+        return $this->result($ps->remove($id));
         
     }
     

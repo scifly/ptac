@@ -38,15 +38,15 @@ class ActionGroup extends Model {
      * @throws Exception
      * @throws \Throwable
      */
-    public function storeByGroupId($groupId, array $ids = []) {
+    static function storeByGroupId($groupId, array $ids = []) {
 
         try {
             DB::transaction(function () use ($groupId, $ids) {
                 # step 1: 删除group_id等于$groupId的所有记录
-                $this->where('group_id', $groupId)->delete();
+                self::whereGroupId($groupId)->delete();
                 # step 2: 创建ids中的所有记录
                 foreach ($ids as $id) {
-                    $this->create([
+                    self::create([
                         'group_id' => $groupId,
                         'action_id' => $id,
                         'enabled' => 1,

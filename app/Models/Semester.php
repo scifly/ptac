@@ -55,8 +55,13 @@ class Semester extends Model {
      * @return HasMany
      */
     public function studentAttendanceSettings() { return $this->hasMany('App\Models\StudentAttendanceSetting'); }
-
-    public function datatable() {
+    
+    /**
+     * 学期列表
+     *
+     * @return array
+     */
+    static function datatable() {
         
         $columns = [
             ['db' => 'Semester.id', 'dt' => 0],
@@ -83,12 +88,9 @@ class Semester extends Model {
                 ],
             ],
         ];
-        $school = new School();
-        $schoolId = $school->getSchoolId();
-        $condition = 'Semester.school_id = ' . $schoolId;
-        unset($school);
+        $condition = 'Semester.school_id = ' . School::id();
     
-        return Datatable::simple($this, $columns, $joins, $condition);
+        return Datatable::simple(self::getModel(), $columns, $joins, $condition);
 
     }
 

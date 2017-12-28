@@ -3,8 +3,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\AttendanceMachineRequest;
 use App\Models\AttendanceMachine;
-use App\Models\School;
 use Exception;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 
@@ -16,13 +16,9 @@ use Illuminate\Support\Facades\Request;
  */
 class AttendanceMachineController extends Controller {
     
-    protected $am;
-    protected $school;
-    function __construct(AttendanceMachine $am, School $school) {
+    function __construct() {
     
-        $this->middleware(['auth']);
-        $this->am = $am;
-        $this->school = $school;
+        $this->middleware(['auth', 'checkrole']);
     
     }
     
@@ -33,10 +29,9 @@ class AttendanceMachineController extends Controller {
      * @throws \Throwable
      */
     public function index() {
-        print_r($this->school->getSchoolId());
 
         if (Request::get('draw')) {
-            return response()->json($this->am->datatable());
+            return response()->json(AttendanceMachine::datatable());
         }
         
         return $this->output();
@@ -51,6 +46,7 @@ class AttendanceMachineController extends Controller {
      */
     public function create() {
         
+        $this->authorize('c', AttendanceMachine::class);
         return $this->output();
         
     }
@@ -60,27 +56,12 @@ class AttendanceMachineController extends Controller {
      *
      * @param AttendanceMachineRequest $request
      * @return JsonResponse
+     * @throws AuthorizationException
      */
     public function store(AttendanceMachineRequest $request) {
 
-        return $this->am->create($request->all())
-            ? $this->succeed() : $this->fail();
-        
-    }
-    
-    /**
-     * 考勤机详情
-     *
-     * @param $id
-     * @return bool|JsonResponse
-     * @throws \Throwable
-     */
-    public function show($id) {
-        
-        $am = $this->am->find($id);
-        if (!$am) { return $this->notFound(); }
-        
-        return $this->output(['am' => $am]);
+        $this->authorize('c', AttendanceMachine::class);
+        return $this->result(AttendanceMachine::create($request->all()));
         
     }
     
@@ -93,8 +74,8 @@ class AttendanceMachineController extends Controller {
      */
     public function edit($id) {
         
-        $am = $this->am->find($id);
-        if (!$am) { return $this->notFound(); }
+        $am = AttendanceMachine::find($id);
+        $this->authorize('rud', $am);
         
         return $this->output(['am' => $am]);
         
@@ -106,14 +87,14 @@ class AttendanceMachineController extends Controller {
      * @param AttendanceMachineRequest $request
      * @param $id
      * @return JsonResponse
+     * @throws AuthorizationException
      */
     public function update(AttendanceMachineRequest $request, $id) {
         
-        $am = $this->am->find($id);
-        if (!$am) { return $this->notFound(); }
+        $am = AttendanceMachine::find($id);
+        $this->authorize('rud', $am);
         
-        return $am->update($request->all())
-            ? $this->succeed() : $this->fail();
+        return $this->result($am->update($request->all()));
         
     }
     
@@ -126,10 +107,10 @@ class AttendanceMachineController extends Controller {
      */
     public function destroy($id) {
         
-        $am = $this->am->find($id);
-        if (!$am) { return $this->notFound(); }
+        $am = AttendanceMachine::find($id);
+        $this->authorize('rud', $am);
         
-        return $am->delete() ? $this->succeed() : $this->fail();
+        return $this->result($am->delete());
         
     }
     

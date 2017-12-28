@@ -16,12 +16,9 @@ use Throwable;
  */
 class IconController extends Controller {
     
-    protected $icon;
+    function __construct() {
     
-    function __construct(Icon $icon) {
-    
-        $this->middleware(['auth']);
-        $this->icon = $icon;
+        $this->middleware(['auth', 'checkrole']);
     
     }
     
@@ -34,7 +31,7 @@ class IconController extends Controller {
     public function index() {
         
         if (Request::get('draw')) {
-            return response()->json($this->icon->datatable());
+            return response()->json(Icon::datatable());
         }
         
         return $this->output();
@@ -61,8 +58,7 @@ class IconController extends Controller {
      */
     public function store(IconRequest $request) {
         
-        return $this->icon->store($request->all())
-            ? $this->succeed() : $this->fail();
+        return $this->result(Icon::store($request->all()));
         
     }
     
@@ -75,7 +71,7 @@ class IconController extends Controller {
      */
     public function show($id) {
         
-        $icon = $this->icon->find($id);
+        $icon = Icon::find($id);
         if (!$icon) { return $this->notFound(); }
         
         return $this->output(['icon' => $icon]);
@@ -91,7 +87,7 @@ class IconController extends Controller {
      */
     public function edit($id) {
         
-        $icon = $this->icon->find($id);
+        $icon = Icon::find($id);
         if (!$icon) { return $this->notFound(); }
         
         return $this->output(['icon' => $icon]);
@@ -107,11 +103,10 @@ class IconController extends Controller {
      */
     public function update(IconRequest $request, $id) {
         
-        $icon = $this->icon->find($id);
+        $icon = Icon::find($id);
         if (!$icon) { return $this->notFound(); }
         
-        return $icon->modify($request->all(), $id)
-            ? $this->succeed() : $this->fail();
+        return $this->result($icon->modify($request->all(), $id));
         
     }
     
@@ -124,11 +119,10 @@ class IconController extends Controller {
      */
     public function destroy($id) {
         
-        $icon = $this->icon->find($id);
+        $icon = Icon::find($id);
         if (!$icon) { return $this->notFound(); }
         
-        return $icon->remove($id)
-            ? $this->succeed() : $this->fail();
+        return $this->result($icon->remove($id));
         
     }
     

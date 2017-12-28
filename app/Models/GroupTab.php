@@ -37,22 +37,23 @@ class GroupTab extends Model {
      * @throws Exception
      * @throws \Throwable
      */
-    public function storeByGroupId($groupId, array $ids = []) {
+    static function storeByGroupId($groupId, array $ids = []) {
+        
         try {
             DB::transaction(function () use ($groupId, $ids) {
-                $this->where('group_id', $groupId)->delete();
+                self::whereGroupId($groupId)->delete();
                 foreach ($ids as $id) {
-                    $this->create([
+                    self::create([
                         'group_id' => $groupId,
                         'tab_id' => $id,
                         'enabled' => 1,
                     ]);
                 }
             });
-
         } catch (Exception $e) {
             throw $e;
         }
+        
         return true;
 
     }

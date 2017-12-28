@@ -18,14 +18,14 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property \Carbon\Carbon|null $created_at
  * @property \Carbon\Carbon|null $updated_at
  * @property-read PollQuestionnaireSubject $pollquestionnaireSubject
- * @method static Builder|PollQuestionnaireChoice whereChoice($value)
- * @method static Builder|PollQuestionnaireChoice whereCreatedAt($value)
- * @method static Builder|PollQuestionnaireChoice whereId($value)
- * @method static Builder|PollQuestionnaireChoice wherePqsId($value)
- * @method static Builder|PollQuestionnaireChoice whereSeqNo($value)
- * @method static Builder|PollQuestionnaireChoice whereUpdatedAt($value)
+ * @method static Builder|PollQuestionnaireSubjectChoice whereChoice($value)
+ * @method static Builder|PollQuestionnaireSubjectChoice whereCreatedAt($value)
+ * @method static Builder|PollQuestionnaireSubjectChoice whereId($value)
+ * @method static Builder|PollQuestionnaireSubjectChoice wherePqsId($value)
+ * @method static Builder|PollQuestionnaireSubjectChoice whereSeqNo($value)
+ * @method static Builder|PollQuestionnaireSubjectChoice whereUpdatedAt($value)
  */
-class PollQuestionnaireChoice extends Model {
+class PollQuestionnaireSubjectChoice extends Model {
 
     //
     protected $table = 'poll_questionnaire_subject_choices';
@@ -40,8 +40,13 @@ class PollQuestionnaireChoice extends Model {
         return $this->belongsTo('App\Models\PollQuestionnaireSubject', 'pqs_id', 'id');
         
     }
-
-    public function datatable() {
+    
+    /**
+     * 投票问卷问题选项列表
+     *
+     * @return array
+     */
+    static function datatable() {
         
         $columns = [
             ['db' => 'PollQuestionnaireChoice.id', 'dt' => 0],
@@ -71,7 +76,7 @@ class PollQuestionnaireChoice extends Model {
             ],
         ];
         
-        return Datatable::simple($this, $columns, $joins);
+        return Datatable::simple(self::getModel(), $columns, $joins);
         
     }
     

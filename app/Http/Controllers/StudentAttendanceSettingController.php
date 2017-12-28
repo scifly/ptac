@@ -16,12 +16,9 @@ use Throwable;
  */
 class StudentAttendanceSettingController extends Controller {
     
-    protected $sas;
+    function __construct() {
     
-    function __construct(StudentAttendanceSetting $sas) {
-    
-        $this->middleware(['auth']);
-        $this->sas = $sas;
+        $this->middleware(['auth', 'checkrole']);
         
     }
     
@@ -34,7 +31,7 @@ class StudentAttendanceSettingController extends Controller {
     public function index() {
         
         if (Request::get('draw')) {
-            return response()->json($this->sas->datatable());
+            return response()->json(StudentAttendanceSetting::datatable());
         }
         
         return $this->output();
@@ -61,8 +58,9 @@ class StudentAttendanceSettingController extends Controller {
      */
     public function store(StudentAttendanceSettingRequest $request) {
         
-        return $this->sas->create($request->all())
-            ? $this->succeed() : $this->fail();
+        return $this->result(
+            StudentAttendanceSetting::create($request->all())
+        );
         
     }
     
@@ -75,7 +73,7 @@ class StudentAttendanceSettingController extends Controller {
      */
     public function edit($id) {
         
-        $sas = $this->sas->find($id);
+        $sas = StudentAttendanceSetting::find($id);
         if (!$sas) { return $this->notFound(); }
         
         return $this->output(['sas' => $sas]);
@@ -91,10 +89,10 @@ class StudentAttendanceSettingController extends Controller {
      */
     public function update(StudentAttendanceSettingRequest $request, $id) {
         
-        $sas = $this->sas->find($id);
+        $sas = StudentAttendanceSetting::find($id);
         if (!$sas) { return $this->notFound(); }
         
-        return $sas->update($request->all()) ? $this->succeed() : $this->fail();
+        return $this->result($sas->update($request->all()));
         
     }
     
@@ -107,11 +105,10 @@ class StudentAttendanceSettingController extends Controller {
      */
     public function destroy($id) {
         
-        $sas = $this->sas->find($id);
+        $sas = StudentAttendanceSetting::find($id);
         if (!$sas) { return $this->notFound(); }
         
-        return $sas->delete() ? $this->succeed() : $this->fail();
-        
+        return $this->result($sas->delete());
     }
     
 }

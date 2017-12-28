@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StudentAttendanceRequest;
@@ -16,8 +15,7 @@ use Illuminate\Support\Facades\Request;
  * Class StudentAttendanceController
  * @package App\Http\Controllers
  */
-class StudentAttendanceController extends Controller
-{
+class StudentAttendanceController extends Controller {
     
     protected $studentAttendance, $student, $media;
     
@@ -25,8 +23,8 @@ class StudentAttendanceController extends Controller
         
         // $this->middleware(['auth']);
         $this->studentAttendance = $studentAttendance;
-        $this->student= $student;
-        $this->media= $media;
+        $this->student = $student;
+        $this->media = $media;
         
     }
     
@@ -36,10 +34,13 @@ class StudentAttendanceController extends Controller
      * @return bool|\Illuminate\Http\JsonResponse
      * @throws \Throwable
      */
-    public function index(){
+    public function index() {
+        
         $this->middleware(['auth']);
         if (Request::get('draw')) {
-            return response()->json($this->studentAttendance->datatable());
+            return response()->json(
+                StudentAttendance::datatable()
+            );
         }
         
         return $this->output();
@@ -52,35 +53,36 @@ class StudentAttendanceController extends Controller
      * @param StudentAttendanceRequest $request
      * @return \Illuminate\Http\JsonResponse
      * @throws \Exception
+     * @throws \Throwable
      */
-    public function createStuAttendance(StudentAttendanceRequest $request){
+    public function createStuAttendance(StudentAttendanceRequest $request) {
+        
         $input = $request->all();
         $school = School::whereName($input['schoolName'])->first();
-        if (empty($school)){
-            return response()->json('学校有误 ，请重新输入！',500);
+        if (empty($school)) {
+            return response()->json('学校有误 ，请重新输入！', 500);
         } else {
-            $schoolId= $school->id;
+            $schoolId = $school->id;
         }
         $student = $this->student
-            ->where('student_number',$input['student_number'])
-            ->where('card_number',$input['cardId'])
+            ->where('student_number', $input['student_number'])
+            ->where('card_number', $input['cardId'])
             ->first();
-        if (empty($student)){
-            return response()->json('卡号或学号有误 ，请重新输入！',500);
+        if (empty($student)) {
+            return response()->json('卡号或学号有误 ，请重新输入！', 500);
         } else {
             $input['student_id'] = $student->id;
         }
-        $attendance = AttendanceMachine::where('machineid',$input['attendId'])
-            ->where('school_id',$schoolId)
+        $attendance = AttendanceMachine::where('machineid', $input['attendId'])
+            ->where('school_id', $schoolId)
             ->first();
-        if (empty($attendance)){
-            return response()->json('考勤机id有误 ，请重新输入！',500);
+        if (empty($attendance)) {
+            return response()->json('考勤机id有误 ，请重新输入！', 500);
         } else {
             $input['attendance_machine_id'] = $attendance->id;
         }
         
-        return $this->studentAttendance->storeByFace($input) ? response()->json('success',200) : response()->json('failed',500);
+        return $this->studentAttendance->storeByFace($input) ? response()->json('success', 200) : response()->json('failed', 500);
     }
     
-
 }

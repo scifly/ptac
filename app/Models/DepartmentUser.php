@@ -39,12 +39,12 @@ class DepartmentUser extends Model {
      * @throws Exception
      * @throws \Throwable
      */
-    public function storeByUserId($userId, array $departmentIds) {
+    static function storeByUserId($userId, array $departmentIds) {
         
         try {
             DB::transaction(function () use ($userId, $departmentIds) {
                 foreach ($departmentIds as $departmentId) {
-                    $this->create([
+                    self::create([
                         'user_id' => $userId,
                         'department_id' => $departmentId,
                         'enabled' => 1,
@@ -68,12 +68,12 @@ class DepartmentUser extends Model {
      * @throws Exception
      * @throws \Throwable
      */
-    public function storeByDepartmentId($departmentId, array $userIds) {
+    static function storeByDepartmentId($departmentId, array $userIds) {
         
         try {
             DB::transaction(function () use ($departmentId, $userIds) {
                 foreach ($userIds as $userId) {
-                    $this->create([
+                    self::create([
                         'user_id' => $userId,
                         'department_id' => $departmentId,
                         'enabled' => 1,

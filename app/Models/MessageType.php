@@ -51,9 +51,9 @@ class MessageType extends Model {
      * @param array $data
      * @return bool
      */
-    public function store(array $data) {
+    static function store(array $data) {
 
-        $messageType = $this->create($data);
+        $messageType = self::create($data);
 
         return $messageType ? true : false;
 
@@ -66,9 +66,9 @@ class MessageType extends Model {
      * @param $id
      * @return bool
      */
-    public function modify(array $data, $id) {
+    static function modify(array $data, $id) {
 
-        $messageType = $this->find($id);
+        $messageType = self::find($id);
         if (!$messageType) { return false; }
 
         return $messageType->update($data) ? true : false;
@@ -82,16 +82,21 @@ class MessageType extends Model {
      * @return bool|null
      * @throws Exception
      */
-    public function remove($id) {
+    static function remove($id) {
 
-        $messageType = $this->find($id);
+        $messageType = self::find($id);
         if (!$messageType) { return false; }
         
         return $messageType->removable($messageType) ? $messageType->delete() : false;
 
     }
-
-    public function datatable() {
+    
+    /**
+     * 消息类型列表
+     *
+     * @return array
+     */
+    static function datatable() {
 
         $columns = [
             ['db' => 'MessageType.id', 'dt' => 0],
@@ -107,7 +112,7 @@ class MessageType extends Model {
             ],
         ];
 
-        return Datatable::simple($this, $columns);
+        return Datatable::simple(self::getModel(), $columns);
 
     }
 

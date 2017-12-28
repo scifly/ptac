@@ -7,6 +7,7 @@ use App\Events\GradeDeleted;
 use App\Events\GradeUpdated;
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -22,8 +23,8 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
  * @property string $name 年级名称
  * @property int $school_id 所属学校ID
  * @property string $educator_ids 年级主任教职员工ID
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property int $enabled
  * @method static Builder|Grade whereCreatedAt($value)
  * @method static Builder|Grade whereEducatorIds($value)
@@ -94,54 +95,18 @@ class Grade extends Model {
             'class_id');
     
     }
-
+    
     /**
      * 根据学校ID返回年级列表(id, name)
      *
-     * @param array $schoolIds
-     * @return array|Collection
+     * @return Collection
      */
-    public function grades(array $schoolIds = []) {
+    static function grades() {
         
-        if (sizeof($schoolIds) === 1) {
-            return $this->where('school_id', $schoolIds[0])
-                ->where('enabled', 1)
-                ->get()->pluck('id', 'name');
-        }
-        # 获取学校列表
-        $schools = School::whereEnabled(1)->get()->pluck('id', 'name');
-        # 获取所有年级对象
-        if (empty($schoolIds)) {
-            $grades = $this->whereEnabled(1)->get(['id', 'name', 'school_id']);
-
-            return $this->getGradesList($grades, $schools);
-        }
-        # 获取指定学校的所有年级列表
-        $grades = $this->whereIn('school_id', $schoolIds)
-            ->where('enabled', 1)->get();
-
-        return $this->getGradesList($grades, $schools);
+        return self::whereSchoolId(School::id())->get()->pluck('name', 'id');
 
     }
     
-    /**
-     * 获取年级列表
-     *
-     * @param $grades
-     * @param $schools
-     * @return array
-     */
-    private function getGradesList($grades, $schools) {
-        
-        $gradesList = [];
-        foreach ($grades as $grade) {
-            $gradesList[$schools[$grade['school_id']]][$grade['id']] = $grade['name'];
-        }
-
-        return $gradesList;
-
-    }
-
     /**
      * 保存年级
      *
@@ -149,9 +114,9 @@ class Grade extends Model {
      * @param bool $fireEvent
      * @return bool
      */
-    public function store(array $data, $fireEvent = false) {
+    static function store(array $data, $fireEvent = false) {
         
-        $grade = $this->create($data);
+        $grade = self::create($data);
         if ($grade && $fireEvent) {
             event(new GradeCreated($grade));
             return true;
@@ -169,9 +134,9 @@ class Grade extends Model {
      * @param bool $fireEvent
      * @return bool
      */
-    public function modify(array $data, $id, $fireEvent = false) {
+    static function modify(array $data, $id, $fireEvent = false) {
         
-        $grade = $this->find($id);
+        $grade = self::find($id);
         $updated = $grade->update($data);
         if ($updated && $fireEvent) {
             event(new GradeUpdated($grade));
@@ -190,11 +155,11 @@ class Grade extends Model {
      * @return bool
      * @throws Exception
      */
-    public function remove($id, $fireEvent = false) {
+    static function remove($id, $fireEvent = false) {
         
-        $grade = $this->find($id);
+        $grade = self::find($id);
         if (!$grade) { return false; }
-        $removed = $this->removable($grade) ? $grade->delete() : false;
+        $removed = self::removable($grade) ? $grade->delete() : false;
         if ($removed && $fireEvent) {
             event(new GradeDeleted($grade));
             return true;
@@ -203,8 +168,13 @@ class Grade extends Model {
         return $removed ? true : false;
 
     }
-
-    public function datatable() {
+    
+    /**
+     * 年级列表
+     *
+     * @return array
+     */
+    static function datatable() {
         
         $columns = [
             ['db' => 'Grade.id', 'dt' => 0],
@@ -229,7 +199,7 @@ class Grade extends Model {
                     $educatorIds = explode(',', $d);
                     $educators = [];
                     foreach ($educatorIds as $id) {
-                        $educator = Educator::whereId($id)->first();
+                        $educator = Educator::find($id);
                         if (!empty($educator) && $educator->user) {
                             $educators[] = $educator->user->realname;
                         }
@@ -256,13 +226,9 @@ class Grade extends Model {
                 ],
             ],
         ];
-
-        $school = new School();
-        $schoolId = $school->getSchoolId();
-        $condition = 'Grade.school_id = ' . $schoolId;
-        unset($school);
+        $condition = 'Grade.school_id = ' . School::id();
         
-        return Datatable::simple($this, $columns, $joins, $condition);
+        return Datatable::simple(self::getModel(), $columns, $joins, $condition);
 
     }
 

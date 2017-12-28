@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -19,8 +20,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int $school_id 流程所属学校ID
  * @property string $name 流程名称
  * @property string $remark 流程备注
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property int $enabled
  * @method static Builder|Procedure whereCreatedAt($value)
  * @method static Builder|Procedure whereEnabled($value)
@@ -81,9 +82,9 @@ class Procedure extends Model {
      * @param array $data
      * @return bool
      */
-    public function store(array $data) {
+    static function store(array $data) {
         
-        $procedure = $this->create($data);
+        $procedure = self::create($data);
 
         return $procedure ? true : false;
 
@@ -96,9 +97,9 @@ class Procedure extends Model {
      * @param $id
      * @return bool
      */
-    public function modify(array $data, $id) {
+    static function modify(array $data, $id) {
         
-        $procedure = $this->find($id);
+        $procedure = self::find($id);
         if (!$procedure) { return false; }
 
         return $procedure->update($data) ? true : false;
@@ -112,16 +113,21 @@ class Procedure extends Model {
      * @return bool|null
      * @throws Exception
      */
-    public function remove($id) {
+    static function remove($id) {
         
-        $procedure = $this->find($id);
+        $procedure = self::find($id);
         if (!$procedure) { return false; }
 
-        return $this->removable($procedure) ? $procedure->delete() : false;
+        return self::removable($procedure) ? $procedure->delete() : false;
 
     }
-
-    public function datatable() {
+    
+    /**
+     * 审批流程列表
+     *
+     * @return array
+     */
+    static function datatable() {
         
         $columns = [
             ['db' => 'Procedures.id', 'dt' => 0],
@@ -157,7 +163,7 @@ class Procedure extends Model {
             ],
         ];
 
-        return Datatable::simple($this, $columns, $joins);
+        return Datatable::simple(self::getModel(), $columns, $joins);
         
     }
 

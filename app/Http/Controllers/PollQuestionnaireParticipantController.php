@@ -3,7 +3,7 @@ namespace App\Http\Controllers;
 
 use App\Models\PollQuestionnaire;
 use App\Models\PollQuestionnaireAnswer;
-use App\Models\PollQuestionnaireChoice;
+use App\Models\PollQuestionnaireSubjectChoice;
 use App\Models\PollQuestionnaireParticipant;
 use App\Models\PollQuestionnaireSubject;
 use App\Models\User;
@@ -18,7 +18,7 @@ use Illuminate\View\View;
  * Class PqParticipantController
  * @package App\Http\Controllers
  */
-class PqParticipantController extends Controller {
+class PollQuestionnaireParticipantController extends Controller {
     
     protected $pollQuestionnaires;
     protected $pollQuestionnaireParticipant;
@@ -30,7 +30,7 @@ class PqParticipantController extends Controller {
     function __construct(
         PollQuestionnaire $pollQuestionnaires,
         PollQuestionnaireAnswer $pollQuestionnaireAnswer,
-        PollQuestionnaireChoice $pollQuestionnaireChoice,
+        PollQuestionnaireSubjectChoice $pollQuestionnaireChoice,
         pollQuestionnaireSubject $pollQuestionnaireSubject,
         PollQuestionnaireParticipant $pollQuestionnaireParticipant,
         User $user

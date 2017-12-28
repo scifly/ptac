@@ -20,7 +20,7 @@ class CorpController extends Controller {
     
     function __construct(Corp $corp) {
         
-        $this->middleware(['auth']);
+        $this->middleware(['auth', 'checkrole']);
         $this->corp = $corp;
         
     }
@@ -34,7 +34,7 @@ class CorpController extends Controller {
     public function index() {
         
         if (Request::get('draw')) {
-            return response()->json($this->corp->datatable());
+            return response()->json(Corp::datatable());
         }
         
         return $this->output();
@@ -61,8 +61,9 @@ class CorpController extends Controller {
      */
     public function store(CorpRequest $request) {
         
-        return $this->corp->store($request->all(), true)
-            ? $this->succeed() : $this->fail();
+        return $this->result(
+            $this->corp->store($request->all(), true)
+        );
         
     }
     
@@ -91,9 +92,12 @@ class CorpController extends Controller {
      */
     public function update(CorpRequest $request, $id) {
         
-        if (!$this->corp->find($id)) { return $this->notFound(); }
-        return $this->corp->modify($request->all(), $id, true)
-            ? $this->succeed() : $this->fail();
+        $corp = Corp::find($id);
+        if (!$corp) { return $this->notFound(); }
+        
+        return $this->result(
+            $this->corp->modify($request->all(), $id, true)
+        );
         
     }
     
@@ -106,10 +110,12 @@ class CorpController extends Controller {
      */
     public function destroy($id) {
         
-        if (!$this->corp->find($id)) { return $this->notFound(); }
+        $corp = Corp::find($id);
+        if (!$corp) { return $this->notFound(); }
         
-        return $this->corp->remove($id, true)
-            ? $this->succeed() : $this->fail();
+        return $this->result(
+            $this->corp->remove($id, true)
+        );
         
     }
     

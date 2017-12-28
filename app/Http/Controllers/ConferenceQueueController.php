@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ConferenceQueueRequest;
 use App\Models\ConferenceQueue;
 use Exception;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 use Throwable;
@@ -16,12 +17,10 @@ use Throwable;
  */
 class ConferenceQueueController extends Controller {
     
-    protected $cq;
     
-    function __construct(ConferenceQueue $cq) {
+    function __construct() {
     
-        $this->middleware(['auth']);
-        $this->cq = $cq;
+        $this->middleware(['auth', 'checkrole']);
         
     }
     
@@ -34,7 +33,7 @@ class ConferenceQueueController extends Controller {
     public function index() {
         
         if (Request::get('draw')) {
-            return response()->json($this->cq->datatable());
+            return response()->json(ConferenceQueue::datatable());
         }
         
         return $this->output();
@@ -49,6 +48,8 @@ class ConferenceQueueController extends Controller {
      */
     public function create() {
         
+        $this->authorize('c', ConferenceQueue::class);
+        
         return $this->output();
         
     }
@@ -58,11 +59,13 @@ class ConferenceQueueController extends Controller {
      *
      * @param ConferenceQueueRequest $request
      * @return JsonResponse
+     * @throws AuthorizationException
      */
     public function store(ConferenceQueueRequest $request) {
         
-        return $this->cq->store($request->all())
-            ? $this->succeed() : $this->fail();
+        $this->authorize('c', ConferenceQueue::class);
+        
+        return $this->result(ConferenceQueue::store($request->all()));
         
     }
     
@@ -75,8 +78,8 @@ class ConferenceQueueController extends Controller {
      */
     public function show($id) {
         
-        $cq = $this->cq->find($id);
-        if (!$cq) { $this->notFound(); }
+        $cq = ConferenceQueue::find($id);
+        $this->authorize('rud', $cq);
         
         return $this->output(['cq' => $cq]);
         
@@ -91,8 +94,8 @@ class ConferenceQueueController extends Controller {
      */
     public function edit($id) {
         
-        $cq = $this->cq->find($id);
-        if (!$cq) { $this->notFound(); }
+        $cq = ConferenceQueue::find($id);
+        $this->authorize('rud', $cq);
         
         return $this->output(['cq' => $cq]);
         
@@ -104,14 +107,14 @@ class ConferenceQueueController extends Controller {
      * @param ConferenceQueueRequest $request
      * @param $id
      * @return JsonResponse
+     * @throws AuthorizationException
      */
     public function update(ConferenceQueueRequest $request, $id) {
         
-        $cq = $this->cq->find($id);
-        if (!$cq) { $this->notFound(); }
+        $cq = ConferenceQueue::find($id);
+        $this->authorize('rud', $cq);
         
-        return $this->cq->modify($request->all(), $id)
-            ? $this->succeed() : $this->fail();
+        return $this->result($cq::modify($request->all(), $id));
         
     }
     
@@ -124,10 +127,10 @@ class ConferenceQueueController extends Controller {
      */
     public function destroy($id) {
         
-        $cq = $this->cq->find($id);
-        if (!$cq) { $this->notFound(); }
+        $cq = ConferenceQueue::find($id);
+        $this->authorize('rud', $cq);
         
-        return $this->cq->remove($id) ? $this->succeed() : $this->fail();
+        return $this->result($cq->remove($id));
         
     }
     

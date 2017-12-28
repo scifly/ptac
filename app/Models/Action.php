@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Facades\DatatableFacade as Datatable;
 use App\Http\Requests\ActionRequest;
 use App\Models\ActionType as ActionType;
+use Carbon\Carbon;
 use Doctrine\Common\Inflector\Inflector;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
@@ -32,8 +33,8 @@ use Throwable;
  * @property int|null $select2 是否使用select2
  * @property int|null $chart 是否使用chart
  * @property int|null $map 是否使用map
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property int $enabled
  * @property string|null $action_type_ids HTTP请求类型IDs
  * @method static Builder|Action whereActionTypeIds($value)
@@ -63,9 +64,7 @@ class Action extends Model {
         'controller', 'view', 'route',
         'js', 'action_type_ids', 'enabled',
     ];
-    // protected $actionType;
-    protected $actionTypes;
-    protected $excludedControllers = [
+    const EXCLUDED_CONTROLLERS = [
         'Controller',
         'ForgotPasswordController',
         'LoginController',
@@ -79,7 +78,7 @@ class Action extends Model {
     ];
     protected $routes;
     # 控制器相对路径
-    protected $ctlrDir = 'app/Http/Controllers';
+    const CONTROLLER_DIR = 'app/Http/Controllers';
 
     /**
      * 返回当前action包含的卡片
@@ -93,9 +92,9 @@ class Action extends Model {
      *
      * @return array
      */
-    public function actions() {
+    static function actions() {
 
-        $data = $this->whereEnabled(1)->get([
+        $data = self::whereEnabled(1)->get([
             'controller', 'name', 'id',
             'action_type_ids', 'route',
         ]);
@@ -115,40 +114,14 @@ class Action extends Model {
         return $actions;
 
     }
-
+    
     /**
-     * 保存新创建的Action记录
+     * 功能列表
      *
-     * @param ActionRequest $request
-     * @return bool
+     * @return array
      */
-    public function store(ActionRequest $request) {
-
-        # 创建新的Action记录及卡片绑定记录
-        return $this->create($request->all()) ? true : false;
-
-    }
-
-    /**
-     * 修改指定的Action记录
-     *
-     * @param ActionRequest $request
-     * @param $actionId
-     * @return bool
-     */
-    public function modify(ActionRequest $request, $actionId) {
-
-        $action = $this->find($actionId);
-        if (!isset($action)) {
-            return false;
-        }
-        # 更新指定的Action记录
-        return $action->update($request->all());
-
-    }
-
-    public function datatable() {
-
+    static function datatable() {
+        
         $columns = [
             ['db' => 'Action.id', 'dt' => 0],
             [
@@ -190,7 +163,7 @@ class Action extends Model {
             [
                 'db' => 'Action.action_type_ids', 'dt' => 7,
                 'formatter' => function ($d) {
-                    return !empty($d) ? $this->actionTypes($d) : '-';
+                    return !empty($d) ? self::actionTypes($d) : '-';
                 },
             ],
             [
@@ -203,29 +176,54 @@ class Action extends Model {
                 },
             ],
         ];
-        return Datatable::simple($this, $columns);
+        
+        return Datatable::simple(self::getModel(), $columns);
+        
+    }
+    
+    /**
+     * 保存新创建的Action记录
+     *
+     * @param ActionRequest $request
+     * @return bool
+     */
+    static function store(ActionRequest $request) {
+
+        # 创建新的Action记录及卡片绑定记录
+        return self::create($request->all()) ? true : false;
 
     }
 
     /**
-     * 根据ActionType IDs返回Http action名称
+     * 修改指定的Action记录
      *
-     * @param $action_type_ids
-     * @return string
+     * @param ActionRequest $request
+     * @param $actionId
+     * @return bool
      */
-    private function actionTypes($action_type_ids) {
+    static function modify(ActionRequest $request, $actionId) {
 
-        $actionTypes = [];
-        $actionTypeIds = explode(',', $action_type_ids);
-        foreach ($actionTypeIds as $actionTypeId) {
-            $actionType = ActionType::whereId($actionTypeId)->where('enabled', 1)->first();
-            if ($actionType) {
-                $actionTypes[] = $actionType->name;
-            }
-        }
+        $action = self::find($actionId);
+        if (!isset($action)) { return false; }
+        
+        return $action->update($request->all());
 
-        return implode(', ', $actionTypes);
-
+    }
+    
+    /**
+     * 移除指定的Action记录
+     *
+     * @param $actionId
+     * @return bool|mixed
+     * @throws Exception|Throwable
+     */
+    static function remove($actionId) {
+        
+        $action = self::find($actionId);
+        if (!isset($action)) { return false; }
+        
+        return $action->delete();
+        
     }
     
     /**
@@ -237,19 +235,15 @@ class Action extends Model {
      */
     public function scan() {
 
-        $actionType = new ActionType();
-        $this->actionTypes = $actionType->pluck('id', 'name')->toArray();
-
         $this->routes = Route::getRoutes()->getRoutes();
-
-        $controllers = $this->scanDirectories($this->getSiteRoot() . $this->ctlrDir);
+        $controllers = self::scanDirectories(self::getSiteRoot() . self::CONTROLLER_DIR);
         # 获取控制器的名字空间
         $this->getControllerNamespaces($controllers);
 
         # 移除excluded控制器
         $controllerNames = array_diff(
             $this->getControllerNames($controllers),
-            $this->excludedControllers
+            self::EXCLUDED_CONTROLLERS
         );
         $selfDefinedMethods = [];
         // remove actions of non-existing controllers
@@ -270,7 +264,7 @@ class Action extends Model {
         }
         foreach ($controllers as $controller) {
             $paths = explode('\\', $controller);
-            if (!in_array($paths[sizeof($paths) - 1], $this->excludedControllers)) {
+            if (!in_array($paths[sizeof($paths) - 1], self::EXCLUDED_CONTROLLERS)) {
                 $obj = new ReflectionClass(ucfirst($controller));
                 $className = $obj->getName();
                 $methods = $obj->getMethods();
@@ -335,7 +329,52 @@ class Action extends Model {
 
         return true;
     }
-
+    
+    /**
+     * 获取网站根所处的路径
+     *
+     * @return bool|string
+     */
+    static function getSiteRoot() {
+        
+        return substr(__DIR__, 0, stripos(__DIR__, 'app/Models'));
+        
+    }
+    
+    /**
+     * 返回控制器的完整名字空间路径
+     *
+     * @param $controllers
+     */
+    static function getControllerNamespaces(&$controllers) {
+        
+        $siteRoot = str_replace('/', '\\', self::getSiteRoot());
+        for ($i = 0; $i < sizeof($controllers); $i++) {
+            $controllers[$i] = str_replace('/', '\\', $controllers[$i]);
+            $controllers[$i] = str_replace($siteRoot, '', $controllers[$i]);
+            $controllers[$i] = str_replace('.php', '', $controllers[$i]);
+        }
+        
+    }
+    
+    /**
+     * 返回去除名字空间路径的控制器名称数组
+     *
+     * @param $controllers
+     * @return array
+     */
+    static function getControllerNames($controllers) {
+        
+        $controllerNames = [];
+        foreach ($controllers as $controller) {
+            $paths = explode('\\', $controller);
+            $controllerNames[] = $paths[sizeof($paths) - 1];
+        }
+        
+        return $controllerNames;
+        
+    }
+    
     /** Helper functions -------------------------------------------------------------------------------------------- */
     /**
      * 返回所有控制器的完整路径
@@ -344,7 +383,7 @@ class Action extends Model {
      * @param array $allData
      * @return array
      */
-    public function scanDirectories($rootDir, $allData = []) {
+    private static function scanDirectories($rootDir, $allData = []) {
 
         // set filenames invisible if you want
         $invisibleFileNames = [".", "..", ".htaccess", ".htpasswd"];
@@ -361,68 +400,11 @@ class Action extends Model {
                     // if content is a directory and readable, add path and name
                 } elseif (is_dir($path) && is_readable($path)) {
                     // recursive callback to open new directory
-                    $allData = $this->scanDirectories($path, $allData);
+                    $allData = self::scanDirectories($path, $allData);
                 }
             }
         }
         return $allData;
-
-    }
-
-    public function getSiteRoot() {
-
-        return substr(__DIR__, 0, stripos(__DIR__, 'app/Models'));
-
-    }
-
-    /**
-     * 返回控制器的完整名字空间路径
-     *
-     * @param $controllers
-     */
-    public function getControllerNamespaces(&$controllers) {
-
-        $siteRoot = str_replace('/', '\\', $this->getSiteRoot());
-        for ($i = 0; $i < sizeof($controllers); $i++) {
-            $controllers[$i] = str_replace('/', '\\', $controllers[$i]);
-            $controllers[$i] = str_replace($siteRoot, '', $controllers[$i]);
-            $controllers[$i] = str_replace('.php', '', $controllers[$i]);
-        }
-
-    }
-
-    /**
-     * 返回去除名字空间路径的控制器名称数组
-     *
-     * @param $controllers
-     * @return array
-     */
-    public function getControllerNames($controllers) {
-
-        $controllerNames = [];
-        foreach ($controllers as $controller) {
-            $paths = explode('\\', $controller);
-            $controllerNames[] = $paths[sizeof($paths) - 1];
-        }
-
-        return $controllerNames;
-
-    }
-
-    /**
-     * 移除指定的Action记录
-     *
-     * @param $actionId
-     * @return bool|mixed
-     * @throws Exception|Throwable
-     */
-    public function remove($actionId) {
-
-        $action = $this->find($actionId);
-        if (!isset($action)) {
-            return false;
-        }
-        return $action->delete();
 
     }
     
@@ -435,24 +417,24 @@ class Action extends Model {
      * @throws Exception
      * @throws Throwable
      */
-    private function delNonExistingMethods($methods, $className) {
+    private static function delNonExistingMethods($methods, $className) {
 
         // remove non-existing methods of current controller
-        $currentMethods = $this->getMethodNames($methods);
+        $currentMethods = self::getMethodNames($methods);
         $existingMethods = [];
-        $controllerName = $this->getControllerName($className);
-        $results = $this->where('controller', $controllerName)->get(['method'])->toArray();
+        $controllerName = self::getControllerName($className);
+        $results = self::whereController($controllerName)->get(['method'])->toArray();
         foreach ($results as $result) {
             $existingMethods[] = $result['method'];
         }
         $methodDiffs = array_diff($existingMethods, $currentMethods);
         foreach ($methodDiffs as $method) {
-            $a = $this->where([
+            $a = self::where([
                 ['controller', $controllerName],
                 ['method', $method],
             ])->first();
             try {
-                $this->remove($a->id);
+                self::remove($a->id);
             } catch (Exception $e) {
                 throw $e;
             }
@@ -468,7 +450,7 @@ class Action extends Model {
      * @param $methods
      * @return array
      */
-    private function getMethodNames($methods) {
+    private static function getMethodNames($methods) {
 
         $methodNames = [];
         /** @var ReflectionMethod $method */
@@ -486,7 +468,7 @@ class Action extends Model {
      * @param $controller
      * @return mixed
      */
-    public function getControllerName($controller) {
+    private static function getControllerName($controller) {
 
         $nameSpacePaths = explode('\\', $controller);
 
@@ -501,7 +483,7 @@ class Action extends Model {
      * @param ReflectionMethod $method
      * @return mixed|string
      */
-    private function getMethodComment(ReflectionClass $controllerObj, ReflectionMethod $method) {
+    private static function getMethodComment(ReflectionClass $controllerObj, ReflectionMethod $method) {
 
         $comment = $controllerObj->getMethod($method->getName())->getDocComment();
         $name = 'n/a';
@@ -528,7 +510,7 @@ class Action extends Model {
      */
     private function getViewPath($controller, $action) {
 
-        if (!in_array($controller, $this->excludedControllers)) {
+        if (!in_array($controller, self::EXCLUDED_CONTROLLERS)) {
             switch ($action) {
                 case 'index':
                 case 'create':
@@ -562,7 +544,7 @@ class Action extends Model {
      * @param $controller string 控制器类名
      * @return string 数据表名称
      */
-    private function getTableName($controller) {
+    private static function getTableName($controller) {
 
         $modelName = substr(
             $controller, 0,
@@ -586,7 +568,7 @@ class Action extends Model {
     private function getRoute($controller, $action) {
 
         $action = ($action == 'destroy' ? 'delete' : $action);
-        if (!in_array($controller, $this->excludedControllers)) {
+        if (!in_array($controller, self::EXCLUDED_CONTROLLERS)) {
             $route = $this->getTableName($controller) . '/' . $action;
             foreach ($this->routes as $r) {
                 if (stripos($r->uri, $route) === 0) {
@@ -609,13 +591,14 @@ class Action extends Model {
     private function getActionTypeIds($controller, $action) {
 
         $action = ($action == 'destroy' ? 'delete' : $action);
-        if (!in_array($controller, $this->excludedControllers)) {
+        $actionTypes = ActionType::pluck('id', 'name')->toArray();
+        if (!in_array($controller, self::EXCLUDED_CONTROLLERS)) {
             $route = $this->getTableName($controller) . '/' . $action;
             $actionTypeIds = [];
             foreach ($this->routes as $r) {
                 if (stripos($r->uri, $route) === 0) {
                     foreach ($r->methods as $method) {
-                        $actionTypeIds[] = $this->actionTypes[$method];
+                        $actionTypeIds[] = $actionTypes[$method];
                     }
                 }
             }
@@ -636,7 +619,7 @@ class Action extends Model {
      */
     private function getJsPath($ctlr, $action) {
 
-        if (!in_array($ctlr, $this->excludedControllers)) {
+        if (!in_array($ctlr, self::EXCLUDED_CONTROLLERS)) {
             $prefix = str_singular($this->getTableName($ctlr));
             $prefix = ($prefix === 'corps') ? 'corp' : $prefix;
             if (in_array($action, ['destroy', 'store', 'update', 'sort', 'move', 'rankTabs'])) {
@@ -650,6 +633,27 @@ class Action extends Model {
 
         return null;
 
+    }
+    
+    /**
+     * 根据ActionType IDs返回Http action名称
+     *
+     * @param $action_type_ids
+     * @return string
+     */
+    private static function actionTypes($action_type_ids) {
+        
+        $actionTypes = [];
+        $actionTypeIds = explode(',', $action_type_ids);
+        foreach ($actionTypeIds as $actionTypeId) {
+            $actionType = ActionType::whereId($actionTypeId)->where('enabled', 1)->first();
+            if ($actionType) {
+                $actionTypes[] = $actionType->name;
+            }
+        }
+        
+        return implode(', ', $actionTypes);
+        
     }
 
 }

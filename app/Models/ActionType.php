@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
@@ -9,8 +10,8 @@ use Illuminate\Database\Eloquent\Model;
  * App\Models\ActionType 功能HTTP请求类型
  *
  * @property int $id
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property string $name action类型名称
  * @property string|null $remark 备注
  * @property int $enabled

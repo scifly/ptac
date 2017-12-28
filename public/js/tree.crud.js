@@ -182,16 +182,12 @@ var tree = {
             switch (table) {
                 case 'departments':
                     switch (nType) {
-                        case 'company':
-                            return pType === 'root';
-                        case 'corp':
-                            return pType === 'company';
-                        case 'school':
-                            return pType === 'corp';
+                        case 'company': return pType === 'root';
+                        case 'corp': return pType === 'company';
+                        case 'school': return pType === 'corp';
                         case 'grade':
                             switch (pType) {
-                                case 'school':
-                                    return true;
+                                case 'school': return true;
                                 case 'other':
                                     grandParents = t.get_node(p).parents;
                                     grandParentTypes = [];
@@ -209,11 +205,9 @@ var tree = {
                                     return false;
                             }
                             // return $.inArray(pType, ['school', 'other']) > -1;
-                            break;
                         case 'class':
                             switch (pType) {
-                                case 'grade':
-                                    return true;
+                                case 'grade': return true;
                                 case 'other':
                                     grandParents = t.get_node(p).parents;
                                     grandParentTypes = [];
@@ -224,7 +218,6 @@ var tree = {
                                 default:
                                     return false;
                             }
-                            break;
                         case 'other':
                             var children = t.get_node(n).children_d;
                             var childTypes = [];
@@ -276,16 +269,12 @@ var tree = {
                     break;
                 case 'menus':
                     switch (nType) {
-                        case 'company':
-                            return pType === 'root';
-                        case 'corp':
-                            return pType === 'company';
-                        case 'school':
-                            return pType === 'corp';
+                        case 'company': return pType === 'root';
+                        case 'corp': return pType === 'company';
+                        case 'school': return pType === 'corp';
                         default:
                             return $.inArray(pType, ['company', 'corp', 'school', 'other', 'root']) > -1;
                     }
-                    break;
                 default:
                     return false;
             }
@@ -351,7 +340,6 @@ var tree = {
                     default:
                         return {};
                 }
-                break;
             case 'menus':
                 switch (node.type) {
                     case 'root':
@@ -364,7 +352,6 @@ var tree = {
                     default:
                         return {}
                 }
-                break;
             default:
                 return {};
         }

@@ -55,19 +55,24 @@ class Team extends Model {
      * @param array $teamIds
      * @return array
      */
-    public function teams(array $teamIds) {
+    static function teams(array $teamIds) {
         
         $teams = [];
         foreach ($teamIds as $id) {
-            $team = $this->find($id);
+            $team = self::find($id);
             $teams[$team['id']] = $team['name'];
         }
 
         return $teams;
 
     }
-
-    public function datatable() {
+    
+    /**
+     * 教职员工组列表
+     *
+     * @return array
+     */
+    static function datatable() {
         
         $columns = [
             ['db' => 'Team.id', 'dt' => 0],
@@ -94,7 +99,7 @@ class Team extends Model {
             ],
         ];
         
-        return Datatable::simple($this, $columns, $joins);
+        return Datatable::simple(self::getModel(), $columns, $joins);
 
     }
 

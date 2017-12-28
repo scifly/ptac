@@ -9,16 +9,17 @@ use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Database\Eloquent\Model;
 
 class ActionPolicy {
+    
     use HandlesAuthorization;
 
     protected $roles = ['运营', '企业', '学校'];
+    
     /**
      * Create a new policy instance.
      *
      * @return void
      */
     public function __construct() {
-        //
 
     }
 

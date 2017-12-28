@@ -19,15 +19,9 @@ use Throwable;
  */
 class SubjectController extends Controller {
     
-    protected $subject, $major, $grade, $majorSubject;
-    
-    function __construct(Subject $subject, Major $major, Grade $grade, MajorSubject $majorSubject) {
+    function __construct() {
         
-        $this->middleware(['auth']);
-        $this->subject = $subject;
-        $this->major = $major;
-        $this->grade = $grade;
-        $this->majorSubject = $majorSubject;
+        $this->middleware(['auth', 'checkrole']);
         
     }
     
@@ -40,7 +34,7 @@ class SubjectController extends Controller {
     public function index() {
         
         if (Request::get('draw')) {
-            return response()->json($this->subject->datatable());
+            return response()->json(Subject::datatable());
         }
         
         return $this->output();
@@ -55,9 +49,11 @@ class SubjectController extends Controller {
      */
     public function create() {
         
+        $this->authorize('c', Subject::class);
+        
         return $this->output([
-            'majors' => $this->major->majors(1),
-            'grades' => $this->grade->grades([1]),
+            'majors' => Major::majors(),
+            'grades' => Grade::grades(),
         ]);
         
     }
@@ -68,11 +64,13 @@ class SubjectController extends Controller {
      * @param SubjectRequest $request
      * @return JsonResponse
      * @throws Exception
+     * @throws Throwable
      */
     public function store(SubjectRequest $request) {
         
-        return $this->subject->store($request)
-            ? $this->succeed() : $this->fail();
+        $this->authorize('c', Subject::class);
+        
+        return $this->result(Subject::store($request));
         
     }
     
@@ -85,8 +83,9 @@ class SubjectController extends Controller {
      */
     public function edit($id) {
         
-        $subject = $this->subject->find($id);
-        if (!$subject) { return $this->notFound(); }
+        $subject = Subject::find($id);
+        $this->authorize('rud', $subject);
+        
         $gradeIds = explode(',', $subject['grade_ids']);
         $selectedGrades = [];
         foreach ($gradeIds as $gradeId) {
@@ -97,12 +96,13 @@ class SubjectController extends Controller {
         foreach ($subject->majors as $major) {
             $selectedMajors[$major->id] = $major->name;
         }
+        
         return $this->output([
             'subject'        => $subject,
             'selectedGrades' => $selectedGrades,
             'selectedMajors' => $selectedMajors,
-            'majors'         => $this->major->majors(1),
-            'grades'         => $this->grade->grades([1]),
+            'majors'         => Major::majors(),
+            'grades'         => Grade::grades(),
         ]);
         
     }
@@ -114,11 +114,14 @@ class SubjectController extends Controller {
      * @param $id
      * @return JsonResponse
      * @throws Exception
+     * @throws Throwable
      */
     public function update(SubjectRequest $request, $id) {
         
-        return $this->subject->modify($request, $id)
-            ? $this->succeed() : $this->fail();
+        $subject = Subject::find($id);
+        $this->authorize('rud', $subject);
+        
+        return $this->result($subject->modify($request, $id));
         
     }
     
@@ -128,11 +131,14 @@ class SubjectController extends Controller {
      * @param $id
      * @return JsonResponse
      * @throws Exception
+     * @throws Throwable
      */
     public function destroy($id) {
         
-        return $this->subject->remove($id)
-            ? $this->succeed() : $this->fail();
+        $subject = Subject::find($id);
+        $this->authorize('rud', $subject);
+        
+        return $this->result($subject->remove($id));
         
     }
     

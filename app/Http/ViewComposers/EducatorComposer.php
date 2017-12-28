@@ -13,16 +13,9 @@ class EducatorComposer {
 
     use ControllerTrait;
     
-    protected $school;
-
-    public function __construct(School $school) {
-
-        $this->school = $school;
-    }
-
     public function compose(View $view) {
-        $schoolId = $this->school->getSchoolId();
-        /** @var School $school */
+        
+        $schoolId = School::id();
         $school = School::find($schoolId);
 
         $squads = $school->classes->where('enabled', 1)
@@ -43,6 +36,7 @@ class EducatorComposer {
             ->pluck('name', 'id')
             ->toArray();
         array_unshift($subjects, '(请选择)');
+        
         $view->with([
             'schoolId' => $schoolId,
             'squads' => $squads,

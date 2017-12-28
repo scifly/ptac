@@ -7,6 +7,8 @@ use App\Events\CorpDeleted;
 use App\Events\CorpUpdated;
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
+use Carbon\Carbon;
+use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -21,29 +23,29 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
  * @property int $id
  * @property string $name 企业名称
  * @property string $corpid 企业号id
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property int $enabled
+ * @property int $menu_id 对应的菜单ID
+ * @property int $company_id 所属运营者公司ID
+ * @property int $department_id 对应的部门ID
  * @method static Builder|Corp whereCorpid($value)
  * @method static Builder|Corp whereCreatedAt($value)
  * @method static Builder|Corp whereEnabled($value)
  * @method static Builder|Corp whereId($value)
  * @method static Builder|Corp whereName($value)
  * @method static Builder|Corp whereUpdatedAt($value)
- * @mixin \Eloquent
- * @property int $company_id 所属运营者公司ID
- * @property-read \App\Models\Company $company
- * @property-read Collection|Department[] $departments
  * @method static Builder|Corp whereCompanyId($value)
+ * @method static Builder|Corp whereDepartmentId($value)
+ * @method static Builder|Corp whereMenuId($value)
+ * @mixin Eloquent
+ * @property-read Company $company
+ * @property-read Collection|Department[] $departments
  * @property-read Collection|Grade[] $grades
  * @property-read Collection|School[] $schools
  * @property-read Collection|Team[] $teams
- * @property int $department_id 对应的部门ID
  * @property-read \App\Models\Department $department
- * @method static Builder|Corp whereDepartmentId($value)
- * @property int $menu_id 对应的菜单ID
- * @property-read \App\Models\Menu $menu
- * @method static Builder|Corp whereMenuId($value)
+ * @property-read Menu $menu
  */
 class Corp extends Model {
 
@@ -114,76 +116,14 @@ class Corp extends Model {
         return $this->hasManyThrough('App\Models\Team', 'App\Models\School');
 
     }
-
-    /**
-     * 保存企业
-     *
-     * @param array $data
-     * @param bool $fireEvent
-     * @return bool
-     */
-    public function store(array $data, $fireEvent = false) {
-
-        $corp = $this->create($data);
-        if ($corp && $fireEvent) {
-            event(new CorpCreated($corp));
-
-            return true;
-        }
-
-        return $corp ? true : false;
-
-    }
-
-    /**
-     * 更新企业
-     *
-     * @param array $data
-     * @param $id
-     * @param bool $fireEvent
-     * @return bool
-     */
-    public function modify(array $data, $id, $fireEvent = false) {
-
-        $corp = $this->find($id);
-        $updated = $corp->update($data);
-        if ($updated && $fireEvent) {
-            event(new CorpUpdated($corp));
-
-            return true;
-        }
-
-        return $updated ? true : false;
-
-    }
     
     /**
-     * 删除企业
+     * 企业列表
      *
-     * @param $id
-     * @param bool $fireEvent
-     * @return bool
-     * @throws Exception
-     */
-    public function remove($id, $fireEvent = false) {
-
-        $corp = $this->find($id);
-        if (!$corp) { return false; }
-        $removed = $this->removable($corp) ? $corp->delete() : false;
-        if ($removed && $fireEvent) {
-            event(new CorpDeleted($corp));
-            return true;
-        }
-
-        return $removed ? true : false;
-
-    }
-
-    /**
      * @return mixed
      */
-    public function datatable() {
-
+    static function datatable() {
+        
         $columns = [
             ['db' => 'Corp.id', 'dt' => 0],
             [
@@ -218,8 +158,71 @@ class Corp extends Model {
                 ],
             ],
         ];
+        
+        return Datatable::simple(self::getModel(), $columns, $joins);
+        
+    }
+    
+    /**
+     * 保存企业
+     *
+     * @param array $data
+     * @param bool $fireEvent
+     * @return bool
+     */
+    static function store(array $data, $fireEvent = false) {
 
-        return Datatable::simple($this, $columns, $joins);
+        $corp = self::create($data);
+        if ($corp && $fireEvent) {
+            event(new CorpCreated($corp));
+            return true;
+        }
+
+        return $corp ? true : false;
+
     }
 
+    /**
+     * 更新企业
+     *
+     * @param array $data
+     * @param $id
+     * @param bool $fireEvent
+     * @return bool
+     */
+    static function modify(array $data, $id, $fireEvent = false) {
+
+        $corp = self::find($id);
+        $updated = $corp->update($data);
+        if ($updated && $fireEvent) {
+            event(new CorpUpdated($corp));
+            return true;
+        }
+
+        return $updated ? true : false;
+
+    }
+    
+    /**
+     * 删除企业
+     *
+     * @param $id
+     * @param bool $fireEvent
+     * @return bool
+     * @throws Exception
+     */
+    static function remove($id, $fireEvent = false) {
+
+        $corp = self::find($id);
+        if (!$corp) { return false; }
+        $removed = self::removable($corp) ? $corp->delete() : false;
+        if ($removed && $fireEvent) {
+            event(new CorpDeleted($corp));
+            return true;
+        }
+
+        return $removed ? true : false;
+
+    }
+    
 }

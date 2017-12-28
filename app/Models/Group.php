@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -20,8 +21,8 @@ use Illuminate\Support\Facades\DB;
  * @property int $id
  * @property string $name 角色名称
  * @property string $remark 角色备注
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property int $enabled
  * @method static Builder|Group whereCreatedAt($value)
  * @method static Builder|Group whereEnabled($value)
@@ -36,8 +37,8 @@ use Illuminate\Support\Facades\DB;
  * @property-read Collection|Tab[] $tabs
  * @property-read Collection|Action[] $actions
  * @property int|null $school_id
- * @property-read \App\Models\GroupType $groupType
- * @property-read \App\Models\School|null $school
+ * @property-read GroupType $groupType
+ * @property-read School|null $school
  */
 class Group extends Model {
 
@@ -99,38 +100,31 @@ class Group extends Model {
      * @throws Exception
      * @throws \Throwable
      */
-    public function store(array $data) {
+    static function store(array $data) {
 
         try {
             DB::transaction(function () use ($data) {
-                $groupData = [
+                $group = self::create([
                     'name' => $data['name'],
                     'remark' => $data['remark'],
                     'enabled' => $data['enabled'],
                     'school_id' => $data['school_id'],
-                ];
-                $g = $this->create($groupData);
+                ]);
                 # 功能与角色的对应关系
-                $actionIds = $data['acitonId'];
-                $actionGroup = new ActionGroup();
-                $actionGroup->storeByGroupId($g->id, $actionIds);
+                ActionGroup::storeByGroupId($group->id, $data['acitonId']);
                 # 功能与菜单的对应关系
-                $menuIds = explode(',', $data['menu_ids']);
-                $groupMenu = new GroupMenu();
-                $groupMenu->storeByGroupId($g->id, $menuIds);
+                GroupMenu::storeByGroupId($group->id, explode(',', $data['menu_ids']));
                 # 功能与卡片的对应关系
-                $tabIds = $data['tabId'];
-                $groupTab = new GroupTab();
-                $groupTab->storeByGroupId($g->id, $tabIds);
-
+                GroupTab::storeByGroupId($group->id, $data['tabId']);
             });
         } catch (Exception $e) {
             throw $e;
         }
+        
         return true;
 
     }
-
+    
     /**
      * 更新角色
      *
@@ -138,40 +132,30 @@ class Group extends Model {
      * @param $id
      * @return bool
      * @throws Exception
+     * @throws \Throwable
      */
-    public function modify(array $data, $id) {
+    static function modify(array $data, $id) {
 
-        $group = $this->find($id);
-        if (!$group) {
-            return false;
-        }
+        $group = self::find($id);
+        if (!$group) { return false; }
         try {
             DB::transaction(function () use ($data, $group, $id) {
-
-                $groupData = [
+                $group->update([
                     'name' => $data['name'],
                     'remark' => $data['remark'],
                     'enabled' => $data['enabled'],
-                ];
-                $group->update($groupData);
+                ]);
                 # 功能与角色的对应关系
-                $actionIds = $data['acitonId'];
-                $actionGroup = new ActionGroup();
-                $actionGroup->storeByGroupId($id, $actionIds);
+                ActionGroup::storeByGroupId($id, $data['acitonId']);
                 # 功能与菜单的对应关系
-                $menuIds = explode(',', $data['menu_ids']);
-                $groupMenu = new GroupMenu();
-                $groupMenu->storeByGroupId($id, $menuIds);
+                GroupMenu::storeByGroupId($id, explode(',', $data['menu_ids']));
                 # 功能与卡片的对应关系
-                $tabIds = $data['tabId'];
-                $groupTab = new GroupTab();
-                $groupTab->storeByGroupId($id, $tabIds);
-
+                GroupTab::storeByGroupId($id, $data['tabId']);
             });
-
         } catch (Exception $e) {
             throw $e;
         }
+        
         return true;
 
     }
@@ -183,16 +167,21 @@ class Group extends Model {
      * @return bool
      * @throws Exception
      */
-    public function remove($id) {
+    static function remove($id) {
 
-        $group = $this->find($id);
+        $group = self::find($id);
         if (!$group) { return false; }
         
-        return $this->removable($group) ? $group->delete() : false;
+        return self::removable($group) ? $group->delete() : false;
 
     }
-
-    public function datatable() {
+    
+    /**
+     * 角色列表
+     *
+     * @return array
+     */
+    static function datatable() {
 
         $columns = [
             ['db' => 'Groups.id', 'dt' => 0],
@@ -234,7 +223,7 @@ class Group extends Model {
             case '运营':
                 break;
             case '企业':
-                $corpId = Corp::whereDepartmentId($user->topDeptId($user))
+                $corpId = Corp::whereDepartmentId($user->topDeptId())
                     ->first()->id;
                 $joins[] = [
                     'table' => 'corps',
@@ -247,15 +236,15 @@ class Group extends Model {
                 $condition = 'Corp.id = ' . $corpId;
                 break;
             case '学校':
-                $schoolId = School::whereDepartmentId($user->topDeptId($user))
+                $schoolId = School::whereDepartmentId($user->topDeptId())
                     ->first()->id;
                 $condition = 'School.id = ' . $schoolId;
                 break;
         }
         if (empty($condition)) {
-            return Datatable::simple($this, $columns, $joins);
+            return Datatable::simple(self::getModel(), $columns, $joins);
         }
-        return Datatable::simple($this, $columns, $joins, $condition);
+        return Datatable::simple(self::getModel(), $columns, $joins, $condition);
 
     }
 

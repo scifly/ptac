@@ -3,7 +3,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Action;
 use App\Models\Menu;
+use App\Models\School;
 use App\Models\Tab;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
@@ -12,6 +14,8 @@ use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
+use phpDocumentor\Reflection\Types\Boolean;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Throwable;
 
 class Controller extends BaseController {
@@ -111,7 +115,7 @@ class Controller extends BaseController {
                 $menu = new Menu();
                 $params['breadcrumb'] = $menu->name . ' / ' . $action->name;
                 return view('home.page', [
-                    'menu' => $menu->getMenuHtml($menu->rootMenuId()),
+                    'menu' => $menu->menuHtml($menu->rootMenuId()),
                     'tabs' => [],
                     'content' => view($view, $params)->render(),
                     'menuId' => session('menuId'),
@@ -141,12 +145,15 @@ class Controller extends BaseController {
     
     protected function notFound() {
         
-        $this->result = [
-            'statusCode' => self::HTTP_STATUSCODE_BAD_REQUEST,
-            'message'    => self::MSG_BAD_REQUEST,
-        ];
-        
-        return response()->json($this->result);
+        if (Request::ajax()) {
+            $this->result = [
+                'statusCode' => self::HTTP_STATUSCODE_BAD_REQUEST,
+                'message'    => self::MSG_BAD_REQUEST,
+            ];
+    
+            return response()->json($this->result);
+        }
+        return abort(404);
         
     }
     
@@ -160,12 +167,27 @@ class Controller extends BaseController {
         
     }
     
+    protected function result($result, String $success = self::MSG_OK, String $failure = self::MSG_FAIL) {
+        
+        if (Request::ajax()) {
+            $this->result = $result
+                ? ['statusCode' => self::HTTP_STATUSCODE_OK, 'message' => $success]
+                : ['statusCode' => self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR, 'message' => $failure];
+            return response()->json($this->result);
+        }
+        return $result
+            ? self::HTTP_STATUSCODE_OK . ' : ' . $success
+            : self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR . ' : ' . $failure;
+        
+    }
+    
     public function getUserInfo() {
         
         $code = Request::query('code');
         $url = 'http://weixin.028lk.com/wap_sites/webindex?code=' . $code;
     
         return $code ? \redirect($url) : 'no code !';
+        
     }
 
 }
