@@ -1,6 +1,80 @@
 var token = $('#csrf_token').attr('content');
 choose_item();
 
+$("#type").select({
+    title: "选择类型",
+
+    items: [
+        {
+            title: "文本",
+            value: "text",
+        },
+        {
+            title: "图文",
+            value: "mpnews",
+        },
+        {
+            title: "图片",
+            value: "image",
+        },
+        {
+            title: "视频",
+            value: "video",
+        },
+        {
+            title: "短信",
+            value: "sms",
+        },
+
+    ]
+});
+
+$('#type').change(function(){
+    var type = $(this).attr('data-values');
+    $('.js-content-item input').val('');
+    $('#emojiInput').html('');
+    switch (type) {
+        case 'text':
+            //文本
+            $('.js-content-item').hide();
+            $('.js-content').show();
+            break;
+        case 'mpnews':
+            //图文
+            $('.js-content-item').hide();
+            $('.js-title').show();
+            $('.js-content').show();
+            $('.js-upload-img').show();
+            $('.js-content_source_url').show();
+            $('.js-author').show();
+            $('.js-mpnews-cover').show();
+            break;
+        case 'image':
+            //图片
+            $('.js-content-item').hide();
+            $('.js-image').show();
+            break;
+        case 'voice':
+            //音频
+            break;
+        case 'video':
+            //视频
+            $('.js-content-item').hide();
+            $('.js-title').show();
+            $('.js-video').show();
+            $('.js-uploadvideo').show();
+            $('.js-description').show();
+            break;
+        case 'sms':
+            //短信
+            $('.js-content-item').hide();
+            $('.js-content').show();
+            break;
+    }
+
+});
+
+
 $(".ma_expect_date").datetimePicker();
 
 $('.js-search-input').bind("input propertychange change",function(event){
@@ -33,7 +107,7 @@ function show_group() {
         $.ajax({
             type: 'GET',
             data: {},
-            url: '../message_dept/' + id,
+            url: '../public/message_dept/' + id,
             success: function (result) {
                 if(result.statusCode === 200){
                     choose_box.html(result.message);
@@ -205,7 +279,7 @@ $(function () {
         formData.append('file', $('#uploaderInput')[0].files[0]);
         formData.append('_token', token);
         $.ajax({
-            url: '../message_upload',
+            url: '../public/message_upload',
             type: 'POST',
             cache: false,
             data: formData,
@@ -214,7 +288,7 @@ $(function () {
             success: function (result) {
                 if (result.statusCode === 200) {
                     $('#uploadimg-'+tmp).attr('data-media-id',result.message.id);
-                    $('#uploadimg-'+tmp).attr('src', 'http://weixin.028lk.com/' + result.message.path);
+                    $('#uploadimg-'+tmp).attr('src', 'http://sandbox.ddd:8080/ptac/' + result.message.path);
                 }
             }
         });
@@ -246,7 +320,7 @@ $(function () {
                 '_token': token, 'title': title, 'content': content,
                 'time': time, 'department_ids': department_ids, 'user_ids': user_ids, 'media_ids': media_ids
             },
-            url: '../message_store',
+            url: '../public/message_store',
             success: function (result) {
                 if (result.statusCode === 200) {
                     $.alert('消息发送成功！');
