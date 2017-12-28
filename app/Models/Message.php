@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 /**
@@ -272,14 +273,17 @@ class Message extends Model {
         if ($obj) {
             $depts = [];
             $users = [];
+            $us = [];
             foreach ($obj as $o) {
                 $item = explode('-', $o);
                 if ($item[1]) {
                     $users[] = User::find($item[1])->userid;
+                    $us[] = User::find($item[1])->id;
                 } else {
                     $depts[] = $o;
                 }
             }
+            $userItems = implode('|', $us);
             $touser = implode('|', $users);
             $toparty = implode('|', $depts);
             $apps = App::whereIn('id', $data['app_ids'])->get()->toArray();
@@ -318,7 +322,7 @@ class Message extends Model {
                         $message['video'] = $data['content']['video'];
                         break;
                     case 'sms':
-                        $this->sendSms($touser, $toparty, $data['content']['sms']);
+                        $this->sendSms($userItems, $toparty, $data['content']['sms']);
                         break;
                 }
                 $message['msgtype'] = $data['type'];
@@ -356,8 +360,12 @@ class Message extends Model {
         $mobiles = $this->getMobiles($touser, $toparty);
 //        $autograph = School::find(School::id())->autograph;
         $autograph = '【成都外国语】';
-        $result = Wechat::batchSend('LKJK004923', '654321@', implode(',', $mobiles), $content . $autograph);
-        
+        $result = Wechat::batchSend('LKJK004923', "654321@", implode(',', $mobiles), $content . $autograph);
+//Log::debug($content . $autograph);
+//Log::debug(implode(',', $mobiles));
+Log::debug(json_encode($result));
+//Log::debug(md5('654321@'));
+//Log::debug(bcrypt('654321@'));
 
     }
 
