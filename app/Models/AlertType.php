@@ -26,8 +26,13 @@ use Illuminate\Database\Eloquent\Model;
 class AlertType extends Model {
 
     protected $fillable = ['name', 'english_name', 'enabled'];
-
-    public function datatable() {
+    
+    /**
+     * 警告类型列表
+     *
+     * @return array
+     */
+    static function datatable() {
 
         $columns = [
             ['db' => 'AlertType.id', 'dt' => 0],
@@ -43,7 +48,7 @@ class AlertType extends Model {
             ],
         ];
 
-        return Datatable::simple($this, $columns);
+        return Datatable::simple(self::getModel(), $columns);
 
     }
 

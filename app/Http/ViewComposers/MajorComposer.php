@@ -8,24 +8,19 @@ use App\Models\Subject;
 use Illuminate\Contracts\View\View;
 
 class MajorComposer {
+    
     use ControllerTrait;
-    protected $school, $subject;
-
-    public function __construct(School $school, Subject $subject) {
-
-        $this->school = $school;
-        $this->subject = $subject;
-    }
 
     public function compose(View $view) {
 
-        $schoolId = $this->school->getSchoolId();
+        $schoolId = School::id();
+        
         $view->with([
             'schoolId' => $schoolId,
-            'subjects' => $this->subject->where('school_id', $schoolId)
-                ->pluck('name', 'id'),
+            'subjects' => Subject::whereSchoolId($schoolId)->pluck('name', 'id'),
             'uris' => $this->uris()
-
         ]);
+        
     }
+    
 }

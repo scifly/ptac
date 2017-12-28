@@ -7,6 +7,8 @@ use App\Events\SchoolDeleted;
 use App\Events\SchoolUpdated;
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
+use Carbon\Carbon;
+use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -29,8 +31,8 @@ use Illuminate\Support\Facades\Auth;
  * @property int $corp_id 学校所属企业ID
  * @property int $sms_max_cnt 学校短信配额
  * @property int $sms_used 短信已使用量
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property int $enabled
  * @method static Builder|School whereAddress($value)
  * @method static Builder|School whereCorpId($value)
@@ -44,7 +46,7 @@ use Illuminate\Support\Facades\Auth;
  * @method static Builder|School whereSmsMaxCnt($value)
  * @method static Builder|School whereSmsUsed($value)
  * @method static Builder|School whereUpdatedAt($value)
- * @mixin \Eloquent
+ * @mixin Eloquent
  * @property-read Corp $corp
  * @property-read Collection|Educator[] $educator
  * @property-read Collection|Grade[] $grade
@@ -229,32 +231,17 @@ class School extends Model {
     }
 
     /**
-     * 获取指定管理/操作员管理的所有学校对象
-     *
-     * @param $operatorId
-     * @return Collection|static[]
-     */
-    public function operatorSchools($operatorId) {
-
-        $schoolIds = Operator::whereId($operatorId)->where('enabled', 1)->first()->school_ids;
-
-        return $this->whereIn('id', explode(',', $schoolIds))->whereEnabled(1)->get();
-
-    }
-
-    /**
-     * 创建学校
+     * 保存学校
      *
      * @param array $data
      * @param bool $fireEvent
      * @return bool
      */
-    public function store(array $data, $fireEvent = false) {
+    static function store(array $data, $fireEvent = false) {
 
-        $school = $this->create($data);
+        $school = self::create($data);
         if ($school && $fireEvent) {
             event(new SchoolCreated($school));
-
             return true;
         }
 
@@ -270,12 +257,12 @@ class School extends Model {
      * @param bool $fireEvent
      * @return bool
      */
-    public function modify(array $data, $id, $fireEvent = false) {
+    static function modify(array $data, $id, $fireEvent = false) {
 
-        $school = $this->find($id);
+        $school = self::find($id);
         $updated = $school->update($data);
         if ($updated && $fireEvent) {
-            event(new SchoolUpdated($this->find($id)));
+            event(new SchoolUpdated(self::find($id)));
             return true;
         }
 
@@ -291,11 +278,11 @@ class School extends Model {
      * @return bool|null
      * @throws Exception
      */
-    public function remove($id, $fireEvent = false) {
+    static function remove($id, $fireEvent = false) {
 
-        $school = $this->find($id);
+        $school = self::find($id);
         if (!$school) { return false; }
-        $removed = $this->removable($school) ? $school->delete() : false;
+        $removed = self::removable($school) ? $school->delete() : false;
         if ($removed && $fireEvent) {
             event(new SchoolDeleted($school));
             return true;
@@ -304,8 +291,13 @@ class School extends Model {
         return $removed ? true : false;
 
     }
-
-    public function datatable() {
+    
+    /**
+     * 学校列表
+     *
+     * @return array
+     */
+    static function datatable() {
 
         $columns = [
             ['db' => 'School.id', 'dt' => 0],
@@ -351,52 +343,34 @@ class School extends Model {
             ],
         ];
 
-        return Datatable::simple($this, $columns, $joins);
+        return Datatable::simple(self::getModel(), $columns, $joins);
 
     }
 
-    public function schools($schoolIds) {
-
-        $schoolList = [];
-        if (!empty($schoolIds)) {
-            $schools = $this->whereIn('id', explode(',', $schoolIds))
-                ->get()
-                ->toArray();
-            foreach ($schools as $school) {
-                $schoolList[$school['id']] = $school['name'];
-            }
-        }
-
-        return $schoolList;
-
-    }
-    
     /**
-     * 根据菜单ID获取school_id
+     * 根据角色/菜单id获取school_id
      *
      * @return int|mixed
      */
-    public function getSchoolId() {
+    static function id() {
 
         $user = Auth::user();
         switch ($user->group->name) {
             case '运营':
             case '企业':
-                $menu = new Menu();
-                $schoolMenuId = $menu->getSchoolMenuId(session('menuId'));
-                $schoolId = $schoolMenuId ? $this::whereMenuId($schoolMenuId)->first()->id : 0;
-                unset($menu);
+                $schoolMenuId = Menu::schoolMenuId(session('menuId'));
+                $id = $schoolMenuId ? self::whereMenuId($schoolMenuId)->first()->id : 0;
                 break;
             case '学校':
-                $departmentId = $user->topDeptId($user);
-                $schoolId = School::whereDepartmentId($departmentId)->first()->id;
+                $departmentId = $user->topDeptId();
+                $id = School::whereDepartmentId($departmentId)->first()->id;
                 break;
             default:
-                $schoolId = $user->educator->school_id;
+                $id = $user->educator->school_id;
                 break;
         }
 
-        return $schoolId;
+        return $id;
 
     }
 

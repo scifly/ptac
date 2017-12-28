@@ -5,22 +5,18 @@ namespace App\Http\ViewComposers;
 use App\Helpers\ControllerTrait;
 use App\Models\ExamType;
 use App\Models\School;
-use App\Models\Squad;
 use App\Models\Subject;
 use Illuminate\Contracts\View\View;
 
 class ExamComposer {
+    
     use ControllerTrait;
-    protected $examtypes, $classes, $subjects, $school;
-
-    public function __construct(Squad $classes, School $school) {
-        $this->classes = $classes;
-        $this->school = $school;
-    }
 
     public function compose(View $view) {
-        $schoolId = $this->school->getSchoolId();
+        
+        $schoolId = School::id();
         $school = School::find($schoolId);
+        
         $examtypes = ExamType::whereSchoolId($schoolId)
             ->where('enabled', 1)
             ->pluck('name', 'id');
@@ -30,13 +26,14 @@ class ExamComposer {
         $subjects = Subject::whereSchoolId($schoolId)
             ->where('enabled', 1)
             ->pluck('name', 'id');
+        
         $view->with([
             'examtypes' => $examtypes,
             'classes' => $squads,
             'subjects' => $subjects,
             'uris' => $this->uris()
-
         ]);
+        
     }
 
 }

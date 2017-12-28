@@ -6,9 +6,11 @@ use App\Jobs\CreateWechatDepartment;
 use App\Models\Menu;
 use App\Models\School as School;
 use Exception;
+use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
+use Illuminate\View\View;
 use Throwable;
 
 /**
@@ -19,13 +21,9 @@ use Throwable;
  */
 class SchoolController extends Controller {
     
-    protected $school, $menu;
-    
-    function __construct(School $school, Menu $menu) {
+    function __construct() {
         
-        $this->middleware(['auth']);
-        $this->school = $school;
-        $this->menu = $menu;
+        $this->middleware(['auth', 'checkrole']);
         
     }
     
@@ -36,31 +34,13 @@ class SchoolController extends Controller {
      * @throws Throwable
      */
     public function index() {
+        
         if (Request::get('draw')) {
-            return response()->json($this->school->datatable());
+            return response()->json(School::datatable());
         }
     
         return $this->output();
     
-        // $user = Auth::user();
-        // $menuId = Request::input('menuId');
-        // if(!$menuId){
-        //     return $this->output();
-        // }
-        // $schoolMenuId = $this->menu->getSchoolMenuId($menuId);
-        // $show = true;
-        // if($user->group->name == '运营' || $user->group->name == '企业'){
-        //     if ($schoolMenuId){
-        //         $school = $this->school->where('menu_id', $schoolMenuId)->first();
-        //         return $this->output('App\Http\Controllers\SchoolController::show', ['school' => $school, 'show' => $show]);
-        //     } else {
-        //         return $this->output();
-        //     }
-        //  } else {
-        //     $school = $this->school->where('menu_id', $schoolMenuId)->first();
-        //     return $this->output('App\Http\Controllers\SchoolController::show', ['school' => $school, 'show' => $show]);
-        // }
-        
     }
     
     /**
@@ -83,8 +63,7 @@ class SchoolController extends Controller {
      */
     public function store(SchoolRequest $request) {
         
-        return $this->school->store($request->all(), true)
-            ? parent::succeed() : parent::fail();
+        return $this->result(School::store($request->all(), true));
         
     }
     
@@ -96,13 +75,12 @@ class SchoolController extends Controller {
      * @throws Throwable
      */
     public function show($id) {
-        $school = $this->school->find($id);
-        if (!$school) {
         
-            return parent::notFound();
-        }
+        $school = School::find($id);
+        if (!$school) { return $this->notFound(); }
     
         return $this->output(['school' => $school]);
+        
     }
     
     /**
@@ -113,10 +91,9 @@ class SchoolController extends Controller {
      * @throws Throwable
      */
     public function edit($id) {
-        $school = $this->school->find($id);
-        if (!$school) {
-            return parent::notFound();
-        }
+        
+        $school = School::find($id);
+        if (!$school) { return $this->notFound(); }
     
         return $this->output(['school' => $school]);
         
@@ -131,9 +108,12 @@ class SchoolController extends Controller {
      */
     public function update(SchoolRequest $request, $id) {
         
-        if (!$this->school->find($id)) { return parent::notFound(); }
-        return $this->school->modify($request->all(), $id, true)
-            ? parent::succeed() : parent::fail();
+        $school = School::find($id);
+        if (!$school) { return $this->notFound(); }
+        
+        return $this->result(
+            School::modify($request->all(), $id, true)
+        );
         
     }
     
@@ -146,42 +126,45 @@ class SchoolController extends Controller {
      */
     public function destroy($id) {
         
-        if (!$this->school->find($id)) {
-            return parent::notFound();
-        }
+        $school = School::find($id);
+        if (!$school) { return $this->notFound(); }
         
-        return $this->school->remove($id, true)
-            ? parent::succeed() : parent::fail();
+        return $this->result($school->remove($id, true));
         
     }
     
     /**
      * 学校设置详情
-     * @return \Illuminate\Contracts\View\Factory|JsonResponse|\Illuminate\View\View
+     * @return Factory|JsonResponse|View
      * @throws Throwable
      */
     public function showInfo(){
+        
         $menuId = Request::input('menuId');
-        $menu = $this->menu->find($menuId);
+        $menu = Menu::find($menuId);
         if (!$menu) {
-            $menuId = $this->menu->where('uri', 'schools/show')->first()->id;
+            $menuId = Menu::whereUri('schools/show')->first()->id;
             session(['menuId' => $menuId]);
         
             return view('home.home', [
-                'menu'    => $this->menu->getMenuHtml($this->menu->rootMenuId()),
+                'menu'    => Menu::menuHtml(Menu::rootMenuId()),
                 'content' => view('home.' . 'school'),
                 'js'      => 'js/home/page.js',
                 'user'    => Auth::user(),
             ]);
         }
-        $schoolMenuId = $this->menu->getSchoolMenuId($menuId);
-        $school = $this->school->where('menu_id', $schoolMenuId)->first();
+        $school = School::find(School::id())->first();
         session(['menuId' => $menuId]);
-            return response()->json([
-                'statusCode' => 200,
-                'html'       => view('school.show_info', ['school' => $school, 'js' => 'js/school/show_info.js', 'breadcrumb' => '学校设置'])->render(),
-                'uri'        => Request::path(),
-                'title'      => '学校设置',
-            ]);
+        
+        return response()->json([
+            'statusCode' => 200,
+            'html'       => view('school.show_info', [
+                            'school' => $school,
+                            'js' => 'js/school/show_info.js',
+                            'breadcrumb' => '学校设置'
+                        ])->render(),
+            'uri'        => Request::path(),
+            'title'      => '学校设置',
+        ]);
     }
 }

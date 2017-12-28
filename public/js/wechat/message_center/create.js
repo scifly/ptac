@@ -1,4 +1,79 @@
 var token = $('#csrf_token').attr('content');
+choose_item();
+
+$("#type").select({
+    title: "选择类型",
+
+    items: [
+        {
+            title: "文本",
+            value: "text",
+        },
+        {
+            title: "图文",
+            value: "news",
+        },
+        {
+            title: "图片",
+            value: "image",
+        },
+        {
+            title: "视频",
+            value: "video",
+        },
+        {
+            title: "短信",
+            value: "sms",
+        },
+
+    ]
+});
+
+$('#type').change(function(){
+    var type = $(this).attr('data-values');
+    $('.js-content-item input').val('');
+    $('#emojiInput').html('');
+    switch (type) {
+        case 'text':
+            //文本
+            $('.js-content-item').hide();
+            $('.js-content').show();
+            break;
+        case 'news':
+            //图文
+            $('.js-content-item').hide();
+            $('.js-title').show();
+            $('.js-content').show();
+            $('.js-upload-img').show();
+            $('.js-content_source_url').show();
+            $('.js-author').show();
+            $('.js-mpnews-cover').show();
+            break;
+        case 'image':
+            //图片
+            $('.js-content-item').hide();
+            $('.js-image').show();
+            break;
+        case 'voice':
+            //音频
+            break;
+        case 'video':
+            //视频
+            $('.js-content-item').hide();
+            $('.js-title').show();
+            $('.js-video').show();
+            $('.js-uploadvideo').show();
+            $('.js-description').show();
+            break;
+        case 'sms':
+            //短信
+            $('.js-content-item').hide();
+            $('.js-content').show();
+            break;
+    }
+
+});
+
 
 $(".ma_expect_date").datetimePicker();
 
@@ -18,46 +93,71 @@ $('.js-search-input').bind("input propertychange change",function(event){
         });
     }
 });
-
-$('.show-group').click(function(){
-    //展示下一个分组
-    alert(1);
-});
-
+show_group();
+function show_group() {
+    $('.show-group').click(function() {
+        //展示下一个分组
+        var id = $(this).prev().attr('data-uid');
+        var name = $(this).prev().find('span').html();
+        var choose_box = $('.air-choose-group');
+        var choose_dept = $('.js-choose-breadcrumb-ol');
+        var html = '>' +
+            '<li data-id= "'+ id +'" class="js-choose-breadcrumb-li headclick"><a>' + name + '</a></li>';
+        choose_dept.append(html);
+        $.ajax({
+            type: 'GET',
+            data: {},
+            url: '../public/message_dept/' + id,
+            success: function (result) {
+                if(result.statusCode === 200){
+                    choose_box.html(result.message);
+                    show_group();
+                    choose_item();
+                    remove_choose_result();
+                } else {
+                    choose_box.empty();
+                }
+            }
+        });
+    });
+}
 $('#choose-btn-ok').click(function(){
     var html = $('.js-choose-header-result').html();
     $('#homeWorkChoose').html(html);
     $.closePopup();
 });
 
-$(".choose-item-btn").change(function() {
-    var $this = $(this).parents('.weui-check__label');
-    var num = $this.attr('data-item');
-    var type = $this.attr('data-type');
-    if($(this).is(':checked')){
-        var imgsrc = $this.find('img').attr('src');
-        var uid = $this.attr('data-uid');
-        if(type == 'group'){
-            var html = '<a class="choose-results-item js-choose-results-item choose-item-type-group" id="list-'+num+'" data-list="'+num+'" data-uid="'+uid+'" data-type="'+type+'">'+
-                '<img src="'+imgsrc+'">'+
-                '</a>';
+function  choose_item() {
+    $(".choose-item-btn").change(function() {
+        var $this = $(this).parents('.weui-check__label');
+        var num = $this.attr('data-item');
+        var type = $this.attr('data-type');
+        if($(this).is(':checked')){
+            var imgsrc = $this.find('img').attr('src');
+            var uid = $this.attr('data-uid');
+            if(type == 'group'){
+                var html = '<a class="choose-results-item js-choose-results-item choose-item-type-group" id="group-'+num+'" data-list="'+num+'" data-uid="'+uid+'" data-type="'+type+'">'+
+                    '<img src="'+imgsrc+'">'+
+                    '</a>';
+            }else{
+                var html = '<a class="choose-results-item js-choose-results-item choose-item-type-person" id="person-'+num+'" data-list="'+num+'" data-uid="'+uid+'" data-type="'+type+'">'+
+                    '<img src="'+imgsrc+'" style="border-radius:50%">'+
+                    '</a>';
+            }
+
+            $('.js-choose-header-result').prepend(html);
+
+            remove_choose_result();
+            count_result();
         }else{
-            var html = '<a class="choose-results-item js-choose-results-item choose-item-type-person" id="list-'+num+'" data-list="'+num+'" data-uid="'+uid+'" data-type="'+type+'">'+
-                '<img src="'+imgsrc+'" style="border-radius:50%">'+
-                '</a>';
+            $('.js-choose-header-result').find('#'+type+'-'+num).remove();
+            $('.air-choose-group').removeClass('air-checkall');
+            $('#checkall').prop('checked',false);
+            count_result();
         }
+    });
+}
 
-        $('.js-choose-header-result').prepend(html);
-
-        remove_choose_result();
-        count_result();
-    }else{
-        $('.js-choose-header-result').find('#list-'+num).remove();
-        $('.air-choose-group').removeClass('air-checkall');
-        $('#checkall').prop('checked',false);
-        count_result();
-    }
-});
 
 $('#checkall').change(function() {
     if($(this).is(':checked')){
@@ -69,11 +169,11 @@ $('#checkall').change(function() {
             var uid = $(vo).attr('data-uid');
             var imgsrc = $(vo).find('img').attr('src');
             if(type == 'group'){
-                html += '<a class="choose-results-item js-choose-results-item choose-item-type-group" id="list-'+num+'" data-list="'+num+'" data-uid="'+uid+'" data-type="'+type+'">'+
+                html += '<a class="choose-results-item js-choose-results-item choose-item-type-group" id="group-'+num+'" data-list="'+num+'" data-uid="'+uid+'" data-type="'+type+'">'+
                     '<img src="'+imgsrc+'">'+
                     '</a>';
             }else{
-                html += '<a class="choose-results-item js-choose-results-item choose-item-type-person" id="list-'+num+'" data-list="'+num+'" data-uid="'+uid+'" data-type="'+type+'">'+
+                html += '<a class="choose-results-item js-choose-results-item choose-item-type-person" id="person-'+num+'" data-list="'+num+'" data-uid="'+uid+'" data-type="'+type+'">'+
                     '<img src="'+imgsrc+'" style="border-radius:50%">'+
                     '</a>';
             }
@@ -99,8 +199,9 @@ function count_result(){
 function remove_choose_result(){
     $('.js-choose-results-item').click(function(){
         var num = $(this).attr('data-list');
+        var type = $(this).attr('data-type');
         $(this).remove();
-        $('#item-'+num).find('.choose-item-btn').prop('checked',false);
+        $('#'+type+'-'+num).find('.choose-item-btn').prop('checked',false);
         count_result();
     });
 }
@@ -112,6 +213,29 @@ $(".weui-switch").change(function() {
     }
 });
 
+function upload_cover() {
+    var formData = new FormData();
+    formData.append('file', $('#pic-url')[0].files[0]);
+    formData.append('_token', token);
+    $.ajax({
+        url: '../public/message_upload',
+        type: 'POST',
+        cache: false,
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function (result) {
+            if (result.statusCode === 200) {
+                var html = '<img class="uploadimg-item pic-url" src="http://sandbox.dev:8080/ptac/'+result.message.path+'" id="pic-url" style="width: 100%" data-id="'+result.message.id+'">'+
+                            '<input id="pic-url" onchange="upload_cover()" class="weui-uploader__input pic-url" type="file" accept="image/*" multiple="">';
+
+                $('#cover').html(html);
+
+            }
+        }
+    });
+
+}
 $(function () {
     // 允许上传的图片类型
     var allowTypes = ['image/jpg', 'image/jpeg', 'image/png', 'image/gif'];
@@ -166,23 +290,9 @@ $(function () {
                     var base64 = canvas.toDataURL('image/png');
 
                     // console.log(base64);
-                    var html = '<img class="uploadimg-item" src="' + base64 + '" id="uploadimg-'+tmp+'">';
+                    var html = '<img class="uploadimg-item" src="' + base64 + '" id="uploadimg-'+tmp+'" style="width: 300px;height: 187px">';
                     $('#emojiInput').append(html);
                     // 然后假装在上传，可以post base64格式，也可以构造blob对象上传，也可以用微信JSSDK上传
-
-                    // function dataURItoBlob(dataURI) {
-                    //     var byteString = atob(dataURI.split(',')[1]);
-                    //     var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
-                    //     var ab = new ArrayBuffer(byteString.length);
-                    //     var ia = new Uint8Array(ab);
-                    //     for (var i = 0; i < byteString.length; i++) {
-                    //         ia[i] = byteString.charCodeAt(i);
-                    //     }
-                    //     return new Blob([ab], {type: mimeString});
-                    // }
-                    //
-                    // imgaeBlob = dataURItoBlob(base64);
-
                 };
                 img.src = e.target.result;
             };
@@ -201,6 +311,7 @@ $(function () {
             success: function (result) {
                 if (result.statusCode === 200) {
                     $('#uploadimg-'+tmp).attr('data-media-id',result.message.id);
+                    $('#uploadimg-'+tmp).attr('src', 'http://sandbox.dev:8080/ptac/' + result.message.path);
                 }
             }
         });
@@ -209,30 +320,37 @@ $(function () {
 
     $('.release').on('click', function () {
         var media_ids = [];
+        var pic_url =  $('.pic-url').attr('data-id');
         var title = $('#title').val();
         var content = $('#emojiInput').html();
         var time = $('#time').val();
-        var send = $('#homeWorkChoose').html();
+        var department_ids = [];
+        var user_ids = [];
+        var choose = $('#homeWorkChoose');
         $('.uploadimg-item').each(function () {
             media_ids.push($(this).attr('data-media-id'));
         });
-        // alert(title);
-        // alert(content);
-        // alert(time);
-        // alert(send);
-        // console.log(media_ids);
-
+        choose.find('a.choose-item-type-group').each(function () {
+           department_ids.push($(this).attr('data-uid'));
+        });
+        choose.find('a.choose-item-type-person').each(function () {
+            user_ids.push($(this).attr('data-uid'));
+        });
         //前端验证
+
         $.ajax({
             type: 'POST',
             data: {
                 '_token': token, 'title': title, 'content': content,
-                'time': time, 'send_ids': send, 'media_ids': media_ids
+                'time': time, 'department_ids': department_ids, 'user_ids': user_ids, 'media_ids': media_ids,
+                'pic_url':pic_url
             },
             url: '../public/message_store',
             success: function (result) {
                 if (result.statusCode === 200) {
-
+                    $.alert('消息发送成功！');
+                } else {
+                    $.alert('消息发送失败，请稍后重试！');
                 }
             }
         });

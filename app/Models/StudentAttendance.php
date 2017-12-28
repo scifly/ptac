@@ -48,7 +48,12 @@ class StudentAttendance extends Model {
     
     public function medias() { return $this->belongsTo('App\Models\Media'); }
     
-    public function datatable() {
+    /**
+     * 学生考勤记录列表
+     *
+     * @return array
+     */
+    static function datatable() {
         
         $columns = [
             ['db' => 'StudentAttendance.id', 'dt' => 0],
@@ -106,12 +111,9 @@ class StudentAttendance extends Model {
                 ],
             ],
         ];
-        $school = new School();
-        $schoolId = $school->getSchoolId();
-        $condition = 'AttendanceMachine.school_id = ' . $schoolId;
-        unset($school);
+        $condition = 'AttendanceMachine.school_id = ' . School::id();
         
-        return Datatable::simple($this, $columns, $joins, $condition);
+        return Datatable::simple(self::getModel(), $columns, $joins, $condition);
         
     }
     
@@ -121,24 +123,22 @@ class StudentAttendance extends Model {
      * @throws Exception
      * @throws \Throwable
      */
-    public function storeByFace($input) {
+    static function storeByFace($input) {
+        
         #事务处理
         try {
             DB::transaction(function () use ($input) {
                 //先处理照片
                 if ($input['img']) {
-                    $media = new Media();
-                    $mediaData = [
+                    $m = Media::create([
                         'path'          => $input['img'],
                         'remark'        => '考勤照片',
                         'media_type_id' => 1,
                         'enabled'       => 1,
-                    ];
-                    $m = $media->create($mediaData);
+                    ]);
                     $input['media_id'] = $m->id;
-                    unset($media);
                 }
-                $stuAttendData = [
+                StudentAttendance::create([
                     'student_id'            => $input['student_id'],
                     'punch_time'            => $input['punch_time'],
                     'inorout'               => $input['inorout'],
@@ -146,17 +146,14 @@ class StudentAttendance extends Model {
                     'media_id'              => $input['media_id'],
                     'longitude'             => $input['longitude'],
                     'latitude'              => $input['latitude'],
-                ];
-                $studentAttendance = new StudentAttendance();
-                $studentAttendance->create($stuAttendData);
-                unset($student);
-                unset($studentAttendance);
+                ]);
             });
         } catch (Exception $e) {
             throw $e;
         }
         
         return true;
+        
     }
     
 }

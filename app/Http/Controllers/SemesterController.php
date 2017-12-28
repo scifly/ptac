@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\SemesterRequest;
 use App\Models\Semester;
 use Exception;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 use Throwable;
@@ -16,12 +18,9 @@ use Throwable;
  */
 class SemesterController extends Controller {
     
-    protected $semester;
+    function __construct() {
     
-    function __construct(Semester $semester) {
-    
-        $this->middleware(['auth']);
-        $this->semester = $semester;
+        $this->middleware(['auth', 'checkrole']);
     
     }
     
@@ -32,8 +31,9 @@ class SemesterController extends Controller {
      * @throws Throwable
      */
     public function index() {
+        
         if (Request::get('draw')) {
-            return response()->json($this->semester->datatable());
+            return response()->json(Semester::datatable());
         }
         
         return $this->output();
@@ -47,6 +47,9 @@ class SemesterController extends Controller {
      * @throws Throwable
      */
     public function create() {
+        
+        $this->authorize('c', Semester::class);
+        
         return $this->output();
         
     }
@@ -55,10 +58,14 @@ class SemesterController extends Controller {
      * 保存学期
      *
      * @param SemesterRequest $request
-     * @return JsonResponse
+     * @return Semester|Model
+     * @throws AuthorizationException
      */
     public function store(SemesterRequest $request) {
-        return $this->semester->create($request->all()) ? $this->succeed() : $this->fail();
+        
+        $this->authorize('c', Semester::class);
+        
+        return Semester::create($request->all());
         
     }
    
@@ -70,10 +77,9 @@ class SemesterController extends Controller {
      * @throws Throwable
      */
     public function edit($id) {
-        $semester = $this->semester->find($id);
-        if (!$semester) {
-            return $this->notFound();
-        }
+        
+        $semester = Semester::find($id);
+        $this->authorize('rud', $semester);
         
         return $this->output(['semester' => $semester]);
         
@@ -85,14 +91,14 @@ class SemesterController extends Controller {
      * @param SemesterRequest $request
      * @param $id
      * @return JsonResponse
+     * @throws AuthorizationException
      */
     public function update(SemesterRequest $request, $id) {
-        $semester = $this->semester->find($id);
-        if (!$semester) {
-            return $this->notFound();
-        }
         
-        return $semester->update($request->all()) ? $this->succeed() : $this->fail();
+        $semester = Semester::find($id);
+        $this->authorize('rud', $semester);
+        
+        return $this->result($semester->update($request->all()));
         
     }
     
@@ -104,10 +110,11 @@ class SemesterController extends Controller {
      * @throws Exception
      */
     public function destroy($id) {
-        $semester = $this->semester->find($id);
-        if (!$semester) { return $this->notFound(); }
         
-        return $semester->delete() ? $this->succeed() : $this->fail();
+        $semester = Semester::find($id);
+        $this->authorize('rud', $semester);
+        
+        return $this->result($semester->delete());
         
     }
     

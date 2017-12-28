@@ -37,7 +37,7 @@ class SchoolType extends Model {
      */
     public function schools() { return $this->hasMany('App\Models\School'); }
 
-    public function datatable() {
+    static function datatable() {
 
         $columns = [
             ['db' => 'SchoolType.id', 'dt' => 0],
@@ -53,7 +53,7 @@ class SchoolType extends Model {
             ],
         ];
 
-        return Datatable::simple($this, $columns);
+        return Datatable::simple(self::getModel(), $columns);
 
     }
 

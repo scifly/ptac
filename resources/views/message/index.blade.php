@@ -28,6 +28,8 @@
                 <div class="tab-pane active" id="tab01">
                     @include('message.objects')
                     @include('message.imagetext')
+                    @include('message.upload_video')
+                    
                     <div class="form-horizontal" id="message">
                     {!! Form::open([
                         'method' => 'post',
@@ -82,11 +84,11 @@
                                                 <i class="fa fa-file-image-o"></i>&nbsp;图片
                                             </a>
                                         </li>
-                                        <li>
+                                        <!--<li>
                                             <a href="#content_voice" data-toggle="tab" class="tab">
                                                 <i class="fa fa-file-sound-o"></i>&nbsp;音频
                                             </a>
-                                        </li>
+                                        </li>-->
                                         <li>
                                             <a href="#content_video" data-toggle="tab" class="tab">
                                                 <i class="fa fa-file-movie-o"></i>&nbsp;视频
@@ -131,7 +133,7 @@
                                             </form>
 
                                         </div>
-                                        <div class="tab-pane" id="content_voice">
+                                        <!--<div class="tab-pane" id="content_voice">
                                             <form id="uploadVoiceForm" enctype="multipart/form-data">
 
                                             <button id="add-voice" class="btn btn-box-tool" type="button" style="margin-top: 3px;position: relative;border: 0;">
@@ -143,9 +145,13 @@
                                             </button>
                                             </form>
 
-                                        </div>
+                                        </div>-->
                                         <div class="tab-pane" id="content_video">
-                                            <form id="uploadVideoForm" enctype="multipart/form-data">
+                                        	<button id="add-video" class="btn btn-box-tool" type="button"
+                                                    style="margin-top: 3px;">
+                                                <i class="fa fa-plus text-blue">&nbsp;添加视频</i>
+                                            </button>
+                                            <!--<form id="uploadVideoForm" enctype="multipart/form-data">
 
                                                 <button id="add-video" class="btn btn-box-tool" type="button" style="margin-top: 3px;position: relative;border: 0;">
                                                     <i class="fa fa-plus text-blue">
@@ -154,13 +160,15 @@
                                                         <input type="file" id="file-video" onchange="uploadfile(this)" name="uploadFile" accept="video/mp4"  style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/>
                                                     </i>
                                                 </button>
-                                            </form>
+                                            </form>-->
                                         </div>
                                         <div class="tab-pane" id="content_sms">
+                                        	<input id="content-sms-maxlength" type="hidden" value="{{$messageMaxSize}}" >
                                             {!! Form::textarea('content', null, [
-                                                'id' => 'content',
+                                                'id' => 'contentSms',
                                                 'class' => 'form-control',
                                             ]) !!}
+                                            <span id="content-sms-length" style="color: #777;margin-top: 10px;display: inline-block;"></span>
                                         </div>
                                     </div>
                                 </div>
@@ -170,9 +178,9 @@
                             <label for="" class="col-sm-3"></label>
                             <div class="col-sm-6">
                                 <input type="button" class="btn btn-default" id="send" value="发送">
-                                <input type="button" class="btn btn-default" id="time-send" value="定时发送">
-                                <input type="button" class="btn btn-default" id="draft" value="存为草稿">
-                                <input type="button" class="btn btn-default" id="preview" value="预览">
+                                {{--<input type="button" class="btn btn-default" id="time-send" value="定时发送">--}}
+                                {{--<input type="button" class="btn btn-default" id="draft" value="存为草稿">--}}
+                                {{--<input type="button" class="btn btn-default" id="preview" value="预览">--}}
                             </div>
                         </div>
                         {!! Form::close() !!}

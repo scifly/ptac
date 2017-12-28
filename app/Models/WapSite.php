@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Throwable;
 
 /**
  * 网站
@@ -39,7 +40,6 @@ use Illuminate\Support\Facades\Storage;
  */
 class WapSite extends Model {
 
-    //
     protected $fillable = [
         'id', 'school_id', 'site_title',
         'media_ids', 'created_at', 'updated_at',
@@ -60,79 +60,13 @@ class WapSite extends Model {
      */
     public function school() { return $this->belongsTo('App\Models\School'); }
     
-    /**
-     * @param WapSiteRequest $request
-     * @return bool
-     * @throws Exception
-     * @throws \Throwable
-     */
-    public function store(WapSiteRequest $request) {
-        
-        try {
-            DB::transaction(function () use ($request) {
-                //删除原有的图片
-                $this->removeMedias($request);
-                $this->create($request->all());
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
-
-    }
     
     /**
-     * @param $request
-     * @throws Exception
-     */
-    private function removeMedias(WapSiteRequest $request) {
-        
-        //删除原有的图片
-        $mediaIds = $request->input('del_ids');
-        if ($mediaIds) {
-            $medias = Media::whereIn('id', $mediaIds)->get(['id', 'path']);
-            foreach ($medias as $media) {
-                $paths = explode("/", $media->path);
-                Storage::disk('public')->delete($paths[5]);
-            }
-            try {
-                Media::whereIn('id', $mediaIds)->delete();
-            } catch (Exception $e) {
-                throw $e;
-            }
-        }
-        
-    }
-    
-    /**
-     * 更新微网站
+     * 微网站列表
      *
-     * @param WapSiteRequest $request
-     * @param $id
-     * @return bool|mixed
-     * @throws Exception
-     * @throws \Throwable
+     * @return array
      */
-    public function modify(WapSiteRequest $request, $id) {
-        
-        $wapSite = $this->find($id);
-        if (!$wapSite) { return false; }
-        try {
-            DB::transaction(function () use ($request, $id) {
-                $this->removeMedias($request);
-                // dd($request->except('_method', '_token'));
-                return $this->where('id', $id)->update($request->except('_method', '_token', 'del_ids'));
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
-        
-    }
-
-    public function datatable() {
+    static function datatable() {
 
         $columns = [
             ['db' => 'WapSite.id', 'dt' => 0],
@@ -157,12 +91,80 @@ class WapSite extends Model {
                 ],
             ],
         ];
-        $school = new School();
-        $schoolId = $school->getSchoolId();
-        $condition = 'WapSite.school_id = ' . $schoolId;
-        unset($school);
+        $condition = 'WapSite.school_id = ' . School::id();
     
-        return Datatable::simple($this, $columns, $joins, $condition);
+        return Datatable::simple(self::getModel(), $columns, $joins, $condition);
+        
+    }
+    
+    /**
+     * @param WapSiteRequest $request
+     * @return bool
+     * @throws Exception
+     * @throws Throwable
+     */
+    static function store(WapSiteRequest $request) {
+        
+        try {
+            DB::transaction(function () use ($request) {
+                //删除原有的图片
+                self::removeMedias($request);
+                self::create($request->all());
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+        return true;
+        
+    }
+    
+    /**
+     * 更新微网站
+     *
+     * @param WapSiteRequest $request
+     * @param $id
+     * @return bool|mixed
+     * @throws Exception
+     * @throws Throwable
+     */
+    static function modify(WapSiteRequest $request, $id) {
+        
+        $wapSite = self::find($id);
+        if (!$wapSite) { return false; }
+        try {
+            DB::transaction(function () use ($request, $id) {
+                self::removeMedias($request);
+                return self::find($id)->update($request->except('_method', '_token', 'del_ids'));
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+        return true;
+        
+    }
+    
+    /**
+     * @param $request
+     * @throws Exception
+     */
+    private static function removeMedias(WapSiteRequest $request) {
+        
+        //删除原有的图片
+        $mediaIds = $request->input('del_ids');
+        if ($mediaIds) {
+            $medias = Media::whereIn('id', $mediaIds)->get(['id', 'path']);
+            foreach ($medias as $media) {
+                $paths = explode("/", $media->path);
+                Storage::disk('public')->delete($paths[5]);
+            }
+            try {
+                Media::whereIn('id', $mediaIds)->delete();
+            } catch (Exception $e) {
+                throw $e;
+            }
+        }
         
     }
     

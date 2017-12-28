@@ -62,13 +62,13 @@ class WapSiteModule extends Model {
      * @throws Exception
      * @throws \Throwable
      */
-    public function store(WapSiteModuleRequest $request) {
+    static function store(WapSiteModuleRequest $request) {
         
         try {
+            //删除原有的图片
             DB::transaction(function () use ($request) {
-                //删除原有的图片
-                $this->removeMedias($request);
-                $this->create($request->all());
+                self::removeMedias($request);
+                self::create($request->all());
             });
         } catch (Exception $e) {
             throw $e;
@@ -82,7 +82,7 @@ class WapSiteModule extends Model {
      * @param $request
      * @throws Exception
      */
-    private function removeMedias(WapSiteModuleRequest $request) {
+    private static function removeMedias(WapSiteModuleRequest $request) {
         
         //删除原有的图片
         $mediaIds = $request->input('del_id');
@@ -108,14 +108,14 @@ class WapSiteModule extends Model {
      * @throws Exception
      * @throws \Throwable
      */
-    public function modify(WapSiteModuleRequest $request, $id) {
+    static function modify(WapSiteModuleRequest $request, $id) {
         
-        $wapSite = $this->find($id);
+        $wapSite = self::find($id);
         if (!$wapSite) { return false; }
         try {
             DB::transaction(function () use ($request, $id) {
-                $this->removeMedias($request);
-                return $this->where('id', $id)->update($request->except('_method', '_token', 'del_id'));
+                self::removeMedias($request);
+                return self::find($id)->update($request->except('_method', '_token', 'del_id'));
             });
         } catch (Exception $e) {
             throw $e;
@@ -128,7 +128,7 @@ class WapSiteModule extends Model {
     /**
      * @return array
      */
-    public function datatable() {
+    static function datatable() {
 
         $columns = [
             ['db' => 'WapSiteModule.id', 'dt' => 0],
@@ -153,12 +153,9 @@ class WapSiteModule extends Model {
                 ],
             ],
         ];
-        $school = new School();
-        $schoolId = $school->getSchoolId();
-        $condition = 'WapSite.school_id = ' . $schoolId;
-        unset($school);
+        $condition = 'WapSite.school_id = ' . School::id();
         
-        return Datatable::simple($this, $columns, $joins, $condition);
+        return Datatable::simple(self::getModel(), $columns, $joins, $condition);
         
     }
 

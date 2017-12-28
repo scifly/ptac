@@ -16,12 +16,9 @@ use Throwable;
  */
 class AlertTypeController extends Controller {
     
-    protected $alertType;
-    
-    function __construct(AlertType $alertType) {
+    function __construct() {
     
         $this->middleware(['auth']);
-        $this->alertType = $alertType;
         
     }
     
@@ -34,7 +31,7 @@ class AlertTypeController extends Controller {
     public function index() {
         
         if (Request::get('draw')) {
-            return response()->json($this->alertType->datatable());
+            return response()->json(AlertType::datatable());
         }
         
         return $this->output();
@@ -61,7 +58,7 @@ class AlertTypeController extends Controller {
      */
     public function store(AlertTypeRequest $request) {
         
-        return $this->alertType->create($request->all())
+        return AlertType::create($request->all())
             ? $this->succeed() : $this->fail();
         
     }
@@ -75,7 +72,7 @@ class AlertTypeController extends Controller {
      */
     public function edit($id) {
         
-        $alertType = $this->alertType->find($id);
+        $alertType = AlertType::find($id);
         if (!$alertType) { return $this->notFound(); }
         
         return $this->output(['alertType' => $alertType]);
@@ -91,10 +88,11 @@ class AlertTypeController extends Controller {
      */
     public function update(AlertTypeRequest $request, $id) {
         
-        $alertType = $this->alertType->find($id);
+        $alertType = AlertType::find($id);
         if (!$alertType) { return $this->notFound(); }
         
-        return $alertType->update($request->all());
+        return $alertType->update($request->all())
+            ? $this->succeed() : $this->fail();
         
     }
     
@@ -107,10 +105,11 @@ class AlertTypeController extends Controller {
      */
     public function destroy($id) {
         
-        $alertType = $this->alertType->find($id);
+        $alertType = AlertType::find($id);
         if (!$alertType) { return $this->notFound(); }
         
-        return $alertType->delete() ? $this->succeed() : $this->fail();
+        return $alertType->delete()
+            ? $this->succeed() : $this->fail();
         
     }
     

@@ -2,7 +2,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\TabRequest;
-use App\Models\Action;
 use App\Models\Menu;
 use App\Models\Tab;
 use Exception;
@@ -18,14 +17,9 @@ use Throwable;
  */
 class TabController extends Controller {
     
-    protected $tab, $action, $menu;
-    
-    function __construct(Tab $tab, Menu $menu, Action $action) {
+    function __construct() {
     
         $this->middleware(['auth']);
-        $this->tab = $tab;
-        $this->menu = $menu;
-        $this->action = $action;
         
     }
     
@@ -38,11 +32,10 @@ class TabController extends Controller {
      */
     public function index() {
         
-        
         if (Request::get('draw')) {
-            return response()->json($this->tab->datatable());
+            return response()->json(Tab::datatable());
         }
-        if (!$this->tab->scan()) { return parent::notFound(); }
+        if (!Tab::scan()) { return $this->notFound(); }
         
         return $this->output();
         
@@ -56,9 +49,7 @@ class TabController extends Controller {
      */
     public function create() {
         
-        return $this->output([
-            'menus' => $this->menu->leaves(1),
-        ]);
+        return $this->output(['menus' => Menu::leaves(1)]);
         
     }
     
@@ -68,26 +59,12 @@ class TabController extends Controller {
      * @param TabRequest $request
      * @return JsonResponse
      * @throws Exception
-     */
-    public function store(TabRequest $request) {
-        return $this->tab->store($request->all())
-            ? parent::succeed() : parent::fail();
-        
-    }
-    
-    /**
-     * 卡片详情
-     *
-     * @param $id
-     * @return bool|JsonResponse
      * @throws Throwable
      */
-    public function show($id) {
+    public function store(TabRequest $request) {
         
-        $tab = $this->tab->find($id);
-        if (!$tab) { return parent::notFound(); };
-        
-        return $this->output(['tab' => $tab]);
+        return Tab::store($request->all())
+            ? $this->succeed() : $this->fail();
         
     }
     
@@ -100,8 +77,8 @@ class TabController extends Controller {
      */
     public function edit($id) {
         
-        $tab = $this->tab->find($id);
-        if (!$tab) { return parent::notFound(); }
+        $tab = Tab::find($id);
+        if (!$tab) { return $this->notFound(); }
         $tabMenus = $tab->menus;
         $selectedMenus = [];
         foreach ($tabMenus as $menu) {
@@ -109,7 +86,7 @@ class TabController extends Controller {
         }
         return $this->output([
             'tab'           => $tab,
-            'menus'         => $this->menu->leaves(1),
+            'menus'         => Menu::leaves(1),
             'selectedMenus' => $selectedMenus,
         ]);
         
@@ -122,14 +99,15 @@ class TabController extends Controller {
      * @param $id
      * @return JsonResponse
      * @throws Exception
+     * @throws Throwable
      */
     public function update(TabRequest $request, $id) {
         
-        $tab = $this->tab->find($id);
-        if (!$tab) { return parent::notFound(); }
+        $tab = Tab::find($id);
+        if (!$tab) { return $this->notFound(); }
         
-        return $this->tab->modify($request->all(), $id)
-            ? parent::succeed() : parent::fail();
+        return Tab::modify($request->all(), $id)
+            ? $this->succeed() : $this->fail();
         
     }
     
@@ -139,15 +117,14 @@ class TabController extends Controller {
      * @param $id
      * @return JsonResponse
      * @throws Exception
+     * @throws Throwable
      */
     public function destroy($id) {
         
-        $tab = $this->tab->find($id);
-        if (!$tab) { return parent::notFound(); }
+        $tab = Tab::find($id);
+        if (!$tab) { return $this->notFound(); }
         
-        return $this->tab->remove($id)
-            ? parent::succeed() : parent::fail();
-        
+        return Tab::remove($id) ? $this->succeed() : $this->fail(); 
     }
     
 }

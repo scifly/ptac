@@ -58,9 +58,9 @@ class ExamType extends Model {
      * @param array $data
      * @return bool
      */
-    public function store(array $data) {
+    static function store(array $data) {
         
-        $examType = $this->create($data);
+        $examType = self::create($data);
 
         return $examType ? true : false;
 
@@ -73,9 +73,9 @@ class ExamType extends Model {
      * @param $id
      * @return bool
      */
-    public function modify(array $data, $id) {
+    static function modify(array $data, $id) {
         
-        $examType = $this->find($id);
+        $examType = self::find($id);
         if (!$examType) { return false; }
 
         return $examType->update($data) ? true : false;
@@ -89,16 +89,21 @@ class ExamType extends Model {
      * @return bool
      * @throws Exception
      */
-    public function remove($id) {
+    static function remove($id) {
         
-        $examType = $this->find($id);
+        $examType = self::find($id);
         if (!$examType) { return false; }
 
-        return $this->removable($examType) ? $examType->delete() : false;
+        return self::removable($examType) ? $examType->delete() : false;
 
     }
-
-    public function datatable() {
+    
+    /**
+     * 考试类型列表
+     *
+     * @return array
+     */
+    static function datatable() {
         
         $columns = [
             ['db' => 'ExamType.id', 'dt' => 0],
@@ -124,10 +129,10 @@ class ExamType extends Model {
                 ],
             ],
         ];
-        $school = new School();
-        $schoolId = $school->getSchoolId();
-        $condition = 'ExamType.school_id = ' . $schoolId;
-        return Datatable::simple($this, $columns, $joins, $condition);
+        $condition = 'ExamType.school_id = ' . School::id();
+        
+        return Datatable::simple(self::getModel(), $columns, $joins, $condition);
+        
     }
 
 }

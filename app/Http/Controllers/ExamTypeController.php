@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ExamTypeRequest;
 use App\Models\ExamType;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 use Throwable;
@@ -15,12 +16,9 @@ use Throwable;
  */
 class ExamTypeController extends Controller {
     
-    protected $examType;
+    function __construct() {
     
-    function __construct(ExamType $examType) {
-    
-        $this->middleware(['auth']);
-        $this->examType = $examType;
+        $this->middleware(['auth', 'checkrole']);
         
     }
     
@@ -33,7 +31,7 @@ class ExamTypeController extends Controller {
     public function index() {
         
         if (Request::get('draw')) {
-            return response()->json($this->examType->datatable());
+            return response()->json(ExamType::datatable());
         }
         
         return $this->output();
@@ -48,6 +46,8 @@ class ExamTypeController extends Controller {
      */
     public function create() {
         
+        $this->authorize('c', ExamType::class);
+        
         return $this->output();
         
     }
@@ -57,11 +57,13 @@ class ExamTypeController extends Controller {
      *
      * @param ExamTypeRequest $request
      * @return JsonResponse
+     * @throws AuthorizationException
      */
     public function store(ExamTypeRequest $request) {
      
-        return $this->examType->store($request->all())
-            ? $this->succeed() : $this->fail();
+        $this->authorize('c', ExamType::class);
+        
+        return $this->result(ExamType::store($request->all()));
         
     }
     
@@ -74,12 +76,10 @@ class ExamTypeController extends Controller {
      */
     public function edit($id) {
         
-        $examType = $this->examType->find($id);
-        if (!$examType) { return $this->notFound(); }
+        $examType = ExamType::find($id);
+        $this->authorize('rud', $examType);
         
-        return $this->output([
-            'examType' => $examType
-        ]);
+        return $this->output(['examType' => $examType]);
         
     }
     
@@ -89,14 +89,14 @@ class ExamTypeController extends Controller {
      * @param ExamTypeRequest $request
      * @param $id
      * @return JsonResponse
+     * @throws AuthorizationException
      */
     public function update(ExamTypeRequest $request, $id) {
         
-        $examType = $this->examType->find($id);
-        if (!$examType) { return $this->notFound(); }
+        $examType = ExamType::find($id);
+        $this->authorize('rud', $examType);
         
-        return $examType->modify($request->all(), $id)
-            ? $this->succeed() : $this->fail();
+        return $this->result($examType->modify($request->all(), $id));
         
     }
     
@@ -109,11 +109,10 @@ class ExamTypeController extends Controller {
      */
     public function destroy($id) {
         
-        $examType = $this->examType->find($id);
-        if (!$examType) { return $this->notFound(); }
+        $examType = ExamType::find($id);
+        $this->authorize('rud', $examType);
         
-        return $examType->remove($id)
-            ? $this->succeed() : $this->fail();
+        return $this->result($examType->remove($id));
         
     }
     

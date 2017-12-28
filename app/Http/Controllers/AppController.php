@@ -14,12 +14,9 @@ use Illuminate\Support\Facades\Request;
  */
 class AppController extends Controller {
     
-    protected $app;
-    
-    function __construct(App $app) {
+    function __construct() {
     
         $this->middleware(['auth']);
-        $this->app = $app;
 
     }
     
@@ -32,7 +29,7 @@ class AppController extends Controller {
     public function index() {
 
         if (Request::method() == 'POST') {
-            return $this->app->store();
+            return App::store();
         }
         
         return $this->output();
@@ -59,24 +56,7 @@ class AppController extends Controller {
      */
     public function store(AppRequest $request) {
         
-        return $this->app->create($request->all())
-            ? $this->succeed() : $this->fail();
-        
-    }
-    
-    /**
-     * 微信应用详情
-     *
-     * @param $id
-     * @return bool|JsonResponse
-     * @throws \Throwable
-     */
-    public function show($id) {
-        
-        $app = $this->app->find($id);
-        return $app
-            ? $this->output(['app' => $app])
-            : $this->notFound();
+        return $this->result(App::create($request->all()));
         
     }
     
@@ -89,10 +69,8 @@ class AppController extends Controller {
      */
     public function edit($id) {
         
-        $app = $this->app->find($id);
-        return $app
-            ? $this->output(['app' => $app])
-            : $this->notFound();
+        $app = App::find($id);
+        return $app ? $this->output(['app' => $app]) : $this->notFound();
         
     }
     
@@ -105,7 +83,7 @@ class AppController extends Controller {
      */
     public function update(AppRequest $request, $id) {
         
-        $app = $this->app->find($id);
+        $app = App::find($id);
         if (!$app) { return $this->notFound(); }
         
         return $app->update($request->all())
@@ -122,7 +100,7 @@ class AppController extends Controller {
      */
     public function menu($id) {
         
-        $app = $this->app->find($id);
+        $app = App::find($id);
         if (!$app) { return $this->notFound(); }
         // $accessToken = Wechat::getAccessToken($app->corp_id, $app->secret, $app->agentid);
         //
@@ -184,7 +162,6 @@ class AppController extends Controller {
                 ]
             }
         ]";
-        // $menus = $this->app->object_to_array($menu->button);
         return $this->output(['menu' => json_decode($menu)]);
 
     }

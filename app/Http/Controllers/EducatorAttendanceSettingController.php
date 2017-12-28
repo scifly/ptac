@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\EducatorAttendanceSettingRequest;
 use App\Models\EducatorAttendanceSetting;
 use Exception;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 
@@ -15,12 +16,9 @@ use Illuminate\Support\Facades\Request;
  */
 class EducatorAttendanceSettingController extends Controller {
     
-    protected $eas;
+    function __construct() {
     
-    function __construct(EducatorAttendanceSetting $eas) {
-    
-        $this->middleware(['auth']);
-        $this->eas = $eas;
+        $this->middleware(['auth', 'checkrole']);
         
     }
     
@@ -33,7 +31,7 @@ class EducatorAttendanceSettingController extends Controller {
     public function index() {
         
         if (Request::get('draw')) {
-            return response()->json($this->eas->datatable());
+            return response()->json(EducatorAttendanceSetting::datatable());
         }
         
         return $this->output();
@@ -47,6 +45,8 @@ class EducatorAttendanceSettingController extends Controller {
      */
     public function create() {
         
+        $this->authorize('c', EducatorAttendanceSetting::class);
+        
         return $this->output();
         
     }
@@ -56,10 +56,13 @@ class EducatorAttendanceSettingController extends Controller {
      *
      * @param EducatorAttendanceSettingRequest $request
      * @return JsonResponse
+     * @throws AuthorizationException
      */
     public function store(EducatorAttendanceSettingRequest $request) {
-        return $this->eas->create($request->all())
-            ? $this->succeed() : $this->fail();
+        
+        $this->authorize('c', EducatorAttendanceSetting::class);
+        
+        return $this->result(EducatorAttendanceSetting::create($request->all()));
         
     }
     
@@ -72,10 +75,8 @@ class EducatorAttendanceSettingController extends Controller {
      */
     public function show($id) {
         
-        $eas = $this->eas->find($id);
-        if (!$eas) {
-            return $this->notFound();
-        }
+        $eas = EducatorAttendanceSetting::find($id);
+        $this->authorize('rud', $eas);
         
         return $this->output(['eas' => $eas]);
         
@@ -89,10 +90,9 @@ class EducatorAttendanceSettingController extends Controller {
      */
     public function edit($id) {
         
-        $eas = $this->eas->find($id);
-        if (!$eas) {
-            return $this->notFound();
-        }
+        $eas = EducatorAttendanceSetting::find($id);
+        $this->authorize('rud', $eas);
+        
         return $this->output(['eas' => $eas]);
     }
     
@@ -102,16 +102,14 @@ class EducatorAttendanceSettingController extends Controller {
      * @param EducatorAttendanceSettingRequest $request
      * @param $id
      * @return JsonResponse
+     * @throws AuthorizationException
      */
     public function update(EducatorAttendanceSettingRequest $request, $id) {
         
-        $eas = $this->eas->find($id);
-        if (!$eas) {
-            return $this->notFound();
-        }
+        $eas = EducatorAttendanceSetting::find($id);
+        $this->authorize('rud', $eas);
         
-        return $eas->update($request->all())
-            ? $this->succeed() : $this->fail();
+        return $this->result($eas->update($request->all()));
         
     }
     
@@ -124,10 +122,10 @@ class EducatorAttendanceSettingController extends Controller {
      */
     public function destroy($id) {
         
-        $eas = $this->eas->find($id);
-        if (!$eas) { return $this->notFound(); }
+        $eas = EducatorAttendanceSetting::find($id);
+        $this->authorize('rud', $eas);
         
-        return $eas->delete() ? $this->succeed() : $this->fail();
+        return $this->result($eas->delete());
         
     }
     

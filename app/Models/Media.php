@@ -80,11 +80,11 @@ class Media extends Model {
      * @param array $ids
      * @return array
      */
-    public function medias(array $ids) {
+    static function medias(array $ids) {
 
         $medias = [];
-        foreach ($ids as $mediaId) {
-            $medias[] = $this->find($mediaId);
+        foreach ($ids as $id) {
+            $medias[] = self::find($id);
         }
 
         return $medias;
@@ -97,9 +97,9 @@ class Media extends Model {
      * @param array $data
      * @return bool
      */
-    public function store(array $data) {
+    static function store(array $data) {
 
-        $media = $this->create($data);
+        $media = self::create($data);
 
         return $media ? true : false;
 
@@ -112,12 +112,10 @@ class Media extends Model {
      * @param $id
      * @return bool
      */
-    public function modify(array $data, $id) {
+    static function modify(array $data, $id) {
 
-        $media = $this->find($id);
-        if (!$media) {
-            return false;
-        }
+        $media = self::find($id);
+        if (!$media) { return false; }
 
         return $media->update($data) ? true : false;
 
@@ -130,9 +128,9 @@ class Media extends Model {
      * @return bool|null
      * @throws Exception
      */
-    public function remove($id) {
+    static function remove($id) {
 
-        $media = $this->find($id);
+        $media = self::find($id);
         if (!$media) { return false; }
         
         return $media->removable($media) ? $media->delete() : false;

@@ -74,7 +74,7 @@
                                                             <div class="titleinfo-head">
                                                                 <div class="titleinfo-head-left fl">
                                                                     <div class="title ml12">{{$s->title}}</div>
-                                                                    <div class="title-info ml12">{{$s->user->realname}}等</div>
+                                                                    {{--<div class="title-info ml12">{{$s->user->realname}}等</div>--}}
                                                                 </div>
                                                                 <span class="worktime">
 														{{substr($s->created_at,0,-8)}}
@@ -138,7 +138,7 @@
                                                             <div class="titleinfo-head">
                                                                 <div class="titleinfo-head-left fl">
                                                                     <div class="title ml12">{{$r->title}}</div>
-                                                                    <div class="title-info ml12">{{$r->user->realname}}</div>
+                                                                    {{--<div class="title-info ml12">{{$r->user->realname}}</div>--}}
                                                                 </div>
                                                                 <span class="worktime">{{substr($r->created_at,0,-8)}}</span>
                                                             </div>

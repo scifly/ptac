@@ -4,11 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CustodianRequest;
 use App\Models\Custodian;
-use App\Models\CustodianStudent;
 use App\Models\Department;
-use App\Models\DepartmentUser;
-use App\Models\Group;
-use App\Models\Student;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
@@ -23,21 +19,10 @@ use Throwable;
  */
 class CustodianController extends Controller {
 
-    protected $custodian, $department, $group, $departmentUser, $student, $custodianStudent;
 
-    function __construct(
-        Custodian $custodian, Department $department, Group $group,
-        DepartmentUser $departmentUser, Student $student,
-        CustodianStudent $custodianStudent
-    ) {
+    function __construct() {
     
-        $this->middleware(['auth']);
-        $this->custodian = $custodian;
-        $this->department = $department;
-        $this->group = $group;
-        $this->departmentUser = $departmentUser;
-        $this->student = $student;
-        $this->custodianStudent = $custodianStudent;
+        $this->middleware(['auth', 'checkrole']);
 
     }
     
@@ -50,7 +35,9 @@ class CustodianController extends Controller {
     public function index() {
         
         if (Request::get('draw')) {
-            return response()->json($this->custodian->datatable());
+            return response()->json(
+                Custodian::datatable()
+            );
         }
 
         return $this->output();
@@ -66,14 +53,13 @@ class CustodianController extends Controller {
     public function create() {
 
         if (Request::method() === 'POST') {
-            
             $field = Request::query('field');
             $id = Request::query('id');
-            $this->result['html'] = $this->custodian->getFieldList($field, $id);
+            $this->result['html'] = Custodian::getFieldList($field, $id);
             return response()->json($this->result);
-    
         }
-
+        // $this->authorize('c', Custodian::class);
+        
         return $this->output();
 
     }
@@ -84,11 +70,13 @@ class CustodianController extends Controller {
      * @param CustodianRequest $request
      * @return JsonResponse
      * @throws Exception
+     * @throws Throwable
      */
     public function store(CustodianRequest $request) {
 
-        return $this->custodian->store($request)
-            ? $this->succeed() : $this->fail();
+        // $this->authorize('c', Custodian::class);
+        
+        return $this->result(Custodian::store($request));
 
     }
     
@@ -100,11 +88,12 @@ class CustodianController extends Controller {
      * @throws Throwable
      */
     public function show($id){
-        $custodian = $this->custodian->find($id);
-        if (!$custodian) { return $this->notFound(); }
-        return $this->output([
-            'custodian'  => $custodian,
-        ]);
+        
+        $custodian = Custodian::find($id);
+        // $this->authorize('rud', $custodian);
+        
+        return $this->output(['custodian'  => $custodian]);
+        
     }
     
     /**
@@ -117,16 +106,16 @@ class CustodianController extends Controller {
     public function edit($id) {
 
         if (Request::method() === 'POST') {
-            return response()->json($this->department->tree());
+            return response()->json(Department::tree());
         }
-        $custodian = $this->custodian->find($id);
-        if (!$custodian) { return $this->notFound(); }
+        $custodian = Custodian::find($id);
+        // $this->authorize('rud', $custodian);
         $pupils = $custodian->custodianStudents;
 
         return $this->output([
-            'mobiles'               => $custodian->user->mobiles,
-            'custodian'             => $custodian,
-            'pupils'                => $pupils,
+            'mobiles'   => $custodian->user->mobiles,
+            'custodian' => $custodian,
+            'pupils'    => $pupils,
         ]);
 
     }
@@ -137,11 +126,11 @@ class CustodianController extends Controller {
      * @param $id
      * @return JsonResponse
      * @throws Exception
+     * @throws Throwable
      */
     public function update(CustodianRequest $request, $id) {
 
-        return $this->custodian->modify($request, $id)
-            ? $this->succeed() : $this->fail();
+        return $this->result(Custodian::modify($request, $id));
 
     }
     
@@ -151,20 +140,22 @@ class CustodianController extends Controller {
      * @param $id
      * @return JsonResponse
      * @throws Exception
+     * @throws Throwable
      */
     public function destroy($id) {
         
-        return $this->custodian->remove($id)
-            ? $this->succeed() : $this->fail();
+        return $this->result(Custodian::remove($id));
         
     }
     
     /**
      * 导出监护人
+     *
      * @return void
      */
     public function export() {
-        $data = $this->custodian->export();
+        
+        $data = Custodian::export();
         /** @noinspection PhpMethodParametersCountMismatchInspection */
         /** @noinspection PhpUndefinedMethodInspection */
         Excel::create(iconv('UTF-8', 'GBK', '监护人列表'), function ($excel) use ($data) {
@@ -183,7 +174,8 @@ class CustodianController extends Controller {
                 ));
                 
             });
-            
         },'UTF-8')->export('xls');
+        
     }
+    
 }

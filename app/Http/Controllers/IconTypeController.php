@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\IconTypeRequest;
+use App\Models\Icon;
 use App\Models\IconType;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -16,12 +17,9 @@ use Throwable;
  */
 class IconTypeController extends Controller {
     
-    protected $iconType;
-    
-    function __construct(IconType $iconType) {
+    function __construct() {
     
         $this->middleware(['auth']);
-        $this->iconType = $iconType;
     
     }
     
@@ -34,7 +32,7 @@ class IconTypeController extends Controller {
     public function index() {
         
         if (Request::get('draw')) {
-            return response()->json($this->iconType->datatable());
+            return response()->json(IconType::datatable());
         }
         
         return $this->output();
@@ -61,8 +59,7 @@ class IconTypeController extends Controller {
      */
     public function store(IconTypeRequest $request) {
         
-        return $this->iconType->store($request->all())
-            ? $this->succeed() : $this->fail();
+        return $this->result(IconType::store($request->all()));
         
     }
     
@@ -75,7 +72,7 @@ class IconTypeController extends Controller {
      */
     public function edit($id) {
         
-        $iconType = $this->iconType->find($id);
+        $iconType = IconType::find($id);
         if (!$iconType) { return $this->notFound(); }
         
         return $this->output(['iconType' => $iconType]);
@@ -91,11 +88,10 @@ class IconTypeController extends Controller {
      */
     public function update(IconTypeRequest $request, $id) {
         
-        $iconType = $this->iconType->find($id);
+        $iconType = IconType::find($id);
         if (!$iconType) { return $this->notFound(); }
         
-        return $iconType->modify($request->all(), $id)
-            ? $this->succeed() : $this->fail();
+        return $this->result($iconType->modify($request->all(), $id));
         
     }
     
@@ -108,10 +104,10 @@ class IconTypeController extends Controller {
      */
     public function destroy($id) {
         
-        $iconType = $this->iconType->find($id);
+        $iconType = IconType::find($id);
         if (!$iconType) { return $this->notFound(); }
         
-        return $iconType->remove($id) ? $this->succeed() : $this->fail();
+        return $this->result($iconType->remove($id));
         
     }
     

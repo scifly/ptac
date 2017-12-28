@@ -41,11 +41,12 @@ class MenuTab extends Model {
      * @throws Exception
      * @throws \Throwable
      */
-    public function storeByMenuId($menuId, array $tabIds) {
+    static function storeByMenuId($menuId, array $tabIds) {
+        
         try {
             DB::transaction(function () use ($menuId, $tabIds) {
                 foreach ($tabIds as $tabId) {
-                    $this->create([
+                    self::create([
                         'menu_id' => $menuId,
                         'tab_id' => $tabId,
                         'enabled' => 1,
@@ -55,6 +56,7 @@ class MenuTab extends Model {
         } catch (Exception $e) {
             throw $e;
         }
+        
         return true;
 
     }
@@ -68,12 +70,12 @@ class MenuTab extends Model {
      * @throws Exception
      * @throws \Throwable
      */
-    public function storeByTabId($tabId, array $menuIds) {
+    static function storeByTabId($tabId, array $menuIds) {
         
         try {
             DB::transaction(function () use ($tabId, $menuIds) {
                 foreach ($menuIds as $menuId) {
-                    $this->create([
+                    self::create([
                         'menu_id' => $menuId,
                         'tab_id' => $tabId,
                         'enabled' => 1,
@@ -97,12 +99,13 @@ class MenuTab extends Model {
      * @throws Exception
      * @throws \Throwable
      */
-    public function storeTabRanks($menuId, array $ranks) {
+    static function storeTabRanks($menuId, array $ranks) {
         
         try {
             DB::transaction(function () use ($menuId, $ranks) {
                 foreach ($ranks as $id => $rank) {
-                    $this::whereMenuId($menuId)->where('tab_id', $id)
+                    self::whereMenuId($menuId)
+                        ->where('tab_id', $id)
                         ->update(['tab_order' => $rank + 1]);
                 }
             });

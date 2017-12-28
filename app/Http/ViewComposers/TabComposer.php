@@ -12,20 +12,11 @@ class TabComposer {
     
     use ControllerTrait;
     
-    protected $icon, $action, $menu;
-
-    public function __construct(Icon $icon, Action $action, Menu $menu) {
-
-        $this->icon = $icon;
-        $this->action = $action;
-
-    }
-
     public function compose(View $view) {
 
         $view->with([
-            'icons' => $this->icon->icons(),
-            'actions' => $this->action->actions(),
+            'icons' => Icon::icons(),
+            'actions' => Action::actions(),
             'groups' => [
                 0 => '所有',
                 1 => '运营',

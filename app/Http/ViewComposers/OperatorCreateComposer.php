@@ -33,7 +33,7 @@ class OperatorCreateComposer {
             case '企业':
                 $groups = $this->group->where('school_id', null)
                     ->whereIn('name', ['企业', '学校'])->pluck('name', 'id');
-                $rootId = $user->topDeptId($user);
+                $rootId = $user->topDeptId();
                 $corpId = Corp::whereDepartmentId($rootId)->first()->id;
                 $schools = School::whereCorpId($corpId)->pluck('name', 'department_id');
                 $view->with(['groups' => $groups, 'rootId' => $rootId, 'schools' => $schools]);
@@ -41,7 +41,7 @@ class OperatorCreateComposer {
             case '学校':
                 $groups = $this->group->where('school_id', null)
                     ->where('name', '学校')->pluck('name', 'id');
-                $view->with(['groups' => $groups, 'rootId' => $user->topDeptId($user)]);
+                $view->with(['groups' => $groups, 'rootId' => $user->topDeptId()]);
                 break;
             default:
                 break;

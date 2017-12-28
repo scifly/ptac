@@ -11,6 +11,7 @@ use App\Models\School;
 use Illuminate\Events\Dispatcher;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Support\Facades\Log;
+use Throwable;
 
 class DepartmentEventSubscriber {
     
@@ -123,6 +124,7 @@ class DepartmentEventSubscriber {
      *
      * @param $event
      * @return bool|null
+     * @throws Throwable
      */
     public function onCompanyDeleted($event) {
         
@@ -136,7 +138,7 @@ class DepartmentEventSubscriber {
      * @param $event
      * @param $model
      * @return bool|null
-     * @throws \Exception
+     * @throws Throwable
      */
     private function deleteDepartment($event, $model) {
         $department = $this->department->find($event->{$model}->department_id);
@@ -175,7 +177,7 @@ class DepartmentEventSubscriber {
      *
      * @param $event
      * @return bool|null
-     * @throws \Exception
+     * @throws Throwable
      */
     public function onCorpDeleted($event) {
         

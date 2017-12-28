@@ -1,4 +1,8 @@
-{!! Form::model($app, ['method' => 'put', 'id' => 'formApp', 'data-parsley-validate' => 'true']) !!}
+{!! Form::model($app, [
+    'method' => 'put',
+    'id' => 'formApp',
+    'data-parsley-validate' => 'true'
+]) !!}
 <div class="box box-default box-solid">
     <div class="box-header with-border">
         @include('partials.form_header')
@@ -36,7 +40,6 @@
                         'placeholder' => '请输入应用名称（不超过12个汉字）',
                         'maxlength' => '12'
                     ]) !!}
-
                 </div>
             </div>
             <div class="form-group">
@@ -79,14 +82,16 @@
                 </div>
             </div>
             @include('partials.enabled', [
-                'label' => '是否打开地理位置上报',
+                'label' => '打开地理位置上报',
                 'id' => 'report_location_flag',
-                'value' => $app['report_location_flag'] ?? NULL
+                'value' => $app['report_location_flag'] ?? NULL,
+                'options' => ['是', '否']
             ])
             @include('partials.enabled', [
-                'label' => '是否上报用户进入应用事件',
+                'label' => '上报用户进入应用事件',
                 'id' => 'isreportenter',
                 'value' => $app['isreportenter'] ?? NULL,
+                'options' => ['是', '否']
             ])
         </div>
     </div>

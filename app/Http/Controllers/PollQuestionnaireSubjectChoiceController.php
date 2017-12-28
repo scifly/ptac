@@ -2,7 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\PqChoiceRequest;
-use App\Models\PollQuestionnaireChoice;
+use App\Models\PollQuestionnaireSubjectChoice;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
@@ -14,18 +14,11 @@ use Throwable;
  * Class PqChoiceController
  * @package App\Http\Controllers
  */
-class PqChoiceController extends Controller {
+class PollQuestionnaireSubjectChoiceController extends Controller {
     
-    protected $pqChoice;
-    
-    /**
-     * PqChoiceController constructor.
-     * @param PollQuestionnaireChoice $pqChoice
-     */
-    function __construct(PollQuestionnaireChoice $pqChoice) {
+    function __construct() {
         
-        $this->middleware(['auth']);
-        $this->pqChoice = $pqChoice;
+        $this->middleware(['auth', 'checkrole']);
         
     }
     
@@ -38,7 +31,7 @@ class PqChoiceController extends Controller {
     public function index() {
         
         if (Request::get('draw')) {
-            return response()->json($this->pqChoice->datatable());
+            return response()->json(PollQuestionnaireSubjectChoice::datatable());
         }
         
         return $this->output();
@@ -65,7 +58,7 @@ class PqChoiceController extends Controller {
      */
     public function store(PqChoiceRequest $request) {
         
-        return $this->pqChoice->create($request->all()) ? $this->succeed() : $this->fail();
+        return $this->result(PollQuestionnaireSubjectChoice::create($request->all()));
         
     }
     
@@ -78,14 +71,10 @@ class PqChoiceController extends Controller {
      */
     public function show($id) {
         
-        $pqChoice = $this->pqChoice->find($id);
-        if (!$pqChoice) {
-            return $this->notFound();
-        }
+        $pqChoice = PollQuestionnaireSubjectChoice::find($id);
+        if (!$pqChoice) { return $this->notFound(); }
         
-        return $this->output([
-            'pqChoice' => $pqChoice,
-        ]);
+        return $this->output(['pqChoice' => $pqChoice]);
         
     }
     
@@ -97,13 +86,10 @@ class PqChoiceController extends Controller {
      */
     public function edit($id) {
         
-        $pqChoice = $this->pqChoice->find($id);
-        if (!$pqChoice) {
-            return $this->notFound();
-        }
-        return $this->output([
-            'pqChoice' => $pqChoice,
-        ]);
+        $pqChoice = PollQuestionnaireSubjectChoice::find($id);
+        if (!$pqChoice) { return $this->notFound(); }
+        
+        return $this->output(['pqChoice' => $pqChoice]);
         
     }
     
@@ -115,13 +101,12 @@ class PqChoiceController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(PqChoiceRequest $request, $id) {
+    
+        $pqChoice = PollQuestionnaireSubjectChoice::find($id);
+        if (!$pqChoice) { return $this->notFound(); }
+    
+        return $this->result($pqChoice->update($request->all()));
         
-        $pqChoice = $this->pqChoice->find($id);
-        if (!$pqChoice) {
-            return $this->notFound();
-        }
-        
-        return $pqChoice->update($request->all()) ? $this->succeed() : $this->fail();
     }
     
     /**
@@ -133,10 +118,11 @@ class PqChoiceController extends Controller {
      */
     public function destroy($id) {
         
-        $pqChoice = $this->pqChoice->find($id);
+        $pqChoice = PollQuestionnaireSubjectChoice::find($id);
         if (!$pqChoice) { return $this->notFound(); }
         
-        return $pqChoice->delete() ? $this->succeed() : $this->fail();
+        return $this->result($pqChoice->delete());
         
     }
+    
 }

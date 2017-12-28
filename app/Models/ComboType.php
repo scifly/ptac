@@ -47,8 +47,14 @@ class ComboType extends Model {
      * @return BelongsTo
      */
     public function school() { return $this->belongsTo('App\Models\school'); }
-
-    public function datatable() {
+    
+    /**
+     * 套餐类型列表
+     *
+     * @return array
+     */
+    static function datatable() {
+        
         $columns = [
             ['db' => 'ComboType.id', 'dt' => 0],
             ['db' => 'ComboType.name', 'dt' => 1],
@@ -75,11 +81,9 @@ class ComboType extends Model {
                 ],
             ],
         ];
-        $school = new School();
-        $schoolId = $school->getSchoolId();
-        $condition = 'ComboType.school_id = ' . $schoolId;
-        unset($school);
-        return Datatable::simple($this, $columns, $joins, $condition);
+        $condition = 'ComboType.school_id = ' . School::id();
+        
+        return Datatable::simple(self::getModel(), $columns, $joins, $condition);
 
     }
 

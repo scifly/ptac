@@ -20,14 +20,9 @@ use Throwable;
  */
 class WapSiteModuleController extends Controller {
     
-    protected $wapSiteModule;
-    protected $media;
-    
     public function __construct(WapSiteModule $wapSiteModule, Media $media) {
         
         $this->middleware(['auth']);
-        $this->wapSiteModule = $wapSiteModule;
-        $this->media = $media;
         
     }
     
@@ -40,7 +35,7 @@ class WapSiteModuleController extends Controller {
     public function index() {
         
         if (Request::get('draw')) {
-            return response()->json($this->wapSiteModule->datatable());
+            return response()->json(WapSiteModule::datatable());
         }
         
         return $this->output();
@@ -64,10 +59,12 @@ class WapSiteModuleController extends Controller {
      * @param WapSiteModuleRequest $request
      * @return JsonResponse
      * @throws Exception
+     * @throws Throwable
      */
     public function store(WapSiteModuleRequest $request) {
         
-        return $this->wapSiteModule->store($request) ? $this->succeed() : $this->fail();
+        return $this->result(WapSiteModule::store($request));
+    
     }
     
     /**
@@ -79,12 +76,12 @@ class WapSiteModuleController extends Controller {
      */
     public function show($id) {
         
-        $module = $this->wapSiteModule->find($id);
-        if (!$module) { return parent::notFound(); }
+        $wsm = WapSiteModule::find($id);
+        if (!$wsm) { return $this->notFound(); }
         
         return $this->output([
-            '$module' => $module,
-            'media'   => $this->media->find($module->media_id),
+            'wsm' => $wsm,
+            'media' => Media::find($wsm->media_id),
         ]);
         
     }
@@ -98,11 +95,12 @@ class WapSiteModuleController extends Controller {
      */
     public function edit($id) {
         
-        $wapSiteModule = $this->wapSiteModule->find($id);
-        if (!$wapSiteModule) { return parent::notFound(); }
+        $wsm = WapSiteModule::find($id);
+        if (!$wsm) { return $this->notFound(); }
+        
         return $this->output([
-            'wapSiteModule' => $wapSiteModule,
-            'media'         => $this->media->find($wapSiteModule->media_id),
+            'wsm' => $wsm,
+            'media' => Media::find($wsm->media_id),
         ]);
         
     }
@@ -114,11 +112,14 @@ class WapSiteModuleController extends Controller {
      * @param $id
      * @return JsonResponse
      * @throws Exception
+     * @throws Throwable
      */
     public function update(WapSiteModuleRequest $request, $id) {
         
-        return $this->wapSiteModule->modify($request, $id)
-            ? $this->succeed() : $this->fail();
+        $wsm = WapSiteModule::find($id);
+        if (!$wsm) { return $this->notFound(); }
+        
+        return $this->result($wsm->modify($request, $id));
         
     }
     
@@ -131,10 +132,10 @@ class WapSiteModuleController extends Controller {
      */
     public function destroy($id) {
         
-        $wapSiteModule = $this->wapSiteModule->find($id);
-        if (!$wapSiteModule) { return parent::notFound(); }
+        $wsm = WapSiteModule::find($id);
+        if (!$wsm) { return $this->notFound(); }
         
-        return $wapSiteModule->delete() ? parent::succeed() : parent::fail();
+        return $this->result($wsm->delete());
         
     }
     
