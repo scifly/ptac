@@ -24,6 +24,7 @@ class MessageIndexComposer {
         
         $view->with([
             'apps' => $apps,
+            'messageMaxSize' => env('MESSAGE_MAX_SIZE'),
             'uris' => $this->uris()
         ]);
 

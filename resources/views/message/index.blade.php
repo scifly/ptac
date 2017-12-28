@@ -163,9 +163,9 @@
                                             </form>-->
                                         </div>
                                         <div class="tab-pane" id="content_sms">
-                                        	<input id="content-sms-maxlength" type="hidden" value="50" >
+                                        	<input id="content-sms-maxlength" type="hidden" value="{{$messageMaxSize}}" >
                                             {!! Form::textarea('content', null, [
-                                                'id' => 'content',
+                                                'id' => 'contentSms',
                                                 'class' => 'form-control',
                                             ]) !!}
                                             <span id="content-sms-length" style="color: #777;margin-top: 10px;display: inline-block;"></span>
@@ -178,9 +178,9 @@
                             <label for="" class="col-sm-3"></label>
                             <div class="col-sm-6">
                                 <input type="button" class="btn btn-default" id="send" value="发送">
-                                <input type="button" class="btn btn-default" id="time-send" value="定时发送">
-                                <input type="button" class="btn btn-default" id="draft" value="存为草稿">
-                                <input type="button" class="btn btn-default" id="preview" value="预览">
+                                {{--<input type="button" class="btn btn-default" id="time-send" value="定时发送">--}}
+                                {{--<input type="button" class="btn btn-default" id="draft" value="存为草稿">--}}
+                                {{--<input type="button" class="btn btn-default" id="preview" value="预览">--}}
                             </div>
                         </div>
                         {!! Form::close() !!}

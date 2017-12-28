@@ -12,9 +12,12 @@ class ComposerServiceProvider extends ServiceProvider {
      * @return void
      */
     public function boot() {
-        
+
+        View::composer('app.index', 'App\Http\ViewComposers\AppIndexComposer');
+        View::composer('app.edit', 'App\Http\ViewComposers\AppComposer');
+
         View::composer('alert_type.index', 'App\Http\ViewComposers\AlertTypeIndexComposer');
-        
+
         View::composer('company.index', 'App\Http\ViewComposers\CompanyIndexComposer');
         View::composer('company.create_edit', 'App\Http\ViewComposers\CompanyComposer');
         
@@ -96,8 +99,7 @@ class ComposerServiceProvider extends ServiceProvider {
         View::composer('combo_type.create_edit', 'App\Http\ViewComposers\ComboTypeComposer');
         View::composer('combo_type.index', 'App\Http\ViewComposers\ComboTypeIndexComposer');
 
-        View::composer('app.index', 'App\Http\ViewComposers\AppIndexComposer');
-        
+
         View::composer('wap_site.create_edit', 'App\Http\ViewComposers\WapSiteComposer');
         View::composer('wap_site.index', 'App\Http\ViewComposers\WapSiteIndexComposer');
 
