@@ -38,24 +38,20 @@ class MessageCenterController extends Controller {
      */
     public function index() {
         #获取用户信息
-        // $corpId = 'wxe75227cead6b8aec';
-        // $secret = 'qv_kkW2S3zmMWIUrV3u2nydcyIoLknTvuDMq7ja4TYE';
-        // $agentId = 3;
-        // $code = Request::input('code');
-        // if (empty($code)) {
-        //     $codeUrl = Wechat::getCodeUrl($corpId, $agentId, 'http://weixin.028lk.com/message_center');
-        //
-        //     return redirect($codeUrl);
-        // } else {
-        //     $code = Request::get('code');
-        //     $accessToken = Wechat::getAccessToken($corpId, $secret);
-        //     $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
-        // }
-        // $userId = $userInfo;
-        // print_r($userId);
-
+        $corpId = 'wxe75227cead6b8aec';
+        $secret = 'qv_kkW2S3zmMWIUrV3u2nydcyIoLknTvuDMq7ja4TYE';
+        $agentId = 3;
+        $code = Request::input('code');
+        if (empty($code)) {
+            $codeUrl = Wechat::getCodeUrl($corpId, $agentId, 'http://weixin.028lk.com/message_center');
         
-        $userId = $this->getRole('http://weixin.028lk.com/message_center');
+            return redirect($codeUrl);
+        } else {
+            $code = Request::get('code');
+            $accessToken = Wechat::getAccessToken($corpId, $secret);
+            $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
+        }
+        $userId = $userInfo['UserId'];
         print_r($userId);
         $user = User::whereUserid($userId)->first();
         if (Request::isMethod('post')) {
@@ -249,28 +245,28 @@ class MessageCenterController extends Controller {
         
     }
     
-    /**
-     * @param $calbackUrl
-     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
-     *
-     */
-    private function getRole($calbackUrl) {
-        //获取微信用户信息
-        $corpId = 'wxe75227cead6b8aec';
-        $secret = 'qv_kkW2S3zmMWIUrV3u2nydcyIoLknTvuDMq7ja4TYE';
-        $agentId = 3;
-        $code = Request::input('code');
-        if (empty($code)) {
-            $codeUrl = Wechat::getCodeUrl($corpId, $agentId, $calbackUrl);
-    
-            return redirect($codeUrl);
-        } else {
-            $code = Request::get('code');
-            $accessToken = Wechat::getAccessToken($corpId, $secret);
-            $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
-            return $userInfo['UserId'];
-        }
-    }
+    // /**
+    //  * @param $calbackUrl
+    //  * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+    //  *
+    //  */
+    // private function getRole($calbackUrl) {
+    //     //获取微信用户信息
+    //     $corpId = 'wxe75227cead6b8aec';
+    //     $secret = 'qv_kkW2S3zmMWIUrV3u2nydcyIoLknTvuDMq7ja4TYE';
+    //     $agentId = 3;
+    //     $code = Request::input('code');
+    //     if (empty($code)) {
+    //         $codeUrl = Wechat::getCodeUrl($corpId, $agentId, $calbackUrl);
+    //
+    //         return redirect($codeUrl);
+    //     } else {
+    //         $code = Request::get('code');
+    //         $accessToken = Wechat::getAccessToken($corpId, $secret);
+    //         $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
+    //         return $userInfo['UserId'];
+    //     }
+    // }
     
     /**
      * 更新是否已读并且更新对应msl记录
