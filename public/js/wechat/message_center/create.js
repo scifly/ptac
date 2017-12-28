@@ -33,7 +33,7 @@ function show_group() {
         $.ajax({
             type: 'GET',
             data: {},
-            url: '../public/message_dept/' + id,
+            url: '../message_dept/' + id,
             success: function (result) {
                 if(result.statusCode === 200){
                     choose_box.html(result.message);
@@ -205,7 +205,7 @@ $(function () {
         formData.append('file', $('#uploaderInput')[0].files[0]);
         formData.append('_token', token);
         $.ajax({
-            url: '../public/message_upload',
+            url: '../message_upload',
             type: 'POST',
             cache: false,
             data: formData,
@@ -214,7 +214,7 @@ $(function () {
             success: function (result) {
                 if (result.statusCode === 200) {
                     $('#uploadimg-'+tmp).attr('data-media-id',result.message.id);
-                    $('#uploadimg-'+tmp).attr('src', 'http://sandbox.ddd:8080/ptac/' + result.message.path);
+                    $('#uploadimg-'+tmp).attr('src', 'http://weixin.028lk.com/' + result.message.path);
                 }
             }
         });
