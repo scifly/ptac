@@ -288,6 +288,7 @@ Route::get('message_update/{id}', 'Wechat\MessageCenterController@updateStatus')
 Route::post('message_update/{id}', 'Wechat\MessageCenterController@update');
 Route::delete('message_delete/{id}', 'Wechat\MessageCenterController@destory');
 Route::post('message_upload', 'Wechat\MessageCenterController@upload');
+Route::get('message_dept/{id}', 'Wechat\MessageCenterController@getNextDept');
 //布置作业
 Route::get('homework', 'Wechat\HomeWorkController@index');
 //微网站
