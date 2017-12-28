@@ -1,35 +1,39 @@
 var token = $('#csrf_token').attr('content');
 choose_item();
+var msg_type = $('#type');
 
-$("#type").select({
+msg_type.select({
     title: "选择类型",
-
     items: [
         {
             title: "文本",
-            value: "text",
+            value: "text"
+        },
+        {
+            title: "卡片",
+            value: "textcard"
         },
         {
             title: "图文",
-            value: "mpnews",
+            value: "mpnews"
         },
         {
             title: "图片",
-            value: "image",
+            value: "image"
         },
         {
             title: "视频",
-            value: "video",
+            value: "video"
         },
         {
             title: "短信",
-            value: "sms",
-        },
+            value: "sms"
+        }
 
     ]
 });
 
-$('#type').change(function(){
+msg_type.change(function () {
     var type = $(this).attr('data-values');
     $('.js-content-item input').val('');
     $('#emojiInput').html('');
@@ -38,6 +42,12 @@ $('#type').change(function(){
             //文本
             $('.js-content-item').hide();
             $('.js-content').show();
+            break;
+        case 'textcard':
+            //卡片
+            $('.js-content-item').hide();
+            $('.js-content').show();
+            $('.js-upload-img').show();
             break;
         case 'mpnews':
             //图文
@@ -77,39 +87,40 @@ $('#type').change(function(){
 
 $(".ma_expect_date").datetimePicker();
 
-$('.js-search-input').bind("input propertychange change",function(event){
+$('.js-search-input').bind("input propertychange change", function (event) {
     var txt = $(this).val();
-    if(txt == ''){
+    if (txt == '') {
         $('.js-choose-items .weui-check__label').show();
         $('.js-choose-breadcrumb-li').text('全部');
-    }else{
+    } else {
         $('.js-choose-breadcrumb-li').text('搜索结果');
         $('.js-choose-items .weui-check__label').hide();
-        $('.js-choose-items .weui-check__label').each(function(){
+        $('.js-choose-items .weui-check__label').each(function () {
             var uname = $(this).find('.contacts-text').text();
-            if(uname.indexOf(txt) >= 0){
+            if (uname.indexOf(txt) >= 0) {
                 $(this).show();
             }
         });
     }
 });
 show_group();
+
 function show_group() {
-    $('.show-group').click(function() {
+    $('.show-group').click(function () {
         //展示下一个分组
         var id = $(this).prev().attr('data-uid');
         var name = $(this).prev().find('span').html();
         var choose_box = $('.air-choose-group');
         var choose_dept = $('.js-choose-breadcrumb-ol');
         var html = '>' +
-            '<li data-id= "'+ id +'" class="js-choose-breadcrumb-li headclick"><a>' + name + '</a></li>';
+            '<li data-id= "' + id + '" class="js-choose-breadcrumb-li headclick"><a>' + name + '</a></li>';
         choose_dept.append(html);
         $.ajax({
             type: 'GET',
             data: {},
             url: '../public/message_dept/' + id,
             success: function (result) {
-                if(result.statusCode === 200){
+                if (result.statusCode === 200) {
                     choose_box.html(result.message);
                     show_group();
                     choose_item();
@@ -121,27 +132,28 @@ function show_group() {
         });
     });
 }
-$('#choose-btn-ok').click(function(){
+
+$('#choose-btn-ok').click(function () {
     var html = $('.js-choose-header-result').html();
     $('#homeWorkChoose').html(html);
     $.closePopup();
 });
 
-function  choose_item() {
-    $(".choose-item-btn").change(function() {
+function choose_item() {
+    $(".choose-item-btn").change(function () {
         var $this = $(this).parents('.weui-check__label');
         var num = $this.attr('data-item');
         var type = $this.attr('data-type');
-        if($(this).is(':checked')){
+        if ($(this).is(':checked')) {
             var imgsrc = $this.find('img').attr('src');
             var uid = $this.attr('data-uid');
-            if(type == 'group'){
-                var html = '<a class="choose-results-item js-choose-results-item choose-item-type-group" id="group-'+num+'" data-list="'+num+'" data-uid="'+uid+'" data-type="'+type+'">'+
-                    '<img src="'+imgsrc+'">'+
+            if (type == 'group') {
+                var html = '<a class="choose-results-item js-choose-results-item choose-item-type-group" id="group-' + num + '" data-list="' + num + '" data-uid="' + uid + '" data-type="' + type + '">' +
+                    '<img src="' + imgsrc + '">' +
                     '</a>';
-            }else{
-                var html = '<a class="choose-results-item js-choose-results-item choose-item-type-person" id="person-'+num+'" data-list="'+num+'" data-uid="'+uid+'" data-type="'+type+'">'+
-                    '<img src="'+imgsrc+'" style="border-radius:50%">'+
+            } else {
+                var html = '<a class="choose-results-item js-choose-results-item choose-item-type-person" id="person-' + num + '" data-list="' + num + '" data-uid="' + uid + '" data-type="' + type + '">' +
+                    '<img src="' + imgsrc + '" style="border-radius:50%">' +
                     '</a>';
             }
 
@@ -149,32 +161,32 @@ function  choose_item() {
 
             remove_choose_result();
             count_result();
-        }else{
-            $('.js-choose-header-result').find('#'+type+'-'+num).remove();
+        } else {
+            $('.js-choose-header-result').find('#' + type + '-' + num).remove();
             $('.air-choose-group').removeClass('air-checkall');
-            $('#checkall').prop('checked',false);
+            $('#checkall').prop('checked', false);
             count_result();
         }
     });
 }
 
 
-$('#checkall').change(function() {
-    if($(this).is(':checked')){
-        $('.choose-item-btn').prop('checked',true);
+$('#checkall').change(function () {
+    if ($(this).is(':checked')) {
+        $('.choose-item-btn').prop('checked', true);
         var html = '';
-        $('.js-choose-items .weui-check__label').each(function(i,vo){
+        $('.js-choose-items .weui-check__label').each(function (i, vo) {
             var type = $(vo).attr('data-type');
             var num = $(vo).attr('data-item');
             var uid = $(vo).attr('data-uid');
             var imgsrc = $(vo).find('img').attr('src');
-            if(type == 'group'){
-                html += '<a class="choose-results-item js-choose-results-item choose-item-type-group" id="group-'+num+'" data-list="'+num+'" data-uid="'+uid+'" data-type="'+type+'">'+
-                    '<img src="'+imgsrc+'">'+
+            if (type == 'group') {
+                html += '<a class="choose-results-item js-choose-results-item choose-item-type-group" id="group-' + num + '" data-list="' + num + '" data-uid="' + uid + '" data-type="' + type + '">' +
+                    '<img src="' + imgsrc + '">' +
                     '</a>';
-            }else{
-                html += '<a class="choose-results-item js-choose-results-item choose-item-type-person" id="person-'+num+'" data-list="'+num+'" data-uid="'+uid+'" data-type="'+type+'">'+
-                    '<img src="'+imgsrc+'" style="border-radius:50%">'+
+            } else {
+                html += '<a class="choose-results-item js-choose-results-item choose-item-type-person" id="person-' + num + '" data-list="' + num + '" data-uid="' + uid + '" data-type="' + type + '">' +
+                    '<img src="' + imgsrc + '" style="border-radius:50%">' +
                     '</a>';
             }
         });
@@ -182,33 +194,34 @@ $('#checkall').change(function() {
         remove_choose_result();
         $('.air-choose-group').addClass('air-checkall');
         count_result();
-    }else{
-        $('.choose-item-btn').prop('checked',false);
+    } else {
+        $('.choose-item-btn').prop('checked', false);
         $('.js-choose-header-result').html('');
         $('.air-choose-group').removeClass('air-checkall');
         count_result();
     }
 });
 
-function count_result(){
+function count_result() {
     var grouptotal = $('.js-choose-header-result .js-choose-results-item.choose-item-type-group').length;
     var persontotal = $('.js-choose-header-result .js-choose-results-item.choose-item-type-person').length;
-    $('.js-choose-num').text('已选'+grouptotal+'个分组,'+persontotal+'名用户');
+    $('.js-choose-num').text('已选' + grouptotal + '个分组,' + persontotal + '名用户');
 }
 
-function remove_choose_result(){
-    $('.js-choose-results-item').click(function(){
+function remove_choose_result() {
+    $('.js-choose-results-item').click(function () {
         var num = $(this).attr('data-list');
         var type = $(this).attr('data-type');
         $(this).remove();
-        $('#'+type+'-'+num).find('.choose-item-btn').prop('checked',false);
+        $('#' + type + '-' + num).find('.choose-item-btn').prop('checked', false);
         count_result();
     });
 }
-$(".weui-switch").change(function() {
-    if($(this).is(':checked')){
+
+$(".weui-switch").change(function () {
+    if ($(this).is(':checked')) {
         $('.hw-time').slideToggle('fast');
-    }else{
+    } else {
         $('.hw-time').slideToggle('fast');
     }
 });
@@ -267,7 +280,7 @@ $(function () {
                     var base64 = canvas.toDataURL('image/png');
 
                     // console.log(base64);
-                    var html = '<img class="uploadimg-item" src="' + base64 + '" id="uploadimg-'+tmp+'" style="width: 300px;height: 187px">';
+                    var html = '<img class="uploadimg-item" src="' + base64 + '" id="uploadimg-' + tmp + '" style="width: 300px;height: 187px">';
                     $('#emojiInput').append(html);
                     // 然后假装在上传，可以post base64格式，也可以构造blob对象上传，也可以用微信JSSDK上传
                 };
@@ -287,27 +300,115 @@ $(function () {
             contentType: false,
             success: function (result) {
                 if (result.statusCode === 200) {
-                    $('#uploadimg-'+tmp).attr('data-media-id',result.message.id);
-                    $('#uploadimg-'+tmp).attr('src', 'http://sandbox.ddd:8080/ptac/' + result.message.path);
+                    $('#uploadimg-' + tmp).attr('data-media-id', result.message.id);
+                    $('#uploadimg-' + tmp).attr('src', 'http://sandbox.ddd:8080/ptac/' + result.message.path);
                 }
             }
         });
         tmp++;
     });
 
+    // $('#mpnews_cover').change(function () {
+    //     var formData = new FormData();
+    //     formData.append('file', $('#mpnews_cover')[0].files[0]);
+    //     formData.append('_token', token);
+    //     $.ajax({
+    //         url: "../public/message_upload",
+    //         data: formData,
+    //         type: 'POST',
+    //         dataType: 'json',
+    //         contentType: false,
+    //         processData: false,
+    //         cache: false,
+    //         success: function (result) {
+    //             if (result.statusCode === 200) {
+    //                 $('#mpnews_cover_img').attr('src', 'http://sandbox.ddd:8080/public/' + result.message.path);
+    //             }
+    //         }
+    //     });
+    // });
+
+    $("#upload_video").change(function () {
+        var $this = $(this);
+        var formData = new FormData();
+        formData.append('file', $('#upload_video')[0].files[0]);
+        formData.append('_token', token);
+        formData.append('type', msg_type.attr('data-values'));
+        $.ajax({
+            url: "../public/message_upload",
+            data: formData,
+            type: 'POST',
+            dataType: 'json',
+            contentType: false,
+            processData: false,
+            cache: false,
+            success: function (result) {
+                if (result.statusCode === 1) {
+                    var html = '<video class="video-id" id="' + result.data.id + '" src="' + 'http://sandbox.ddd:8080/ptac/' + result.data.path + '" controls="controls" style="height: 300px; width: 200px"></video>' +
+                        '<input id="video_media_id" name="video_media_id" value="' + result.data.media_id + '" hidden>';
+                    $this.parent().parent().html(html);
+                }
+            }
+        });
+    });
+
+    $('#upload_image').change(function () {
+        var $this = $(this);
+        var formData = new FormData();
+        formData.append('file', $('#upload_image')[0].files[0]);
+        formData.append('_token', token);
+        formData.append('type', msg_type.attr('data-values'));
+        $.ajax({
+            url: "../public/message_upload",
+            data: formData,
+            type: 'POST',
+            dataType: 'json',
+            contentType: false,
+            processData: false,
+            cache: false,
+            success: function (result) {
+                if (result.statusCode === 1) {
+                    var html = '<img class="img-id" id="' + result.data.id + '" src="' + 'http://sandbox.ddd:8080/ptac/' + result.data.path + '" style="height: 200px; width: 300px">' +
+                        '<input id="image_media_id" name="image_media_id" value="' + result.data.media_id + '" hidden>';
+                    $this.parent().parent().html(html);
+                }
+            }
+        });
+    });
+
+
+    var title = '';
+    var content = '';
+    var media_ids = [];
+    var wechat_media_id = '';
+    var time = '';
     $('.release').on('click', function () {
-        var media_ids = [];
-        var title = $('#title').val();
-        var content = $('#emojiInput').html();
-        var time = $('#time').val();
+        media_ids = [];
+        title = $('#title').val();
+        content = $('#emojiInput').html();
+        time = $('#time').val();
         var department_ids = [];
         var user_ids = [];
         var choose = $('#homeWorkChoose');
+        var type = msg_type.attr('data-values');
+
+        if (type === 'video') {
+            content = $('#description-video').val();
+            wechat_media_id = $('#video_media_id').val();
+            media_ids.push($('.video-id').attr('id'));
+        }
+        if (type === 'image') {
+            content = '0';
+            wechat_media_id = $('#image_media_id').val();
+            media_ids.push($('.img-id').attr('id'));
+        }
+
         $('.uploadimg-item').each(function () {
             media_ids.push($(this).attr('data-media-id'));
         });
+
         choose.find('a.choose-item-type-group').each(function () {
-           department_ids.push($(this).attr('data-uid'));
+            department_ids.push($(this).attr('data-uid'));
         });
         choose.find('a.choose-item-type-person').each(function () {
             user_ids.push($(this).attr('data-uid'));
@@ -318,12 +419,17 @@ $(function () {
             type: 'POST',
             data: {
                 '_token': token, 'title': title, 'content': content,
-                'time': time, 'department_ids': department_ids, 'user_ids': user_ids, 'media_ids': media_ids
+                'time': time, 'department_ids': department_ids,
+                'user_ids': user_ids, 'media_ids': media_ids,
+                'type': type, 'mediaid': wechat_media_id
             },
             url: '../public/message_store',
             success: function (result) {
                 if (result.statusCode === 200) {
-                    $.alert('消息发送成功！');
+                    $.alert('消息发送成功！', function () {
+                        window.location.href = '../public/message_center';
+                    });
+
                 } else {
                     $.alert('消息发送失败，请稍后重试！');
                 }

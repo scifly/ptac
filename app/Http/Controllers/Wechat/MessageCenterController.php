@@ -5,6 +5,8 @@ use App\Facades\Wechat;
 use App\Helpers\ControllerTrait;
 
 use App\Http\Controllers\Controller;
+use App\Models\App;
+use App\Models\Corp;
 use App\Models\Department;
 use App\Models\Educator;
 use App\Models\Media;
@@ -233,27 +235,49 @@ class MessageCenterController extends Controller {
     }
     
     /**
-     *
-     * @param null $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function upload($id = null) {
-        if ($id) {
-            //删除已上传的图片
-            $media = Media::whereId($id)->first();
-            if ($media->path) {
-                $removeFile = public_path('uploads/') . $media->path;
-                if (is_file($removeFile)) {
-                    unlink($removeFile);
-                }
-            }
-            
-            return $media->delete() ? $this->succeed() : $this->fail();
-        }
-        //上传图片
-        $data = $this->uploadedMedias(Request::file('file'), '前端消息中心');
+    public function upload() {
         
-        return $data ? $this->succeed($data) : $this->fail();
+        $type = Request::input('type');
+        if(empty($type)){
+            $data = $this->uploadedMedias(Request::file('file'), '前端消息中心');
+        
+            return $data ? $this->succeed($data) : $this->fail();
+        }
+        
+        $file = Request::file('file');
+        if (empty($file)) {
+            $result['statusCode'] = 0;
+            $result['message'] = '您还未选择文件！';
+        
+            return $result;
+        } else {
+            $result['data'] = [];
+            $mes = $this->uploadedMedias($file, ' 前端消息中心');
+            if ($mes) {
+                $result['statusCode'] = 1;
+                $result['message'] = '上传成功！';
+                $path = dirname(public_path()) . '/' . $mes['path'];
+                $data = ["media" => curl_file_create($path)];
+                $crop = Corp::whereName('万浪软件')->first();
+                $app = App::whereAgentid('999')->first();
+                $token = Wechat::getAccessToken($crop->corpid, $app->secret);
+                $status = Wechat::uploadMedia($token, $type, $data);
+                $message = json_decode($status);
+                if ($message->errcode == 0) {
+                    $mes['media_id'] = $message->media_id;
+                    $result['data'] = $mes;
+                } else {
+                    $result['statusCode'] = 0;
+                    $result['message'] = '微信服务器上传失败！';
+                }
+            } else {
+                $result['statusCode'] = 0;
+                $result['message'] = '文件上传失败！';
+            }
+        }
+        return response()->json($result);
     }
     
     /**
@@ -344,6 +368,7 @@ class MessageCenterController extends Controller {
                 }
             }
         }
+        
         $receiveUserIds = array_merge($input['user_ids'], $userIds);
         try {
             DB::transaction(function () use ($receiveUserIds, $input, $user) {
@@ -387,7 +412,7 @@ class MessageCenterController extends Controller {
                 }
                 #推送微信服务器且显示详情页
                 $message = $this->message->where('msl_id',$input['msl_id'])->first();
-                $url = 'http://weixin.028lk.com/message_show/' . $message->id;
+                $url = 'http:/sandbox.ddd:8080/ptac/public/message_show/' . $message->id;
                 $this->frontSendMessage($input, $url);
             });
         } catch (Exception $e) {
@@ -408,7 +433,7 @@ class MessageCenterController extends Controller {
         // if(empty($input['media_ids'])){
         //     $input['type'] = 'text';
         // }
-        $input['type'] = 'textcard';
+        // $input['type'] = 'textcard';
         $corpId = 'wxe75227cead6b8aec';
         $secret = 'qv_kkW2S3zmMWIUrV3u2nydcyIoLknTvuDMq7ja4TYE';
         $token = Wechat::getAccessToken($corpId, $secret, $url);
@@ -439,17 +464,23 @@ class MessageCenterController extends Controller {
                     'url' => $url
                 ];
                 break;
-            // case 'image' :
-            //
+                
+            case 'image' :
+                $message['image'] = ['media_id' => $input['mediaid']];
+                break;
             // case 'voice' :
             //     $message['image'] = ['media_id' => $data['content']['media_id']];
             //     break;
             // case 'mpnews' :
             //     $message['mpnews'] = ['articles' => $data['content']['articles']];
             //     break;
-            // case 'video' :
-            //     $message['video'] = $data['content']['video'];
-            //     break;
+            case 'video' :
+                $message['video'] = [
+                    'media_id' => $input['mediaid'],
+                    'title' => $input['title'],
+                    'description' => strip_tags($input['content'])
+                ];
+                break;
         }
         $message['msgtype'] = $input['type'];
         $status = json_decode(Wechat::sendMessage($token, $message));
