@@ -37,8 +37,8 @@ class MessageCenterController extends Controller {
      * @throws \Throwable
      */
     public function index() {
-        // $userId = 'yuanhongbin';
-        $userId = $this->getRole('http://weixin.028lk.com/message_center');
+        $userId = 'yuanhongbin';
+        // $userId = $this->getRole('http://weixin.028lk.com/message_center');
         $user = User::whereUserid($userId)->first();
         if (Request::isMethod('post')) {
             $keywords = Request::get('keywords');
@@ -250,8 +250,7 @@ class MessageCenterController extends Controller {
             $code = Request::get('code');
             $accessToken = Wechat::getAccessToken($corpId, $secret);
             $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
-            print_r($userInfo);
-            // return $userInfo['userId'];
+            return $userInfo['userId'];
         }
         die;
     }
