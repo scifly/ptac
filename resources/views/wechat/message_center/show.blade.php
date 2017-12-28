@@ -15,7 +15,7 @@
                     </div>
                     <div class="model-name-layout d-inline">
                         <div class="model-name-left d-inline white-over" style="color:#878787;font-size:15px">
-                            <span>发送者：{{ $message->user->realname }}</span>
+                            {{--<span>发送者：{{ $message->user->realname }}</span>--}}
                         </div>
                     </div>
 

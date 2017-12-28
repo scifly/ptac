@@ -37,7 +37,8 @@ class MessageCenterController extends Controller {
      * @throws \Throwable
      */
     public function index() {
-        $userId = 'yuanhongbin';
+        // $userId = 'yuanhongbin';
+        $userId = $this->getRole('http://weixin.028lk.com/message_center');
         $user = User::whereUserid($userId)->first();
         if (Request::isMethod('post')) {
             $keywords = Request::get('keywords');
@@ -86,6 +87,7 @@ class MessageCenterController extends Controller {
         // }
         $sendMessages = $this->message->where('s_user_id', $user->id)->get()->unique('msl_id')->groupBy('message_type_id');
         $receiveMessages = $this->message->where('r_user_id', $user->id)->get()->groupBy('message_type_id');
+       
         $count = $this->message->where('r_user_id', $user->id)->where('readed', '0')->count();
         
         return view('wechat.message_center.index', [
@@ -100,9 +102,14 @@ class MessageCenterController extends Controller {
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function create() {
+        
         $userId = "yuanhongbin";
+        
+        #教师可发送消息
         $user = $this->user->where('userid', $userId)->first();
-        $departmentId = $this->user->topDeptId($user);
+        #取的和教师关联的学校的部门id
+        $departmentId = $user->departments()->where('department_type_id',4)->first()->id;
+       
         $departments = Department::where('parent_id', $departmentId)->get();
         $department = Department::whereId($departmentId)->first();
         $users = $department->users;
@@ -158,7 +165,7 @@ class MessageCenterController extends Controller {
      */
     public function show($id) {
         // $userId = $this->getRole('http://weixin.028lk.com/message_show');
-        $userId = "abcd456456";
+        $userId = "yuanhongbin";
         $user = $this->user->where('userid', $userId)->first();
         $message = $this->message->find($id);
         $edit = $user->id == $message->s_user_id ? true : false;
@@ -280,7 +287,7 @@ class MessageCenterController extends Controller {
      * @throws \Throwable
      */
     private function frontStore() {
-        $userId = "abcd456456";
+        $userId = "yuanhongbin";
         $user = $this->user->where('userid', $userId)->first();
         $input = Request::all();
         $userIds = [];
