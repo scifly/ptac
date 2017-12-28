@@ -167,15 +167,15 @@ class Department extends Model {
      * @param null $rootId
      * @return Collection|static[]
      */
-    private function nodes($rootId = null) {
+    static function nodes($rootId = null) {
 
         $nodes = new Collection();
         if (!isset($rootId)) {
-            $nodes = $this->all();
+            $nodes = self::all();
         } else {
-            $root = $this->find($rootId);
+            $root = self::find($rootId);
             $nodes->push($root);
-            $this->getChildren($rootId, $nodes);
+            self::getChildren($rootId, $nodes);
         }
 
         return $nodes;
@@ -188,12 +188,12 @@ class Department extends Model {
      * @param $id
      * @param Collection $nodes
      */
-    private function getChildren($id, Collection &$nodes) {
+    static function getChildren($id, Collection &$nodes) {
 
-        $node = $this->find($id);
+        $node = self::find($id);
         foreach ($node->children as $child) {
             $nodes->push($child);
-            $this->getChildren($child->id, $nodes);
+            self::getChildren($child->id, $nodes);
         }
 
     }
@@ -221,15 +221,15 @@ class Department extends Model {
      * @param array $path
      * @return string
      */
-    private function leafPath($id, array &$path) {
+    static function leafPath($id, array &$path) {
 
-        $department = $this->find($id);
+        $department = self::find($id);
         if (!isset($department)) {
             return '';
         }
         $path[] = $department->name;
         if (isset($department->parent_id)) {
-            $this->leafPath($department->parent_id, $path);
+            self::leafPath($department->parent_id, $path);
         }
         krsort($path);
 
@@ -772,6 +772,13 @@ class Department extends Model {
         return self::find($topLevelId)->parent->id;
         
     }
+
+    /**
+     * 获取一个数组部门下 连同子部门下的所有用户
+     *
+     * @param $toparty
+     * @return array
+     */
     public function getPartyUser ($toparty) {
         $users = [];
         $depts = new Collection();

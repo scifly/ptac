@@ -1,4 +1,4 @@
-
+page.index('messages');
 page.initSelect2({
     templateResult: page.formatStateImg,
     templateSelection: page.formatStateImg
@@ -18,8 +18,6 @@ var $addVideo = $('#add-video');
 var $cancelVideo = $('#cancel-video');
 var $send = $('#send');
 var $token = $('#csrf_token');
-var $active = $('#message-content .tab-pane.active');
-var $fileDel = $('.tab-pane.active .file-del');
 var $addArticle = $('#add-article-url');
 var $fileCover = $('#file-cover');
 
@@ -68,8 +66,8 @@ function get_sms_length(){
 	var now_length = '';
 	var surp_length = '';
 	$('#content-sms-length').text('已输入0个字符， 还可输入'+sms_maxlength+'个字符');
-	$('.tab-pane.active #content').attr('maxlength',sms_maxlength);
-	$('.tab-pane.active #content').bind("input propertychange",function(){
+	$('.tab-pane.active #contentSms').attr('maxlength',sms_maxlength);
+	$('.tab-pane.active #contentSms').bind("input propertychange",function(){
 		now_length = $(this).val().length;
 		surp_length = sms_maxlength - now_length ;
 		$('#content-sms-length').text('已输入'+now_length+'个字符， 还可输入'+surp_length+'个字符');
@@ -135,12 +133,13 @@ function uploadfile(obj){
 				  	html+='<div class="fileshow" style="display: inline-block;width: auto;position: relative;">'+
                             	'<img src="../../'+result.data.path+'" style="height: 200px;">'+
                             	'<input id="image_media_id" type="hidden" value="'+result.data.media_id+'"/>'+
+                            	'<input id="image-media-id" type="hidden" value="'+result.data.id+'"/>'+
                             	'<input type="hidden" value="image" name="type" />'+
                                 '<input type="file" id="file-image" onchange="uploadfile(this)" name="uploadFile" accept="image/*" style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/>'+
                             	'<i class="fa fa-close file-del" style="position: absolute;top: 10px;right: 15px;font-size: 20px;z-index: 2;cursor: pointer;"></i>'+
                             '</div>'+
                             '</form>';
-                    $active.html(html);
+                    $('#message-content .tab-pane.active').html(html);
                     removefile(type);
 				 	break;
 				case 'voice':
@@ -149,13 +148,14 @@ function uploadfile(obj){
 								'<i class="fa fa-file-sound-o">'+
 					  				'<span style="margin-left: 5px;position:relative;cursor:pointer;">'+result.data.filename+''+
 						  				'<input  id="voice_media_id"  type="hidden" value="'+result.data.media_id+'"/>'+
+						  				'<input  id="voice-media-id"  type="hidden" value="'+result.id+'"/>'+
 										'<input type="hidden" value="voice" name="type" />'+
 										'<input id="file-voice" type="file" onchange="uploadfile(this)" name="uploadFile" style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/>'+
 					  				'</span>'+
 							    '<i class="fa fa-close file-del" style="margin-left: 35px;cursor:pointer;"></i>'+
 						    '</div>'+
 						    '</form>';
-				  	$active.html(html);	
+				  	$('#message-content .tab-pane.active').html(html);	
 				  	removefile(type);
 				 	break;
 				case 'video':
@@ -166,6 +166,7 @@ function uploadfile(obj){
 							'<a class="changefile" style="position: relative;margin-left: 10px;">'+
 								'更改'+
 								'<input  id="video_media_id"  type="hidden" value="'+result.data.media_id+'"/>'+
+								'<input  id="video-media-id"  type="hidden" value="'+result.data.id+'"/>'+
 								'<input type="hidden" value="video" name="type" />'+
 								'<input type="file" id="file-video" onchange="uploadfile(this)" name="uploadFile" accept="video/mp4" style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/>'+
 							'</a>'+
@@ -184,7 +185,7 @@ function uploadfile(obj){
 }
 
 function removefile(type){
-	$fileDel.click(function(){
+	$('.tab-pane.active .file-del').click(function(){
         var btntxt = '';
         var fileaccept = '';
 		switch(type)
@@ -211,7 +212,7 @@ function removefile(type){
                             '</i>'+
                         '</button>'+
                     '</form>';
-        $active.html(html);
+        $('#message-content .tab-pane.active').html(html);
 	});
 }
 
@@ -219,7 +220,7 @@ $addArticle.click(function(){
 	$(this).next().slideToggle('fast');
 	$(this).next().val('');
 });
-
+//图文的上传封面
 function upload_cover(obj){
 	var extension = $fileCover[0].files[0].name.split('.');
 	extension = extension[extension.length-1];
@@ -248,6 +249,7 @@ function upload_cover(obj){
                 var html = '<form id="uploadForm" enctype="multipart/form-data">'+
 	                			'<div class="show-cover" style="position: relative;height: 130px;width: 130px;background-image: url(../../'+result.data.path+');background-size: cover;">'+
 			                		'<input type="hidden" value="'+result.data.media_id+'" name="media_id" />'+
+			                		'<input type="hidden" value="'+result.data.id+'" name="news-media-id" />'+
 			                		'<input type="hidden" value="image" name="type" />'+
 			                        '<input type="file" id="file-cover" onchange="upload_cover(this)" name="input-cover" accept="image/*" style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/>'+
 			                		'<i class="fa fa-close cover-del" style="position: absolute;top: 10px;right: 15px;font-size: 20px;z-index: 2;cursor: pointer;"></i>'+
@@ -294,6 +296,7 @@ $saveImageText.click(function(){
 	}else{
 		picurl = picurl.replace('url("','').replace('")','');
 		var picid = $('#cover .show-cover input').eq(0).val();
+		var picMediaId = $('#cover .show-cover input').eq(1).val();
 	}
 	
 	var content_source_url = $('.imagetext-content_source_url').val();
@@ -303,6 +306,7 @@ $saveImageText.click(function(){
                 	'<div class="show_imagetext_pic" style="height: 125px;width: 250px;background-repeat: no-repeat;background-size:cover;background-image: url('+picurl+');"></div>'+
                 	'<div class="show_imagetext_content" style="font-size: 12px;margin-top:12px;color:#787878;line-height: 20px;overflow: hidden;text-overflow:ellipsis;-webkit-line-clamp:4;">'+content+'</div>'+
                 	'<input type="hidden" class="show_imagetext_pic_media_id" value="'+picid+'">'+
+                	'<input type="hidden" class="show_imagetext_media_id" value="'+picMediaId+'">'+
                 	'<input type="hidden" class="show_imagetext_author" value="'+author+'">'+
                 	'<input type="hidden" class="show_imagetext_content_source_url" value="'+content_source_url+'">'+
                 '</div>';
@@ -372,9 +376,8 @@ function show_video(){
 $send.on('click', function() {
     var appIds = $('#app_ids').val();
     var selectedDepartmentIds = $('#selectedDepartmentIds').val();
-    var type = $active.attr('id');
+    var type = $('#message-content .tab-pane.active').attr('id');
     type = type.substring('8');
-    // alert(type);
 	var content = '';
 	var media_id = '';
     switch(type)
@@ -393,15 +396,18 @@ $send.on('click', function() {
 	  		thumb_media_id : $('.show_imagetext_pic_media_id').val(),
 	  	}];
 	  	content = {articles : articles};
-	 	break;
+        media_id = $('.show_imagetext_media_id').val();
+        break;
 	case 'image':
 		//图片
         content = {media_id: $('#image_media_id').val()};
+        media_id = $('#image-media-id').val();
         break;
 	case 'voice':
 	//音频
 	  	content = {media_id: $('#voice_media_id').val()};
-	 	break;
+        media_id = $('#voice-media-id').val();
+        break;
 	case 'video':
 	//视频
         var video = {
@@ -410,15 +416,15 @@ $send.on('click', function() {
         	description:$('.show_video_description').text(),
         	};
         content = {video : video};
+        media_id = $('#video-media-id').val();
 
         break;
 	case 'sms':
 	//短信
-        content = {sms : $('#content').val()};
-
+        content = {sms : $('#contentSms').val()};
         break;
 	}
-    
+
     if (appIds.toString() === '') {
         alert('应用不能为空');
         return false
@@ -431,6 +437,10 @@ $send.on('click', function() {
         alert('内容不能为空');
         return false
     }
+    if (content['sms'] === '') {
+        alert('内容不能为空');
+        return false
+    }
    $.ajax({
      url: page.siteRoot() + "messages/store",
      type: 'POST',
@@ -440,7 +450,7 @@ $send.on('click', function() {
          departIds: selectedDepartmentIds,
          type: type,
          content: content,
-		 // media_id:
+		 media_id: media_id,
          _token: $token.attr('content')},
 
      success: function (result) {
