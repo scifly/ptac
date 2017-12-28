@@ -220,7 +220,7 @@ $addArticle.click(function(){
 	$(this).next().slideToggle('fast');
 	$(this).next().val('');
 });
-
+//图文的上传封面
 function upload_cover(obj){
 	var extension = $fileCover[0].files[0].name.split('.');
 	extension = extension[extension.length-1];
@@ -249,6 +249,7 @@ function upload_cover(obj){
                 var html = '<form id="uploadForm" enctype="multipart/form-data">'+
 	                			'<div class="show-cover" style="position: relative;height: 130px;width: 130px;background-image: url(../../'+result.data.path+');background-size: cover;">'+
 			                		'<input type="hidden" value="'+result.data.media_id+'" name="media_id" />'+
+			                		'<input type="hidden" value="'+result.data.id+'" name="news-media-id" />'+
 			                		'<input type="hidden" value="image" name="type" />'+
 			                        '<input type="file" id="file-cover" onchange="upload_cover(this)" name="input-cover" accept="image/*" style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/>'+
 			                		'<i class="fa fa-close cover-del" style="position: absolute;top: 10px;right: 15px;font-size: 20px;z-index: 2;cursor: pointer;"></i>'+
@@ -295,6 +296,7 @@ $saveImageText.click(function(){
 	}else{
 		picurl = picurl.replace('url("','').replace('")','');
 		var picid = $('#cover .show-cover input').eq(0).val();
+		var picMediaId = $('#cover .show-cover input').eq(1).val();
 	}
 	
 	var content_source_url = $('.imagetext-content_source_url').val();
@@ -304,6 +306,7 @@ $saveImageText.click(function(){
                 	'<div class="show_imagetext_pic" style="height: 125px;width: 250px;background-repeat: no-repeat;background-size:cover;background-image: url('+picurl+');"></div>'+
                 	'<div class="show_imagetext_content" style="font-size: 12px;margin-top:12px;color:#787878;line-height: 20px;overflow: hidden;text-overflow:ellipsis;-webkit-line-clamp:4;">'+content+'</div>'+
                 	'<input type="hidden" class="show_imagetext_pic_media_id" value="'+picid+'">'+
+                	'<input type="hidden" class="show_imagetext_media_id" value="'+picMediaId+'">'+
                 	'<input type="hidden" class="show_imagetext_author" value="'+author+'">'+
                 	'<input type="hidden" class="show_imagetext_content_source_url" value="'+content_source_url+'">'+
                 '</div>';
@@ -393,7 +396,8 @@ $send.on('click', function() {
 	  		thumb_media_id : $('.show_imagetext_pic_media_id').val(),
 	  	}];
 	  	content = {articles : articles};
-	 	break;
+        media_id = $('.show_imagetext_media_id').val();
+        break;
 	case 'image':
 		//图片
         content = {media_id: $('#image_media_id').val()};
@@ -403,7 +407,6 @@ $send.on('click', function() {
 	//音频
 	  	content = {media_id: $('#voice_media_id').val()};
         media_id = $('#voice-media-id').val();
-
         break;
 	case 'video':
 	//视频
@@ -419,7 +422,6 @@ $send.on('click', function() {
 	case 'sms':
 	//短信
         content = {sms : $('#contentSms').val()};
-
         break;
 	}
 
