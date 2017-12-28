@@ -39,6 +39,7 @@ class MessageCenterController extends Controller {
     public function index() {
         // $userId = 'yuanhongbin';
         $userId = $this->getRole('http://weixin.028lk.com/message_center');
+        print_r($userId);
         $user = User::whereUserid($userId)->first();
         if (Request::isMethod('post')) {
             $keywords = Request::get('keywords');
@@ -81,10 +82,13 @@ class MessageCenterController extends Controller {
             
         }
         //判断是否为教职工
-        $educator = true;
-        // if($user->group->name == '教职工'){
-        //     $educator = true;
-        // }
+        $educator = false;
+        print_r($user->group->name);
+        die;
+        if($user->group->name == '教职工'){
+            $educator = true;
+        }
+        
         $sendMessages = $this->message->where('s_user_id', $user->id)->get()->unique('msl_id')->groupBy('message_type_id');
         $receiveMessages = $this->message->where('r_user_id', $user->id)->get()->groupBy('message_type_id');
        
