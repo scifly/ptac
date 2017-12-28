@@ -408,7 +408,7 @@ class MessageCenterController extends Controller {
                          $this->message->create($messageData);
                     }
                     #调用短信接口
-                    $this->frontSendSms($input);
+                    return $this->frontSendSms($input);
                 });
             } catch (Exception $e) {
                 throw $e;
@@ -457,7 +457,7 @@ class MessageCenterController extends Controller {
                     #推送微信服务器且显示详情页
                     $message = $this->message->where('msl_id', $input['msl_id'])->first();
                     $url = 'http:/sandbox.ddd:8080/ptac/public/message_show/' . $message->id;
-                    $this->frontSendMessage($input, $url);
+                    return $this->frontSendMessage($input, $url);
                 });
             } catch (Exception $e) {
                 throw $e;
@@ -527,22 +527,11 @@ class MessageCenterController extends Controller {
     /**
      * 短信消息发送
      * @param $input
-     * @return \Illuminate\Http\JsonResponse
+     * @return bool
      */
     private function frontSendSms($input){
         #调用短信接口
         $code = $this->message->sendSms($input['user_ids'], $input['department_ids'], $input['content']);
-        if ($code > 0) {
-                $result = [
-                    'statusCode' => 200,
-                    'message' => '消息已发送！',
-                ];
-            } else {
-                $result = [
-                    'statusCode' => 0,
-                    'message' => '出错！',
-                ];
-            }
-        return response()->json($result);
+        return $code>0 ? true : false;
     }
 }

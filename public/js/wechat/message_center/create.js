@@ -406,7 +406,7 @@ $(function () {
             media_ids.push($('.img-id').attr('id'));
         }
         if(type === 'sms'){
-            title = '0';
+            title = '短信信息';
         }
 
         $('.uploadimg-item').each(function () {
