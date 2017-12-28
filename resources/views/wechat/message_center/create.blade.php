@@ -24,7 +24,7 @@
 
 			<div class="mt5px msg-send-bg b-bottom hw-title">
 				<div class="weui-cell">
-					<div class="weui-cell__bd">
+					<div class="weui-cell__bd js-title">
 						<input id="title" name="title" type="text" placeholder="标题" maxlength="30" @if(isset($message)) value="{{ $message->title }}" @else value="" @endif  class="weui-input fs18 one-line title">
 					</div>
 				</div>
@@ -245,6 +245,13 @@
 
 			</div>
 		</div>
+        <div id="upload-wait" style="display:none;position: fixed;top: 0;height: 100%;width: 100%;z-index:999;background-color: #000;opacity: 0.4">
+            <div class="weui-loadmore" style="margin-top: 50%;">
+                <i class="weui-loading"></i>
+                <span class="weui-loadmore__tips">正在加载</span>
+            </div>
+        </div>
+
 @endsection
 @section('script')
     <script src="{{asset('/js/wechat/message_center/create.js')}}"></script>

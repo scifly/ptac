@@ -349,6 +349,8 @@ class MessageCenterController extends Controller {
     }
     
     /**
+     *
+     * 服务器端数据保存 后期用队列处理
      * @param $userId
      * @return bool
      * @throws Exception
@@ -370,70 +372,108 @@ class MessageCenterController extends Controller {
         }
         
         $receiveUserIds = array_merge($input['user_ids'], $userIds);
-        try {
-            DB::transaction(function () use ($receiveUserIds, $input, $user) {
-                $messageSendingLog = new MessageSendingLog();
-                #新增一条日志记录（指定批次）
-                $sendLogData = [
-                    'read_count' => 0,
-                    'received_count' => 0,
-                    'recipient_count' => count($receiveUserIds),
-                ];
-                $input['msl_id'] = $messageSendingLog->create($sendLogData)->id;
-                $msl = $messageSendingLog->whereId($input['msl_id'])->first();
-                if (isset($input['media_ids'])){
-                $input['media_ids'] = implode(',', $input['media_ids']);
-                } else {
-                    $input['media_ids'] = '0';
-                }
-                foreach ($receiveUserIds as $receiveUserId) {
-                    $messageData = [
-                        'title'           => $input['title'],
-                        'comm_type_id'    => 1,
-                        'app_id'          => 1,
-                        'msl_id'          => $input['msl_id'],
-                        'content'         => $input['content'],
-                        'serviceid'       => 0,
-                        'message_id'      => 0,
-                        'url'             => '0',
-                        'media_ids'       => $input['media_ids'],
-                        's_user_id'       => $user->id,
-                        'r_user_id'       => $receiveUserId,
-                        'message_type_id' => 1,
-                        'readed'          => 0,
-                        'sent'            => 0,
+        if ($input['type'] == 'sms'){
+            try {
+                DB::transaction(function () use ($receiveUserIds, $input, $user) {
+                    $messageSendingLog = new MessageSendingLog();
+                    #新增一条日志记录（指定批次）
+                    $sendLogData = [
+                        'read_count' => count($receiveUserIds),
+                        'received_count' => count($receiveUserIds),
+                        'recipient_count' => count($receiveUserIds),
                     ];
-                    $message = $this->message->create($messageData);
-                    $message->sent = 1;
-                    $message->save();
-                    #更新msl表
-                    $msl->received_count = $msl->received_count + 1;
-                    $msl->save();
-                }
-                #推送微信服务器且显示详情页
-                $message = $this->message->where('msl_id',$input['msl_id'])->first();
-                $url = 'http:/sandbox.ddd:8080/ptac/public/message_show/' . $message->id;
-                $this->frontSendMessage($input, $url);
-            });
-        } catch (Exception $e) {
-            throw $e;
+                    $input['msl_id'] = $messageSendingLog->create($sendLogData)->id;
+                    if (isset($input['media_ids'])){
+                        $input['media_ids'] = implode(',', $input['media_ids']);
+                    } else {
+                        $input['media_ids'] = '0';
+                    }
+                    foreach ($receiveUserIds as $receiveUserId) {
+                        $messageData = [
+                            'title'           => $input['title'],
+                            'comm_type_id'    => 1,
+                            'app_id'          => 1,
+                            'msl_id'          => $input['msl_id'],
+                            'content'         => $input['content'],
+                            'serviceid'       => 0,
+                            'message_id'      => 0,
+                            'url'             => '0',
+                            'media_ids'       => $input['media_ids'],
+                            's_user_id'       => $user->id,
+                            'r_user_id'       => $receiveUserId,
+                            'message_type_id' => 1,
+                            'readed'          => 1,
+                            'sent'            => 1,
+                        ];
+                         $this->message->create($messageData);
+                    }
+                    #调用短信接口
+                    $this->frontSendSms($input);
+                });
+            } catch (Exception $e) {
+                throw $e;
+            }
+        } else {
+            try {
+                DB::transaction(function () use ($receiveUserIds, $input, $user) {
+                    $messageSendingLog = new MessageSendingLog();
+                    #新增一条日志记录（指定批次）
+                    $sendLogData = [
+                        'read_count'      => 0,
+                        'received_count'  => 0,
+                        'recipient_count' => count($receiveUserIds),
+                    ];
+                    $input['msl_id'] = $messageSendingLog->create($sendLogData)->id;
+                    $msl = $messageSendingLog->whereId($input['msl_id'])->first();
+                    if (isset($input['media_ids'])) {
+                        $input['media_ids'] = implode(',', $input['media_ids']);
+                    } else {
+                        $input['media_ids'] = '0';
+                    }
+                    foreach ($receiveUserIds as $receiveUserId) {
+                        $messageData = [
+                            'title'           => $input['title'],
+                            'comm_type_id'    => 1,
+                            'app_id'          => 1,
+                            'msl_id'          => $input['msl_id'],
+                            'content'         => $input['content'],
+                            'serviceid'       => 0,
+                            'message_id'      => 0,
+                            'url'             => '0',
+                            'media_ids'       => $input['media_ids'],
+                            's_user_id'       => $user->id,
+                            'r_user_id'       => $receiveUserId,
+                            'message_type_id' => 1,
+                            'readed'          => 0,
+                            'sent'            => 0,
+                        ];
+                        $message = $this->message->create($messageData);
+                        $message->sent = 1;
+                        $message->save();
+                        #更新msl表
+                        $msl->received_count = $msl->received_count + 1;
+                        $msl->save();
+                    }
+                    #推送微信服务器且显示详情页
+                    $message = $this->message->where('msl_id', $input['msl_id'])->first();
+                    $url = 'http:/sandbox.ddd:8080/ptac/public/message_show/' . $message->id;
+                    $this->frontSendMessage($input, $url);
+                });
+            } catch (Exception $e) {
+                throw $e;
+            }
         }
-        
         return true;
     }
     
     /**
-     * 前端消息推送
+     * 前端应用消息推送 微信端
      *
      * @param $input
      * @param null $url
      * @return bool
      */
     private function frontSendMessage($input, $url = null) {
-        // if(empty($input['media_ids'])){
-        //     $input['type'] = 'text';
-        // }
-        // $input['type'] = 'textcard';
         $corpId = 'wxe75227cead6b8aec';
         $secret = 'qv_kkW2S3zmMWIUrV3u2nydcyIoLknTvuDMq7ja4TYE';
         $token = Wechat::getAccessToken($corpId, $secret, $url);
@@ -468,12 +508,9 @@ class MessageCenterController extends Controller {
             case 'image' :
                 $message['image'] = ['media_id' => $input['mediaid']];
                 break;
-            // case 'voice' :
-            //     $message['image'] = ['media_id' => $data['content']['media_id']];
-            //     break;
-            // case 'mpnews' :
-            //     $message['mpnews'] = ['articles' => $data['content']['articles']];
-            //     break;
+            case 'mpnews' :
+                $message['mpnews'] = ['articles' => $input['content']['articles']];
+                break;
             case 'video' :
                 $message['video'] = [
                     'media_id' => $input['mediaid'],
@@ -485,5 +522,27 @@ class MessageCenterController extends Controller {
         $message['msgtype'] = $input['type'];
         $status = json_decode(Wechat::sendMessage($token, $message));
         return $status->errcode == 0 ? true : false;
+    }
+    
+    /**
+     * 短信消息发送
+     * @param $input
+     * @return \Illuminate\Http\JsonResponse
+     */
+    private function frontSendSms($input){
+        #调用短信接口
+        $code = $this->message->sendSms($input['user_ids'], $input['department_ids'], $input['content']);
+        if ($code > 0) {
+                $result = [
+                    'statusCode' => 200,
+                    'message' => '消息已发送！',
+                ];
+            } else {
+                $result = [
+                    'statusCode' => 0,
+                    'message' => '出错！',
+                ];
+            }
+        return response()->json($result);
     }
 }

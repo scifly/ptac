@@ -78,6 +78,7 @@ msg_type.change(function () {
         case 'sms':
             //短信
             $('.js-content-item').hide();
+            $('.js-title').hide();
             $('.js-content').show();
             break;
     }
@@ -353,6 +354,7 @@ $(function () {
     });
 
     $('#upload_image').change(function () {
+        $('#upload-wait').show();
         var $this = $(this);
         var formData = new FormData();
         formData.append('file', $('#upload_image')[0].files[0]);
@@ -367,6 +369,7 @@ $(function () {
             processData: false,
             cache: false,
             success: function (result) {
+                $('#upload-wait').hide();
                 if (result.statusCode === 1) {
                     var html = '<img class="img-id" id="' + result.data.id + '" src="' + 'http://sandbox.ddd:8080/ptac/' + result.data.path + '" style="height: 200px; width: 300px">' +
                         '<input id="image_media_id" name="image_media_id" value="' + result.data.media_id + '" hidden>';
@@ -401,6 +404,9 @@ $(function () {
             content = '0';
             wechat_media_id = $('#image_media_id').val();
             media_ids.push($('.img-id').attr('id'));
+        }
+        if(type === 'sms'){
+            title = '0';
         }
 
         $('.uploadimg-item').each(function () {
