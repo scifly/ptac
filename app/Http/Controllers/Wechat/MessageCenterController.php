@@ -150,8 +150,23 @@ class MessageCenterController extends Controller {
      * @throws \Throwable
      */
     public function store() {
+        $corpId = 'wxe75227cead6b8aec';
+        $secret = 'qv_kkW2S3zmMWIUrV3u2nydcyIoLknTvuDMq7ja4TYE';
+        $agentId = 3;
+        $code = Request::input('code');
+        if (empty($code)) {
+            $codeUrl = Wechat::getCodeUrl($corpId, $agentId, 'http://weixin.028lk.com/message_create');
         
-        return $this->frontStore() ? $this->succeed() : $this->fail();
+            return redirect($codeUrl);
+        } else {
+            $code = Request::get('code');
+            $accessToken = Wechat::getAccessToken($corpId, $secret);
+            $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
+        }
+        $userId = $userInfo['UserId'];
+        
+        
+        return $this->frontStore($userId) ? $this->succeed() : $this->fail();
     }
     
     /**
@@ -312,8 +327,7 @@ class MessageCenterController extends Controller {
      * @throws Exception
      * @throws \Throwable
      */
-    private function frontStore() {
-        $userId = "yuanhongbin";
+    private function frontStore($userId) {
         $user = $this->user->where('userid', $userId)->first();
         $input = Request::all();
         $userIds = [];
