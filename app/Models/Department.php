@@ -772,6 +772,13 @@ class Department extends Model {
         return self::find($topLevelId)->parent->id;
         
     }
+
+    /**
+     * 获取一个数组部门下 连同子部门下的所有用户
+     *
+     * @param $toparty
+     * @return array
+     */
     public function getPartyUser ($toparty) {
         $users = [];
         $depts = new Collection();

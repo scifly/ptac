@@ -1,4 +1,4 @@
-
+page.index('messages');
 page.initSelect2({
     templateResult: page.formatStateImg,
     templateSelection: page.formatStateImg

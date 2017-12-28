@@ -12,6 +12,7 @@ use App\Models\Message;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Throwable;
 
@@ -40,12 +41,12 @@ class MessageController extends Controller {
     public function index() {
         
         if (Request::get('draw')) {
+            Log::debug(response()->json(Message::datatable()));
             return response()->json(Message::datatable());
         }
         if (Request::method() == 'POST') {
             return Department::contacts();
         }
-        
         return $this->output();
         
     }
