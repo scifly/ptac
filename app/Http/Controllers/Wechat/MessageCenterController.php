@@ -53,6 +53,8 @@ class MessageCenterController extends Controller {
         }
         $userId = $userInfo['userId'];
         print_r($userId);
+
+        // $userId = $this->getRole('http://weixin.028lk.com/message_center');
         $user = User::whereUserid($userId)->first();
         if (Request::isMethod('post')) {
             $keywords = Request::get('keywords');
