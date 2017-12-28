@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -20,8 +21,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $day 星期几？
  * @property int $inorout 进或出
  * @property string $msg_template 考勤消息模板
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @method static Builder|StudentAttendanceSetting whereCreatedAt($value)
  * @method static Builder|StudentAttendanceSetting whereDay($value)
  * @method static Builder|StudentAttendanceSetting whereEnd($value)
@@ -40,8 +41,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class StudentAttendanceSetting extends Model {
 
-    //
     protected $table = 'student_attendance_settings';
+    
     protected $fillable = [
         'name', 'grade_id', 'semester_id',
         'ispublic', 'start', 'end',
@@ -65,8 +66,13 @@ class StudentAttendanceSetting extends Model {
         return $this->belongsTo('App\Models\Semester', 'semester_id', 'id');
         
     }
-
-    public function datatable() {
+    
+    /**
+     * 学生考勤设置记录列表
+     *
+     * @return array
+     */
+    static function datatable() {
         
         $columns = [
             ['db' => 'StudentAttendanceSetting.id', 'dt' => 0],
@@ -113,11 +119,9 @@ class StudentAttendanceSetting extends Model {
                 ],
             ],
         ];
-        $school = new School();
-        $condition = 'Semester.school_id = ' . $school->getSchoolId();
-        unset($school);
+        $condition = 'Semester.school_id = ' . School::id();
         
-        return Datatable::simple($this, $columns, $joins,$condition);
+        return Datatable::simple(self::getModel(), $columns, $joins, $condition);
 
     }
 }

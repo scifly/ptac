@@ -53,7 +53,7 @@ class ActionController extends Controller {
     public function edit($id) {
 
         $action = $this->action->find($id);
-        if (!$action) { return parent::notFound(); }
+        if (!$action) { return $this->notFound(); }
 
         return $this->output(['action' => $action]);
 
@@ -69,10 +69,9 @@ class ActionController extends Controller {
     public function update(ActionRequest $request, $id) {
 
         $action = $this->action->find($id);
-        if (!$action) { return parent::notFound(); }
+        if (!$action) { return $this->notFound(); }
 
-        return $action->update($request->all())
-            ? parent::succeed() : parent::fail();
+        return $this->result($action->update($request->all()));
 
     }
     

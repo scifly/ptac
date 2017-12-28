@@ -2,15 +2,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\GroupRequest;
-use App\Models\Action;
-use App\Models\Corp;
 use App\Models\Group;
 use App\Models\Menu;
 use App\Models\School;
-use App\Models\Tab;
 use Exception;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Throwable;
 
@@ -22,20 +18,9 @@ use Throwable;
  */
 class GroupController extends Controller {
     
-    protected $group, $menu, $tab, $action, $corp, $school;
+    function __construct() {
     
-    function __construct(
-        Group $group, Menu $menu, Tab $tab,
-        Action $action, Corp $corp, School $school
-    ) {
-    
-        $this->middleware(['auth']);
-        $this->group = $group;
-        $this->menu = $menu;
-        $this->tab = $tab;
-        $this->action = $action;
-        $this->corp = $corp;
-        $this->school = $school;
+        $this->middleware(['auth', 'checkrole']);
         
     }
     
@@ -48,7 +33,7 @@ class GroupController extends Controller {
     public function index() {
         
         if (Request::get('draw')) {
-            return response()->json($this->group->datatable());
+            return response()->json(Group::datatable());
         }
 
         return $this->output();
@@ -66,7 +51,7 @@ class GroupController extends Controller {
         if (Request::method() === 'POST') {
             $schoolId = Request::query('schoolId');
             $menuId = School::whereId($schoolId)->first()->menu_id;
-            return $this->menu->getTree($menuId);
+            return Menu::schoolTree($menuId);
         }
 
         return $this->output();
@@ -79,11 +64,11 @@ class GroupController extends Controller {
      * @param GroupRequest $request
      * @return JsonResponse
      * @throws Exception
+     * @throws Throwable
      */
     public function store(GroupRequest $request) {
         
-        return $this->group->store($request->all())
-            ? $this->succeed() : $this->fail();
+        return $this->result(Group::store($request->all()));
         
     }
     
@@ -96,12 +81,12 @@ class GroupController extends Controller {
      */
     public function edit($id) {
         
-        $group = $this->group->find($id);
+        $group = Group::find($id);
         if (!$group) { return $this->notFound(); }
         if (Request::method() === 'POST') {
             $schoolId = Request::query('schoolId');
             $menuId = School::whereId($schoolId)->first()->menu_id;
-            return $this->menu->getTree($menuId);
+            return Menu::schoolTree($menuId);
         }
         
         return $this->output(['group' => $group]);
@@ -115,13 +100,14 @@ class GroupController extends Controller {
      * @param $id
      * @return JsonResponse
      * @throws Exception
+     * @throws Throwable
      */
     public function update(GroupRequest $request, $id) {
         
-        $group = $this->group->find($id);
+        $group = Group::find($id);
         if (!$group) { return $this->notFound(); }
-        return $group->modify($request->all(), $id)
-            ? $this->succeed() : $this->fail();
+        
+        return $this->result($group->modify($request->all(), $id));
         
     }
     
@@ -134,9 +120,10 @@ class GroupController extends Controller {
      */
     public function destroy($id) {
         
-        $group = $this->group->find($id);
+        $group = Group::find($id);
         if (!$group) { return $this->notFound(); }
-        return $group->remove($id) ? $this->succeed() : $this->fail();
+        
+        return $this->result($group->remove($id));
         
     }
     

@@ -17,13 +17,9 @@ use Throwable;
  */
 class SquadController extends Controller {
     
-    protected $class, $educator;
+    public function __construct() {
     
-    public function __construct(Squad $class, Educator $educator) {
-    
-        $this->middleware(['auth']);
-        $this->class = $class;
-        $this->educator = $educator;
+        $this->middleware(['auth', 'checkrole']);
         
     }
     
@@ -36,7 +32,7 @@ class SquadController extends Controller {
     public function index() {
         
         if (Request::get('draw')) {
-            return response()->json($this->class->datatable());
+            return response()->json(Squad::datatable());
         }
         
         return $this->output();
@@ -63,30 +59,10 @@ class SquadController extends Controller {
      */
     public function store(SquadRequest $request) {
         
-        return $this->class->store($request->all(), true)
-            ? $this->succeed() : $this->fail();
+        return $this->result(Squad::store($request->all(), true));
         
     }
     
-    // /**
-    //  * 班级详情
-    //  *
-    //  * @param $id
-    //  * @return bool|\Illuminate\Http\JsonResponse
-    //  */
-    // public function show($id) {
-    //
-    //     $class = $this->class->find($id);
-    //     if (!$class) {
-    //         return $this->notFound();
-    //     }
-    //     $educatorIds = explode(",", $class->educator_ids);
-    //     return $this->output([
-    //         'class'     => $class,
-    //         'educators' => $this->educator->educators($educatorIds),
-    //     ]);
-    //
-    // }
     /**
      * 编辑班级
      *
@@ -96,14 +72,15 @@ class SquadController extends Controller {
      */
     public function edit($id) {
         
-        $class = $this->class->find($id);
+        $class = Squad::find($id);
         $selectedEducators = [];
-        if (!$class) {
-            return $this->notFound();
-        }
+        if (!$class) { return $this->notFound(); }
         if ($class->educator_ids != '0') {
-            $selectedEducators = $this->educator->getEducatorListByIds(explode(",", $class->educator_ids));
+            $selectedEducators = Educator::educatorList(
+                explode(",", $class->educator_ids)
+            );
         }
+        
         return $this->output([
             'class'             => $class,
             'selectedEducators' => $selectedEducators
@@ -120,10 +97,10 @@ class SquadController extends Controller {
      */
     public function update(SquadRequest $request, $id) {
         
-        if (!$this->class->find($id)) { return $this->notFound(); }
+        $class = Squad::find($id);
+        if (!$class) { return $this->notFound(); }
         
-        return $this->class->modify($request->all(), $id, true)
-            ? $this->succeed() : $this->fail();
+        return $this->result(Squad::modify($request->all(), $id, true));
         
     }
     
@@ -136,9 +113,10 @@ class SquadController extends Controller {
      */
     public function destroy($id) {
         
-        if (!$this->class->find($id)) { return $this->notFound(); }
+        $class = Squad::find($id);
+        if (!$class) { return $this->notFound(); }
         
-        return $this->class->remove($id, true) ? $this->succeed() : $this->fail();
+        return $this->result($class->remove($id, true));
         
     }
     

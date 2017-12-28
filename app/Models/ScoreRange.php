@@ -58,9 +58,9 @@ class ScoreRange extends Model {
      * @param array $data
      * @return bool
      */
-    public function store(array $data) {
+    static function store(array $data) {
         
-        $scoreRange = $this->create($data);
+        $scoreRange = self::create($data);
 
         return $scoreRange ? true : false;
 
@@ -73,9 +73,9 @@ class ScoreRange extends Model {
      * @param $id
      * @return bool
      */
-    public function modify(array $data, $id) {
+    static function modify(array $data, $id) {
         
-        $scoreRange = $this->find($id);
+        $scoreRange = self::find($id);
         if (!$scoreRange) { return false; }
 
         return $scoreRange->update($data) ? true : false;
@@ -89,16 +89,21 @@ class ScoreRange extends Model {
      * @return bool|null
      * @throws \Exception
      */
-    public function remove($id) {
+    static function remove($id) {
         
-        $scoreRange = $this->find($id);
+        $scoreRange = self::find($id);
         if (!$scoreRange) { return false; }
 
-        return $this->removable($scoreRange) ? $scoreRange->delete() : false;
+        return self::removable($scoreRange) ? $scoreRange->delete() : false;
 
     }
-
-    public function datatable() {
+    
+    /**
+     * 分数统计范围列表
+     *
+     * @return array
+     */
+    static function datatable() {
         
         $columns = [
             ['db' => 'ScoreRange.id', 'dt' => 0],
@@ -125,14 +130,19 @@ class ScoreRange extends Model {
                 ],
             ],
         ];
-        $school = new School();
-        $schoolId = $school->getSchoolId();
-        $condition = 'ScoreRange.school_id = ' . $schoolId;
-        return Datatable::simple($this, $columns, $joins, $condition);
+        $condition = 'ScoreRange.school_id = ' . School::id();
+        
+        return Datatable::simple(self::getModel(), $columns, $joins, $condition);
 
     }
-
-    public function statistics($request) {
+    
+    /**
+     * 按分数范围进行统计
+     *
+     * @param $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    static function statistics($request) {
         
         //查询班级
         if ($request['type'] == 'grade') {
@@ -153,9 +163,7 @@ class ScoreRange extends Model {
             ->orderBy('scores.score', 'desc')
             ->get();
         //查找所有成绩统计项
-        $score_range = $this->select([
-            'id', 'name', 'subject_ids', 'start_score', 'end_score',
-        ])->get()->toArray();
+        $score_range = self::all()->toArray();
         //循环成绩项
         foreach ($score_range as $v) {
             $v->number = 0;

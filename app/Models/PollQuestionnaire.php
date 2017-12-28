@@ -102,16 +102,21 @@ class PollQuestionnaire extends Model {
      * @return bool|null
      * @throws Exception
      */
-    public function remove($id) {
+    static function remove($id) {
         
-        $pq = $this->find($id);
+        $pq = self::find($id);
         if (!$pq) { return false; }
 
-        return $this->removable($pq) ? $pq->delete() : false;
+        return self::removable($pq) ? $pq->delete() : false;
 
     }
-
-    public function dataTable() {
+    
+    /**
+     * 投票问卷列表
+     *
+     * @return array
+     */
+    static function dataTable() {
         
         $columns = [
             ['db' => 'PollQuestionnaire.id', 'dt' => 0],
@@ -148,7 +153,7 @@ class PollQuestionnaire extends Model {
             ],
         ];
         
-        return Datatable::simple($this, $columns, $joins);
+        return Datatable::simple(self::getModel(), $columns, $joins);
         
     }
     

@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ConferenceParticipantRequest;
 use App\Models\ConferenceParticipant;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 use Throwable;
@@ -15,12 +16,9 @@ use Throwable;
  */
 class ConferenceParticipantController extends Controller {
     
-    protected $cp;
+    function __construct() {
     
-    function __construct(ConferenceParticipant $cp) {
-    
-        $this->middleware(['auth']);
-        $this->cp = $cp;
+        $this->middleware(['auth', 'checkrole']);
         
     }
     
@@ -33,7 +31,7 @@ class ConferenceParticipantController extends Controller {
     public function index() {
         
         if (Request::get('draw')) {
-            return response()->json($this->cp->datatable());
+            return response()->json(ConferenceParticipant::datatable());
         }
         
         return $this->output();
@@ -45,11 +43,13 @@ class ConferenceParticipantController extends Controller {
      *
      * @param ConferenceParticipantRequest $request
      * @return JsonResponse
+     * @throws AuthorizationException
      */
     public function store(ConferenceParticipantRequest $request) {
         
-        return $this->cp->create($request->all())
-            ? $this->succeed() : $this->fail();
+        $this->authorize('c', ConferenceParticipant::class);
+        
+        return $this->result(ConferenceParticipant::create($request->all()));
         
     }
     
@@ -62,8 +62,8 @@ class ConferenceParticipantController extends Controller {
      */
     public function show($id) {
         
-        $cp = $this->cp->find($id);
-        if (!$cp) { return $this->notFound(); }
+        $cp = ConferenceParticipant::find($id);
+        $this->authorize('rud', $cp);
         
         return $this->output(['cp' => $cp]);
         

@@ -92,16 +92,16 @@ Route::group(['prefix' => 'score_ranges'], function () {
 });
 // 成绩统计/打印
 // 成绩发布
-Route::group(['prefix' => 'scoreSend'], function () {
-    $ctlr = 'Score_SendController';
-    Route::get('/', $ctlr . '@index');
-    Route::get('index', $ctlr . '@index@index');
-    Route::Post('getgrade/{id}', $ctlr . '@getGrade');
-    Route::Post('getclass/{id}', $ctlr . '@getClass');
-    Route::Post('getexam/{id}', $ctlr . '@getExam');
-    Route::Post('getsubject/{id}', $ctlr . '@getSubject');
-    Route::post('preview/{examId}/{classId}/{subjectIds}/{itemId}', $ctlr . '@preview');
-});
+// Route::group(['prefix' => 'scoreSend'], function () {
+//     $ctlr = 'Score_SendController';
+//     Route::get('/', $ctlr . '@index');
+//     Route::get('index', $ctlr . '@index@index');
+//     Route::Post('getgrade/{id}', $ctlr . '@getGrade');
+//     Route::Post('getclass/{id}', $ctlr . '@getClass');
+//     Route::Post('getexam/{id}', $ctlr . '@getExam');
+//     Route::Post('getsubject/{id}', $ctlr . '@getSubject');
+//     Route::post('preview/{examId}/{classId}/{subjectIds}/{itemId}', $ctlr . '@preview');
+// });
 /** 考勤管理 */
 // 考勤设置 - 考勤时段设置.考勤机设置
 Route::group(['prefix' => 'attendance_machines'], routes('AttendanceMachineController'));
@@ -192,12 +192,12 @@ Route::group(['prefix' => 'messages'], function () {
 });
 // 日历
 // 个人信息
-Route::group(['prefix' => 'personal_infos'], function () {
-    $ctlr = 'PersonalInfoController';
-    Route::get('index', $ctlr . '@index');
-    Route::put('update/{id}', $ctlr . '@update');
-    Route::post('upload_ava/{id}', $ctlr . '@uploadAvatar');
-});
+// Route::group(['prefix' => 'personal_infos'], function () {
+//     $ctlr = 'PersonalInfoController';
+//     Route::get('index', $ctlr . '@index');
+//     Route::put('update/{id}', $ctlr . '@update');
+//     Route::post('upload_ava/{id}', $ctlr . '@uploadAvatar');
+// });
 /** 订单管理 */
 Route::group(['prefix' => 'orders'], function () {
     $ctlr = 'OrderController';

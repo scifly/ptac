@@ -34,7 +34,7 @@ class CustodianRelationshipComposer {
                 ->where('enabled', 1)
                 ->pluck('name', 'id');
         } else {
-            $topDepartmentId = $this->user->topDeptId($user);
+            $topDepartmentId = $this->user->topDeptId();
             $departmentType = Department::whereId($topDepartmentId)->first()->departmentType;
             switch ($departmentType->name) {
                 case '根':

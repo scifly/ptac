@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ProcedureRequest;
 use App\Models\Procedure;
 use Exception;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 use Throwable;
@@ -16,12 +17,9 @@ use Throwable;
  */
 class ProcedureController extends Controller {
     
-    protected $procedure;
+    function __construct() {
     
-    function __construct(Procedure $procedure) {
-    
-        $this->middleware(['auth']);
-        $this->procedure = $procedure;
+        $this->middleware(['auth', 'checkrole']);
     
     }
     
@@ -32,8 +30,11 @@ class ProcedureController extends Controller {
      * @throws Throwable
      */
     public function index() {
+        
         if (Request::get('draw')) {
-            return response()->json($this->procedure->datatable());
+            return response()->json(
+                Procedure::datatable()
+            );
         }
         
         return $this->output();
@@ -48,6 +49,8 @@ class ProcedureController extends Controller {
      */
     public function create() {
         
+        $this->authorize('c', Procedure::class);
+        
         return $this->output();
         
     }
@@ -57,10 +60,13 @@ class ProcedureController extends Controller {
      *
      * @param ProcedureRequest $request
      * @return JsonResponse
+     * @throws AuthorizationException
      */
     public function store(ProcedureRequest $request) {
-        return $this->procedure->store($request->all())
-            ? $this->succeed() : $this->fail();
+        
+        $this->authorize('c', Procedure::class);
+        
+        return $this->result(Procedure::store($request->all()));
         
     }
     
@@ -72,10 +78,9 @@ class ProcedureController extends Controller {
      * @throws Throwable
      */
     public function show($id) {
-        $procedure = $this->procedure->find($id);
-        if (!$procedure) {
-            return $this->notFound();
-        }
+        
+        $procedure = Procedure::find($id);
+        $this->authorize('rud', $procedure);
         
         return $this->output(['procedure' => $procedure]);
         
@@ -89,10 +94,9 @@ class ProcedureController extends Controller {
      * @throws Throwable
      */
     public function edit($id) {
-        $procedure = $this->procedure->find($id);
-        if (!$procedure) {
-            return $this->notFound();
-        }
+        
+        $procedure = Procedure::find($id);
+        $this->authorize('rud', $procedure);
         
         return $this->output(['procedure' => $procedure]);
         
@@ -104,15 +108,15 @@ class ProcedureController extends Controller {
      * @param ProcedureRequest $request
      * @param $id
      * @return JsonResponse
+     * @throws AuthorizationException
      */
     public function update(ProcedureRequest $request, $id) {
-        $procedure = $this->procedure->find($id);
-        if (!$procedure) {
-            return $this->notFound();
-        }
         
-        return $procedure->modify($request->all(), $id)
-            ? $this->succeed() : $this->fail();
+        $procedure = Procedure::find($id);
+        $this->authorize('rud', $procedure);
+        
+        return $this->result($procedure->modify($request->all(), $id));
+        
     }
     
     /**
@@ -123,13 +127,11 @@ class ProcedureController extends Controller {
      * @throws Exception
      */
     public function destroy($id) {
-        $procedure = $this->procedure->find($id);
-        if (!$procedure) {
-            return $this->notFound();
-        }
         
-        return $procedure->remove($id)
-            ? $this->succeed() : $this->fail();
+        $procedure = Procedure::find($id);
+        $this->authorize('rud', $procedure);
+        
+        return $this->result($procedure->remove($id));
         
     }
     

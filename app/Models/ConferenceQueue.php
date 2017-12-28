@@ -76,9 +76,10 @@ class ConferenceQueue extends Model {
      * @param array $data
      * @return bool
      */
-    public function store(array $data) {
+    static function store(array $data) {
 
-        $cq = $this->create($data);
+        $cq = self::create($data);
+        
         return $cq ? true : false;
 
     }
@@ -90,12 +91,11 @@ class ConferenceQueue extends Model {
      * @param $id
      * @return bool
      */
-    public function modify(array $data, $id) {
+    static function modify(array $data, $id) {
 
-        $cq = $this->find($id);
-        if (!$cq) {
-            return false;
-        }
+        $cq = self::find($id);
+        if (!$cq) {return false;}
+        
         return $cq->update($data) ? true : false;
 
     }
@@ -107,16 +107,21 @@ class ConferenceQueue extends Model {
      * @return bool
      * @throws Exception
      */
-    public function remove($id) {
+    static function remove($id) {
 
-        $cq = $this->find($id);
+        $cq = self::find($id);
         if (!$cq) { return false; }
         
         return $cq->removable($id) ? $cq->delete() : false;
 
     }
-
-    public function datatable() {
+    
+    /**
+     * 会议列表
+     *
+     * @return array
+     */
+    static function datatable() {
 
         $columns = [
             ['db' => 'ConferenceQueue.id', 'dt' => 0],
@@ -160,7 +165,7 @@ class ConferenceQueue extends Model {
             ],
         ];
 
-        return Datatable::simple($this, $columns, $joins);
+        return Datatable::simple(ConferenceQueue::getModel(), $columns, $joins);
 
     }
 

@@ -21,9 +21,7 @@ class ScoreTotalController extends Controller {
     
     function __construct(ScoreTotal $score_total, Subject $subject) {
     
-        $this->middleware(['auth']);
-        $this->scoreTotal = $score_total;
-        $this->subject = $subject;
+        $this->middleware(['auth', 'checkrole']);
         
     }
     
@@ -36,7 +34,9 @@ class ScoreTotalController extends Controller {
     public function index() {
         
         if (Request::get('draw')) {
-            return response()->json($this->scoreTotal->datatable());
+            return response()->json(
+                ScoreTotal::datatable()
+            );
         }
         
         return $this->output();
@@ -52,15 +52,14 @@ class ScoreTotalController extends Controller {
      */
     public function show($id) {
         
-        $scoreTotal = $this->scoreTotal->find($id);
-        if (!$scoreTotal) {
-            return $this->notFound();
-        }
+        $st = ScoreTotal::find($id);
+        if (!$st) { return $this->notFound(); }
+        
         return $this->output([
-            'score_total' => $scoreTotal,
-            'studentname' => $scoreTotal->student->user->realname,
-            'subjects'    => $this->subject->subjects($scoreTotal->subject_ids),
-            'na_subjects' => $this->subject->subjects($scoreTotal->na_subject_ids),
+            'score_total' => $st,
+            'studentname' => $st->student->user->realname,
+            'subjects'    => Subject::subjects($st->subject_ids),
+            'na_subjects' => Subject::subjects($st->na_subject_ids),
         ]);
         
     }
@@ -74,7 +73,7 @@ class ScoreTotalController extends Controller {
      */
     public function statistics($examId) {
         
-        return $this->scoreTotal->statistics($examId) ? $this->succeed() : $this->fail();
+        return $this->result(ScoreTotal::statistics($examId));
         
     }
     

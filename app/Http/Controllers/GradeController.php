@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 use App\Http\Requests\GradeRequest;
 use App\Models\Educator;
 use App\Models\Grade;
+use App\Models\GroupTab;
 use Exception;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 
@@ -16,13 +18,9 @@ use Illuminate\Support\Facades\Request;
  */
 class GradeController extends Controller {
     
-    protected $grade, $educator;
-    
-    function __construct(Grade $grade, Educator $educator) {
+    function __construct() {
         
-        $this->middleware(['auth']);
-        $this->grade = $grade;
-        $this->educator = $educator;
+        $this->middleware(['auth', 'checkrole']);
         
     }
     
@@ -35,7 +33,7 @@ class GradeController extends Controller {
     public function index() {
         
         if (Request::get('draw')) {
-            return response()->json($this->grade->datatable());
+            return response()->json(Grade::datatable());
         }
         
         return $this->output();
@@ -50,6 +48,8 @@ class GradeController extends Controller {
      */
     public function create() {
         
+        $this->authorize('c', Grade::class);
+        
         return $this->output();
         
     }
@@ -59,33 +59,16 @@ class GradeController extends Controller {
      *
      * @param GradeRequest $request
      * @return JsonResponse
+     * @throws AuthorizationException
      */
     public function store(GradeRequest $request) {
         
-        return $this->grade->store($request->all(), true)
-            ? $this->succeed() : $this->fail();
+        $this->authorize('c', Grade::class);
+        
+        return $this->result(Grade::store($request->all(), true));
         
     }
     
-    // /**
-    //  * 年级详情
-    //  *
-    //  * @param $id
-    //  * @return bool|\Illuminate\Http\JsonResponse
-    //  */
-    // public function show($id) {
-    //
-    //     $grade = $this->grade->find($id);
-    //     if (!$grade) {
-    //         return $this->notFound();
-    //     }
-    //
-    //     return $this->output([
-    //         'grade'     => $grade,
-    //         'educators' => $this->educator->educators($grade->educator_ids),
-    //     ]);
-    //
-    // }
     /**
      * 编辑年级
      *
@@ -95,14 +78,16 @@ class GradeController extends Controller {
      */
     public function edit($id) {
         
-        $grade = $this->grade->find($id);
+        $grade = Grade::find($id);
+        $this->authorize('rud', $grade);
+        
         $selectedEducators = [];
-        if (!$grade) {
-            return $this->notFound();
-        }
         if ($grade->educator_ids != '0') {
-            $selectedEducators = $this->educator->getEducatorListByIds(explode(",", $grade->educator_ids));
+            $selectedEducators = Educator::educatorList(
+                explode(",", $grade->educator_ids)
+            );
         }
+        
         return $this->output([
             'grade'             => $grade,
             'selectedEducators' => $selectedEducators,
@@ -116,15 +101,14 @@ class GradeController extends Controller {
      * @param GradeRequest $request
      * @param $id
      * @return JsonResponse
+     * @throws AuthorizationException
      */
     public function update(GradeRequest $request, $id) {
         
-        if (!$this->grade->find($id)) {
-            return $this->notFound();
-        }
+        $grade = Grade::find($id);
+        $this->authorize('rud', $grade);
         
-        return $this->grade->modify($request->all(), $id, true)
-            ? $this->succeed() : $this->fail();
+        return $this->result($grade::modify($request->all(), $id, true));
         
     }
     
@@ -136,11 +120,11 @@ class GradeController extends Controller {
      * @throws Exception
      */
     public function destroy($id) {
+       
+        $grade = Grade::find($id);
+        $this->authorize('rud', $grade);
         
-        if (!$this->grade->find($id)) { return $this->notFound(); }
-        
-        return $this->grade->remove($id, true)
-            ? $this->succeed() : $this->fail();
+        return $this->result($grade::remove($id, true));
         
     }
     

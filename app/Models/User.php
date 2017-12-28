@@ -7,6 +7,7 @@ use App\Events\UserDeleted;
 use App\Events\UserUpdated;
 use App\Facades\DatatableFacade as Datatable;
 use Carbon\Carbon;
+use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -17,11 +18,12 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Notifications\DatabaseNotificationCollection;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * App\User 用户
  *
- * @mixin \Eloquent
+ * @mixin Eloquent
  * @property int $id
  * @property int $group_id 所属角色/权限ID
  * @property string $username 用户名
@@ -35,7 +37,6 @@ use Illuminate\Notifications\Notifiable;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property int $enabled
- * @property-read DatabaseNotificationCollection|DatabaseNotification[] $notifications
  * @property string $userid 成员userid
  * @property string|null $english_name 英文名
  * @property string $department_ids 用户所属部门IDs
@@ -45,9 +46,6 @@ use Illuminate\Notifications\Notifiable;
  * @property int|null $order 部门内的排序值，默认为0。数量必须和department一致，数值越大排序越前面
  * @property string|null $mobile 手机号码
  * @property string|null $avatar_mediaid 成员头像的mediaid，通过多媒体接口上传图片获得的mediaid
- * @property-read Custodian $custodian
- * @property-read Educator $educator
- * @property-read Student $student
  * @method static Builder|User whereAvatarUrl($value)
  * @method static Builder|User whereCreatedAt($value)
  * @method static Builder|User whereEmail($value)
@@ -70,6 +68,9 @@ use Illuminate\Notifications\Notifiable;
  * @method static Builder|User wherePosition($value)
  * @method static Builder|User whereTelephone($value)
  * @method static Builder|User whereUserid($value)
+ * @property-read Custodian $custodian
+ * @property-read Educator $educator
+ * @property-read Student $student
  * @property-read Group $group
  * @property-read Operator $operator
  * @property-read PollQuestionnaireAnswer $pollquestionnaireAnswer
@@ -82,6 +83,7 @@ use Illuminate\Notifications\Notifiable;
  * @property-read Collection|Department[] $departments
  * @property-read Collection|Mobile[] $mobiles
  * @property-read Collection|Order[] $orders
+ * @property-read DatabaseNotificationCollection|DatabaseNotification[] $notifications
  */
 class User extends Authenticatable {
 
@@ -216,11 +218,11 @@ class User extends Authenticatable {
      * @param array $userIds
      * @return array
      */
-    public function users(array $userIds) {
+    static function users(array $userIds) {
 
         $users = [];
         foreach ($userIds as $id) {
-            $user = $this->find($id);
+            $user = self::find($id);
             $users[$user->id] = $user->realname;
         }
 
@@ -231,12 +233,11 @@ class User extends Authenticatable {
     /**
      * 返回用户所属最顶级部门的ID
      *
-     * @param User $user
      * @return mixed
      */
-    public function topDeptId(User $user) {
+    static function topDeptId() {
         
-        $departmentIds = $user->departments
+        $departmentIds = Auth::user()->departments
             ->pluck('id')
             ->toArray();
         $levels = [];
@@ -258,15 +259,13 @@ class User extends Authenticatable {
      * @param $deptId
      * @return int|mixed
      */
-    public function getDeptSchoolId(&$deptId) {
+    static function getDeptSchoolId(&$deptId) {
 
         $dept = Department::find($deptId);
-
         $typeId = DepartmentType::where('name', '学校')->first()->id;
-
         if ($dept->department_type_id != $typeId) {
             $deptId = $dept->parent_id;
-            return $this->getDeptSchoolId($deptId);
+            return self::getDeptSchoolId($deptId);
         }else{
             return $deptId;
         }
@@ -276,9 +275,9 @@ class User extends Authenticatable {
      *
      * @param $id
      */
-    public function createWechatUser($id) {
+    static function createWechatUser($id) {
 
-        $user = $this->find($id);
+        $user = self::find($id);
         $mobile = Mobile::whereUserId($id)->where('isdefault', 1)->first()->mobile;
         $data = [
             'userid' => $user->userid,
@@ -292,9 +291,9 @@ class User extends Authenticatable {
 
     }
 
-    public function importData(&$data) {
+    static function importData(&$data) {
         
-        $u = $this->create($data);
+        $u = self::create($data);
         $data['id'] = $u->id;
         
     }
@@ -304,9 +303,9 @@ class User extends Authenticatable {
      *
      * @param $id
      */
-    public function updateWechatUser($id) {
+    static function updateWechatUser($id) {
 
-        $user = $this->find($id);
+        $user = self::find($id);
         $mobile = Mobile::whereUserId($id)->where('isdefault', 1)->first()->mobile;
         $data = [
             'userid' => $user->userid,
@@ -326,13 +325,18 @@ class User extends Authenticatable {
      *
      * @param $id
      */
-    public function deleteWechatUser($id) {
+    static function deleteWechatUser($id) {
 
-        event(new UserDeleted($this->find($id)->userid));
+        event(new UserDeleted(self::find($id)->userid));
 
     }
-
-    public function datatable() {
+    
+    /**
+     * 用户列表
+     *
+     * @return array
+     */
+    static function datatable() {
 
         $columns = [
             ['db' => 'User.id', 'dt' => 0],
@@ -367,7 +371,7 @@ class User extends Authenticatable {
             ],
         ];
 
-        return Datatable::simple($this, $columns, $joins);
+        return Datatable::simple(self::getModel(), $columns, $joins);
 
     }
 

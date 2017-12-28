@@ -3,6 +3,7 @@ namespace App\Http\Controllers\Wechat;
 
 use App\Facades\Wechat;
 use App\Helpers\ControllerTrait;
+
 use App\Http\Controllers\Controller;
 use App\Models\Department;
 use App\Models\Media;

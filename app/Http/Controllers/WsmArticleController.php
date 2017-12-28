@@ -17,14 +17,9 @@ use Throwable;
  */
 class WsmArticleController extends Controller {
     
-    protected $article;
-    protected $media;
-    
-    public function __construct(WsmArticle $article, Media $media) {
+    public function __construct() {
         
-        $this->middleware(['auth']);
-        $this->article = $article;
-        $this->media = $media;
+        $this->middleware(['auth', 'checkrole']);
         
     }
     
@@ -37,7 +32,7 @@ class WsmArticleController extends Controller {
     public function index() {
         
         if (Request::get('draw')) {
-            return response()->json($this->article->datatable());
+            return response()->json(WsmArticle::datatable());
         }
         
         return $this->output();
@@ -62,11 +57,11 @@ class WsmArticleController extends Controller {
      * @param WsmArticleRequest $request
      * @return JsonResponse
      * @throws Exception
+     * @throws Throwable
      */
     public function store(WsmArticleRequest $request) {
         
-        return $this->article->store($request)
-            ? $this->succeed() : $this->fail();
+        return $this->result(WsmArticle::store($request));
         
     }
     
@@ -79,12 +74,12 @@ class WsmArticleController extends Controller {
      */
     public function show($id) {
         
-        $article = $this->article->find($id);
+        $article = WsmArticle::find($id);
         if (!$article) { return parent::notFound(); }
         
         return $this->output([
             'article' => $article,
-            'medias'  => $this->media->medias($article->media_ids),
+            'medias'  => Media::medias($article->media_ids),
         ]);
         
     }
@@ -98,12 +93,12 @@ class WsmArticleController extends Controller {
      */
     public function edit($id) {
         
-        $article = $this->article->find($id);
+        $article = WsmArticle::find($id);
         if (!$article) { return parent::notFound(); }
         
         return $this->output([
             'article' => $article,
-            'medias'  => $this->media->medias($article->media_ids),
+            'medias'  => Media::medias($article->media_ids),
         ]);
         
     }
@@ -115,11 +110,13 @@ class WsmArticleController extends Controller {
      * @param $id
      * @return JsonResponse
      * @throws Exception
+     * @throws Throwable
      */
     public function update(WsmArticleRequest $request, $id) {
         
-        return $this->article->modify($request, $id)
-            ? $this->succeed() : $this->fail();
+        $article = WsmArticle::find($id);
+        
+        return $this->result($article->modify($request, $id));
         
     }
     
@@ -132,10 +129,10 @@ class WsmArticleController extends Controller {
      */
     public function destroy($id) {
         
-        $article = $this->article->find($id);
+        $article = WsmArticle::find($id);
         if (!$article) { return parent::notFound(); }
         
-        return $article->delete() ? parent::succeed() : parent::fail();
+        return $this->result($article->delete());
         
     }
     
@@ -147,11 +144,11 @@ class WsmArticleController extends Controller {
      */
     public function detail($id) {
         
-        $article = $this->article->find($id);
+        $article = WsmArticle::find($id);
         
         return view('frontend.wap_site.article', [
             'article' => $article,
-            'medias'  => $this->media->medias($article->media_ids),
+            'medias'  => Media::medias($article->media_ids),
         ]);
         
     }

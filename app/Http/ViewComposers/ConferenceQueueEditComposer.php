@@ -23,7 +23,7 @@ class ConferenceQueueEditComposer {
     public function compose(View $view) {
 
         $view->with([
-            'selectedEducators' => $this->educator->getEducatorListByIds(
+            'selectedEducators' => $this->educator->educatorList(
                 ConferenceQueue::find(Request::route('id'))->educator_ids),
             'uris' => $this->uris()
 

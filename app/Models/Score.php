@@ -64,8 +64,13 @@ class Score extends Model {
      * @return BelongsTo
      */
     public function exam() { return $this->belongsTo('App\Models\Exam'); }
-
-    public function datatable() {
+    
+    /**
+     * 分数记录列表
+     *
+     * @return array
+     */
+    static function datatable() {
 
         $columns = [
             ['db' => 'Score.id', 'dt' => 0],
@@ -128,10 +133,11 @@ class Score extends Model {
             ],
         ];
 
-        return Datatable::simple($this, $columns, $joins);
+        return Datatable::simple(self::getModel(), $columns, $joins);
+        
     }
 
-    public function statistics($exam_id) {
+    static function statistics($exam_id) {
         
         $class_ids = DB::table('exams')->where('id', $exam_id)->value('class_ids');
         $class = DB::table('classes')
@@ -146,8 +152,7 @@ class Score extends Model {
         //循环每个年级
         foreach ($grades as $class_ids_arr) {
             //查找此年级所有班级的学生的各科成绩
-            $score = $this
-                ->join('students', 'students.id', '=', 'scores.student_id')
+            $score = self::join('students', 'students.id', '=', 'scores.student_id')
                 ->whereIn('students.class_id', $class_ids_arr)
                 ->where('scores.exam_id', $exam_id)
                 ->select(['scores.id', 'scores.student_id', 'scores.subject_id', 'scores.score', 'students.class_id'])
@@ -170,7 +175,7 @@ class Score extends Model {
                 }
                 //写入年级排名
                 foreach ($val as $grade_rank) {
-                    $this->where('id', $grade_rank->id)->update(['grade_rank' => $grade_rank->grade_rank]);
+                    self::find($grade_rank->id)->update(['grade_rank' => $grade_rank->grade_rank]);
                 }
                 //通过班级分组
                 $classes = [];
@@ -189,7 +194,7 @@ class Score extends Model {
                     }
                     //写入年级排名
                     foreach ($v as $class_rank) {
-                        $this->where('id', $class_rank->id)->update(['class_rank' => $class_rank->class_rank]);
+                        self::find($class_rank->id)->update(['class_rank' => $class_rank->class_rank]);
                     }
                 }
             }

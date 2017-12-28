@@ -24,7 +24,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|PollQuestionnaireAnswer whereUserId($value)
  * @mixin \Eloquent
  * @property-read PollQuestionnaire $pollquestionnaire
- * @property-read PollQuestionnaireChoice $pollquestionnaireChoice
+ * @property-read PollQuestionnaireSubjectChoice $pollquestionnaireChoice
  * @property-read PollQuestionnaireSubject $pollquestionnaireSubject
  * @property-read User $user
  */
@@ -40,6 +40,6 @@ class PollQuestionnaireAnswer extends Model {
 
     public function pollquestionnaireSubject() { return $this->belongsTo('App\Models\PollQuestionnaireSubject'); }
 
-    public function pollquestionnaireChoice() { return $this->hasOne('App\Models\PollQuestionnaireChoice'); }
+    public function pollquestionnaireChoice() { return $this->hasOne('App\Models\PollQuestionnaireSubjectChoice'); }
     
 }

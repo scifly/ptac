@@ -64,20 +64,15 @@ class Major extends Model {
         );
 
     }
-
+    
     /**
      * 返回专业列表
      *
-     * @param null $schoolId
-     * @return Collection|\Illuminate\Support\Collection
+     * @return Collection
      */
-    public function majors($schoolId = null) {
+    static function majors() {
 
-        if (isset($schoolId)) {
-            return $this->where('school_id', $schoolId)->get()->pluck('id', 'name');
-        }
-
-        return $this->pluck('id', 'name');
+        return self::whereSchoolId(School::id())->get()->pluck('name', 'id');
 
     }
     
@@ -89,14 +84,13 @@ class Major extends Model {
      * @throws Exception
      * @throws \Throwable
      */
-    public function store(MajorRequest $request) {
+    static function store(MajorRequest $request) {
 
         try {
             DB::transaction(function () use ($request) {
-                $m = $this->create($request->all());
-                $majorSubject = new MajorSubject();
+                $m = self::create($request->all());
                 $subjectIds = $request->input('subject_ids', []);
-                $majorSubject->storeByMajorId($m->id, $subjectIds);
+                MajorSubject::storeByMajorId($m->id, $subjectIds);
             });
 
         } catch (Exception $e) {
@@ -115,12 +109,10 @@ class Major extends Model {
      * @throws Exception
      * @throws \Throwable
      */
-    public function modify(MajorRequest $request, $id) {
+    static function modify(MajorRequest $request, $id) {
 
-        $major = $this->find($id);
-        if (!isset($major)) {
-            return false;
-        }
+        $major = self::find($id);
+        if (!isset($major)) { return false; }
         try {
             DB::transaction(function () use ($request, $id, $major) {
                 $major->update($request->all());
@@ -132,7 +124,9 @@ class Major extends Model {
         } catch (Exception $e) {
             throw $e;
         }
+        
         return true;
+        
     }
     
     /**
@@ -143,12 +137,10 @@ class Major extends Model {
      * @throws Exception
      * @throws \Throwable
      */
-    public function remove($id) {
+    static function remove($id) {
 
-        $major = $this->find($id);
-        if (!isset($major)) {
-            return false;
-        }
+        $major = self::find($id);
+        if (!isset($major)) { return false; }
         try {
             DB::transaction(function () use ($id, $major) {
                 # 删除指定的专业记录
@@ -156,14 +148,20 @@ class Major extends Model {
                 # 删除与指定专业绑定的科目记录
                 MajorSubject::whereMajorId($id)->delete();
             });
-
         } catch (Exception $e) {
             throw $e;
         }
+        
         return true;
+        
     }
-
-    public function datatable() {
+    
+    /**
+     * 专业列表
+     *
+     * @return array
+     */
+    static function datatable() {
 
         $columns = [
             ['db' => 'Major.id', 'dt' => 0],
@@ -198,11 +196,9 @@ class Major extends Model {
                 ],
             ],
         ];
-        $school = new School();
-        $schoolId = $school->getSchoolId();
-        $condition = 'Major.school_id = ' . $schoolId;
-        unset($school);
-        return DataTable::simple($this, $columns, $joins, $condition);
+        $condition = 'Major.school_id = ' . School::id();
+
+        return DataTable::simple(self::getModel(), $columns, $joins, $condition);
 
     }
 

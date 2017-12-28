@@ -59,7 +59,7 @@ class EducatorAttendanceSetting extends Model {
      */
     public function school() { return $this->belongsTo('App\Models\School'); }
 
-    public function datatable() {
+    static function datatable() {
         
         $columns = [
             ['db' => 'EducatorAttendanceSetting.id', 'dt' => 0],
@@ -96,12 +96,9 @@ class EducatorAttendanceSetting extends Model {
                 ],
             ],
         ];
-        $school = new School();
-        $schoolId = $school->getSchoolId();
-        $condition = 'EducatorAttendanceSetting.school_id = ' . $schoolId;
-        unset($school);
+        $condition = 'EducatorAttendanceSetting.school_id = ' . School::id();
         
-        return Datatable::simple($this, $columns, $joins, $condition);
+        return Datatable::simple(self::getModel(), $columns, $joins, $condition);
 
     }
 

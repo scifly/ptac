@@ -2,6 +2,7 @@
 
 namespace App\Http\ViewComposers;
 
+use App\Helpers\ControllerTrait;
 use App\Models\Educator;
 use App\Models\School;
 use App\Models\Subject;
@@ -9,14 +10,11 @@ use Illuminate\Contracts\View\View;
 
 class EventComposer {
     
-    protected $school;
+    use ControllerTrait;
     
-    public function __construct(School $school) {
-        $this->school = $school;
-    }
-
     public function compose(View $view) {
-        $schoolId = $this->school->getSchoolId();
+        
+        $schoolId = School::id();
         $educators = Educator::whereSchoolId($schoolId)
             ->where('enabled',1)
             ->get();
@@ -27,9 +25,13 @@ class EventComposer {
         $subjects = Subject::whereSchoolId($schoolId)
             ->where('enabled',1)
             ->pluck('name','id');
+        
         $view->with([
             'educators' => $educatorUsers,
             'subjects'  => $subjects,
+            'uris'      => $this->uris()
         ]);
+        
     }
+    
 }

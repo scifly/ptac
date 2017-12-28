@@ -12,17 +12,10 @@ class SubjectComposer {
     
     use ControllerTrait;
     
-    protected $school;
-
-    public function __construct(School $school) {
-        
-        $this->school = $school;
-        
-    }
-
     public function compose(View $view) {
         
-        $schoolId = $this->school->getSchoolId();
+        $schoolId = School::id();
+        
         $view->with([
             'schoolId' => $schoolId,
             'grades' => Grade::whereSchoolId($schoolId)->pluck('name', 'id'),
@@ -31,4 +24,5 @@ class SubjectComposer {
         ]);
         
     }
+    
 }

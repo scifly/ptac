@@ -71,6 +71,7 @@ class OperatorController extends Controller {
      * @param OperatorRequest $request
      * @return JsonResponse
      * @throws Exception
+     * @throws Throwable
      */
     public function store(OperatorRequest $request) {
         
@@ -124,6 +125,7 @@ class OperatorController extends Controller {
      * @param $id
      * @return JsonResponse
      * @throws Exception
+     * @throws Throwable
      */
     public function update(OperatorRequest $request, $id) {
         

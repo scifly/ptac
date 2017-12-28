@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use Carbon\Carbon;
+use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -11,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Facades\DB;
 use ReflectionClass;
+use Throwable;
 
 /**
  * App\Models\Tab
@@ -18,8 +21,8 @@ use ReflectionClass;
  * @property int $id
  * @property string $name 卡片名称
  * @property string|null $remark 卡片备注
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property int $enabled
  * @method static Builder|Tab whereCreatedAt($value)
  * @method static Builder|Tab whereEnabled($value)
@@ -28,7 +31,7 @@ use ReflectionClass;
  * @method static Builder|Tab whereRemark($value)
  * @method static Builder|Tab whereUpdatedAt($value)
  * @method static Builder|Tab whereGroupId($value)
- * @mixin \Eloquent
+ * @mixin Eloquent
  * @property-read Collection|Action[] $actions
  * @property-read Collection|Menu[] $menus
  * @property int|null $icon_id 图标ID
@@ -46,12 +49,12 @@ class Tab extends Model {
         'name', 'remark', 'icon_id','group_id',
         'action_id', 'enabled', 'controller',
     ];
-    protected $excluded_controllers = [
+    const EXCLUDED_CONTROLLERS = [
         'ForgotPasswordController', 'Controller', 'RegisterController',
         'LoginController', 'ResetPasswordController', 'TestController',
+        'MessageCenterController', 'HomeWorkController', 'MobileSiteController'
     ];
-
-    protected $ctlrDir = 'app/Http/Controllers';
+    const CONTROLLER_DIR = 'app/Http/Controllers';
 
     /**
      * 返回指定卡片所属的菜单对象
@@ -73,32 +76,31 @@ class Tab extends Model {
      * @return BelongsTo
      */
     public function action() { return $this->belongsTo('App\Models\Action'); }
-
+    
     /**
      * 扫描
      *
      * @return bool
      * @throws Exception
+     * @throws Throwable
      */
-    public function scan() {
+    static function scan() {
 
         $action = new Action();
-        $controllers = $this->scanDirectories($action->getSiteRoot() . $this->ctlrDir);
+        $controllers = self::controllerPaths($action->getSiteRoot() . self::CONTROLLER_DIR);
         $action->getControllerNamespaces($controllers);
         $controllerNames = $action->getControllerNames($controllers);
         // remove nonexisting controllers
         $existingCtlrs = [];
-        $ctlrs = $this->groupBy('controller')->get(['controller'])->toArray();
+        $ctlrs = self::groupBy('controller')->get(['controller'])->toArray();
         foreach ($ctlrs as $ctlr) {
             $existingCtlrs[] = $ctlr['controller'];
         }
         $ctlrDiff = array_diff($existingCtlrs, $controllerNames);
         foreach ($ctlrDiff as $ctlr) {
-            $tab = $this->where('controller', $ctlr)->first();
-            if ($tab) {
-                if (!$this->remove($tab->id)) {
-                    return false;
-                };
+            $tab = self::whereController($ctlr)->first();
+            if ($tab && !self::remove($tab->id)) {
+                return false;
             }
         }
         // create new Tabs or update the existing Tabs
@@ -107,15 +109,15 @@ class Tab extends Model {
             $ctlrNameSpace = $obj->getName();
             $paths = explode('\\', $ctlrNameSpace);
             $ctlrName = $paths[sizeof($paths) - 1];
-            if (in_array($ctlrName, $this->excluded_controllers)) continue;
+            if (in_array($ctlrName, self::EXCLUDED_CONTROLLERS)) continue;
             $record = [
-                'name' => $this->getControllerComment($obj),
+                'name' => self::controllerComments($obj),
                 'controller' => $ctlrName,
                 'remark' => $controller,
-                'action_id' => $this->getIndexActionId($ctlrName),
+                'action_id' => self::indexActionId($ctlrName),
                 'enabled' => 1,
             ];
-            $tab = $this->where('controller', $record['controller'])->first();
+            $tab = self::whereController($record['controller'])->first();
             if ($tab) {
                 $tab->name = $record['name'];
                 if (empty($tab->action_id)) {
@@ -123,44 +125,37 @@ class Tab extends Model {
                 }
                 $tab->save();
             } else {
-                $this->create($record);
+                self::create($record);
             }
         }
         unset($action);
+        
         return true;
 
     }
-
+    
     /**
-     * 返回所有控制器的完整路径
+     * 保存卡片
      *
-     * @param $rootDir
-     * @param array $allData
-     * @return array
+     * @param array $data
+     * @return bool|mixed
+     * @throws Throwable
      */
-    private function scanDirectories($rootDir, $allData = []) {
-
-        // set filenames invisible if you want
-        $invisibleFileNames = [".", "..", ".htaccess", ".htpasswd"];
-        // run through content of root directory
-        $dirContent = scandir($rootDir);
-        foreach ($dirContent as $key => $content) {
-            // filter all files not accessible
-            $path = $rootDir . '/' . $content;
-            if (!in_array($content, $invisibleFileNames)) {
-                // if content is file & readable, add to array
-                if (is_file($path) && is_readable($path)) {
-                    // save file name with path
-                    $allData[] = $path;
-                    // if content is a directory and readable, add path and name
-                } elseif (is_dir($path) && is_readable($path)) {
-                    // recursive callback to open new directory
-                    $allData = $this->scanDirectories($path, $allData);
-                }
-            }
+    static function store(array $data) {
+        
+        try {
+            DB::transaction(function () use ($data) {
+                $t = self::create($data);
+                $menuTab = new MenuTab();
+                $menuIds = $data['menu_ids'];
+                $menuTab->storeByTabId($t->id, $menuIds);
+            });
+        } catch (Exception $e) {
+            throw $e;
         }
-        return $allData;
-
+        
+        return true;
+        
     }
     
     /**
@@ -168,12 +163,11 @@ class Tab extends Model {
      *
      * @param $id
      * @return bool|mixed
-     * @throws Exception
-     * @throws \Throwable
+     * @throws Throwable
      */
-    public function remove($id) {
+    static function remove($id) {
 
-        $tab = $this->find($id);
+        $tab = self::find($id);
         if (!isset($tab)) { return false; }
         try {
             DB::transaction(function () use ($id, $tab) {
@@ -189,48 +183,20 @@ class Tab extends Model {
         return true;
 
     }
-
-    private function getControllerComment(ReflectionClass $controller) {
-
-        $comment = $controller->getDocComment();
-        $name = 'n/a';
-        preg_match_all("#\/\*\*\n\s{1}\*[^\*]*\*#", $comment, $matches);
-        if (isset($matches[0][0])) {
-            $name = str_replace(str_split("\r\n/* "), '', $matches[0][0]);
-        } else {
-            preg_match_all("#\/\*\*\r\n\s{1}\*[^\*]*\*#", $comment, $matches);
-            if (isset($matches[0][0])) {
-                $name = str_replace(str_split("\r\n/* "), '', $matches[0][0]);
-            }
-        }
-
-        return $name;
-
-    }
-
-    private function getIndexActionId($ctlrName) {
-
-        $action = new Action();
-        $a = $actionId = $action::whereEnabled(1)
-            ->where('controller', $ctlrName)
-            ->where('method', 'index')
-            ->first();
-        if (!$a) {
-            return 0;
-        }
-
-        return $a->id;
-
-    }
-
-    public function datatable() {
+    
+    /**
+     * 卡片列表
+     *
+     * @return array
+     */
+    static function datatable() {
 
         $columns = [
             ['db' => 'Tab.id', 'dt' => 0],
             [
                 'db' => 'Tab.name', 'dt' => 1,
                 'formatter' => function ($d, $row) {
-                    $iconId = $this->find($row['id'])->icon_id;
+                    $iconId = self::find($row['id'])->icon_id;
                     if ($iconId) {
                         return '<i class="' . Icon::find($iconId)->name . '"></i>&nbsp;' . $d;
                     }
@@ -250,11 +216,9 @@ class Tab extends Model {
                 'formatter' => function ($d, $row) {
                     $id = $row['id'];
                     $status = $d ? Datatable::DT_ON : Datatable::DT_OFF;
-                    $showLink = sprintf(Datatable::DT_LINK_SHOW, 'show_' . $id);
                     $editLink = sprintf(Datatable::DT_LINK_EDIT, 'edit_' . $id);
                     return
                         $status . str_repeat('&nbsp;', 3) .
-                        $showLink . str_repeat('&nbsp;', 3) .
                         $editLink;
                 },
             ],
@@ -269,32 +233,8 @@ class Tab extends Model {
                 ],
             ],
         ];
-        return Datatable::simple($this, $columns, $joins);
-
-    }
-    
-    /**
-     * 保存卡片
-     *
-     * @param array $data
-     * @return bool|mixed
-     * @throws Exception
-     * @throws \Throwable
-     */
-    public function store(array $data) {
-
-        try {
-            DB::transaction(function () use ($data) {
-                $t = $this->create($data);
-                $menuTab = new MenuTab();
-                $menuIds = $data['menu_ids'];
-                $menuTab->storeByTabId($t->id, $menuIds);
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
         
-        return true;
+        return Datatable::simple(self::getModel(), $columns, $joins);
 
     }
     
@@ -305,11 +245,11 @@ class Tab extends Model {
      * @param $id
      * @return bool|mixed
      * @throws Exception
-     * @throws \Throwable
+     * @throws Throwable
      */
-    public function modify(array $data, $id) {
+    static function modify(array $data, $id) {
 
-        $tab = $this->find($id);
+        $tab = self::find($id);
         if (!isset($tab)) { return false; }
         try {
             DB::transaction(function () use ($data, $id, $tab) {
@@ -322,11 +262,87 @@ class Tab extends Model {
         } catch (Exception $e) {
             throw $e;
         }
+        
         return true;
 
     }
-
-    public function getTree($schoolId) {
-
+    
+    /**
+     * 获取指定控制器的注释文本
+     *
+     * @param ReflectionClass $controller
+     * @return mixed|string
+     */
+    private static function controllerComments(ReflectionClass $controller) {
+        
+        $comment = $controller->getDocComment();
+        $name = 'n/a';
+        preg_match_all("#\/\*\*\n\s{1}\*[^\*]*\*#", $comment, $matches);
+        if (isset($matches[0][0])) {
+            $name = str_replace(str_split("\r\n/* "), '', $matches[0][0]);
+        } else {
+            preg_match_all("#\/\*\*\r\n\s{1}\*[^\*]*\*#", $comment, $matches);
+            if (isset($matches[0][0])) {
+                $name = str_replace(str_split("\r\n/* "), '', $matches[0][0]);
+            }
+        }
+        
+        return $name;
+        
     }
+    
+    /**
+     * 获取index方法的action_id
+     *
+     * @param $ctlrName
+     * @return int|mixed
+     */
+    private static function indexActionId($ctlrName) {
+        
+        $action = new Action();
+        $a = $actionId = $action::whereEnabled(1)
+            ->where('controller', $ctlrName)
+            ->where('method', 'index')
+            ->first();
+        if (!$a) {
+            return 0;
+        }
+        
+        return $a->id;
+        
+    }
+    
+    /**
+     * 返回所有控制器的完整路径
+     *
+     * @param $rootDir
+     * @param array $allData
+     * @return array
+     */
+    private static function controllerPaths($rootDir, $allData = []) {
+        
+        // set filenames invisible if you want
+        $invisibleFileNames = [".", "..", ".htaccess", ".htpasswd"];
+        // run through content of root directory
+        $dirContent = scandir($rootDir);
+        foreach ($dirContent as $key => $content) {
+            // filter all files not accessible
+            $path = $rootDir . '/' . $content;
+            if (!in_array($content, $invisibleFileNames)) {
+                // if content is file & readable, add to array
+                if (is_file($path) && is_readable($path)) {
+                    // save file name with path
+                    $allData[] = $path;
+                    // if content is a directory and readable, add path and name
+                } elseif (is_dir($path) && is_readable($path)) {
+                    // recursive callback to open new directory
+                    $allData = self::controllerPaths($path, $allData);
+                }
+            }
+        }
+        
+        return $allData;
+        
+    }
+
 }

@@ -5,6 +5,7 @@ use App\Http\Requests\ExamRequest;
 use App\Models\Exam;
 use App\Models\Squad;
 use Exception;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 use Throwable;
@@ -17,14 +18,9 @@ use Throwable;
  */
 class ExamController extends Controller {
     
-    protected $exam;
-    protected $squad;
+    function __construct() {
     
-    function __construct(Exam $exam, Squad $squad) {
-    
-        $this->middleware(['auth']);
-        $this->exam = $exam;
-        $this->squad = $squad;
+        $this->middleware(['auth', 'checkrole']);
         
     }
     
@@ -37,7 +33,7 @@ class ExamController extends Controller {
     public function index() {
         
         if (Request::get('draw')) {
-            return response()->json($this->exam->datatable());
+            return response()->json(Exam::datatable());
         }
         
         return $this->output();
@@ -52,6 +48,8 @@ class ExamController extends Controller {
      */
     public function create() {
         
+        $this->authorize('c', Exam::class);
+        
         return $this->output();
         
     }
@@ -61,10 +59,13 @@ class ExamController extends Controller {
      *
      * @param ExamRequest $request
      * @return JsonResponse
+     * @throws AuthorizationException
      */
     public function store(ExamRequest $request) {
         
-        return $this->exam->create($request->all()) ? $this->succeed() : $this->fail();
+        $this->authorize('c', Exam::class);
+        
+        return $this->result(Exam::create($request->all()));
         
     }
     
@@ -77,13 +78,13 @@ class ExamController extends Controller {
      */
     public function show($id) {
         
-        $exam = $this->exam->find($id);
-        if (!$exam) { return $this->notFound(); }
+        $exam = Exam::find($id);
+        // $this->authorize('rud', $exam);
         
         return $this->output([
             'exam'     => $exam,
-            'classes'  => $this->exam->classes($exam->class_ids),
-            'subjects' => $this->exam->subjects(),
+            'classes'  => Exam::classes($exam->class_ids),
+            'subjects' => Exam::subjects(),
         ]);
         
     }
@@ -96,13 +97,14 @@ class ExamController extends Controller {
      * @throws Throwable
      */
     public function edit($id) {
-        $exam = $this->exam->find($id);
-        if (!$exam) { return $this->notFound(); }
+        
+        $exam = Exam::find($id);
+        // $this->authorize('rud', $exam);
         
         return $this->output([
             'exam'             => $exam,
-            'selectedClasses'  => $this->exam->classes($exam->class_ids),
-            'selectedSubjects' => $this->exam->subjects($exam->subject_ids),
+            'selectedClasses'  => Exam::classes($exam->class_ids),
+            'selectedSubjects' => Exam::subjects($exam->subject_ids),
         ]);
     }
     
@@ -115,12 +117,10 @@ class ExamController extends Controller {
      */
     public function update(ExamRequest $request, $id) {
         
-        $exam = $this->exam->find($id);
-        if (!$exam) {
-            return $this->notFound();
-        }
+        $exam = Exam::find($id);
+        // $this->authorize('rud', $exam);
         
-        return $exam->update($request->all()) ? $this->succeed() : $this->fail();
+        return $this->result($exam->update($request->all()));
         
     }
     
@@ -133,12 +133,10 @@ class ExamController extends Controller {
      */
     public function destroy($id) {
         
-        $exam = $this->exam->find($id);
-        if (!$exam) {
-            return $this->notFound();
-        }
+        $exam = Exam::find($id);
+        // $this->authorize('rud', $exam);
         
-        return $exam->delete() ? $this->succeed() : $this->fail();
+        return $this->result($exam->delete());
         
     }
     

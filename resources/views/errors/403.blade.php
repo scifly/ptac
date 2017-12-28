@@ -10,7 +10,7 @@
 <body>
     <div>
         <h1>403</h1>
-        <a href="/">Back</a>
+        <a href="javascript:history.back();">Back</a>
     </div>
 </body>
 </html>

@@ -17,13 +17,9 @@ use Throwable;
  */
 class MajorController extends Controller {
     
-    protected $major, $subject;
+    function __construct() {
     
-    function __construct(Major $major, Subject $subject) {
-    
-        $this->middleware(['auth']);
-        $this->major = $major;
-        $this->subject = $subject;
+        $this->middleware(['auth', 'checkrole']);
         
     }
     
@@ -36,7 +32,7 @@ class MajorController extends Controller {
     public function index() {
         
         if (Request::get('draw')) {
-            return response()->json($this->major->datatable());
+            return response()->json(Major::datatable());
         }
         
         return $this->output();
@@ -63,6 +59,7 @@ class MajorController extends Controller {
      * @param MajorRequest $request
      * @return JsonResponse
      * @throws Exception
+     * @throws Throwable
      */
     public function store(MajorRequest $request) {
         
@@ -104,6 +101,7 @@ class MajorController extends Controller {
      * @param $id
      * @return JsonResponse
      * @throws Exception
+     * @throws Throwable
      */
     public function update(MajorRequest $request, $id) {
         
@@ -120,6 +118,7 @@ class MajorController extends Controller {
      * @param $id
      * @return JsonResponse
      * @throws Exception
+     * @throws Throwable
      */
     public function destroy($id) {
         

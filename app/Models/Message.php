@@ -5,6 +5,8 @@ namespace App\Models;
 use App\Facades\DatatableFacade as Datatable;
 use App\Facades\Wechat;
 use App\Http\Requests\MessageRequest;
+use Carbon\Carbon;
+use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -29,8 +31,16 @@ use Illuminate\Support\Facades\Storage;
  * @property int $read_count 已读数量
  * @property int $received_count 消息发送成功数
  * @property int $recipient_count 接收者数量
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property int $comm_type_id 通信方式id
+ * @property int $app_id 应用id
+ * @property int $msl_id 消息发送批次id
+ * @property int $s_user_id 发送者用户ID
+ * @property int $r_user_id 接收者用户IDs
+ * @property int $readed 是否已读
+ * @property int $sent 消息发送是否成功
+ * @mixin Eloquent
  * @method static Builder|Message whereContent($value)
  * @method static Builder|Message whereCreatedAt($value)
  * @method static Builder|Message whereId($value)
@@ -45,16 +55,6 @@ use Illuminate\Support\Facades\Storage;
  * @method static Builder|Message whereUrl($value)
  * @method static Builder|Message whereUserId($value)
  * @method static Builder|Message whereUserIds($value)
- * @mixin \Eloquent
- * @property-read MessageType $messageType
- * @property-read User $user
- * @property int $comm_type_id 通信方式id
- * @property int $app_id 应用id
- * @property int $msl_id 消息发送批次id
- * @property int $s_user_id 发送者用户ID
- * @property int $r_user_id 接收者用户IDs
- * @property int $readed 是否已读
- * @property int $sent 消息发送是否成功
  * @method static Builder|Message whereAppId($value)
  * @method static Builder|Message whereCommTypeId($value)
  * @method static Builder|Message whereMslId($value)
@@ -62,7 +62,9 @@ use Illuminate\Support\Facades\Storage;
  * @method static Builder|Message whereReaded($value)
  * @method static Builder|Message whereSUserId($value)
  * @method static Builder|Message whereSent($value)
- * @property-read \App\Models\CommType $commType
+ * @property-read MessageType $messageType
+ * @property-read User $user
+ * @property-read CommType $commType
  * @property-read MessageSendingLog $messageSendinglog
  * @property-read MessageSendingLog $messageSendinglogs
  */
@@ -89,8 +91,8 @@ class Message extends Model {
      *
      * @return BelongsTo
      */
-    public function user() { return $this->belongsTo('App\Models\User', 's_user_id', 'id'); }
-
+    public function user() { return $this->belongsTo('App\Models\User'); }
+    
     /**
      * 获取
      *
@@ -109,11 +111,11 @@ class Message extends Model {
      * @throws Exception
      * @throws \Throwable
      */
-    public function store(MessageRequest $request) {
+    static function store(MessageRequest $request) {
+        
         $input = $request->all();
-        $messageSendingLog = new MessageSendingLog();
         #新增一条日志记录（指定批次）
-        $logId = $messageSendingLog->store(count($input['r_user_id']));
+        $logId = MessageSendingLog::store(count($input['r_user_id']));
         $input['msl_id'] = $logId;
         $updateUrl = [];
         try {
@@ -121,24 +123,25 @@ class Message extends Model {
                 $input['r_user_id'] = $receiveUser;
                 DB::transaction(function () use ($request, $input, $updateUrl) {
                     //删除原有的图片
-                    $this->removeMedias($request);
-                    $crateDate = $this->create($input);
-                    $updateUrl['url'] = url('messages/show/' . $crateDate->id);
-                    $crateDate->update($updateUrl);
+                    self::removeMedias($request);
+                    $message = self::create($input);
+                    $updateUrl['url'] = url('messages/show/' . $message->id);
+                    $message->update($updateUrl);
                 });
             }
-
         } catch (Exception $e) {
             throw $e;
         }
+        
         return true;
+        
     }
 
     /**
      * @param $request
      * @throws Exception
      */
-    private function removeMedias(MessageRequest $request) {
+    private static function removeMedias(MessageRequest $request) {
 
         //删除原有的图片
         $mediaIds = $request->input('del_ids');
@@ -164,25 +167,30 @@ class Message extends Model {
      * @throws Exception
      * @throws \Throwable
      */
-    public function modify(MessageRequest $request, $id) {
-        $message = $this->find($id);
-        if (!$message) {
-            return false;
-        }
+    static function modify(MessageRequest $request, $id) {
+        
+        $message = self::find($id);
+        if (!$message) { return false; }
         try {
             DB::transaction(function () use ($request, $id) {
-                $this->removeMedias($request);
+                self::removeMedias($request);
 
-                return $this->where('id', $id)->update($request->except('_method', '_token'));
+                return self::find($id)->update($request->except('_method', '_token'));
             });
-
         } catch (Exception $e) {
             throw $e;
         }
+        
         return true;
+        
     }
-
-    public function datatable() {
+    
+    /**
+     * 消息列表
+     *
+     * @return array
+     */
+    static function datatable() {
 
         $columns = [
             ['db' => 'Message.id', 'dt' => 0],
@@ -202,7 +210,11 @@ class Message extends Model {
                 },
             ],
             ['db' => 'Message.created_at', 'dt' => 8],
-            ['db' => 'Message.updated_at', 'dt' => 9
+            [
+                'db' => 'Message.updated_at', 'dt' => 9,
+                'formatter' => function ($d, $row) {
+                    return Datatable::dtOps(self::getModel(), $d, $row);
+                },
             ],
         ];
         $joins = [
@@ -244,10 +256,13 @@ class Message extends Model {
         if ($role == '教职员工') {
             $condition = 'Message.r_user_id=' . Auth::id();
         }
-        return Datatable::simple($this, $columns, $joins, $condition);
+        
+        return Datatable::simple(self::getModel(), $columns, $joins, $condition);
+        
     }
 
-    public function sendMessage($data) {
+    static function sendMessage($data) {
+        
         $result = [
             'statusCode' => 200,
             'message' => '',
@@ -319,7 +334,10 @@ class Message extends Model {
                 }
             }
         }
+        
         return response()->json($result);
+        
     }
+    
 }
 
