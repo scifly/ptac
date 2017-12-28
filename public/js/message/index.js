@@ -66,8 +66,8 @@ function get_sms_length(){
 	var now_length = '';
 	var surp_length = '';
 	$('#content-sms-length').text('已输入0个字符， 还可输入'+sms_maxlength+'个字符');
-	$('.tab-pane.active #content').attr('maxlength',sms_maxlength);
-	$('.tab-pane.active #content').bind("input propertychange",function(){
+	$('.tab-pane.active #contentSms').attr('maxlength',sms_maxlength);
+	$('.tab-pane.active #contentSms').bind("input propertychange",function(){
 		now_length = $(this).val().length;
 		surp_length = sms_maxlength - now_length ;
 		$('#content-sms-length').text('已输入'+now_length+'个字符， 还可输入'+surp_length+'个字符');
