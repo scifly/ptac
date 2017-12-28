@@ -18,8 +18,6 @@ var $addVideo = $('#add-video');
 var $cancelVideo = $('#cancel-video');
 var $send = $('#send');
 var $token = $('#csrf_token');
-//var $('#message-content .tab-pane.active') = $('#message-content .tab-pane.active');
-//var $('.tab-pane.active .file-del') = $('.tab-pane.active .file-del');
 var $addArticle = $('#add-article-url');
 var $fileCover = $('#file-cover');
 
