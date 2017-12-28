@@ -51,9 +51,10 @@ class MessageCenterController extends Controller {
             $accessToken = Wechat::getAccessToken($corpId, $secret);
             $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
         }
-        $userId = $userInfo['userId'];
+        $userId = $userInfo;
         print_r($userId);
 
+        
         // $userId = $this->getRole('http://weixin.028lk.com/message_center');
         $user = User::whereUserid($userId)->first();
         if (Request::isMethod('post')) {
