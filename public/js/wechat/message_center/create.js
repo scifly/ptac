@@ -246,7 +246,7 @@ $(function () {
                 '_token': token, 'title': title, 'content': content,
                 'time': time, 'department_ids': department_ids, 'user_ids': user_ids, 'media_ids': media_ids
             },
-            url: '../public/message_store',
+            url: '../message_store',
             success: function (result) {
                 if (result.statusCode === 200) {
                     $.alert('消息发送成功！');
