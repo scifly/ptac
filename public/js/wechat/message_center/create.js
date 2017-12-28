@@ -471,3 +471,8 @@ $(function () {
     });
 })
 ;
+
+$(".js-choose-breadcrumb-li headclick").on('click',function () {
+    var id = $(this ).parent ().attr ("data-id")
+   console.log()
+});

@@ -139,7 +139,6 @@ class MessageCenterController extends Controller {
         // }
         // $userId = $userInfo['UserId'];
        
-        $userId = 'yuanhongbin';
         $departmentId = 4;
         #教师可发送消息
         #取的和教师关联的学校的部门id
@@ -465,7 +464,7 @@ class MessageCenterController extends Controller {
                     }
                     #推送微信服务器且显示详情页
                     $message = $this->message->where('msl_id', $input['msl_id'])->first();
-                    $url = 'http:/sandbox.ddd:8080/ptac/public/message_show/' . $message->id;
+                    $url = 'http:/sandbox.dev:8080/ptac/public/message_show/' . $message->id;
                     $this->frontSendMessage($input, $url);
                 });
             } catch (Exception $e) {
@@ -520,7 +519,7 @@ class MessageCenterController extends Controller {
                             'title' => $input['title'],
                             'description' => strip_tags($input['content']),
                             'url' => $url,
-                            'picurl'=> 'http://weixin.028lk.com/'.$input['pic_url'],
+                            'picurl'=> 'http://weixin.028lk.com/img/photo1.png',
                         ]
                     ];
                 break;
