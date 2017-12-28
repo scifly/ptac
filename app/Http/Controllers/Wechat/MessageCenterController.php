@@ -122,7 +122,7 @@ class MessageCenterController extends Controller {
         $agentId = 3;
         $code = Request::input('code');
         if (empty($code)) {
-            $codeUrl = Wechat::getCodeUrl($corpId, $agentId, 'http://weixin.028lk.com/message_center');
+            $codeUrl = Wechat::getCodeUrl($corpId, $agentId, 'http://weixin.028lk.com/message_create');
         
             return redirect($codeUrl);
         } else {
