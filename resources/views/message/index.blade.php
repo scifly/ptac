@@ -163,10 +163,12 @@
                                             </form>-->
                                         </div>
                                         <div class="tab-pane" id="content_sms">
+                                        	<input id="content-sms-maxlength" type="hidden" value="50" >
                                             {!! Form::textarea('content', null, [
                                                 'id' => 'content',
                                                 'class' => 'form-control',
                                             ]) !!}
+                                            <span id="content-sms-length" style="color: #777;margin-top: 10px;display: inline-block;"></span>
                                         </div>
                                     </div>
                                 </div>

@@ -55,6 +55,22 @@ if (typeof contacts === 'undefined') {
 } else { contacts.init('messages/index'); }
 
 
+//短信获取输入字符
+get_sms_length();
+function get_sms_length(){
+	var sms_maxlength = $('#content-sms-maxlength').val();
+	var now_length = '';
+	var surp_length = '';
+	$('#content-sms-length').text('已输入0个字符， 还可输入'+sms_maxlength+'个字符');
+	$('.tab-pane.active #content').attr('maxlength',sms_maxlength);
+	$('.tab-pane.active #content').bind("input propertychange",function(){
+		now_length = $(this).val().length;
+		surp_length = sms_maxlength - now_length ;
+		$('#content-sms-length').text('已输入'+now_length+'个字符， 还可输入'+surp_length+'个字符');
+	})
+}
+
+
 function uploadfile(obj){
 	var $this = $(obj);
 	var type = $this.prev().val();
