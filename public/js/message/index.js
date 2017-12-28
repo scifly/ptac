@@ -18,8 +18,6 @@ var $addVideo = $('#add-video');
 var $cancelVideo = $('#cancel-video');
 var $send = $('#send');
 var $token = $('#csrf_token');
-var $active = $('#message-content .tab-pane.active');
-var $fileDel = $('.tab-pane.active .file-del');
 var $addArticle = $('#add-article-url');
 var $fileCover = $('#file-cover');
 
@@ -141,7 +139,7 @@ function uploadfile(obj){
                             	'<i class="fa fa-close file-del" style="position: absolute;top: 10px;right: 15px;font-size: 20px;z-index: 2;cursor: pointer;"></i>'+
                             '</div>'+
                             '</form>';
-                    $active.html(html);
+                    $('#message-content .tab-pane.active').html(html);
                     removefile(type);
 				 	break;
 				case 'voice':
@@ -157,7 +155,7 @@ function uploadfile(obj){
 							    '<i class="fa fa-close file-del" style="margin-left: 35px;cursor:pointer;"></i>'+
 						    '</div>'+
 						    '</form>';
-				  	$active.html(html);	
+				  	$('#message-content .tab-pane.active').html(html);	
 				  	removefile(type);
 				 	break;
 				case 'video':
@@ -187,7 +185,7 @@ function uploadfile(obj){
 }
 
 function removefile(type){
-	$fileDel.click(function(){
+	$('.tab-pane.active .file-del').click(function(){
         var btntxt = '';
         var fileaccept = '';
 		switch(type)
@@ -214,7 +212,7 @@ function removefile(type){
                             '</i>'+
                         '</button>'+
                     '</form>';
-        $active.html(html);
+        $('#message-content .tab-pane.active').html(html);
 	});
 }
 
