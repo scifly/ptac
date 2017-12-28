@@ -20,6 +20,9 @@ var custodian = {
     relationship: function () {
         return $('#relationship');
     },
+    exportPupils: function () {
+        return $("#export-pupils");
+    },
     saveStudent: function(item) {
         $(document).on('click', '#confirm-bind', function () {
             var relationship = custodian.relationship().val();
@@ -174,8 +177,8 @@ var custodian = {
         $(document).on('click', '#confirm-bind', function () {
             var classId = custodian.$classId().val();
             //无法用ajax请求
-            window.location.href='../pppp/public/students/export/?id=' + classId;
-            $("#export-pupils").modal('hide');
+            window.location.href = "../pppp/public/students/export/?id=" + classId;
+            custodian.exportPupils().modal('hide');
         });
     },
     exportEducator: function () {
@@ -184,8 +187,8 @@ var custodian = {
         $(document).on('click', '#confirm-bind', function () {
             var schoolId = custodian.$schoolId().val();
             //无法用ajax请求
-            window.location.href='../pppp/public/educators/export/?id=' + schoolId;
-            $("#export-pupils").modal('hide');
+            window.location.href = '../pppp/public/educators/export/?id=' + schoolId;
+            custodian.exportPupils().modal('hide');
         });
     }
 };

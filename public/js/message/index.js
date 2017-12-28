@@ -11,11 +11,17 @@ var $saveAttachment = $('#save-attachment');
 var $cancelAttachment = $('#cancel-attachment');
 var $addImageText = $('#add-imagetext');
 var $saveImageText = $('#save-imagetext');
+var $saveVideo = $('#save-video');
 var $cancelImageText = $('#cancel-imagetext');
 var $video = $('#upload_video');
 var $addVideo = $('#add-video');
 var $cancelVideo = $('#cancel-video');
 var $send = $('#send');
+var $token = $('#csrf_token');
+var $active = $('#message-content .tab-pane.active');
+var $fileDel = $('.tab-pane.active .file-del');
+var $addArticle = $('#add-article-url');
+var $fileCover = $('#file-cover');
 
 // 附件管理
 $addAttachment.on('click', function() {
@@ -91,8 +97,9 @@ function uploadfile(obj){
     var formData = new FormData();
 
 	formData.append('uploadFile', $('#file-'+type)[0].files[0]);
-    formData.append('_token', $('#csrf_token').attr('content'));
+    formData.append('_token', $token.attr('content'));
     formData.append('type', type);
+
     //请求接口
     $.ajax({
         url: page.siteRoot() + "messages/uploadFile",
@@ -117,7 +124,7 @@ function uploadfile(obj){
                             	'<i class="fa fa-close file-del" style="position: absolute;top: 10px;right: 15px;font-size: 20px;z-index: 2;cursor: pointer;"></i>'+
                             '</div>'+
                             '</form>';
-                    $('#message-content .tab-pane.active').html(html);
+                    $active.html(html);
                     removefile(type);
 				 	break;
 				case 'voice':
@@ -132,7 +139,7 @@ function uploadfile(obj){
 							    '<i class="fa fa-close file-del" style="margin-left: 35px;cursor:pointer;"></i>'+
 						    '</div>'+
 						    '</form>';
-				  	$('#message-content .tab-pane.active').html(html);	
+				  	$active.html(html);	
 				  	removefile(type);
 				 	break;
 				case 'video':
@@ -161,7 +168,7 @@ function uploadfile(obj){
 }
 
 function removefile(type){
-	$('.tab-pane.active .file-del').click(function(){
+	$fileDel.click(function(){
         var btntxt = '';
         var fileaccept = '';
 		switch(type)
@@ -188,19 +195,17 @@ function removefile(type){
                             '</i>'+
                         '</button>'+
                     '</form>';
-        $('#message-content .tab-pane.active').html(html);
+        $active.html(html);
 	});
 }
 
-$('#add-article-url').click(function(){
+$addArticle.click(function(){
 	$(this).next().slideToggle('fast');
 	$(this).next().val('');
 });
 
 function upload_cover(obj){
-	var $this = $(obj);
-	var type = 'image';
-	var extension = $('#file-cover')[0].files[0].name.split('.');
+	var extension = $fileCover[0].files[0].name.split('.');
 	extension = extension[extension.length-1];
 	extension = extension.toUpperCase();
 	if(extension !== 'JPG' && extension !== 'PNG'){
@@ -210,10 +215,9 @@ function upload_cover(obj){
     page.inform("温馨提示", '正在上传中...', page.info);
     var formData = new FormData();
 	
-	formData.append('uploadFile', $('#file-cover')[0].files[0]);
-	
-    formData.append('_token', $('#csrf_token').attr('content'));
-    formData.append('type', type);
+	formData.append('uploadFile', $fileCover[0].files[0]);
+    formData.append('_token', $token.attr('content'));
+    formData.append('type', 'image');
     //请求接口
     $.ajax({
         url: page.siteRoot() + "messages/uploadFile",
@@ -256,7 +260,7 @@ function removecover(){
 	});
 }
 
-$('#save-imagetext').click(function(){
+$saveImageText.click(function(){
 	var title = $('.imagetext-title').val();
 	if(title === ''){
 		alert('请输入标题');
@@ -313,7 +317,7 @@ function removevideo(){
 	});
 }
 
-$('#save-video').click(function(){
+$saveVideo.click(function(){
 	var title = $('.video-title').val();
 	if(title === ''){
 		alert('请输入标题');
@@ -352,10 +356,11 @@ function show_video(){
 $send.on('click', function() {
     var appIds = $('#app_ids').val();
     var selectedDepartmentIds = $('#selectedDepartmentIds').val();
-    var type = $('#message-content .tab-pane.active').attr('id');
+    var type = $active.attr('id');
     type = type.substring('8');
     // alert(type);
 	var content = '';
+	var media_id = '';
     switch(type)
 	{
 		case 'text':
@@ -418,7 +423,8 @@ $send.on('click', function() {
          departIds: selectedDepartmentIds,
          type: type,
          content: content,
-         _token: $('#csrf_token').attr('content')},
+		 // media_id:
+         _token: $token.attr('content')},
 
      success: function (result) {
          if (result.error !== 0) {

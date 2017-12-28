@@ -127,7 +127,8 @@ class Wechat extends Facade {
     const URL_BATCH_SEND_SMS = "http://sdk2.028lk.com:9880/sdk2/BatchSend2.aspx?CorpID=%s&Pwd=%s&Mobile=%s&Content=%s&Cell=%s&SendTime=%s";
     # 接收短信回复
     const URL_GET_RESPONSE_SMS = "http://sdk2.028lk.com:9880/sdk2/Get.aspx?CorpID=%s&Pwd=%s";
-    
+
+
     
     /**
      * 获取access_token
@@ -943,5 +944,9 @@ class Wechat extends Facade {
 
 
         return self::curlPost(sprintf(self::URL_UPLOAD_MEDIA, $accessToken, $type), $data);
+    }
+
+    static function sendSms() {
+
     }
 }

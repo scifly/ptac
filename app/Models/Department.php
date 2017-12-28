@@ -186,6 +186,22 @@ class Department extends Model {
         }
 
     }
+    /**
+     * 根据Department ID返回所有下级部门 含本身
+     *
+     * @param $id
+     * @param Collection $nodes
+     */
+    private function getChildrenNode($id, Collection &$nodes) {
+
+        $node = $this->find($id);
+        $nodes->push($node);
+        foreach ($node->children as $child) {
+            $nodes->push($child);
+            $this->getChildren($child->id, $nodes);
+        }
+
+    }
 
     /**
      * 获取指定部门的子部门
@@ -750,7 +766,8 @@ class Department extends Model {
         $user = Auth::user();
         $role = $user->group->name;
         $school = new School();
-        $schoolId = $school->getSchoolId();
+//        $schoolId = $school->getSchoolId();
+        $schoolId = $school->id();
         $departmentId = $school::find($schoolId)->first()->department_id;
         $contacts = [];
         if (in_array($role, $this->roles)) {
@@ -845,5 +862,24 @@ class Department extends Model {
         $topLevelId = key($levels);
         return $this::find($topLevelId)->parent->id;
 
+    }
+    public function getPartyUser ($toparty) {
+        $users = [];
+        $depts = new Collection();
+        foreach ($toparty as $p) {
+            $this->getChildrenNode($p, $depts);
+        }
+        $items = $depts->toArray();
+        if (empty($items)) { return $users; }
+        foreach ($items as $i) {
+            $deptUsers = DepartmentUser::whereDepartmentId($i['id'])->get();
+            if ($deptUsers) {
+                foreach ($deptUsers as $d) {
+                    $user = User::find($d->user_id);
+                    if ($user) { $users[] = $user; }
+                }
+            }
+        }
+        return $users;
     }
 }
