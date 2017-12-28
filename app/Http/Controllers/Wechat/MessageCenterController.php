@@ -36,13 +36,6 @@ class MessageCenterController extends Controller {
      * @throws \Throwable
      */
     public function index() {
-        // $userId = $this->getRole('http://weixin.028lk.com/message_center');
-        // $user = $this->user->where('userid',$userId)->first();
-        // if ($user->group->name == '教职员工'){
-        //     $sendMessages = $this->message->where('s_user_id', $user->id)->get();
-        //     $receiveMessages = $this->message->where('r_user_id',$user->id)->get();
-        // return view('wechat.message_center.index');
-        // }
         $userId = 'yuanhongbin';
         $user = User::whereUserid($userId)->first();
         if (Request::isMethod('post')) {
@@ -341,9 +334,7 @@ class MessageCenterController extends Controller {
                     $msl->received_count = $msl->received_count + 1;
                     $msl->save();
                 }
-                #推送微信服务器
-                
-                #详情展示页地址
+                #推送微信服务器且显示详情页
                 $message = $this->message->where('msl_id',$input['msl_id'])->first();
                 $url = 'http://weixin.028lk.com/message_show/' . $message->id;
                 $this->frontSendMessage($input, $url);
