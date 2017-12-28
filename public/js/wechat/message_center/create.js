@@ -214,7 +214,7 @@ $(function () {
             success: function (result) {
                 if (result.statusCode === 200) {
                     $('#uploadimg-'+tmp).attr('data-media-id',result.message.id);
-                    $('#uploadimg-'+tmp).attr('src','../' + result.message.path);
+                    $('#uploadimg-'+tmp).attr('src', 'http://sandbox.ddd:8080/ptac/' + result.message.path);
                 }
             }
         });
@@ -238,12 +238,8 @@ $(function () {
         choose.find('a.choose-item-type-person').each(function () {
             user_ids.push($(this).attr('data-uid'));
         });
-        // alert(title);
-        // alert(content);
-        // alert(time);
-        // alert(send);
-        // console.log(media_ids);
         //前端验证
+
         $.ajax({
             type: 'POST',
             data: {

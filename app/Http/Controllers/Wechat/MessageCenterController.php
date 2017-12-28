@@ -43,7 +43,7 @@ class MessageCenterController extends Controller {
         //     $receiveMessages = $this->message->where('r_user_id',$user->id)->get();
         // return view('wechat.message_center.index');
         // }
-        $userId = 'abcd456456';
+        $userId = 'yuanhongbin';
         $user = User::whereUserid($userId)->first();
         if (Request::isMethod('post')) {
             $keywords = Request::get('keywords');
@@ -106,7 +106,7 @@ class MessageCenterController extends Controller {
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function create() {
-        $userId = "abcd456456";
+        $userId = "yuanhongbin";
         $user = $this->user->where('userid', $userId)->first();
         $departmentId = $this->user->topDeptId($user);
         $departments = Department::where('parent_id', $departmentId)->get();
@@ -169,7 +169,7 @@ class MessageCenterController extends Controller {
         $message = $this->message->find($id);
         $edit = $user->id == $message->s_user_id ? true : false;
         
-        return view('wechat.message_center.show', ['message' => $this->message->find($id), 'edit' => $edit]);
+        return view('wechat.message_center.show', ['message' => $this->message->find($id), 'edit' => $edit, 'show' => true]);
     }
     
     /**
@@ -248,15 +248,6 @@ class MessageCenterController extends Controller {
             $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
             
             return $userInfo['userId'];
-            //{
-            //"UserId":"yuanhongbin",
-            //"DeviceId":"873fbe89aec047758ebbc6b41e4b45f9",
-            //"errcode":0,
-            //"errmsg":"ok",
-            //"user_ticket":"xVAunChCFmwvi1yJokTRDtzOuIyyvJuYQ2Q59LjiUB-b1O9rJZlx0pGXrNPGjGv7h13abTLvn30oxT-BqvY7YQ",
-            //"expires_in":1800
-            //}
-            // }
         }
     }
     
@@ -295,7 +286,8 @@ class MessageCenterController extends Controller {
      * @throws \Throwable
      */
     private function frontStore() {
-        
+        $userId = "abcd456456";
+        $user = $this->user->where('userid', $userId)->first();
         $input = Request::all();
         $userIds = [];
         #处理接收者 这里先处理了一层
@@ -310,14 +302,21 @@ class MessageCenterController extends Controller {
         }
         $receiveUserIds = array_merge($input['user_ids'], $userIds);
         try {
-            DB::transaction(function () use ($receiveUserIds, $input) {
+            DB::transaction(function () use ($receiveUserIds, $input, $user) {
                 $messageSendingLog = new MessageSendingLog();
                 #新增一条日志记录（指定批次）
-                $input['msl_id'] = $messageSendingLog->store(count($receiveUserIds));
-                dd($input['msl_id']);
-                
+                $sendLogData = [
+                    'read_count' => 0,
+                    'received_count' => 0,
+                    'recipient_count' => count($receiveUserIds),
+                ];
+                $input['msl_id'] = $messageSendingLog->create($sendLogData)->id;
                 $msl = $messageSendingLog->whereId($input['msl_id'])->first();
+                if (isset($input['media_ids'])){
                 $input['media_ids'] = implode(',', $input['media_ids']);
+                } else {
+                    $input['media_ids'] = '0';
+                }
                 foreach ($receiveUserIds as $receiveUserId) {
                     $messageData = [
                         'title'           => $input['title'],
@@ -329,7 +328,7 @@ class MessageCenterController extends Controller {
                         'message_id'      => 0,
                         'url'             => '0',
                         'media_ids'       => $input['media_ids'],
-                        's_user_id'       => 3,
+                        's_user_id'       => $user->id,
                         'r_user_id'       => $receiveUserId,
                         'message_type_id' => 1,
                         'readed'          => 0,
@@ -342,11 +341,76 @@ class MessageCenterController extends Controller {
                     $msl->received_count = $msl->received_count + 1;
                     $msl->save();
                 }
+                #推送微信服务器
+                
+                #详情展示页地址
+                $message = $this->message->where('msl_id',$input['msl_id'])->first();
+                $url = 'http://weixin.028lk.com/message_show/' . $message->id;
+                $this->frontSendMessage($input, $url);
             });
         } catch (Exception $e) {
             throw $e;
         }
         
         return true;
+    }
+    
+    /**
+     * 前端消息推送
+     *
+     * @param $input
+     * @param null $url
+     * @return bool
+     */
+    private function frontSendMessage($input, $url = null) {
+        // if(empty($input['media_ids'])){
+        //     $input['type'] = 'text';
+        // }
+        $input['type'] = 'textcard';
+        $corpId = 'wxe75227cead6b8aec';
+        $secret = 'qv_kkW2S3zmMWIUrV3u2nydcyIoLknTvuDMq7ja4TYE';
+        $token = Wechat::getAccessToken($corpId, $secret, $url);
+        $agentid = 3;
+        $users = [];
+        foreach ($input['user_ids'] as $u_id){
+            $users[] = User::find($u_id)->userid;
+        }
+        if(!empty($input['department_ids'])) {
+            $toparty = implode('|', $input['department_ids']);
+        } else {
+            $toparty = '';
+        }
+        $topuser= implode('|', $users);
+        $message = [
+            'touser'  => $topuser,
+            'toparty' => $toparty,
+            'agentid' => $agentid,
+        ];
+        switch ($input['type']) {
+            case 'text' :
+                $message['text'] = ['content' => $input['content']];
+                break;
+            case 'textcard':
+                $message['textcard'] = [
+                    'title' => $input['title'],
+                    'description' => strip_tags($input['content']),
+                    'url' => $url
+                ];
+                break;
+            // case 'image' :
+            //
+            // case 'voice' :
+            //     $message['image'] = ['media_id' => $data['content']['media_id']];
+            //     break;
+            // case 'mpnews' :
+            //     $message['mpnews'] = ['articles' => $data['content']['articles']];
+            //     break;
+            // case 'video' :
+            //     $message['video'] = $data['content']['video'];
+            //     break;
+        }
+        $message['msgtype'] = $input['type'];
+        $status = json_decode(Wechat::sendMessage($token, $message));
+        return $status->errcode == 0 ? true : false;
     }
 }
