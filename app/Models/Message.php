@@ -322,7 +322,19 @@ class Message extends Model {
                         $message['video'] = $data['content']['video'];
                         break;
                     case 'sms':
-                        $this->sendSms($userItems, $toparty, $data['content']['sms']);
+                        $code = $this->sendSms($userItems, $toparty, $data['content']['sms']);
+                        if ($code > 0) {
+                            $result = [
+                                'statusCode' => 200,
+                                'message' => '消息已发送！',
+                            ];
+                        } else {
+                            $result = [
+                                'statusCode' => 0,
+                                'message' => '出错！',
+                            ];
+                        }
+                        return response()->json($result);
                         break;
                 }
                 $message['msgtype'] = $data['type'];
@@ -355,15 +367,17 @@ class Message extends Model {
      * @param $touser
      * @param $toparty
      * @param $content
+     * @return string
      */
     private function sendSms($touser, $toparty, $content) {
         $mobiles = $this->getMobiles($touser, $toparty);
 //        $autograph = School::find(School::id())->autograph;
         $autograph = '【成都外国语】';
         $result = Wechat::batchSend('LKJK004923', "654321@", implode(',', $mobiles), $content . $autograph);
+        return json_encode($result);
 //Log::debug($content . $autograph);
 //Log::debug(implode(',', $mobiles));
-Log::debug(json_encode($result));
+//Log::debug(json_encode($result));
 //Log::debug(md5('654321@'));
 //Log::debug(bcrypt('654321@'));
 
