@@ -49,7 +49,7 @@ class MessageCenterController extends Controller {
         $userId = Session::get('userId') ? Session::get('userId') : null;
         $code = Request::input('code');
         if (empty($code) && empty($userId)) {
-            $codeUrl = Wechat::getCodeUrl($corpId, $agentId, 'http://weixin.028lk.com/message_create');
+            $codeUrl = Wechat::getCodeUrl($corpId, $agentId, 'http://weixin.028lk.com/message_center');
             return redirect($codeUrl);
         }elseif(!empty($code) && empty($userId)){
             $accessToken = Wechat::getAccessToken($corpId, $secret);
