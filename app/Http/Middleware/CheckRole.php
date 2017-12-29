@@ -34,8 +34,7 @@ class CheckRole {
         $groupId = $user->group_id;
         $role = $user->group->name;
         $menuId = session('menuId');
-        $menu = new Menu();
-        # 超级用户直接访问所有功能
+        # 超级用户直接访问所有功能, 如果访问的是首页，则直接通过并进入下个请求
         if ($role == '运营' || $route == '/' || $route == '/home') {
             return $next($request);
         }
@@ -43,14 +42,14 @@ class CheckRole {
         if (stripos($route, 'pages') > -1) {
             switch ($role) {
                 case '企业':
-                    $menuIds = $menu->subMenuIds(
+                    $menuIds = Menu::subMenuIds(
                         Corp::whereDepartmentId($user->topDeptId())
                             ->first()->menu_id
                     );
                     $abort = !in_array($menuId, $menuIds) ?? false;
                     break;
                 case '学校':
-                    $menuIds = $menu->subMenuIds(
+                    $menuIds = Menu::subMenuIds(
                         School::whereDepartmentId($user->topDeptId())
                             ->first()->menu_id
                     );
@@ -63,26 +62,31 @@ class CheckRole {
                     $abort = !$groupMenu ?? false;
                     break;
             }
-            if ($abort) {
-                $this->abort();
-            }
+            if ($abort) { $this->abort(); }
             
             return $next($request);
         }
         # 功能权限判断
+        $controller = Action::whereRoute($route)->first()->controller;
         switch ($role) {
             case '企业':
+                $tab = Tab::whereIn('group_id', [0, 2, 3])
+                    ->where('controller', $controller)
+                    ->first();
+                $abort = !$tab ?? false;
+                break;
             case '学校':
-                $tab = Tab::whereGroupId($user->group_id)->orWhere('group_id', 0)
-                    ->where('controller', Action::whereRoute($route)->first()->controller)
+                $tab = Tab::whereIn('group_id', [0, 3])
+                    ->where('controller', $controller)
                     ->first();
                 $abort = !$tab ?? false;
                 break;
             default:
                 # 校级以下角色 action权限判断
-                $groupAction = ActionGroup::whereActionId(
-                    Action::whereRoute($route)->first()->id
-                )->where('group_id', $groupId)->first();
+                $actionId = Action::whereRoute($route)->first()->id;
+                $groupAction = ActionGroup::whereActionId($actionId)
+                    ->where('group_id', $groupId)
+                    ->first();
                 $abort = !$groupAction ?? false;
                 break;
         }
