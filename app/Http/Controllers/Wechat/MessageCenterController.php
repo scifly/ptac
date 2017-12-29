@@ -16,6 +16,7 @@ use App\Models\User;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\Session;
 
 class MessageCenterController extends Controller {
     
@@ -46,12 +47,11 @@ class MessageCenterController extends Controller {
         $secret = 'qv_kkW2S3zmMWIUrV3u2nydcyIoLknTvuDMq7ja4TYE';
         $agentId = 3;
         $code = Request::input('code');
-        
-        if (empty($code)) {
+        if (empty($code) || !Session::has('code')) {
             $codeUrl = Wechat::getCodeUrl($corpId, $agentId, 'http://weixin.028lk.com/message_center');
-        
             return redirect($codeUrl);
         } else {
+            Session::put('code', $code);
             $accessToken = Wechat::getAccessToken($corpId, $secret);
             $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
         }
@@ -113,7 +113,7 @@ class MessageCenterController extends Controller {
         $receiveMessages = $this->message->where('r_user_id', $user->id)->get()->groupBy('message_type_id');
         $count = $this->message->where('r_user_id', $user->id)->where('readed', '0')->count();
         
-        Request::flush();
+        Session::forget('code');
         return view('wechat.message_center.index', [
             'receiveMessages' => $receiveMessages,
             'sendMessages'    => $sendMessages,
