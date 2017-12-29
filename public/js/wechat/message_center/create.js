@@ -15,7 +15,7 @@ msg_type.select({
         },
         {
             title: "图文",
-            value: "news"
+            value: "mpnews"
         },
         {
             title: "图片",
@@ -49,12 +49,12 @@ msg_type.change(function () {
             $('.js-content').show();
             $('.js-upload-img').show();
             break;
-        case 'news':
+        case 'mpnews':
             //图文
             $('.js-content-item').hide();
             $('.js-title').show();
             $('.js-content').show();
-            $('.js-upload-img').show();
+            $('.js-upload-img').hide();
             $('.js-content_source_url').show();
             $('.js-author').show();
             $('.js-mpnews-cover').show();
@@ -333,26 +333,6 @@ $(function () {
         });
         tmp++;
     });
-
-    // $('#mpnews_cover').change(function () {
-    //     var formData = new FormData();
-    //     formData.append('file', $('#mpnews_cover')[0].files[0]);
-    //     formData.append('_token', token);
-    //     $.ajax({
-    //         url: "../message_upload",
-    //         data: formData,
-    //         type: 'POST',
-    //         dataType: 'json',
-    //         contentType: false,
-    //         processData: false,
-    //         cache: false,
-    //         success: function (result) {
-    //             if (result.statusCode === 200) {
-    //                 $('#mpnews_cover_img').attr('src', 'http://sandbox.ddd:8080/' + result.message.path);
-    //             }
-    //         }
-    //     });
-    // });
 
     $("#upload_video").change(function () {
         $('#upload-wait').show();
