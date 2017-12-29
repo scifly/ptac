@@ -321,6 +321,10 @@ class MessageCenterController extends Controller {
         if (!isset($input['department_ids'])) {
             $input['department_ids'] = [];
         }
+        if ($input['content'] == '0') {
+            $input['content'] = '';
+        }
+    
         #处理接收者 这里先处理了一层
         if (!empty($input['department_ids'])) {
             #获取该部门下包括子部门的user
