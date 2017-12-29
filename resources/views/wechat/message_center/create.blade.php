@@ -166,10 +166,6 @@
 						<div class="choose-breadcrumb js-choose-breadcrumb">
 							<ol class="breadcrumb js-choose-breadcrumb-ol">
 								<li data-id="{{ $department->id }}" class="js-choose-breadcrumb-li headclick"><a>{{ $department->name }}</a></li>
-								{{-->--}}
-								{{--<li data-id="2" class="js-choose-breadcrumb-li headclick"><a>一年级</a></li>--}}
-								{{-->--}}
-								{{--<li data-id="3" class="js-choose-breadcrumb-li headclick active"><a>三班</a></li>--}}
 							</ol>
 						</div>
 
@@ -246,7 +242,7 @@
         <div id="upload-wait" style="display:none;position: fixed;top: 0;height: 100%;width: 100%;z-index:999;background-color: #000;opacity: 0.4">
             <div class="weui-loadmore" style="margin-top: 50%;">
                 <i class="weui-loading"></i>
-                <span class="weui-loadmore__tips">正在加载</span>
+                <span class="weui-loadmore__tips">正在上传</span>
             </div>
         </div>
 
