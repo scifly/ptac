@@ -1,5 +1,6 @@
 var token = $('#csrf_token').attr('content');
 choose_item();
+getdept();
 var msg_type = $('#type');
 
 msg_type.select({
@@ -15,7 +16,7 @@ msg_type.select({
         },
         {
             title: "图文",
-            value: "mpnews"
+            value: "news"
         },
         {
             title: "图片",
@@ -49,7 +50,7 @@ msg_type.change(function () {
             $('.js-content').show();
             $('.js-upload-img').show();
             break;
-        case 'mpnews':
+        case 'news':
             //图文
             $('.js-content-item').hide();
             $('.js-title').show();
@@ -113,8 +114,8 @@ function show_group() {
         var name = $(this).prev().find('span').html();
         var choose_box = $('.air-choose-group');
         var choose_dept = $('.js-choose-breadcrumb-ol');
-        var html = '>' +
-            '<li data-id= "' + id + '" class="js-choose-breadcrumb-li headclick"><a>' + name + '</a></li>';
+        var html =
+            '<li data-id="' + id + '" class="js-choose-breadcrumb-li headclick"><a>>' + name + '</a></li>';
         choose_dept.append(html);
         $.ajax({
             type: 'GET',
@@ -126,6 +127,7 @@ function show_group() {
                     show_group();
                     choose_item();
                     remove_choose_result();
+                    getdept();
                 } else {
                     choose_box.empty();
                 }
@@ -227,6 +229,30 @@ $(".weui-switch").change(function () {
     }
 });
 
+function upload_cover() {
+    var formData = new FormData();
+    formData.append('file', $('#pic-url')[0].files[0]);
+    formData.append('_token', token);
+    $.ajax({
+        url: '../public/message_upload',
+        type: 'POST',
+        cache: false,
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function (result) {
+            if (result.statusCode === 200) {
+                var html = '<img class="uploadimg-item pic-url" src="http://sandbox.dev:8080/ptac/' + result.message.path + '" id="pic-url" style="width: 100%" data-id="' + result.message.id + '">' +
+                    '<input id="pic-url" onchange="upload_cover()" class="weui-uploader__input pic-url" type="file" accept="image/*" multiple="">';
+
+                $('#cover').html(html);
+
+            }
+        }
+    });
+
+}
+
 $(function () {
     // 允许上传的图片类型
     var allowTypes = ['image/jpg', 'image/jpeg', 'image/png', 'image/gif'];
@@ -302,7 +328,7 @@ $(function () {
             success: function (result) {
                 if (result.statusCode === 200) {
                     $('#uploadimg-' + tmp).attr('data-media-id', result.message.id);
-                    $('#uploadimg-' + tmp).attr('src', 'http://sandbox.ddd:8080/ptac/' + result.message.path);
+                    $('#uploadimg-' + tmp).attr('src', 'http://sandbox.dev:8080/ptac/' + result.message.path);
                 }
             }
         });
@@ -384,12 +410,13 @@ $(function () {
     var content = '';
     var media_ids = [];
     var wechat_media_id = '';
-    var time = '';
+    // var time = '';
     $('.release').on('click', function () {
+        var pic_url = $('.pic-url').attr('data-id');
         media_ids = [];
         title = $('#title').val();
         content = $('#emojiInput').html();
-        time = $('#time').val();
+        // time = $('#time').val();
         var department_ids = [];
         var user_ids = [];
         var choose = $('#homeWorkChoose');
@@ -405,7 +432,7 @@ $(function () {
             wechat_media_id = $('#image_media_id').val();
             media_ids.push($('.img-id').attr('id'));
         }
-        if(type === 'sms'){
+        if (type === 'sms') {
             title = '短信信息';
         }
 
@@ -424,10 +451,16 @@ $(function () {
         $.ajax({
             type: 'POST',
             data: {
-                '_token': token, 'title': title, 'content': content,
-                'time': time, 'department_ids': department_ids,
-                'user_ids': user_ids, 'media_ids': media_ids,
-                'type': type, 'mediaid': wechat_media_id
+                '_token': token,
+                'title': title,
+                'content': content,
+                // 'time': time,
+                'department_ids': department_ids,
+                'user_ids': user_ids,
+                'media_ids': media_ids,
+                'pic_url': pic_url,
+                'type': type,
+                'mediaid': wechat_media_id
             },
             url: '../public/message_store',
             success: function (result) {
@@ -443,5 +476,29 @@ $(function () {
         });
 
     });
-})
-;
+});
+
+function getdept() {
+    $(".js-choose-breadcrumb-ol li").on('click', function () {
+            var id = $(this).attr("data-id");
+            // var name = $(this).find('a').html();
+            var choose_box = $('.air-choose-group');
+            $(this).nextAll().remove();
+            $.ajax({
+                type: 'GET',
+                data: {},
+                url: '../public/message_dept/' + id,
+                success: function (result) {
+                    if (result.statusCode === 200) {
+                        choose_box.html(result.message);
+                        show_group();
+                        choose_item();
+                        remove_choose_result();
+                        getdept();
+                    } else {
+                        choose_box.empty();
+                    }
+                }
+            });
+        });
+}

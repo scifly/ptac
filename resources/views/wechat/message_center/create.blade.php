@@ -51,11 +51,9 @@
                             <div class="weui-uploader__hd">
                                 <p class="weui-uploader__title">封面上传</p>
                             </div>
-                            <div class="weui-uploader__bd">
-                                <div class="weui-uploader__input-box">
-                                    {{--<img id="mpnews_cover_img"--}}
-                                         {{--src=' ' style="width: 300px; height: 200px">--}}
-                                    <input id="mpnews_cover" class="weui-uploader__input" type="file" accept="image/*" multiple="">
+                            <div class="weui-uploader__bd" id="cover" style="width: 100%">
+                                <div class="weui-uploader__input-box" >
+                                    <input id="pic-url" onchange="upload_cover()" class="weui-uploader__input pic-url" type="file" accept="image/*" multiple="">
                                 </div>
                             </div>
                         </div>
@@ -167,7 +165,7 @@
 
 						<div class="choose-breadcrumb js-choose-breadcrumb">
 							<ol class="breadcrumb js-choose-breadcrumb-ol">
-								<li data-id="0" class="js-choose-breadcrumb-li headclick"><a>学校</a></li>
+								<li data-id="{{ $department->id }}" class="js-choose-breadcrumb-li headclick"><a>{{ $department->name }}</a></li>
 								{{-->--}}
 								{{--<li data-id="2" class="js-choose-breadcrumb-li headclick"><a>一年级</a></li>--}}
 								{{-->--}}
