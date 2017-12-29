@@ -46,17 +46,19 @@ class MessageCenterController extends Controller {
         $corpId = 'wxe75227cead6b8aec';
         $secret = 'qv_kkW2S3zmMWIUrV3u2nydcyIoLknTvuDMq7ja4TYE';
         $agentId = 3;
+        $userId = Session::get('userId') ? Session::get('userId') : null;
         $code = Request::input('code');
-        if (empty($code)) {
-            $codeUrl = Wechat::getCodeUrl($corpId, $agentId, 'http://weixin.028lk.com/message_center');
-        
+        if (empty($code) && empty($userId)) {
+            $codeUrl = Wechat::getCodeUrl($corpId, $agentId, 'http://weixin.028lk.com/message_create');
             return redirect($codeUrl);
-        } else {
+        }elseif(!empty($code) && empty($userId)){
             $accessToken = Wechat::getAccessToken($corpId, $secret);
             $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
+            $userId = $userInfo['UserId'];
+            Session::put('userId',$userId);
         }
 
-        $userId = $userInfo['UserId'];
+        // $userId = $userInfo['UserId'];
         // $userId = 'yuanhongbin';
         $user = User::whereUserid($userId)->first();
         if (Request::isMethod('post')) {
