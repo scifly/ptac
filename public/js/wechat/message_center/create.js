@@ -120,7 +120,7 @@ function show_group() {
         $.ajax({
             type: 'GET',
             data: {},
-            url: '../message_dept/' + id,
+            url: '../public/message_dept/' + id,
             success: function (result) {
                 if (result.statusCode === 200) {
                     choose_box.html(result.message);
@@ -356,6 +356,7 @@ $(function () {
     // });
 
     $("#upload_video").change(function () {
+        $('#upload-wait').show();
         var $this = $(this);
         var formData = new FormData();
         formData.append('file', $('#upload_video')[0].files[0]);
@@ -370,10 +371,13 @@ $(function () {
             processData: false,
             cache: false,
             success: function (result) {
+                $('#upload-wait').hide();
                 if (result.statusCode === 1) {
                     var html = '<video class="video-id" id="' + result.data.id + '" src="' + 'http://weixin.028lk.com/' + result.data.path + '" controls="controls" style="height: 300px; width: 200px"></video>' +
                         '<input id="video_media_id" name="video_media_id" value="' + result.data.media_id + '" hidden>';
                     $this.parent().parent().html(html);
+                } else {
+                    $.alert('上传失败，请稍后重新尝试！')
                 }
             }
         });
@@ -400,6 +404,8 @@ $(function () {
                     var html = '<img class="img-id" id="' + result.data.id + '" src="' + 'http://weixin.028lk.com/' + result.data.path + '" style="height: 200px; width: 300px">' +
                         '<input id="image_media_id" name="image_media_id" value="' + result.data.media_id + '" hidden>';
                     $this.parent().parent().html(html);
+                } else {
+                    $.alert('上传失败，请稍后重新尝试！')
                 }
             }
         });
@@ -426,11 +432,23 @@ $(function () {
             content = $('#description-video').val();
             wechat_media_id = $('#video_media_id').val();
             media_ids.push($('.video-id').attr('id'));
+            if(media_ids.length === 0){
+                $.alert('亲，还没有上传视频！');
+                return;
+            }
+            if(content == null){
+                $.alert('亲，请填写描述！');
+                return;
+            }
         }
         if (type === 'image') {
             content = '0';
             wechat_media_id = $('#image_media_id').val();
             media_ids.push($('.img-id').attr('id'));
+            if(media_ids.length === 0){
+                $.alert('亲，还没有上传图片！');
+                return;
+            }
         }
         if (type === 'sms') {
             title = '短信信息';
@@ -447,6 +465,18 @@ $(function () {
             user_ids.push($(this).attr('data-uid'));
         });
         //前端验证
+        if ((user_ids.length === 0) && (department_ids.length === 0)) {
+            $.alert('发送对象不能为空');
+            return false;
+        }
+        if(content == null){
+            $.alert('发送内容不能为空');
+            return false;
+        }
+        if(title == null){
+            $.alert('标题不能为空');
+            return false;
+        }
 
         $.ajax({
             type: 'POST',
@@ -462,13 +492,12 @@ $(function () {
                 'type': type,
                 'mediaid': wechat_media_id
             },
-            url: '../message_store',
+            url: '../public/message_store',
             success: function (result) {
                 if (result.statusCode === 200) {
                     $.alert('消息发送成功！', function () {
                         window.location.href = '../message_center';
                     });
-
                 } else {
                     $.alert('消息发送失败，请稍后重试！');
                 }
@@ -480,25 +509,25 @@ $(function () {
 
 function getdept() {
     $(".js-choose-breadcrumb-ol li").on('click', function () {
-            var id = $(this).attr("data-id");
-            // var name = $(this).find('a').html();
-            var choose_box = $('.air-choose-group');
-            $(this).nextAll().remove();
-            $.ajax({
-                type: 'GET',
-                data: {},
-                url: '../message_dept/' + id,
-                success: function (result) {
-                    if (result.statusCode === 200) {
-                        choose_box.html(result.message);
-                        show_group();
-                        choose_item();
-                        remove_choose_result();
-                        getdept();
-                    } else {
-                        choose_box.empty();
-                    }
+        var id = $(this).attr("data-id");
+        // var name = $(this).find('a').html();
+        var choose_box = $('.air-choose-group');
+        $(this).nextAll().remove();
+        $.ajax({
+            type: 'GET',
+            data: {},
+            url: '../message_dept/' + id,
+            success: function (result) {
+                if (result.statusCode === 200) {
+                    choose_box.html(result.message);
+                    show_group();
+                    choose_item();
+                    remove_choose_result();
+                    getdept();
+                } else {
+                    choose_box.empty();
                 }
-            });
+            }
         });
+    });
 }

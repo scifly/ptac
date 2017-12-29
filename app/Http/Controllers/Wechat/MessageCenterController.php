@@ -104,7 +104,6 @@ class MessageCenterController extends Controller {
         // if($user->group->name == '教职工'){
         //     $educator = true;
         // }
-        $sendMessages = $this->message->where('s_user_id', $user->id)->get()->groupBy('message_type_id');
         if($user->group->name == '教职员工'){
             $educator = true;
         }
@@ -229,7 +228,6 @@ class MessageCenterController extends Controller {
         }
         $userId = $userInfo['UserId'];
         
-        // $userId = $this->getRole('http://weixin.028lk.com/message_show');
         // $userId = "yuanhongbin";
         $user = $this->user->where('userid', $userId)->first();
         $message = $this->message->find($id);
