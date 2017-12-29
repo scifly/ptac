@@ -47,11 +47,11 @@ class MessageCenterController extends Controller {
         $secret = 'qv_kkW2S3zmMWIUrV3u2nydcyIoLknTvuDMq7ja4TYE';
         $agentId = 3;
         $code = Request::input('code');
-        if (empty($code) || !Session::has('code')) {
+        Session::put('code', $code);
+        if (empty($code) || Session::get('code') == '') {
             $codeUrl = Wechat::getCodeUrl($corpId, $agentId, 'http://weixin.028lk.com/message_center');
             return redirect($codeUrl);
         } else {
-            Session::put('code', $code);
             $accessToken = Wechat::getAccessToken($corpId, $secret);
             $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
         }
