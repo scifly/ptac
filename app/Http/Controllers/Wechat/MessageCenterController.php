@@ -52,10 +52,16 @@ class MessageCenterController extends Controller {
             return redirect($codeUrl);
         } else {
             $code = Request::get('code');
+            print_r($code);
+            echo '************************';
             $accessToken = Wechat::getAccessToken($corpId, $secret);
+            print_r($accessToken);
             $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
         }
+        
+        die;
         $userId = $userInfo['UserId'];
+        
         // $userId = 'yuanhongbin';
         $user = User::whereUserid($userId)->first();
         if (Request::isMethod('post')) {
@@ -102,7 +108,7 @@ class MessageCenterController extends Controller {
         #判断是否为教职工
         $educator = false;
         if(empty($user)){
-            return '<h4>你暂不是该校教职员工或监护人</h4>';
+            return '<h4>你暂不是教职员工或监护人</h4>';
         }
         if ($user->group->name == '教职员工') {
             $educator = true;
