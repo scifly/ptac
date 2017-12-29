@@ -54,10 +54,10 @@ class MessageCenterController extends Controller {
             $code = Request::get('code');
             $accessToken = Wechat::getAccessToken($corpId, $secret);
             $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
-            print_r($userInfo);
+            // print_r($userInfo);
         }
         
-        die;
+        // die;
         $userId = $userInfo['UserId'];
         
         // $userId = 'yuanhongbin';
