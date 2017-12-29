@@ -16,6 +16,7 @@ use App\Models\User;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\Session;
 
 class MessageCenterController extends Controller {
     
@@ -45,8 +46,8 @@ class MessageCenterController extends Controller {
         $corpId = 'wxe75227cead6b8aec';
         $secret = 'qv_kkW2S3zmMWIUrV3u2nydcyIoLknTvuDMq7ja4TYE';
         $agentId = 3;
-        $code = Request::input('code');
         $userInfo['errcode'] = '';
+        $code = Request::input('code');
         if (empty($code) || $userInfo['errcode'] == 40029) {
             $codeUrl = Wechat::getCodeUrl($corpId, $agentId, 'http://weixin.028lk.com/message_center');
         
@@ -55,9 +56,10 @@ class MessageCenterController extends Controller {
             
             $accessToken = Wechat::getAccessToken($corpId, $secret);
             $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
+            print_r($userInfo);
         }
+        die;
         $userId = $userInfo['UserId'];
-        
         // $userId = 'yuanhongbin';
         $user = User::whereUserid($userId)->first();
         if (Request::isMethod('post')) {
