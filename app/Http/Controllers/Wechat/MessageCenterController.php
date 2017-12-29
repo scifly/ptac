@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Models\App;
 use App\Models\Corp;
 use App\Models\Department;
+use App\Models\Educator;
 use App\Models\Message;
 use App\Models\MessageSendingLog;
 use App\Models\User;
@@ -162,7 +163,7 @@ class MessageCenterController extends Controller {
         $agentId = 3;
         $code = Request::input('code');
         if (empty($code)) {
-            $codeUrl = Wechat::getCodeUrl($corpId, $agentId, 'http://weixin.028lk.com/message_create');
+            $codeUrl = Wechat::getCodeUrl($corpId, $agentId, 'http://weixin.028lk.com/message_store');
         
             return redirect($codeUrl);
         } else {
@@ -218,7 +219,7 @@ class MessageCenterController extends Controller {
         $agentId = 3;
         $code = Request::input('code');
         if (empty($code)) {
-            $codeUrl = Wechat::getCodeUrl($corpId, $agentId, 'http://weixin.028lk.com/message_create');
+            $codeUrl = Wechat::getCodeUrl($corpId, $agentId, 'http://weixin.028lk.com/message_show');
         
             return redirect($codeUrl);
         } else {
@@ -458,7 +459,7 @@ class MessageCenterController extends Controller {
                     }
                     #推送微信服务器且显示详情页
                     $message = $this->message->where('msl_id', $input['msl_id'])->first();
-                    $url = 'http:/sandbox.ddd:8080/ptac/public/message_show/' . $message->id;
+                    $url = 'http:/weixin.028lk.com/message_show/' . $message->id;
                     return $this->frontSendMessage($input, $url);
                 });
             } catch (Exception $e) {
