@@ -82,7 +82,7 @@ var page = {
             ? window.location.origin + '/'
             : window.location.protocol + '/' + window.location.host + '/';
         if (window.location.href.indexOf('public') > -1) {
-            return siteRoot + 'ptac/public/';
+            return siteRoot + 'pppp/public/';
         }
         return siteRoot;
     },
