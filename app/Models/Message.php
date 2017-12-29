@@ -4,7 +4,6 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Facades\Wechat;
-use App\Helpers\ControllerTrait;
 use App\Http\Requests\MessageRequest;
 use Carbon\Carbon;
 use Eloquent;
@@ -300,6 +299,8 @@ class Message extends Model {
             }
             # 推送的所有用户以及电话
             $userDatas = $this->getMobiles($us, $depts);
+            $title = '';
+            $content = '';
 
             $msl = [
                 'read_count' => 0,
@@ -307,7 +308,6 @@ class Message extends Model {
                 'recipient_count' => count($userDatas['users']),
             ];
             $id = MessageSendingLog::create($msl)->id;
-            $content = '';
             foreach ($apps as $app) {
                 $token = Wechat::getAccessToken($corp->corpid, $app['secret']);
                 $message = [
@@ -315,7 +315,6 @@ class Message extends Model {
                     'toparty' => $toparty,
                     'agentid' => $app['agentid'],
                 ];
-
                 # 短信推送
                 if ($data['type'] == 'sms') {
                     $code = $this->sendSms($userItems, $toparty, $data['content']['sms']);
@@ -344,9 +343,12 @@ class Message extends Model {
                         break;
                         case 'mpnews' :
                             $message['mpnews'] = ['articles' => $data['content']['articles']];
+                            $title = $data['content']['articles']['title'];
                             break;
                         case 'video' :
                             $message['video'] = $data['content']['video'];
+                            $title = $data['content']['video']['title'];
+
                             break;
 
                             break;
@@ -378,6 +380,7 @@ class Message extends Model {
                         'comm_type_id' => CommType::whereName($comtype)->first()->id,
                         'app_id' => $app['id'],
                         'msl_id' => $id,
+                        'title' => $title,
                         'content' => json_encode($content),
                         'serviceid' => 0,
                         'message_id' => 0,
@@ -398,7 +401,7 @@ class Message extends Model {
             if ($result['statusCode'] == 200) {
                 $readCount = $data['type'] == 'sms' ? count($userDatas['users']) : 0;
                 $receivedCount = count($userDatas['users']);
-                $statuss = MessageSendingLog::find($id)->update(['read_count' => $readCount , 'received_count' => $receivedCount]);
+                MessageSendingLog::find($id)->update(['read_count' => $readCount , 'received_count' => $receivedCount]);
             }
         }
         
