@@ -38,8 +38,7 @@ class MessageCenterController extends Controller {
     }
     
     /**
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\JsonResponse|\Illuminate\View\View
-     * @throws \Throwable
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector|\Illuminate\View\View|string
      */
     public function index() {
         #获取用户信息
@@ -102,8 +101,8 @@ class MessageCenterController extends Controller {
         }
         #判断是否为教职工
         $educator = false;
-        if(!$user){
-            echo '<h4>你暂不是该校教职员工或监护人</h4>';
+        if(empty($user)){
+            return '<h4>你暂不是该校教职员工或监护人</h4>';
         }
         if ($user->group->name == '教职员工') {
             $educator = true;
