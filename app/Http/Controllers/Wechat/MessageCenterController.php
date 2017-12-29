@@ -8,6 +8,7 @@ use App\Models\App;
 use App\Models\CommType;
 use App\Models\Corp;
 use App\Models\Department;
+use App\Models\Educator;
 use App\Models\Message;
 use App\Models\MessageSendingLog;
 use App\Models\MessageType;
