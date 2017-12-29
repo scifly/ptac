@@ -229,6 +229,7 @@ $(".weui-switch").change(function () {
 });
 
 function upload_cover() {
+    $('#upload-wait').show();
     var formData = new FormData();
     formData.append('file', $('#upload_mpnews')[0].files[0]);
     formData.append('_token', token);
@@ -241,6 +242,7 @@ function upload_cover() {
         processData: false,
         contentType: false,
         success: function (result) {
+            $('#upload-wait').hide();
             if (result.statusCode === 1) {
                 var html = '<img class="uploadimg-item upload_mpnews" id="' + result.data.id + '" src="http://weixin.028lk.com/' + result.data.path + '"  style="width: 100%" data-id="' + result.data.id + '">' +
                 '<input id="mpnews_media_id" name="mpnews_media_id" onchange="upload_cover()" data-content-id="' + result.data.media_id + '" class="weui-uploader__input upload_mpnews" type="file" accept="image/*" multiple="" >';
@@ -398,7 +400,6 @@ $(function () {
     var wechat_media_id = '';
     // var time = '';
     $('.release').on('click', function () {
-        var pic_url = $('.pic-url').attr('data-id');
         media_ids = [];
         title = $('#title').val();
         content = $('#emojiInput').html();
