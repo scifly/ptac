@@ -234,7 +234,7 @@ function upload_cover() {
     formData.append('file', $('#pic-url')[0].files[0]);
     formData.append('_token', token);
     $.ajax({
-        url: '../public/message_upload',
+        url: '../message_upload',
         type: 'POST',
         cache: false,
         data: formData,
@@ -319,7 +319,7 @@ $(function () {
         formData.append('file', $('#uploaderInput')[0].files[0]);
         formData.append('_token', token);
         $.ajax({
-            url: '../public/message_upload',
+            url: '../message_upload',
             type: 'POST',
             cache: false,
             data: formData,
@@ -328,7 +328,7 @@ $(function () {
             success: function (result) {
                 if (result.statusCode === 200) {
                     $('#uploadimg-' + tmp).attr('data-media-id', result.message.id);
-                    $('#uploadimg-' + tmp).attr('src', 'http://sandbox.dev:8080/ptac/' + result.message.path);
+                    $('#uploadimg-' + tmp).attr('src', 'http://weixin.028lk.com/' + result.message.path);
                 }
             }
         });
@@ -362,7 +362,7 @@ $(function () {
         formData.append('_token', token);
         formData.append('type', msg_type.attr('data-values'));
         $.ajax({
-            url: "../public/message_upload",
+            url: "../message_upload",
             data: formData,
             type: 'POST',
             dataType: 'json',
@@ -371,7 +371,7 @@ $(function () {
             cache: false,
             success: function (result) {
                 if (result.statusCode === 1) {
-                    var html = '<video class="video-id" id="' + result.data.id + '" src="' + 'http://sandbox.ddd:8080/ptac/' + result.data.path + '" controls="controls" style="height: 300px; width: 200px"></video>' +
+                    var html = '<video class="video-id" id="' + result.data.id + '" src="' + 'http://weixin.028lk.com/' + result.data.path + '" controls="controls" style="height: 300px; width: 200px"></video>' +
                         '<input id="video_media_id" name="video_media_id" value="' + result.data.media_id + '" hidden>';
                     $this.parent().parent().html(html);
                 }
@@ -387,7 +387,7 @@ $(function () {
         formData.append('_token', token);
         formData.append('type', msg_type.attr('data-values'));
         $.ajax({
-            url: "../public/message_upload",
+            url: "../message_upload",
             data: formData,
             type: 'POST',
             dataType: 'json',
@@ -397,7 +397,7 @@ $(function () {
             success: function (result) {
                 $('#upload-wait').hide();
                 if (result.statusCode === 1) {
-                    var html = '<img class="img-id" id="' + result.data.id + '" src="' + 'http://sandbox.ddd:8080/ptac/' + result.data.path + '" style="height: 200px; width: 300px">' +
+                    var html = '<img class="img-id" id="' + result.data.id + '" src="' + 'http://weixin.028lk.com/' + result.data.path + '" style="height: 200px; width: 300px">' +
                         '<input id="image_media_id" name="image_media_id" value="' + result.data.media_id + '" hidden>';
                     $this.parent().parent().html(html);
                 }
@@ -462,11 +462,11 @@ $(function () {
                 'type': type,
                 'mediaid': wechat_media_id
             },
-            url: '../public/message_store',
+            url: '../message_store',
             success: function (result) {
                 if (result.statusCode === 200) {
                     $.alert('消息发送成功！', function () {
-                        window.location.href = '../public/message_center';
+                        window.location.href = '../message_center';
                     });
 
                 } else {
@@ -487,7 +487,7 @@ function getdept() {
             $.ajax({
                 type: 'GET',
                 data: {},
-                url: '../public/message_dept/' + id,
+                url: '../message_dept/' + id,
                 success: function (result) {
                     if (result.statusCode === 200) {
                         choose_box.html(result.message);
