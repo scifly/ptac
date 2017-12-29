@@ -2,7 +2,6 @@ var token = $('#csrf_token').attr('content');
 choose_item();
 getdept();
 var msg_type = $('#type');
-
 msg_type.select({
     title: "选择类型",
     items: [
@@ -120,7 +119,7 @@ function show_group() {
         $.ajax({
             type: 'GET',
             data: {},
-            url: '../public/message_dept/' + id,
+            url: '../message_dept/' + id,
             success: function (result) {
                 if (result.statusCode === 200) {
                     choose_box.html(result.message);
@@ -242,7 +241,7 @@ function upload_cover() {
         contentType: false,
         success: function (result) {
             if (result.statusCode === 200) {
-                var html = '<img class="uploadimg-item pic-url" src="http://sandbox.dev:8080/ptac/' + result.message.path + '" id="pic-url" style="width: 100%" data-id="' + result.message.id + '">' +
+                var html = '<img class="uploadimg-item pic-url" src="http://weixin.028lk.com/' + result.message.path + '" id="pic-url" style="width: 100%" data-id="' + result.message.id + '">' +
                     '<input id="pic-url" onchange="upload_cover()" class="weui-uploader__input pic-url" type="file" accept="image/*" multiple="">';
 
                 $('#cover').html(html);
@@ -340,7 +339,7 @@ $(function () {
     //     formData.append('file', $('#mpnews_cover')[0].files[0]);
     //     formData.append('_token', token);
     //     $.ajax({
-    //         url: "../public/message_upload",
+    //         url: "../message_upload",
     //         data: formData,
     //         type: 'POST',
     //         dataType: 'json',
@@ -349,7 +348,7 @@ $(function () {
     //         cache: false,
     //         success: function (result) {
     //             if (result.statusCode === 200) {
-    //                 $('#mpnews_cover_img').attr('src', 'http://sandbox.ddd:8080/public/' + result.message.path);
+    //                 $('#mpnews_cover_img').attr('src', 'http://sandbox.ddd:8080/' + result.message.path);
     //             }
     //         }
     //     });
@@ -492,7 +491,7 @@ $(function () {
                 'type': type,
                 'mediaid': wechat_media_id
             },
-            url: '../public/message_store',
+            url: '../message_store',
             success: function (result) {
                 if (result.statusCode === 200) {
                     $.alert('消息发送成功！', function () {
@@ -515,7 +514,6 @@ function getdept() {
         $(this).nextAll().remove();
         $.ajax({
             type: 'GET',
-            data: {},
             url: '../message_dept/' + id,
             success: function (result) {
                 if (result.statusCode === 200) {

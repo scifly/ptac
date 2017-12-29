@@ -92,7 +92,14 @@ class Message extends Model {
      *
      * @return BelongsTo
      */
-    public function user() { return $this->belongsTo('App\Models\User'); }
+    public function user() { return $this->belongsTo('App\Models\User','s_user_id','id'); }
+    
+    /**
+     * 返回指定消息接收的用户对象
+     *
+     * @return BelongsTo
+     */
+    public function receiveUser() { return $this->belongsTo('App\Models\User','r_user_id','id'); }
     
     /**
      * 获取
