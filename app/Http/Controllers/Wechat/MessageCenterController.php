@@ -52,11 +52,9 @@ class MessageCenterController extends Controller {
             return redirect($codeUrl);
         } else {
             $code = Request::get('code');
-            print_r($code);
-            echo '************************';
             $accessToken = Wechat::getAccessToken($corpId, $secret);
-            print_r($accessToken);
             $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
+            print_r($userInfo);
         }
         
         die;
