@@ -57,8 +57,6 @@ class MessageCenterController extends Controller {
             $userId = $userInfo['UserId'];
             Session::put('userId',$userId);
         }
-
-        // $userId = $userInfo['UserId'];
         // $userId = 'yuanhongbin';
         $user = User::whereUserid($userId)->first();
         if (Request::isMethod('post')) {
@@ -159,22 +157,22 @@ class MessageCenterController extends Controller {
      * @throws \Throwable
      */
     public function store() {
-        $corpId = 'wxe75227cead6b8aec';
-        $secret = 'qv_kkW2S3zmMWIUrV3u2nydcyIoLknTvuDMq7ja4TYE';
-        $agentId = 3;
-        $code = Request::input('code');
-        if (empty($code)) {
-            $codeUrl = Wechat::getCodeUrl($corpId, $agentId, 'http://weixin.028lk.com/message_store');
-        
-            return redirect($codeUrl);
-        } else {
-            $accessToken = Wechat::getAccessToken($corpId, $secret);
-            $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
-        }
-        $userId = $userInfo['UserId'];
+        // $corpId = 'wxe75227cead6b8aec';
+        // $secret = 'qv_kkW2S3zmMWIUrV3u2nydcyIoLknTvuDMq7ja4TYE';
+        // $agentId = 3;
+        // $code = Request::input('code');
+        // if (empty($code)) {
+        //     $codeUrl = Wechat::getCodeUrl($corpId, $agentId, 'http://weixin.028lk.com/message_store');
+        //
+        //     return redirect($codeUrl);
+        // } else {
+        //     $accessToken = Wechat::getAccessToken($corpId, $secret);
+        //     $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
+        // }
+        // $userId = $userInfo['UserId'];
         // $userId = 'yuanhongbin';
         
-        return $this->frontStore($userId) ? $this->succeed() : $this->fail();
+        return $this->frontStore() ? $this->succeed() : $this->fail();
     }
     
     /**
@@ -347,14 +345,13 @@ class MessageCenterController extends Controller {
     /**
      *
      * 服务器端数据保存 后期用队列处理
-     * @param $userId
      * @return bool
      * @throws Exception
      * @throws \Throwable
      */
-    private function frontStore($userId) {
+    private function frontStore() {
         
-        $user = $this->user->where('userid', $userId)->first();
+        $user = $this->user->where('userid', Session::get('userId'))->first();
         $input = Request::all();
         $userIds = [];
         if (!isset($input['user_ids'])) {
