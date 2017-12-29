@@ -106,7 +106,7 @@ class MessageCenterController extends Controller {
         // if($user->group->name == '教职工'){
         //     $educator = true;
         // }
-        if(empty($user)){
+        if(count($user) == 0){
             echo '<h4>你暂不是该校教职员工或监护人</h4>';
         }
         if ($user->group->name == '教职员工') {
