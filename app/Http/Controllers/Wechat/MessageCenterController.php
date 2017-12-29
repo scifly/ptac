@@ -42,7 +42,6 @@ class MessageCenterController extends Controller {
      * @throws \Throwable
      */
     public function index() {
-        static $userId = '';
         #获取用户信息
         $corpId = 'wxe75227cead6b8aec';
         $secret = 'qv_kkW2S3zmMWIUrV3u2nydcyIoLknTvuDMq7ja4TYE';
@@ -103,9 +102,7 @@ class MessageCenterController extends Controller {
         }
         #判断是否为教职工
         $educator = false;
-        print_r($user);
-        die;
-        if($user == 0){
+        if(!$user){
             echo '<h4>你暂不是该校教职员工或监护人</h4>';
         }
         if ($user->group->name == '教职员工') {
