@@ -113,7 +113,7 @@ function uploadfile(obj){
 	formData.append('uploadFile', $('#file-'+type)[0].files[0]);
     formData.append('_token', $token.attr('content'));
     formData.append('type', type);
-
+	$('.overlay').show();
     //请求接口
     $.ajax({
         url: page.siteRoot() + "messages/uploadFile",
@@ -123,6 +123,7 @@ function uploadfile(obj){
         processData: false,
         contentType: false,
 		success: function (result) {
+			$('.overlay').hide();
 			if(result.statusCode){
                 page.inform("操作结果", result.message, page.success);
                 var html = '<form id="uploadForm" enctype="multipart/form-data">';
@@ -235,6 +236,7 @@ function upload_cover(obj){
 	formData.append('uploadFile', $fileCover[0].files[0]);
     formData.append('_token', $token.attr('content'));
     formData.append('type', 'image');
+    $('.overlay').show();
     //请求接口
     $.ajax({
         url: page.siteRoot() + "messages/uploadFile",
@@ -244,6 +246,7 @@ function upload_cover(obj){
         processData: false,
         contentType: false,
 		success: function (result) {
+			$('.overlay').hide();
 			if(result.statusCode){
                 page.inform("操作结果", result.message, page.success);
                 var html = '<form id="uploadForm" enctype="multipart/form-data">'+
