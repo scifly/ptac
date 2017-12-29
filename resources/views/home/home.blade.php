@@ -36,7 +36,6 @@
     @include('partials.site_main_sidebar')
     <!-- 页面内容 -->
     <div class="content-wrapper">
-
         {!! $content !!}
     </div>
     <!-- 页面尾部 -->
@@ -52,6 +51,5 @@
 <script src="{{ URL::asset('js/plugins/parsley/i18n/zh_cn.js') }}"></script>
 <script src="{{ URL::asset('js/plugins/parsley/i18n/zh_cn.extra.js') }}"></script>
 <script src="{{ URL::asset($js) }}"></script>
-
 </body>
 </html>

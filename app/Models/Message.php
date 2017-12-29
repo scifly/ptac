@@ -91,7 +91,14 @@ class Message extends Model {
      *
      * @return BelongsTo
      */
-    public function user() { return $this->belongsTo('App\Models\User'); }
+    public function user() { return $this->belongsTo('App\Models\User','s_user_id','id'); }
+    
+    /**
+     * 返回指定消息接收的用户对象
+     *
+     * @return BelongsTo
+     */
+    public function receiveUser() { return $this->belongsTo('App\Models\User','r_user_id','id'); }
     
     /**
      * 获取
@@ -199,7 +206,7 @@ class Message extends Model {
             ['db' => 'Message.msl_id', 'dt' => 3],
             ['db' => 'User.realname', 'dt' => 4],
             ['db' => 'MessageType.name as messagetypename', 'dt' => 5],
-            ['db' => 'Message.readed', 'dt' => 6,
+            ['db' => 'Message.read', 'dt' => 6,
                 'formatter' => function ($d) {
                     return $d === 0 ? "否" : "是";
                 },

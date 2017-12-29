@@ -6,11 +6,13 @@ use App\Helpers\ControllerTrait;
 
 use App\Http\Controllers\Controller;
 use App\Models\App;
+use App\Models\CommType;
 use App\Models\Corp;
 use App\Models\Department;
 use App\Models\Educator;
 use App\Models\Message;
 use App\Models\MessageSendingLog;
+use App\Models\MessageType;
 use App\Models\User;
 use Exception;
 use Illuminate\Support\Facades\DB;
@@ -42,21 +44,21 @@ class MessageCenterController extends Controller {
      */
     public function index() {
         #获取用户信息
-        $corpId = 'wxe75227cead6b8aec';
-        $secret = 'qv_kkW2S3zmMWIUrV3u2nydcyIoLknTvuDMq7ja4TYE';
-        $agentId = 3;
-        $code = Request::input('code');
-        if (empty($code)) {
-            $codeUrl = Wechat::getCodeUrl($corpId, $agentId, 'http://weixin.028lk.com/message_center');
-        
-            return redirect($codeUrl);
-        } else {
-            $code = Request::get('code');
-            $accessToken = Wechat::getAccessToken($corpId, $secret);
-            $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
-        }
-        $userId = $userInfo['UserId'];
-        // $userId = 'yuanhongbin';
+        // $corpId = 'wxe75227cead6b8aec';
+        // $secret = 'qv_kkW2S3zmMWIUrV3u2nydcyIoLknTvuDMq7ja4TYE';
+        // $agentId = 3;
+        // $code = Request::input('code');
+        // if (empty($code)) {
+        //     $codeUrl = Wechat::getCodeUrl($corpId, $agentId, 'http://weixin.028lk.com/message_center');
+        //
+        //     return redirect($codeUrl);
+        // } else {
+        //     $code = Request::get('code');
+        //     $accessToken = Wechat::getAccessToken($corpId, $secret);
+        //     $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
+        // }
+        // $userId = $userInfo['UserId'];
+        $userId = 'yuanhongbin';
         $user = User::whereUserid($userId)->first();
         if (Request::isMethod('post')) {
             $keywords = Request::get('keywords');
@@ -99,16 +101,17 @@ class MessageCenterController extends Controller {
             }
             
         }
-        //判断是否为教职工
-        $educator = true;
+        #判断是否为教职工
+        $educator = false;
         // if($user->group->name == '教职工'){
         //     $educator = true;
         // }
-        $sendMessages = $this->message->where('s_user_id', $user->id)->get()->groupBy('message_type_id');
         if($user->group->name == '教职员工'){
             $educator = true;
         }
         $sendMessages = $this->message->where('s_user_id', $user->id)->get()->unique('msl_id')->groupBy('message_type_id');
+        
+        
         $receiveMessages = $this->message->where('r_user_id', $user->id)->get()->groupBy('message_type_id');
         $count = $this->message->where('r_user_id', $user->id)->where('readed', '0')->count();
         return view('wechat.message_center.index', [
@@ -123,27 +126,27 @@ class MessageCenterController extends Controller {
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function create() {
-        $corpId = 'wxe75227cead6b8aec';
-        $secret = 'qv_kkW2S3zmMWIUrV3u2nydcyIoLknTvuDMq7ja4TYE';
-        $agentId = 3;
-        $code = Request::input('code');
-        if (empty($code)) {
-            $codeUrl = Wechat::getCodeUrl($corpId, $agentId, 'http://weixin.028lk.com/message_create');
-        
-            return redirect($codeUrl);
-        } else {
-            $code = Request::get('code');
-            $accessToken = Wechat::getAccessToken($corpId, $secret);
-            $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
-        }
-        $userId = $userInfo['UserId'];
-        // $departmentId = 4;
+        // $corpId = 'wxe75227cead6b8aec';
+        // $secret = 'qv_kkW2S3zmMWIUrV3u2nydcyIoLknTvuDMq7ja4TYE';
+        // $agentId = 3;
+        // $code = Request::input('code');
+        // if (empty($code)) {
+        //     $codeUrl = Wechat::getCodeUrl($corpId, $agentId, 'http://weixin.028lk.com/message_create');
+        //
+        //     return redirect($codeUrl);
+        // } else {
+        //     $code = Request::get('code');
+        //     $accessToken = Wechat::getAccessToken($corpId, $secret);
+        //     $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
+        // }
+        // $userId = $userInfo['UserId'];
+        $departmentId = 4;
         #教师可发送消息
         #取的和教师关联的学校的部门id
-        $user = $this->user->where('userid', $userId)->first();
-        $educator = Educator::where('user_id',$user->id)->first();
-        $school = $educator->school;
-        $departmentId = Department::where('name',$school->name)->first()->id;
+        // $user = $this->user->where('userid', $userId)->first();
+        // $educator = Educator::where('user_id',$user->id)->first();
+        // $school = $educator->school;
+        // $departmentId = Department::where('name',$school->name)->first()->id;
         
         $departments = Department::where('parent_id', $departmentId)->get();
         $department = Department::whereId($departmentId)->first();
@@ -158,21 +161,21 @@ class MessageCenterController extends Controller {
      * @throws \Throwable
      */
     public function store() {
-        $corpId = 'wxe75227cead6b8aec';
-        $secret = 'qv_kkW2S3zmMWIUrV3u2nydcyIoLknTvuDMq7ja4TYE';
-        $agentId = 3;
-        $code = Request::input('code');
-        if (empty($code)) {
-            $codeUrl = Wechat::getCodeUrl($corpId, $agentId, 'http://weixin.028lk.com/message_store');
-        
-            return redirect($codeUrl);
-        } else {
-            $code = Request::get('code');
-            $accessToken = Wechat::getAccessToken($corpId, $secret);
-            $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
-        }
-        $userId = $userInfo['UserId'];
-        // $userId = 'yuanhongbin';
+        // $corpId = 'wxe75227cead6b8aec';
+        // $secret = 'qv_kkW2S3zmMWIUrV3u2nydcyIoLknTvuDMq7ja4TYE';
+        // $agentId = 3;
+        // $code = Request::input('code');
+        // if (empty($code)) {
+        //     $codeUrl = Wechat::getCodeUrl($corpId, $agentId, 'http://weixin.028lk.com/message_store');
+        //
+        //     return redirect($codeUrl);
+        // } else {
+        //     $code = Request::get('code');
+        //     $accessToken = Wechat::getAccessToken($corpId, $secret);
+        //     $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
+        // }
+        // $userId = $userInfo['UserId'];
+        $userId = 'yuanhongbin';
         
         return $this->frontStore($userId) ? $this->succeed() : $this->fail();
     }
@@ -214,23 +217,22 @@ class MessageCenterController extends Controller {
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function show($id) {
-        $corpId = 'wxe75227cead6b8aec';
-        $secret = 'qv_kkW2S3zmMWIUrV3u2nydcyIoLknTvuDMq7ja4TYE';
-        $agentId = 3;
-        $code = Request::input('code');
-        if (empty($code)) {
-            $codeUrl = Wechat::getCodeUrl($corpId, $agentId, 'http://weixin.028lk.com/message_show');
+        // $corpId = 'wxe75227cead6b8aec';
+        // $secret = 'qv_kkW2S3zmMWIUrV3u2nydcyIoLknTvuDMq7ja4TYE';
+        // $agentId = 3;
+        // $code = Request::input('code');
+        // if (empty($code)) {
+        //     $codeUrl = Wechat::getCodeUrl($corpId, $agentId, 'http://weixin.028lk.com/message_show');
+        //
+        //     return redirect($codeUrl);
+        // } else {
+        //     $code = Request::get('code');
+        //     $accessToken = Wechat::getAccessToken($corpId, $secret);
+        //     $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
+        // }
+        // $userId = $userInfo['UserId'];
         
-            return redirect($codeUrl);
-        } else {
-            $code = Request::get('code');
-            $accessToken = Wechat::getAccessToken($corpId, $secret);
-            $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
-        }
-        $userId = $userInfo['UserId'];
-        
-        // $userId = $this->getRole('http://weixin.028lk.com/message_show');
-        // $userId = "yuanhongbin";
+        $userId = "yuanhongbin";
         $user = $this->user->where('userid', $userId)->first();
         $message = $this->message->find($id);
         $edit = $user->id == $message->s_user_id ? true : false;
@@ -264,7 +266,9 @@ class MessageCenterController extends Controller {
         
             return $data ? $this->succeed($data) : $this->fail();
         }
-        
+        if($type == 'mpnews'){
+            $type = 'image';
+        }
         $file = Request::file('file');
         if (empty($file)) {
             $result['statusCode'] = 0;
@@ -394,8 +398,8 @@ class MessageCenterController extends Controller {
                     foreach ($receiveUserIds as $receiveUserId) {
                         $messageData = [
                             'title'           => $input['title'],
-                            'comm_type_id'    => 1,
-                            'app_id'          => 1,
+                            'comm_type_id'    => CommType::whereName('短信')->first()->id,
+                            'app_id'          => App::whereName('消息中心')->first()->id,
                             'msl_id'          => $input['msl_id'],
                             'content'         => $input['content'],
                             'serviceid'       => 0,
@@ -404,7 +408,7 @@ class MessageCenterController extends Controller {
                             'media_ids'       => $input['media_ids'],
                             's_user_id'       => $user->id,
                             'r_user_id'       => $receiveUserId,
-                            'message_type_id' => 1,
+                            'message_type_id' => MessageType::whereName('test')->first()->id,
                             'readed'          => 1,
                             'sent'            => 1,
                         ];
@@ -436,8 +440,8 @@ class MessageCenterController extends Controller {
                     foreach ($receiveUserIds as $receiveUserId) {
                         $messageData = [
                             'title'           => $input['title'],
-                            'comm_type_id'    => 1,
-                            'app_id'          => 1,
+                            'comm_type_id'    => CommType::whereName('应用')->first()->id,
+                            'app_id'          => App::whereName('消息中心')->first()->id,
                             'msl_id'          => $input['msl_id'],
                             'content'         => $input['content'],
                             'serviceid'       => 0,
@@ -446,7 +450,7 @@ class MessageCenterController extends Controller {
                             'media_ids'       => $input['media_ids'],
                             's_user_id'       => $user->id,
                             'r_user_id'       => $receiveUserId,
-                            'message_type_id' => 1,
+                            'message_type_id' => MessageType::whereName('test')->first()->id,
                             'readed'          => 0,
                             'sent'            => 0,
                         ];
@@ -507,14 +511,15 @@ class MessageCenterController extends Controller {
                     'url' => $url
                 ];
                 break;
-             case 'news' :
-                $message['news']['articles'] =
+             case 'mpnews' :
+                $message['mpnews']['articles'] =
                     [
                         [
                             'title' => $input['title'],
-                            'description' => strip_tags($input['content']),
-                            'url' => $url,
-                            'picurl'=> 'http://weixin.028lk.com/img/photo1.png',
+                            'thumb_media_id' => $input['mediaid'],
+                            'content' => $input['content'],
+                            'content_source_url'=> $url,
+                            'digest'=> strip_tags($input['content']),
                         ]
                     ];
                 break;

@@ -33,7 +33,6 @@
 			<div class="msg-send-conwrap msg-send-bg js-content js-content-item">
 				<div contenteditable="true" id="emojiInput" class="wangEditor-mobile-txt">@if(isset($message)) {!! $message->content !!}@endif</div>
 			</div>
-
 			<div class="msg-send-conicon msg-send-bg b-top js-upload-img js-content-item" style="display: none">
 				<ul class="weui-flex">
 					<li class="weui-flex__item addImg">
@@ -53,7 +52,7 @@
                             </div>
                             <div class="weui-uploader__bd" id="cover" style="width: 100%">
                                 <div class="weui-uploader__input-box" >
-                                    <input id="pic-url" onchange="upload_cover()" class="weui-uploader__input pic-url" type="file" accept="image/*" multiple="">
+                                    <input id="upload_mpnews" onchange="upload_cover()" class="weui-uploader__input upload_mpnews" type="file" accept="image/*" multiple="">
                                 </div>
                             </div>
                         </div>
@@ -166,10 +165,6 @@
 						<div class="choose-breadcrumb js-choose-breadcrumb">
 							<ol class="breadcrumb js-choose-breadcrumb-ol">
 								<li data-id="{{ $department->id }}" class="js-choose-breadcrumb-li headclick"><a>{{ $department->name }}</a></li>
-								{{-->--}}
-								{{--<li data-id="2" class="js-choose-breadcrumb-li headclick"><a>一年级</a></li>--}}
-								{{-->--}}
-								{{--<li data-id="3" class="js-choose-breadcrumb-li headclick active"><a>三班</a></li>--}}
 							</ol>
 						</div>
 
@@ -246,7 +241,7 @@
         <div id="upload-wait" style="display:none;position: fixed;top: 0;height: 100%;width: 100%;z-index:999;background-color: #000;opacity: 0.4">
             <div class="weui-loadmore" style="margin-top: 50%;">
                 <i class="weui-loading"></i>
-                <span class="weui-loadmore__tips">正在加载</span>
+                <span class="weui-loadmore__tips">正在上传</span>
             </div>
         </div>
 

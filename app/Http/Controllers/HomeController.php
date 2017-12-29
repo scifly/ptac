@@ -60,8 +60,8 @@ class HomeController extends Controller {
                     break;
                 default:
                     $view = 'school';
-                    $toDeptId = $user->topDeptId();
-                    $parentMenuId = School::whereDepartmentId($user->getDeptSchoolId($toDeptId))
+                    $topDeptId = $user->topDeptId();
+                    $parentMenuId = School::whereDepartmentId($user->getDeptSchoolId($topDeptId))
                         ->first()->menu_id;
                     break;
             }
@@ -101,6 +101,7 @@ class HomeController extends Controller {
             return view('home.home', [
                 'menu' => Menu::menuHtml(Menu::rootMenuId()),
                 'menuId' => $menuId,
+                'content' => view('home.' . $view),
                 'js' => 'js/home/page.js',
                 'user' => Auth::user()
             ]);
