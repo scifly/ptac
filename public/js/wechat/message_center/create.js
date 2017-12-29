@@ -423,7 +423,7 @@ $(function () {
             }
         }
         if (type === 'image') {
-            content = '0';
+            content = '';
             wechat_media_id = $('#image_media_id').val();
             media_ids.push($('.img-id').attr('id'));
             if(media_ids.length === 0){
