@@ -125,29 +125,29 @@ class MessageCenterController extends Controller {
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function create() {
-        $corpId = 'wxe75227cead6b8aec';
-        $secret = 'qv_kkW2S3zmMWIUrV3u2nydcyIoLknTvuDMq7ja4TYE';
-        $agentId = 3;
-        $userId = Session::get('userId') ? Session::get('userId') : null;
-        $code = Request::input('code');
+        // $corpId = 'wxe75227cead6b8aec';
+        // $secret = 'qv_kkW2S3zmMWIUrV3u2nydcyIoLknTvuDMq7ja4TYE';
+        // $agentId = 3;
+        // $userId = Session::get('userId') ? Session::get('userId') : null;
+        // $code = Request::input('code');
+        //
+        // if (empty($code) && empty($userId)) {
+        //     $codeUrl = Wechat::getCodeUrl($corpId, $agentId, 'http://weixin.028lk.com/message_center');
+        //     return redirect($codeUrl);
+        // }elseif(!empty($code) && empty($userId)){
+        //     $accessToken = Wechat::getAccessToken($corpId, $secret);
+        //     $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
+        //     $userId = $userInfo['UserId'];
+        //     Session::put('userId',$userId);
+        // }
 
-        if (empty($code) && empty($userId)) {
-            $codeUrl = Wechat::getCodeUrl($corpId, $agentId, 'http://weixin.028lk.com/message_center');
-            return redirect($codeUrl);
-        }elseif(!empty($code) && empty($userId)){
-            $accessToken = Wechat::getAccessToken($corpId, $secret);
-            $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
-            $userId = $userInfo['UserId'];
-            Session::put('userId',$userId);
-        }
-
-        // $departmentId = 4;
+         $departmentId = 4;
         #教师可发送消息
         #取的和教师关联的学校的部门id
-        $user = $this->user->where('userid', $userId)->first();
-        $educator = Educator::where('user_id',$user->id)->first();
-        $school = $educator->school;
-        $departmentId = Department::where('name',$school->name)->first()->id;
+        // $user = $this->user->where('userid', $userId)->first();
+        // $educator = Educator::where('user_id',$user->id)->first();
+        // $school = $educator->school;
+        // $departmentId = Department::where('name',$school->name)->first()->id;
         $departments = Department::where('parent_id', $departmentId)->get();
         $department = Department::whereId($departmentId)->first();
         $users = $department->users;
@@ -463,7 +463,8 @@ class MessageCenterController extends Controller {
                     #推送微信服务器且显示详情页
                     $message = $this->message->where('msl_id', $input['msl_id'])->first();
                     $url = 'http:/weixin.028lk.com/message_show/' . $message->id;
-                    
+                    print_r($url);exit;
+
                     return $this->frontSendMessage($input, $url);
                 });
             } catch (Exception $e) {
