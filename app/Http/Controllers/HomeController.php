@@ -101,6 +101,7 @@ class HomeController extends Controller {
             return view('home.home', [
                 'menu' => Menu::menuHtml(Menu::rootMenuId()),
                 'menuId' => $menuId,
+                'content' => view('home.' . $view),
                 'js' => 'js/home/page.js',
                 'user' => Auth::user()
             ]);
