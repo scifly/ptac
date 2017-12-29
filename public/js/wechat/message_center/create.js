@@ -372,7 +372,7 @@ $(function () {
             success: function (result) {
                 $('#upload-wait').hide();
                 if (result.statusCode === 1) {
-                    var html = '<video class="video-id" id="' + result.data.id + '" src="' + 'http://weixin.028lk.com/' + result.data.path + '" controls="controls" style="height: 300px; width: 200px"></video>' +
+                    var html = '<video class="video-id" id="' + result.data.id + '" src="' + 'http://weixin.028lk.com/' + result.data.path + '" controls="controls" style="height: 200px; width: 300px"></video>' +
                         '<input id="video_media_id" name="video_media_id" value="' + result.data.media_id + '" hidden>';
                     $this.parent().parent().html(html);
                 } else {
