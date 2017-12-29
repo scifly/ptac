@@ -29,7 +29,9 @@
                     @include('message.objects')
                     @include('message.imagetext')
                     @include('message.upload_video')
-                    
+                    <div class="overlay" style="display: none;position: fixed;top: 0;left: 0;width: 100%;height: 100%;">
+					    <i class="fa fa-refresh fa-spin" style=""></i>
+					</div>
                     <div class="form-horizontal" id="message">
                     {!! Form::open([
                         'method' => 'post',
@@ -212,3 +214,4 @@
         </div>
     </div>
 </div>
+
