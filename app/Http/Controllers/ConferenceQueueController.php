@@ -33,7 +33,9 @@ class ConferenceQueueController extends Controller {
     public function index() {
         
         if (Request::get('draw')) {
-            return response()->json(ConferenceQueue::datatable());
+            return response()->json(
+                ConferenceQueue::datatable()
+            );
         }
         
         return $this->output();
@@ -65,7 +67,9 @@ class ConferenceQueueController extends Controller {
         
         $this->authorize('c', ConferenceQueue::class);
         
-        return $this->result(ConferenceQueue::store($request->all()));
+        return $this->result(
+            ConferenceQueue::store($request->all())
+        );
         
     }
     
@@ -114,7 +118,9 @@ class ConferenceQueueController extends Controller {
         $cq = ConferenceQueue::find($id);
         $this->authorize('rud', $cq);
         
-        return $this->result($cq::modify($request->all(), $id));
+        return $this->result(
+            $cq::modify($request->all(), $id)
+        );
         
     }
     
