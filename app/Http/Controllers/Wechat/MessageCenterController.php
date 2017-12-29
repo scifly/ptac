@@ -9,7 +9,6 @@ use App\Models\App;
 use App\Models\Corp;
 use App\Models\Department;
 use App\Models\Educator;
-use App\Models\Media;
 use App\Models\Message;
 use App\Models\MessageSendingLog;
 use App\Models\User;
@@ -21,17 +20,19 @@ class MessageCenterController extends Controller {
     
     use ControllerTrait;
     
-    protected $message, $user;
+    protected $message, $user, $department;
     
     /**
      * MessageCenterController constructor.
      * @param Message $message
      * @param User $user
+     * @param Department $department
      */
-    public function __construct(Message $message, User $user) {
+    public function __construct(Message $message, User $user, Department $department) {
         // $this->middleware();
         $this->message = $message;
         $this->user = $user;
+        $this->department = $department;
         
     }
     
@@ -40,24 +41,22 @@ class MessageCenterController extends Controller {
      * @throws \Throwable
      */
     public function index() {
-
-        $userId = 'kobe';
         #获取用户信息
-        // $corpId = 'wxe75227cead6b8aec';
-        // $secret = 'qv_kkW2S3zmMWIUrV3u2nydcyIoLknTvuDMq7ja4TYE';
-        // $agentId = 3;
-        // $code = Request::input('code');
-        // if (empty($code)) {
-        //     $codeUrl = Wechat::getCodeUrl($corpId, $agentId, 'http://weixin.028lk.com/message_center');
-        //
-        //     return redirect($codeUrl);
-        // } else {
-        //     $code = Request::get('code');
-        //     $accessToken = Wechat::getAccessToken($corpId, $secret);
-        //     $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
-        // }
-        // $userId = $userInfo['UserId'];
-        $userId = 'yuanhongbin';
+        $corpId = 'wxe75227cead6b8aec';
+        $secret = 'qv_kkW2S3zmMWIUrV3u2nydcyIoLknTvuDMq7ja4TYE';
+        $agentId = 3;
+        $code = Request::input('code');
+        if (empty($code)) {
+            $codeUrl = Wechat::getCodeUrl($corpId, $agentId, 'http://weixin.028lk.com/message_center');
+        
+            return redirect($codeUrl);
+        } else {
+            $code = Request::get('code');
+            $accessToken = Wechat::getAccessToken($corpId, $secret);
+            $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
+        }
+        $userId = $userInfo['UserId'];
+        // $userId = 'yuanhongbin';
         $user = User::whereUserid($userId)->first();
         if (Request::isMethod('post')) {
             $keywords = Request::get('keywords');
@@ -105,7 +104,6 @@ class MessageCenterController extends Controller {
         // if($user->group->name == '教职工'){
         //     $educator = true;
         // }
-        $sendMessages = $this->message->where('s_user_id', $user->id)->get()->groupBy('message_type_id');
         if($user->group->name == '教职员工'){
             $educator = true;
         }
@@ -124,34 +122,33 @@ class MessageCenterController extends Controller {
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function create() {
-        // $corpId = 'wxe75227cead6b8aec';
-        // $secret = 'qv_kkW2S3zmMWIUrV3u2nydcyIoLknTvuDMq7ja4TYE';
-        // $agentId = 3;
-        // $code = Request::input('code');
-        // if (empty($code)) {
-        //     $codeUrl = Wechat::getCodeUrl($corpId, $agentId, 'http://weixin.028lk.com/message_create');
-        //
-        //     return redirect($codeUrl);
-        // } else {
-        //     $code = Request::get('code');
-        //     $accessToken = Wechat::getAccessToken($corpId, $secret);
-        //     $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
-        // }
-        // $userId = $userInfo['UserId'];
-       
-        $departmentId = 4;
+        $corpId = 'wxe75227cead6b8aec';
+        $secret = 'qv_kkW2S3zmMWIUrV3u2nydcyIoLknTvuDMq7ja4TYE';
+        $agentId = 3;
+        $code = Request::input('code');
+        if (empty($code)) {
+            $codeUrl = Wechat::getCodeUrl($corpId, $agentId, 'http://weixin.028lk.com/message_create');
+        
+            return redirect($codeUrl);
+        } else {
+            $code = Request::get('code');
+            $accessToken = Wechat::getAccessToken($corpId, $secret);
+            $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
+        }
+        $userId = $userInfo['UserId'];
+        // $departmentId = 4;
         #教师可发送消息
         #取的和教师关联的学校的部门id
-        // $user = $this->user->where('userid', $userId)->first();
-        // $educator = Educator::where('user_id',$user->id)->first();
-        // $school = $educator->school;
-        // $departmentId = Department::where('name',$school->name)->first()->id;
-
+        $user = $this->user->where('userid', $userId)->first();
+        $educator = Educator::where('user_id',$user->id)->first();
+        $school = $educator->school;
+        $departmentId = Department::where('name',$school->name)->first()->id;
+        
         $departments = Department::where('parent_id', $departmentId)->get();
         $department = Department::whereId($departmentId)->first();
         $users = $department->users;
-        
-        return view('wechat.message_center.create', ['departments' => $departments, 'users' => $users]);
+
+        return view('wechat.message_center.create', ['department' => $department,'departments' => $departments, 'users' => $users]);
     }
     
     /**
@@ -160,21 +157,21 @@ class MessageCenterController extends Controller {
      * @throws \Throwable
      */
     public function store() {
-        // $corpId = 'wxe75227cead6b8aec';
-        // $secret = 'qv_kkW2S3zmMWIUrV3u2nydcyIoLknTvuDMq7ja4TYE';
-        // $agentId = 3;
-        // $code = Request::input('code');
-        // if (empty($code)) {
-        //     $codeUrl = Wechat::getCodeUrl($corpId, $agentId, 'http://weixin.028lk.com/message_create');
-        //
-        //     return redirect($codeUrl);
-        // } else {
-        //     $code = Request::get('code');
-        //     $accessToken = Wechat::getAccessToken($corpId, $secret);
-        //     $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
-        // }
-        // $userId = $userInfo['UserId'];
-        $userId = 'yuanhongbin';
+        $corpId = 'wxe75227cead6b8aec';
+        $secret = 'qv_kkW2S3zmMWIUrV3u2nydcyIoLknTvuDMq7ja4TYE';
+        $agentId = 3;
+        $code = Request::input('code');
+        if (empty($code)) {
+            $codeUrl = Wechat::getCodeUrl($corpId, $agentId, 'http://weixin.028lk.com/message_store');
+        
+            return redirect($codeUrl);
+        } else {
+            $code = Request::get('code');
+            $accessToken = Wechat::getAccessToken($corpId, $secret);
+            $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
+        }
+        $userId = $userInfo['UserId'];
+        // $userId = 'yuanhongbin';
         
         return $this->frontStore($userId) ? $this->succeed() : $this->fail();
     }
@@ -216,8 +213,22 @@ class MessageCenterController extends Controller {
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function show($id) {
-        // $userId = $this->getRole('http://weixin.028lk.com/message_show');
-        $userId = "yuanhongbin";
+        $corpId = 'wxe75227cead6b8aec';
+        $secret = 'qv_kkW2S3zmMWIUrV3u2nydcyIoLknTvuDMq7ja4TYE';
+        $agentId = 3;
+        $code = Request::input('code');
+        if (empty($code)) {
+            $codeUrl = Wechat::getCodeUrl($corpId, $agentId, 'http://weixin.028lk.com/message_show');
+        
+            return redirect($codeUrl);
+        } else {
+            $code = Request::get('code');
+            $accessToken = Wechat::getAccessToken($corpId, $secret);
+            $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
+        }
+        $userId = $userInfo['UserId'];
+        
+        // $userId = "yuanhongbin";
         $user = $this->user->where('userid', $userId)->first();
         $message = $this->message->find($id);
         $edit = $user->id == $message->s_user_id ? true : false;
@@ -304,29 +315,6 @@ class MessageCenterController extends Controller {
         
     }
     
-    // /**
-    //  * @param $calbackUrl
-    //  * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
-    //  *
-    //  */
-    // private function getRole($calbackUrl) {
-    //     //获取微信用户信息
-    //     $corpId = 'wxe75227cead6b8aec';
-    //     $secret = 'qv_kkW2S3zmMWIUrV3u2nydcyIoLknTvuDMq7ja4TYE';
-    //     $agentId = 3;
-    //     $code = Request::input('code');
-    //     if (empty($code)) {
-    //         $codeUrl = Wechat::getCodeUrl($corpId, $agentId, $calbackUrl);
-    //
-    //         return redirect($codeUrl);
-    //     } else {
-    //         $code = Request::get('code');
-    //         $accessToken = Wechat::getAccessToken($corpId, $secret);
-    //         $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
-    //         return $userInfo['UserId'];
-    //     }
-    // }
-    
     /**
      * 更新是否已读并且更新对应msl记录
      *
@@ -386,18 +374,23 @@ class MessageCenterController extends Controller {
         }
 
         $userIds = [];
+        if(!isset($input['user_ids'])){
+            $input['user_ids'] = [];
+        }
+        if(!isset($input['department_ids'])){
+            $input['department_ids'] = [];
+        }
         #处理接收者 这里先处理了一层
         if (!empty($input['department_ids'])) {
-            foreach ($input['department_ids'] as $departmentId) {
-                $department = Department::whereId($departmentId)->first();
-                $users = $department->users;
+            #获取该部门下包括子部门的user
+            $users = $this->department->getPartyUser($input['department_ids']);
                 foreach ($users as $user) {
                     $userIds[] = $user->id;
-                }
             }
         }
+        $receiveUserIds = array_unique(array_merge($input['user_ids'], $userIds));
         
-        $receiveUserIds = array_merge($input['user_ids'], $userIds);
+        #判断是否是短信，调用接口不一样
         if ($input['type'] == 'sms'){
             try {
                 DB::transaction(function () use ($receiveUserIds, $input, $user) {
@@ -437,7 +430,7 @@ class MessageCenterController extends Controller {
                          $this->message->create($messageData);
                     }
                     #调用短信接口
-                    $this->frontSendSms($input);
+                    return $this->frontSendSms($input);
                 });
             } catch (Exception $e) {
                 throw $e;
@@ -485,8 +478,8 @@ class MessageCenterController extends Controller {
                     }
                     #推送微信服务器且显示详情页
                     $message = $this->message->where('msl_id', $input['msl_id'])->first();
-                    $url = 'http:/sandbox.dev:8080/ptac/public/message_show/' . $message->id;
-                    $this->frontSendMessage($input, $url);
+                    $url = 'http:/weixin.028lk.com/message_show/' . $message->id;
+                    return $this->frontSendMessage($input, $url);
                 });
             } catch (Exception $e) {
                 throw $e;
@@ -564,22 +557,11 @@ class MessageCenterController extends Controller {
     /**
      * 短信消息发送
      * @param $input
-     * @return \Illuminate\Http\JsonResponse
+     * @return bool
      */
     private function frontSendSms($input){
         #调用短信接口
         $code = $this->message->sendSms($input['user_ids'], $input['department_ids'], $input['content']);
-        if ($code > 0) {
-                $result = [
-                    'statusCode' => 200,
-                    'message' => '消息已发送！',
-                ];
-            } else {
-                $result = [
-                    'statusCode' => 0,
-                    'message' => '出错！',
-                ];
-            }
-        return response()->json($result);
+        return $code>0 ? true : false;
     }
 }

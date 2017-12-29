@@ -18,7 +18,6 @@
                         'placeholder' => '请输入应用名称（不超过12个汉字）',
                         'maxlength' => '12'
                     ]) !!}
-
                 </div>
             </div>
             <div class="form-group">

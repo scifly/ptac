@@ -1,8 +1,9 @@
 <?php
 namespace App\Providers;
 
+use App\Models\Corp;
 use App\Policies\ActionPolicy;
-use App\Policies\CreatePolicy;
+use App\Policies\CorpPolicy;
 use App\Policies\SchoolPolicy;
 use App\Policies\Route;
 use Illuminate\Database\Eloquent\Model;
@@ -18,6 +19,7 @@ class AuthServiceProvider extends ServiceProvider {
     protected $policies = [
         Route::class => ActionPolicy::class,
         Model::class => SchoolPolicy::class,
+        Corp::class => CorpPolicy::class
     ];
     
     /**

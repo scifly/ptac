@@ -34,11 +34,11 @@
             <div class="bottom-artic b-top">
                 <div class="bot-edit-wrap" _v-2ee0662a="">
                     <div class="bottom-edit-layout" style="padding:0;height: auto;text-align: center;">
-						@if(!empty($edit))
-                        <span class="bottom-icon-box">
-								<span class="icon iconfont icon-bianji c-green"></span>
-                        </span>
-                        @endif
+						{{--@if(!empty($edit))--}}
+                        {{--<span class="bottom-icon-box">--}}
+								{{--<span class="icon iconfont icon-bianji c-green"></span>--}}
+                        {{--</span>--}}
+                        {{--@endif--}}
                         <span class="bottom-icon-box">
 								<span class="icon iconfont icon-lajixiang c-green"></span>
 							</span>
