@@ -136,7 +136,7 @@ class MessageCenterController extends Controller {
         //     $accessToken = Wechat::getAccessToken($corpId, $secret);
         //     $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
         // }
-        $userId = Session::get('UserId');
+        $userId = Session::get('userId');
         // $departmentId = 4;
         #教师可发送消息
         #取的和教师关联的学校的部门id
@@ -224,7 +224,7 @@ class MessageCenterController extends Controller {
         //     $accessToken = Wechat::getAccessToken($corpId, $secret);
         //     $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
         // }
-        $userId = Session::get('UserId');
+        $userId = Session::get('userId');
         // $userId = "yuanhongbin";
         $user = $this->user->where('userid', $userId)->first();
         $message = $this->message->find($id);
