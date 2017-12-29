@@ -34,14 +34,14 @@
 				<div contenteditable="true" id="emojiInput" class="wangEditor-mobile-txt">@if(isset($message)) {!! $message->content !!}@endif</div>
 			</div>
 
-			<div class="msg-send-conicon msg-send-bg b-top js-upload-img js-content-item" style="display: none">
-				<ul class="weui-flex">
-					<li class="weui-flex__item addImg">
-						<i class="icon iconfont icon-tupian placeholder fs15 c-999"></i>
-						 <input id="uploaderInput" class="weui-uploader__input js_file" type="file" accept="image/*" multiple="multiple">
-                    </li>
-				</ul>
-			</div>
+			{{--<div class="msg-send-conicon msg-send-bg b-top js-upload-img js-content-item" style="display: none">--}}
+				{{--<ul class="weui-flex">--}}
+					{{--<li class="weui-flex__item addImg">--}}
+						{{--<i class="icon iconfont icon-tupian placeholder fs15 c-999"></i>--}}
+						 {{--<input id="uploaderInput" class="weui-uploader__input js_file" type="file" accept="image/*" multiple="multiple">--}}
+                    {{--</li>--}}
+				{{--</ul>--}}
+			{{--</div>--}}
             <div style="height: 5px;"></div>
 
             <div class="weui-cells weui-cells_form js-mpnews-cover js-content-item" style="margin: 0;display: none;">
@@ -53,7 +53,7 @@
                             </div>
                             <div class="weui-uploader__bd" id="cover" style="width: 100%">
                                 <div class="weui-uploader__input-box" >
-                                    <input id="pic-url" onchange="upload_cover()" class="weui-uploader__input pic-url" type="file" accept="image/*" multiple="">
+                                    <input id="upload_mpnews" onchange="upload_cover()" class="weui-uploader__input upload_mpnews" type="file" accept="image/*" multiple="">
                                 </div>
                             </div>
                         </div>

@@ -263,6 +263,7 @@ class MessageController extends Controller {
                 $token = Wechat::getAccessToken($crop->corpid, $app->secret);
                 $status = Wechat::uploadMedia($token, $type, $data);
                 $message = json_decode($status);
+
                 if ($message->errcode == 0) {
                     $mes['media_id'] = $message->media_id;
                     $result['data'] = $mes;

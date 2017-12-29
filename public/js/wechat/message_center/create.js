@@ -15,7 +15,7 @@ msg_type.select({
         },
         {
             title: "图文",
-            value: "news"
+            value: "mpnews"
         },
         {
             title: "图片",
@@ -49,7 +49,7 @@ msg_type.change(function () {
             $('.js-content').show();
             $('.js-upload-img').show();
             break;
-        case 'news':
+        case 'mpnews':
             //图文
             $('.js-content-item').hide();
             $('.js-title').show();
@@ -229,8 +229,10 @@ $(".weui-switch").change(function () {
 
 function upload_cover() {
     var formData = new FormData();
-    formData.append('file', $('#pic-url')[0].files[0]);
+    formData.append('file', $('#upload_mpnews')[0].files[0]);
     formData.append('_token', token);
+    formData.append('type', msg_type.attr('data-values'));
+
     $.ajax({
         url: '../public/message_upload',
         type: 'POST',
@@ -239,10 +241,11 @@ function upload_cover() {
         processData: false,
         contentType: false,
         success: function (result) {
-            if (result.statusCode === 200) {
-                var html = '<img class="uploadimg-item pic-url" src="http://sandbox.dev:8080/ptac/'+result.message.path+'" id="pic-url" style="width: 100%" data-id="'+result.message.id+'">'+
-                            '<input id="pic-url" onchange="upload_cover()" class="weui-uploader__input pic-url" type="file" accept="image/*" multiple="">';
-
+            if (result.statusCode === 1) {
+                var html = '<img class="uploadimg-item upload_mpnews" id="'+ result.data.id +'" src="http://sandbox.dev:8080/ptac/'+result.data.path+'"  style="width: 100%" data-id="'+result.data.id+'">'+
+                            '<input id="mpnews_media_id" name="mpnews_media_id" onchange="upload_cover()" data-content-id="' + result.data.media_id +'" class="weui-uploader__input upload_mpnews" type="file" accept="image/*" multiple="" >';
+                // var html = '<img class="uploadimg-item pic-url" id="pic-url" src="' + 'http://sandbox.dev:8080/ptac/' + result.message.path + '" style="height: 100px" data-id="'+result.message.id+'">'+
+                //     '<input id="pic-url" name="pic-url" value="' + result.data.media_id + '" >';
                 $('#cover').html(html);
 
             }
@@ -260,97 +263,79 @@ $(function () {
     // 最大上传图片数量
     var maxCount = 6;
     var tmp = 1;
-    $('.js_file').on('change', function (event) {
-        var files = event.target.files;
-
-        // 如果没有选中文件，直接返回
-        if (files.length === 0) {
-            return;
-        }
-
-        for (var i = 0, len = files.length; i < len; i++) {
-            var file = files[i];
-            var reader = new FileReader();
-
-            // 如果类型不在允许的类型范围内
-            if (allowTypes.indexOf(file.type) === -1) {
-                $.weui.alert({text: '该类型不允许上传'});
-                continue;
-            }
-
-            if (file.size > maxSize) {
-                $.weui.alert({text: '图片太大，不允许上传'});
-                continue;
-            }
-
-            if ($('.weui_uploader_file').length >= maxCount) {
-                $.weui.alert({text: '最多只能上传' + maxCount + '张图片'});
-                return;
-            }
-
-            reader.onload = function (e) {
-                var img = new Image();
-                img.onload = function () {
-                    // 不要超出最大宽度
-                    var w = Math.min(maxWidth, img.width);
-                    // 高度按比例计算
-                    var h = img.height * (w / img.width);
-                    var canvas = document.createElement('canvas');
-                    var ctx = canvas.getContext('2d');
-                    // 设置 canvas 的宽度和高度
-                    canvas.width = w;
-                    canvas.height = h;
-                    ctx.drawImage(img, 0, 0, w, h);
-                    var base64 = canvas.toDataURL('image/png');
-
-                    // console.log(base64);
-                    var html = '<img class="uploadimg-item" src="' + base64 + '" id="uploadimg-' + tmp + '" style="width: 300px;height: 187px">';
-                    $('#emojiInput').append(html);
-                    // 然后假装在上传，可以post base64格式，也可以构造blob对象上传，也可以用微信JSSDK上传
-                };
-                img.src = e.target.result;
-            };
-            reader.readAsDataURL(file);
-        }
-        var formData = new FormData();
-        formData.append('file', $('#uploaderInput')[0].files[0]);
-        formData.append('_token', token);
-        $.ajax({
-            url: '../public/message_upload',
-            type: 'POST',
-            cache: false,
-            data: formData,
-            processData: false,
-            contentType: false,
-            success: function (result) {
-                if (result.statusCode === 200) {
-                    $('#uploadimg-'+tmp).attr('data-media-id',result.message.id);
-                    $('#uploadimg-'+tmp).attr('src', 'http://sandbox.dev:8080/ptac/' + result.message.path);
-                }
-            }
-        });
-        tmp++;
-    });
-
-    // $('#mpnews_cover').change(function () {
+    // $('.js_file').on('change', function (event) {
+    //     var files = event.target.files;
+    //
+    //     // 如果没有选中文件，直接返回
+    //     if (files.length === 0) {
+    //         return;
+    //     }
+    //
+    //     for (var i = 0, len = files.length; i < len; i++) {
+    //         var file = files[i];
+    //         var reader = new FileReader();
+    //
+    //         // 如果类型不在允许的类型范围内
+    //         if (allowTypes.indexOf(file.type) === -1) {
+    //             $.weui.alert({text: '该类型不允许上传'});
+    //             continue;
+    //         }
+    //
+    //         if (file.size > maxSize) {
+    //             $.weui.alert({text: '图片太大，不允许上传'});
+    //             continue;
+    //         }
+    //
+    //         if ($('.weui_uploader_file').length >= maxCount) {
+    //             $.weui.alert({text: '最多只能上传' + maxCount + '张图片'});
+    //             return;
+    //         }
+    //
+    //         reader.onload = function (e) {
+    //             var img = new Image();
+    //             img.onload = function () {
+    //                 // 不要超出最大宽度
+    //                 var w = Math.min(maxWidth, img.width);
+    //                 // 高度按比例计算
+    //                 var h = img.height * (w / img.width);
+    //                 var canvas = document.createElement('canvas');
+    //                 var ctx = canvas.getContext('2d');
+    //                 // 设置 canvas 的宽度和高度
+    //                 canvas.width = w;
+    //                 canvas.height = h;
+    //                 ctx.drawImage(img, 0, 0, w, h);
+    //                 var base64 = canvas.toDataURL('image/png');
+    //
+    //                 // console.log(base64);
+    //                 var html = '<img class="uploadimg-item" src="' + base64 + '" id="uploadimg-' + tmp + '" style="width: 300px;height: 187px">';
+    //                 $('#emojiInput').append(html);
+    //                 // 然后假装在上传，可以post base64格式，也可以构造blob对象上传，也可以用微信JSSDK上传
+    //             };
+    //             img.src = e.target.result;
+    //         };
+    //         reader.readAsDataURL(file);
+    //     }
     //     var formData = new FormData();
-    //     formData.append('file', $('#mpnews_cover')[0].files[0]);
+    //     formData.append('file', $('#uploaderInput')[0].files[0]);
     //     formData.append('_token', token);
     //     $.ajax({
-    //         url: "../public/message_upload",
-    //         data: formData,
+    //         url: '../public/message_upload',
     //         type: 'POST',
-    //         dataType: 'json',
-    //         contentType: false,
-    //         processData: false,
     //         cache: false,
+    //         data: formData,
+    //         processData: false,
+    //         contentType: false,
     //         success: function (result) {
     //             if (result.statusCode === 200) {
-    //                 $('#mpnews_cover_img').attr('src', 'http://sandbox.ddd:8080/public/' + result.message.path);
+    //                 $('#uploadimg-'+tmp).attr('data-media-id',result.message.id);
+    //                 $('#uploadimg-'+tmp).attr('src', 'http://sandbox.dev:8080/ptac/' + result.message.path);
     //             }
     //         }
     //     });
+    //     tmp++;
     // });
+
+
 
     $("#upload_video").change(function () {
         var $this = $(this);
@@ -409,7 +394,6 @@ $(function () {
     var wechat_media_id = '';
     var time = '';
     $('.release').on('click', function () {
-        var pic_url =  $('.pic-url').attr('data-id');
         media_ids = [];
         title = $('#title').val();
         content = $('#emojiInput').html();
@@ -423,6 +407,9 @@ $(function () {
             content = $('#description-video').val();
             wechat_media_id = $('#video_media_id').val();
             media_ids.push($('.video-id').attr('id'));
+        }
+        if(type === 'mpnews'){
+            wechat_media_id = $('#mpnews_media_id').attr('data-content-id');
         }
         if (type === 'image') {
             content = '0';
@@ -444,15 +431,11 @@ $(function () {
             user_ids.push($(this).attr('data-uid'));
         });
         //前端验证
-
         $.ajax({
             type: 'POST',
             data: {
                 '_token': token, 'title': title, 'content': content,
                 'time': time, 'department_ids': department_ids, 'user_ids': user_ids, 'media_ids': media_ids,
-                'pic_url':pic_url,
-                'time': time, 'department_ids': department_ids,
-                'user_ids': user_ids, 'media_ids': media_ids,
                 'type': type, 'mediaid': wechat_media_id
             },
             url: '../public/message_store',
@@ -472,7 +455,8 @@ $(function () {
 })
 ;
 
-$(".js-choose-breadcrumb-li headclick").on('click',function () {
-    var id = $(this ).parent ().attr ("data-id")
-   console.log()
+$(".choose-breadcrumb li a").on('click',function () {
+
+    var id = $(this).parents('li').attr("data-id");
+    alert(id);
 });

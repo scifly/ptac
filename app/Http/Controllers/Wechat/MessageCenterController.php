@@ -251,7 +251,9 @@ class MessageCenterController extends Controller {
         
             return $data ? $this->succeed($data) : $this->fail();
         }
-        
+        if($type == 'mpnews'){
+            $type = 'image';
+        }
         $file = Request::file('file');
         if (empty($file)) {
             $result['statusCode'] = 0;
@@ -366,6 +368,22 @@ class MessageCenterController extends Controller {
 
         $user = $this->user->where('userid', $userId)->first();
         $input = Request::all();
+        if(isset($input['pic_url']) && !empty($input['pic_url'])){
+            $data = ["media" => curl_file_create($input['pic_url'])];
+            $corpId = 'wxe75227cead6b8aec';
+            $secret = 'qv_kkW2S3zmMWIUrV3u2nydcyIoLknTvuDMq7ja4TYE';
+            $token = Wechat::getAccessToken($corpId, $secret);
+            $type = 'image';
+            $status = Wechat::uploadMedia($token, $type, $data);
+            $message = json_decode($status);
+            if ($message->errcode == 0) {
+                $mes['media_id'] = $message->media_id;
+                $result['data'] = $mes;
+            } else {
+                $result['statusCode'] = 0;
+                $result['message'] = '微信服务器上传失败！';
+            }
+        }
 
         $userIds = [];
         #处理接收者 这里先处理了一层
@@ -395,6 +413,9 @@ class MessageCenterController extends Controller {
                         $input['media_ids'] = implode(',', $input['media_ids']);
                     } else {
                         $input['media_ids'] = '0';
+                    }
+                    if(isset($input['pic_url']) && !empty($input['pic_url'])){
+
                     }
                     foreach ($receiveUserIds as $receiveUserId) {
                         $messageData = [
@@ -512,14 +533,15 @@ class MessageCenterController extends Controller {
                     'url' => $url
                 ];
                 break;
-             case 'news' :
-                $message['news']['articles'] =
+             case 'mpnews' :
+                $message['mpnews']['articles'] =
                     [
                         [
                             'title' => $input['title'],
-                            'description' => strip_tags($input['content']),
-                            'url' => $url,
-                            'picurl'=> 'http://weixin.028lk.com/img/photo1.png',
+                            'thumb_media_id' => $input['mediaid'],
+                            'content' => $input['content'],
+                            'content_source_url'=> $url,
+                            'digest'=> strip_tags($input['content']),
                         ]
                     ];
                 break;
