@@ -2,7 +2,6 @@ var token = $('#csrf_token').attr('content');
 choose_item();
 getdept();
 var msg_type = $('#type');
-
 msg_type.select({
     title: "选择类型",
     items: [
@@ -55,7 +54,7 @@ msg_type.change(function () {
             $('.js-content-item').hide();
             $('.js-title').show();
             $('.js-content').show();
-            $('.js-upload-img').show();
+            $('.js-upload-img').hide();
             $('.js-content_source_url').show();
             $('.js-author').show();
             $('.js-mpnews-cover').show();
@@ -234,9 +233,8 @@ function upload_cover() {
     formData.append('file', $('#upload_mpnews')[0].files[0]);
     formData.append('_token', token);
     formData.append('type', msg_type.attr('data-values'));
-
     $.ajax({
-        url: '../message_upload',
+        url: '../public/message_upload',
         type: 'POST',
         cache: false,
         data: formData,
@@ -244,8 +242,8 @@ function upload_cover() {
         contentType: false,
         success: function (result) {
             if (result.statusCode === 1) {
-                var html = '<img class="uploadimg-item upload_mpnews" id="' + result.data.id + '" src="http://sandbox.dev:8080/ptac/' + result.data.path + '"  style="width: 100%" data-id="' + result.data.id + '">' +
-                    '<input id="mpnews_media_id" name="mpnews_media_id" onchange="upload_cover()" data-content-id="' + result.data.media_id + '" class="weui-uploader__input upload_mpnews" type="file" accept="image/*" multiple="" >';
+                var html = '<img class="uploadimg-item upload_mpnews" id="' + result.data.id + '" src="http://sandbox.ddd:8080/ptac/' + result.data.path + '"  style="width: 100%" data-id="' + result.data.id + '">' +
+                '<input id="mpnews_media_id" name="mpnews_media_id" onchange="upload_cover()" data-content-id="' + result.data.media_id + '" class="weui-uploader__input upload_mpnews" type="file" accept="image/*" multiple="" >';
                 $('#cover').html(html);
 
             }
@@ -253,6 +251,7 @@ function upload_cover() {
     });
 
 }
+
 
 $(function () {
     // 允许上传的图片类型
@@ -316,78 +315,25 @@ $(function () {
             };
             reader.readAsDataURL(file);
         }
-    // $('.js_file').on('change', function (event) {
-    //     var files = event.target.files;
-    //
-    //     // 如果没有选中文件，直接返回
-    //     if (files.length === 0) {
-    //         return;
-    //     }
-    //
-    //     for (var i = 0, len = files.length; i < len; i++) {
-    //         var file = files[i];
-    //         var reader = new FileReader();
-    //
-    //         // 如果类型不在允许的类型范围内
-    //         if (allowTypes.indexOf(file.type) === -1) {
-    //             $.weui.alert({text: '该类型不允许上传'});
-    //             continue;
-    //         }
-    //
-    //         if (file.size > maxSize) {
-    //             $.weui.alert({text: '图片太大，不允许上传'});
-    //             continue;
-    //         }
-    //
-    //         if ($('.weui_uploader_file').length >= maxCount) {
-    //             $.weui.alert({text: '最多只能上传' + maxCount + '张图片'});
-    //             return;
-    //         }
-    //
-    //         reader.onload = function (e) {
-    //             var img = new Image();
-    //             img.onload = function () {
-    //                 // 不要超出最大宽度
-    //                 var w = Math.min(maxWidth, img.width);
-    //                 // 高度按比例计算
-    //                 var h = img.height * (w / img.width);
-    //                 var canvas = document.createElement('canvas');
-    //                 var ctx = canvas.getContext('2d');
-    //                 // 设置 canvas 的宽度和高度
-    //                 canvas.width = w;
-    //                 canvas.height = h;
-    //                 ctx.drawImage(img, 0, 0, w, h);
-    //                 var base64 = canvas.toDataURL('image/png');
-    //
-    //                 // console.log(base64);
-    //                 var html = '<img class="uploadimg-item" src="' + base64 + '" id="uploadimg-' + tmp + '" style="width: 300px;height: 187px">';
-    //                 $('#emojiInput').append(html);
-    //                 // 然后假装在上传，可以post base64格式，也可以构造blob对象上传，也可以用微信JSSDK上传
-    //             };
-    //             img.src = e.target.result;
-    //         };
-    //         reader.readAsDataURL(file);
-    //     }
-    //     var formData = new FormData();
-    //     formData.append('file', $('#uploaderInput')[0].files[0]);
-    //     formData.append('_token', token);
-    //     $.ajax({
-    //         url: '../message_upload',
-    //         type: 'POST',
-    //         cache: false,
-    //         data: formData,
-    //         processData: false,
-    //         contentType: false,
-    //         success: function (result) {
-    //             if (result.statusCode === 200) {
-    //                 $('#uploadimg-' + tmp).attr('data-media-id', result.message.id);
-    //                 $('#uploadimg-' + tmp).attr('src', 'http://weixin.028lk.com/' + result.message.path);
-    //             }
-    //         }
-    //     });
-    //     tmp++;
-    // });
-
+        var formData = new FormData();
+        formData.append('file', $('#uploaderInput')[0].files[0]);
+        formData.append('_token', token);
+        $.ajax({
+            url: '../public/message_upload',
+            type: 'POST',
+            cache: false,
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (result) {
+                if (result.statusCode === 200) {
+                    $('#uploadimg-' + tmp).attr('data-media-id', result.message.id);
+                    $('#uploadimg-' + tmp).attr('src', 'http://weixin.028lk.com/' + result.message.path);
+                }
+            }
+        });
+        tmp++;
+    });
 
     $("#upload_video").change(function () {
         $('#upload-wait').show();
@@ -397,7 +343,7 @@ $(function () {
         formData.append('_token', token);
         formData.append('type', msg_type.attr('data-values'));
         $.ajax({
-            url: "../message_upload",
+            url: "../public/message_upload",
             data: formData,
             type: 'POST',
             dataType: 'json',
@@ -407,7 +353,7 @@ $(function () {
             success: function (result) {
                 $('#upload-wait').hide();
                 if (result.statusCode === 1) {
-                    var html = '<video class="video-id" id="' + result.data.id + '" src="' + 'http://weixin.028lk.com/' + result.data.path + '" controls="controls" style="height: 300px; width: 200px"></video>' +
+                    var html = '<video class="video-id" id="' + result.data.id + '" src="' + 'http://weixin.028lk.com/' + result.data.path + '" controls="controls" style="height: 200px; width: 300px"></video>' +
                         '<input id="video_media_id" name="video_media_id" value="' + result.data.media_id + '" hidden>';
                     $this.parent().parent().html(html);
                 } else {
@@ -425,7 +371,7 @@ $(function () {
         formData.append('_token', token);
         formData.append('type', msg_type.attr('data-values'));
         $.ajax({
-            url: "../message_upload",
+            url: "../public/message_upload",
             data: formData,
             type: 'POST',
             dataType: 'json',
@@ -452,7 +398,7 @@ $(function () {
     var wechat_media_id = '';
     // var time = '';
     $('.release').on('click', function () {
-
+        var pic_url = $('.pic-url').attr('data-id');
         media_ids = [];
         title = $('#title').val();
         content = $('#emojiInput').html();
@@ -466,27 +412,28 @@ $(function () {
             content = $('#description-video').val();
             wechat_media_id = $('#video_media_id').val();
             media_ids.push($('.video-id').attr('id'));
-            if (media_ids.length === 0) {
+            if(media_ids.length === 0){
                 $.alert('亲，还没有上传视频！');
                 return;
             }
-            if (content == null) {
+            if(!content){
                 $.alert('亲，请填写描述！');
+                return;
+            }
+        }
+        if (type === 'image') {
+            content = '0';
+            wechat_media_id = $('#image_media_id').val();
+            media_ids.push($('.img-id').attr('id'));
+            if(media_ids.length === 0){
+                $.alert('亲，还没有上传图片！');
                 return;
             }
         }
         if (type === 'mpnews') {
             wechat_media_id = $('#mpnews_media_id').attr('data-content-id');
         }
-        if (type === 'image') {
-            content = '0';
-            wechat_media_id = $('#image_media_id').val();
-            media_ids.push($('.img-id').attr('id'));
-            if (media_ids.length === 0) {
-                $.alert('亲，还没有上传图片！');
-                return;
-            }
-        }
+
         if (type === 'sms') {
             title = '短信信息';
         }
@@ -506,15 +453,14 @@ $(function () {
             $.alert('发送对象不能为空');
             return false;
         }
-        if (!content) {
-            $.alert('发送内容不能为空');
-            return false;
-        }
-        if (!title) {
+        if(!title){
             $.alert('标题不能为空');
             return false;
         }
-
+        if(!content){
+            $.alert('发送内容不能为空');
+            return false;
+        }
         $.ajax({
             type: 'POST',
             data: {
@@ -532,7 +478,7 @@ $(function () {
             success: function (result) {
                 if (result.statusCode === 200) {
                     $.alert('消息发送成功！', function () {
-                        window.location.href = '../message_center';
+                        window.location.href = '../public/message_center';
                     });
                 } else {
                     $.alert('消息发送失败，请稍后重试！');
@@ -551,8 +497,7 @@ function getdept() {
         $(this).nextAll().remove();
         $.ajax({
             type: 'GET',
-            data: {},
-            url: '../message_dept/' + id,
+            url: '../public/message_dept/' + id,
             success: function (result) {
                 if (result.statusCode === 200) {
                     choose_box.html(result.message);

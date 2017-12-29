@@ -33,7 +33,6 @@
 			<div class="msg-send-conwrap msg-send-bg js-content js-content-item">
 				<div contenteditable="true" id="emojiInput" class="wangEditor-mobile-txt">@if(isset($message)) {!! $message->content !!}@endif</div>
 			</div>
-
 			<div class="msg-send-conicon msg-send-bg b-top js-upload-img js-content-item" style="display: none">
 				<ul class="weui-flex">
 					<li class="weui-flex__item addImg">

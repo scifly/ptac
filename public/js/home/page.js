@@ -82,7 +82,7 @@ var page = {
             ? window.location.origin + '/'
             : window.location.protocol + '/' + window.location.host + '/';
         if (window.location.href.indexOf('public') > -1) {
-            return siteRoot + 'ptac/public/';
+            return siteRoot + 'pppp/public/';
         }
         return siteRoot;
     },
@@ -214,10 +214,12 @@ var page = {
                             // 获取当前卡片中的HTML
                             page.getTabContent($tab, tabUri);
                         } else {
-                            $.getScript(page.siteRoot() + result.js, function () {
-		                        $('#ajaxLoader').remove();
-		                        $('.overlay').hide();
-		                    });
+                            if (typeof result.js !== 'undefined') {
+                                $.getScript(page.siteRoot() + result.js, function () {
+                                    $('#ajaxLoader').remove();
+                                    $('.overlay').hide();
+                                });
+                            }
                             // Wrapper中的Html不含卡片，更新浏览器History
                             document.title = docTitle + ' - ' + result['title'];
                             // 0 - tabId, 1 - menuId, 2 - menuUrl
