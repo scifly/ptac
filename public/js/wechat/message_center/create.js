@@ -119,7 +119,7 @@ function show_group() {
         $.ajax({
             type: 'GET',
             data: {},
-            url: '../public/message_dept/' + id,
+            url: '../message_dept/' + id,
             success: function (result) {
                 if (result.statusCode === 200) {
                     choose_box.html(result.message);
@@ -234,7 +234,7 @@ function upload_cover() {
     formData.append('_token', token);
     formData.append('type', msg_type.attr('data-values'));
     $.ajax({
-        url: '../public/message_upload',
+        url: '../message_upload',
         type: 'POST',
         cache: false,
         data: formData,
@@ -319,7 +319,7 @@ $(function () {
         formData.append('file', $('#uploaderInput')[0].files[0]);
         formData.append('_token', token);
         $.ajax({
-            url: '../public/message_upload',
+            url: '../message_upload',
             type: 'POST',
             cache: false,
             data: formData,
@@ -343,7 +343,7 @@ $(function () {
         formData.append('_token', token);
         formData.append('type', msg_type.attr('data-values'));
         $.ajax({
-            url: "../public/message_upload",
+            url: "../message_upload",
             data: formData,
             type: 'POST',
             dataType: 'json',
@@ -371,7 +371,7 @@ $(function () {
         formData.append('_token', token);
         formData.append('type', msg_type.attr('data-values'));
         $.ajax({
-            url: "../public/message_upload",
+            url: "../message_upload",
             data: formData,
             type: 'POST',
             dataType: 'json',
@@ -474,11 +474,11 @@ $(function () {
                 'type': type,
                 'mediaid': wechat_media_id
             },
-            url: '../public/message_store',
+            url: '../message_store',
             success: function (result) {
                 if (result.statusCode === 200) {
                     $.alert('消息发送成功！', function () {
-                        window.location.href = '../public/message_center';
+                        window.location.href = '../message_center';
                     });
                 } else {
                     $.alert('消息发送失败，请稍后重试！');
@@ -497,7 +497,7 @@ function getdept() {
         $(this).nextAll().remove();
         $.ajax({
             type: 'GET',
-            url: '../public/message_dept/' + id,
+            url: '../message_dept/' + id,
             success: function (result) {
                 if (result.statusCode === 200) {
                     choose_box.html(result.message);
