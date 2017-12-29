@@ -120,7 +120,7 @@ function show_group() {
         $.ajax({
             type: 'GET',
             data: {},
-            url: '../public/message_dept/' + id,
+            url: '../message_dept/' + id,
             success: function (result) {
                 if (result.statusCode === 200) {
                     choose_box.html(result.message);
