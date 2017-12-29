@@ -46,14 +46,14 @@ class MessageCenterController extends Controller {
         $corpId = 'wxe75227cead6b8aec';
         $secret = 'qv_kkW2S3zmMWIUrV3u2nydcyIoLknTvuDMq7ja4TYE';
         $agentId = 3;
-        $code = Request::input('code');
-        Session::put('code', $code);
-        if (empty($code) || Session::get('code') == '') {
+        Session::put('code', Request::input('code'));
+        if (Session::get('code') == '') {
             $codeUrl = Wechat::getCodeUrl($corpId, $agentId, 'http://weixin.028lk.com/message_center');
             return redirect($codeUrl);
         } else {
             $accessToken = Wechat::getAccessToken($corpId, $secret);
-            $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
+            $userInfo = json_decode(Wechat::getUserInfo($accessToken, Session::get('code')), JSON_UNESCAPED_UNICODE);
+            Session::forget('code');
         }
         
         $userId = $userInfo['UserId'];
@@ -112,8 +112,6 @@ class MessageCenterController extends Controller {
         $sendMessages = $this->message->where('s_user_id', $user->id)->get()->unique('msl_id')->groupBy('message_type_id');
         $receiveMessages = $this->message->where('r_user_id', $user->id)->get()->groupBy('message_type_id');
         $count = $this->message->where('r_user_id', $user->id)->where('readed', '0')->count();
-        
-        Session::forget('code');
         return view('wechat.message_center.index', [
             'receiveMessages' => $receiveMessages,
             'sendMessages'    => $sendMessages,
