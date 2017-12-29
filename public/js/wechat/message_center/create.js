@@ -264,58 +264,58 @@ $(function () {
     // 最大上传图片数量
     var maxCount = 6;
     var tmp = 1;
-    // $('.js_file').on('change', function (event) {
-    //     var files = event.target.files;
-    //
-    //     // 如果没有选中文件，直接返回
-    //     if (files.length === 0) {
-    //         return;
-    //     }
-    //
-    //     for (var i = 0, len = files.length; i < len; i++) {
-    //         var file = files[i];
-    //         var reader = new FileReader();
-    //
-    //         // 如果类型不在允许的类型范围内
-    //         if (allowTypes.indexOf(file.type) === -1) {
-    //             $.weui.alert({text: '该类型不允许上传'});
-    //             continue;
-    //         }
-    //
-    //         if (file.size > maxSize) {
-    //             $.weui.alert({text: '图片太大，不允许上传'});
-    //             continue;
-    //         }
-    //
-    //         if ($('.weui_uploader_file').length >= maxCount) {
-    //             $.weui.alert({text: '最多只能上传' + maxCount + '张图片'});
-    //             return;
-    //         }
-    //
-    //         reader.onload = function (e) {
-    //             var img = new Image();
-    //             img.onload = function () {
-    //                 // 不要超出最大宽度
-    //                 var w = Math.min(maxWidth, img.width);
-    //                 // 高度按比例计算
-    //                 var h = img.height * (w / img.width);
-    //                 var canvas = document.createElement('canvas');
-    //                 var ctx = canvas.getContext('2d');
-    //                 // 设置 canvas 的宽度和高度
-    //                 canvas.width = w;
-    //                 canvas.height = h;
-    //                 ctx.drawImage(img, 0, 0, w, h);
-    //                 var base64 = canvas.toDataURL('image/png');
-    //
-    //                 // console.log(base64);
-    //                 var html = '<img class="uploadimg-item" src="' + base64 + '" id="uploadimg-' + tmp + '" style="width: 300px;height: 187px">';
-    //                 $('#emojiInput').append(html);
-    //                 // 然后假装在上传，可以post base64格式，也可以构造blob对象上传，也可以用微信JSSDK上传
-    //             };
-    //             img.src = e.target.result;
-    //         };
-    //         reader.readAsDataURL(file);
-    //     }
+    $('.js_file').on('change', function (event) {
+        var files = event.target.files;
+
+        // 如果没有选中文件，直接返回
+        if (files.length === 0) {
+            return;
+        }
+
+        for (var i = 0, len = files.length; i < len; i++) {
+            var file = files[i];
+            var reader = new FileReader();
+
+            // 如果类型不在允许的类型范围内
+            if (allowTypes.indexOf(file.type) === -1) {
+                $.weui.alert({text: '该类型不允许上传'});
+                continue;
+            }
+
+            if (file.size > maxSize) {
+                $.weui.alert({text: '图片太大，不允许上传'});
+                continue;
+            }
+
+            if ($('.weui_uploader_file').length >= maxCount) {
+                $.weui.alert({text: '最多只能上传' + maxCount + '张图片'});
+                return;
+            }
+
+            reader.onload = function (e) {
+                var img = new Image();
+                img.onload = function () {
+                    // 不要超出最大宽度
+                    var w = Math.min(maxWidth, img.width);
+                    // 高度按比例计算
+                    var h = img.height * (w / img.width);
+                    var canvas = document.createElement('canvas');
+                    var ctx = canvas.getContext('2d');
+                    // 设置 canvas 的宽度和高度
+                    canvas.width = w;
+                    canvas.height = h;
+                    ctx.drawImage(img, 0, 0, w, h);
+                    var base64 = canvas.toDataURL('image/png');
+
+                    // console.log(base64);
+                    var html = '<img class="uploadimg-item" src="' + base64 + '" id="uploadimg-' + tmp + '" style="width: 300px;height: 187px">';
+                    $('#emojiInput').append(html);
+                    // 然后假装在上传，可以post base64格式，也可以构造blob对象上传，也可以用微信JSSDK上传
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
     // $('.js_file').on('change', function (event) {
     //     var files = event.target.files;
     //
