@@ -44,7 +44,7 @@ class WapSiteController extends Controller {
      * @throws Throwable
      */
     public function index() {
-        $schoolId = $this->school->getSchoolId();
+        $schoolId = School::id();
         $wapSite = $this->wapSite->where('school_id',$schoolId)->first();
         if (empty($wapSite)) {
             return parent::notFound();
