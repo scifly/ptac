@@ -526,6 +526,7 @@ class Action extends Model {
                 case 'relationship':
                     $viewPath = 'custodian.relationship';
                     break;
+
                 default:
                     $viewPath = Inflector::singularize(self::getTableName($controller)) . '.' . $action;
                     break;

@@ -89,16 +89,22 @@ msg_type.change(function () {
 $(".ma_expect_date").datetimePicker();
 
 $('.js-search-input').bind("input propertychange change", function (event) {
-    var txt = $(this).val();
-    if (txt == '') {
+    var keyword = $(this).val();
+    if (keyword == '') {
         $('.js-choose-items .weui-check__label').show();
         $('.js-choose-breadcrumb-li').text('全部');
     } else {
+        $.ajax({
+            type:'post',
+            dataType:'json',
+            url:'message_create',
+            data:{keywords:keywords,_token:$('#csrf_token').attr('content')},
+        });
         $('.js-choose-breadcrumb-li').text('搜索结果');
         $('.js-choose-items .weui-check__label').hide();
         $('.js-choose-items .weui-check__label').each(function () {
             var uname = $(this).find('.contacts-text').text();
-            if (uname.indexOf(txt) >= 0) {
+            if (uname.indexOf(keyword) >= 0) {
                 $(this).show();
             }
         });
@@ -244,11 +250,7 @@ function upload_cover() {
         success: function (result) {
             $('#upload-wait').hide();
             if (result.statusCode === 1) {
-<<<<<<< HEAD
-                var html = '<img class="uploadimg-item upload_mpnews" id="' + result.data.id + '" src="' + 'http://weixin.028lk.com/' + result.data.path + '"  style="width: 100%" data-id="' + result.data.id + '">' +
-=======
                 var html = '<img class="uploadimg-item upload_mpnews" id="' + result.data.id + '" src="http://weixin.028lk.com/' + result.data.path + '"  style="width: 100%" data-id="' + result.data.id + '">' +
->>>>>>> ptac/master
                 '<input id="mpnews_media_id" name="mpnews_media_id" onchange="upload_cover()" data-content-id="' + result.data.media_id + '" class="weui-uploader__input upload_mpnews" type="file" accept="image/*" multiple="" >';
                 $('#cover').html(html);
             }else {

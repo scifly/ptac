@@ -246,7 +246,11 @@ class Educator extends Model {
                     }
                 }
                 # 当选择了学校角色没有选择 学校部门时
-                if ($u->group_id == Group::whereName('学校')->first()->id) {
+                $deptUser = DepartmentUser::whereDepartmentId(Group::whereName('学校')->first()->id)
+                    ->where('user_id', $u->id)
+                    ->first();
+                if ($u->group_id == Group::whereName('学校')->first()->id && empty($deptUser)) {
+
                     DepartmentUser::create([
                         'user_id' => $u->id,
                         'department_id' => School::find(School::id())->department_id,
@@ -368,7 +372,6 @@ class Educator extends Model {
                     'realname' => $user['realname'],
                     'gender' => $user['gender'],
                     'avatar_url' => '00001.jpg',
-                    'userid' => '111111',
                     'wechatid' => $user['wechatid'],
                     'isleader' => 0,
                     'english_name' => $user['english_name'],

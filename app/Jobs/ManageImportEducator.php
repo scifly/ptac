@@ -20,7 +20,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Mockery\Exception;
+use Exception;
 
 class ManageImportEducator implements ShouldQueue {
     
@@ -209,10 +209,11 @@ class ManageImportEducator implements ShouldQueue {
 
             event(new ContactImportTrigger($data));
 
-            return is_null($exception) ? true : $exception;
-        } catch (Exception $e) {
-            return false;
+        }catch (Exception $e) {
+            throw $e;
         }
+
+        return true;
         
     }
 }

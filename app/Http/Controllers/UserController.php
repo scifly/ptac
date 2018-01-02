@@ -1,17 +1,13 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Http\Requests\UserRequest;
 use App\Models\Event;
-use App\Models\Menu;
 use App\Models\Message;
 use App\Models\User;
-use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
-use Illuminate\Support\Facades\Session;
 use Throwable;
 
 /**
@@ -27,7 +23,8 @@ class UserController extends Controller {
         $this->middleware(['auth', 'checkrole']);
         
     }
-    
+
+
     /**
      * 修改个人信息
      *
@@ -35,38 +32,8 @@ class UserController extends Controller {
      */
     public function profile() {
 
-        // return $this->output();
-        
-        $menuId = Request::query('menuId');
-        $menu = Menu::find($menuId);
-        if (!$menu) {
-            $menuId = Menu::whereUri('users/profile')->first()->id;
-            session(['menuId' => $menuId]);
-            return view('home.home', [
-                'menu'    => Menu::menuHtml(Menu::rootMenuId()),
-                'content' => view('home.' . 'school'),
-                'js'      => 'js/home/page.js',
-                'user'    => Auth::user(),
-            ]);
-        } else {
-            if (!session('menuId') || session('menuId') !== $menuId) {
-                session(['menuId' => $menuId]);
-                session(['menuChanged' => true]);
-            } else {
-                Session::forget('menuChanged');
-            }
-            if (Request::ajax()) {
-                return response()->json([
-                    'statusCode' => 200,
-                    'title'      => '首页',
-                    'uri'        => Request::path(),
-                    'html'       => view('user.profile', ['user' => Auth::user()])->render(),
-                ]);
-            }
-        }
-        
-        return null;
-        
+        return $this->output();
+
     }
     
     /**
@@ -75,7 +42,7 @@ class UserController extends Controller {
      * @throws Throwable
      */
     public function reset() {
-        
+
         if (Request::isMethod('post')) {
             $password = Request::input('password');
             $pwd = bcrypt(Request::input('pwd'));
@@ -88,39 +55,9 @@ class UserController extends Controller {
                 return response()->json(['statusCode' => 200]);
             }
         }
-        // return $this->output();
-        $menuId = Request::query('menuId');
-        $menu = Menu::find($menuId);
-        if (!$menu) {
-            $menuId = Menu::whereUri('users/reset')->first()->id;
-            session(['menuId' => $menuId]);
-            return view('home.home', [
-                'menu'    => Menu::menuHtml(Menu::rootMenuId()),
-                'content' => view('user.' . 'reset'),
-                'js'      => 'js/home/page.js',
-                'reset'   => '../public/js/user/reset.js',
-                'user'    => Auth::user(),
-            ]);
-        } else {
-            if (!session('menuId') || session('menuId') !== $menuId) {
-                session(['menuId' => $menuId]);
-                session(['menuChanged' => true]);
-            } else {
-                Session::forget('menuChanged');
-            }
-            if (Request::ajax()) {
-                return response()->json([
-                    'statusCode' => 200,
-                    'title'      => '首页',
-                    'uri'        => Request::path(),
-                    'html'       => view('user.reset', [
-                        'user'  => Auth::user(),
-                        'reset' => '../public/js/user/reset.js',
-                    ])->render(),
-                ]);
-            }
-        }
-        
+
+        return $this->output();
+
     }
     
     /**
@@ -129,92 +66,26 @@ class UserController extends Controller {
      */
     public function messages(){
 
-//        return $this->output();
-        $menuId = Request::query('menuId');
-        $menu = Menu::find($menuId);
-        if (!$menu) {
-            $menuId = Menu::whereUri('users/messages')->first()->id;
-
-            session(['menuId' => $menuId]);
-            if (Request::get('draw')) {
-                return response()->json(Message::datatable());
-            }
-            return view('home.home', [
-                'menu' => Menu::menuHtml(Menu::rootMenuId()),
-                'content' => view('user.' . 'message'),
-                'js' => 'js/home/page.js',
-                'message' => '../public/js/user/message.js',
-                'user' => Auth::user()
-            ]);
-        } else {
-            if (!session('menuId') || session('menuId') !== $menuId) {
-                session(['menuId' => $menuId]);
-                session(['menuChanged' => true]);
-            } else {
-                Session::forget('menuChanged');
-            }
-            if (Request::get('draw')) {
-                return response()->json(Message::datatable());
-            }
-            if (Request::ajax()) {
-                return response()->json([
-                    'statusCode' => 200,
-                    'title' => '首页',
-                    'uri' => Request::path(),
-                    'html' => view('user.message',[
-                        'user' => Auth::user(),
-                        'message' => '../public/js/user/message.js',
-                    ])->render()
-                ]);
-            }
-
+        if (Request::get('draw')) {
+            return response()->json(Message::datatable());
         }
 
+        return $this->output();
 
     }
-    
+
     /**
      * 待办事项
+     * @throws Throwable
      */
     public function event(){
-        $menuId = Request::query('menuId');
-        $menu = Menu::find($menuId);
-        if (!$menu) {
-            $menuId = Menu::whereUri('users/events')->first()->id;
-            session(['menuId' => $menuId]);
-            if (Request::get('draw')) {
-                return response()->json(Event::datatable());
-            }
-            return view('home.home', [
-                'menu' => Menu::menuHtml(Menu::rootMenuId()),
-                'content' => view('user.' . 'event'),
-                'js' => 'js/home/page.js',
-                'event' => '../public/js/user/event.js',
-                'user' => Auth::user()
-            ]);
-        }else {
-            if (!session('menuId') || session('menuId') !== $menuId) {
-                session(['menuId' => $menuId]);
-                session(['menuChanged' => true]);
-            } else {
-                Session::forget('menuChanged');
-            }
-            if (Request::get('draw')) {
-                return response()->json(Event::datatable());
-            }
-            if (Request::ajax()) {
-                return response()->json([
-                    'statusCode' => 200,
-                    'title' => '首页',
-                    'uri' => Request::path(),
-                    'html' => view('user.event',[
-                        'user' => Auth::user(),
-                        'event' => '../public/js/user/event.js',
-                    ])->render()
-                ]);
-            }
 
+        if (Request::get('draw')) {
+            return response()->json(Event::datatable());
         }
+
+        return $this->output();
+
     }
 
     /**
@@ -224,7 +95,7 @@ class UserController extends Controller {
      * @return JsonResponse
      */
     public function uploadAvatar($id) {
-        
+
         $file = Request::file('avatar');
         $check = $this->checkFile($file);
         if (!$check['status']) {
@@ -250,14 +121,14 @@ class UserController extends Controller {
         if ($id < 1) {
             $this->result['statusCode'] = self::HTTP_STATUSCODE_OK;
             $this->result['fileName'] = $fileName;
-            
+
             return response()->json($this->result);
         }
-        
+
         return $this->saveImg($id, $fileName);
-        
+
     }
-    
+
     /**
      * 验证文件是否上传成功
      *

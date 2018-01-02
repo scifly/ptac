@@ -278,6 +278,24 @@ class Message extends Model {
 
         $obj = explode(',', $data['departIds']);
         if ($obj) {
+
+            $apps = App::whereIn('id', $data['app_ids'])->get()->toArray();
+            if (!$apps) {
+                $result = [
+                    'statusCode' => 0,
+                    'message' => '应用不存在，请刷新页面！',
+                ];
+                return response()->json($result);
+            }
+            $corp = Corp::where('name', '万浪软件')->first();
+            if (!$corp) {
+                $result = [
+                    'statusCode' => 0,
+                    'message' => '企业号不存在，请刷新页面！',
+                ];
+                return response()->json($result);
+            }
+
             $depts = [];
             $users = [];
             $us = [];
@@ -293,20 +311,6 @@ class Message extends Model {
             $userItems = implode('|', $us);
             $touser = implode('|', $users);
             $toparty = implode('|', $depts);
-            $apps = App::whereIn('id', $data['app_ids'])->get()->toArray();
-            if (!$apps) {
-                $result = [
-                    'statusCode' => 0,
-                    'message' => '应用不存在，请刷新页面！',
-                ];
-            }
-            $corp = Corp::where('name', '万浪软件')->first();
-            if (!$corp) {
-                $result = [
-                    'statusCode' => 0,
-                    'message' => '企业号不存在，请刷新页面！',
-                ];
-            }
             # 推送的所有用户以及电话
             $userDatas = $this->getMobiles($us, $depts);
             $title = '';
@@ -337,8 +341,10 @@ class Message extends Model {
                     } else {
                         $result = [
                             'statusCode' => 0,
-                            'message' => '出错！',
+                            'message' => '短信推送失败！',
                         ];
+                        return response()->json($result);
+
                     }
                 }else{
                     switch ($data['type']) {
@@ -358,7 +364,6 @@ class Message extends Model {
                         case 'video' :
                             $message['video'] = $data['content']['video'];
                             $title = $data['content']['video']['title'];
-
                             break;
 
                             break;
@@ -375,8 +380,9 @@ class Message extends Model {
                     } else {
                         $result = [
                             'statusCode' => 0,
-                            'message' => '出错！',
+                            'message' => '消息发送失败！',
                         ];
+                        return response()->json($result);
                     }
 
                 }
