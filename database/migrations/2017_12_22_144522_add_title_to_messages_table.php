@@ -15,7 +15,7 @@ class AddTitleToMessagesTable extends Migration
     {
         Schema::table('messages', function (Blueprint $table) {
 
-            $table->string('title',64)->after('msl_id')->comment('消息标题');
+            $table->string('title',64)->after('msl_id')->nullable()->comment('消息标题');
         });
     }
 
