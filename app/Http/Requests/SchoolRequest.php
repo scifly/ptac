@@ -23,6 +23,7 @@ class SchoolRequest extends FormRequest {
             'name'           => 'required|string|between:6,255|unique:schools,name,' .
                 $this->input('id') . ',id',
             'address'        => 'required|string|between:6,255',
+            'signature'      => 'required|string|between:2,7',
             'department_id'  => 'required|integer',
             'corp_id'        => 'required|integer',
             'menu_id'        => 'required|integer',

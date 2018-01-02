@@ -2,7 +2,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\UserRequest;
+use App\Models\Event;
 use App\Models\Menu;
+use App\Models\Message;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -219,7 +221,7 @@ class UserController extends Controller {
                 ]);
             }
         }
-        
+        return null;
     }
     
     /**
@@ -229,17 +231,17 @@ class UserController extends Controller {
     public function messages(){
 
         $menuId = Request::query('menuId');
-        $menu = $this->menu->find($menuId);
+        $menu = Menu::find($menuId);
         if (!$menu) {
             $user = Auth::user();
-            $menuId = $this->menu->where('uri', 'users/messages')->first()->id;
+            $menuId = Menu::where('uri', 'users/messages')->first()->id;
 
             session(['menuId' => $menuId]);
             if (Request::get('draw')) {
-                return response()->json($this->message->datatable());
+                return response()->json(Message::datatable());
             }
             return view('home.home', [
-                'menu' => $this->menu->getMenuHtml($this->menu->rootMenuId()),
+                'menu' => Menu::menuHtml(Menu::rootMenuId()),
                 'content' => view('user.' . 'message'),
                 'js' => 'js/home/page.js',
                 'message' => '../public/js/user/message.js',
@@ -254,7 +256,7 @@ class UserController extends Controller {
             }
 
             if (Request::get('draw')) {
-                return response()->json($this->message->datatable());
+                return response()->json(Message::datatable());
             }
 
             if (Request::ajax()) {
@@ -270,7 +272,7 @@ class UserController extends Controller {
             }
 
         }
-
+        return null;
 
     }
     
@@ -279,15 +281,15 @@ class UserController extends Controller {
      */
     public function event(){
         $menuId = Request::query('menuId');
-        $menu = $this->menu->find($menuId);
+        $menu = Menu::find($menuId);
         if (!$menu) {
-            $menuId = $this->menu->where('uri', 'users/events')->first()->id;
+            $menuId = Menu::where('uri', 'users/events')->first()->id;
             session(['menuId' => $menuId]);
             if (Request::get('draw')) {
-                return response()->json($this->event->datatable());
+                return response()->json(Event::datatable());
             }
             return view('home.home', [
-                'menu' => $this->menu->getMenuHtml($this->menu->rootMenuId()),
+                'menu' => Menu::menuHtml(Menu::rootMenuId()),
                 'content' => view('user.' . 'event'),
                 'js' => 'js/home/page.js',
                 'event' => '../public/js/user/event.js',
@@ -302,7 +304,7 @@ class UserController extends Controller {
             }
 
             if (Request::get('draw')) {
-                return response()->json($this->event->datatable());
+                return response()->json(Event::datatable());
             }
 
             if (Request::ajax()) {
@@ -316,8 +318,8 @@ class UserController extends Controller {
                     ])->render()
                 ]);
             }
-
         }
+        return null;
     }
     /**
      * 上传用户头像
