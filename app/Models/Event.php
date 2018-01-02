@@ -87,7 +87,7 @@ class Event extends Model {
      */
     public function subject() { return $this->belongsTo('App\Models\Subject'); }
 
-    public function datatable() {
+    static function datatable() {
 
         $columns = [
             ['db' => 'Event.id', 'dt' => 0],
@@ -132,7 +132,7 @@ class Event extends Model {
         $condition = null;
         $condition = 'Event.enabled = 1';
 
-        return Datatable::simple($this, $columns, $joins, $condition);
+        return Datatable::simple(self::getModel(), $columns, $joins, $condition);
     }
 
     /**

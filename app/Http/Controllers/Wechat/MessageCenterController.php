@@ -69,15 +69,16 @@ class MessageCenterController extends Controller {
                         $sendMessages = [];
                         $sendMessages = Message::whereSUserId($user->id)
                             ->where('content', 'like', '%' . $keywords . '%')
-                            ->Where('content', 'like', '%' . $keywords . '%')
                             ->orWhere('title', 'like', '%' . $keywords . '%')
                             ->get();
+
                         if (sizeof($sendMessages) != 0) {
                             foreach ($sendMessages as $s) {
                                 $s['r_user_id'] = User::whereId($s['r_user_id'])->first()->realname;
                             }
                         }
-                        
+                        // echo '<pre>';
+                        // print_r($sendMessages);exit;
                         return response(['sendMessages' => $sendMessages, 'type' => $type]);
                         break;
                     case 'receive':
@@ -463,8 +464,6 @@ class MessageCenterController extends Controller {
                     #推送微信服务器且显示详情页
                     $message = $this->message->where('msl_id', $input['msl_id'])->first();
                     $url = 'http:/weixin.028lk.com/message_show/' . $message->id;
-                    print_r($url);exit;
-
                     return $this->frontSendMessage($input, $url);
                 });
             } catch (Exception $e) {
