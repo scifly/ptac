@@ -244,11 +244,7 @@ function upload_cover() {
         success: function (result) {
             $('#upload-wait').hide();
             if (result.statusCode === 1) {
-<<<<<<< HEAD
-                var html = '<img class="uploadimg-item upload_mpnews" id="' + result.data.id + '" src="' + 'http://weixin.028lk.com/' + result.data.path + '"  style="width: 100%" data-id="' + result.data.id + '">' +
-=======
                 var html = '<img class="uploadimg-item upload_mpnews" id="' + result.data.id + '" src="http://weixin.028lk.com/' + result.data.path + '"  style="width: 100%" data-id="' + result.data.id + '">' +
->>>>>>> ptac/master
                 '<input id="mpnews_media_id" name="mpnews_media_id" onchange="upload_cover()" data-content-id="' + result.data.media_id + '" class="weui-uploader__input upload_mpnews" type="file" accept="image/*" multiple="" >';
                 $('#cover').html(html);
             }else {
