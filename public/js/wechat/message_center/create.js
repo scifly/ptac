@@ -89,16 +89,22 @@ msg_type.change(function () {
 $(".ma_expect_date").datetimePicker();
 
 $('.js-search-input').bind("input propertychange change", function (event) {
-    var txt = $(this).val();
-    if (txt == '') {
+    var keyword = $(this).val();
+    if (keyword == '') {
         $('.js-choose-items .weui-check__label').show();
         $('.js-choose-breadcrumb-li').text('全部');
     } else {
+        $.ajax({
+            type:'post',
+            dataType:'json',
+            url:'message_create',
+            data:{keywords:keywords,_token:$('#csrf_token').attr('content')},
+        });
         $('.js-choose-breadcrumb-li').text('搜索结果');
         $('.js-choose-items .weui-check__label').hide();
         $('.js-choose-items .weui-check__label').each(function () {
             var uname = $(this).find('.contacts-text').text();
-            if (uname.indexOf(txt) >= 0) {
+            if (uname.indexOf(keyword) >= 0) {
                 $(this).show();
             }
         });

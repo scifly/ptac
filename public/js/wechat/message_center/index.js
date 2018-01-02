@@ -28,10 +28,10 @@ $('.teacher-list-box').click(function () {
     $.ajax({
         type: 'GET',
         dataType: 'json',
-        url: '../message_update/' + id,
+        url: '../public/message_update/' + id,
         success: function (result) {
             if (result.statusCode === 200) {
-                window.location.href = '../message_show/' + id;
+                window.location.href = '../public/message_show/' + id;
             }
         }
     });

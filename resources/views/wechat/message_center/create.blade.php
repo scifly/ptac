@@ -164,7 +164,9 @@
 
 						<div class="choose-breadcrumb js-choose-breadcrumb">
 							<ol class="breadcrumb js-choose-breadcrumb-ol">
-								<li data-id="{{ $department->id }}" class="js-choose-breadcrumb-li headclick"><a>{{ $department->name }}</a></li>
+								<li data-id="{{ $department->id }}" class="js-choose-breadcrumb-li headclick">
+									<a>{{ $department->name }}</a>
+								</li>
 							</ol>
 						</div>
 

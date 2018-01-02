@@ -281,6 +281,7 @@ Route::group(['prefix' => 'operators'], function() {
 Route::get('message_center', 'Wechat\MessageCenterController@index');
 Route::post('message_center', 'Wechat\MessageCenterController@index');
 Route::get('message_create', 'Wechat\MessageCenterController@create');
+Route::post('message_create', 'Wechat\MessageCenterController@create');
 Route::post('message_store', 'Wechat\MessageCenterController@store');
 Route::get('message_edit/{id}', 'Wechat\MessageCenterController@edit');
 Route::get('message_show/{id}', 'Wechat\MessageCenterController@show');
