@@ -247,14 +247,17 @@ class Educator extends Model {
                     }
                 }
                 # 当选择了学校角色没有选择 学校部门时
-//                if ($u->group_id == Group::whereName('学校')->first()->id) {
-//
-//                    DepartmentUser::create([
-//                        'user_id' => $u->id,
-//                        'department_id' => School::find(School::id())->department_id,
-//                        'enabled' => $user['enabled'],
-//                    ]);
-//                }
+                $deptUser = DepartmentUser::whereDepartmentId(Group::whereName('学校')->first()->id)
+                    ->where('user_id', $u->id)
+                    ->first();
+                if ($u->group_id == Group::whereName('学校')->first()->id && empty($deptUser)) {
+
+                    DepartmentUser::create([
+                        'user_id' => $u->id,
+                        'department_id' => School::find(School::id())->department_id,
+                        'enabled' => $user['enabled'],
+                    ]);
+                }
                 # 保存班级科目绑定关系
                 $classSubjectData = $request->input('classSubject');
                 if ($classSubjectData['class_ids'] && $classSubjectData['subject_ids']) {
