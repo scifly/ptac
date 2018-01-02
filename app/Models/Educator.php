@@ -369,7 +369,6 @@ class Educator extends Model {
                     'realname' => $user['realname'],
                     'gender' => $user['gender'],
                     'avatar_url' => '00001.jpg',
-                    'userid' => '111111',
                     'wechatid' => $user['wechatid'],
                     'isleader' => 0,
                     'english_name' => $user['english_name'],

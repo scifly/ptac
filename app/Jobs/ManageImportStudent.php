@@ -3,7 +3,6 @@ namespace App\Jobs;
 
 use App\Models\Custodian;
 use App\Models\CustodianStudent;
-use App\Models\Department;
 use App\Models\DepartmentUser;
 use App\Models\Group;
 use App\Models\Mobile;
@@ -16,7 +15,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Mockery\Exception;
+use Exception;
 
 class ManageImportStudent implements ShouldQueue {
     
@@ -210,10 +209,11 @@ class ManageImportStudent implements ShouldQueue {
                 }
     
             });
-            return is_null($exception) ? true : $exception;
         } catch (Exception $e) {
-            return false;
+            throw $e;
         }
+
+        return true;
         
     }
 }
