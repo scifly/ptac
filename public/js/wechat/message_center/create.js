@@ -119,7 +119,7 @@ function show_group() {
         $.ajax({
             type: 'GET',
             data: {},
-            url: '../public/message_dept/' + id,
+            url: '../message_dept/' + id,
             success: function (result) {
                 if (result.statusCode === 200) {
                     choose_box.html(result.message);
@@ -235,7 +235,7 @@ function upload_cover() {
     formData.append('_token', token);
     formData.append('type', msg_type.attr('data-values'));
     $.ajax({
-        url: '../public/message_upload',
+        url: '../message_upload',
         type: 'POST',
         cache: false,
         data: formData,
@@ -244,7 +244,11 @@ function upload_cover() {
         success: function (result) {
             $('#upload-wait').hide();
             if (result.statusCode === 1) {
+<<<<<<< HEAD
                 var html = '<img class="uploadimg-item upload_mpnews" id="' + result.data.id + '" src="' + 'http://weixin.028lk.com/' + result.data.path + '"  style="width: 100%" data-id="' + result.data.id + '">' +
+=======
+                var html = '<img class="uploadimg-item upload_mpnews" id="' + result.data.id + '" src="http://weixin.028lk.com/' + result.data.path + '"  style="width: 100%" data-id="' + result.data.id + '">' +
+>>>>>>> ptac/master
                 '<input id="mpnews_media_id" name="mpnews_media_id" onchange="upload_cover()" data-content-id="' + result.data.media_id + '" class="weui-uploader__input upload_mpnews" type="file" accept="image/*" multiple="" >';
                 $('#cover').html(html);
             }else {
@@ -322,7 +326,7 @@ $(function () {
         formData.append('file', $('#uploaderInput')[0].files[0]);
         formData.append('_token', token);
         $.ajax({
-            url: '../public/message_upload',
+            url: '../message_upload',
             type: 'POST',
             cache: false,
             data: formData,
@@ -346,7 +350,7 @@ $(function () {
         formData.append('_token', token);
         formData.append('type', msg_type.attr('data-values'));
         $.ajax({
-            url: "../public/message_upload",
+            url: "../message_upload",
             data: formData,
             type: 'POST',
             dataType: 'json',
@@ -374,7 +378,7 @@ $(function () {
         formData.append('_token', token);
         formData.append('type', msg_type.attr('data-values'));
         $.ajax({
-            url: "../public/message_upload",
+            url: "../message_upload",
             data: formData,
             type: 'POST',
             dataType: 'json',
@@ -401,7 +405,6 @@ $(function () {
     var wechat_media_id = '';
     // var time = '';
     $('.release').on('click', function () {
-        var pic_url = $('.pic-url').attr('data-id');
         media_ids = [];
         title = $('#title').val();
         content = $('#emojiInput').html();
@@ -477,11 +480,11 @@ $(function () {
                 'type': type,
                 'mediaid': wechat_media_id
             },
-            url: '../public/message_store',
+            url: '../message_store',
             success: function (result) {
                 if (result.statusCode === 200) {
                     $.alert('消息发送成功！', function () {
-                        window.location.href = '../public/message_center';
+                        window.location.href = '../message_center';
                     });
                 } else {
                     $.alert('消息发送失败，请稍后重试！');
@@ -500,7 +503,7 @@ function getdept() {
         $(this).nextAll().remove();
         $.ajax({
             type: 'GET',
-            url: '../public/message_dept/' + id,
+            url: '../message_dept/' + id,
             success: function (result) {
                 if (result.statusCode === 200) {
                     choose_box.html(result.message);
