@@ -31,6 +31,19 @@
                     ]) !!}
                 </div>
             </div>
+            <div class="form-group">
+                {!! Form::label('signature', '签名', [
+                    'class' => 'col-sm-3 control-label'
+                ]) !!}
+                <div class="col-sm-6">
+                    {!! Form::text('signature', null, [
+                        'class' => 'form-control',
+                        'required' => 'true',
+                        'placeholder'=>'签名格式必须为[内容]',
+                        'data-parsley-length' => '[2, 7]'
+                    ]) !!}
+                </div>
+            </div>
             @include('partials.single_select', [
                 'label' => '学校类型',
                 'id' => 'school_type_id',

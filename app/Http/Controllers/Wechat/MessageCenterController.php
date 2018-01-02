@@ -124,6 +124,7 @@ class MessageCenterController extends Controller {
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function create() {
+
         $userId = Session::get('userId');
         // $departmentId = 4;
         #教师可发送消息
