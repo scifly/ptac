@@ -2,7 +2,7 @@
 
 namespace App\Http\ViewComposers;
 
-use App\Helpers\ControllerTrait;
+use App\Helpers\ModelTrait;
 use App\Models\ConferenceRoom;
 use App\Models\Educator;
 use App\Models\School;
@@ -10,15 +10,8 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 
 class ConferenceQueueComposer {
-    use ControllerTrait;
-    protected $conferenceRoom, $educator;
-
-    public function __construct(ConferenceRoom $conferenceRoom, Educator $educator) {
-
-        $this->conferenceRoom = $conferenceRoom;
-        $this->educator = $educator;
-
-    }
+    
+    use ModelTrait;
 
     public function compose(View $view) {
 
@@ -29,8 +22,8 @@ class ConferenceQueueComposer {
             $schoolId = School::whereDepartmentId($user->topDeptId())->first()->id;
         }
         $view->with([
-            'conferenceRooms' => $this->conferenceRoom->where('school_id', $schoolId)->pluck('name', 'id'),
-            'educators' => $this->educator->where('school_id', $schoolId)->pluck('name', 'id'),
+            'conferenceRooms' => ConferenceRoom::whereSchoolId($schoolId)->pluck('name', 'id'),
+            'educators' => Educator::whereSchoolId($schoolId)->pluck('name', 'id'),
             'uris' => $this->uris()
         ]);
 

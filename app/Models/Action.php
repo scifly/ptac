@@ -527,7 +527,7 @@ class Action extends Model {
                     $viewPath = 'custodian.relationship';
                     break;
                 default:
-                    $viewPath = '';
+                    $viewPath = Inflector::singularize(self::getTableName($controller)) . '.' . $action;
                     break;
             }
 

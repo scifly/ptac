@@ -612,7 +612,7 @@ $(function () {
         page.refreshTabs();
         // 获取被点击卡片的uri
         var url = $(this).attr('data-uri');
-        // 选地所有卡片
+        // 选定所有卡片
         var $tabPanes = $('.card');
         // 获取状态为active的卡片
         var $activeTabPane = $('#tab_' + page.getActiveTabId());

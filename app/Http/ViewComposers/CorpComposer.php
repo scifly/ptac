@@ -2,22 +2,19 @@
 
 namespace App\Http\ViewComposers;
 
-use App\Helpers\ControllerTrait;
+use App\Helpers\ModelTrait;
 use App\Models\Company;
 use Illuminate\Contracts\View\View;
 
 class CorpComposer {
-    use ControllerTrait;
-    protected $company;
-
-    public function __construct(Company $company) { $this->company = $company; }
+    
+    use ModelTrait;
 
     public function compose(View $view) {
 
         $view->with([
-            'companies' => $this->company->pluck('name', 'id'),
+            'companies' => Company::pluck('name', 'id'),
             'uris' => $this->uris()
-
         ]);
 
     }

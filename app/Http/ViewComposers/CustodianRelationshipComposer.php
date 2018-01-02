@@ -14,14 +14,6 @@ use Illuminate\Support\Facades\Auth;
 
 class CustodianRelationshipComposer {
 
-    protected $user;
-
-    public function __construct(User $user) {
-
-        $this->user = $user;
-
-    }
-
     public function compose(View $view) {
 
         $schools = null;
@@ -34,7 +26,7 @@ class CustodianRelationshipComposer {
                 ->where('enabled', 1)
                 ->pluck('name', 'id');
         } else {
-            $topDepartmentId = $this->user->topDeptId();
+            $topDepartmentId = User::topDeptId();
             $departmentType = Department::whereId($topDepartmentId)->first()->departmentType;
             switch ($departmentType->name) {
                 case '根':

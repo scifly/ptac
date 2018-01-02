@@ -2,18 +2,18 @@
 
 namespace App\Http\ViewComposers;
 
-use App\Helpers\ControllerTrait;
+use App\Helpers\ModelTrait;
 use App\Models\Educator;
 use App\Models\Grade;
 use App\Models\School;
 use Illuminate\Contracts\View\View;
 
 class SquadComposer {
-    
-    use ControllerTrait;
+
+    use ModelTrait;
 
     public function compose(View $view) {
-        
+
         $schoolId = School::id();
         $grades = Grade::whereSchoolId($schoolId)
             ->where('enabled', 1)
@@ -27,13 +27,13 @@ class SquadComposer {
                 $educators[$v['id']] = $v['user']['realname'];
             }
         }
-        
+
         $view->with([
             'grades' => $grades,
             'educators' => $educators,
             'uris' => $this->uris()
         ]);
-        
+
     }
 
 }

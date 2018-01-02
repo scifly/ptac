@@ -2,7 +2,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\UserRequest;
+use App\Models\Event;
 use App\Models\Menu;
+use App\Models\Message;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -20,113 +22,9 @@ use Throwable;
  */
 class UserController extends Controller {
     
-    function __construct(User $user, Menu $menu) {
+    function __construct() {
         
         $this->middleware(['auth', 'checkrole']);
-        
-    }
-    
-    /**
-     * 用户列表
-     *
-     * @return bool|JsonResponse
-     * @throws \Throwable
-     */
-    public function index() {
-        
-        if (Request::get('draw')) {
-            return response()->json(User::datatable());
-        }
-        
-        return $this->output();
-        
-    }
-    
-    /**
-     * 创建用户
-     *
-     * @return bool|JsonResponse
-     * @throws \Throwable
-     */
-    public function create() {
-        
-        return $this->output();
-        
-    }
-    
-    /**
-     * 保存用户
-     *
-     * @param UserRequest $request
-     * @return JsonResponse
-     */
-    public function store(UserRequest $request) {
-        
-        return $this->result(User::create($request->all()));
-    
-    }
-    
-    /**
-     * 用户详情
-     *
-     * @param $id
-     * @return bool|JsonResponse
-     * @throws \Throwable
-     */
-    public function show($id) {
-        
-        $user = User::find($id);
-        if (!$user) { return $this->notFound(); }
-        
-        return $this->output(['user' => $user]);
-        
-    }
-    
-    /**
-     * 编辑用户
-     *
-     * @param $id
-     * @return bool|JsonResponse
-     * @throws \Throwable
-     */
-    public function edit($id) {
-        
-        $user = User::find($id);
-        if (!$user) { return $this->notFound(); }
-        
-        return $this->output(['user' => $user]);
-        
-    }
-    
-    /**
-     * 更新用户
-     *
-     * @param UserRequest $request ;
-     * @param $id
-     * @return JsonResponse
-     */
-    public function update(UserRequest $request, $id) {
-        
-        $user = User:: find($id);
-        if (!$user) { return $this->notFound(); }
-        
-        return $this->result($user->update($request->all()));
-        
-    }
-    
-    /**
-     * 删除用户
-     *
-     * @param $id
-     * @return JsonResponse
-     * @throws Exception
-     */
-    public function destroy($id) {
-        
-        $user = User::find($id);
-        if (!$user) { return $this->notFound(); }
-        
-        return $this->result($user->delete());
         
     }
     
@@ -136,6 +34,8 @@ class UserController extends Controller {
      * @throws \Throwable
      */
     public function profile() {
+
+        // return $this->output();
         
         $menuId = Request::query('menuId');
         $menu = Menu::find($menuId);
@@ -188,6 +88,7 @@ class UserController extends Controller {
                 return response()->json(['statusCode' => 200]);
             }
         }
+        // return $this->output();
         $menuId = Request::query('menuId');
         $menu = Menu::find($menuId);
         if (!$menu) {
@@ -228,35 +129,33 @@ class UserController extends Controller {
      */
     public function messages(){
 
+//        return $this->output();
         $menuId = Request::query('menuId');
-        $menu = $this->menu->find($menuId);
+        $menu = Menu::find($menuId);
         if (!$menu) {
-            $user = Auth::user();
-            $menuId = $this->menu->where('uri', 'users/messages')->first()->id;
+            $menuId = Menu::whereUri('users/messages')->first()->id;
 
             session(['menuId' => $menuId]);
             if (Request::get('draw')) {
-                return response()->json($this->message->datatable());
+                return response()->json(Message::datatable());
             }
             return view('home.home', [
-                'menu' => $this->menu->getMenuHtml($this->menu->rootMenuId()),
+                'menu' => Menu::menuHtml(Menu::rootMenuId()),
                 'content' => view('user.' . 'message'),
                 'js' => 'js/home/page.js',
                 'message' => '../public/js/user/message.js',
                 'user' => Auth::user()
             ]);
-        }else {
+        } else {
             if (!session('menuId') || session('menuId') !== $menuId) {
                 session(['menuId' => $menuId]);
                 session(['menuChanged' => true]);
             } else {
                 Session::forget('menuChanged');
             }
-
             if (Request::get('draw')) {
-                return response()->json($this->message->datatable());
+                return response()->json(Message::datatable());
             }
-
             if (Request::ajax()) {
                 return response()->json([
                     'statusCode' => 200,
@@ -279,15 +178,15 @@ class UserController extends Controller {
      */
     public function event(){
         $menuId = Request::query('menuId');
-        $menu = $this->menu->find($menuId);
+        $menu = Menu::find($menuId);
         if (!$menu) {
-            $menuId = $this->menu->where('uri', 'users/events')->first()->id;
+            $menuId = Menu::whereUri('users/events')->first()->id;
             session(['menuId' => $menuId]);
             if (Request::get('draw')) {
-                return response()->json($this->event->datatable());
+                return response()->json(Event::datatable());
             }
             return view('home.home', [
-                'menu' => $this->menu->getMenuHtml($this->menu->rootMenuId()),
+                'menu' => Menu::menuHtml(Menu::rootMenuId()),
                 'content' => view('user.' . 'event'),
                 'js' => 'js/home/page.js',
                 'event' => '../public/js/user/event.js',
@@ -300,11 +199,9 @@ class UserController extends Controller {
             } else {
                 Session::forget('menuChanged');
             }
-
             if (Request::get('draw')) {
-                return response()->json($this->event->datatable());
+                return response()->json(Event::datatable());
             }
-
             if (Request::ajax()) {
                 return response()->json([
                     'statusCode' => 200,
@@ -319,6 +216,7 @@ class UserController extends Controller {
 
         }
     }
+
     /**
      * 上传用户头像
      *

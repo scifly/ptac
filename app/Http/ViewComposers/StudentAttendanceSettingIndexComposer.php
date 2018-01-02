@@ -2,14 +2,12 @@
 
 namespace App\Http\ViewComposers;
 
-use App\Helpers\ControllerTrait;
-use App\Models\Grade;
-use App\Models\School;
-use App\Models\Semester;
+use App\Helpers\ModelTrait;
 use Illuminate\Contracts\View\View;
 
 class StudentAttendanceSettingIndexComposer {
-    use ControllerTrait;
+    
+    use ModelTrait;
 
     public function compose(View $view) {
 

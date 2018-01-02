@@ -31,7 +31,7 @@ class HomeController extends Controller {
         $this->middleware(['auth', 'checkrole']);
 
     }
-    
+
     /**
      * 后台首页
      *
@@ -42,29 +42,7 @@ class HomeController extends Controller {
         $menuId = Request::query('menuId');
         $menu = Menu::find($menuId);
         if (!$menu) {
-            $user = Auth::user();
-            switch ($user->group->name) {
-                case '运营':
-                    $view = 'company';
-                    $parentMenuId = 1;
-                    break;
-                case '企业':
-                    $view = 'corp';
-                    $parentMenuId = Corp::whereDepartmentId($user->topDeptId())
-                        ->first()->menu_id;
-                    break;
-                case '学校':
-                    $view = 'school';
-                    $parentMenuId = School::whereDepartmentId($user->topDeptId())
-                        ->first()->menu_id;
-                    break;
-                default:
-                    $view = 'school';
-                    $topDeptId = $user->topDeptId();
-                    $parentMenuId = School::whereDepartmentId($user->getDeptSchoolId($topDeptId))
-                        ->first()->menu_id;
-                    break;
-            }
+            list($view, $parentMenuId) = self::parentMenuId();
             $menuId = Menu::whereParentId($parentMenuId)
                 ->whereIn('uri', ['home', '/'])
                 ->first()
@@ -98,13 +76,14 @@ class HomeController extends Controller {
                     'html' => view('home.' . $view)->render()
                 ]);
             }
+
             return view('home.home', [
                 'menu' => Menu::menuHtml(Menu::rootMenuId()),
                 'menuId' => $menuId,
                 'content' => view('home.' . $view),
                 'js' => 'js/home/page.js',
-                'user' => Auth::user()
             ]);
+
         }
 
     }
@@ -132,8 +111,7 @@ class HomeController extends Controller {
         $tabArray = [];
         $isTabLegit = true;
         $tabRanks = MenuTab::whereMenuId($id)
-            ->get()
-            ->sortBy('tab_order')
+            ->get()->sortBy('tab_order')
             ->toArray();
         $allowedTabIds = GroupTab::whereGroupId($user->group_id)
             ->pluck('tab_id')
@@ -215,8 +193,40 @@ class HomeController extends Controller {
             'tabs'   => $tabArray,
             'menuId' => $id,
             'js'     => 'js/home/page.js',
-            'user'   => Auth::user(),
         ]);
+
+    }
+
+    /**
+     * @return array
+     */
+    private static function parentMenuId(): array {
+
+        $user = Auth::user();
+        switch ($user->group->name) {
+            case '运营':
+                $view = 'company';
+                $parentMenuId = 1;
+                break;
+            case '企业':
+                $view = 'corp';
+                $parentMenuId = Corp::whereDepartmentId($user->topDeptId())
+                    ->first()->menu_id;
+                break;
+            case '学校':
+                $view = 'school';
+                $parentMenuId = School::whereDepartmentId($user->topDeptId())
+                    ->first()->menu_id;
+                break;
+            default:
+                $view = 'school';
+                $topDeptId = $user->topDeptId();
+                $parentMenuId = School::whereDepartmentId($user->schoolDeptId($topDeptId))
+                    ->first()->menu_id;
+                break;
+        }
+
+        return array($view, $parentMenuId);
 
     }
 
