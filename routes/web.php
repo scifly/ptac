@@ -159,8 +159,8 @@ Route::group(['prefix' => 'procedure_logs'], function () {
     Route::get('create', $c . '@create');
     Route::post('store', $c . '@store');
     Route::post('decision', $c . '@decision');
-    Route::post('upload_medias', $c . '@uploadMedias');
-    Route::get('delete_medias/{id}', $c . '@deleteMedias');
+    Route::post('uploadMedias', $c . '@uploadMedias');
+    Route::get('deleteMedias/{id}', $c . '@deleteMedias');
 });
 // 会议助手
 Route::group(['prefix' => 'conference_rooms'], routes('ConferenceRoomController'));
