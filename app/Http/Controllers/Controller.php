@@ -55,7 +55,6 @@ class Controller extends BaseController {
      * @throws Throwable
      */
     protected function output(array $params = []) {
-        
         $action = Action::whereMethod(Request::route()->getActionMethod())
             ->where('controller', class_basename(Request::route()->controller))
             ->first();

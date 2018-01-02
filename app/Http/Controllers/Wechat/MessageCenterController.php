@@ -43,21 +43,21 @@ class MessageCenterController extends Controller {
      */
     public function index() {
         #获取用户信息
-        $corpId = 'wxe75227cead6b8aec';
-        $secret = 'qv_kkW2S3zmMWIUrV3u2nydcyIoLknTvuDMq7ja4TYE';
-        $agentId = 3;
-        $userId = Session::get('userId') ? Session::get('userId') : null;
-        $code = Request::input('code');
-        if (empty($code) && empty($userId)) {
-            $codeUrl = Wechat::getCodeUrl($corpId, $agentId, 'http://weixin.028lk.com/message_center');
-            return redirect($codeUrl);
-        }elseif(!empty($code) && empty($userId)){
-            $accessToken = Wechat::getAccessToken($corpId, $secret);
-            $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
-            $userId = $userInfo['UserId'];
-            Session::put('userId',$userId);
-        }
-        // $userId = 'yuanhongbin';
+        // $corpId = 'wxe75227cead6b8aec';
+        // $secret = 'qv_kkW2S3zmMWIUrV3u2nydcyIoLknTvuDMq7ja4TYE';
+        // $agentId = 3;
+        // $userId = Session::get('userId') ? Session::get('userId') : null;
+        // $code = Request::input('code');
+        // if (empty($code) && empty($userId)) {
+        //     $codeUrl = Wechat::getCodeUrl($corpId, $agentId, 'http://weixin.028lk.com/message_center');
+        //     return redirect($codeUrl);
+        // }elseif(!empty($code) && empty($userId)){
+        //     $accessToken = Wechat::getAccessToken($corpId, $secret);
+        //     $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
+        //     $userId = $userInfo['UserId'];
+        //     Session::put('userId',$userId);
+        // }
+         $userId = 'yuanhongbin';
         $user = User::whereUserid($userId)->first();
         if (Request::isMethod('post')) {
             $keywords = Request::get('keywords');
@@ -68,7 +68,6 @@ class MessageCenterController extends Controller {
                         $sendMessages = [];
                         $sendMessages = Message::whereSUserId($user->id)
                             ->where('content', 'like', '%' . $keywords . '%')
-                            ->Where('content', 'like', '%' . $keywords . '%')
                             ->orWhere('title', 'like', '%' . $keywords . '%')
                             ->get();
                         if (sizeof($sendMessages) != 0) {
@@ -125,19 +124,26 @@ class MessageCenterController extends Controller {
      */
     public function create() {
 
-        $userId = Session::get('userId');
-        // $departmentId = 4;
+        // $userId = Session::get('userId');
+        if(Request::isMethod('post')){
+            $keywords = Request::get('keyword');
+        }
+        $departmentId = 4;
         #教师可发送消息
-        #取的和教师关联的学校的部门id
-        $user = $this->user->where('userid', $userId)->first();
-        $educator = Educator::where('user_id',$user->id)->first();
-        $school = $educator->school;
-        $departmentId = Department::where('name',$school->name)->first()->id;
+        // #取的和教师关联的学校的部门id
+        // $user = $this->user->where('userid', $userId)->first();
+        // $educator = Educator::where('user_id',$user->id)->first();
+        // $school = $educator->school;
+        // $departmentId = Department::where('name',$school->name)->first()->id;
         $departments = Department::where('parent_id', $departmentId)->get();
         $department = Department::whereId($departmentId)->first();
         $users = $department->users;
         
-        return view('wechat.message_center.create', ['department' => $department, 'departments' => $departments, 'users' => $users]);
+        return view('wechat.message_center.create', [
+            'department' => $department,
+            'departments' => $departments,
+            'users' => $users
+        ]);
     }
     
     /**
@@ -186,8 +192,8 @@ class MessageCenterController extends Controller {
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function show($id) {
-        $userId = Session::get('userId');
-        // $userId = "yuanhongbin";
+        // $userId = Session::get('userId');
+         $userId = "yuanhongbin";
         $user = $this->user->where('userid', $userId)->first();
         $message = $this->message->find($id);
         $edit = $user->id == $message->s_user_id ? true : false;
