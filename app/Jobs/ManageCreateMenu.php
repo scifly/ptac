@@ -33,11 +33,16 @@ class ManageCreateMenu implements ShouldQueue {
      *u@throws \Throwable
      */
     public function handle() {
-        $this->menuNameTab = [
-            '首页', '自媒体管理', '课程表管理', '菜单管理', '用户中心', '投票问卷', '消息中心',
-            '通讯录', '成绩管理', '考勤管理', '移动办公', '系统设置',
-        ];
-    
+        // $this->menuNameTab = [
+        //     '首页', '自媒体管理', '课程表管理', '用户中心',
+        //     '通讯录', '成绩管理', '考勤管理', '移动办公', '系统设置'
+        // ];
+        $this->menu = new Menu();
+        $this->menuNameTab = [];
+        $schoolMenus = $this->menu->where('parent_id',5)->get();
+        foreach ($schoolMenus as $schoolMenu){
+            $this->menuNameTab[] = $schoolMenu->name;
+        }
         return $this->storeSchoolMenu($this->parentMenu, $this->menuNameTab);
     }
     
