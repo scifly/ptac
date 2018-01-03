@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
 	<meta name="csrf_token" content="{{ csrf_token() }}" id="csrf_token">
-    <title>WeUI</title>
+    <title>消息中心</title>
     <link rel="stylesheet" href="{{ asset('/css/weui.min.css') }}">
     <link rel="stylesheet" href="{{ asset('/css/jquery-weui.min.css') }}">
     <link rel="stylesheet" href="{{ asset('/css/wechat/icon/iconfont.css') }}">

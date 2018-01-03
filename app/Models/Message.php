@@ -111,7 +111,7 @@ class Message extends Model {
      */
     public function classes(array $classIds) { return Squad::whereIn('id', $classIds)->get(['id', 'name']); }
 
-    public function messageSendinglogs() { return $this->belongsTo('App\Models\MessageSendingLog'); }
+    public function messageSendinglogs() { return $this->belongsTo('App\Models\MessageSendingLog','msl_id','id'); }
 
     public function commType() { return $this->belongsTo('App\Models\CommType'); }
 
@@ -209,7 +209,7 @@ class Message extends Model {
             ['db' => 'Message.msl_id', 'dt' => 3],
             ['db' => 'User.realname', 'dt' => 4],
             ['db' => 'MessageType.name as messagetypename', 'dt' => 5],
-            ['db' => 'Message.read', 'dt' => 6,
+            ['db' => 'Message.readed', 'dt' => 6,
                 'formatter' => function ($d) {
                     return $d === 0 ? "否" : "是";
                 },
@@ -347,6 +347,7 @@ class Message extends Model {
 
                     }
                 }else{
+                    $message['msgtype'] = $data['type'];
                     switch ($data['type']) {
                         case 'text' :
                             $message['text'] = ['content' => $data['content']['text']];
@@ -358,7 +359,8 @@ class Message extends Model {
 
                         break;
                         case 'mpnews' :
-                            $message['mpnews'] = ['articles' => $data['content']['articles']];
+                            $i['articles'][] = $data['content']['articles'];
+                            $message['mpnews'] = $i;
                             $title = $data['content']['articles']['title'];
                             break;
                         case 'video' :
@@ -368,7 +370,7 @@ class Message extends Model {
 
                             break;
                     }
-                    $message['msgtype'] = $data['type'];
+
                     $status = json_decode(Wechat::sendMessage($token, $message));
                     $content = $message[$data['type']];
 

@@ -89,25 +89,92 @@ msg_type.change(function () {
 $(".ma_expect_date").datetimePicker();
 
 $('.js-search-input').bind("input propertychange change", function (event) {
-    var keyword = $(this).val();
-    if (keyword == '') {
-        $('.js-choose-items .weui-check__label').show();
-        $('.js-choose-breadcrumb-li').text('全部');
-    } else {
+    var keywords = $(this).val();
+    if (keywords === '') {
         $.ajax({
             type:'post',
             dataType:'json',
             url:'message_create',
             data:{keywords:keywords,_token:$('#csrf_token').attr('content')},
-        });
-        $('.js-choose-breadcrumb-li').text('搜索结果');
-        $('.js-choose-items .weui-check__label').hide();
-        $('.js-choose-items .weui-check__label').each(function () {
-            var uname = $(this).find('.contacts-text').text();
-            if (uname.indexOf(keyword) >= 0) {
-                $(this).show();
+            success: function ($data) {
+                var str = '';
+                if($data.departments.length > 0 || $data.user.length > 0){
+                    for(var i = 0; i<$data.departments.length; i++){
+                        var data = $data.departments[i];
+                        str += '<div class="air-choose-item" style="position: relative;">' +
+                            '<label class="weui-cell weui-check__label" id="group-'+data.id+'" data-item="'+data.id+'" data-uid="'+data.id+'" data-type="group">' +
+                            '<div class="weui-cell__hd">' +
+                            '<input type="checkbox" class="weui-check choose-item-btn" name="checkbox" >' +
+                            '<i class="weui-icon-checked"></i>' +
+                            '</div>' +
+                            '<div class="weui-cell__bd">' +
+                            '<img src="http://shp.qpic.cn/bizmp/UsXhSsnUkjjG5UGo8OES72Sw7U1CJYHXEkg1UlGkono5lDEiaZeBFlw/64" style="border-radius: 0;" class="js-go-detail lazy" width="75" height="75">' +
+                            '<span class="contacts-text">'+data.name+'</span>' +
+                            '</div>' +
+                            '</label>' +
+                            '<a class="icon iconfont icon-jiantouyou show-group" style="position:absolute;top: 0;right:0;height: 55px;line-height:55px;z-index: 1;width: 30px;"></a>' +
+                            '</div>';
+                    }
+                    for(var j = 0; j<$data.user.length; j++){
+                        var user = $data.user[j];
+                        str += '<div class="air-choose-item" style="position: relative;">' +
+                            '<label class="weui-cell weui-check__label" id="person-'+user.id+'" data-item="'+user.id+'" data-uid="'+user.id+'" data-type="person">' +
+                            '<div class="weui-cell__hd">' +
+                            '<input type="checkbox" class="weui-check choose-item-btn" name="checkbox">' +
+                            '<i class="weui-icon-checked"></i>' +
+                            '</div>' +
+                            '<div class="weui-cell__bd">' +
+                            '<img src="http://shp.qpic.cn/bizmp/UsXhSsnUkjgYesvoOibygyRfgukxHDouo6ovRRicAKOphkKd0Licg3I2w/64" class="js-go-detail lazy" width="75" height="75">' +
+                            '<span class="contacts-text">'+user.realname+'</span>' +
+                            '</div>' +
+                            '</label>' +
+                            '</div>'
+                    }
+                    $('.air-choose-group').html(str);
+                    choose_item();
+                    show_group();
+                }
             }
         });
+        // $('.js-choose-items .weui-check__label').show();
+        // $('.js-choose-breadcrumb-li').text('全部');
+    } else {
+        // $('.js-choose-items .air-choose-item').html('');
+        $.ajax({
+            type:'post',
+            dataType:'json',
+            url:'message_create',
+            data:{keywords:keywords,_token:$('#csrf_token').attr('content')},
+            success: function ($data) {
+                if ($data.user.length>0) {
+                    for (var i = 0; i < $data.user.length; i++) {
+                        var data = $data.user[i];
+                        var str = '<div class="air-choose-item" style="position: relative;"><label class="weui-cell weui-check__label" id="person-'+data.id+'" data-item="'+data.id+'" data-uid="'+data.id+'" data-type="person">' +
+                            '<div class="weui-cell__hd">' +
+                            '<input type="checkbox" class="weui-check choose-item-btn" name="checkbox">' +
+                            '<i class="weui-icon-checked"></i>' +
+                            '</div>' +
+                            '<div class="weui-cell__bd">' +
+                            '<img src="http://shp.qpic.cn/bizmp/UsXhSsnUkjgYesvoOibygyRfgukxHDouo6ovRRicAKOphkKd0Licg3I2w/64" class="js-go-detail lazy" width="75" height="75">' +
+                            '<span class="contacts-text">'+data.realname+'</span>' +
+                            '</div>' +
+                            '</label></div>';
+                    }
+                    $('.air-choose-group').html(str);
+                    choose_item();
+                }else{
+                    $('.js-choose-items .air-choose-item').html('');
+                }
+            }
+        });
+        // $('.js-choose-breadcrumb-li').text('搜索结果');
+        // $('.js-choose-items .weui-check__label').hide();
+        // $('.js-choose-items .weui-check__label').each(function () {
+        //     var uname = $(this).find('.contacts-text').text();
+        //     if (uname.indexOf(keywords) >= 0) {
+        //         $(this).show();
+        //     }
+        // });
     }
 });
 show_group();
@@ -125,7 +192,7 @@ function show_group() {
         $.ajax({
             type: 'GET',
             data: {},
-            url: '../public/message_dept/' + id,
+            url: '../message_dept/' + id,
             success: function (result) {
                 if (result.statusCode === 200) {
                     choose_box.html(result.message);
@@ -155,12 +222,13 @@ function choose_item() {
         if ($(this).is(':checked')) {
             var imgsrc = $this.find('img').attr('src');
             var uid = $this.attr('data-uid');
-            if (type == 'group') {
-                var html = '<a class="choose-results-item js-choose-results-item choose-item-type-group" id="group-' + num + '" data-list="' + num + '" data-uid="' + uid + '" data-type="' + type + '">' +
+            var html= '';
+            if (type === 'group') {
+                 html = '<a class="choose-results-item js-choose-results-item choose-item-type-group" id="group-' + num + '" data-list="' + num + '" data-uid="' + uid + '" data-type="' + type + '">' +
                     '<img src="' + imgsrc + '">' +
                     '</a>';
             } else {
-                var html = '<a class="choose-results-item js-choose-results-item choose-item-type-person" id="person-' + num + '" data-list="' + num + '" data-uid="' + uid + '" data-type="' + type + '">' +
+                 html = '<a class="choose-results-item js-choose-results-item choose-item-type-person" id="person-' + num + '" data-list="' + num + '" data-uid="' + uid + '" data-type="' + type + '">' +
                     '<img src="' + imgsrc + '" style="border-radius:50%">' +
                     '</a>';
             }
@@ -188,7 +256,7 @@ $('#checkall').change(function () {
             var num = $(vo).attr('data-item');
             var uid = $(vo).attr('data-uid');
             var imgsrc = $(vo).find('img').attr('src');
-            if (type == 'group') {
+            if (type === 'group') {
                 html += '<a class="choose-results-item js-choose-results-item choose-item-type-group" id="group-' + num + '" data-list="' + num + '" data-uid="' + uid + '" data-type="' + type + '">' +
                     '<img src="' + imgsrc + '">' +
                     '</a>';
@@ -241,7 +309,7 @@ function upload_cover() {
     formData.append('_token', token);
     formData.append('type', msg_type.attr('data-values'));
     $.ajax({
-        url: '../public/message_upload',
+        url: '../message_upload',
         type: 'POST',
         cache: false,
         data: formData,
@@ -328,7 +396,7 @@ $(function () {
         formData.append('file', $('#uploaderInput')[0].files[0]);
         formData.append('_token', token);
         $.ajax({
-            url: '../public/message_upload',
+            url: '../message_upload',
             type: 'POST',
             cache: false,
             data: formData,
@@ -352,7 +420,7 @@ $(function () {
         formData.append('_token', token);
         formData.append('type', msg_type.attr('data-values'));
         $.ajax({
-            url: "../public/message_upload",
+            url: "../message_upload",
             data: formData,
             type: 'POST',
             dataType: 'json',
@@ -380,7 +448,7 @@ $(function () {
         formData.append('_token', token);
         formData.append('type', msg_type.attr('data-values'));
         $.ajax({
-            url: "../public/message_upload",
+            url: "../message_upload",
             data: formData,
             type: 'POST',
             dataType: 'json',
@@ -482,11 +550,11 @@ $(function () {
                 'type': type,
                 'mediaid': wechat_media_id
             },
-            url: '../public/message_store',
+            url: '../message_store',
             success: function (result) {
                 if (result.statusCode === 200) {
                     $.alert('消息发送成功！', function () {
-                        window.location.href = '../public/message_center';
+                        window.location.href = '../message_center';
                     });
                 } else {
                     $.alert('消息发送失败，请稍后重试！');
@@ -505,7 +573,7 @@ function getdept() {
         $(this).nextAll().remove();
         $.ajax({
             type: 'GET',
-            url: '../public/message_dept/' + id,
+            url: '../message_dept/' + id,
             success: function (result) {
                 if (result.statusCode === 200) {
                     choose_box.html(result.message);

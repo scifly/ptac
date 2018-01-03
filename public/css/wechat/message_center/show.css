@@ -97,3 +97,225 @@ div.weui_tab_bd {
 .c-green {
     color: #1aad19!important;
 }
+
+.weui-popup__overlay{
+    opacity: 0.3 !important;
+}
+.homework .artic-head {
+    padding: 18px 11px 0;
+    position: relative;
+}
+.homework .artic-title {
+    font-size: 21px;
+    width: 100%;
+    display: inline-block;
+    float: left;
+}
+.white-over {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.comment-selfEdit-con {
+    height: 58px;
+    position: relative;
+    padding-left: 52px;
+}
+.edit-input {
+    height: 29px;
+    border: none;
+    background: #efeef3;
+    text-align: center;
+    line-height: 29px;
+    border-radius: 5px;
+    -webkit-border-radius:5px;
+    color: #bababc;
+    position: relative;
+    top: 5.9px;
+}
+.comment-selfEdit-con .head {
+    position: absolute;
+    top: 0;
+    left: 0;
+    top: 3px;
+    width: 35px;
+    height: 35px;
+    background-color: #ccc;
+    vertical-align: top;
+    margin-top: 0;
+    border-radius: 2px;
+    border-radius: 50%;
+    -webkit-border-radius: 50%;
+}
+.discuss_list {
+    margin-top: -5px;
+    font-size: 16px;
+    padding: 1px 0;
+    list-style: none;
+}
+.discuss_item:after {
+    content: "\200B";
+    display: block;
+    height: 0;
+    clear: both;
+}
+.discuss_item {
+    position: relative;
+    padding-left: 45px;
+    margin-top: 15px;
+}
+.discuss_item .user_info {
+    min-height: 20px;
+    overflow: hidden;
+}
+.discuss_item .nickname {
+    display: block;
+    font-weight: 400;
+    font-style: normal;
+    color: #727272;
+    width: 147px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    word-wrap: normal;
+    font-size: 16px;
+}
+.discuss_item .avatar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    top: 3px;
+    width: 35px;
+    height: 35px;
+    background-color: #ccc;
+    vertical-align: top;
+    margin-top: 0;
+    border-radius: 2px;
+    border-radius: 50%;
+    -webkit-border-radius: 50%;
+}
+.discuss_item .discuss_extra_info {
+    color: #8c8c8c;
+    font-size: 15px;
+}
+.discuss_item .discuss_message {
+    color: #3e3e3e;
+    line-height: 1.5;
+    position: relative;
+    padding-right: 20px;
+}
+.discuss_message_content {
+    position: relative;
+    word-wrap: break-word;
+    word-break: break-all;
+    font-size: 17px;
+    overflow: hidden;
+}
+.discuss_message .del-icon-btn {
+    position: absolute;
+    bottom: -10px;
+    right: 0;
+    display: inline-block;
+    height: 46px;
+    width: 35px;
+    text-align: right;
+    line-height: 46px;
+}
+.discuss_message .del-icon-btn span{
+    font-size: 14px;
+    color: #aaa;
+}
+.comment-content .comment-edit-con:before {
+    content: " ";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 110%;
+    height: 1px;
+    border-top: 1px solid #dadada;
+    -webkit-transform-origin: 0 0;
+    transform-origin: 0 0;
+    -webkit-transform: scaleY(0.5);
+    transform: scaleY(0.5);
+}
+.comment-content .comment-edit-con {
+    padding: 15px;
+    height: 23px;
+    text-align: center;
+    font-size: 17px;
+    position: relative;
+    line-height: 23px;
+}
+.weui_cells {
+    margin-top: 20px;
+    background-color: #fff;
+    line-height: 1.41176471;
+    font-size: 17px;
+    overflow: hidden;
+    position: relative;
+}
+.comment-content .weui_cells:before {
+    left: 17px;
+}
+.weui_cells:after, .weui_cells:before {
+    content: " ";
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    color: #d9d9d9;
+    -webkit-transform: scaleY(.5);
+    transform: scaleY(.5);
+}
+.weui_cells:before {
+    top: 0;
+    border-top: 1px solid #d9d9d9;
+    -webkit-transform-origin: 0 0;
+    transform-origin: 0 0;
+}
+.weui_cell {
+    padding: 10px 15px;
+    position: relative;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+}
+.weui_cell_primary {
+    -webkit-box-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+}
+.weui_textarea {
+    display: block;
+    border: 0;
+    resize: none;
+    width: 100%;
+    color: inherit;
+    font-size: 1em;
+    line-height: inherit;
+    outline: 0;
+    font-family: "微软雅黑";
+}
+.weui_textarea_counter {
+    color: #b2b2b2;
+    text-align: right;
+}
+.weui_cells:after {
+    bottom: 0;
+    border-bottom: 1px solid #d9d9d9;
+    -webkit-transform-origin: 0 100%;
+    transform-origin: 0 100%;
+}
+.weui_cells:after, .weui_cells:before {
+    content: " ";
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    color: #d9d9d9;
+    -webkit-transform: scaleY(.5);
+    transform: scaleY(.5);
+}

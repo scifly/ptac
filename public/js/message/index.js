@@ -1,8 +1,10 @@
-page.index('messages');
 page.initSelect2({
     templateResult: page.formatStateImg,
-    templateSelection: page.formatStateImg
+    templateSelection: page.formatStateImg,
+    language: "zh-CN",
 });
+page.index('messages');
+
 var $message = $('#message');
 var $objects = $('#objects');
 var $imageText = $('#imagetext');
@@ -20,6 +22,7 @@ var $send = $('#send');
 var $token = $('#csrf_token');
 var $addArticle = $('#add-article-url');
 var $fileCover = $('#file-cover');
+var $btn_cancelAttachment = $('.js-btn-close-Attachment');
 
 // 附件管理
 $addAttachment.on('click', function() {
@@ -31,7 +34,10 @@ $cancelAttachment.on('click',function () {
     $message.show();
     $objects.hide();
 });
-
+$btn_cancelAttachment.on('click',function () {
+    $message.show();
+    $objects.hide();
+});
 // 图文管理
 $addImageText.on('click', function() {
     $message.hide();
@@ -44,6 +50,7 @@ $cancelImageText.on('click',function () {
     $message.show();
     $imageText.hide();
 });
+
 $addVideo.on('click', function() {
     $message.hide();
     $video.show();
@@ -391,13 +398,13 @@ $send.on('click', function() {
         break;
 	case 'mpnews':
 	//图文
-	  	var articles = [{
+	  	var articles = {
 	  		title : $('.show_imagetext_title').text(),
 	  		content : $('.show_imagetext_content').html(),
 	  		author : $('.show_imagetext_author').val(),
 	  		content_source_url : $('.show_imagetext_content_source_url').val(),
 	  		thumb_media_id : $('.show_imagetext_pic_media_id').val(),
-	  	}];
+	  	};
 	  	content = {articles : articles};
         media_id = $('.show_imagetext_media_id').val();
         break;

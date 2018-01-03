@@ -4,7 +4,7 @@
             <i class="fa fa-globe"></i> 选择发送对象
         </h3>
         <div class="box-tools pull-right">
-            <i class="fa fa-close"></i>
+            <i class="fa fa-close js-btn-close-Attachment" style="cursor: pointer;"></i>
         </div>
     </div>
     <div class="box-body row">
