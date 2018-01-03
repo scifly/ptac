@@ -347,6 +347,7 @@ class Message extends Model {
 
                     }
                 }else{
+                    $message['msgtype'] = $data['type'];
                     switch ($data['type']) {
                         case 'text' :
                             $message['text'] = ['content' => $data['content']['text']];
@@ -358,7 +359,8 @@ class Message extends Model {
 
                         break;
                         case 'mpnews' :
-                            $message['mpnews'] = ['articles' => $data['content']['articles']];
+                            $i['articles'][] = $data['content']['articles'];
+                            $message['mpnews'] = $i;
                             $title = $data['content']['articles']['title'];
                             break;
                         case 'video' :
@@ -368,7 +370,7 @@ class Message extends Model {
 
                             break;
                     }
-                    $message['msgtype'] = $data['type'];
+
                     $status = json_decode(Wechat::sendMessage($token, $message));
                     $content = $message[$data['type']];
 
