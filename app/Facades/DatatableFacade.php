@@ -2,6 +2,7 @@
 namespace App\Facades;
 
 use App\Helpers\ControllerTrait;
+use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use DateTime;
 use Illuminate\Database\Eloquent\Model;
@@ -12,7 +13,7 @@ use Illuminate\Support\Facades\Request;
 
 class DatatableFacade extends Facade {
 
-    use ControllerTrait;
+    use ModelTrait;
 
     const DT_ON = '<i class="fa fa-circle text-green" title="已启用"></i>';
     const DT_OFF = '<i class="fa fa-circle text-gray" title="未启用"></i>';

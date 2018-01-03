@@ -106,7 +106,12 @@ class Event extends Model {
                 },
             ],
             ['db' => 'Subject.name', 'dt' => 7],
-            ['db' => 'Event.alertable', 'dt' => 8],
+            [
+                'db' => 'Event.alertable', 'dt' => 8,
+                'formatter' => function ($d,$row){
+                 return $d ? '是' : '否';
+                }
+            ],
             ['db' => 'User.realname', 'dt' => 9],
             ['db' => 'Event.updated_at', 'dt' => 10],
         ];
@@ -133,6 +138,7 @@ class Event extends Model {
         $condition = 'Event.enabled = 1';
 
         return Datatable::simple(self::getModel(), $columns, $joins, $condition);
+
     }
 
     /**

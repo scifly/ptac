@@ -5,7 +5,6 @@ namespace App\Models;
 use App\Events\EducatorImported;
 use App\Events\SchoolDeleted;
 use App\Facades\DatatableFacade as Datatable;
-use App\Helpers\ControllerTrait;
 use App\Helpers\ModelTrait;
 use App\Http\Requests\CustodianRequest;
 use App\Http\Requests\EducatorRequest;
@@ -57,7 +56,7 @@ use PHPExcel_Exception;
  */
 class Educator extends Model {
     
-    use ControllerTrait, ModelTrait;
+    use ModelTrait;
     
     const EXCEL_FILE_TITLE = [
         '姓名', '性别', '生日', '学校',
@@ -228,13 +227,67 @@ class Educator extends Model {
                     'enabled' => $user['enabled'],
                 ]);
                 # 创建教职员工
-                $educatorInputData = $request->input('educator');
-                $educator = self::create([
-                    'user_id' => $u->id,
-                    'school_id' => $educatorInputData['school_id'],
-                    'sms_quote' => 0,
-                    'enabled' => $user['enabled'],
-                ]);
+                if ($u->group_id != Group::whereName('学校')->first()->id) {
+                    $educatorInputData = $request->input('educator');
+                    $educator = self::create([
+                        'user_id' => $u->id,
+                        'school_id' => $educatorInputData['school_id'],
+                        'sms_quote' => 0,
+                        'enabled' => $user['enabled'],
+                    ]);
+                    # 保存班级科目绑定关系
+                    $classSubjectData = $request->input('classSubject');
+                    if ($classSubjectData['class_ids'] && $classSubjectData['subject_ids']) {
+                        $uniqueArray = [];
+                        foreach ($classSubjectData['class_ids'] as $index => $class) {
+                            $uniqueArray[] = [
+                                'class_id' => $class,
+                                'subject_id' => $classSubjectData['subject_ids'][$index],
+                            ];
+                        }
+                        $classSubjects = self::array_unique_fb($uniqueArray);
+                        foreach ($classSubjects as $key => $row) {
+                            if ($row['class_id'] != 0 && $row['class_id'] != 0) {
+                                EducatorClass::create([
+                                    'educator_id' => $educator->id,
+                                    'class_id' => $row['class_id'],
+                                    'subject_id' => $row['subject_id'],
+                                    'enabled' => $user['enabled'],
+                                ]);
+                            }
+                        }
+                    }
+                    if (isset($educatorInputData['team_id'])) {
+                        foreach ($educatorInputData['team_id'] as $key => $row) {
+                            EducatorTeam::create([
+                                'educator_id' => $educator->id,
+                                'team_id' => $row,
+                                'enabled' => $user['enabled'],
+                            ]);
+                        }
+                    }
+                    if ($classSubjectData) {
+                        $uniqueArray = [];
+                        foreach ($classSubjectData['class_ids'] as $index => $class) {
+                            $uniqueArray[] = [
+                                'class_id' => $class,
+                                'subject_id' => $classSubjectData['subject_ids'][$index],
+                            ];
+                        }
+                        $classSubjects = self::array_unique_fb($uniqueArray);
+                        foreach ($classSubjects as $key => $row) {
+                            if ($row['class_id'] != 0 && $row['class_id'] != 0) {
+                                EducatorClass::create([
+                                    'educator_id' => $educator->id,
+                                    'class_id' => $row['class_id'],
+                                    'subject_id' => $row['subject_id'],
+                                    'enabled' => $user['enabled'],
+                                ]);
+                            }
+                        }
+                    }
+                }
+
                 # 创建部门信息
                 $selectedDepartments = $request->input('selectedDepartments');
                 if (!empty($selectedDepartments)) {
@@ -247,64 +300,18 @@ class Educator extends Model {
                     }
                 }
                 # 当选择了学校角色没有选择 学校部门时
-                if ($u->group_id == Group::whereName('学校')->first()->id) {
+                $deptUser = DepartmentUser::whereDepartmentId(Group::whereName('学校')->first()->id)
+                    ->where('user_id', $u->id)
+                    ->first();
+                if ($u->group_id == Group::whereName('学校')->first()->id && empty($deptUser)) {
+
                     DepartmentUser::create([
                         'user_id' => $u->id,
                         'department_id' => School::find(School::id())->department_id,
                         'enabled' => $user['enabled'],
                     ]);
                 }
-                # 保存班级科目绑定关系
-                $classSubjectData = $request->input('classSubject');
-                if ($classSubjectData['class_ids'] && $classSubjectData['subject_ids']) {
-                    $uniqueArray = [];
-                    foreach ($classSubjectData['class_ids'] as $index => $class) {
-                        $uniqueArray[] = [
-                            'class_id' => $class,
-                            'subject_id' => $classSubjectData['subject_ids'][$index],
-                        ];
-                    }
-                    $classSubjects = self::array_unique_fb($uniqueArray);
-                    foreach ($classSubjects as $key => $row) {
-                        if ($row['class_id'] != 0 && $row['class_id'] != 0) {
-                            EducatorClass::create([
-                                'educator_id' => $educator->id,
-                                'class_id' => $row['class_id'],
-                                'subject_id' => $row['subject_id'],
-                                'enabled' => $user['enabled'],
-                            ]);
-                        }
-                    }
-                }
-                if (isset($educatorInputData['team_id'])) {
-                    foreach ($educatorInputData['team_id'] as $key => $row) {
-                        EducatorTeam::create([
-                            'educator_id' => $educator->id,
-                            'team_id' => $row,
-                            'enabled' => $user['enabled'],
-                        ]);
-                    }
-                }
-                if ($classSubjectData) {
-                    $uniqueArray = [];
-                    foreach ($classSubjectData['class_ids'] as $index => $class) {
-                        $uniqueArray[] = [
-                            'class_id' => $class,
-                            'subject_id' => $classSubjectData['subject_ids'][$index],
-                        ];
-                    }
-                    $classSubjects = self::array_unique_fb($uniqueArray);
-                    foreach ($classSubjects as $key => $row) {
-                        if ($row['class_id'] != 0 && $row['class_id'] != 0) {
-                            EducatorClass::create([
-                                'educator_id' => $educator->id,
-                                'class_id' => $row['class_id'],
-                                'subject_id' => $row['subject_id'],
-                                'enabled' => $user['enabled'],
-                            ]);
-                        }
-                    }
-                }
+
                 $mobiles = $request->input('mobile');
                 if ($mobiles) {
                     foreach ($mobiles as $k => $mobile) {
@@ -369,7 +376,6 @@ class Educator extends Model {
                     'realname' => $user['realname'],
                     'gender' => $user['gender'],
                     'avatar_url' => '00001.jpg',
-                    'userid' => '111111',
                     'wechatid' => $user['wechatid'],
                     'isleader' => 0,
                     'english_name' => $user['english_name'],

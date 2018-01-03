@@ -42,6 +42,6 @@
 <script src="{{ URL::asset('js/plugins/parsley/i18n/zh_cn.extra.js') }}"></script>
 <script src="{{ URL::asset('js/plugins/datatables/datatables.min.js') }}"></script>
 <script src="{{ URL::asset('js/plugins/datatables/dataTables.checkboxes.min.js') }}"></script>
-@isset($message)
-    <script src="{{ URL::asset($message) }}"></script>
+@isset($messages)
+    <script src="{{ URL::asset($messages) }}"></script>
 @endisset

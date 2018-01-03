@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Facades\Wechat;
+use App\Helpers\ModelTrait;
 use App\Http\Requests\MessageRequest;
 use Carbon\Carbon;
 use Eloquent;
@@ -71,6 +72,8 @@ use Illuminate\Support\Facades\Storage;
  */
 class Message extends Model {
 
+    use ModelTrait;
+    
     protected $table = 'messages';
 
     protected $fillable = [
@@ -275,6 +278,24 @@ class Message extends Model {
 
         $obj = explode(',', $data['departIds']);
         if ($obj) {
+
+            $apps = App::whereIn('id', $data['app_ids'])->get()->toArray();
+            if (!$apps) {
+                $result = [
+                    'statusCode' => 0,
+                    'message' => '应用不存在，请刷新页面！',
+                ];
+                return response()->json($result);
+            }
+            $corp = Corp::where('name', '万浪软件')->first();
+            if (!$corp) {
+                $result = [
+                    'statusCode' => 0,
+                    'message' => '企业号不存在，请刷新页面！',
+                ];
+                return response()->json($result);
+            }
+
             $depts = [];
             $users = [];
             $us = [];
@@ -290,20 +311,6 @@ class Message extends Model {
             $userItems = implode('|', $us);
             $touser = implode('|', $users);
             $toparty = implode('|', $depts);
-            $apps = App::whereIn('id', $data['app_ids'])->get()->toArray();
-            if (!$apps) {
-                $result = [
-                    'statusCode' => 0,
-                    'message' => '应用不存在，请刷新页面！',
-                ];
-            }
-            $corp = Corp::where('name', '万浪软件')->first();
-            if (!$corp) {
-                $result = [
-                    'statusCode' => 0,
-                    'message' => '企业号不存在，请刷新页面！',
-                ];
-            }
             # 推送的所有用户以及电话
             $userDatas = $this->getMobiles($us, $depts);
             $title = '';
@@ -334,10 +341,13 @@ class Message extends Model {
                     } else {
                         $result = [
                             'statusCode' => 0,
-                            'message' => '出错！',
+                            'message' => '短信推送失败！',
                         ];
+                        return response()->json($result);
+
                     }
                 }else{
+                    $message['msgtype'] = $data['type'];
                     switch ($data['type']) {
                         case 'text' :
                             $message['text'] = ['content' => $data['content']['text']];
@@ -349,18 +359,18 @@ class Message extends Model {
 
                         break;
                         case 'mpnews' :
-                            $message['mpnews'] = ['articles' => $data['content']['articles']];
+                            $i['articles'][] = $data['content']['articles'];
+                            $message['mpnews'] = $i;
                             $title = $data['content']['articles']['title'];
                             break;
                         case 'video' :
                             $message['video'] = $data['content']['video'];
                             $title = $data['content']['video']['title'];
-
                             break;
 
                             break;
                     }
-                    $message['msgtype'] = $data['type'];
+
                     $status = json_decode(Wechat::sendMessage($token, $message));
                     $content = $message[$data['type']];
 
@@ -372,8 +382,9 @@ class Message extends Model {
                     } else {
                         $result = [
                             'statusCode' => 0,
-                            'message' => '出错！',
+                            'message' => '消息发送失败！',
                         ];
+                        return response()->json($result);
                     }
 
                 }
@@ -449,6 +460,7 @@ class Message extends Model {
      * @return array
      */
     public function getMobiles($touser, $toparty) {
+        
         $mobiles = [];
         $userDatas = [];
         if ($touser) {

@@ -2,27 +2,21 @@
 
 namespace App\Http\ViewComposers;
 
-use App\Helpers\ControllerTrait;
+use App\Helpers\ModelTrait;
 use App\Models\PollQuestionnaireSubject;
 use Illuminate\Contracts\View\View;
 
 class PqChoiceComposer {
-    use ControllerTrait;
-    protected $pqs;
-
-    public function __construct(PollQuestionnaireSubject $pqs) {
-
-        $this->pqs = $pqs;
-
-    }
+    
+    use ModelTrait;
 
     public function compose(View $view) {
 
         $view->with([
-            'pqs' => $this->pqs->pluck('subject', 'id'),
+            'pqs' => PollQuestionnaireSubject::pluck('subject', 'id'),
             'uris' => $this->uris()
-
         ]);
+        
     }
 
 }

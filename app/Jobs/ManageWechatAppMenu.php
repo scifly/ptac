@@ -12,8 +12,6 @@ use Illuminate\Queue\SerializesModels;
 
 class ManageWechatAppMenu implements ShouldQueue {
 
-    use ControllerTrait;
-    
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     
     protected $app;

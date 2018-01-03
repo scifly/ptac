@@ -15,7 +15,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Mockery\Exception;
+use Exception;
 
 class ManageUpdateStudent implements ShouldQueue {
     
@@ -191,10 +191,11 @@ class ManageUpdateStudent implements ShouldQueue {
                 }
                 
             });
-            return is_null($exception) ? true : $exception;
-        } catch (Exception $e) {
-            return false;
+        }catch (Exception $e) {
+            throw $e;
         }
+
+        return true;
         
     }
 }

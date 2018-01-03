@@ -33,37 +33,37 @@ Route::get('pages/{id}', 'HomeController@menu');
 // 教职员工
 Route::group(['prefix' => 'educators'], routes('EducatorController'));
 Route::group(['prefix' => 'educators'], function () {
-    $ctlr = 'EducatorController';
-    Route::get('recharge/{id}', $ctlr . '@recharge');
-    Route::put('rechargeStore/{id}', $ctlr . '@rechargeStore');
-    Route::post('edit/{id}', $ctlr . '@edit');
-    Route::post('create', $ctlr . '@create');
-    Route::get('export', $ctlr . '@export');
-    Route::post('import', $ctlr . '@import');
+    $c = 'EducatorController';
+    Route::get('recharge/{id}', $c . '@recharge');
+    Route::put('rechargeStore/{id}', $c . '@rechargeStore');
+    Route::post('edit/{id}', $c . '@edit');
+    Route::post('create', $c . '@create');
+    Route::get('export', $c . '@export');
+    Route::post('import', $c . '@import');
 });
 // 监护人
 Route::group(['prefix' => 'custodians'], routes('CustodianController'));
 Route::group(['prefix' => 'custodians'], function () {
-    $ctlr = 'CustodianController';
-    Route::post('edit/{id}', $ctlr . '@edit');
-    Route::post('create', $ctlr . '@create');
-    Route::get('export', $ctlr . '@export');
-    // Route::any('relationship', $ctlr . '@relationship');
+    $c = 'CustodianController';
+    Route::post('edit/{id}', $c . '@edit');
+    Route::post('create', $c . '@create');
+    Route::get('export', $c . '@export');
+    // Route::any('relationship', $c . '@relationship');
 });
 // 学生
 Route::group(['prefix' => 'students'], routes('StudentController'));
 Route::group(['prefix' => 'students'], function () {
-    $ctlr = 'StudentController';
-    Route::post('edit/{id}', $ctlr . '@edit');
-    Route::post('create', $ctlr . '@create');
-    Route::post('import', $ctlr . '@import');
-    Route::get('export', $ctlr . '@export');
+    $c = 'StudentController';
+    Route::post('edit/{id}', $c . '@edit');
+    Route::post('create', $c . '@create');
+    Route::post('import', $c . '@import');
+    Route::get('export', $c . '@export');
 });
 // 用户
 Route::group(['prefix' => 'users'], routes('UserController'));
 Route::group(['prefix' => 'users'], function () {
-    $ctlr = 'UserController';
-    Route::get('event', $ctlr . '@event');
+    $c = 'UserController';
+    Route::get('event', $c . '@event');
 });
 Route::post('users/upload_ava/{id}', 'UserController@uploadAvatar');
 /** 成绩管理 */
@@ -73,34 +73,34 @@ Route::group(['prefix' => 'exam_types'], routes('ExamTypeController'));
 // 成绩管理 - 成绩录入/导入.总成绩录入/导入.成绩统计项设置
 Route::group(['prefix' => 'scores'], routes('ScoreController'));
 Route::group(['prefix' => 'scores'], function () {
-    $ctlr = 'ScoreController';
-    Route::get('statistics/{examId}', $ctlr . '@statistics');
-    Route::get('export/{examId}', $ctlr . '@export');
-    Route::get('import', $ctlr . '@import');
+    $c = 'ScoreController';
+    Route::get('statistics/{examId}', $c . '@statistics');
+    Route::get('export/{examId}', $c . '@export');
+    Route::get('import', $c . '@import');
 });
 Route::group(['prefix' => 'score_totals'], function () {
-    $ctlr = 'ScoreTotalController';
-    Route::get('index', $ctlr . '@index');
-    Route::get('show/{id}', $ctlr . '@show');
-    Route::get('statistics/{examId}', $ctlr . '@statistics');
+    $c = 'ScoreTotalController';
+    Route::get('index', $c . '@index');
+    Route::get('show/{id}', $c . '@show');
+    Route::get('statistics/{examId}', $c . '@statistics');
 });
 Route::group(['prefix' => 'score_ranges'], routes('ScoreRangeController'));
 Route::group(['prefix' => 'score_ranges'], function () {
-    $ctlr = 'ScoreRangeController';
-    Route::get('show_statistics', $ctlr . '@showStatistics');
-    Route::post('statistics', $ctlr . '@statistics');
+    $c = 'ScoreRangeController';
+    Route::get('show_statistics', $c . '@showStatistics');
+    Route::post('statistics', $c . '@statistics');
 });
 // 成绩统计/打印
 // 成绩发布
 // Route::group(['prefix' => 'scoreSend'], function () {
-//     $ctlr = 'Score_SendController';
-//     Route::get('/', $ctlr . '@index');
-//     Route::get('index', $ctlr . '@index@index');
-//     Route::Post('getgrade/{id}', $ctlr . '@getGrade');
-//     Route::Post('getclass/{id}', $ctlr . '@getClass');
-//     Route::Post('getexam/{id}', $ctlr . '@getExam');
-//     Route::Post('getsubject/{id}', $ctlr . '@getSubject');
-//     Route::post('preview/{examId}/{classId}/{subjectIds}/{itemId}', $ctlr . '@preview');
+//     $c = 'Score_SendController';
+//     Route::get('/', $c . '@index');
+//     Route::get('index', $c . '@index@index');
+//     Route::Post('getgrade/{id}', $c . '@getGrade');
+//     Route::Post('getclass/{id}', $c . '@getClass');
+//     Route::Post('getexam/{id}', $c . '@getExam');
+//     Route::Post('getsubject/{id}', $c . '@getSubject');
+//     Route::post('preview/{examId}/{classId}/{subjectIds}/{itemId}', $c . '@preview');
 // });
 /** 考勤管理 */
 // 考勤设置 - 考勤时段设置.考勤机设置
@@ -116,10 +116,10 @@ Route::group(['prefix' => 'student_attendances'], function (){
 // 课程表设置
 Route::group(['prefix' => 'events'], routes('EventController'));
 Route::group(['prefix' => 'events'], function () {
-    $ctlr = 'EventController';
-    Route::get('calendar_events/{id}', $ctlr . '@calendarEvents');
-    Route::post('drag_events', $ctlr . '@dragEvents');
-    Route::post('update_time', $ctlr . '@updateTime');
+    $c = 'EventController';
+    Route::get('calendar_events/{id}', $c . '@calendarEvents');
+    Route::post('drag_events', $c . '@dragEvents');
+    Route::post('update_time', $c . '@updateTime');
 });
 /** 自媒体管理 */
 // 微网站设置 - 微网站管理.网站模块管理.文章管理
@@ -133,16 +133,16 @@ Route::get('wsm_articles/detail/{id}', 'WsmArticleController@detail');
 /** 投票问卷 */
 // 发起
 Route::group(['prefix' => 'poll_questionnaires'], routes('PollQuestionnaireController'));
-Route::group(['prefix' => 'pq_subjects'], routes('PqSubjectController'));
-Route::group(['prefix' => 'pq_choices'], routes('PqChoiceController'));
+Route::group(['prefix' => 'poll_questionnaire_subjects'], routes('PollQuestionnaireSubjectController'));
+Route::group(['prefix' => 'poll_questionnaire_subject_choices'], routes('PollQuestionnaireSubjectChoiceController'));
 // 参与
 // 查询/统计
-Route::group(['prefix' => 'pollQuestionnaireParticpation'], function () {
-    $ctlr = 'PqParticipantController';
-    Route::get('/', $ctlr . '@index');
-    Route::get('index', $ctlr . '@index');
-    Route::post('show/{id}', $ctlr . '@show');
-    Route::put('update', $ctlr . '@update')->name("pqp_update");
+Route::group(['prefix' => 'poll_questionnaire_participants'], function () {
+    $c = 'PollQuestionnaireParticipantController';
+    Route::get('/', $c . '@index');
+    Route::get('index', $c . '@index');
+    Route::post('show/{id}', $c . '@show');
+    Route::put('update', $c . '@update')->name("pqp_update");
 });
 /** 移动办公 */
 // 审批设置 - 流程设置.流程类型设置.流程步骤设置
@@ -152,29 +152,28 @@ Route::group(['prefix' => 'procedure_steps'], routes('ProcedureStepController'))
 Route::get('procedure_steps/getSchoolEducators/{id}', 'ProcedureStepController@getSchoolEducators');
 // 审批发起/处理
 Route::group(['prefix' => 'procedure_logs'], function () {
-    $ctlr = 'ProcedureLogController';
-    Route::get('index', $ctlr . '@index');
-    Route::get('pending', $ctlr . '@pending');
-    Route::get('show/{firstLogId}    ', $ctlr . '@show');
-    Route::get('create', $ctlr . '@create');
-    Route::post('store', $ctlr . '@store');
-    Route::post('decision', $ctlr . '@decision');
-    Route::post('upload_medias', $ctlr . '@uploadMedias');
-    Route::get('delete_medias/{id}', $ctlr . '@deleteMedias');
+    $c = 'ProcedureLogController';
+    Route::get('index', $c . '@index');
+    Route::get('pending', $c . '@pending');
+    Route::get('show/{firstLogId}', $c . '@show');
+    Route::get('create', $c . '@create');
+    Route::post('store', $c . '@store');
+    Route::post('decision', $c . '@decision');
+    Route::post('uploadMedias', $c . '@uploadMedias');
+    Route::get('deleteMedias/{id}', $c . '@deleteMedias');
 });
 // 会议助手
 Route::group(['prefix' => 'conference_rooms'], routes('ConferenceRoomController'));
 Route::group(['prefix' => 'conference_queues'], routes('ConferenceQueueController'));
 Route::group(['prefix' => 'conference_participants'], function () {
-    $ctlr = 'ConferenceParticipantController';
-    Route::get('index', $ctlr . '@index');
-    Route::post('store', $ctlr . '@store');
-    Route::get('show/{id}', $ctlr . '@show');
+    $c = 'ConferenceParticipantController';
+    Route::get('index', $c . '@index');
+    Route::post('store', $c . '@store');
+    Route::get('show/{id}', $c . '@show');
 });
 // 申诉
 /** 用户中心 */
 Route::get('users/profile','UserController@profile');
-// Route::put('users/profile','UserController@profile');
 Route::get('users/reset','UserController@reset');
 Route::post('users/reset','UserController@reset');
 Route::get('users/messages','UserController@messages');
@@ -183,29 +182,29 @@ Route::get('users/events','UserController@event');
 // 消息中心
 Route::group(['prefix' => 'messages'], routes('MessageController'));
 Route::group(['prefix' => 'messages'], function () {
-    $ctlr = 'MessageController';
-    Route::post('get_depart_users', $ctlr . '@getDepartmentUsers');
-    Route::post('index', $ctlr . '@index');
-    Route::get('send', $ctlr . '@send');
-    Route::any('uploadFile', $ctlr . '@uploadFile');
+    $c = 'MessageController';
+    Route::post('get_depart_users', $c . '@getDepartmentUsers');
+    Route::post('index', $c . '@index');
+    Route::get('send', $c . '@send');
+    Route::any('uploadFile', $c . '@uploadFile');
 
 });
 // 日历
 // 个人信息
 // Route::group(['prefix' => 'personal_infos'], function () {
-//     $ctlr = 'PersonalInfoController';
-//     Route::get('index', $ctlr . '@index');
-//     Route::put('update/{id}', $ctlr . '@update');
-//     Route::post('upload_ava/{id}', $ctlr . '@uploadAvatar');
+//     $c = 'PersonalInfoController';
+//     Route::get('index', $c . '@index');
+//     Route::put('update/{id}', $c . '@update');
+//     Route::post('upload_ava/{id}', $c . '@uploadAvatar');
 // });
 /** 订单管理 */
 Route::group(['prefix' => 'orders'], function () {
-    $ctlr = 'OrderController';
-    Route::get('index', $ctlr . '@index');
-    Route::post('store', $ctlr . '@store');
-    Route::get('show/{id}', $ctlr . '@show');
-    Route::put('update/{id}', $ctlr . '@update');
-    Route::delete('delete/{id}', $ctlr . '@destroy');
+    $c = 'OrderController';
+    Route::get('index', $c . '@index');
+    Route::post('store', $c . '@store');
+    Route::get('show/{id}', $c . '@show');
+    Route::put('update/{id}', $c . '@update');
+    Route::delete('delete/{id}', $c . '@destroy');
 });
 Route::group(['prefix' => 'combo_types'], routes('ComboTypeController'));
 /** 系统设置 */
@@ -249,10 +248,10 @@ Route::group(['prefix' => 'alert_types'], routes('AlertTypeController'));
 Route::group(['prefix' => 'department_types'], routes('DepartmentTypeController'));
 Route::group(['prefix' => 'departments'], routes('DepartmentController'));
 Route::group(['prefix' => 'departments'], function () {
-    $ctlr = 'DepartmentController';
-    Route::post('index', $ctlr . '@index');
-    Route::post('move/{id}/{parentId?}', $ctlr . '@move');
-    Route::post('sort', $ctlr . '@sort');
+    $c = 'DepartmentController';
+    Route::post('index', $c . '@index');
+    Route::post('move/{id}/{parentId?}', $c . '@move');
+    Route::post('sort', $c . '@sort');
 });
 Route::group(['prefix' => 'companies'], routes('CompanyController'));
 Route::group(['prefix' => 'corps'], routes('CorpController'));
@@ -261,19 +260,19 @@ Route::group(['prefix' => 'actions'], routes('ActionController'));
 Route::group(['prefix' => 'tabs'], routes('TabController'));
 Route::group(['prefix' => 'menus'], routes('MenuController'));
 Route::group(['prefix' => 'menus'], function () {
-    $ctlr = 'MenuController';
-    Route::post('index', $ctlr . '@index');
-    Route::post('sort', $ctlr . '@sort');
-    Route::post('move/{id}/{parentId?}', $ctlr . '@move');
-    Route::get('menutabs/{id}', $ctlr . '@menuTabs');
-    Route::post('ranktabs/{id}', $ctlr . '@rankTabs');
+    $c = 'MenuController';
+    Route::post('index', $c . '@index');
+    Route::post('sort', $c . '@sort');
+    Route::post('move/{id}/{parentId?}', $c . '@move');
+    Route::get('menutabs/{id}', $c . '@menuTabs');
+    Route::post('ranktabs/{id}', $c . '@rankTabs');
 });
 // 管理员
 Route::group(['prefix' => 'operators'], routes('OperatorController'));
 Route::group(['prefix' => 'operators'], function() {
-    $ctlr = 'OperatorController';
-    Route::post('create', $ctlr . '@create');
-    Route::post('edit/{id}', $ctlr . '@edit');
+    $c = 'OperatorController';
+    Route::post('create', $c . '@create');
+    Route::post('edit/{id}', $c . '@edit');
 });
 
 # --------------------------------------------------------------------------------
@@ -281,6 +280,7 @@ Route::group(['prefix' => 'operators'], function() {
 Route::get('message_center', 'Wechat\MessageCenterController@index');
 Route::post('message_center', 'Wechat\MessageCenterController@index');
 Route::get('message_create', 'Wechat\MessageCenterController@create');
+Route::post('message_create', 'Wechat\MessageCenterController@create');
 Route::post('message_store', 'Wechat\MessageCenterController@store');
 Route::get('message_show/{id}', 'Wechat\MessageCenterController@show');
 Route::get('message_update/{id}', 'Wechat\MessageCenterController@updateStatus');
@@ -294,3 +294,6 @@ Route::delete('message_replaydel/{id}', 'Wechat\MessageCenterController@replayDe
 Route::get('homework', 'Wechat\HomeWorkController@index');
 //微网站
 Route::get('wapsite', 'Wechat\MobileSiteController@index');
+// 考勤
+Route::get('attendance_records', 'Wechat\AttendanceController@index');
+

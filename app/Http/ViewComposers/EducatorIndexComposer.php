@@ -2,7 +2,7 @@
 
 namespace App\Http\ViewComposers;
 
-use App\Helpers\ControllerTrait;
+use App\Helpers\ModelTrait;
 use App\Models\Corp;
 use App\Models\Department;
 use App\Models\Grade;
@@ -13,16 +13,8 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 
 class EducatorIndexComposer {
-    
-    use ControllerTrait;
-    
-    protected $user;
 
-    public function __construct(User $user) {
-
-        $this->user = $user;
-
-    }
+    use ModelTrait;
 
     public function compose(View $view) {
 
@@ -35,7 +27,7 @@ class EducatorIndexComposer {
                 ->where('enabled', 1)
                 ->pluck('name', 'id');
         } else {
-            $topDepartmentId = $this->user->topDeptId();
+            $topDepartmentId = User::topDeptId();
             $departmentType = Department::whereId($topDepartmentId)->first()->departmentType;
             switch ($departmentType->name) {
                 case '根':

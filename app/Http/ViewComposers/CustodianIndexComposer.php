@@ -2,18 +2,12 @@
 
 namespace App\Http\ViewComposers;
 
-use App\Helpers\ControllerTrait;
-use App\Models\Grade;
-use App\Models\Group;
-use App\Models\School;
-use App\Models\Squad;
-use App\Models\Student;
-use App\Models\User;
+use App\Helpers\ModelTrait;
 use Illuminate\Contracts\View\View;
 
 class CustodianIndexComposer {
 
-    use ControllerTrait;
+    use ModelTrait;
 
     public function compose(View $view) {
 

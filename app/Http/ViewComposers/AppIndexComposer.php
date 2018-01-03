@@ -2,7 +2,7 @@
 
 namespace App\Http\ViewComposers;
 
-use App\Helpers\ControllerTrait;
+use App\Helpers\ModelTrait;
 use App\Models\App;
 use App\Models\Corp;
 use Carbon\Carbon;
@@ -11,9 +11,7 @@ use Illuminate\Support\Facades\Auth;
 
 class AppIndexComposer {
 
-    use ControllerTrait;
-    
-    public function __construct() { }
+    use ModelTrait;
 
     public function compose(View $view) {
 

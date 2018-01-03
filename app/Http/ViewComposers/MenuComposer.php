@@ -2,23 +2,15 @@
 
 namespace App\Http\ViewComposers;
 
-use App\Helpers\ControllerTrait;
+use App\Helpers\ModelTrait;
 use App\Models\Icon;
 use App\Models\Tab;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 
 class MenuComposer {
-    
-    use ControllerTrait;
-    
-    protected $icon;
 
-    public function __construct(Icon $icon) {
-
-        $this->icon = $icon;
-
-    }
+    use ModelTrait;
 
     public function compose(View $view) {
 
@@ -44,7 +36,7 @@ class MenuComposer {
         }
         $view->with([
             'tabs' => $tabs,
-            'icons' => $this->icon->icons(),
+            'icons' => Icon::icons(),
             'uris' => $this->uris()
         ]);
 
