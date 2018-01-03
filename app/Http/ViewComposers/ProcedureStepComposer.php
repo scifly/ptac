@@ -2,25 +2,21 @@
 
 namespace App\Http\ViewComposers;
 
-use App\Helpers\ControllerTrait;
+use App\Helpers\ModelTrait;
 use App\Models\Procedure;
 use Illuminate\Contracts\View\View;
 
 class ProcedureStepComposer {
-    use ControllerTrait;
-    protected $procedures;
-
-    public function __construct(Procedure $procedures) {
-        $this->procedures = $procedures;
-    }
+    
+    use ModelTrait;
 
     public function compose(View $view) {
 
         $view->with([
-            'procedures' => $this->procedures->pluck('name', 'id'),
+            'procedures' => Procedure::pluck('name', 'id'),
             'uris' => $this->uris()
-
         ]);
+        
     }
 
 }

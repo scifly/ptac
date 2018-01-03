@@ -2,6 +2,7 @@
 
 namespace App\Http\ViewComposers;
 
+use App\Helpers\ModelTrait;
 use App\Models\Corp;
 use App\Models\School;
 use Illuminate\Contracts\View\View;
@@ -9,13 +10,7 @@ use Illuminate\Support\Facades\Auth;
 
 class GroupCreateComposer {
 
-    protected $school;
-
-    public function __construct(School $school) {
-
-        $this->school = $school;
-
-    }
+    use ModelTrait;
 
     public function compose(View $view) {
 
@@ -24,20 +19,24 @@ class GroupCreateComposer {
         $schools = [];
         switch ($group) {
             case '运营':
-                $schools = School::whereEnabled(1)->pluck('id', 'name');
+                $schools = School::whereEnabled(1)->pluck('name', 'id');
                 break;
             case '企业':
                 $corpId = Corp::whereDepartmentId($user->topDeptId())->first()->id;
-                $schools = School::whereCorpId($corpId)->where('enabled', 1)->pluck('id', 'name');
+                $schools = School::whereCorpId($corpId)->where('enabled', 1)->pluck('name', 'id');
                 break;
             case '学校':
                 $schools = School::whereDepartmentId($user->topDeptId())
-                    ->first()->pluck('id', 'name');
+                    ->first()->pluck('name', 'id');
                 break;
             default:
                 break;
         }
-        $view->with(['schools' => $schools]);
+
+        $view->with([
+            'schools' => $schools,
+            'uris' => $this->uris()
+        ]);
 
     }
 

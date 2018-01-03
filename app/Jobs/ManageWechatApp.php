@@ -2,7 +2,6 @@
 namespace App\Jobs;
 
 use App\Facades\Wechat;
-use App\Helpers\ControllerTrait;
 use App\Models\App;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -12,8 +11,6 @@ use Illuminate\Queue\SerializesModels;
 
 class ManageWechatApp implements ShouldQueue {
 
-    use ControllerTrait;
-    
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     
     protected $app;

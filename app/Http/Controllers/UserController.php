@@ -1,17 +1,13 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Http\Requests\UserRequest;
 use App\Models\Event;
-use App\Models\Menu;
 use App\Models\Message;
 use App\Models\User;
-use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
-use Illuminate\Support\Facades\Session;
 use Throwable;
 
 /**
@@ -22,12 +18,12 @@ use Throwable;
  */
 class UserController extends Controller {
     
-    function __construct(User $user, Menu $menu) {
+    function __construct() {
         
         $this->middleware(['auth', 'checkrole']);
         
     }
-    
+
 
     /**
      * 修改个人信息
@@ -61,6 +57,7 @@ class UserController extends Controller {
         }
 
         return $this->output();
+
     }
     
     /**
@@ -72,6 +69,7 @@ class UserController extends Controller {
         if (Request::get('draw')) {
             return response()->json(Message::datatable());
         }
+
         return $this->output();
 
     }
@@ -81,11 +79,15 @@ class UserController extends Controller {
      * @throws Throwable
      */
     public function event(){
+
         if (Request::get('draw')) {
             return response()->json(Event::datatable());
         }
+
         return $this->output();
+
     }
+
     /**
      * 上传用户头像
      *

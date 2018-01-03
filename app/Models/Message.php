@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Facades\Wechat;
+use App\Helpers\ModelTrait;
 use App\Http\Requests\MessageRequest;
 use Carbon\Carbon;
 use Eloquent;
@@ -71,6 +72,8 @@ use Illuminate\Support\Facades\Storage;
  */
 class Message extends Model {
 
+    use ModelTrait;
+    
     protected $table = 'messages';
 
     protected $fillable = [
@@ -455,6 +458,7 @@ class Message extends Model {
      * @return array
      */
     public function getMobiles($touser, $toparty) {
+        
         $mobiles = [];
         $userDatas = [];
         if ($touser) {

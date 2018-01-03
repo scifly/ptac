@@ -4,7 +4,6 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="csrf_token" content="{{ csrf_token() }}" id="csrf_token">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>家校通</title>
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
@@ -24,7 +23,7 @@
     <link rel="stylesheet"
           href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
     <style>
-        .box.box-solid.box-default>.box-header { background-color: #f4f4f4; }
+        .box.box-solid.box-default > .box-header { background-color: #f4f4f4; }
         .box.box-solid.box-default { border: 1px solid #f4f4f4; }
     </style>
 </head>
@@ -51,5 +50,7 @@
 <script src="{{ URL::asset('js/plugins/parsley/i18n/zh_cn.js') }}"></script>
 <script src="{{ URL::asset('js/plugins/parsley/i18n/zh_cn.extra.js') }}"></script>
 <script src="{{ URL::asset($js) }}"></script>
+<script src="{{ URL::asset('js/plugins/select2/js/i18n/zh-CN.js') }}"></script>
+
 </body>
 </html>
