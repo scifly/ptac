@@ -126,7 +126,28 @@ class MessageCenterController extends Controller {
 
         // $userId = Session::get('userId');
         if(Request::isMethod('post')){
-            $keywords = Request::get('keyword');
+            $keywords = Request::get('keywords');
+            if (empty($keywords)){
+                $departmentId = 4;
+                #教师可发送消息
+                // #取的和教师关联的学校的部门id
+                // $user = $this->user->where('userid', $userId)->first();
+                // $educator = Educator::where('user_id',$user->id)->first();
+                // $school = $educator->school;
+                // $departmentId = Department::where('name',$school->name)->first()->id;
+                $departments = Department::where('parent_id', $departmentId)->get();
+                $department = Department::whereId($departmentId)->first();
+                $users = $department->users;
+                return response()->json([
+                    'department' => $department,
+                    'departments'=>$departments,
+                    'user'=> $users
+                ]);
+            }
+            $users = User::where('realname', 'like', '%' . $keywords . '%')->get();
+            if($users){
+                return response()->json(['statusCode'=> 200, 'user'=> $users]);
+            }
         }
         $departmentId = 4;
         #教师可发送消息
@@ -138,7 +159,7 @@ class MessageCenterController extends Controller {
         $departments = Department::where('parent_id', $departmentId)->get();
         $department = Department::whereId($departmentId)->first();
         $users = $department->users;
-        
+
         return view('wechat.message_center.create', [
             'department' => $department,
             'departments' => $departments,

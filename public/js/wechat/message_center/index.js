@@ -47,66 +47,71 @@ $("#searchInput").bind("input propertychange change",function(event){
   var keywords = $(this).val();
   var type = $('.weui-bar__item--on').attr('data-type');
     $('.weui-popup__container .weui-tab__bd-item .list-layout').html('');
-  $.ajax({
-      type: 'post',
-      dataType: 'json',
-      data: {keywords:keywords,type:type,_token:$('#csrf_token').attr('content')},
-      url: 'message_center',
-      success: function ($data) {
-          var str = '';
-          if($data.type === 'send'){
-              if($data.sendMessages.length !== 0){
-                  for(var i=0 ; i< $data.sendMessages.length; i++){
-                      var data = $data.sendMessages[i];
-                      str += '<div class="table-list ">'+
-                          '<div class="line"></div>'+
-                          '<div class="teacher-list-box glayline">'+
-                          '<div class="teacher-work-box">'+
-                          '<a class="teacher-work-head" style="color:#000" href="message_show/'+data.id+'">'+
-                          '<div class="titleinfo">'+
-                          '<div class="titleinfo-head">'+
-                          '<div class="titleinfo-head-left fl">'+
-                          '<div class="title ml12">'+ data.title +'</div>'+
-                          '<div class="title-info ml12">'+ data.r_user_id+'</div>'+
-                          '</div>'+
-                          '<span class="worktime">'+ data.created_at.substr(0,10);
-                      if(data.sent === 1){
-                          str +='<span class="info-status green">已发送</span>';
-                      }else{
-                          str +='<span class="info-status green">未发送</span>';
-                      }
-                      str +='</span> </div> </div> </a> </div> </div> </div>';
+    if(keywords === ''){
+        $('.weui-popup__container .weui-tab__bd-item .list-layout').html('');
+    }else{
+        $.ajax({
+            type: 'post',
+            dataType: 'json',
+            data: {keywords:keywords,type:type,_token:$('#csrf_token').attr('content')},
+            url: 'message_center',
+            success: function ($data) {
+                var str = '';
+                if($data.type === 'send'){
+                    if($data.sendMessages.length !== 0){
+                        for(var i=0 ; i< $data.sendMessages.length; i++){
+                            var data = $data.sendMessages[i];
+                            str += '<div class="table-list ">'+
+                                '<div class="line"></div>'+
+                                '<div class="teacher-list-box glayline">'+
+                                '<div class="teacher-work-box">'+
+                                '<a class="teacher-work-head" style="color:#000" href="message_show/'+data.id+'">'+
+                                '<div class="titleinfo">'+
+                                '<div class="titleinfo-head">'+
+                                '<div class="titleinfo-head-left fl">'+
+                                '<div class="title ml12">'+ data.title +'</div>'+
+                                '<div class="title-info ml12">'+ data.r_user_id+'</div>'+
+                                '</div>'+
+                                '<span class="worktime">'+ data.created_at.substr(0,10);
+                            if(data.sent === 1){
+                                str +='<span class="info-status green">已发送</span>';
+                            }else{
+                                str +='<span class="info-status green">未发送</span>';
+                            }
+                            str +='</span> </div> </div> </a> </div> </div> </div>';
 
-                  }
-                  $('.weui-popup__container .weui-tab__bd-item .list-layout').html(str);
-              }else{
-                  $('.weui-popup__container .weui-tab__bd-item .list-layout').html('');
-              }
-          }else if($data.type === 'receive'){
-              if($data.receiveMessages.length !== 0){
-                  for(var i=0 ; i< $data.receiveMessages.length; i++){
-                      var data = $data.receiveMessages[i];
-                      str += '<div class="table-list ">'+
-                          '<div class="line"></div>'+
-                          '<div class="teacher-list-box glayline">'+
-                          '<div class="teacher-work-box">'+
-                          '<a class="teacher-work-head" style="color:#000" href="message_show/'+data.id+'">'+
-                          '<div class="titleinfo">'+
-                          '<div class="titleinfo-head">'+
-                          '<div class="titleinfo-head-left fl">'+
-                          '<div class="title ml12">'+ data.title +'</div>'+
-                          '<div class="title-info ml12">'+ data.s_user_id+'</div>'+
-                          '</div>'+
-                          '<span class="worktime">'+ data.created_at.substr(0,10)+
-                         '</span></div></div></a></div></div></div>';
+                        }
+                        $('.weui-popup__container .weui-tab__bd-item .list-layout').html(str);
+                    }else{
+                        $('.weui-popup__container .weui-tab__bd-item .list-layout').html('');
+                    }
+                }else if($data.type === 'receive'){
+                    if($data.receiveMessages.length !== 0){
+                        for(var i=0 ; i< $data.receiveMessages.length; i++){
+                            var data = $data.receiveMessages[i];
+                            str += '<div class="table-list ">'+
+                                '<div class="line"></div>'+
+                                '<div class="teacher-list-box glayline">'+
+                                '<div class="teacher-work-box">'+
+                                '<a class="teacher-work-head" style="color:#000" href="message_show/'+data.id+'">'+
+                                '<div class="titleinfo">'+
+                                '<div class="titleinfo-head">'+
+                                '<div class="titleinfo-head-left fl">'+
+                                '<div class="title ml12">'+ data.title +'</div>'+
+                                '<div class="title-info ml12">'+ data.s_user_id+'</div>'+
+                                '</div>'+
+                                '<span class="worktime">'+ data.created_at.substr(0,10)+
+                                '</span></div></div></a></div></div></div>';
 
-                  }
-                  $('.weui-popup__container .weui-tab__bd-item .list-layout').html(str);
-              }else{
-                  $('.weui-popup__container .weui-tab__bd-item .list-layout').html('');
-              }
-          }
+                        }
+                        $('.weui-popup__container .weui-tab__bd-item .list-layout').html(str);
+                    }else{
+                        $('.weui-popup__container .weui-tab__bd-item .list-layout').html('');
+                    }
+                }
 
-      }
-  });
+            }
+        });
+    }
+
 });
