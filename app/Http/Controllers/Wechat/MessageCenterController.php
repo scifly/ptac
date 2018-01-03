@@ -227,7 +227,7 @@ class MessageCenterController extends Controller {
         $message = $this->message->find($id);
         $edit = ($user->id == $message->s_user_id ? true : false);
         
-        return view('wechat.message_center.show', ['message' => $this->message->find($id), 'edit' => $edit, 'show' => true]);
+        return view('wechat.message_center.show', ['message' => $message, 'edit' => $edit, 'show' => true]);
     }
     
     /**
@@ -416,7 +416,6 @@ class MessageCenterController extends Controller {
             $input['content'] = '';
         }
     
-        #处理接收者 这里先处理了一层
         if (!empty($input['department_ids'])) {
             #获取该部门下包括子部门的user
             $users = $this->department->getPartyUser($input['department_ids']);
@@ -455,7 +454,7 @@ class MessageCenterController extends Controller {
                             'media_ids'       => $input['media_ids'],
                             's_user_id'       => $user->id,
                             'r_user_id'       => $receiveUserId,
-                            'message_type_id' => MessageType::whereName('test')->first()->id,
+                            'message_type_id' => MessageType::whereName('消息通知')->first()->id,
                             'readed'          => 1,
                             'sent'            => 1,
                         ];
@@ -498,7 +497,7 @@ class MessageCenterController extends Controller {
                             'media_ids'       => $input['media_ids'],
                             's_user_id'       => $user->id,
                             'r_user_id'       => $receiveUserId,
-                            'message_type_id' => MessageType::whereName('test')->first()->id,
+                            'message_type_id' => MessageType::whereName('消息通知')->first()->id,
                             'readed'          => 0,
                             'sent'            => 0,
                         ];

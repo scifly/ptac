@@ -38,8 +38,12 @@ $('.weui_textarea').bind("input propertychange", function () {
     $('.weui_textarea_counter span').text(now_length);
 });
 
-$('.send-btn').click(function () {
+$('.send-btn').off('click').click(function () {
     var content = $('.weui_textarea').val();
+    if(!content){
+        $.alert('回复内容不能为空！');
+        return false;
+    }
     var msl_id = $('#msl_id').val();
     $.ajax({
         type: 'POST',
