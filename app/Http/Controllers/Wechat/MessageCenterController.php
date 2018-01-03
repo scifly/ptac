@@ -105,7 +105,7 @@ class MessageCenterController extends Controller {
             
         }
         #判断是否为教职工
-        $educator = true;
+        $educator = false;
         if(empty($user)){
             return '<h4>你暂不是教职员工或监护人</h4>';
         }
