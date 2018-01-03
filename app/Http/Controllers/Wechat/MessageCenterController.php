@@ -419,7 +419,6 @@ class MessageCenterController extends Controller {
             $input['content'] = '';
         }
     
-        #处理接收者 这里先处理了一层
         if (!empty($input['department_ids'])) {
             #获取该部门下包括子部门的user
             $users = $this->department->getPartyUser($input['department_ids']);
@@ -505,6 +504,9 @@ class MessageCenterController extends Controller {
                             'readed'          => 0,
                             'sent'            => 0,
                         ];
+                        print_r($messageData);
+                        die;
+                        
                         $message = $this->message->create($messageData);
                         $message->sent = 1;
                         $message->save();
