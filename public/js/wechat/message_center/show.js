@@ -40,6 +40,10 @@ $('.weui_textarea').bind("input propertychange", function () {
 
 $('.send-btn').click(function () {
     var content = $('.weui_textarea').val();
+    if(!content){
+        $.alert('回复内容不能为空！');
+        return false;
+    }
     var msl_id = $('#msl_id').val();
     $.ajax({
         type: 'POST',
