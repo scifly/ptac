@@ -1,8 +1,10 @@
-page.index('messages');
 page.initSelect2({
     templateResult: page.formatStateImg,
-    templateSelection: page.formatStateImg
+    templateSelection: page.formatStateImg,
+    language: "zh-CN",
 });
+page.index('messages');
+
 var $message = $('#message');
 var $objects = $('#objects');
 var $imageText = $('#imagetext');
@@ -20,7 +22,7 @@ var $send = $('#send');
 var $token = $('#csrf_token');
 var $addArticle = $('#add-article-url');
 var $fileCover = $('#file-cover');
-
+$('.select2-search__field').val('');
 // 附件管理
 $addAttachment.on('click', function() {
     $message.hide();

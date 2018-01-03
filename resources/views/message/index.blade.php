@@ -38,7 +38,9 @@
                         'id' => 'formImagetext',
                         'data-parsley-validate' => 'true'
                     ]) !!}
-                    <!-- 选择应用 -->
+                    <style>.select2-search__field{display: none;}</style>
+
+                        <!-- 选择应用 -->
                     @include('partials.multiple_select', [
                         'label' => '应用',
                         'id' => 'app_ids',
