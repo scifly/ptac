@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Helpers\ModelTrait;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -48,12 +49,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property-read \App\Models\User $operatorUser
  */
 class ProcedureLog extends Model {
-
+    
     const DT_PEND = '<span class="badge bg-orange">%s</span>';
 
     protected $table = 'procedure_logs';
 
-    protected $joins = [
+    const JOINS = [
         [
             'table' => 'procedures',
             'alias' => 'Procedures',
@@ -134,7 +135,7 @@ class ProcedureLog extends Model {
         return $medias;
     }
 
-    public function datatable($where) {
+    static function datatable($where) {
 
         $columns = [
             ['db' => 'ProcedureLog.first_log_id', 'dt' => 0],
@@ -174,18 +175,8 @@ class ProcedureLog extends Model {
                 },
             ],
         ];
-        return Datatable::simple($this, $columns, $this->joins, $where);
-    }
 
-    /**
-     * 获取用户信息
-     * @param $userId
-     * @return Collection|Model|null|static|static[]
-     */
-    public function get_user($userId) {
-        
-        return User::find($userId);
-        
+        return Datatable::simple(self::getModel(), $columns, self::JOINS, $where);
     }
 
 }

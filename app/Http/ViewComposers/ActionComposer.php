@@ -2,23 +2,15 @@
 
 namespace App\Http\ViewComposers;
 
-use App\Helpers\ControllerTrait;
+use App\Helpers\ModelTrait;
 use App\Models\Action;
 use App\Models\ActionType;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Request;
 
 class ActionComposer {
-    
-    use ControllerTrait;
 
-    protected $action, $actionType;
-
-    public function __construct(ActionType $actionType) {
-
-        $this->actionType = $actionType;
-
-    }
+    use ModelTrait;
 
     public function compose(View $view) {
 
@@ -29,7 +21,7 @@ class ActionComposer {
             $selectedActionTypes[$actionTypeId] = $actionType['name'];
         }
         $view->with([
-            'actionTypes' => $this->actionType->pluck('name', 'id'),
+            'actionTypes' => ActionType::pluck('name', 'id'),
             'selectedActionTypes' => $selectedActionTypes ?? null,
             'uris' => $this->uris()
         ]);

@@ -2,26 +2,19 @@
 
 namespace App\Http\ViewComposers;
 
-use App\Helpers\ControllerTrait;
+use App\Helpers\ModelTrait;
 use App\Models\IconType;
 use Illuminate\Contracts\View\View;
 
 class IconComposer {
-    use ControllerTrait;
-    protected $iconType;
 
-    public function __construct(IconType $iconType) {
-
-        $this->iconType = $iconType;
-
-    }
+    use ModelTrait;
 
     public function compose(View $view) {
 
         $view->with([
-            'iconTypes' => $this->iconType->pluck('name', 'id'),
+            'iconTypes' => IconType::pluck('name', 'id'),
             'uris' => $this->uris()
-
         ]);
 
     }

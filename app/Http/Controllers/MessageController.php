@@ -2,7 +2,6 @@
 namespace App\Http\Controllers;
 
 use App\Facades\Wechat;
-use App\Helpers\ControllerTrait;
 use App\Http\Requests\MessageRequest;
 use App\Models\App;
 use App\Models\Corp;
@@ -23,8 +22,6 @@ use Throwable;
  * @package App\Http\Controllers
  */
 class MessageController extends Controller {
-    
-    use ControllerTrait;
     
     public function __construct() {
         
@@ -207,40 +204,6 @@ class MessageController extends Controller {
         
     }
     
-    // public function getDepartmentUsers() {
-    //     $input = Request::all();
-    //     $departmentUsers = Array();
-    //     //找出此部门节点下的所有子节点的id
-    //     $departmentIds = $this->departmentChildIds($input['id']);
-    //     $departmentIds[] = $input['id'];
-    //     foreach ($departmentIds as $departmentId) {
-    //         $department = Department::find($departmentId);
-    //         foreach ($department->users as $user) {
-    //             $departmentUsers[$user['id']] = $user['username'];
-    //         }
-    //     }
-    //     //dd($departmentUsers);
-    //     $dataView = view('message.wechat_message', ['departmentUsers' => $departmentUsers])->render();
-    //     return is_null($departmentUsers) ? $this->fail('该部门下暂时还没有人员') : $this->succeed($dataView);
-    // }
-    // public function userMessages() {
-    //     //判断用户是否为消息接收者
-    //     $userId = 1;
-    //     $messageTypes = ['成绩信息', '作业信息'];
-    //     $userReceiveMessages = Array();
-    //     foreach ($messageTypes as $messageType) {
-    //         $userReceiveMessages[$messageType] = $this->userReceiveMessages($userId, $messageType);
-    //     }
-    //     dd($userReceiveMessages);
-    //     return view('message.wechat_messgae', [$userReceiveMessages]);
-    // }
-    
-    private function userReceiveMessages($userId, $messageType) {
-        //显示当前用户能接受到的消息
-        $messages = Message::where('r_user_id', $userId)
-            ->where('message_type_id', $messageType)->get();
-    }
-    
     public function uploadFile() {
         
         $file = Request::file('uploadFile');
@@ -252,7 +215,7 @@ class MessageController extends Controller {
             return $result;
         } else {
             $result['data'] = [];
-            $mes = $this->uploadedMedias($file, '消息中心');
+            $mes = Media::upload($file, '消息中心');
             if ($mes) {
                 $result['statusCode'] = 1;
                 $result['message'] = '上传成功！';
@@ -280,37 +243,5 @@ class MessageController extends Controller {
         return response()->json($result);
         
     }
-    
-    //    public function curl_upload($file='/images/2.jpg'){
-    //        $this -> access_token($GLOBALS['db']);
-    //        $access_token = $GLOBALS['db']->getOne("SELECT `access_token` FROM `wxch_config` where id=1");
-    //        $url="https://api.weixin.qq.com/cgi-bin/media/upload?access_token={$access_token}&type=image";
-    //        $ch1 = curl_init ();
-    //        $timeout = 10;
-    //        $real_path=$_SERVER['DOCUMENT_ROOT'].$file;
-    //        $file_info=array(
-    //            'filename'=>$file,  //国片相对于网站根目录的路径
-    //            'content-type'=>'image/jpeg',  //文件类型
-    //            'filelength'=>filesize($real_path)         //图文大小
-    //        );
-    //        $data= array("media"=>"@{$real_path}",'form-data'=>$file_info);
-    //        curl_setopt ( $ch1, CURLOPT_URL, $url );
-    //        curl_setopt ( $ch1, CURLOPT_POST, 1 );
-    //        curl_setopt ( $ch1, CURLOPT_RETURNTRANSFER, 1 );
-    //        curl_setopt ( $ch1, CURLOPT_CONNECTTIMEOUT, $timeout );
-    //        curl_setopt ( $ch1, CURLOPT_SSL_VERIFYPEER, FALSE );
-    //        curl_setopt ( $ch1, CURLOPT_SSL_VERIFYHOST, false );
-    //        curl_setopt ( $ch1, CURLOPT_POSTFIELDS, $data );
-    //        $result = curl_exec ( $ch1 );
-    //        curl_close ( $ch1 );
-    //        if(curl_errno()==0){
-    //            $result=json_decode($result,true);
-    //            //var_dump($result);
-    //            return $result['media_id'];
-    //        }
-    //        else {
-    //            return false;
-    //        }
-    //    }
     
 }

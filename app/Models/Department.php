@@ -125,8 +125,6 @@ class Department extends Model {
 
     }
 
-    
-   
     /**
      * 获取指定部门的子部门
      *
@@ -182,37 +180,6 @@ class Department extends Model {
 
     }
 
-    /**
-     * 根据Department ID返回所有下级部门
-     *
-     * @param $id
-     * @param Collection $nodes
-     */
-    static function getChildren($id, Collection &$nodes) {
-
-        $node = self::find($id);
-        foreach ($node->children as $child) {
-            $nodes->push($child);
-            self::getChildren($child->id, $nodes);
-        }
-
-    }
-    /**
-     * 根据Department ID返回所有下级部门 含本身
-     *
-     * @param $id
-     * @param Collection $nodes
-     */
-    private function getChildrenNode($id, Collection &$nodes) {
-
-        $node = $this->find($id);
-        $nodes->push($node);
-        foreach ($node->children as $child) {
-            $nodes->push($child);
-            $this->getChildren($child->id, $nodes);
-        }
-
-    }
 
     /**
      * 获取指定部门的完整路径
@@ -688,6 +655,7 @@ class Department extends Model {
                 $t['type'] = $t['id'] == 0 ? '#' : 'dept';
                 # 读取当前部门下的所有用户
                 $users = self::find($t['id'])->users;
+                /** @var User $u */
                 foreach ($users as $u) {
                     $contacts[] = [
                         'id' => 'user-' . $u->id,
@@ -737,6 +705,7 @@ class Department extends Model {
                 if ($datum['seletable']) {
                     # 读取当前部门下的所有用户
                     $users = self::find($datum['id'])->users;
+                    /** @var User $u */
                     foreach ($users as $u) {
                         $contacts[] = [
                             'id' => 'user-' . $u->id,
@@ -751,25 +720,8 @@ class Department extends Model {
             }
             
             return response()->json(array_merge($data, $contacts));
+
         }
-        
-    }
-    
-    private static function topDeptId() {
-        
-        $departmentIds = Auth::user()->departments
-            ->pluck('id')
-            ->toArray();
-        $levels = [];
-        foreach ($departmentIds as $id) {
-            $level = 0;
-            $levels[$id] = self::level($id, $level);
-        }
-        asort($levels);
-        reset($levels);
-        $topLevelId = key($levels);
-        
-        return self::find($topLevelId)->parent->id;
         
     }
 
@@ -779,11 +731,12 @@ class Department extends Model {
      * @param $toparty
      * @return array
      */
-    public function getPartyUser ($toparty) {
+    static function getPartyUser ($toparty) {
+
         $users = [];
         $depts = new Collection();
         foreach ($toparty as $p) {
-            $this->getChildrenNode($p, $depts);
+            self::getChildrenNode($p, $depts);
         }
         $items = $depts->toArray();
         if (empty($items)) { return $users; }
@@ -797,6 +750,59 @@ class Department extends Model {
             }
         }
         return $users;
+    }
+
+    /**
+     * 返回用户所处的顶级部门id
+     *
+     * @return int
+     */
+    private static function topDeptId() {
+        
+        $ids = Auth::user()->departments->pluck('id')->toArray();
+        $levels = [];
+        foreach ($ids as $id) {
+            $level = 0;
+            $levels[$id] = self::level($id, $level);
+        }
+        asort($levels);
+        reset($levels);
+        $topLevelId = key($levels);
+        
+        return self::find($topLevelId)->parent->id;
+        
+    }
+
+    /**
+     * 根据Department ID返回所有下级部门
+     *
+     * @param $id
+     * @param Collection $nodes
+     */
+    private static function getChildren($id, Collection &$nodes) {
+
+        $node = self::find($id);
+        foreach ($node->children as $child) {
+            $nodes->push($child);
+            self::getChildren($child->id, $nodes);
+        }
+
+    }
+    /**
+     * 根据Department ID返回所有下级部门 含本身
+     *
+     * @param $id
+     * @param Collection $nodes
+     */
+    private static function getChildrenNode($id, Collection &$nodes) {
+
+        $node = self::find($id);
+        $nodes->push($node);
+        foreach ($node->children as $child) {
+            $nodes->push($child);
+            self::getChildren($child->id, $nodes);
+        }
+
     }
 
 

@@ -2,16 +2,15 @@
 
 namespace App\Http\ViewComposers;
 
-use App\Helpers\ControllerTrait;
+use App\Helpers\ModelTrait;
 use App\Models\Action;
 use App\Models\Icon;
-use App\Models\Menu;
 use Illuminate\Contracts\View\View;
 
 class TabComposer {
-    
-    use ControllerTrait;
-    
+
+    use ModelTrait;
+
     public function compose(View $view) {
 
         $view->with([

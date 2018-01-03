@@ -2,28 +2,21 @@
 
 namespace App\Http\ViewComposers;
 
-use App\Helpers\ControllerTrait;
-use App\Models\App;
-use App\Models\CommType;
+use App\Helpers\ModelTrait;
 use App\Models\MessageType;
-use App\Models\User;
 use Illuminate\Contracts\View\View;
 
 class MessageCenterComposer {
-    use ControllerTrait;
-    protected $messageTypes;
 
-    public function __construct(MessageType $messageTypes) {
-
-        $this->messageTypes = $messageTypes;
-    }
+    use ModelTrait;
 
     public function compose(View $view) {
-        // print_r($this->messageTypes->pluck('name', 'id'));
-        // die;
+
         $view->with([
-            'messageTypes' => $this->messageTypes->pluck('name', 'id'),
+            'messageTypes' => MessageType::pluck('name', 'id'),
+            'uris' => $this->uris()
         ]);
+
     }
 
 }

@@ -2,7 +2,7 @@
 
 namespace App\Http\ViewComposers;
 
-use App\Helpers\ControllerTrait;
+use App\Helpers\ModelTrait;
 use App\Models\Grade;
 use App\Models\Group;
 use App\Models\School;
@@ -11,8 +11,8 @@ use App\Models\Student;
 use Illuminate\Contracts\View\View;
 
 class CustodianComposer {
-    
-    use ControllerTrait;
+
+    use ModelTrait;
 
     public function compose(View $view) {
 
@@ -45,7 +45,7 @@ class CustodianComposer {
                 }
             }
         }
-        
+
         $view->with([
             'schools' => $schools,
             'grades' => $grades,
@@ -54,7 +54,7 @@ class CustodianComposer {
             'groupId' => Group::whereName('监护人')->first()->id,
             'uris' => $this->uris()
         ]);
-        
+
     }
 
 }

@@ -2,15 +2,12 @@
 
 namespace App\Http\ViewComposers;
 
-use App\Helpers\ControllerTrait;
-use App\Models\Action;
-use App\Models\ActionType;
+use App\Helpers\ModelTrait;
 use Illuminate\Contracts\View\View;
-use Illuminate\Support\Facades\Request;
 
 class ActionIndexComposer {
-    
-    use ControllerTrait;
+
+    use ModelTrait;
 
     public function compose(View $view) {
 

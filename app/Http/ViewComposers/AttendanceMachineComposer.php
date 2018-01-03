@@ -2,21 +2,21 @@
 
 namespace App\Http\ViewComposers;
 
-use App\Helpers\ControllerTrait;
+use App\Helpers\ModelTrait;
 use App\Models\School;
 use Illuminate\Contracts\View\View;
 
 class AttendanceMachineComposer {
-    
-    use ControllerTrait;
-    
+
+    use ModelTrait;
+
     public function compose(View $view) {
 
         $view->with([
             'schoolId' => School::id(),
             'uris' => $this->uris()
         ]);
-        
+
     }
 
 }

@@ -2,13 +2,13 @@
 namespace App\Http\Controllers\Wechat;
 
 use App\Facades\Wechat;
-use App\Helpers\ControllerTrait;
 use App\Http\Controllers\Controller;
 use App\Models\App;
 use App\Models\CommType;
 use App\Models\Corp;
 use App\Models\Department;
 use App\Models\Educator;
+use App\Models\Media;
 use App\Models\Message;
 use App\Models\MessageSendingLog;
 use App\Models\MessageType;
@@ -19,9 +19,7 @@ use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
 
 class MessageCenterController extends Controller {
-    
-    use ControllerTrait;
-    
+
     protected $message, $user, $department;
     
     /**
@@ -31,6 +29,7 @@ class MessageCenterController extends Controller {
      * @param Department $department
      */
     public function __construct(Message $message, User $user, Department $department) {
+
         // $this->middleware();
         $this->message = $message;
         $this->user = $user;
@@ -65,7 +64,7 @@ class MessageCenterController extends Controller {
             if (!empty($keywords)) {
                 switch ($type) {
                     case 'send':
-                        $sendMessages = [];
+                        // $sendMessages = [];
                         $sendMessages = Message::whereSUserId($user->id)
                             ->where('content', 'like', '%' . $keywords . '%')
                             ->orWhere('title', 'like', '%' . $keywords . '%')
@@ -79,7 +78,7 @@ class MessageCenterController extends Controller {
                         return response(['sendMessages' => $sendMessages, 'type' => $type]);
                         break;
                     case 'receive':
-                        $receiveMessages = [];
+                        // $receiveMessages = [];
                         $receiveMessages = Message::whereRUserId($user->id)
                             ->where('content', 'like', '%' . $keywords . '%')
                             ->orWhere('title', 'like', '%' . $keywords . '%')
@@ -244,8 +243,7 @@ class MessageCenterController extends Controller {
         
         $type = Request::input('type');
         if (empty($type)) {
-            $data = $this->uploadedMedias(Request::file('file'), '前端消息中心');
-            
+            $data = Media::upload(Request::file('file'), '前端消息中心');
             return $data ? $this->succeed($data) : $this->fail();
         }
         if ($type == 'mpnews') {
@@ -259,7 +257,7 @@ class MessageCenterController extends Controller {
             return $result;
         } else {
             $result['data'] = [];
-            $mes = $this->uploadedMedias($file, ' 前端消息中心');
+            $mes = Media::upload($file, ' 前端消息中心');
             if ($mes) {
                 $result['statusCode'] = 1;
                 $result['message'] = '上传成功！';

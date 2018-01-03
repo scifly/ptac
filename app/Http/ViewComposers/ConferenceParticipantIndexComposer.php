@@ -2,15 +2,12 @@
 
 namespace App\Http\ViewComposers;
 
-use App\Helpers\ControllerTrait;
-use App\Models\ConferenceRoom;
-use App\Models\Educator;
-use App\Models\School;
+use App\Helpers\ModelTrait;
 use Illuminate\Contracts\View\View;
-use Illuminate\Support\Facades\Auth;
 
 class ConferenceParticipantIndexComposer {
-    use ControllerTrait;
+
+    use ModelTrait;
 
     public function compose(View $view) {
 
