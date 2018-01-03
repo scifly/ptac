@@ -287,7 +287,7 @@ class Message extends Model {
                 ];
                 return response()->json($result);
             }
-            $corp = Corp::where('name', '万浪软件')->first();
+            $corp = Corp::whereName('万浪软件')->first();
             if (!$corp) {
                 $result = [
                     'statusCode' => 0,
@@ -464,8 +464,8 @@ class Message extends Model {
         if ($touser) {
             // $userIds = explode('|', $touser);
             foreach ($touser as $i) {
-                $user = User::where('id', $i)->first();
-                $m = Mobile::where('user_id', $i)->where('enabled', 1)->first();
+                $user = User::find($i);
+                $m = Mobile::whereUserId($i)->where('enabled', 1)->first();
                 if ($m) { $mobiles[] = $m->mobile; $userDatas[] = $user;}
             }
         }
@@ -475,7 +475,7 @@ class Message extends Model {
             $users = $dept->getPartyUser($toparty);
             if ($users) {
                 foreach ($users as $u) {
-                    $m = Mobile::where('user_id', $u->id)->where('enabled', 1)->first();
+                    $m = Mobile::whereUserId($u->id)->where('enabled', 1)->first();
 
                     if ($m) { $mobiles[] = $m->mobile; $userDatas[] = $u;}
                 }

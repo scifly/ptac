@@ -47,10 +47,10 @@ class ManageWechatDepartment implements ShouldQueue {
         if ($schoolId != 0) {
             $school = School::find($schoolId);
             $corpMenuId = $school->menu->parent_id;
-            $corp = Corp::where('menu_id', $corpMenuId)->first();
+            $corp = Corp::whereMenuId($corpMenuId)->first();
             $corpId = $corp->corpid;
         } else {
-            $corp = Corp::where('id',1)->first();
+            $corp = Corp::find(1);
             $corpId = $corp->corpid;
         }
         $contactSync = App::whereAgentid('999')->first();
