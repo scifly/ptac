@@ -46,6 +46,8 @@ class MessageCenterController extends Controller {
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector|\Illuminate\View\View|string
      */
     public function index() {
+        Session::forget('userId');
+        Session::flush();
         #获取用户信息
         $corpId = 'wxe75227cead6b8aec';
         $secret = 'qv_kkW2S3zmMWIUrV3u2nydcyIoLknTvuDMq7ja4TYE';
@@ -61,7 +63,7 @@ class MessageCenterController extends Controller {
             $userId = $userInfo['UserId'];
             Session::put('userId',$userId);
         }
-        Session::forget('userId');
+    
         print_r($userId);
         die;
         // $userId = 'yuanhongbin';
