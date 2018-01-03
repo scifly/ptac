@@ -13,7 +13,7 @@ class MessageIndexComposer {
 
     public function compose(View $view) {
 
-        $school = School::find(School::id());
+        $school = School::find(School::schoolId());
         $data = App::whereEnabled(1)
             ->where('corp_id', $school->corp_id)
             ->get(['id', 'name', 'square_logo_url']);

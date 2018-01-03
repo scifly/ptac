@@ -35,7 +35,7 @@ class WapSiteController extends Controller {
      */
     public function index() {
 
-        $schoolId = School::id();
+        $schoolId = School::schoolId();
         $wapSite = WapSite::whereSchoolId($schoolId)->first();
         if (empty($wapSite)) {
             return parent::notFound();

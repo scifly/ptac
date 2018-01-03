@@ -34,6 +34,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property-read School $school
  * @method static Builder|Semester whereRemark($value)
  * @property-read StudentAttendanceSetting $studentAttendanceSetting
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\StudentAttendanceSetting[] $studentAttendanceSettings
  */
 class Semester extends Model {
 
@@ -88,7 +89,7 @@ class Semester extends Model {
                 ],
             ],
         ];
-        $condition = 'Semester.school_id = ' . School::id();
+        $condition = 'Semester.school_id = ' . School::schoolId();
     
         return Datatable::simple(self::getModel(), $columns, $joins, $condition);
 

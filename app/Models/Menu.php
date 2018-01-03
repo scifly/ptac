@@ -63,6 +63,7 @@ use Illuminate\Support\Facades\DB;
  * @property-read Company $company
  * @property-read Corp $corp
  * @property-read \App\Models\Media|null $media
+ * @property string|null $uri
  */
 class Menu extends Model {
 

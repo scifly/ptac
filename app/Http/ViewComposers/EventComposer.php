@@ -14,7 +14,7 @@ class EventComposer {
 
     public function compose(View $view) {
 
-        $schoolId = School::id();
+        $schoolId = School::schoolId();
         $educators = Educator::whereSchoolId($schoolId)
             ->where('enabled', 1)
             ->get();

@@ -69,6 +69,11 @@ use Illuminate\Support\Facades\Storage;
  * @property-read CommType $commType
  * @property-read MessageSendingLog $messageSendinglog
  * @property-read MessageSendingLog $messageSendinglogs
+ * @property string $title 消息标题
+ * @property int $read 是否已读
+ * @property-read \App\Models\User $receiveUser
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Message whereRead($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Message whereTitle($value)
  */
 class Message extends Model {
 

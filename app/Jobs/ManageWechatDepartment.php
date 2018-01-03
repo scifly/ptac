@@ -43,7 +43,7 @@ class ManageWechatDepartment implements ShouldQueue {
      */
     public function handle() {
 
-        $schoolId = School::id();
+        $schoolId = School::schoolId();
         if ($schoolId != 0) {
             $school = School::find($schoolId);
             $corpMenuId = $school->menu->parent_id;

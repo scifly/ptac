@@ -56,7 +56,7 @@ class EducatorController extends Controller {
         
         $this->authorize('c', Educator::class);
         if (Request::method() === 'POST') {
-            $school = School::find(School::id());
+            $school = School::find(School::schoolId());
             return response()->json(
                 Department::tree($school->department_id)
             );

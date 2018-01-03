@@ -153,7 +153,7 @@ class SchoolController extends Controller {
                 'user'    => Auth::user(),
             ]);
         }
-        $school = School::find(School::id())->first();
+        $school = School::find(School::schoolId())->first();
         session(['menuId' => $menuId]);
         
         return response()->json([

@@ -173,7 +173,7 @@ class Student extends Model {
                     }
                 }
                 # 创建企业微信部门成员
-                $school = School::find(School::id());
+                $school = School::find(School::schoolId());
                 $grade = Grade::find($student['grade_id']);
                 $class = Squad::find($student['class_id']);
                 $deptId = self::deptId($school->name, $grade->name, $class->name);
@@ -230,7 +230,7 @@ class Student extends Model {
     static function gradeClasses($gradeId = 0) {
         
         $grades = Grade::whereEnabled(1)
-            ->where('school_id', School::id())
+            ->where('school_id', School::schoolId())
             ->pluck('name', 'id')
             ->toArray();
         $gradeId = $gradeId == 0 ? array_keys($grades)[0] : $gradeId;
@@ -321,7 +321,7 @@ class Student extends Model {
                 }
                 # 创建部门成员
                 DepartmentUser::whereUserId( $userId)->delete();
-                $school = School::find(School::id());
+                $school = School::find(School::schoolId());
                 $grade = Grade::find($studentData['grade_id']);
                 $class = Squad::find($studentData['class_id']);
                 $deptId = self::deptId($school->name, $grade->name, $class->name);
@@ -668,7 +668,7 @@ class Student extends Model {
                 ],
             ],
         ];
-        $condition = 'Grade.school_id = ' . School::id();
+        $condition = 'Grade.school_id = ' . School::schoolId();
         
         return Datatable::simple(self::getModel(), $columns, $joins, $condition);
 

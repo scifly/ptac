@@ -22,8 +22,6 @@ use Illuminate\Support\Facades\Session;
 
 class MessageCenterController extends Controller {
     
-    use ControllerTrait;
-    
     protected $message, $user, $department;
     
     /**
@@ -33,6 +31,7 @@ class MessageCenterController extends Controller {
      * @param Department $department
      */
     public function __construct(Message $message, User $user, Department $department) {
+        
         // $this->middleware();
         $this->message = $message;
         $this->user = $user;
@@ -378,9 +377,7 @@ class MessageCenterController extends Controller {
      */
     private function modifyReaded($id) {
         $message = $this->message->find($id);
-        if (!$message) {
-            return false;
-        }
+        if (!$message) { return false; }
         try {
             DB::transaction(function () use ($message, $id) {
                 $message->readed = 1;
