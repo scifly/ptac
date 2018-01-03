@@ -228,7 +228,7 @@ class MessageCenterController extends Controller {
         $message = $this->message->find($id);
         $edit = ($user->id == $message->s_user_id ? true : false);
         
-        return view('wechat.message_center.show', ['message' => $this->message->find($id), 'edit' => $edit, 'show' => true]);
+        return view('wechat.message_center.show', ['message' => $message, 'edit' => $edit, 'show' => true]);
     }
     
     /**
