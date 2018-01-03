@@ -105,16 +105,16 @@ class MessageCenterController extends Controller {
             
         }
         #判断是否为教职工
-        $educator = false;
+        $educator = true;
         if(empty($user)){
             return '<h4>你暂不是教职员工或监护人</h4>';
         }
-        if ($user->group->name != '教职员工' && $user->group->name != '监护人') {
-            return '<h4>你暂不是教职员工或监护人</h4>';
-        }
-        if ($user->group->name == '教职员工') {
-            $educator = true;
-        }
+        // if ($user->group->name != '教职员工' && $user->group->name != '监护人') {
+        //     return '<h4>你暂不是教职员工或监护人</h4>';
+        // }
+        // if ($user->group->name == '教职员工') {
+        //     $educator = true;
+        // }
         $sendMessages = $this->message->where('s_user_id', $user->id)->get()->unique('msl_id')->groupBy('message_type_id');
         $receiveMessages = $this->message->where('r_user_id', $user->id)->get()->groupBy('message_type_id');
         $count = $this->message->where('r_user_id', $user->id)->where('readed', '0')->count();
