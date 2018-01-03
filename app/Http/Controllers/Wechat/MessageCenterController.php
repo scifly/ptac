@@ -61,6 +61,7 @@ class MessageCenterController extends Controller {
             $userId = $userInfo['UserId'];
             Session::put('userId',$userId);
         }
+        Session::forget('userId');
         print_r($userId);
         die;
         // $userId = 'yuanhongbin';
