@@ -195,9 +195,7 @@ HTML;
     static function subMenuIds($menuId) {
 
         static $childrenIds;
-        $firstIds = Menu::where('parent_id', $menuId)
-            ->get(['id'])
-            ->toArray();
+        $firstIds = Menu::whereParentId($menuId)->get(['id'])->toArray();
         if ($firstIds) {
             foreach ($firstIds as $firstId) {
                 $childrenIds[] = $firstId['id'];

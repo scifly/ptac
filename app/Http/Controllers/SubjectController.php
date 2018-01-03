@@ -89,7 +89,7 @@ class SubjectController extends Controller {
         $gradeIds = explode(',', $subject['grade_ids']);
         $selectedGrades = [];
         foreach ($gradeIds as $gradeId) {
-            $grade = Grade::whereId($gradeId)->first();
+            $grade = Grade::find($gradeId);
             $selectedGrades[$gradeId] = $grade['name'];
         }
         $selectedMajors = [];

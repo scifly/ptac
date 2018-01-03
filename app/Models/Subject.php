@@ -200,7 +200,7 @@ class Subject extends Model {
                 # 删除指定的科目记录
                 $subject->delete();
                 # 删除与科目绑定的专业记录
-                MajorSubject::where('subject_id', $id)->delete();
+                MajorSubject::whereSubjectId($id)->delete();
             });
 
         } catch (Exception $e) {

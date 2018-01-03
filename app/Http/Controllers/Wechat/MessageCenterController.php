@@ -77,7 +77,7 @@ class MessageCenterController extends Controller {
                             ->get();
                         if (sizeof($sendMessages) != 0) {
                             foreach ($sendMessages as $s) {
-                                $s['r_user_id'] = User::whereId($s['r_user_id'])->first()->realname;
+                                $s['r_user_id'] = User::find($s['r_user_id'])->realname;
                             }
                         }
 
@@ -91,7 +91,7 @@ class MessageCenterController extends Controller {
                             ->get();
                         if (sizeof($receiveMessages) != 0) {
                             foreach ($receiveMessages as $r) {
-                                $r['s_user_id'] = User::whereId($r['s_user_id'])->first()->realname;
+                                $r['s_user_id'] = User::find($r['s_user_id'])->realname;
                             }
                         }
                         
@@ -161,11 +161,11 @@ class MessageCenterController extends Controller {
         #教师可发送消息
         #取的和教师关联的学校的部门id
         $user = $this->user->where('userid', $userId)->first();
-        $educator = Educator::where('user_id',$user->id)->first();
+        $educator = Educator::whereUserId($user->id)->first();
         $school = $educator->school;
-        $departmentId = Department::where('name',$school->name)->first()->id;
-        $departments = Department::where('parent_id', $departmentId)->get();
-        $department = Department::whereId($departmentId)->first();
+        $departmentId = Department::whereName($school->name)->first()->id;
+        $departments = Department::whereParentId($departmentId)->get();
+        $department = Department::find($departmentId);
         $users = $department->users;
 
         return view('wechat.message_center.create', [
@@ -359,9 +359,9 @@ class MessageCenterController extends Controller {
      */
     public function getNextDept($id) {
         
-        $department = Department::whereId($id)->first();
+        $department = Department::find($id);
         $users = $department->users;
-        $nextDepts = Department::where('parent_id', $id)->get();
+        $nextDepts = Department::whereParentId($id)->get();
         $data = view('wechat.message_center.select', ['departments' => $nextDepts, 'users' => $users])->render();
         
         return $data ? $this->succeed($data) : $this->fail();
@@ -385,7 +385,7 @@ class MessageCenterController extends Controller {
             DB::transaction(function () use ($message, $id) {
                 $message->readed = 1;
                 $message->save();
-                $msl = MessageSendingLog::whereId($message->msl_id)->first();
+                $msl = MessageSendingLog::find($message->msl_id);
                 $msl->read_count = $msl->read_count + 1;
                 
                 return $msl->save() ? true : false;

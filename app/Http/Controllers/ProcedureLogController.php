@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ProcedureLogRequest;
 use App\Models\Media;
 use App\Models\ProcedureLog;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
@@ -156,7 +157,7 @@ class ProcedureLogController extends Controller {
             'initiator_media_ids' => empty($mediaIds) ? 0 : implode(',', $mediaIds),
         ];
         if ($id = ProcedureLog::insertGetId($data)) {
-            ProcedureLog::where('id', $id)->update(['first_log_id' => $id]);
+            ProcedureLog::find($id)->update(['first_log_id' => $id]);
             
             return $this->succeed();
         }
@@ -174,16 +175,13 @@ class ProcedureLogController extends Controller {
         
         $userId = 3;
         $request = Request::all();
-        $update = ProcedureLog::where('id', $request['id'])
-            ->update([
-                'step_status'        => $request['step_status'],
-                'operator_user_id'   => $userId,
-                'operator_msg'       => $request['operator_msg'],
-                'operator_media_ids' => empty($request['media_ids']) ? 0 : implode(',', $request['media_ids']),
-            ]);
-        if (!$update) {
-            return $this->fail();
-        }
+        $updated = ProcedureLog::find($request['id'])->update([
+            'step_status'        => $request['step_status'],
+            'operator_user_id'   => $userId,
+            'operator_msg'       => $request['operator_msg'],
+            'operator_media_ids' => empty($request['media_ids']) ? 0 : implode(',', $request['media_ids']),
+        ]);
+        if (!$updated) { return $this->fail(); }
         if ($request['step_status'] == 0) {
             $procedureStep = DB::table('procedure_steps')->where([
                 ['procedure_id', '=', $request['procedure_id']],
@@ -241,13 +239,13 @@ class ProcedureLogController extends Controller {
      *
      * @param $id
      * @return JsonResponse
+     * @throws Exception
      */
     public function deleteMedias($id) {
         
-        $path = Media::whereId($id)->value('path');
-        $path_arr = explode("/", $path);
+        $path_arr = explode("/", Media::find($id)->path);
         Storage::disk('uploads')->delete($path_arr[5]);
-        if (Media::whereId($id)->delete()) {
+        if (Media::find($id)->delete()) {
             $result['statusCode'] = self::HTTP_STATUSCODE_OK;
             $result['message'] = self::MSG_DEL_OK;
         } else {
