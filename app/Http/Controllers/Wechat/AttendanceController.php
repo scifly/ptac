@@ -9,7 +9,8 @@ class AttendanceController extends Controller{
     use ControllerTrait;
 
     public function index(){
-        return '测试';
+
+        return view('wechat.attendance_records.attendance_records');
     }
 
 }
