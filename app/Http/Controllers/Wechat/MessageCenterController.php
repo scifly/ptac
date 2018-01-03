@@ -43,21 +43,21 @@ class MessageCenterController extends Controller {
      */
     public function index() {
         #获取用户信息
-         $corpId = 'wxe75227cead6b8aec';
-         $secret = 'qv_kkW2S3zmMWIUrV3u2nydcyIoLknTvuDMq7ja4TYE';
-         $agentId = 3;
-         $userId = Session::get('userId') ? Session::get('userId') : null;
-         $code = Request::input('code');
-         if (empty($code) && empty($userId)) {
-             $codeUrl = Wechat::getCodeUrl($corpId, $agentId, 'http://weixin.028lk.com/message_center');
-             return redirect($codeUrl);
-         }elseif(!empty($code) && empty($userId)){
-             $accessToken = Wechat::getAccessToken($corpId, $secret);
-             $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
-             $userId = $userInfo['UserId'];
-             Session::put('userId',$userId);
-         }
-//         $userId = 'yuanhongbin';
+         // $corpId = 'wxe75227cead6b8aec';
+         // $secret = 'qv_kkW2S3zmMWIUrV3u2nydcyIoLknTvuDMq7ja4TYE';
+         // $agentId = 3;
+         // $userId = Session::get('userId') ? Session::get('userId') : null;
+         // $code = Request::input('code');
+         // if (empty($code) && empty($userId)) {
+         //     $codeUrl = Wechat::getCodeUrl($corpId, $agentId, 'http://weixin.028lk.com/message_center');
+         //     return redirect($codeUrl);
+         // }elseif(!empty($code) && empty($userId)){
+         //     $accessToken = Wechat::getAccessToken($corpId, $secret);
+         //     $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
+         //     $userId = $userInfo['UserId'];
+         //     Session::put('userId',$userId);
+         // }
+         $userId = 'yuanhongbin';
         $user = User::whereUserid($userId)->first();
         if (Request::isMethod('post')) {
             $keywords = Request::get('keywords');
@@ -75,7 +75,7 @@ class MessageCenterController extends Controller {
                                 $s['r_user_id'] = User::whereId($s['r_user_id'])->first()->realname;
                             }
                         }
-                        
+
                         return response(['sendMessages' => $sendMessages, 'type' => $type]);
                         break;
                     case 'receive':
@@ -130,7 +130,7 @@ class MessageCenterController extends Controller {
             if (empty($keywords)){
                 $departmentId = 4;
                 #教师可发送消息
-                // #取的和教师关联的学校的部门id
+                // // #取的和教师关联的学校的部门id
                 // $user = $this->user->where('userid', $userId)->first();
                 // $educator = Educator::where('user_id',$user->id)->first();
                 // $school = $educator->school;
@@ -149,13 +149,13 @@ class MessageCenterController extends Controller {
                 return response()->json(['statusCode'=> 200, 'user'=> $users]);
             }
         }
-//      $departmentId = 4;
+      $departmentId = 4;
         #教师可发送消息
         #取的和教师关联的学校的部门id
-        $user = $this->user->where('userid', $userId)->first();
-        $educator = Educator::where('user_id',$user->id)->first();
-        $school = $educator->school;
-        $departmentId = Department::where('name',$school->name)->first()->id;
+        //  $user = $this->user->where('userid', $userId)->first();
+        //  $educator = Educator::where('user_id',$user->id)->first();
+        //  $school = $educator->school;
+        // $departmentId = Department::where('name',$school->name)->first()->id;
         $departments = Department::where('parent_id', $departmentId)->get();
         $department = Department::whereId($departmentId)->first();
         $users = $department->users;

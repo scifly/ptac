@@ -294,3 +294,6 @@ Route::get('message_dept/{id}', 'Wechat\MessageCenterController@getNextDept');
 Route::get('homework', 'Wechat\HomeWorkController@index');
 //微网站
 Route::get('wapsite', 'Wechat\MobileSiteController@index');
+// 考勤
+Route::get('attendance_records', 'Wechat\AttendanceController@index');
+
