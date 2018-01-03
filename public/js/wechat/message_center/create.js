@@ -309,7 +309,7 @@ function upload_cover() {
     formData.append('_token', token);
     formData.append('type', msg_type.attr('data-values'));
     $.ajax({
-        url: '../message_upload',
+        url: '../public/message_upload',
         type: 'POST',
         cache: false,
         data: formData,
@@ -396,7 +396,7 @@ $(function () {
         formData.append('file', $('#uploaderInput')[0].files[0]);
         formData.append('_token', token);
         $.ajax({
-            url: '../message_upload',
+            url: '../public/message_upload',
             type: 'POST',
             cache: false,
             data: formData,
@@ -420,7 +420,7 @@ $(function () {
         formData.append('_token', token);
         formData.append('type', msg_type.attr('data-values'));
         $.ajax({
-            url: "../message_upload",
+            url: "../public/message_upload",
             data: formData,
             type: 'POST',
             dataType: 'json',
@@ -448,7 +448,7 @@ $(function () {
         formData.append('_token', token);
         formData.append('type', msg_type.attr('data-values'));
         $.ajax({
-            url: "../message_upload",
+            url: "../public/message_upload",
             data: formData,
             type: 'POST',
             dataType: 'json',
@@ -550,11 +550,11 @@ $(function () {
                 'type': type,
                 'mediaid': wechat_media_id
             },
-            url: '../message_store',
+            url: '../public/message_store',
             success: function (result) {
                 if (result.statusCode === 200) {
                     $.alert('消息发送成功！', function () {
-                        window.location.href = '../message_center';
+                        window.location.href = '../public/message_center';
                     });
                 } else {
                     $.alert('消息发送失败，请稍后重试！');

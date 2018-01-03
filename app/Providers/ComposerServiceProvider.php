@@ -123,7 +123,8 @@ class ComposerServiceProvider extends ServiceProvider {
         
         View::composer('school.create_edit', 'App\Http\ViewComposers\SchoolComposer');
         View::composer('school.index', 'App\Http\ViewComposers\SchoolIndexComposer');
-        
+        View::composer('school.show', 'App\Http\ViewComposers\SchoolShowComposer');
+
         View::composer('school_type.index', 'App\Http\ViewComposers\SchoolTypeIndexComposer');
 
         View::composer('corp.index', 'App\Http\ViewComposers\CorpIndexComposer');
