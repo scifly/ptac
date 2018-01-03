@@ -34,3 +34,9 @@ if (typeof dept === 'undefined') {
     $.getMultiScripts(['js/department.tree.js'], page.siteRoot())
         .done(function() { dept.init('educators/create'); });
 } else { dept.init('educators/create'); }
+
+$('.js-btn-close-Attachment').on('click',function () {
+	$('.form-horizontal').show();
+	$('.box-footer').show();
+	$('.tree-box').hide();
+});

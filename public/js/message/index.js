@@ -20,7 +20,7 @@ var $send = $('#send');
 var $token = $('#csrf_token');
 var $addArticle = $('#add-article-url');
 var $fileCover = $('#file-cover');
-
+var $btn_cancelAttachment = $('.js-btn-close-Attachment');
 // 附件管理
 $addAttachment.on('click', function() {
     $message.hide();
@@ -31,7 +31,10 @@ $cancelAttachment.on('click',function () {
     $message.show();
     $objects.hide();
 });
-
+$btn_cancelAttachment.on('click',function () {
+    $message.show();
+    $objects.hide();
+});
 // 图文管理
 $addImageText.on('click', function() {
     $message.hide();
@@ -44,6 +47,7 @@ $cancelImageText.on('click',function () {
     $message.show();
     $imageText.hide();
 });
+
 $addVideo.on('click', function() {
     $message.hide();
     $video.show();
