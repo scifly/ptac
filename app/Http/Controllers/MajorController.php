@@ -47,9 +47,7 @@ class MajorController extends Controller {
      */
     public function create() {
         
-        return $this->output([
-            'subjects' => $this->subject->subjects(1),
-        ]);
+        return $this->output(['subjects' => Subject::subjects(1)]);
         
     }
     
@@ -63,7 +61,7 @@ class MajorController extends Controller {
      */
     public function store(MajorRequest $request) {
         
-        return $this->major->store($request) ? $this->succeed() : $this->fail();
+        return Major::store($request) ? $this->succeed() : $this->fail();
         
     }
 
@@ -76,7 +74,7 @@ class MajorController extends Controller {
      */
     public function edit($id) {
         
-        $major = $this->major->find($id);
+        $major = Major::find($id);
         if (!$major) {
             return $this->notFound();
         }
@@ -105,7 +103,7 @@ class MajorController extends Controller {
      */
     public function update(MajorRequest $request, $id) {
         
-        $major = $this->major->find($id);
+        $major = Major::find($id);
         if (!$major) { return $this->notFound(); }
         
         return $major->modify($request, $id) ? $this->succeed() : $this->fail();
@@ -122,7 +120,7 @@ class MajorController extends Controller {
      */
     public function destroy($id) {
         
-        $major = $this->major->find($id);
+        $major = Major::find($id);
         if (!$major) { return $this->notFound(); }
         
         return $major->remove($id) ? $this->succeed() : $this->fail();

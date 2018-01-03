@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\SubjectRequest;
 use App\Models\Grade;
 use App\Models\Major;
-use App\Models\MajorSubject;
 use App\Models\Subject;
 use Exception;
 use Illuminate\Http\JsonResponse;
