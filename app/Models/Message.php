@@ -108,7 +108,7 @@ class Message extends Model {
      */
     public function classes(array $classIds) { return Squad::whereIn('id', $classIds)->get(['id', 'name']); }
 
-    public function messageSendinglogs() { return $this->belongsTo('App\Models\MessageSendingLog'); }
+    public function messageSendinglogs() { return $this->belongsTo('App\Models\MessageSendingLog','msl_id','id'); }
 
     public function commType() { return $this->belongsTo('App\Models\CommType'); }
 
