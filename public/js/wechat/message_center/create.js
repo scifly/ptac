@@ -554,7 +554,7 @@ $(function () {
             success: function (result) {
                 if (result.statusCode === 200) {
                     $.alert('消息发送成功！', function () {
-                        window.location.href = '../public/message_center';
+                        window.location.href = '../message_center';
                     });
                 } else {
                     $.alert('消息发送失败，请稍后重试！');
