@@ -398,13 +398,13 @@ $send.on('click', function() {
         break;
 	case 'mpnews':
 	//图文
-	  	var articles = [{
+	  	var articles = {
 	  		title : $('.show_imagetext_title').text(),
 	  		content : $('.show_imagetext_content').html(),
 	  		author : $('.show_imagetext_author').val(),
 	  		content_source_url : $('.show_imagetext_content_source_url').val(),
 	  		thumb_media_id : $('.show_imagetext_pic_media_id').val(),
-	  	}];
+	  	};
 	  	content = {articles : articles};
         media_id = $('.show_imagetext_media_id').val();
         break;
