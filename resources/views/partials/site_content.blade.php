@@ -31,7 +31,6 @@
             </div>
         </div>
     @else
-        {{--菜单配置错误, 请检查后重试--}}
         {!! $content !!}
     @endif
 </section>

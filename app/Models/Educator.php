@@ -5,7 +5,6 @@ namespace App\Models;
 use App\Events\EducatorImported;
 use App\Events\SchoolDeleted;
 use App\Facades\DatatableFacade as Datatable;
-use App\Helpers\ControllerTrait;
 use App\Helpers\ModelTrait;
 use App\Http\Requests\CustodianRequest;
 use App\Http\Requests\EducatorRequest;
@@ -57,7 +56,7 @@ use PHPExcel_Exception;
  */
 class Educator extends Model {
     
-    use ControllerTrait, ModelTrait;
+    use ModelTrait;
     
     const EXCEL_FILE_TITLE = [
         '姓名', '性别', '生日', '学校',

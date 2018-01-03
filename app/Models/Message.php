@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Facades\Wechat;
+use App\Helpers\ModelTrait;
 use App\Http\Requests\MessageRequest;
 use Carbon\Carbon;
 use Eloquent;
@@ -71,6 +72,8 @@ use Illuminate\Support\Facades\Storage;
  */
 class Message extends Model {
 
+    use ModelTrait;
+    
     protected $table = 'messages';
 
     protected $fillable = [
@@ -206,7 +209,7 @@ class Message extends Model {
             ['db' => 'Message.msl_id', 'dt' => 3],
             ['db' => 'User.realname', 'dt' => 4],
             ['db' => 'MessageType.name as messagetypename', 'dt' => 5],
-            ['db' => 'Message.readed', 'dt' => 6,
+            ['db' => 'Message.read', 'dt' => 6,
                 'formatter' => function ($d) {
                     return $d === 0 ? "否" : "是";
                 },
@@ -455,6 +458,7 @@ class Message extends Model {
      * @return array
      */
     public function getMobiles($touser, $toparty) {
+        
         $mobiles = [];
         $userDatas = [];
         if ($touser) {

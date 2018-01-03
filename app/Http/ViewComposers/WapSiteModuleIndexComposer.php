@@ -2,16 +2,17 @@
 
 namespace App\Http\ViewComposers;
 
-use App\Helpers\ControllerTrait;
-use App\Models\WapSite;
+use App\Helpers\ModelTrait;
 use Illuminate\Contracts\View\View;
 
 class WapSiteModuleIndexComposer {
-    use ControllerTrait;
+    
+    use ModelTrait;
 
     public function compose(View $view) {
 
         $view->with(['uris' => $this->uris()]);
+        
     }
 
 }

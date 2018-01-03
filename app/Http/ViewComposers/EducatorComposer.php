@@ -2,7 +2,7 @@
 
 namespace App\Http\ViewComposers;
 
-use App\Helpers\ControllerTrait;
+use App\Helpers\ModelTrait;
 use App\Models\Group;
 use App\Models\School;
 use App\Models\Subject;
@@ -11,10 +11,10 @@ use Illuminate\Contracts\View\View;
 
 class EducatorComposer {
 
-    use ControllerTrait;
-    
+    use ModelTrait;
+
     public function compose(View $view) {
-        
+
         $schoolId = School::id();
         $school = School::find($schoolId);
 
@@ -36,7 +36,7 @@ class EducatorComposer {
             ->pluck('name', 'id')
             ->toArray();
         array_unshift($subjects, '(请选择)');
-        
+
         $view->with([
             'schoolId' => $schoolId,
             'squads' => $squads,
@@ -45,6 +45,7 @@ class EducatorComposer {
             'teams' => $teams,
             'uris' => $this->uris()
         ]);
+        
     }
 
 }

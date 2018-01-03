@@ -215,18 +215,18 @@ class User extends Authenticatable {
     /**
      * 返回用户列表(id, name)
      *
-     * @param array $userIds
+     * @param array $ids
      * @return array
      */
-    static function users(array $userIds) {
+    static function users(array $ids) {
 
-        $users = [];
-        foreach ($userIds as $id) {
+        $list = [];
+        foreach ($ids as $id) {
             $user = self::find($id);
-            $users[$user->id] = $user->realname;
+            $list[$user->id] = $user->realname;
         }
 
-        return $users;
+        return $list;
 
     }
 
@@ -238,8 +238,7 @@ class User extends Authenticatable {
     static function topDeptId() {
         
         $departmentIds = Auth::user()->departments
-            ->pluck('id')
-            ->toArray();
+            ->pluck('id')->toArray();
         $levels = [];
         foreach ($departmentIds as $id) {
             $level = 0;
@@ -252,24 +251,25 @@ class User extends Authenticatable {
 
     }
 
-
     /**
-     * 学校以下的部门获取所属学校部门id
+     * 根据部门id获取部门所属学校的部门id
      *
      * @param $deptId
      * @return int|mixed
      */
-    static function getDeptSchoolId(&$deptId) {
+    static function schoolDeptId(&$deptId) {
 
         $dept = Department::find($deptId);
-        $typeId = DepartmentType::where('name', '学校')->first()->id;
+        $typeId = DepartmentType::whereName('学校')->first()->id;
         if ($dept->department_type_id != $typeId) {
             $deptId = $dept->parent_id;
-            return self::getDeptSchoolId($deptId);
-        }else{
+            return self::schoolDeptId($deptId);
+        } else {
             return $deptId;
         }
+
     }
+
     /**
      * 创建企业号会员
      *
@@ -289,13 +289,6 @@ class User extends Authenticatable {
         ];
         event(new UserCreated($data));
 
-    }
-
-    static function importData(&$data) {
-        
-        $u = self::create($data);
-        $data['id'] = $u->id;
-        
     }
 
     /**

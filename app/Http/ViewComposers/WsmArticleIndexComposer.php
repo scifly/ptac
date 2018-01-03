@@ -2,18 +2,17 @@
 
 namespace App\Http\ViewComposers;
 
-use App\Helpers\ControllerTrait;
-use App\Models\WapSiteModule;
+use App\Helpers\ModelTrait;
 use Illuminate\Contracts\View\View;
 
 class WsmArticleIndexComposer {
-    use ControllerTrait;
+    
+    use ModelTrait;
 
-    /**
-     * @param View $view
-     */
     public function compose(View $view) {
+        
         $view->with(['uris' => $this->uris()]);
+        
     }
 
 }

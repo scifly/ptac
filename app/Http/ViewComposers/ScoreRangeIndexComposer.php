@@ -2,15 +2,17 @@
 
 namespace App\Http\ViewComposers;
 
-use App\Helpers\ControllerTrait;
-use App\Models\School;
-use App\Models\Subject;
+use App\Helpers\ModelTrait;
 use Illuminate\Contracts\View\View;
 
 class ScoreRangeIndexComposer {
-    use ControllerTrait;
+    
+    use ModelTrait;
 
     public function compose(View $view) {
+        
         $view->with(['uris' => $this->uris()]);
+        
     }
+    
 }

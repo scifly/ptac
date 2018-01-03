@@ -1,7 +1,10 @@
 <?php
 namespace App\Helpers;
 
+use App\Models\Action;
+use App\Policies\Route;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Request;
 use ReflectionClass;
 
 trait ModelTrait {
@@ -30,6 +33,27 @@ trait ModelTrait {
         return true;
         
     }
-    
+
+    /**
+     * 获取当前控制器包含的方法所对应的路由对象数组
+     *
+     * @return array
+     */
+    static function uris() {
+
+        $controller = class_basename(Request::route()->controller);
+        $routes = Action::whereController(class_basename($controller))
+            ->where('route', '<>', null)
+            ->pluck('route', 'method')
+            ->toArray();
+        $uris = [];
+        foreach ($routes as $key => $value) {
+            $uris[$key] = new Route($value);
+        }
+        
+        return $uris;
+
+    }
+
 }
 

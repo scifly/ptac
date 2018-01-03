@@ -2,20 +2,19 @@
 
 namespace App\Http\ViewComposers;
 
-use App\Helpers\ControllerTrait;
-use App\Models\Educator;
-use App\Models\Grade;
-use App\Models\School;
+use App\Helpers\ModelTrait;
 use Illuminate\Contracts\View\View;
 
 class SquadIndexComposer {
-    use ControllerTrait;
+
+    use ModelTrait;
 
     public function compose(View $view) {
 
         $view->with([
             'uris' => $this->uris()
         ]);
+
     }
 
 }

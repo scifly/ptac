@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 use App\Facades\Wechat;
 use App\Http\Requests\WapSiteRequest;
 use App\Models\Media;
-use App\Models\Menu;
 use App\Models\School;
 use App\Models\WapSite;
 use Exception;
@@ -22,19 +21,10 @@ use Throwable;
  */
 class WapSiteController extends Controller {
     
-    protected $wapSite;
-    protected $media;
-    protected $menu;
-    protected $school;
-    
-    public function __construct(WapSite $wapSite, Media $media, Menu $menu, School $school) {
+    public function __construct() {
         
         $this->middleware(['auth', 'checkrole']);
-        $this->wapSite = $wapSite;
-        $this->media = $media;
-        $this->menu = $menu;
-        $this->school = $school;
-        
+
     }
     
     /**
@@ -44,8 +34,9 @@ class WapSiteController extends Controller {
      * @throws Throwable
      */
     public function index() {
+
         $schoolId = School::id();
-        $wapSite = $this->wapSite->where('school_id',$schoolId)->first();
+        $wapSite = WapSite::whereSchoolId($schoolId)->first();
         if (empty($wapSite)) {
             return parent::notFound();
         }
@@ -53,23 +44,11 @@ class WapSiteController extends Controller {
     
         return $this->output([
             'wapSite' => $wapSite,
-            'medias'  => $this->media->medias($mediaIds),
+            'medias'  => Media::medias($mediaIds),
             'show'    => true,
         ]);
     
     }
-    
-    /**
-     * 创建微网站
-     *
-     * @return bool|JsonResponse
-     * @throws Throwable
-     */
-    // public function create() {
-    //
-    //     return $this->output();
-    //
-    // }
     
     /**
      * 保存微网站
@@ -81,33 +60,9 @@ class WapSiteController extends Controller {
      */
     public function store(WapSiteRequest $request) {
         
-        return $this->wapSite->store($request)
-            ? $this->succeed() : $this->fail();
-        
+        return $this->result(WapSite::store($request));
+
     }
-    
-    /**
-     * 微网站详情
-     *
-     * @param $id
-     * @return bool|JsonResponse
-     * @throws Throwable
-     */
-    // public function show($id) {
-    //
-    //     $wapSite = $this->wapSite->find($id);
-    //     if (!$wapSite) {
-    //         return parent::notFound();
-    //     }
-    //     $mediaIds = explode(",", $wapSite->media_ids);
-    //
-    //     return $this->output([
-    //         'wapSite' => $wapSite,
-    //         'medias'  => $this->media->medias($mediaIds),
-    //         'show'    => true,
-    //     ]);
-    //
-    // }
     
     /**
      * 编辑微网站
@@ -117,14 +72,13 @@ class WapSiteController extends Controller {
      * @throws Throwable
      */
     public function edit($id) {
-        $wapSite = $this->wapSite->find($id);
-        if (!$wapSite) {
-            return parent::notFound();
-        }
+
+        $wapSite = WapSite::find($id);
+        if (!$wapSite) { return parent::notFound(); }
         
         return $this->output([
             'wapSite' => $wapSite,
-            'medias'  => $this->media->medias(explode(',',$wapSite->media_ids)),
+            'medias'  => Media::medias(explode(',',$wapSite->media_ids)),
         ]);
         
     }
@@ -140,9 +94,8 @@ class WapSiteController extends Controller {
      */
     public function update(WapSiteRequest $request, $id) {
         
-        return $this->wapSite->modify($request, $id)
-            ? $this->succeed() : $this->fail();
-        
+        return $this->result(WapSite::modify($request, $id));
+
     }
     
     /**
@@ -154,12 +107,12 @@ class WapSiteController extends Controller {
      */
     public function destroy($id) {
         
-        $wapsite = $this->wapSite->find($id);
+        $wapsite = WapSite::find($id);
         if (!$wapsite) {
             return parent::notFound();
         }
         
-        return $wapsite->delete() ? parent::succeed() : parent::fail();
+        return $this->result($wapsite->delete());
         
     }
     
@@ -175,7 +128,6 @@ class WapSiteController extends Controller {
         if (empty($files)) {
             $result['statusCode'] = 0;
             $result['message'] = '您还未选择图片！';
-            
             return $result;
         } else {
             $result['data'] = [];
@@ -187,7 +139,7 @@ class WapSiteController extends Controller {
             $result['message'] = '上传成功！';
             $result['data'] = $mes;
             $token = '';
-            $result = Wechat::uploadMedia($token, $type,$data);
+            $result = Wechat::uploadMedia($token, $type);
         }
         
         return response()->json($result);

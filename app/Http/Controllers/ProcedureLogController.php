@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Helpers\ControllerTrait;
 use App\Http\Requests\ProcedureLogRequest;
 use App\Models\Media;
 use App\Models\ProcedureLog;
@@ -19,14 +18,9 @@ use Throwable;
  */
 class ProcedureLogController extends Controller {
     
-    use ControllerTrait;
+    function __construct() {
     
-    protected $procedureLog;
-    
-    function __construct(ProcedureLog $procedureLog) {
-    
-        $this->middleware(['auth']);
-        $this->procedureLog = $procedureLog;
+        $this->middleware(['auth', 'checkrole']);
         
     }
     
@@ -41,37 +35,40 @@ class ProcedureLogController extends Controller {
         if (Request::get('draw')) {
             $userId = 6;
             //查询我发布的流程最后一条log记录
-            $ids = $this->procedureLog->select(DB::raw('max(procedure_logs.id) as id'))
+            $ids = ProcedureLog::select(DB::raw('max(procedure_logs.id) as id'))
                 ->where('initiator_user_id', $userId)
                 ->groupBy('first_log_id')
                 ->pluck('id')->toArray();
             $where = 'ProcedureLog.id in (' . implode(',', $ids) . ')';
-            return response()->json($this->procedureLog->datatable($where));
+            return response()->json(ProcedureLog::datatable($where));
         }
         
         return $this->output();
         
     }
-    
+
     /**
      * 待审核的流程审批列表
      *
      * @return bool|JsonResponse
+     * @throws Throwable
      */
     public function pending() {
         
         if (Request::get('draw')) {
             $userId = 3;
             //查询待审核的流程最后一条log记录
-            $ids = $this->procedureLog->select(DB::raw('max(procedure_logs.id) as id'))
+            $ids = ProcedureLog::select(DB::raw('max(procedure_logs.id) as id'))
                 ->where('step_status', 2)
                 ->groupBy('first_log_id')
                 ->pluck('id')
                 ->toArray();
             $where = 'ProcedureLog.id in (' . implode(',', $ids) . ') and FIND_IN_SET(' . $userId . ',ProcedureStep.approver_user_ids)';
-            return response()->json($this->procedureLog->datatable($where));
-            
+            return response()->json(ProcedureLog::datatable($where));
         }
+
+        return $this->output();
+
     }
     
     /**
@@ -81,11 +78,12 @@ class ProcedureLogController extends Controller {
      * @throws Throwable
      */
     public function related() {
+        
         if (Request::get('draw')) {
             $userId = 3;
             $where = '(FIND_IN_SET(' . $userId . ',ProcedureStep.related_user_ids) or FIND_IN_SET(' . $userId . ',ProcedureStep.approver_user_ids))';
             
-            return response()->json($this->procedureLog->datatable($where));
+            return response()->json(ProcedureLog::datatable($where));
             
         }
         
@@ -101,10 +99,10 @@ class ProcedureLogController extends Controller {
      * @throws Throwable
      */
     public function show($firstLogId) {
+        
         $userId = 7;
         //根据IDs查询数据
-        $data = $this->procedureLog
-            ->with('procedure', 'procedure_step', 'initiator_user', 'operator_user')
+        $data = ProcedureLog::with('procedure', 'procedure_step', 'initiator_user', 'operator_user')
             ->where('first_log_id', $firstLogId)
             ->orderBy('id', 'asc')
             ->get();
@@ -124,6 +122,7 @@ class ProcedureLogController extends Controller {
      * @throws Throwable
      */
     public function create() {
+        
         $procedureId = DB::table('procedures')->pluck('name', 'id');
         
         return $this->output(['procedure_id' => $procedureId]);
@@ -137,6 +136,7 @@ class ProcedureLogController extends Controller {
      * @return JsonResponse
      */
     public function store(ProcedureLogRequest $request) {
+        
         $userId = 6;
         $mediaIds = $request->input('media_ids');
         $procedureStep = DB::table('procedure_steps')
@@ -155,8 +155,8 @@ class ProcedureLogController extends Controller {
             'initiator_msg'       => $request->input('initiator_msg'),
             'initiator_media_ids' => empty($mediaIds) ? 0 : implode(',', $mediaIds),
         ];
-        if ($id = $this->procedureLog->insertGetId($data)) {
-            $this->procedureLog->where('id', $id)->update(['first_log_id' => $id]);
+        if ($id = ProcedureLog::insertGetId($data)) {
+            ProcedureLog::where('id', $id)->update(['first_log_id' => $id]);
             
             return $this->succeed();
         }
@@ -174,7 +174,7 @@ class ProcedureLogController extends Controller {
         
         $userId = 3;
         $request = Request::all();
-        $update = $this->procedureLog->where('id', $request['id'])
+        $update = ProcedureLog::where('id', $request['id'])
             ->update([
                 'step_status'        => $request['step_status'],
                 'operator_user_id'   => $userId,
@@ -202,7 +202,7 @@ class ProcedureLogController extends Controller {
                     'initiator_msg'       => $request['initiator_msg'],
                     'initiator_media_ids' => empty($request['initiator_media_ids']) ? 0 : $request['initiator_media_ids'],
                 ];
-                $this->procedureLog->insertGetId($data);
+                ProcedureLog::insertGetId($data);
             }
         }
         
@@ -216,6 +216,7 @@ class ProcedureLogController extends Controller {
      * @return JsonResponse
      */
     public function uploadMedias() {
+        
         $files = Request::file('medias');
         if (empty($files)) {
             $result['statusCode'] = 500;
@@ -224,7 +225,7 @@ class ProcedureLogController extends Controller {
             $result['data'] = [];
             $mes = [];
             foreach ($files as $file) {
-                $mes [] = $this->uploadedMedias($file, '上传审批流程相关文件');
+                $mes [] = Media::upload($file, '上传审批流程相关文件');
             }
             $result['statusCode'] = 200;
             $result['message'] = '上传成功！';
@@ -242,6 +243,7 @@ class ProcedureLogController extends Controller {
      * @return JsonResponse
      */
     public function deleteMedias($id) {
+        
         $path = Media::whereId($id)->value('path');
         $path_arr = explode("/", $path);
         Storage::disk('uploads')->delete($path_arr[5]);
