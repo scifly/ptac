@@ -504,9 +504,6 @@ class MessageCenterController extends Controller {
                             'readed'          => 0,
                             'sent'            => 0,
                         ];
-                        print_r($messageData);
-                        die;
-                        
                         $message = $this->message->create($messageData);
                         $message->sent = 1;
                         $message->save();
