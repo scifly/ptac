@@ -60,9 +60,9 @@ class MessageCenterController extends Controller {
             $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
             $userId = $userInfo['UserId'];
             Session::put('userId',$userId);
+            print_r($userInfo);
+            die;
         }
-        print_r($userInfo);
-        die;
         // $userId = 'yuanhongbin';
         // Session::put('userId',$userId);
         $user = User::whereUserid($userId)->first();
