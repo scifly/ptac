@@ -11,6 +11,7 @@ use App\Models\Tab;
 use App\Models\WapSite;
 use Closure;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class CheckRole {
@@ -64,7 +65,11 @@ class CheckRole {
             
             return $next($request);
         }
+        Log::debug($route);
         # 功能权限判断
+        if (strpos($route, '?')) {
+            $route = explode('?', $route);
+        }
         $controller = Action::whereRoute($route)->first()->controller;
         switch ($role) {
             case '企业':
