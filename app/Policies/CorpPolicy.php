@@ -23,7 +23,7 @@ class CorpPolicy {
     }
 
     /**
-     * Determine whether the user can view/edit/update/delete the corp.
+     * Determine whether the user can (v)iew/(e)dit/(u)pdate/(d)elete the corp.
      *
      * @param  User $user
      * @param  Corp $corp

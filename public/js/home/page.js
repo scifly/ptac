@@ -16,7 +16,6 @@ var page = {
             css: 'js/plugins/select2/css/select2.min.css',
             js: 'js/plugins/select2/js/select2.full.min.js',
             jscn: 'js/plugins/select2/js/i18n/zh-CN.js'
-
         },
         icheck: {
             css: 'js/plugins/icheck/all.css',
@@ -84,7 +83,7 @@ var page = {
             ? window.location.origin + '/'
             : window.location.protocol + '/' + window.location.host + '/';
         if (window.location.href.indexOf('public') > -1) {
-            return siteRoot + 'pppp/public/';
+            return siteRoot + 'ptac/public/';
         }
         return siteRoot;
     },
