@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\GradeRequest;
 use App\Models\Educator;
 use App\Models\Grade;
-use App\Models\GroupTab;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;

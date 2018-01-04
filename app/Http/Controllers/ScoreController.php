@@ -10,6 +10,8 @@ use Excel;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
+use Maatwebsite\Excel\Classes\PHPExcel;
+use Maatwebsite\Excel\Files\ExcelFile;
 use Throwable;
 
 /**
@@ -153,13 +155,13 @@ class ScoreController extends Controller {
      */
     public function export($examId) {
         
-        $exam = $this->exam->find($examId);
-        $subject = $this->exam->subjects($exam->subject_ids);
+        $exam = Exam::find($examId);
+        $subject = Exam::subjects($exam->subject_ids);
         $heading = ['学号', '姓名'];
         foreach ($subject as $value) {
             $heading[] = $value;
         }
-        $cellData = $this->student->studentsNum($exam->class_ids);
+        $cellData = Student::studentsNum($exam->class_ids);
         array_unshift($cellData, $heading);
         Excel::create('score', function ($excel) use ($cellData, $examId) {
             $excel->sheet('score', function ($sheet) use ($cellData) {
@@ -178,13 +180,13 @@ class ScoreController extends Controller {
         $insert = [];
         Excel::load($filePath, function ($reader) use (&$insert) {
             $exam_id = $reader->getTitle();
-            $subjects = $this->subject->ids(array_slice(array_keys($reader->toArray()[0]), 2));
+            $subjects = Subject::ids(array_slice(array_keys($reader->toArray()[0]), 2));
             $reader->each(function ($sheet) use ($exam_id, $subjects, &$insert) {
                 $studentNum = '';
                 foreach ($sheet as $key => $row) {
                     switch ($key) {
                         case '学号':
-                            $studentNum = $this->student->whereStudentNumber($row)->value('id');
+                            $studentNum = Student::whereStudentNumber($row)->value('id');
                             break;
                         case '姓名':
                             break;
@@ -203,7 +205,7 @@ class ScoreController extends Controller {
             });
         });
         
-        return $this->score->insert($insert) ? $this->succeed() : $this->fail();
+        return Score::insert($insert) ? $this->succeed() : $this->fail();
     }
 }
 

@@ -91,7 +91,7 @@ class Exam extends Model {
         $subjectIds = explode(",", $subjectIds);
         $selectedSubjects = [];
         foreach ($subjectIds as $subjectId) {
-            $selectedSubjects[$subjectId] = Subject::whereId($subjectId)->value('name');
+            $selectedSubjects[$subjectId] = Subject::find($subjectId)->name;
         }
         return $selectedSubjects;
 
@@ -236,7 +236,7 @@ class Exam extends Model {
                 ],
             ],
         ];
-        $condition = 'ExamType.school_id = ' . School::id();
+        $condition = 'ExamType.school_id = ' . School::schoolId();
         
         return Datatable::simple(self::getModel(), $columns, $joins, $condition);
 

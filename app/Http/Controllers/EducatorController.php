@@ -4,10 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\EducatorRequest;
 use App\Models\Department;
 use App\Models\Educator;
-use App\Models\EducatorClass;
-use App\Models\Mobile;
 use App\Models\School;
-use App\Models\Team;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
@@ -56,7 +53,7 @@ class EducatorController extends Controller {
         
         $this->authorize('c', Educator::class);
         if (Request::method() === 'POST') {
-            $school = School::find(School::id());
+            $school = School::find(School::schoolId());
             return response()->json(
                 Department::tree($school->department_id)
             );

@@ -21,7 +21,7 @@ class CustodianComposer {
         $classes = null;
         $students = null;
 
-        $schoolId = School::id();
+        $schoolId = School::schoolId();
         $schools = School::whereId($schoolId)
             ->where('enabled', 1)
             ->pluck('name', 'id');

@@ -73,16 +73,17 @@ class StudentAttendanceController extends Controller {
         } else {
             $input['student_id'] = $student->id;
         }
-        $attendance = AttendanceMachine::where('machineid', $input['attendId'])
-            ->where('school_id', $schoolId)
-            ->first();
+        $attendance = AttendanceMachine::whereMachineid($input['attendId'])
+            ->where('school_id', $schoolId)->first();
         if (empty($attendance)) {
             return response()->json('考勤机id有误 ，请重新输入！', 500);
         } else {
             $input['attendance_machine_id'] = $attendance->id;
         }
         
-        return $this->studentAttendance->storeByFace($input) ? response()->json('success', 200) : response()->json('failed', 500);
+        return $this->studentAttendance->storeByFace($input)
+            ? response()->json('success', 200)
+            : response()->json('failed', 500);
     }
     
 }

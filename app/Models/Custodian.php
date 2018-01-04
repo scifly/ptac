@@ -235,9 +235,9 @@ class Custodian extends Model {
                 # 删除与指定监护人绑定的学生记录
                 CustodianStudent::whereCustodianId($custodianId)->delete();
                 # 删除与指定监护人绑定的部门记录
-                DepartmentUser::where('user_id', $custodian['user_id'])->delete();
+                DepartmentUser::whereUserId($custodian['user_id'])->delete();
                 # 删除与指定监护人绑定的手机记录
-                Mobile::where('user_id', $custodian['user_id'])->delete();
+                Mobile::whereUserId($custodian['user_id'])->delete();
             });
         } catch (Exception $e) {
             throw $e;
@@ -359,8 +359,8 @@ class Custodian extends Model {
             ['db' => 'User.email', 'dt' => 3],
             ['db' => 'Custodian.id as mobile', 'dt' => 4,
                 'formatter' => function ($d) {
-                    $custodian = Custodian::whereId($d)->first();
-                    $mobiles = Mobile::where('user_id', $custodian->user_id)->get();
+                    $custodian = Custodian::find($d);
+                    $mobiles = Mobile::whereUserId($custodian->user_id)->get();
                     $mobile = [];
                     foreach ($mobiles as $key => $value) {
                         $mobile[] = $value->mobile;
@@ -420,7 +420,7 @@ class Custodian extends Model {
                 ],
             ],
         ];
-        $condition = 'Grade.school_id = ' . School::id();
+        $condition = 'Grade.school_id = ' . School::schoolId();
         
         return Datatable::simple(self::getModel(), $columns, $joins, $condition);
 

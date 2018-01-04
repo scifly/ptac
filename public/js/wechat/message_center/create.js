@@ -543,7 +543,7 @@ $(function () {
                 '_token': token,
                 'title': title,
                 'content': content,
-                // 'time': time,
+                //'time': time,
                 'department_ids': department_ids,
                 'user_ids': user_ids,
                 'media_ids': media_ids,

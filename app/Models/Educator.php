@@ -307,7 +307,7 @@ class Educator extends Model {
 
                     DepartmentUser::create([
                         'user_id' => $u->id,
-                        'department_id' => School::find(School::id())->department_id,
+                        'department_id' => School::find(School::schoolId())->department_id,
                         'enabled' => $user['enabled'],
                     ]);
                 }
@@ -397,7 +397,7 @@ class Educator extends Model {
                 if ($user['group_id'] == Group::whereName('学校')->first()->id) {
                     DepartmentUser::create([
                         'user_id' => $request->input('user_id'),
-                        'department_id' => School::find(School::id())->department_id,
+                        'department_id' => School::find(School::schoolId())->department_id,
                         'enabled' => $user['enabled'],
                     ]);
                 }
@@ -605,7 +605,7 @@ class Educator extends Model {
                 ],
             ],
         ];
-        $condition = 'Educator.school_id = ' . School::id();
+        $condition = 'Educator.school_id = ' . School::schoolId();
         
         return Datatable::simple(self::getModel(), $columns, $joins, $condition);
 

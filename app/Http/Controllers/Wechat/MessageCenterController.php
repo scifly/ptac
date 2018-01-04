@@ -2,7 +2,6 @@
 namespace App\Http\Controllers\Wechat;
 
 use App\Facades\Wechat;
-use App\Helpers\ControllerTrait;
 use App\Http\Controllers\Controller;
 use App\Models\App;
 use App\Models\CommType;
@@ -22,8 +21,7 @@ use Illuminate\Support\Facades\Session;
 
 class MessageCenterController extends Controller {
     
-    use ControllerTrait;
-    
+
     protected $message, $user, $department;
     
     /**
@@ -46,22 +44,22 @@ class MessageCenterController extends Controller {
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector|\Illuminate\View\View|string
      */
     public function index() {
-        // #获取用户信息
-        // $corpId = 'wxe75227cead6b8aec';
-        // $secret = 'qv_kkW2S3zmMWIUrV3u2nydcyIoLknTvuDMq7ja4TYE';
-        // $agentId = 3;
-        // $userId = Session::get('userId') ? Session::get('userId') : null;
-        // $code = Request::input('code');
-        // if (empty($code) && empty($userId)) {
-        //     $codeUrl = Wechat::getCodeUrl($corpId, $agentId, 'http://weixin.028lk.com/message_center');
-        //     return redirect($codeUrl);
-        // }elseif(!empty($code) && empty($userId)){
-        //     $accessToken = Wechat::getAccessToken($corpId, $secret);
-        //     $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
-        //     $userId = $userInfo['UserId'];
-        //     Session::put('userId',$userId);
-        // }
-         $userId = 'yuanhongbin';
+         #获取用户信息
+         $corpId = 'wxe75227cead6b8aec';
+         $secret = 'qv_kkW2S3zmMWIUrV3u2nydcyIoLknTvuDMq7ja4TYE';
+         $agentId = 3;
+         $userId = Session::get('userId') ? Session::get('userId') : null;
+         $code = Request::input('code');
+         if (empty($code) && empty($userId)) {
+             $codeUrl = Wechat::getCodeUrl($corpId, $agentId, 'http://weixin.028lk.com/message_center');
+             return redirect($codeUrl);
+         }elseif(!empty($code) && empty($userId)){
+             $accessToken = Wechat::getAccessToken($corpId, $secret);
+             $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
+             $userId = $userInfo['UserId'];
+             Session::put('userId',$userId);
+         }
+        //$userId = 'yuanhongbin';
         // Session::put('userId',$userId);
         $user = User::whereUserid($userId)->first();
         if (Request::isMethod('post')) {

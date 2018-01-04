@@ -28,7 +28,7 @@ class EducatorIndexComposer {
                 ->pluck('name', 'id');
         } else {
             $topDepartmentId = User::topDeptId();
-            $departmentType = Department::whereId($topDepartmentId)->first()->departmentType;
+            $departmentType = Department::find($topDepartmentId)->departmentType;
             switch ($departmentType->name) {
                 case '根':
                 case '运营':

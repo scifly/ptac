@@ -5,7 +5,6 @@ use App\Http\Requests\SchoolTypeRequest;
 use App\Models\SchoolType;
 use Exception;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Request;
 use Throwable;
 
@@ -55,7 +54,7 @@ class SchoolTypeController extends Controller {
      * 保存学校类型
      *
      * @param SchoolTypeRequest|\Illuminate\Http\Request $request
-     * @return Response
+     * @return JsonResponse|string
      */
     public function store(SchoolTypeRequest $request) {
         

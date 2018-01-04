@@ -13,7 +13,7 @@ class ExamTypeComposer {
     public function compose(View $view) {
 
         $view->with([
-            'schoolId' => School::id(),
+            'schoolId' => School::schoolId(),
             'uris' => $this->uris()
         ]);
 

@@ -63,6 +63,7 @@ use Illuminate\Support\Facades\DB;
  * @property-read Company $company
  * @property-read Corp $corp
  * @property-read \App\Models\Media|null $media
+ * @property string|null $uri
  */
 class Menu extends Model {
 
@@ -195,9 +196,7 @@ HTML;
     static function subMenuIds($menuId) {
 
         static $childrenIds;
-        $firstIds = Menu::where('parent_id', $menuId)
-            ->get(['id'])
-            ->toArray();
+        $firstIds = Menu::whereParentId($menuId)->get(['id'])->toArray();
         if ($firstIds) {
             foreach ($firstIds as $firstId) {
                 $childrenIds[] = $firstId['id'];
