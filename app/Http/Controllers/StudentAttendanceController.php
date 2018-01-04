@@ -43,10 +43,10 @@ class StudentAttendanceController extends Controller {
             );
         }
         
-        return $this->output();
+        return $this->output(['addBtn' => true]);
         
     }
-    
+
     /**
      * 写入学生考勤记录接口
      *

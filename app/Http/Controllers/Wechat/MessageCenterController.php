@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Session;
 
 class MessageCenterController extends Controller {
     
+
     protected $message, $user, $department;
     
     /**
@@ -30,7 +31,6 @@ class MessageCenterController extends Controller {
      * @param Department $department
      */
     public function __construct(Message $message, User $user, Department $department) {
-        
         // $this->middleware();
         $this->message = $message;
         $this->user = $user;
@@ -44,23 +44,22 @@ class MessageCenterController extends Controller {
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector|\Illuminate\View\View|string
      */
     public function index() {
-        #获取用户信息
-        $corpId = 'wxe75227cead6b8aec';
-        $secret = 'qv_kkW2S3zmMWIUrV3u2nydcyIoLknTvuDMq7ja4TYE';
-        $agentId = 3;
-        $userId = Session::get('userId') ? Session::get('userId') : null;
-        $code = Request::input('code');
-        if (empty($code) && empty($userId)) {
-            $codeUrl = Wechat::getCodeUrl($corpId, $agentId, 'http://weixin.028lk.com/message_center');
-            
-            return redirect($codeUrl);
-        } elseif (!empty($code) && empty($userId)) {
-            $accessToken = Wechat::getAccessToken($corpId, $secret);
-            $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
-            $userId = $userInfo['UserId'];
-            Session::put('userId', $userId);
-        }
-        // $userId = 'yuanhongbin';
+         #获取用户信息
+         $corpId = 'wxe75227cead6b8aec';
+         $secret = 'qv_kkW2S3zmMWIUrV3u2nydcyIoLknTvuDMq7ja4TYE';
+         $agentId = 3;
+         $userId = Session::get('userId') ? Session::get('userId') : null;
+         $code = Request::input('code');
+         if (empty($code) && empty($userId)) {
+             $codeUrl = Wechat::getCodeUrl($corpId, $agentId, 'http://weixin.028lk.com/message_center');
+             return redirect($codeUrl);
+         }elseif(!empty($code) && empty($userId)){
+             $accessToken = Wechat::getAccessToken($corpId, $secret);
+             $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
+             $userId = $userInfo['UserId'];
+             Session::put('userId',$userId);
+         }
+        //$userId = 'yuanhongbin';
         // Session::put('userId',$userId);
         $user = User::whereUserid($userId)->first();
         if (Request::isMethod('post')) {
@@ -76,10 +75,10 @@ class MessageCenterController extends Controller {
                             ->get();
                         if (sizeof($sendMessages) != 0) {
                             foreach ($sendMessages as $s) {
-                                $s['r_user_id'] = User::find($s['r_user_id'])->realname;
+                                $s['r_user_id'] = User::whereId($s['r_user_id'])->first()->realname;
                             }
                         }
-                        
+
                         return response(['sendMessages' => $sendMessages, 'type' => $type]);
                         break;
                     case 'receive':
@@ -90,7 +89,7 @@ class MessageCenterController extends Controller {
                             ->get();
                         if (sizeof($receiveMessages) != 0) {
                             foreach ($receiveMessages as $r) {
-                                $r['s_user_id'] = User::find($r['s_user_id'])->realname;
+                                $r['s_user_id'] = User::whereId($r['s_user_id'])->first()->realname;
                             }
                         }
                         
@@ -105,7 +104,7 @@ class MessageCenterController extends Controller {
         }
         #判断是否为教职工
         $educator = false;
-        if (empty($user)) {
+        if(empty($user)){
             return '<h4>你暂不是教职员工或监护人</h4>';
         }
         if ($user->group->name != '教职员工' && $user->group->name != '监护人') {
@@ -132,45 +131,46 @@ class MessageCenterController extends Controller {
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function create() {
-        
-        $userId = Session::get('userId');
-        if (Request::isMethod('post')) {
+
+        // $userId = Session::get('userId');
+        $userId = 'yuanhongbin';
+        if(Request::isMethod('post')){
             $keywords = Request::get('keywords');
-            if (empty($keywords)) {
+            if (empty($keywords)){
                 $user = $this->user->where('userid', $userId)->first();
-                $educator = Educator::where('user_id', $user->id)->first();
+                $educator = Educator::where('user_id',$user->id)->first();
                 $school = $educator->school;
-                $departmentId = Department::where('name', $school->name)->first()->id;
+                $departmentId = Department::where('name',$school->name)->first()->id;
                 $departments = Department::where('parent_id', $departmentId)->get();
                 $department = Department::whereId($departmentId)->first();
                 $users = $department->users;
-                
                 return response()->json([
-                    'department'  => $department,
-                    'departments' => $departments,
-                    'user'        => $users,
+                    'department' => $department,
+                    'departments'=>$departments,
+                    'user'=> $users
                 ]);
             }
             $users = User::where('realname', 'like', '%' . $keywords . '%')->get();
-            if ($users) {
-                return response()->json(['statusCode' => 200, 'user' => $users]);
+            if($users){
+                return response()->json(['statusCode'=> 200, 'user'=> $users]);
             }
         }
+    
         // $departmentId = 4;
         #教师可发送消息
         #取的和教师关联的学校的部门id
         $user = $this->user->where('userid', $userId)->first();
-        $educator = Educator::whereUserId($user->id)->first();
+        $educator = Educator::where('user_id',$user->id)->first();
         $school = $educator->school;
-        $departmentId = Department::whereName($school->name)->first()->id;
-        $departments = Department::whereParentId($departmentId)->get();
-        $department = Department::find($departmentId);
+        $departmentId = Department::where('name',$school->name)->first()->id;
+        $departments = Department::where('parent_id', $departmentId)->get();
+        $department = Department::whereId($departmentId)->first();
         $users = $department->users;
-        
+
         return view('wechat.message_center.create', [
-            'department'  => $department,
+            'department' => $department,
             'departments' => $departments,
-            'users'       => $users,
+            'users' => $users
         ]);
     }
     
@@ -227,7 +227,7 @@ class MessageCenterController extends Controller {
         $message = $this->message->find($id);
         $edit = ($user->id == $message->s_user_id ? true : false);
         
-        return view('wechat.message_center.show', ['message' => $message, 'edit' => $edit, 'show' => true]);
+        return view('wechat.message_center.show', ['message' => $this->message->find($id), 'edit' => $edit, 'show' => true]);
     }
     
     /**
@@ -251,12 +251,11 @@ class MessageCenterController extends Controller {
      * 消息回复
      *
      */
-    public function replay() {
+    public function replay(){
         $userId = Session::get('userId');
         $user = $this->user->where('userid', $userId)->first();
         $input = Request::all();
         $input['user_id'] = $user->id;
-        
         return MessageReply::store($input) ? $this->succeed() : $this->fail();
     }
     
@@ -265,24 +264,22 @@ class MessageCenterController extends Controller {
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function replayList() {
-        
+    public function replayList(){
         $userId = Session::get('userId');
         $user = $this->user->where('userid', $userId)->first();
         $input = Request::all();
         $message = $this->message->find($input['id']);
         $lists = MessageReply::where('msl_id', $input['msl_id'])->get();
-        if ($user->id == $message->s_user_id) {
-            foreach ($lists as $list) {
+        if($user->id == $message->s_user_id){
+            foreach ($lists as $list){
                 $list->name = $list->user->realname;
             }
-        } else {
+        }else{
             $lists = MessageReply::where('msl_id', $input['msl_id'])->where('user_id', $user->id)->get();
-            foreach ($lists as $list) {
+            foreach ($lists as $list){
                 $list->name = $list->user->realname;
             }
         }
-        
         return $lists ? $this->succeed($lists) : $this->fail();
     }
     
@@ -291,15 +288,16 @@ class MessageCenterController extends Controller {
      *
      * @param $id
      * @return \Illuminate\Http\JsonResponse
-     * @throws Exception
      */
-    public function replayDestroy($id) {
+    public function replayDestroy($id){
         
         $messageReply = MessageReply::find($id);
-        if (!$messageReply) { return $this->notFound(); }
-        
+        if (!$messageReply) {
+            return $this->notFound();
+        }
         return $messageReply->delete() ? $this->succeed() : $this->fail();
     }
+    
     
     /**
      *上传图片和视频
@@ -311,7 +309,6 @@ class MessageCenterController extends Controller {
         $type = Request::input('type');
         if (empty($type)) {
             $data = Media::upload(Request::file('file'), '前端消息中心');
-            
             return $data ? $this->succeed($data) : $this->fail();
         }
         if ($type == 'mpnews') {
@@ -361,9 +358,9 @@ class MessageCenterController extends Controller {
      */
     public function getNextDept($id) {
         
-        $department = Department::find($id);
+        $department = Department::whereId($id)->first();
         $users = $department->users;
-        $nextDepts = Department::whereParentId($id)->get();
+        $nextDepts = Department::where('parent_id', $id)->get();
         $data = view('wechat.message_center.select', ['departments' => $nextDepts, 'users' => $users])->render();
         
         return $data ? $this->succeed($data) : $this->fail();
@@ -379,14 +376,15 @@ class MessageCenterController extends Controller {
      * @throws \Throwable
      */
     private function modifyReaded($id) {
-        
         $message = $this->message->find($id);
-        if (!$message) { return false; }
+        if (!$message) {
+            return false;
+        }
         try {
             DB::transaction(function () use ($message, $id) {
                 $message->readed = 1;
                 $message->save();
-                $msl = MessageSendingLog::find($message->msl_id);
+                $msl = MessageSendingLog::whereId($message->msl_id)->first();
                 $msl->read_count = $msl->read_count + 1;
                 
                 return $msl->save() ? true : false;
@@ -409,6 +407,7 @@ class MessageCenterController extends Controller {
         
         $user = $this->user->where('userid', Session::get('userId'))->first();
         $input = Request::all();
+        
         $userIds = [];
         if (!isset($input['user_ids'])) {
             $input['user_ids'] = [];
@@ -419,6 +418,8 @@ class MessageCenterController extends Controller {
         if ($input['content'] == '0') {
             $input['content'] = '';
         }
+    
+        #处理接收者 这里先处理了一层
         if (!empty($input['department_ids'])) {
             #获取该部门下包括子部门的user
             $users = $this->department->getPartyUser($input['department_ids']);
@@ -457,7 +458,7 @@ class MessageCenterController extends Controller {
                             'media_ids'       => $input['media_ids'],
                             's_user_id'       => $user->id,
                             'r_user_id'       => $receiveUserId,
-                            'message_type_id' => MessageType::whereName('消息通知')->first()->id,
+                            'message_type_id' => MessageType::whereName('test')->first()->id,
                             'readed'          => 1,
                             'sent'            => 1,
                         ];
@@ -500,7 +501,7 @@ class MessageCenterController extends Controller {
                             'media_ids'       => $input['media_ids'],
                             's_user_id'       => $user->id,
                             'r_user_id'       => $receiveUserId,
-                            'message_type_id' => MessageType::whereName('消息通知')->first()->id,
+                            'message_type_id' => MessageType::whereName('test')->first()->id,
                             'readed'          => 0,
                             'sent'            => 0,
                         ];

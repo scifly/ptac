@@ -1,3 +1,4 @@
+<style>.parsley-errors-list.filled{text-align: left}</style>
 <div class="form-group">
     <label for="mobile" class="col-sm-3 control-label">手机</label>
     <div class="col-sm-6">
@@ -27,12 +28,14 @@
                                            value='{{ $mobile->mobile }}'
                                            required
                                            pattern="/^1[0-9]{10}$/"
+                                           style="width: 75%"
                                     />
                                     <input class="form-control"
                                            name="mobile[{{ $key }}][id]"
                                            type="hidden"
                                            value='{{ $mobile->id }}'
                                     />
+
                                 </div>
                             </td>
                             <td class="text-center">
@@ -88,6 +91,7 @@
                                        value=''
                                        required
                                        pattern="/^1[0-9]{10}$/"
+                                       style="width: 75%"
                                 />
                             </div>
                         </td>
