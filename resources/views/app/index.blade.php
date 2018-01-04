@@ -45,7 +45,7 @@
                     'id' => 'secret',
                     'class' => 'form-control input-sm',
                     'required' => 'true',
-                    'data-parsley-length' => '[44,44]'
+                    'data-parsley-length' => '[43,43]'
                 ]) !!}
             </div>
             {!! Form::submit('同步应用', [

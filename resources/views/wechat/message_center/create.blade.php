@@ -199,7 +199,7 @@
 												<i class="weui-icon-checked"></i>
 											</div>
 											<div class="weui-cell__bd">
-												<img src="http://shp.qpic.cn/bizmp/UsXhSsnUkjgYesvoOibygyRfgukxHDouo6ovRRicAKOphkKd0Licg3I2w/64" class="js-go-detail lazy" width="75" height="75">
+												<img src="{{asset('img/20180103142935.png')}}" class="js-go-detail lazy" width="75" height="75">
 												<span class="contacts-text">{{ $user->realname }}</span>
 											</div>
 										</label>
