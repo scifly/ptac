@@ -181,7 +181,8 @@ class MessageCenterController extends Controller {
      * @throws \Throwable
      */
     public function store() {
-        return $this->frontStore() ? $this->succeed() : $this->fail();
+        return $this->succeed();
+        // return $this->frontStore() ? $this->succeed() : $this->fail();
     }
     
     /**
@@ -404,7 +405,7 @@ class MessageCenterController extends Controller {
      * @throws \Throwable
      */
     private function frontStore() {
-        return true;
+
         $user = $this->user->where('userid', Session::get('userId'))->first();
         $input = Request::all();
         $userIds = [];
