@@ -71,7 +71,7 @@ if (typeof crud === 'undefined') {
 
 /** 监护人学生关系管理 */
 var item = 'custodians/';
-var type = 'create/';
+var type = 'create';
 if (typeof custodian === 'undefined') {
 
     $.getMultiScripts(['js/custodian.relationship.js'], page.siteRoot())

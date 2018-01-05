@@ -2,7 +2,7 @@ page.index('educators');
 
 /** 导出excel 选择学校 */
 var item = 'educators/';
-var type = 'export/';
+var type = 'export';
 if (typeof custodian === 'undefined') {
     $.getMultiScripts(['js/custodian.relationship.js'], page.siteRoot())
         .done(function() { custodian.init(item, type, ''); });

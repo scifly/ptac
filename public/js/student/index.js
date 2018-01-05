@@ -36,7 +36,7 @@ $import.on('click', function () {
 });
 /** 导出excel 选择班级 */
 var item = 'students/';
-var type = 'export/';
+var type = 'export';
 if (typeof custodian === 'undefined') {
     $.getMultiScripts(['js/custodian.relationship.js'], page.siteRoot())
         .done(function() { custodian.init(item, type, ''); });

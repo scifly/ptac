@@ -71,10 +71,19 @@ var custodian = {
             var $studentNext = $studentId.next();
             var $studentPrev = $studentId.prev();
             var token = $('#csrf_token').attr('content');
+
+            var uri =  item + type + id + '?field=school' + '&id=' + schoolId + '&_token=' + token;
+            var curWwwPath = window.document.location.href;
+            //获取主机地址之后的目录，如： uimcardprj/share/meun.jsp
+            var pathName = window.document.location.pathname;
+            var pos = curWwwPath.indexOf(pathName);
+            //获取带"/"的项目名，如：/uimcardprj
+            var projectName = pathName.substring(0, pathName.substr(1).indexOf('/') + 1);
+            var url = page.siteRoot() + '/' + projectName + '/public/' + uri;
             $.ajax({
                 type: 'POST',
                 dataType: 'json',
-                url: page.siteRoot() + item + type + id + '?field=school' + '&id=' + schoolId + '&_token=' + token,
+                url: url,
                 success: function (result) {
                     $next.remove();
                     $gradeId.remove();
@@ -105,12 +114,17 @@ var custodian = {
             var $studentId = $('#studentId');
             var $studentNext = $studentId.next();
             var $studentPrev = $studentId.prev();
-
             var token = $('#csrf_token').attr('content');
+            var uri =  item + type + id+ '?field=grade' + '&id=' + gradeId + '&_token=' + token;
+            //获取主机地址之后的目录，如： uimcardprj/share/meun.jsp
+            // var pathName = window.document.location.pathname;
+            // //获取带"/"的项目名，如：/uimcardprj
+            // var projectName = pathName.substring(0, pathName.substr(1).indexOf('/') + 1).replace('/', '');
+
             $.ajax({
                 type: 'POST',
                 dataType: 'json',
-                url: page.siteRoot() + item + type + id + '?field=grade' + '&id=' + gradeId + '&_token=' + token,
+                url: page.siteRoot() + uri,
                 success: function (result) {
                     $next.remove();
                     $classId.remove();
@@ -131,10 +145,17 @@ var custodian = {
             var $next = $studentId.next();
             var $prev = $studentId.prev();
             var token = $('#csrf_token').attr('content');
+            var uri =  item + type + id + '?field=class' + '&id=' + classId + '&_token=' + token;
+            var curWwwPath = window.document.location.href;
+            //获取主机地址之后的目录，如： uimcardprj/share/meun.jsp
+            var pathName = window.document.location.pathname;
+            var pos = curWwwPath.indexOf(pathName);
+            //获取带"/"的项目名，如：/uimcardprj
+            var projectName = pathName.substring(0, pathName.substr(1).indexOf('/') + 1);
             $.ajax({
                 type: 'POST',
                 dataType: 'json',
-                url: page.siteRoot() + item + type + id + '?field=class' + '&id=' + classId + '&_token=' + token,
+                url: page.siteRoot() + '/' + projectName + '/public/' + uri,
                 success: function (result) {
                     $next.remove();
                     $studentId.remove();
