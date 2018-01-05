@@ -181,8 +181,8 @@ class MessageCenterController extends Controller {
      * @throws \Throwable
      */
     public function store() {
-        return $this->succeed();
-        // return $this->frontStore() ? $this->succeed() : $this->fail();
+     
+        return $this->frontStore() ? $this->succeed() : $this->fail();
     }
     
     /**
