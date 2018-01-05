@@ -101,7 +101,7 @@ class ManageStudentAttendance implements ShouldQueue {
                     ]);
                     $input['media_id'] = $m->id;
                 } else {
-                    $input['media_id'] = '';
+                    $input['media_id'] = 0;
                 }
                 $studentAttendance = StudentAttendance::create([
                     'student_id'            => $student->id,
