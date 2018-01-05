@@ -67,9 +67,9 @@ class CheckRole {
         }
         Log::debug($route);
         # 功能权限判断
-        if (strpos($route, '?')) {
-            $route = explode('?', $route);
-        }
+//        if (strpos($route, '?')) {
+//            $route = explode('?', $route);
+//        }
         $controller = Action::whereRoute($route)->first()->controller;
         switch ($role) {
             case '企业':
