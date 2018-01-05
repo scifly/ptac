@@ -108,10 +108,16 @@ class ManageStudentAttendance implements ShouldQueue {
                     'longitude'             => $input['longitude'],
                     'latitude'              => $input['latitude'],
                 ]);
-                #推送信息
-               //根据学生信息获取监护人信息
                 
-                
+               #推送信息
+               //根据学生信息获取监护人信息 多个
+               // $custodians = $student->custodians;
+               //消息模板
+               // $msgTemplate = StudentAttendanceSetting::whereId($studentAttendance->sas_id)->first()->msg_template;
+               $msgTemplate = $studentAttendance->studentAttendancesetting->msg_template;
+               // $msg = '尊敬的XX家长, 你的孩子于XX在校打卡, 打卡状态：XX';
+               print_r($msgTemplate);
+    
             });
         } catch (Exception $e) {
             throw $e;

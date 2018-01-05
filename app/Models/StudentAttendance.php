@@ -62,6 +62,10 @@ class StudentAttendance extends Model {
     public function medias() { return $this->belongsTo('App\Models\Media'); }
     
     /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function studentAttendancesetting(){ return $this->belongsTo('App\Models\StudentAttendanceSetting','sas_id', 'id'); }
+    /**
      * 学生考勤记录列表
      *
      * @return array
