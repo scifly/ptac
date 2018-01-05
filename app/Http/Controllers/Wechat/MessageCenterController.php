@@ -61,8 +61,6 @@ class MessageCenterController extends Controller {
          }
         //$userId = 'yuanhongbin';
         //Session::put('userId',$userId);
-        print_r($userId);
-         die;
         $user = User::whereUserid($userId)->first();
         if (Request::isMethod('post')) {
             $keywords = Request::get('keywords');
