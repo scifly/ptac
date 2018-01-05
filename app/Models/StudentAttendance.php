@@ -1,6 +1,7 @@
 <?php
 namespace App\Models;
 
+use App\Events\StudentAttendanceCreate;
 use App\Facades\DatatableFacade as Datatable;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
@@ -39,16 +40,25 @@ class StudentAttendance extends Model {
     
     protected $table = 'student_attendances';
     protected $fillable = [
-        'id', 'student_id', 'punch_time',
+        'id', 'student_id', 'punch_time', 'sas_id',
         'inorout', 'attendance_machine_id', 'media_id',
-        'longitude', 'latitude', 'created_at',
+        'status', 'longitude', 'latitude', 'created_at',
         'updated_at',
     ];
     
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function attendanceMachine() { return $this->belongsTo('App\Models\AttendanceMachine'); }
     
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function student() { return $this->belongsTo('App\Models\Student'); }
     
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function medias() { return $this->belongsTo('App\Models\Media'); }
     
     /**
@@ -122,41 +132,10 @@ class StudentAttendance extends Model {
     
     /**
      * @param $input
-     * @return bool
-     * @throws Exception
-     * @throws \Throwable
      */
     static function storeByFace($input) {
-        
-        #事务处理
-        try {
-            DB::transaction(function () use ($input) {
-                //先处理照片
-                if ($input['img']) {
-                    $m = Media::create([
-                        'path'          => $input['img'],
-                        'remark'        => '考勤照片',
-                        'media_type_id' => 1,
-                        'enabled'       => 1,
-                    ]);
-                    $input['media_id'] = $m->id;
-                }
-                StudentAttendance::create([
-                    'student_id'            => $input['student_id'],
-                    'punch_time'            => $input['punch_time'],
-                    'inorout'               => $input['inorout'],
-                    'attendance_machine_id' => $input['attendance_machine_id'],
-                    'media_id'              => $input['media_id'],
-                    'longitude'             => $input['longitude'],
-                    'latitude'              => $input['latitude'],
-                ]);
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
-        
+        #触发事件调用队列
+        event(new StudentAttendanceCreate($input));
     }
     
 }

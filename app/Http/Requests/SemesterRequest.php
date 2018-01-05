@@ -11,7 +11,7 @@ class SemesterRequest extends FormRequest {
      * @return bool
      */
     public function authorize() {
-        return false;
+        return true;
     }
     
     /**
@@ -22,8 +22,8 @@ class SemesterRequest extends FormRequest {
     public function rules() {
         return [
             'school_id'  => 'required|integer',
-            'name'       => 'required|string|max:60',
-            'remark'     => 'nullable|string|max:255',
+            'name'       => 'required|string',
+            'remark'     => 'nullable|string',
             'start_date' => 'required|date|before:end_date',
             'end_date'   => 'required|date|after:start_date',
             'enabled'    => 'required|boolean',
