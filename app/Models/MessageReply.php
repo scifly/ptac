@@ -12,7 +12,11 @@ class MessageReply extends Model
     protected $fillable = [
         'msl_id','user_id','content'
     ];
-    
+
+    public static function where( $string, $msl_id ) { }
+
+    public static function find( $id ) { }
+
     /**
      *
      */
