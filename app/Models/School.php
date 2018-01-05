@@ -356,20 +356,15 @@ class School extends Model {
         switch ($user->group->name) {
             case '运营':
             case '企业':
-                $schoolMenuId = Menu::schoolMenuId(session('menuId'));
-                $id = $schoolMenuId ? self::whereMenuId($schoolMenuId)->first()->id : 0;
-                break;
+                $schoolMenuId = Menu::menuId(session('menuId'));
+                return $schoolMenuId ? self::whereMenuId($schoolMenuId)->first()->id : 0;
             case '学校':
                 $departmentId = $user->topDeptId();
-                $id = School::whereDepartmentId($departmentId)->first()->id;
-                break;
+                return School::whereDepartmentId($departmentId)->first()->id;
             default:
-                $id = $user->educator->school_id;
-                break;
+                return $user->educator->school_id;
         }
-    
-        return $id;
-    
+
     }
     /**
      * 获取字段列表

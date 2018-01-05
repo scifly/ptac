@@ -26,7 +26,6 @@
                         'placeholder' => '请输入应用id',
                         'maxlength' => '12'
                     ]) !!}
-
                 </div>
             </div>
             <div class="form-group">
@@ -34,25 +33,17 @@
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
-                    {!! Form::text('name', null, [
-                        'class' => 'form-control',
-                        'required' => 'true',
-                        'placeholder' => '请输入应用名称（不超过12个汉字）',
-                        'maxlength' => '12'
-                    ]) !!}
-                </div>
-            </div>
-            <div class="form-group">
-                {!! Form::label('description', '应用详情', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
-                <div class="col-sm-6">
-                    {!! Form::text('description', null, [
-                        'class' => 'form-control',
-                        'required' => 'true',
-                        'placeholder' => '请输入应用详情',
-                        'maxlength' => '255'
-                    ]) !!}
+                    <div class="input-group">
+                        <div class="input-group-addon">
+                            <i class="fa fa-weixin"></i>
+                        </div>
+                        {!! Form::text('name', null, [
+                            'class' => 'form-control',
+                            'required' => 'true',
+                            'placeholder' => '请输入应用名称（不超过12个汉字）',
+                            'maxlength' => '12'
+                        ]) !!}
+                    </div>
                 </div>
             </div>
             <div class="form-group">
@@ -73,14 +64,23 @@
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
-                    {!! Form::text('home_url', null, [
-                        'class' => 'form-control',
-                        'required' => 'true',
-                        'placeholder' => '请输入主页型应用url',
-                        'maxlength' => '255'
-                    ]) !!}
+                    <div class="input-group">
+                        <div class="input-group-addon">
+                            <i class="fa fa-link"></i>
+                        </div>
+                        {!! Form::text('home_url', null, [
+                            'class' => 'form-control',
+                            'required' => 'true',
+                            'placeholder' => '请输入主页型应用url',
+                            'maxlength' => '255'
+                        ]) !!}
+                    </div>
                 </div>
             </div>
+            @include('partials.remark', [
+                'label' => '应用详情',
+                'field' => 'description',
+            ])
             @include('partials.enabled', [
                 'label' => '打开地理位置上报',
                 'id' => 'report_location_flag',

@@ -6,7 +6,6 @@ use App\Models\Action;
 use App\Models\ActionGroup;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Illuminate\Database\Eloquent\Model;
 
 class ActionPolicy {
     
@@ -19,9 +18,7 @@ class ActionPolicy {
      *
      * @return void
      */
-    public function __construct() {
-
-    }
+    public function __construct() { }
 
     public function act(User $user, Route $route) {
 
@@ -32,6 +29,7 @@ class ActionPolicy {
                 ->first();
             return $actionGroup ? true : false;
         }
+
         return true;
 
     }
