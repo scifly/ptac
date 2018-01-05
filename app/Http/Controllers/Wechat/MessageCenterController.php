@@ -491,7 +491,7 @@ class MessageCenterController extends Controller {
                             'title'           => $input['title'],
                             'comm_type_id'    => CommType::whereName('应用')->first()->id,
                             'app_id'          => App::whereName('信息发送')->first()->id,
-                            'msl_id'          => $input['msl_id'],
+                            'msl_id'          => 22,
                             'content'         => $input['content'],
                             'serviceid'       => 0,
                             'message_id'      => 0,
