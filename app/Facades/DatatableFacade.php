@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Facade;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 
 class DatatableFacade extends Facade {
@@ -268,7 +269,6 @@ class DatatableFacade extends Facade {
      * @return array Formatted data in a row based format
      */
     static function data_output(array $columns, array $data) {
-        
         $out = [];
         $length = count($data);
         for ($i = 0; $i < $length; $i++) {
@@ -276,7 +276,7 @@ class DatatableFacade extends Facade {
             $_data = (array)$data[$i];
             $j = 0;
             foreach ($_data as $name => $value) {
-                if (isset($value) && self::validateDate($value)) {
+                if (isset($value) && self::validateDate($value) && $name != 'birthday') {
                     Carbon::setLocale('zh');
                     $dt = Carbon::createFromFormat('Y-m-d H:i:s', $value);
                     $value = $dt->diffForhumans();
