@@ -61,6 +61,10 @@ class EducatorIndexComposer {
                 ->where('enabled', 1)
                 ->pluck('name', 'id');
         }
+        if (empty($grades)) {$grades[] = '' ;}
+        if (empty($schools)) {$schools[] = '' ;}
+        if (empty($classes)) {$classes[] = '' ;}
+
         $view->with([
             'schools' => $schools,
             'grades' => $grades,
