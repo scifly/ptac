@@ -35,9 +35,10 @@ $import.on('click', function () {
     })
 });
 /** 导出excel 选择班级 */
-var item = 'student';
+var item = 'students/';
+var type = 'export/';
 if (typeof custodian === 'undefined') {
     $.getMultiScripts(['js/custodian.relationship.js'], page.siteRoot())
-        .done(function() { custodian.init(item); });
-} else { custodian.init(item); }
+        .done(function() { custodian.init(item, type, ''); });
+} else { custodian.init(item, type, ''); }
 

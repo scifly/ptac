@@ -227,10 +227,15 @@ class EducatorController extends Controller {
     /**
      * 导出教职员工
      *
-     * @return void
      */
     public function export() {
-        
+
+        if (Request::method() === 'POST') {
+            $field = Request::query('field');
+            $id = Request::query('id');
+            $this->result['html'] = School::getFieldList($field, $id);
+            return response()->json($this->result);
+        }
         $id = Request::query('id');
         if ($id) {
             $data = Educator::export($id);

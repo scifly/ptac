@@ -55,7 +55,7 @@ var custodian = {
             $("#pupils").modal('hide');
         });
     },
-    schoolChange: function() {
+    schoolChange: function(item, type, id) {
         $(document).on('change', '#schoolId', function () {
             var schoolId = $('#schoolId').val();
 
@@ -74,7 +74,7 @@ var custodian = {
             $.ajax({
                 type: 'POST',
                 dataType: 'json',
-                url: page.siteRoot() + 'custodians/create?field=school' + '&id=' + schoolId + '&_token=' + token,
+                url: page.siteRoot() + item + type + id + '?field=school' + '&id=' + schoolId + '&_token=' + token,
                 success: function (result) {
                     $next.remove();
                     $gradeId.remove();
@@ -110,7 +110,7 @@ var custodian = {
             $.ajax({
                 type: 'POST',
                 dataType: 'json',
-                url: page.siteRoot() + 'custodians/create?field=grade' + '&id=' + gradeId + '&_token=' + token,
+                url: page.siteRoot() + item +'/create?field=grade' + '&id=' + gradeId + '&_token=' + token,
                 success: function (result) {
                     $next.remove();
                     $classId.remove();
@@ -134,7 +134,7 @@ var custodian = {
             $.ajax({
                 type: 'POST',
                 dataType: 'json',
-                url: page.siteRoot() + 'custodians/create?field=class' + '&id=' + classId + '&_token=' + token,
+                url: page.siteRoot() + item +'/create?field=class' + '&id=' + classId + '&_token=' + token,
                 success: function (result) {
                     $next.remove();
                     $studentId.remove();
@@ -149,17 +149,17 @@ var custodian = {
             $(this).parents('tr').remove();
         });
     },
-    init: function (item) {
-        custodian.schoolChange();
-        custodian.gradeChange();
-        custodian.classChange();
+    init: function (item, type, id) {
+        custodian.schoolChange(item, type, id);
+        custodian.gradeChange(item, type, id);
+        custodian.classChange(item, type, id);
 
-        if (item === 'student') {
+        if (item === 'students') {
             page.initSelect2();
             custodian.exportStudent();
             custodian.$export().on('click', function () { $('#export-pupils').modal({backdrop: true}) });
 
-        }else if (item === 'educator') {
+        }else if (item === 'educators') {
             page.initSelect2();
             custodian.exportEducator();
             custodian.$export().on('click', function () { $('#export-pupils').modal({backdrop: true}) });
@@ -167,7 +167,7 @@ var custodian = {
         }else{
             custodian.relationship().val("");
             custodian.deleteItem();
-            custodian.saveStudent(item);
+            custodian.saveStudent(0);
             custodian.$addPupil().on('click', function () { $('#pupils').modal({backdrop: true}) });
         }
     },

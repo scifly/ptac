@@ -25,7 +25,7 @@ class CheckRole {
      */
     public function handle($request, Closure $next) {
         
-        $route = $request->route()->uri();
+        $route = trim($request->route()->uri());
 //        if (!Session::exists('menuId') && $route != '/' && $route != 'home') {
 //            $this->abort();
 //        };

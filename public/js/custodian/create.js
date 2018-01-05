@@ -70,12 +70,13 @@ if (typeof crud === 'undefined') {
 // });
 
 /** 监护人学生关系管理 */
-var item = 0;
+var item = 'custodians/';
+var type = 'create/';
 if (typeof custodian === 'undefined') {
 
     $.getMultiScripts(['js/custodian.relationship.js'], page.siteRoot())
-    .done(function() { custodian.init(item); });
-} else { custodian.init(item); }
+    .done(function() { custodian.init(item, type, ''); });
+} else { custodian.init(item, type, ''); }
 
 
 // var $addPupil = $('#add-pupil');

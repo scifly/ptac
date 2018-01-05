@@ -2,7 +2,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StudentRequest;
+use App\Models\Custodian;
 use App\Models\Department;
+use App\Models\School;
 use App\Models\Student;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -49,8 +51,16 @@ class StudentController extends Controller {
     public function create() {
         
         if (Request::method() === 'POST') {
-            return response()->json(Department::tree());
+            $field = Request::query('field');
+            $id = Request::query('id');
+            if($field && $id) {
+                $this->result['html'] = School::getFieldList($field, $id);
+                return response()->json($this->result);
+            }else{
+                return response()->json(Department::tree());
+            }
         }
+
         $items = Student::gradeClasses();
         
         return $this->output([
@@ -91,14 +101,19 @@ class StudentController extends Controller {
     }
     
     /**
-     * 编辑学生记录\
+     * 编辑学生记录
      *
      * @param $id
      * @return bool|JsonResponse
      * @throws Throwable
      */
     public function edit($id) {
-
+        if (Request::method() === 'POST') {
+            $field = Request::query('field');
+            $id = Request::query('id');
+            $this->result['html'] = School::getFieldList($field, $id);
+            return response()->json($this->result);
+        }
         # 查询学生信息
         $student = Student::find($id);
         if (!$student) { return $this->notFound(); }
@@ -178,6 +193,13 @@ class StudentController extends Controller {
      * 导出学籍
      */
     public function export() {
+
+        if (Request::method() === 'POST') {
+            $field = Request::query('field');
+            $id = Request::query('id');
+            $this->result['html'] = School::getFieldList($field, $id);
+            return response()->json($this->result);
+        }
         $id = Request::query('id');
         if ($id) {
             $data = Student::export($id);
