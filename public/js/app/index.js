@@ -1,7 +1,7 @@
 var $sync = $('#sync');
 var $form = $('#formApp');
 var sync = function () {
-    $sync.html(page.ajaxLoader());
+    $('.overlay').show();
     $.ajax({
         type: 'POST',
         url: '../apps/index',
@@ -10,6 +10,11 @@ var sync = function () {
         success: function (result) {
             var data = result["app"];
             var app = '';
+            var className = data['enabled'] ? 'text-green' : 'text-gray';
+            var title = data['enabled'] ? '已启用' : '未启用';
+            var status = '<i class="fa fa-circle ' + className + '" title="' + title + '"></i>\n\n&nbsp;&nbsp;\n' +
+                '<a href="#"><i class="fa fa-pencil" title="修改"></i></a>\n\n&nbsp;&nbsp;\n' +
+                '<a href="#"><i class="fa fa-exchange" title="同步菜单"></i></a>';
             if(result['action'] === 'create') {
                 app = '<tr id="app"' + data['agentid'] + '">' +
                     '<td>' + data['id'] + '</td>' +
@@ -19,7 +24,7 @@ var sync = function () {
                     '<td>' + data['description'] + '</td>' +
                     '<td class="text-center">' + data['created_at'] + '</td>' +
                     '<td class="text-center">' + data['updated_at'] + '</td>' +
-                    '<td class="text-right">' + data['enabled'] + '</td>' +
+                    '<td class="text-right">' + status + '</td>' +
                     '</tr>';
                 var $na = $('#na');
                 if(typeof $na !== 'undefined') {
@@ -35,10 +40,11 @@ var sync = function () {
                     '<td>' + data['description'] + '</td>' +
                     '<td class="text-center">' + data['created_at'] + '</td>' +
                     '<td class="text-center">' + data['updated_at'] + '</td>' +
-                    '<td class="text-right">' + data['enabled'] + '</td>';
+                    '<td class="text-right">' + status + '</td>';
                 $tr.html(app);
             }
-            $sync.html('同步应用');
+            $('.overlay').hide();
+            page.inform('操作结果', '已完成指定应用同步', page.success);
         },
         error: function() {}
     });

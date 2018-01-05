@@ -2,7 +2,6 @@
 namespace App\Http\Controllers\Wechat;
 
 use App\Facades\Wechat;
-use App\Helpers\ControllerTrait;
 use App\Http\Controllers\Controller;
 use App\Models\App;
 use App\Models\CommType;
@@ -22,8 +21,7 @@ use Illuminate\Support\Facades\Session;
 
 class MessageCenterController extends Controller {
     
-    use ControllerTrait;
-    
+
     protected $message, $user, $department;
     
     /**
@@ -46,22 +44,22 @@ class MessageCenterController extends Controller {
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector|\Illuminate\View\View|string
      */
     public function index() {
-        // #获取用户信息
-        // $corpId = 'wxe75227cead6b8aec';
-        // $secret = 'qv_kkW2S3zmMWIUrV3u2nydcyIoLknTvuDMq7ja4TYE';
-        // $agentId = 3;
-        // $userId = Session::get('userId') ? Session::get('userId') : null;
-        // $code = Request::input('code');
-        // if (empty($code) && empty($userId)) {
-        //     $codeUrl = Wechat::getCodeUrl($corpId, $agentId, 'http://weixin.028lk.com/message_center');
-        //     return redirect($codeUrl);
-        // }elseif(!empty($code) && empty($userId)){
-        //     $accessToken = Wechat::getAccessToken($corpId, $secret);
-        //     $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
-        //     $userId = $userInfo['UserId'];
-        //     Session::put('userId',$userId);
-        // }
-         $userId = 'yuanhongbin';
+         #获取用户信息
+         $corpId = 'wxe75227cead6b8aec';
+         $secret = 'qv_kkW2S3zmMWIUrV3u2nydcyIoLknTvuDMq7ja4TYE';
+         $agentId = 3;
+         $userId = Session::get('userId') ? Session::get('userId') : null;
+         $code = Request::input('code');
+         if (empty($code) && empty($userId)) {
+             $codeUrl = Wechat::getCodeUrl($corpId, $agentId, 'http://weixin.028lk.com/message_center');
+             return redirect($codeUrl);
+         }elseif(!empty($code) && empty($userId)){
+             $accessToken = Wechat::getAccessToken($corpId, $secret);
+             $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
+             $userId = $userInfo['UserId'];
+             Session::put('userId',$userId);
+         }
+        //$userId = 'yuanhongbin';
         // Session::put('userId',$userId);
         $user = User::whereUserid($userId)->first();
         if (Request::isMethod('post')) {
@@ -134,8 +132,7 @@ class MessageCenterController extends Controller {
      */
     public function create() {
 
-        // $userId = Session::get('userId');
-        $userId = 'yuanhongbin';
+        $userId = Session::get('userId');
         if(Request::isMethod('post')){
             $keywords = Request::get('keywords');
             if (empty($keywords)){
@@ -229,7 +226,7 @@ class MessageCenterController extends Controller {
         $message = $this->message->find($id);
         $edit = ($user->id == $message->s_user_id ? true : false);
         
-        return view('wechat.message_center.show', ['message' => $this->message->find($id), 'edit' => $edit, 'show' => true]);
+        return view('wechat.message_center.show', ['message' => $message, 'edit' => $edit, 'show' => true]);
     }
     
     /**
@@ -290,6 +287,7 @@ class MessageCenterController extends Controller {
      *
      * @param $id
      * @return \Illuminate\Http\JsonResponse
+     * @throws Exception
      */
     public function replayDestroy($id){
         
@@ -409,7 +407,6 @@ class MessageCenterController extends Controller {
         
         $user = $this->user->where('userid', Session::get('userId'))->first();
         $input = Request::all();
-        
         $userIds = [];
         if (!isset($input['user_ids'])) {
             $input['user_ids'] = [];
@@ -421,7 +418,6 @@ class MessageCenterController extends Controller {
             $input['content'] = '';
         }
     
-        #处理接收者 这里先处理了一层
         if (!empty($input['department_ids'])) {
             #获取该部门下包括子部门的user
             $users = $this->department->getPartyUser($input['department_ids']);
@@ -460,7 +456,7 @@ class MessageCenterController extends Controller {
                             'media_ids'       => $input['media_ids'],
                             's_user_id'       => $user->id,
                             'r_user_id'       => $receiveUserId,
-                            'message_type_id' => MessageType::whereName('test')->first()->id,
+                            'message_type_id' => MessageType::whereName('消息通知')->first()->id,
                             'readed'          => 1,
                             'sent'            => 1,
                         ];
@@ -503,7 +499,7 @@ class MessageCenterController extends Controller {
                             'media_ids'       => $input['media_ids'],
                             's_user_id'       => $user->id,
                             'r_user_id'       => $receiveUserId,
-                            'message_type_id' => MessageType::whereName('test')->first()->id,
+                            'message_type_id' => MessageType::whereName('消息通知')->first()->id,
                             'readed'          => 0,
                             'sent'            => 0,
                         ];

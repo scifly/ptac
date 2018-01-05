@@ -2,10 +2,8 @@
 
 namespace App\Models;
 
-use App\Events\AppMenuCreated;
 use App\Events\AppMenuUpdated;
 use App\Events\AppUpdated;
-use App\Facades\DatatableFacade as Datatable;
 use App\Facades\Wechat;
 use Carbon\Carbon;
 use Eloquent;
@@ -56,9 +54,9 @@ use Illuminate\Support\Facades\Request;
  * @method static Builder|App whereToken($value)
  * @method static Builder|App whereUpdatedAt($value)
  * @method static Builder|App whereUrl($value)
- * @mixin Eloquent
  * @property string|null $access_token
  * @property string|null $expire_at
+ * @mixin Eloquent
  * @method static Builder|App whereAccessToken($value)
  * @method static Builder|App whereAllowPartys($value)
  * @method static Builder|App whereAllowTags($value)
@@ -87,57 +85,55 @@ class App extends Model {
 
         $secret = Request::input('secret');
         $agentid = Request::input('agentid');
-        $corp_id = Request::input('corp_id');
-
-        $corp = new Corp();
-        $corps = $corp::whereName('万浪软件')->first();
-        $corpId = $corps->corpid;
-        $dir = dirname(__FILE__);
-        $path = substr($dir, 0, stripos($dir, 'app/Jobs'));
-        $tokenFile = $path . 'public/token.txt';
-        $token = Wechat::getAccessToken($tokenFile, $corpId, $secret);
-
+        $corp_id = Corp::corpId();
+        $corpid = Corp::find($corp_id)->corpid;
+        $token = Wechat::getAccessToken($corpid, $secret);
         $corpApp = json_decode(Wechat::getApp($token, $agentid));
-        // dd($corp_id);
-        $app = self::whereAgentid($agentid)->where('corp_id', $corp_id)->first();
-        if (!$app) {
-            $data = [
-                'corp_id' => intval($corp_id),
-                'name' => $corpApp->name,
-                'secret' => $secret,
-                'description' => $corpApp->description,
-                'agentid' => $agentid,
-                'report_location_flag' => $corpApp->report_location_flag,
-                'square_logo_url' => $corpApp->square_logo_url,
-                'redirect_domain' => $corpApp->redirect_domain,
-                'isreportenter' => $corpApp->isreportenter,
-                'home_url' => $corpApp->home_url,
-                'menu' => '',
-                'allow_userinfos' => json_encode($corpApp->allow_userinfos),
-                'allow_partys' => json_encode($corpApp->allow_partys),
-                'allow_tags' => isset($corpApp->allow_tags) ? json_encode($corpApp->allow_tags) : '',
-                'enabled' => $corpApp->close,
-            ];
-            $a = self::create($data);
-            $response = response()->json(['app' => self::formatDateTime($a->toArray()), 'action' => 'create']);
+        if (isset($corpApp->name)) {
+            $app = self::whereAgentid($agentid)->where('corp_id', $corp_id)->first();
+            if (!$app) {
+                $data = [
+                    'corp_id' => intval($corp_id),
+                    'name' => $corpApp->name,
+                    'secret' => $secret,
+                    'description' => $corpApp->description,
+                    'agentid' => $agentid,
+                    'report_location_flag' => $corpApp->report_location_flag,
+                    'square_logo_url' => $corpApp->square_logo_url,
+                    'redirect_domain' => $corpApp->redirect_domain,
+                    'isreportenter' => $corpApp->isreportenter,
+                    'home_url' => $corpApp->home_url,
+                    'menu' => '',
+                    'allow_userinfos' => json_encode($corpApp->allow_userinfos),
+                    'allow_partys' => json_encode($corpApp->allow_partys),
+                    'allow_tags' => isset($corpApp->allow_tags) ? json_encode($corpApp->allow_tags) : '',
+                    'enabled' => $corpApp->close,
+                ];
+                $a = self::create($data);
+                $response = response()->json(['app' => self::formatDateTime($a->toArray()), 'action' => 'create']);
+            } else {
+                $app->corp_id = intval($corp_id);
+                $app->name = $corpApp->name;
+                $app->secret = $secret;
+                $app->description = $corpApp->description;
+                $app->agentid = $agentid;
+                $app->report_location_flag = $corpApp->report_location_flag;
+                $app->square_logo_url = $corpApp->square_logo_url;
+                $app->redirect_domain = $corpApp->redirect_domain;
+                $app->isreportenter = $corpApp->isreportenter;
+                $app->home_url = $corpApp->home_url;
+                $app->menu = '';
+                $app->allow_userinfos = json_encode($corpApp->allow_userinfos);
+                $app->allow_partys = json_encode($corpApp->allow_partys);
+                $app->allow_tags = isset($corpApp->allow_tags) ? json_encode($corpApp->allow_tags) : '';
+                $app->enabled = !($corpApp->close);
+                $app->save();
+                $app = $app->toArray();
+                self::formatDateTime($app);
+                $response = response()->json(['app' => $app, 'action' => 'update']);
+            }
         } else {
-            $app->corp_id = intval($corp_id);
-            $app->name = $corpApp->name;
-            $app->secret = $secret;
-            $app->description = $corpApp->description;
-            $app->agentid = $agentid;
-            $app->report_location_flag = $corpApp->report_location_flag;
-            $app->square_logo_url = $corpApp->square_logo_url;
-            $app->redirect_domain = $corpApp->redirect_domain;
-            $app->isreportenter = $corpApp->isreportenter;
-            $app->home_url = $corpApp->home_url;
-            $app->menu = '';
-            $app->allow_userinfos = json_encode($corpApp->allow_userinfos);
-            $app->allow_partys = json_encode($corpApp->allow_partys);
-            $app->allow_tags = isset($corpApp->allow_tags) ? json_encode($corpApp->allow_tags) : '';
-            $app->enabled = $corpApp->close;
-            $app->save();
-            $response = response()->json(['app' => self::formatDateTime($app->toArray()), 'action' => 'update']);
+            $response = response()->json(['error' => $corpApp->errmsg]);
         }
 
         return $response;

@@ -97,7 +97,7 @@ class StudentAttendanceSetting extends Model {
             [
                 'db' => 'StudentAttendanceSetting.updated_at', 'dt' => 10,
                 'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($d, $row);
+                    return Datatable::dtOps($d, $row,false);
                 },
             ],
         ];
@@ -119,7 +119,7 @@ class StudentAttendanceSetting extends Model {
                 ],
             ],
         ];
-        $condition = 'Semester.school_id = ' . School::id();
+        $condition = 'Semester.school_id = ' . School::schoolId();
         
         return Datatable::simple(self::getModel(), $columns, $joins, $condition);
 

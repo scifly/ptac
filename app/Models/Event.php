@@ -147,10 +147,11 @@ class Event extends Model {
      * @return JsonResponse
      */
     public function showCalendar($userId) {
+        
         //通过userId找出educator_id
-        $educator = Educator::where('user_id', $userId)->first();
+        $educator = Educator::whereUserId($userId)->first();
         //全部公共事件
-        $pubEvents = $this->where('ispublic', 1)->get()->toArray();
+        $pubEvents = self::whereIspublic(1)->get()->toArray();
         if(!empty($educator)) {
             //先选出公开事件中 非课程的事件
             $pubNoCourseEvents = $this
@@ -228,7 +229,7 @@ class Event extends Model {
     public function isRepeatTimeUser($userId, $start, $end, $id = null) {
         
         //通过userId 找到educator_id
-        $educator = Educator::where('user_id', $userId)->first();
+        $educator = Educator::whereUserId($userId)->first();
         //验证是否和课表时间有冲突
         $event = $this
             ->where('id', '<>', $id)

@@ -28,7 +28,7 @@ var crud = {
                             '<div class="input-group-addon">' +
                                 '<i class="fa fa-mobile"></i>' +
                             '</div>' +
-                            '<input class="form-control" placeholder="（请输入手机号码）" name="mobile[' + size + '][mobile]" value="">' +
+                            '<input class="form-control" placeholder="（请输入手机号码）" name="mobile[' + size + '][mobile]" value="" style="width: 75%">' +
                         '</div>' +
                     '</td>' +
                     '<td style="text-align: center">' +

@@ -183,8 +183,7 @@ class MenuController extends Controller {
             ->toArray();
         $tabs = [];
         foreach ($tabRanks as $rank) {
-            $tab = Tab::whereId($rank['tab_id'])->first();
-            $tabs[] = $tab;
+            $tabs[] = Tab::find($rank['tab_id']);
         }
 
         return $this->output(['tabs' => $tabs]);

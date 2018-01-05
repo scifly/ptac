@@ -17,7 +17,6 @@
                         'class' => 'form-control',
                         'placeholder' => '(不得超过20个汉字)',
                         'required' => 'true',
-                        'max' => '60'
                     ]) !!}
                 </div>
             </div>
@@ -46,7 +45,7 @@
                         <div class="input-group-addon">
                             <i class="fa fa-calendar"></i>
                         </div>
-                        {!! Form::text('start_date', null, [
+                        {!! Form::text('end_date', null, [
                             'class' => 'form-control pull-right',
                             'placeholder' => '(请选择结束日期)',
                             'required' => 'true',

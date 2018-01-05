@@ -14,7 +14,7 @@ class SquadComposer {
 
     public function compose(View $view) {
 
-        $schoolId = School::id();
+        $schoolId = School::schoolId();
         $grades = Grade::whereSchoolId($schoolId)
             ->where('enabled', 1)
             ->pluck('name', 'id');

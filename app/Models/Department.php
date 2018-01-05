@@ -645,7 +645,7 @@ class Department extends Model {
         $role = $user->group->name;
         $school = new School();
 
-        $departmentId = $school::find(School::id())->department_id;
+        $departmentId = $school::find(School::schoolId())->department_id;
         $contacts = [];
         if (in_array($role, self::ROLES)) {
             $tree = self::tree($departmentId);

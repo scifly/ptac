@@ -75,7 +75,7 @@ class SubjectModule extends Model {
                 ],
             ],
         ];
-        $condition = 'Subject.school_id = ' . School::id();
+        $condition = 'Subject.school_id = ' . School::schoolId();
         
         return Datatable::simple(self::getModel(), $columns, $joins, $condition);
 

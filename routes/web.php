@@ -39,6 +39,7 @@ Route::group(['prefix' => 'educators'], function () {
     Route::post('edit/{id}', $c . '@edit');
     Route::post('create', $c . '@create');
     Route::get('export', $c . '@export');
+    Route::post('export', $c . '@export');
     Route::post('import', $c . '@import');
 });
 // 监护人
@@ -58,6 +59,7 @@ Route::group(['prefix' => 'students'], function () {
     Route::post('create', $c . '@create');
     Route::post('import', $c . '@import');
     Route::get('export', $c . '@export');
+    Route::post('export', $c . '@export');
 });
 // 用户
 Route::group(['prefix' => 'users'], routes('UserController'));
@@ -246,7 +248,7 @@ Route::group(['prefix' => 'comm_types'], routes('CommTypeController'));
 Route::group(['prefix' => 'alert_types'], routes('AlertTypeController'));
 // 运营者设置 - 企业设置
 Route::group(['prefix' => 'department_types'], routes('DepartmentTypeController'));
-Route::group(['prefix' => 'departments'], routes('DepartmentController'));
+Route::group(['prefix' => 'departments'], routeItem('DepartmentController'));
 Route::group(['prefix' => 'departments'], function () {
     $c = 'DepartmentController';
     Route::post('index', $c . '@index');
@@ -258,7 +260,7 @@ Route::group(['prefix' => 'corps'], routes('CorpController'));
 // 菜单管理 - action设置.卡片设置.菜单设置
 Route::group(['prefix' => 'actions'], routes('ActionController'));
 Route::group(['prefix' => 'tabs'], routes('TabController'));
-Route::group(['prefix' => 'menus'], routes('MenuController'));
+Route::group(['prefix' => 'menus'], routeItem('MenuController'));
 Route::group(['prefix' => 'menus'], function () {
     $c = 'MenuController';
     Route::post('index', $c . '@index');

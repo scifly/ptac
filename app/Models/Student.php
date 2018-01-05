@@ -173,7 +173,7 @@ class Student extends Model {
                     }
                 }
                 # 创建企业微信部门成员
-                $school = School::find(School::id());
+                $school = School::find(School::schoolId());
                 $grade = Grade::find($student['grade_id']);
                 $class = Squad::find($student['class_id']);
                 $deptId = self::deptId($school->name, $grade->name, $class->name);
@@ -204,13 +204,13 @@ class Student extends Model {
      */
     private static function deptId($school, $grade, $class) {
         
-        $deptSchool = Department::where('name', $school)->first();
+        $deptSchool = Department::whereName($school)->first();
         if ($deptSchool) {
-            $deptGrade = Department::where('name', $grade)
+            $deptGrade = Department::whereName($grade)
                 ->where('parent_id', $deptSchool->id)
                 ->first();
             if ($deptGrade) {
-                $deptClass = Department::where('name', $class)
+                $deptClass = Department::whereName($class)
                     ->where('parent_id', $deptGrade->id)
                     ->first();
                 return $deptClass->id;
@@ -230,7 +230,7 @@ class Student extends Model {
     static function gradeClasses($gradeId = 0) {
         
         $grades = Grade::whereEnabled(1)
-            ->where('school_id', School::id())
+            ->where('school_id', School::schoolId())
             ->pluck('name', 'id')
             ->toArray();
         $gradeId = $gradeId == 0 ? array_keys($grades)[0] : $gradeId;
@@ -321,7 +321,7 @@ class Student extends Model {
                 }
                 # 创建部门成员
                 DepartmentUser::whereUserId( $userId)->delete();
-                $school = School::find(School::id());
+                $school = School::find(School::schoolId());
                 $grade = Grade::find($studentData['grade_id']);
                 $class = Squad::find($studentData['class_id']);
                 $deptId = self::deptId($school->name, $grade->name, $class->name);
@@ -361,11 +361,11 @@ class Student extends Model {
                 # 删除指定的学生记录
                 $student->delete();
                 # 删除与指定学生绑定的监护人记录
-                CustodianStudent::where('student_id', $studentId)->delete();
+                CustodianStudent::whereStudentId($studentId)->delete();
                 # 删除与指定学生绑定的部门记录
-                DepartmentUser::where('user_id', $student['user_id'])->delete();
+                DepartmentUser::whereUserId($student['user_id'])->delete();
                 # 删除与指定学生绑定的手机记录
-                Mobile::where('user_id', $student['user_id'])->delete();
+                Mobile::whereUserId($student['user_id'])->delete();
             });
         } catch (Exception $e) {
             throw $e;
@@ -504,7 +504,7 @@ class Student extends Model {
                 continue;
 
             }
-            $grade = Grade::where('name', $user['grade'])
+            $grade = Grade::whereName($user['grade'])
                 ->where('school_id', $school->id)
                 ->first();
             # 数据非法
@@ -513,7 +513,7 @@ class Student extends Model {
                 unset($data[$i]);
                 continue;
             }
-            $class = Squad::where('name', $user['class'])
+            $class = Squad::whereName($user['class'])
                 ->where('grade_id', $grade->id)
                 ->first();
             if (!$class) {
@@ -521,7 +521,7 @@ class Student extends Model {
                 unset($data[$i]);
                 continue;
             }
-            $student = Student::where('student_number', $user['student_number'])
+            $student = Student::whereStudentNumber($user['student_number'])
                 ->where('class_id', $class->id)
                 ->first();
             $user['class_id'] = $class->id;
@@ -668,7 +668,7 @@ class Student extends Model {
                 ],
             ],
         ];
-        $condition = 'Grade.school_id = ' . School::id();
+        $condition = 'Grade.school_id = ' . School::schoolId();
         
         return Datatable::simple(self::getModel(), $columns, $joins, $condition);
 

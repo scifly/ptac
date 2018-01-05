@@ -91,7 +91,7 @@ class AttendanceMachine extends Model {
                 ],
             ],
         ];
-        $condition = 'School.id = ' . School::id();
+        $condition = 'School.id = ' . School::schoolId();
 
         return Datatable::simple(self::getModel(), $columns, $joins, $condition);
         

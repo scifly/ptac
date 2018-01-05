@@ -55,7 +55,7 @@ var custodian = {
             $("#pupils").modal('hide');
         });
     },
-    schoolChange: function() {
+    schoolChange: function(item, type, id) {
         $(document).on('change', '#schoolId', function () {
             var schoolId = $('#schoolId').val();
 
@@ -71,10 +71,18 @@ var custodian = {
             var $studentNext = $studentId.next();
             var $studentPrev = $studentId.prev();
             var token = $('#csrf_token').attr('content');
+
+            var uri =  item + type + id + '?field=school' + '&id=' + schoolId + '&_token=' + token;
+            var curWwwPath = window.document.location.href;
+            //获取主机地址之后的目录，如： uimcardprj/share/meun.jsp
+            var pathName = window.document.location.pathname;
+            var pos = curWwwPath.indexOf(pathName);
+            //获取带"/"的项目名，如：/uimcardprj
+            var projectName = pathName.substring(0, pathName.substr(1).indexOf('/') + 1);
             $.ajax({
                 type: 'POST',
                 dataType: 'json',
-                url: page.siteRoot() + 'custodians/create?field=school' + '&id=' + schoolId + '&_token=' + token,
+                url: page.siteRoot() + uri,
                 success: function (result) {
                     $next.remove();
                     $gradeId.remove();
@@ -94,7 +102,7 @@ var custodian = {
         });
     },
 
-    gradeChange: function () {
+    gradeChange: function (item, type, id) {
         $(document).on('change', '#gradeId', function () {
             var gradeId = $('#gradeId').val();
 
@@ -105,12 +113,17 @@ var custodian = {
             var $studentId = $('#studentId');
             var $studentNext = $studentId.next();
             var $studentPrev = $studentId.prev();
-
             var token = $('#csrf_token').attr('content');
+            var uri =  item + type + id+ '?field=grade' + '&id=' + gradeId + '&_token=' + token;
+            //获取主机地址之后的目录，如： uimcardprj/share/meun.jsp
+            // var pathName = window.document.location.pathname;
+            // //获取带"/"的项目名，如：/uimcardprj
+            // var projectName = pathName.substring(0, pathName.substr(1).indexOf('/') + 1).replace('/', '');
+
             $.ajax({
                 type: 'POST',
                 dataType: 'json',
-                url: page.siteRoot() + 'custodians/create?field=grade' + '&id=' + gradeId + '&_token=' + token,
+                url: page.siteRoot() + uri,
                 success: function (result) {
                     $next.remove();
                     $classId.remove();
@@ -124,17 +137,24 @@ var custodian = {
             });
         });
     },
-    classChange: function () {
+    classChange: function (item, type, id) {
         $(document).on('change', '#classId', function () {
             var classId = $('#classId').val();
             var $studentId = $('#studentId');
             var $next = $studentId.next();
             var $prev = $studentId.prev();
             var token = $('#csrf_token').attr('content');
+            var uri =  item + type + id + '?field=class' + '&id=' + classId + '&_token=' + token;
+            var curWwwPath = window.document.location.href;
+            //获取主机地址之后的目录，如： uimcardprj/share/meun.jsp
+            var pathName = window.document.location.pathname;
+            var pos = curWwwPath.indexOf(pathName);
+            //获取带"/"的项目名，如：/uimcardprj
+            var projectName = pathName.substring(0, pathName.substr(1).indexOf('/') + 1);
             $.ajax({
                 type: 'POST',
                 dataType: 'json',
-                url: page.siteRoot() + 'custodians/create?field=class' + '&id=' + classId + '&_token=' + token,
+                url: page.siteRoot() + uri,
                 success: function (result) {
                     $next.remove();
                     $studentId.remove();
@@ -149,17 +169,17 @@ var custodian = {
             $(this).parents('tr').remove();
         });
     },
-    init: function (item) {
-        custodian.schoolChange();
-        custodian.gradeChange();
-        custodian.classChange();
+    init: function (item, type, id) {
+        custodian.schoolChange(item, type, id);
+        custodian.gradeChange(item, type, id);
+        custodian.classChange(item, type, id);
 
-        if (item === 'student') {
+        if (item === 'students') {
             page.initSelect2();
             custodian.exportStudent();
             custodian.$export().on('click', function () { $('#export-pupils').modal({backdrop: true}) });
 
-        }else if (item === 'educator') {
+        }else if (item === 'educators') {
             page.initSelect2();
             custodian.exportEducator();
             custodian.$export().on('click', function () { $('#export-pupils').modal({backdrop: true}) });
@@ -167,7 +187,7 @@ var custodian = {
         }else{
             custodian.relationship().val("");
             custodian.deleteItem();
-            custodian.saveStudent(item);
+            custodian.saveStudent(0);
             custodian.$addPupil().on('click', function () { $('#pupils').modal({backdrop: true}) });
         }
     },

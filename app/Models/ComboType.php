@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -16,8 +17,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $discount 折扣比例(80,90)
  * @property int $school_id 套餐所属学校ID
  * @property int $months 有效月数
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property int $enabled
  * @method static Builder|ComboType whereAmount($value)
  * @method static Builder|ComboType whereCreatedAt($value)
@@ -81,7 +82,7 @@ class ComboType extends Model {
                 ],
             ],
         ];
-        $condition = 'ComboType.school_id = ' . School::id();
+        $condition = 'ComboType.school_id = ' . School::schoolId();
         
         return Datatable::simple(self::getModel(), $columns, $joins, $condition);
 
