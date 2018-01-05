@@ -3,6 +3,7 @@ namespace App\Http\Controllers\Wechat;
 
 use App\Http\Controllers\Controller;
 use App\Models\Squad;
+use App\Models\Student;
 use App\Models\User;
 
 class AttendanceController extends Controller {
@@ -21,8 +22,13 @@ class AttendanceController extends Controller {
         ]);
         // $time = '2018-01-03';
         // $into = StudentAttendance::whereInorout(1)->where('punch_time', 'like', $time . '%')->get();
-        // // echo '<pre>';
-        // // print_r($into);exit;
-        // return view('wechat.attendance_records.attendance_records');
+
+        //
+    }
+
+    public function records($id)
+    {
+        $student = Student::whereId($id)->first();
+        return view('wechat.attendance_records.attendance_records');
     }
 }
