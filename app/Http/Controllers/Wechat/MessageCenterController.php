@@ -534,7 +534,7 @@ class MessageCenterController extends Controller {
     private function frontSendMessage($input, $url = null) {
         $corpId = 'wxe75227cead6b8aec';
         $secret = 'qv_kkW2S3zmMWIUrV3u2nydcyIoLknTvuDMq7ja4TYE';
-        $token = Wechat::getAccessToken($corpId, $secret, $url);
+        $token = Wechat::getAccessToken($corpId, $secret);
         $agentid = 3;
         $users = [];
         foreach ($input['user_ids'] as $u_id) {
