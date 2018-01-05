@@ -38,21 +38,17 @@ class StudentRequest extends FormRequest {
         return $rules;
     }
 
-   // public function messages() {
-   //     return [
-   //         'user.realname.required' => '学生姓名不能为空',
-   //         'student.student_number.required' => '学号不能为空!',
-   //         'student.student_number.max' => '学号长度最大为32位!',
-   //         'student.student_number.min' => '学号最小长度为2位!',
-   //         'student.card_number.required' => '卡号不能为空!',
-   //         'student.card_number.max' => '卡号长度最大为32位!',
-   //         'student.card_number.min' => '卡号长度最小为2位!',
-   //         'student.remark.birthday' => '生日不能为空!',
-   //         'student.remark.required' => '备注不能为空!',
-   //         'student.remark.max' => '不能超过255个字符!',
-   //         'student.remark.min' => '备注不能少于2个字符!',
-   //     ];
-   // }
+    public function messages() {
+        return [
+            'user.realname.required' => '学生姓名不能为空',
+            'student_number.required' => '学号不能为空!',
+            'student_number.max' => '学号长度最大为32位!',
+            'student_number.min' => '学号最小长度为2位!',
+            'card_number.required' => '卡号不能为空!',
+            'birthday' => '生日不能为空!',
+            'user.email.email' => '邮箱格式不正确!',
+        ];
+    }
 //
 //    public function wantsJson() {
 //
