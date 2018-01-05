@@ -60,7 +60,7 @@ class MessageCenterController extends Controller {
              Session::put('userId',$userId);
          }
         //$userId = 'yuanhongbin';
-        // Session::put('userId',$userId);
+        //Session::put('userId',$userId);
         $user = User::whereUserid($userId)->first();
         if (Request::isMethod('post')) {
             $keywords = Request::get('keywords');
@@ -504,6 +504,7 @@ class MessageCenterController extends Controller {
                             'sent'            => 0,
                         ];
                         $message = $this->message->create($messageData);
+                        //这里的判断是无效的，应该放在应用发送后返回正确的状态值后
                         $message->sent = 1;
                         $message->save();
                         #更新msl表

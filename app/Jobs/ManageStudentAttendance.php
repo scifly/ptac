@@ -2,9 +2,13 @@
 namespace App\Jobs;
 
 use App\Facades\Wechat;
+use App\Models\App;
 use App\Models\AttendanceMachine;
+use App\Models\CommType;
 use App\Models\Media;
 use App\Models\Message;
+use App\Models\MessageSendingLog;
+use App\Models\MessageType;
 use App\Models\Semester;
 use App\Models\Student;
 use App\Models\StudentAttendance;
@@ -17,6 +21,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ManageStudentAttendance implements ShouldQueue {
     
@@ -119,13 +124,40 @@ class ManageStudentAttendance implements ShouldQueue {
                 // $msg = '尊敬的XX家长, 你的孩子于XX在校打卡, 打卡状态：XX';
                 $msg = str_replace_array('XX', [$student->user->realname, $studentAttendance->punch_time, $studentAttendance->status == 1 ? '正常' : '异常'], $msgTemplate);
                 //在本地创建消息记录
-               
-               
+                $messageSendingLog = new MessageSendingLog();
+                //新增一条日志记录（指定批次）
+                $sendLogData = [
+                    'read_count'      => 0,
+                    'received_count'  => 0,
+                    'recipient_count' => count($userId),
+                ];
+                $mslId = $messageSendingLog->create($sendLogData)->id;
+                //新增本地消息记录
+                $this->message = new Message();
+                foreach ($userId as $u) {
+                    $messageData = [
+                        'title'           => $date_time . '-考勤信息',
+                        'comm_type_id'    => CommType::whereName('应用')->first()->id,
+                        'app_id'          => App::whereName('信息发送')->first()->id,
+                        'msl_id'          => $mslId,
+                        'content'         => $msg,
+                        'serviceid'       => 0,
+                        'message_id'      => 0,
+                        'url'             => '0',
+                        'media_ids'       => '0',
+                        's_user_id'       => 1,
+                        'r_user_id'       => $u,
+                        'message_type_id' => MessageType::whereName('考勤消息')->first()->id,
+                        'readed'          => 0,
+                        'sent'            => 1,
+                    ];
+                    $this->message->create($messageData);
+                }
                 //推送应用信息 失败将推送短信
                 if (!$this->pushMessage($userId, $msg)) {
-                    $this->message = new Message();
                     $this->message->sendSms($userId, [], $msg);
                 };
+                unset($this->message);
             });
         } catch (Exception $e) {
             throw $e;
