@@ -45,7 +45,9 @@ class CustodianComposer {
                 }
             }
         }
-
+        if (empty($students)) {$students[] = '' ;}
+        if (empty($classes)) {$classes[] = '' ;}
+        if (empty($grades)) {$grades[] = '' ;}
         $view->with([
             'schools' => $schools,
             'grades' => $grades,

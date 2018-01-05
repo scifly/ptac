@@ -23,7 +23,8 @@ class StudentComposer {
             ->where('grade_id', array_keys($grades)[0])
             ->pluck('name', 'id')
             ->toArray();
-
+        if (empty($classes)) {$classes[] = '' ;}
+        if (empty($grades)) {$grades[] = '' ;}
         $view->with([
             'schoolId' => $schoolId,
             'grades' => $grades,
