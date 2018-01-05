@@ -138,7 +138,9 @@
                     </table>
 
                     <div class="list-item-icon">
-                        <i class="icon iconfont icon-jiantouyou"></i>
+                        <a href="{{ url('attendance_records/'.$s->id) }}">
+                            <i class="icon iconfont icon-jiantouyou"></i>
+                        </a>
                     </div>
 
                 </div>
@@ -176,7 +178,7 @@
             </table>
 
             <div class="list-item-icon">
-                <i class="icon iconfont icon-jiantouyou"></i>
+                <a><i class="icon iconfont icon-jiantouyou"></i></a>
             </div>
 
         </div>
