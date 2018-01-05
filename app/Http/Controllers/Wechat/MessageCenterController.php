@@ -289,6 +289,7 @@ class MessageCenterController extends Controller {
      *
      * @param $id
      * @return \Illuminate\Http\JsonResponse
+     * @throws Exception
      */
     public function replayDestroy($id){
         
