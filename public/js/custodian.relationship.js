@@ -79,11 +79,10 @@ var custodian = {
             var pos = curWwwPath.indexOf(pathName);
             //获取带"/"的项目名，如：/uimcardprj
             var projectName = pathName.substring(0, pathName.substr(1).indexOf('/') + 1);
-            var url = page.siteRoot() + '/' + projectName + '/public/' + uri;
             $.ajax({
                 type: 'POST',
                 dataType: 'json',
-                url: url,
+                url: page.siteRoot() + uri,
                 success: function (result) {
                     $next.remove();
                     $gradeId.remove();
@@ -155,7 +154,7 @@ var custodian = {
             $.ajax({
                 type: 'POST',
                 dataType: 'json',
-                url: page.siteRoot() + '/' + projectName + '/public/' + uri,
+                url: page.siteRoot() + uri,
                 success: function (result) {
                     $next.remove();
                     $studentId.remove();
