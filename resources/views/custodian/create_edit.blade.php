@@ -242,7 +242,7 @@
                     </div>
                     <!-- 学生列表 -->
                     <div class="form-group">
-                        {{--@if(isset($students))--}}
+                        @if(isset($students))
                             @include('partials.single_select', [
                                     'id' => 'studentId',
                                     'label' => '被监护人',
@@ -265,7 +265,7 @@
                             {{--]) }}--}}
                             {{--</div>--}}
                             {{--@endif--}}
-                        {{--@endif--}}
+                        @endif
                     </div>
                     {{--<!-- 监护关系 -->--}}
                     <div class="form-group">
