@@ -456,7 +456,7 @@ class MessageCenterController extends Controller {
                             'media_ids'       => $input['media_ids'],
                             's_user_id'       => $user->id,
                             'r_user_id'       => $receiveUserId,
-                            'message_type_id' => MessageType::whereName('消息通知')->first()->id,
+                            'message_type_id' => 1,
                             'readed'          => 1,
                             'sent'            => 1,
                         ];
