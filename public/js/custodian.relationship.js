@@ -173,13 +173,13 @@ var custodian = {
         custodian.schoolChange(item, type, id);
         custodian.gradeChange(item, type, id);
         custodian.classChange(item, type, id);
-
-        if (item === 'students') {
+console.log(item);
+        if (item === 'students/') {
             page.initSelect2();
             custodian.exportStudent();
             custodian.$export().on('click', function () { $('#export-pupils').modal({backdrop: true}) });
 
-        }else if (item === 'educators') {
+        }else if (item === 'educators/') {
             page.initSelect2();
             custodian.exportEducator();
             custodian.$export().on('click', function () { $('#export-pupils').modal({backdrop: true}) });
@@ -197,7 +197,7 @@ var custodian = {
         $(document).on('click', '#confirm-bind', function () {
             var classId = custodian.$classId().val();
             //无法用ajax请求
-            window.location.href = "../pppp/public/students/export/?id=" + classId;
+            window.location.href = page.siteRoot() +　"students/export?id=" + classId;
             custodian.exportPupils().modal('hide');
         });
     },
@@ -207,7 +207,7 @@ var custodian = {
         $(document).on('click', '#confirm-bind', function () {
             var schoolId = custodian.$schoolId().val();
             //无法用ajax请求
-            window.location.href = '../pppp/public/educators/export/?id=' + schoolId;
+            window.location.href = page.siteRoot() +　'educators/export?id=' + schoolId;
             custodian.exportPupils().modal('hide');
         });
     }

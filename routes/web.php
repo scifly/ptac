@@ -297,5 +297,6 @@ Route::get('homework', 'Wechat\HomeWorkController@index');
 //微网站
 Route::get('wapsite', 'Wechat\MobileSiteController@index');
 // 考勤
-Route::get('attendance_records', 'Wechat\AttendanceController@index');
+Route::get('lists', 'Wechat\AttendanceController@index');
+Route::get('attendance_records/{id}', 'Wechat\AttendanceController@records');
 
