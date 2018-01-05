@@ -45,6 +45,7 @@ class MessageCenterController extends Controller {
      */
     public function index() {
          #获取用户信息
+         Session::flush();
          $corpId = 'wxe75227cead6b8aec';
          $secret = 'qv_kkW2S3zmMWIUrV3u2nydcyIoLknTvuDMq7ja4TYE';
          $agentId = 3;
