@@ -94,7 +94,7 @@ var custodian = {
         });
     },
 
-    gradeChange: function () {
+    gradeChange: function (item, type, id) {
         $(document).on('change', '#gradeId', function () {
             var gradeId = $('#gradeId').val();
 
@@ -110,7 +110,7 @@ var custodian = {
             $.ajax({
                 type: 'POST',
                 dataType: 'json',
-                url: page.siteRoot() + item +'/create?field=grade' + '&id=' + gradeId + '&_token=' + token,
+                url: page.siteRoot() + item + type + id + '?field=grade' + '&id=' + gradeId + '&_token=' + token,
                 success: function (result) {
                     $next.remove();
                     $classId.remove();
@@ -124,7 +124,7 @@ var custodian = {
             });
         });
     },
-    classChange: function () {
+    classChange: function (item, type, id) {
         $(document).on('change', '#classId', function () {
             var classId = $('#classId').val();
             var $studentId = $('#studentId');
@@ -134,7 +134,7 @@ var custodian = {
             $.ajax({
                 type: 'POST',
                 dataType: 'json',
-                url: page.siteRoot() + item +'/create?field=class' + '&id=' + classId + '&_token=' + token,
+                url: page.siteRoot() + item + type + id + '?field=class' + '&id=' + classId + '&_token=' + token,
                 success: function (result) {
                     $next.remove();
                     $studentId.remove();
