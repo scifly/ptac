@@ -111,19 +111,28 @@ class ManageStudentAttendance implements ShouldQueue {
                 
                #推送信息
                //根据学生信息获取监护人信息 多个
-               // $custodians = $student->custodians;
-               //消息模板
-               // $msgTemplate = StudentAttendanceSetting::whereId($studentAttendance->sas_id)->first()->msg_template;
+                $userId = [];
+               $custodians = $student->custodians;
+               foreach ($custodians as $custodian){
+               
+               }
+
                $msgTemplate = $studentAttendance->studentAttendancesetting->msg_template;
                // $msg = '尊敬的XX家长, 你的孩子于XX在校打卡, 打卡状态：XX';
-               print_r($msgTemplate);
-    
+                $msg = str_replace_array('XX', [$student->user->realname, $studentAttendance->punch_time, $studentAttendance->status], $msgTemplate);
+               print_r($msg);
+               $this->pushMessage();
+               
             });
         } catch (Exception $e) {
             throw $e;
         }
         
-        // return true;
+        return true;
     }
     
+    private function pushMessage(){
+
+    
+    }
 }
