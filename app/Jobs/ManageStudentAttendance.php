@@ -9,6 +9,7 @@ use App\Models\Media;
 use App\Models\Message;
 use App\Models\MessageSendingLog;
 use App\Models\MessageType;
+use App\Models\Mobile;
 use App\Models\Semester;
 use App\Models\Student;
 use App\Models\StudentAttendance;
@@ -134,6 +135,7 @@ class ManageStudentAttendance implements ShouldQueue {
                 $mslId = $messageSendingLog->create($sendLogData)->id;
                 //新增本地消息记录
                 $this->message = new Message();
+                $mobiles = [];
                 foreach ($userId as $u) {
                     $messageData = [
                         'title'           => $date_time . '-考勤信息',
@@ -152,12 +154,14 @@ class ManageStudentAttendance implements ShouldQueue {
                         'sent'            => 1,
                     ];
                     $this->message->create($messageData);
+                    $m = Mobile::whereUserId($u)->where('enabled', 1)->first();
+                    $mobiles[] = $m->mobile;
                 }
                 //推送应用信息 失败将推送短信
                 if (!$this->pushMessage($userId, $msg)) {
-                    $this->message->sendSms($userId, [], $msg);
+                $autograph = '【成都外国语】';
+                Wechat::batchSend('LKJK004923', "654321@", implode(',', $mobiles), urlencode($msg) . $autograph);
                 };
-                unset($this->message);
             });
         } catch (Exception $e) {
             throw $e;
