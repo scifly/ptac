@@ -480,6 +480,9 @@ class MessageCenterController extends Controller {
                         'recipient_count' => count($receiveUserIds),
                     ];
                     $input['msl_id'] = $messageSendingLog->create($sendLogData)->id;
+                    if($input['msl_id']){
+                        return true;
+                    }
                     $msl = $messageSendingLog->whereId($input['msl_id'])->first();
                     if (isset($input['media_ids'])) {
                         $input['media_ids'] = implode(',', $input['media_ids']);
