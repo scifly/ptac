@@ -3,19 +3,14 @@ namespace App\Http\Controllers;
 
 use App\Models\Action;
 use App\Models\Menu;
-use App\Models\School;
 use App\Models\Tab;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller as BaseController;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
-use phpDocumentor\Reflection\Types\Boolean;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 use Throwable;
 
 class Controller extends BaseController {

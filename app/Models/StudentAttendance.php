@@ -32,6 +32,9 @@ use Illuminate\Support\Facades\DB;
  * @method static Builder|StudentAttendance whereStudentId($value)
  * @method static Builder|StudentAttendance whereUpdatedAt($value)
  * @mixin \Eloquent 考勤
+ * @property-read \App\Models\AttendanceMachine $attendanceMachine
+ * @property-read \App\Models\Media $medias
+ * @property-read \App\Models\Student $student
  */
 class StudentAttendance extends Model {
     
@@ -121,7 +124,7 @@ class StudentAttendance extends Model {
                 ],
             ],
         ];
-        $condition = 'AttendanceMachine.school_id = ' . School::id();
+        $condition = 'AttendanceMachine.school_id = ' . School::schoolId();
         
         return Datatable::simple(self::getModel(), $columns, $joins, $condition);
         

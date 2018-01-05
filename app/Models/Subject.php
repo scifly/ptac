@@ -281,7 +281,7 @@ class Subject extends Model {
                 'conditions' => ['School.id = Subject.school_id'],
             ],
         ];
-        $condition = 'Subject.school_id = ' . School::id();
+        $condition = 'Subject.school_id = ' . School::schoolId();
         
         return Datatable::simple(self::getModel(), $columns, $joins, $condition);
 

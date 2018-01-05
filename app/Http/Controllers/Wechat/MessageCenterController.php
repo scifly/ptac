@@ -2,7 +2,6 @@
 namespace App\Http\Controllers\Wechat;
 
 use App\Facades\Wechat;
-use App\Helpers\ControllerTrait;
 use App\Http\Controllers\Controller;
 use App\Models\App;
 use App\Models\CommType;
@@ -22,8 +21,7 @@ use Illuminate\Support\Facades\Session;
 
 class MessageCenterController extends Controller {
     
-    use ControllerTrait;
-    
+
     protected $message, $user, $department;
     
     /**
@@ -46,22 +44,22 @@ class MessageCenterController extends Controller {
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector|\Illuminate\View\View|string
      */
     public function index() {
-        #获取用户信息
-        $corpId = 'wxe75227cead6b8aec';
-        $secret = 'qv_kkW2S3zmMWIUrV3u2nydcyIoLknTvuDMq7ja4TYE';
-        $agentId = 3;
-        $userId = Session::get('userId') ? Session::get('userId') : null;
-        $code = Request::input('code');
-        if (empty($code) && empty($userId)) {
-            $codeUrl = Wechat::getCodeUrl($corpId, $agentId, 'http://weixin.028lk.com/message_center');
-            return redirect($codeUrl);
-        }elseif(!empty($code) && empty($userId)){
-            $accessToken = Wechat::getAccessToken($corpId, $secret);
-            $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
-            $userId = $userInfo['UserId'];
-            Session::put('userId',$userId);
-        }
-        // $userId = 'yuanhongbin';
+         #获取用户信息
+         $corpId = 'wxe75227cead6b8aec';
+         $secret = 'qv_kkW2S3zmMWIUrV3u2nydcyIoLknTvuDMq7ja4TYE';
+         $agentId = 3;
+         $userId = Session::get('userId') ? Session::get('userId') : null;
+         $code = Request::input('code');
+         if (empty($code) && empty($userId)) {
+             $codeUrl = Wechat::getCodeUrl($corpId, $agentId, 'http://weixin.028lk.com/message_center');
+             return redirect($codeUrl);
+         }elseif(!empty($code) && empty($userId)){
+             $accessToken = Wechat::getAccessToken($corpId, $secret);
+             $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
+             $userId = $userInfo['UserId'];
+             Session::put('userId',$userId);
+         }
+        //$userId = 'yuanhongbin';
         // Session::put('userId',$userId);
         $user = User::whereUserid($userId)->first();
         if (Request::isMethod('post')) {
@@ -77,7 +75,7 @@ class MessageCenterController extends Controller {
                             ->get();
                         if (sizeof($sendMessages) != 0) {
                             foreach ($sendMessages as $s) {
-                                $s['r_user_id'] = User::find($s['r_user_id'])->realname;
+                                $s['r_user_id'] = User::whereId($s['r_user_id'])->first()->realname;
                             }
                         }
 
@@ -91,7 +89,7 @@ class MessageCenterController extends Controller {
                             ->get();
                         if (sizeof($receiveMessages) != 0) {
                             foreach ($receiveMessages as $r) {
-                                $r['s_user_id'] = User::find($r['s_user_id'])->realname;
+                                $r['s_user_id'] = User::whereId($r['s_user_id'])->first()->realname;
                             }
                         }
                         
@@ -161,11 +159,11 @@ class MessageCenterController extends Controller {
         #教师可发送消息
         #取的和教师关联的学校的部门id
         $user = $this->user->where('userid', $userId)->first();
-        $educator = Educator::whereUserId($user->id)->first();
+        $educator = Educator::where('user_id',$user->id)->first();
         $school = $educator->school;
-        $departmentId = Department::whereName($school->name)->first()->id;
-        $departments = Department::whereParentId($departmentId)->get();
-        $department = Department::find($departmentId);
+        $departmentId = Department::where('name',$school->name)->first()->id;
+        $departments = Department::where('parent_id', $departmentId)->get();
+        $department = Department::whereId($departmentId)->first();
         $users = $department->users;
 
         return view('wechat.message_center.create', [
@@ -360,9 +358,9 @@ class MessageCenterController extends Controller {
      */
     public function getNextDept($id) {
         
-        $department = Department::find($id);
+        $department = Department::whereId($id)->first();
         $users = $department->users;
-        $nextDepts = Department::whereParentId($id)->get();
+        $nextDepts = Department::where('parent_id', $id)->get();
         $data = view('wechat.message_center.select', ['departments' => $nextDepts, 'users' => $users])->render();
         
         return $data ? $this->succeed($data) : $this->fail();
@@ -386,7 +384,7 @@ class MessageCenterController extends Controller {
             DB::transaction(function () use ($message, $id) {
                 $message->readed = 1;
                 $message->save();
-                $msl = MessageSendingLog::find($message->msl_id);
+                $msl = MessageSendingLog::whereId($message->msl_id)->first();
                 $msl->read_count = $msl->read_count + 1;
                 
                 return $msl->save() ? true : false;

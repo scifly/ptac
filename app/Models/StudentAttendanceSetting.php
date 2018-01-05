@@ -119,7 +119,7 @@ class StudentAttendanceSetting extends Model {
                 ],
             ],
         ];
-        $condition = 'Semester.school_id = ' . School::id();
+        $condition = 'Semester.school_id = ' . School::schoolId();
         
         return Datatable::simple(self::getModel(), $columns, $joins, $condition);
 

@@ -32,7 +32,7 @@ class SchoolPolicy {
         if ($role == '运营') { return true; }
         if ($role == '企业') {
             $corp = Corp::whereDepartmentId($user->topDeptId())->first();
-            return in_array(School::id(), $corp->schools->pluck('id')->toArray());
+            return in_array(School::schoolId(), $corp->schools->pluck('id')->toArray());
         }
         
         return true;
@@ -57,7 +57,7 @@ class SchoolPolicy {
             return in_array($schoolId, $corp->schools->pluck('id')->toArray());
         }
         
-        return $schoolId == School::id();
+        return $schoolId == School::schoolId();
     
     }
     

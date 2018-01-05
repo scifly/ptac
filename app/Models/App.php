@@ -66,6 +66,7 @@ use Illuminate\Support\Facades\Request;
  * @method static Builder|App whereExpireAt($value)
  * @method static Builder|App whereSecret($value)
  * @method static Builder|App whereSquareLogoUrl($value)
+ * @property string $square_logo_url 企业应用方形头像
  */
 class App extends Model {
 

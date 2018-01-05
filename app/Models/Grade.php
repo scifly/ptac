@@ -103,7 +103,7 @@ class Grade extends Model {
      */
     static function grades() {
         
-        return self::whereSchoolId(School::id())->get()->pluck('name', 'id');
+        return self::whereSchoolId(School::schoolId())->get()->pluck('name', 'id');
 
     }
     
@@ -226,7 +226,7 @@ class Grade extends Model {
                 ],
             ],
         ];
-        $condition = 'Grade.school_id = ' . School::id();
+        $condition = 'Grade.school_id = ' . School::schoolId();
         
         return Datatable::simple(self::getModel(), $columns, $joins, $condition);
 

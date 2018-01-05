@@ -91,7 +91,7 @@ class WapSite extends Model {
                 ],
             ],
         ];
-        $condition = 'WapSite.school_id = ' . School::id();
+        $condition = 'WapSite.school_id = ' . School::schoolId();
     
         return Datatable::simple(self::getModel(), $columns, $joins, $condition);
         

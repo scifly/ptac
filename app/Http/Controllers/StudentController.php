@@ -2,13 +2,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StudentRequest;
-use App\Models\Custodian;
-use App\Models\CustodianStudent;
 use App\Models\Department;
-use App\Models\DepartmentUser;
-use App\Models\Group;
 use App\Models\Student;
-use App\Models\User;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
@@ -111,7 +106,7 @@ class StudentController extends Controller {
         $items = Student::gradeClasses(
             $student->squad->grade_id
         );
-        $student->grade_id = $student->squad->grade_id;
+        $student->{'grade_id'} = $student->squad->grade_id;
         return $this->output([
             'student' => $student,
             'mobiles' => $user->mobiles,

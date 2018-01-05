@@ -14,7 +14,7 @@ class ExamComposer {
 
     public function compose(View $view) {
 
-        $schoolId = School::id();
+        $schoolId = School::schoolId();
         $school = School::find($schoolId);
 
         $examtypes = ExamType::whereSchoolId($schoolId)

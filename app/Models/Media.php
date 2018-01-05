@@ -197,10 +197,10 @@ class Media extends Model {
     private static function mediaTypeId($type) {
 
         switch (explode('/', $type)[0]) {
-            case 'image': return 1; break;
-            case 'audio': return 2; break;
-            case 'video': return 3; break;
-            case 'application': return 4; break;
+            case 'image': return 1;
+            case 'audio': return 2;
+            case 'video': return 3;
+            case 'application': return 4;
             default: return 5;
         }
 

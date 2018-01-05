@@ -23,7 +23,7 @@ class StudentAttendanceSettingComposer {
             '星期六' => '星期六',
             '星期天' => '星期天',
         ];
-        $schoolId = School::id();
+        $schoolId = School::schoolId();
 
         $view->with([
             'schoolId' => $schoolId,

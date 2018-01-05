@@ -550,7 +550,7 @@ $(function () {
                 'type': type,
                 'mediaid': wechat_media_id
             },
-            url: '../message_store',
+            url: '../public/message_store',
             success: function (result) {
                 if (result.statusCode === 200) {
                     $.alert('消息发送成功！', function () {

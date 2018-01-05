@@ -13,7 +13,7 @@ class SubjectModuleComposer {
 
     public function compose(View $view) {
 
-        $subjects = Subject::whereSchoolId(School::id())
+        $subjects = Subject::whereSchoolId(School::schoolId())
             ->where('enabled', 1)
             ->pluck('name', 'id');
 

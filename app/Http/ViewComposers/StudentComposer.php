@@ -14,7 +14,7 @@ class StudentComposer {
 
     public function compose(View $view) {
 
-        $schoolId = School::id();
+        $schoolId = School::schoolId();
         $grades = Grade::whereEnabled(1)
             ->where('school_id', $schoolId)
             ->pluck('name', 'id')

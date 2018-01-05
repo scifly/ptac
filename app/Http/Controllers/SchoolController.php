@@ -2,7 +2,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\SchoolRequest;
-use App\Jobs\CreateWechatDepartment;
 use App\Models\Menu;
 use App\Models\School as School;
 use Exception;
@@ -59,7 +58,7 @@ class SchoolController extends Controller {
      * 保存学校
      *
      * @param SchoolRequest $request
-     * @return \Illuminate\Http\Response
+     * @return JsonResponse|string
      */
     public function store(SchoolRequest $request) {
         
@@ -153,16 +152,16 @@ class SchoolController extends Controller {
                 'user'    => Auth::user(),
             ]);
         }
-        $school = School::find(School::id())->first();
+        $school = School::find(School::schoolId())->first();
         session(['menuId' => $menuId]);
         
         return response()->json([
             'statusCode' => 200,
             'html'       => view('school.show_info', [
-                            'school' => $school,
-                            'js' => 'js/school/show_info.js',
-                            'breadcrumb' => '学校设置'
-                        ])->render(),
+                'school' => $school,
+                'js' => 'js/school/show_info.js',
+                'breadcrumb' => '学校设置'
+            ])->render(),
             'uri'        => Request::path(),
             'title'      => '学校设置',
         ]);

@@ -36,6 +36,7 @@ use Illuminate\Support\Facades\Storage;
  * @property-read WapSite $wapsite
  * @property-read Collection|WsmArticle[] $wsmarticles
  * @property-read Media $media
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\WsmArticle[] $wsmArticles
  */
 class WapSiteModule extends Model {
 
@@ -153,7 +154,7 @@ class WapSiteModule extends Model {
                 ],
             ],
         ];
-        $condition = 'WapSite.school_id = ' . School::id();
+        $condition = 'WapSite.school_id = ' . School::schoolId();
         
         return Datatable::simple(self::getModel(), $columns, $joins, $condition);
         
