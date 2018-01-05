@@ -38,6 +38,7 @@ $import.on('click', function () {
 var item = 'students/';
 var type = 'export';
 if (typeof custodian === 'undefined') {
+    console.log(32);
     $.getMultiScripts(['js/custodian.relationship.js'], page.siteRoot())
         .done(function() { custodian.init(item, type, ''); });
 } else { custodian.init(item, type, ''); }
