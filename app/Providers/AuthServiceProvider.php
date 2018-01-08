@@ -1,8 +1,10 @@
 <?php
 namespace App\Providers;
 
+use App\Models\App;
 use App\Models\Corp;
 use App\Policies\ActionPolicy;
+use App\Policies\AppPolicy;
 use App\Policies\CorpPolicy;
 use App\Policies\SchoolPolicy;
 use App\Policies\Route;
@@ -17,9 +19,10 @@ class AuthServiceProvider extends ServiceProvider {
      * @var array
      */
     protected $policies = [
-        Route::class => ActionPolicy::class,
         Model::class => SchoolPolicy::class,
-        Corp::class => CorpPolicy::class
+        Route::class => ActionPolicy::class,
+        Corp::class => CorpPolicy::class,
+        App::class => AppPolicy::class,
     ];
     
     /**

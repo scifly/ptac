@@ -8,18 +8,18 @@ use App\Models\Group;
 use App\Models\Mobile;
 use App\Models\Student;
 use App\Models\User;
+use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use Exception;
 
 class ManageImportStudent implements ShouldQueue {
     
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    
     protected $data;
     
     /**
@@ -28,58 +28,60 @@ class ManageImportStudent implements ShouldQueue {
      * @param $data
      */
     public function __construct($data) {
+        
         $this->data = $data;
+        
     }
     
+    /**
+     * @return bool
+     * @throws Exception
+     * @throws \Throwable
+     */
     public function handle() {
-        Log::debug('import');
+        
         $rows = $this->data;
         try {
-            
-            $exception = DB::transaction(function () use ($rows) {
-                foreach ($rows as $datum) {
-                    $relationship = str_replace(['，', '：'], [',', ':'], $datum['relationship']);
+            DB::transaction(function () use ($rows) {
+                foreach ($rows as $row) {
+                    $relationship = str_replace(['，', '：'], [',', ':'], $row['relationship']);
                     $relationships = explode(',', $relationship);
-                    $s = new Student();
-                    $studentData = $s->where('student_number', $datum['student_number'])->first();
-                    if (empty($studentData)) {
+                    $student = Student::whereStudentNumber($row['student_number'])->first();
+                    if (!$student) {
                         # 创建用户
-                        $user = [
+                        $u = User::create([
                             'username'   => uniqid('student_'),
                             'group_id'   => Group::whereName('学生')->first()->id,
                             'password'   => bcrypt('student8888'),
-                            'realname'   => $datum['name'],
-                            'gender'     => $datum['gender'] == '男' ? '0' : '1',
+                            'realname'   => $row['name'],
+                            'gender'     => $row['gender'] == '男' ? '0' : '1',
                             'avatar_url' => '00001.jpg',
                             'userid'     => uniqid('custodian_'),
                             'isleader'   => 0,
                             'wechatid'   => '',
                             'enabled'    => 1,
-                        ];
-                        $u = User::create($user);
+                        ]);
                         # 创建学生
-                        $student = [
+                        $s = Student::create([
                             'user_id'        => $u['id'],
-                            'class_id'       => $datum['class_id'],
-                            'student_number' => $datum['student_number'],
-                            'card_number'    => $datum['card_number'],
-                            'oncampus'       => $datum['oncampus'] == '住读' ? '0' : '1',
-                            'birthday'       => $datum['birthday'],
-                            'remark'         => $datum['remark'],
+                            'class_id'       => $row['class_id'],
+                            'student_number' => $row['student_number'],
+                            'card_number'    => $row['card_number'],
+                            'oncampus'       => $row['oncampus'] == '住读' ? '0' : '1',
+                            'birthday'       => $row['birthday'],
+                            'remark'         => $row['remark'],
                             'enabled'        => 1,
-                        ];
-                        $s = Student::create($student);
-                        // print_r(count($relationships));die;
+                        ]);
                         # 创建监护人关系
                         if (!empty($relationships)) {
                             foreach ($relationships as $r) {
                                 $item = explode(':', $r);
                                 if (count($item) == 4) {
-                                    $m = Mobile::where('mobile', $item[3])->first();
+                                    $m = Mobile::whereMobile($item[3])->first();
                                     # 手机号码不存在时 增加监护人用户 如果存在则更新
                                     if (empty($m)) {
                                         # 创建监护人用户
-                                        $user = [
+                                        $user = User::create([
                                             'username'   => uniqid('custodian_'),
                                             'group_id'   => Group::whereName('监护人')->first()->id,
                                             'password'   => bcrypt('custodian8888'),
@@ -90,130 +92,105 @@ class ManageImportStudent implements ShouldQueue {
                                             'isleader'   => 0,
                                             'wechatid'   => '',
                                             'enabled'    => 1,
-                                        ];
-                                        // $u = new User();
-                                        $userData = User::create($user);
+                                        ]);
                                         # 创建监护人
-                                        $custodian = [
-                                            'user_id' => $userData['id'],
-                                        ];
-                                        // $c = new Custodian();
-                                        $c = Custodian::create($custodian);
+                                        $c = Custodian::create(['user_id' => $user['id']]);
                                         # 创建 监护关系
-                                        $custodianStudent = [
+                                        CustodianStudent::create([
                                             'custodian_id' => $c['id'],
                                             'student_id'   => $s['id'],
                                             'relationship' => $item[0],
                                             'enabled'      => 1,
-                                        ];
-                                        // $cs = new CustodianStudent();
-                                        CustodianStudent::create($custodianStudent);
+                                        ]);
                                         # 创建监护人用户手机号码
-                                        $mobile = [
-                                            'user_id'   => $userData['id'],
+                                        Mobile::create([
+                                            'user_id'   => $user['id'],
                                             'mobile'    => $item[3],
                                             'isdefault' => 1,
                                             'enabled'   => 1,
-                                        ];
-                                        Mobile::create($mobile);
+                                        ]);
                                         # 创建部门成员
-                                        $departmentUser = [
-                                            'department_id' => $datum['department_id'],
-                                            'user_id'       => $userData['id'],
+                                        DepartmentUser::create([
+                                            'department_id' => $row['department_id'],
+                                            'user_id'       => $user['id'],
                                             'enabled'       => 1,
-                                        ];
-                                        DepartmentUser::create($departmentUser);
+                                        ]);
                                         # 创建企业号成员
-                                        $userModel = new User();
-                                        $userModel->createWechatUser($userData['id']);
-                                        unset($userModel);
-        
-                                    }else{
+                                        User::createWechatUser($user['id']);
+                                    } else {
                                         # 手机号码存在时 更新user 再判断监护人是否存在 监护关系是否存在
-                                        $user = User::whereId($m->user_id)->first();
+                                        $user = User::find($m->user_id);
                                         if (!empty($user)) {
                                             $user->realname = $item[1];
                                             $user->gender = $item[2] == '男' ? '0' : '1';
                                             $user->save();
                                         }
-                                        $c = Custodian::where('user_id', $m->user_id)->first();
+                                        $c = Custodian::whereUserId($m->user_id)->first();
                                         # 监护人不存在时
                                         if (empty($c)) {
                                             # 创建监护人
-                                            $custodian = [
-                                                'user_id' => $m->user_id,
-                                            ];
-                                            $custodianData = Custodian::create($custodian);
-                                            
+                                            $custodian = Custodian::create(['user_id' => $m->user_id]);
                                             # 创建 监护关系
-                                            $custodianStudent = [
-                                                'custodian_id' => $custodianData['id'],
+                                            CustodianStudent::create([
+                                                'custodian_id' => $custodian['id'],
                                                 'student_id'   => $s['id'],
                                                 'relationship' => $item[0],
                                                 'enabled'      => 1,
-                                            ];
-                                            CustodianStudent::create($custodianStudent);
-                                        }else{
+                                            ]);
+                                        } else {
                                             # 监护人存在 监护关系不存在时
-                                            $csData = CustodianStudent::where('custodian_id',$c['id'])->where('student_id', $s['id'])->first();
+                                            $csData = CustodianStudent::whereCustodianId($c['id'])
+                                                ->where('student_id', $s['id'])
+                                                ->first();
                                             if (empty($csData)) {
                                                 # 创建 监护关系
-                                                $custodianStudent = [
+                                                CustodianStudent::create([
                                                     'custodian_id' => $c['id'],
                                                     'student_id'   => $s['id'],
                                                     'relationship' => $item[0],
                                                     'enabled'      => 1,
-                                                ];
-                                                CustodianStudent::create($custodianStudent);
+                                                ]);
                                             }
                                         }
                                         # 更新部门成员
-                                        DepartmentUser::where('user_id', $m->user_id)->delete();
-                                        $departmentUser = [
-                                            'department_id' => $datum['department_id'],
+                                        DepartmentUser::whereUserId($m->user_id)->delete();
+                                        DepartmentUser::create([
+                                            'department_id' => $row['department_id'],
                                             'user_id'       => $m->user_id,
                                             'enabled'       => 1,
-                                        ];
-                                        DepartmentUser::create($departmentUser);
+                                        ]);
                                         # 更新企业号监护人成员
-                                        $userModel = new User();
-                                        $userModel->updateWechatUser($m->user_id);
-                                        unset($userModel);
+                                        User::updateWechatUser($m->user_id);
                                     }
                                 }
                             }
                             
                         }
-                        Log::debug('导入学生');
                         # 创建学生用户手机号码
-                        $mobile = [
+                        Mobile::create([
                             'user_id'   => $u['id'],
-                            'mobile'    => $datum['mobile'],
+                            'mobile'    => $row['mobile'],
                             'isdefault' => 1,
                             'enabled'   => 1,
-                        ];
-                        Mobile::create($mobile);
-                        Log::debug($u['id']);
+                        ]);
                         # 创建部门成员
-                        $departmentUser = [
-                            'department_id' => $datum['department_id'],
+                        DepartmentUser::create([
+                            'department_id' => $row['department_id'],
                             'user_id'       => $u['id'],
                             'enabled'       => 1,
-                        ];
-                        DepartmentUser::create($departmentUser);
+                        ]);
                         # 创建企业号成员
-                        $user = new User();
-                        $user->createWechatUser($u['id']);
-                        unset($user);
+                        User::createWechatUser($u['id']);
                     }
                 }
-    
+                
             });
         } catch (Exception $e) {
             throw $e;
         }
-
+        
         return true;
         
     }
+    
 }

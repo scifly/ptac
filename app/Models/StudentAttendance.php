@@ -1,6 +1,7 @@
 <?php
 namespace App\Models;
 
+use App\Events\StudentAttendanceCreate;
 use App\Facades\DatatableFacade as Datatable;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
@@ -31,23 +32,39 @@ use Illuminate\Support\Facades\DB;
  * @method static Builder|StudentAttendance whereStudentId($value)
  * @method static Builder|StudentAttendance whereUpdatedAt($value)
  * @mixin \Eloquent 考勤
+ * @property-read \App\Models\AttendanceMachine $attendanceMachine
+ * @property-read \App\Models\Media $medias
+ * @property-read \App\Models\Student $student
  */
 class StudentAttendance extends Model {
     
     protected $table = 'student_attendances';
     protected $fillable = [
-        'id', 'student_id', 'punch_time',
+        'id', 'student_id', 'punch_time', 'sas_id',
         'inorout', 'attendance_machine_id', 'media_id',
-        'longitude', 'latitude', 'created_at',
+        'status', 'longitude', 'latitude', 'created_at',
         'updated_at',
     ];
     
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function attendanceMachine() { return $this->belongsTo('App\Models\AttendanceMachine'); }
     
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function student() { return $this->belongsTo('App\Models\Student'); }
     
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function medias() { return $this->belongsTo('App\Models\Media'); }
     
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function studentAttendancesetting(){ return $this->belongsTo('App\Models\StudentAttendanceSetting','sas_id', 'id'); }
     /**
      * 学生考勤记录列表
      *
@@ -83,7 +100,14 @@ class StudentAttendance extends Model {
                     return $d == 0 ? ' ' : $d;
                 },
             ],
-            ['db' => 'StudentAttendance.created_at', 'dt' => 8],
+            ['db' => 'StudentAttendanceSetting.name', 'dt' => 8],
+            ['db' => 'StudentAttendance.status', 'dt' => 9,
+                'formatter' => function ($d) {
+//                    return $d == 1 ? '正常' : '异常';
+                    return $d == 1 ? '<span class="badge bg-green">正常</span>' : '<span class="badge bg-red">异常</span>';
+
+                },],
+            ['db' => 'StudentAttendance.created_at', 'dt' => 10],
         ];
         $joins = [
             [
@@ -110,8 +134,16 @@ class StudentAttendance extends Model {
                     'User.id = Student.user_id',
                 ],
             ],
+            [
+                'table'      => 'student_attendance_settings',
+                'alias'      => 'StudentAttendanceSetting',
+                'type'       => 'INNER',
+                'conditions' => [
+                    'StudentAttendanceSetting.id = StudentAttendance.sas_id',
+                ],
+            ],
         ];
-        $condition = 'AttendanceMachine.school_id = ' . School::id();
+        $condition = 'AttendanceMachine.school_id = ' . School::schoolId();
         
         return Datatable::simple(self::getModel(), $columns, $joins, $condition);
         
@@ -119,41 +151,10 @@ class StudentAttendance extends Model {
     
     /**
      * @param $input
-     * @return bool
-     * @throws Exception
-     * @throws \Throwable
      */
     static function storeByFace($input) {
-        
-        #事务处理
-        try {
-            DB::transaction(function () use ($input) {
-                //先处理照片
-                if ($input['img']) {
-                    $m = Media::create([
-                        'path'          => $input['img'],
-                        'remark'        => '考勤照片',
-                        'media_type_id' => 1,
-                        'enabled'       => 1,
-                    ]);
-                    $input['media_id'] = $m->id;
-                }
-                StudentAttendance::create([
-                    'student_id'            => $input['student_id'],
-                    'punch_time'            => $input['punch_time'],
-                    'inorout'               => $input['inorout'],
-                    'attendance_machine_id' => $input['attendance_machine_id'],
-                    'media_id'              => $input['media_id'],
-                    'longitude'             => $input['longitude'],
-                    'latitude'              => $input['latitude'],
-                ]);
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
-        
+        #触发事件调用队列
+        event(new StudentAttendanceCreate($input));
     }
     
 }

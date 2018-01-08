@@ -39,6 +39,7 @@ Route::group(['prefix' => 'educators'], function () {
     Route::post('edit/{id}', $c . '@edit');
     Route::post('create', $c . '@create');
     Route::get('export', $c . '@export');
+    Route::post('export', $c . '@export');
     Route::post('import', $c . '@import');
 });
 // 监护人
@@ -58,6 +59,7 @@ Route::group(['prefix' => 'students'], function () {
     Route::post('create', $c . '@create');
     Route::post('import', $c . '@import');
     Route::get('export', $c . '@export');
+    Route::post('export', $c . '@export');
 });
 // 用户
 Route::group(['prefix' => 'users'], routes('UserController'));
@@ -107,9 +109,14 @@ Route::group(['prefix' => 'score_ranges'], function () {
 Route::group(['prefix' => 'attendance_machines'], routes('AttendanceMachineController'));
 Route::group(['prefix' => 'educator_attendance_settings'], routes('EducatorAttendanceSettingController'));
 Route::group(['prefix' => 'student_attendance_settings'], routes('StudentAttendanceSettingController'));
-// 考勤查询/统计
+// 学生考勤记录
 Route::group(['prefix' => 'student_attendances'], function (){
     $ctrl = 'StudentAttendanceController';
+    Route::get('index', $ctrl . '@index');
+});
+// 考勤查询/统计
+Route::group(['prefix' => 'student_attendance_statistics'], function (){
+    $ctrl = 'StudentAttendanceStatisticsController';
     Route::get('index', $ctrl . '@index');
 });
 /** 课程表管理 */
@@ -246,7 +253,7 @@ Route::group(['prefix' => 'comm_types'], routes('CommTypeController'));
 Route::group(['prefix' => 'alert_types'], routes('AlertTypeController'));
 // 运营者设置 - 企业设置
 Route::group(['prefix' => 'department_types'], routes('DepartmentTypeController'));
-Route::group(['prefix' => 'departments'], routes('DepartmentController'));
+Route::group(['prefix' => 'departments'], routeItem('DepartmentController'));
 Route::group(['prefix' => 'departments'], function () {
     $c = 'DepartmentController';
     Route::post('index', $c . '@index');
@@ -258,7 +265,7 @@ Route::group(['prefix' => 'corps'], routes('CorpController'));
 // 菜单管理 - action设置.卡片设置.菜单设置
 Route::group(['prefix' => 'actions'], routes('ActionController'));
 Route::group(['prefix' => 'tabs'], routes('TabController'));
-Route::group(['prefix' => 'menus'], routes('MenuController'));
+Route::group(['prefix' => 'menus'], routeItem('MenuController'));
 Route::group(['prefix' => 'menus'], function () {
     $c = 'MenuController';
     Route::post('index', $c . '@index');
@@ -282,14 +289,19 @@ Route::post('message_center', 'Wechat\MessageCenterController@index');
 Route::get('message_create', 'Wechat\MessageCenterController@create');
 Route::post('message_create', 'Wechat\MessageCenterController@create');
 Route::post('message_store', 'Wechat\MessageCenterController@store');
-Route::get('message_edit/{id}', 'Wechat\MessageCenterController@edit');
 Route::get('message_show/{id}', 'Wechat\MessageCenterController@show');
 Route::get('message_update/{id}', 'Wechat\MessageCenterController@updateStatus');
-Route::post('message_update/{id}', 'Wechat\MessageCenterController@update');
-Route::delete('message_delete/{id}', 'Wechat\MessageCenterController@destory');
+Route::delete('message_delete/{id}', 'Wechat\MessageCenterController@destroy');
 Route::post('message_upload', 'Wechat\MessageCenterController@upload');
 Route::get('message_dept/{id}', 'Wechat\MessageCenterController@getNextDept');
+Route::post('message_replay', 'Wechat\MessageCenterController@replay');
+Route::post('message_replaylist', 'Wechat\MessageCenterController@replayList');
+Route::delete('message_replaydel/{id}', 'Wechat\MessageCenterController@replayDestroy');
 //布置作业
 Route::get('homework', 'Wechat\HomeWorkController@index');
 //微网站
 Route::get('wapsite', 'Wechat\MobileSiteController@index');
+// 考勤
+Route::get('lists', 'Wechat\AttendanceController@index');
+Route::get('attendance_records/{id}', 'Wechat\AttendanceController@records');
+

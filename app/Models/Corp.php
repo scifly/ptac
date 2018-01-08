@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * App\Models\Corp 企业
@@ -224,5 +225,27 @@ class Corp extends Model {
         return $removed ? true : false;
 
     }
-    
+
+    /**
+     * 根据角色 & 菜单id获取corp_id
+     *
+     * @return int|mixed
+     */
+    static function corpId() {
+
+        $user = Auth::user();
+        switch ($user->group->name) {
+            case '运营':
+            case '企业':
+                $corpMenuId = Menu::menuId(session('menuId'), '企业');
+                return $corpMenuId ? self::whereMenuId($corpMenuId)->first()->id : 0;
+            case '学校':
+                $departmentId = $user->topDeptId();
+                return School::whereDepartmentId($departmentId)->first()->corp_id;
+            default:
+                return School::find($user->educator->school_id)->corp_id;
+        }
+
+    }
+
 }

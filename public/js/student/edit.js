@@ -80,7 +80,7 @@ $(document).on('change', '#grade_id', function (e) {
     $.ajax({
         type: 'POST',
         dataType: 'json',
-        url: page.siteRoot() + 'custodians/create?field=grade' + '&id=' + gradeId + '&_token=' + token,
+        url: page.siteRoot() + 'students/edit/'+id+'/?field=grade' + '&id=' + gradeId + '&_token=' + token,
         success: function (result) {
             $next.remove();
             $classId.remove();

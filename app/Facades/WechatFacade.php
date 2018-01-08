@@ -155,7 +155,7 @@ class Wechat extends Facade {
         } else {
             $accessToken = $app['access_token'];
         }
-        Log::debug('token');
+
         return $accessToken;
         
     }

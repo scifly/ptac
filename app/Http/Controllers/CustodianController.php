@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\CustodianRequest;
 use App\Models\Custodian;
 use App\Models\Department;
+use App\Models\School;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
@@ -55,7 +56,7 @@ class CustodianController extends Controller {
         if (Request::method() === 'POST') {
             $field = Request::query('field');
             $id = Request::query('id');
-            $this->result['html'] = Custodian::getFieldList($field, $id);
+            $this->result['html'] = School::getFieldList($field, $id);
             return response()->json($this->result);
         }
         // $this->authorize('c', Custodian::class);
@@ -106,7 +107,14 @@ class CustodianController extends Controller {
     public function edit($id) {
 
         if (Request::method() === 'POST') {
-            return response()->json(Department::tree());
+            $field = Request::query('field');
+            $id = Request::query('id');
+            if($field && $id) {
+                $this->result['html'] = School::getFieldList($field, $id);
+                return response()->json($this->result);
+            }else{
+                return response()->json(Department::tree());
+            }
         }
         $custodian = Custodian::find($id);
         // $this->authorize('rud', $custodian);

@@ -42,6 +42,9 @@ use Throwable;
  * @method static Builder|Tab whereActionId($value)
  * @property string $controller 控制器名称
  * @method static Builder|Tab whereController($value)
+ * @property int $group_id
+ * @property int|null $new_column
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Tab whereNewColumn($value)
  */
 class Tab extends Model {
 

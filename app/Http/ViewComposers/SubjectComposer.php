@@ -14,7 +14,7 @@ class SubjectComposer {
 
     public function compose(View $view) {
 
-        $schoolId = School::id();
+        $schoolId = School::schoolId();
 
         $view->with([
             'schoolId' => $schoolId,

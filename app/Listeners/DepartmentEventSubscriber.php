@@ -214,7 +214,7 @@ class DepartmentEventSubscriber {
      *
      * @param $event
      * @return bool|null
-     * @throws \Exception
+     * @throws Throwable
      */
     public function onSchoolDeleted($event) {
         
@@ -251,7 +251,7 @@ class DepartmentEventSubscriber {
      *
      * @param $event
      * @return bool|null
-     * @throws \Exception
+     * @throws Throwable
      */
     public function onGradeDeleted($event) {
         
@@ -288,7 +288,7 @@ class DepartmentEventSubscriber {
      *
      * @param $event
      * @return bool|null
-     * @throws \Exception
+     * @throws Throwable
      */
     public function onClassDeleted($event) {
         
@@ -296,6 +296,10 @@ class DepartmentEventSubscriber {
         
     }
     
+    /**
+     * @param $event
+     * @return bool|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|null|static|static[]
+     */
     public function onMenuMoved($event) {
         
         /** @var Menu $menu */
@@ -303,23 +307,15 @@ class DepartmentEventSubscriber {
         $menuType = $menu->menuType->name;
         if (in_array($menuType, ['企业', '学校'])) {
             if ($menuType == '企业') {
-                /** @var Corp $corp */
                 $corp = $menu->corp;
-                /** @var Company $company */
                 $company = $menu->parent->company;
-                /** @var Department $department */
-                $department = Department::whereId($corp->department_id)->first();
-                /** @var Department $parentDepartment */
-                $parentDepartment = Department::whereId($company->department_id)->first();
+                $department = Department::find($corp->department_id);
+                $parentDepartment = Department::find($company->department_id);
             } else {
-                /** @var School $school */
                 $school = $menu->school;
-                /** @var Corp $corp */
                 $corp = $menu->parent->corp;
-                /** @var Department $department */
-                $department = Department::whereId($school->department_id)->first();
-                /** @var Department $parentDepartment */
-                $parentDepartment = Department::whereId($corp->department_id)->first();
+                $department = Department::find($school->department_id);
+                $parentDepartment = Department::find($corp->department_id);
             }
             if ($department->parent_id != $parentDepartment->id) {
                 return $department->modify(['parent_id' => $parentDepartment->id], $department->id);

@@ -64,15 +64,16 @@ if (typeof crud === 'undefined') {
 // });
 
 /** 监护人学生关系管理 */
-var item = 0;
+var item = 'custodians/';
+var type = 'edit/';
 if (typeof custodian === 'undefined') {
     var $relationship = $('#tBody').find('tr:last');
     if($relationship.find('input').val() !== undefined) {
         item = $relationship.find('input').val();
     }
     $.getMultiScripts(['js/custodian.relationship.js'], page.siteRoot())
-        .done(function() { custodian.init(item); });
-} else { custodian.init(item); }
+        .done(function() { custodian.init(item, type, id+'/'); });
+} else { custodian.init(item, type, id); }
 
 
 // /** 监护人所属部门管理 */

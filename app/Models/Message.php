@@ -69,6 +69,11 @@ use Illuminate\Support\Facades\Storage;
  * @property-read CommType $commType
  * @property-read MessageSendingLog $messageSendinglog
  * @property-read MessageSendingLog $messageSendinglogs
+ * @property string $title 消息标题
+ * @property int $read 是否已读
+ * @property-read \App\Models\User $receiveUser
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Message whereRead($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Message whereTitle($value)
  */
 class Message extends Model {
 
@@ -111,7 +116,7 @@ class Message extends Model {
      */
     public function classes(array $classIds) { return Squad::whereIn('id', $classIds)->get(['id', 'name']); }
 
-    public function messageSendinglogs() { return $this->belongsTo('App\Models\MessageSendingLog'); }
+    public function messageSendinglogs() { return $this->belongsTo('App\Models\MessageSendingLog','msl_id','id'); }
 
     public function commType() { return $this->belongsTo('App\Models\CommType'); }
 
@@ -287,7 +292,7 @@ class Message extends Model {
                 ];
                 return response()->json($result);
             }
-            $corp = Corp::where('name', '万浪软件')->first();
+            $corp = Corp::whereName('万浪软件')->first();
             if (!$corp) {
                 $result = [
                     'statusCode' => 0,
@@ -301,7 +306,7 @@ class Message extends Model {
             $us = [];
             foreach ($obj as $o) {
                 $item = explode('-', $o);
-                if ($item[1]) {
+                if (isset($item[1])) {
                     $users[] = User::find($item[1])->userid;
                     $us[] = User::find($item[1])->id;
                 } else {
@@ -347,6 +352,7 @@ class Message extends Model {
 
                     }
                 }else{
+                    $message['msgtype'] = $data['type'];
                     switch ($data['type']) {
                         case 'text' :
                             $message['text'] = ['content' => $data['content']['text']];
@@ -358,7 +364,8 @@ class Message extends Model {
 
                         break;
                         case 'mpnews' :
-                            $message['mpnews'] = ['articles' => $data['content']['articles']];
+                            $i['articles'][] = $data['content']['articles'];
+                            $message['mpnews'] = $i;
                             $title = $data['content']['articles']['title'];
                             break;
                         case 'video' :
@@ -368,7 +375,7 @@ class Message extends Model {
 
                             break;
                     }
-                    $message['msgtype'] = $data['type'];
+
                     $status = json_decode(Wechat::sendMessage($token, $message));
                     $content = $message[$data['type']];
 
@@ -464,8 +471,8 @@ class Message extends Model {
         if ($touser) {
             // $userIds = explode('|', $touser);
             foreach ($touser as $i) {
-                $user = User::where('id', $i)->first();
-                $m = Mobile::where('user_id', $i)->where('enabled', 1)->first();
+                $user = User::find($i);
+                $m = Mobile::whereUserId($i)->where('enabled', 1)->first();
                 if ($m) { $mobiles[] = $m->mobile; $userDatas[] = $user;}
             }
         }
@@ -475,7 +482,7 @@ class Message extends Model {
             $users = $dept->getPartyUser($toparty);
             if ($users) {
                 foreach ($users as $u) {
-                    $m = Mobile::where('user_id', $u->id)->where('enabled', 1)->first();
+                    $m = Mobile::whereUserId($u->id)->where('enabled', 1)->first();
 
                     if ($m) { $mobiles[] = $m->mobile; $userDatas[] = $u;}
                 }

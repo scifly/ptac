@@ -229,23 +229,15 @@ class MenuEventSubscriber {
         $departmentType = $department->departmentType->name;
         if (in_array($departmentType, ['企业', '学校'])) {
             if ($departmentType == '企业') {
-                /** @var Corp $corp */
                 $corp = $department->corp;
-                /** @var Company $company */
                 $company = $department->parent->company;
-                /** @var Menu $menu */
-                $menu = Menu::whereId($corp->menu_id)->first();
-                /** @var Menu $parentMenu */
-                $parentMenu = Menu::whereId($company->menu_id)->first();
+                $menu = Menu::find($corp->menu_id);
+                $parentMenu = Menu::find($company->menu_id);
             } else {
-                /** @var School $school */
                 $school = $department->school;
-                /** @var Corp $corp */
                 $corp = $department->parent->corp;
-                /** @var Menu $menu */
-                $menu = Menu::whereId($school->menu_id)->first();
-                /** @var Menu $parentMenu */
-                $parentMenu = Menu::whereId($corp->menu_id)->first();
+                $menu = Menu::find($school->menu_id);
+                $parentMenu = Menu::find($corp->menu_id);
             }
             if ($menu->parent_id != $parentMenu->id) {
                 return $menu->alter(['parent_id' => $parentMenu->id], $menu->id);

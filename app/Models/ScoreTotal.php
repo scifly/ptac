@@ -39,6 +39,7 @@ use Illuminate\Support\Facades\DB;
  * @property-read Student $student
  * @property-read Subject $subjects
  * @method static Builder|ScoreTotal whereEnabled($value)
+ * @property-read \App\Models\Subject $subject
  */
 class ScoreTotal extends Model {
 

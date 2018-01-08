@@ -14,20 +14,14 @@
                 {!! Form::label('corp_id', '所属企业：', [
                     'class' => 'control-label',
                 ]) !!}
-                @if (Auth::user()->group->name == '运营')
-                    {!! Form::select('corp_id', $corps, null, [
-                        'class' => 'form-control input-sm'
-                    ]) !!}
-                @else
-                    {!! Form::label('name', $corp->name, [
-                        'class' => 'control-label',
-                        'style' => 'font-weight: normal;'
-                    ]) !!}
-                @endif
+                {!! Form::label('name', $corp->name, [
+                    'class' => 'control-label',
+                    'style' => 'font-weight: normal;'
+                ]) !!}
             </div>
             <!-- 企业应用ID -->
             <div class="form-group" style="margin-right: 10px">
-                {!! Form::label('agentid', '企业应用id：', [
+                {!! Form::label('agentid', '应用AgentId：', [
                     'class' => 'control-label'
                 ]) !!}
                 {!! Form::text('agentid', null, [
@@ -45,7 +39,7 @@
                     'id' => 'secret',
                     'class' => 'form-control input-sm',
                     'required' => 'true',
-                    'data-parsley-length' => '[44,44]'
+                    'data-parsley-length' => '[43,43]'
                 ]) !!}
             </div>
             {!! Form::submit('同步应用', [
@@ -91,7 +85,7 @@
                             @else
                                 <i class="fa fa-circle text-gray" title="未启用"></i>
                             @endif
-                            &nbsp;&nbsp;&nbsp;
+                            &nbsp;&nbsp;
                             <a href="#"><i class="fa fa-pencil" title="修改"></i></a>
                             &nbsp;&nbsp;
                             <a href="#"><i class="fa fa-exchange" title="同步菜单"></i></a>

@@ -34,6 +34,9 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property-read PollQuestionnaire $poll_questionnaire
  * @property-read PollQuestionnaireAnswer $poll_questionnaire_answer
  * @property-read Collection|PollQuestionnaireSubjectChoice[] $poll_questionnaire_choice
+ * @property-read \App\Models\PollQuestionnaire $pollQuestionnaire
+ * @property-read \App\Models\PollQuestionnaireAnswer $pollQuestionnaireAnswer
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\PollQuestionnaireSubjectChoice[] $pollQuestionnaireSubjectChoice
  */
 class PollQuestionnaireSubject extends Model {
 
@@ -57,7 +60,7 @@ class PollQuestionnaireSubject extends Model {
      */
     public function pollQuestionnaireSubjectChoice() {
         
-        return $this->hasMany("App\Models\PollQuestionnaireChoice", 'pqs_id', 'id');
+        return $this->hasMany("App\Models\PollQuestionnaireSubjectChoice", 'pqs_id', 'id');
         
     }
 

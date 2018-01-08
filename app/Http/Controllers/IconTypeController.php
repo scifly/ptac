@@ -2,7 +2,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\IconTypeRequest;
-use App\Models\Icon;
 use App\Models\IconType;
 use Exception;
 use Illuminate\Http\JsonResponse;

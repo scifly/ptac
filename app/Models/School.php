@@ -24,11 +24,14 @@ use Illuminate\Support\Facades\Auth;
  *
  * @property int $id
  * @property int $school_type_id 学校类型ID
+ * @property int $corp_id 学校所属企业ID
+ * @property int $menu_id 对应的菜单ID
+ * @property int $department_id 对应的部门ID
  * @property string $name 学校名称
+ * @property string $signature 签名
  * @property string $address 学校地址
  * @property float $longitude 学校所处经度
  * @property float $latitude 学校所处纬度
- * @property int $corp_id 学校所属企业ID
  * @property int $sms_max_cnt 学校短信配额
  * @property int $sms_used 短信已使用量
  * @property Carbon|null $created_at
@@ -46,15 +49,16 @@ use Illuminate\Support\Facades\Auth;
  * @method static Builder|School whereSmsMaxCnt($value)
  * @method static Builder|School whereSmsUsed($value)
  * @method static Builder|School whereUpdatedAt($value)
+ * @method static Builder|School whereDepartmentId($value)
+ * @method static Builder|School whereMenuId($value)
+ * @method static Builder|School whereSignature($value)
  * @mixin Eloquent
  * @property-read Corp $corp
- * @property-read Collection|Educator[] $educator
- * @property-read Collection|Grade[] $grade
+ * @property-read Department $department
+ * @property-read Menu $menu
  * @property-read SchoolType $schoolType
- * @property-read Collection|Semester[] $semesters
- * @property-read Collection|Subject[] $subject
- * @property-read WapSite $wapsite
  * @property-read WapSite $wapSite
+ * @property-read Collection|Semester[] $semesters
  * @property-read Collection|AttendanceMachine[] $attendanceMachines
  * @property-read Collection|Squad[] $classes
  * @property-read Collection|ConferenceRoom[] $conferenceRooms
@@ -68,12 +72,6 @@ use Illuminate\Support\Facades\Auth;
  * @property-read Collection|Subject[] $subjects
  * @property-read Collection|Team[] $teams
  * @property-read Collection|WapSiteModule[] $wapSiteModules
- * @property int $department_id 对应的部门ID
- * @property-read \App\Models\Department $department
- * @method static Builder|School whereDepartmentId($value)
- * @property int $menu_id 对应的菜单ID
- * @property-read \App\Models\Menu $menu
- * @method static Builder|School whereMenuId($value)
  * @property-read Collection|ExamType[] $examTypes
  * @property-read Collection|Group[] $groups
  */
@@ -99,135 +97,135 @@ class School extends Model {
      * @return BelongsTo
      */
     public function menu() { return $this->belongsTo('App\Models\Menu'); }
-
+    
     /**
      * 返回所属学校类型对象
      *
      * @return BelongsTo
      */
     public function schoolType() { return $this->belongsTo('App\Models\SchoolType'); }
-
+    
     /**
      * 返回所属企业对象
      *
      * @return BelongsTo
      */
     public function corp() { return $this->belongsTo('App\Models\Corp'); }
-
+    
     /**
      * 获取隶属指定学校的所有角色对象
      *
      * @return HasMany
      */
     public function groups() { return $this->hasMany('App\Models\Group'); }
-
+    
     /**
      * 获取指定学校所有的考勤机对象
      *
      * @return HasMany
      */
     public function attendanceMachines() { return $this->hasMany('App\Models\AttendanceMachine'); }
-
+    
     /**
      * 获取所有的会议室对象
      *
      * @return HasMany
      */
     public function conferenceRooms() { return $this->hasMany('App\Models\ConferenceRoom'); }
-
+    
     /**
      * 获取指定学校的所有调查问卷对象
      *
      * @return HasMany
      */
     public function pollQuestionnaires() { return $this->hasMany('App\Models\PollQuestionnaire'); }
-
+    
     /**
      * 获取指定学校的所有审批流程对象
      *
      * @return HasMany
      */
     public function procedures() { return $this->hasMany('App\Models\Procedure'); }
-
+    
     /**
      * 获取指定学校所有的学期对象
      *
      * @return HasMany
      */
     public function semesters() { return $this->hasMany('App\Models\Semester'); }
-
+    
     /**
      * 获取指定学校所有的科目对象
      *
      * @return HasMany
      */
     public function subjects() { return $this->hasMany('App\Models\Subject'); }
-
+    
     /**
      * 获取指定学校的所有教职员工组对象
      *
      * @return HasMany
      */
     public function teams() { return $this->hasMany('App\Models\Team'); }
-
+    
     /**
      * 获取指定学校所有的年级对象
      *
      * @return HasMany
      */
     public function grades() { return $this->hasMany('App\Models\Grade'); }
-
+    
     /**
      * 获取指定学校的所有专业对象
      *
      * @return HasMany
      */
     public function majors() { return $this->hasMany('App\Models\Major'); }
-
+    
     /**
      * 获取指定学校包含的所有考试类型对象
      *
      * @return HasMany
      */
     public function examTypes() { return $this->hasMany('App\Models\ExamType'); }
-
+    
     /**
      * 获取指定学校所有的教职员工对象
      *
      * @return HasMany
      */
     public function educators() { return $this->hasMany('App\Models\Educator'); }
-
+    
     /**
      * 获取指定学校的微网站对象
      *
      * @return HasOne
      */
     public function wapSite() { return $this->hasOne('App\Models\WapSite'); }
-
+    
     /**
      * 通过WapSite中间对象获取所有的微网站模块对象
      *
      * @return HasManyThrough
      */
     public function wapSiteModules() {
-
+    
         return $this->hasManyThrough('App\Models\WapSiteModule', 'App\Models\WapSite');
-
+    
     }
-
+    
     /**
      * 通过Grade中间对象获取所有的班级对象
      *
      * @return HasManyThrough
      */
     public function classes() {
-
+    
         return $this->hasManyThrough(
             'App\Models\Squad', 'App\Models\Grade',
             'school_id', 'grade_id'
         );
-
+    
     }
 
     /**
@@ -352,26 +350,84 @@ class School extends Model {
      *
      * @return int|mixed
      */
-    static function id() {
-
+    static function schoolId() {
+    
         $user = Auth::user();
         switch ($user->group->name) {
             case '运营':
             case '企业':
-                $schoolMenuId = Menu::schoolMenuId(session('menuId'));
-                $id = $schoolMenuId ? self::whereMenuId($schoolMenuId)->first()->id : 0;
-                break;
+                $schoolMenuId = Menu::menuId(session('menuId'));
+                return $schoolMenuId ? self::whereMenuId($schoolMenuId)->first()->id : 0;
             case '学校':
                 $departmentId = $user->topDeptId();
-                $id = School::whereDepartmentId($departmentId)->first()->id;
-                break;
+                return School::whereDepartmentId($departmentId)->first()->id;
             default:
-                $id = $user->educator->school_id;
-                break;
+                return $user->educator->school_id;
         }
 
-        return $id;
+    }
+    /**
+     * 获取字段列表
+     *
+     * @param $field
+     * @param $id
+     * @return array
+     */
+    static function getFieldList($field, $id) {
+
+        $grades = [];
+        $classes = [];
+        $students = [];
+        switch ($field) {
+            case 'school':
+                $grades = Grade::whereSchoolId($id)
+                    ->where('enabled', 1)
+                    ->pluck('name', 'id');
+                $classes = Squad::whereGradeId($grades->keys()->first())
+                    ->where('enabled', 1)
+                    ->pluck('name', 'id');
+                $students = Student::whereClassId($classes->keys()->first())
+                    ->where('enabled', 1)
+                    ->pluck('student_number', 'id');
+                break;
+            case 'grade':
+                $classes = Squad::whereGradeId($id)
+                    ->where('enabled', 1)
+                    ->pluck('name', 'id');
+                $students = Student::whereClassId($classes->keys()->first())
+                    ->where('enabled', 1)
+                    ->pluck('student_number', 'id');
+                break;
+            case 'class':
+                $list = Student::whereClassId($id)
+                    ->where('enabled', 1)
+                    ->get();
+                if (!empty($list)) {
+                    foreach ($list as $s) {
+                        $students[$s->id] = $s->user->realname . "-" . $s->student_number;
+                    }
+                }
+                break;
+            default:
+                break;
+        }
+        $htmls = array_map(
+            function ($items) {
+                $html = '<select class="form-control col-sm-6" id="%s" name="%s">';
+                foreach ($items as $key => $value) {
+                    $html .= '<option value="' . $key . '">' . $value . '</option>';
+                }
+                $html .= '</select>';
+                return $html;
+
+            }, [$grades, $classes, $students]
+        );
+
+        return [
+            'grades' => sprintf($htmls[0], 'gradeId', 'gradeId'),
+            'classes' => sprintf($htmls[1], 'classId', 'classId'),
+            'students' => sprintf($htmls[2], 'studentId', 'studentId')
+        ];
 
     }
-
 }

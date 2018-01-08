@@ -15,19 +15,16 @@ class AppIndexComposer {
 
     public function compose(View $view) {
 
-        $user = Auth::user();
-        if ($user->group->name == '运营') {
-            $corps = Corp::pluck('name', 'id')->toArray();
-            reset($corps);
-            $apps = App::whereCorpId(key($corps))->get()->toArray();
-            $this->formatDateTime($apps);
-            $view->with(['corps' => $corps, 'apps' => $apps, 'uris' => $this->uris()]);
-        } else {
-            $corp = Corp::whereDepartmentId($user->topDeptId())->first();
-            $apps = App::whereCorpId($corp->id)->get();
-            $this->formatDateTime($apps);
-            $view->with(['corp' => $corp, 'apps' => $apps, 'uris' => $this->uris()]);
-        }
+        $corpId = Corp::corpId();
+        $corp = Corp::find($corpId);
+        $apps = App::whereCorpId($corpId)->get()->toArray();
+        $this->formatDateTime($apps);
+
+        $view->with([
+            'corp' => $corp,
+            'apps' => $apps,
+            'uris' => $this->uris()
+        ]);
 
     }
 

@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\SubjectRequest;
 use App\Models\Grade;
 use App\Models\Major;
-use App\Models\MajorSubject;
 use App\Models\Subject;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -89,7 +88,7 @@ class SubjectController extends Controller {
         $gradeIds = explode(',', $subject['grade_ids']);
         $selectedGrades = [];
         foreach ($gradeIds as $gradeId) {
-            $grade = Grade::whereId($gradeId)->first();
+            $grade = Grade::find($gradeId);
             $selectedGrades[$gradeId] = $grade['name'];
         }
         $selectedMajors = [];

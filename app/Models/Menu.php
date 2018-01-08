@@ -8,6 +8,7 @@ use App\Events\MenuMoved;
 use App\Events\MenuUpdated;
 use App\Http\Requests\MenuRequest;
 use App\Models\MenuTab as MenuTab;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -18,12 +19,14 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Throwable;
 
 /**
  * App\Models\Menu
  *
  * @property int $id
  * @property int|null $parent_id 父菜单ID
+ * @property int $menu_type_id 所属菜单类型ID
  * @property string $name 菜单名称
  * @property int|null $position 菜单所处位置
  * @property string|null $remark 菜单备注
@@ -32,8 +35,10 @@ use Illuminate\Support\Facades\DB;
  * @property int|null $rght
  * @property int|null $media_id 图片ID
  * @property int|null $action_id 对应的控制器action ID
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property int|null $icon_id 图标ID
+ * @property string|null $uri
  * @property int $enabled
  * @method static Builder|Menu whereActionId($value)
  * @method static Builder|Menu whereCreatedAt($value)
@@ -49,16 +54,14 @@ use Illuminate\Support\Facades\DB;
  * @method static Builder|Menu whereUpdatedAt($value)
  * @method static Builder|Menu wherePosition($value)
  * @method static Builder|Menu whereUri($value)
+ * @method static Builder|Menu whereIconId($value)
  * @mixin \Eloquent
  * @property-read Collection|\App\Models\Tab[] $tabs
- * @property int|null $icon_id 图标ID
  * @property-read Collection|Menu[] $children
  * @property-read Menu|null $parent
- * @method static Builder|Menu whereIconId($value)
  * @property-read Icon|null $icon
  * @property-read Action|null $action
  * @property-read School $school
- * @property int $menu_type_id 所属菜单类型ID
  * @property-read MenuType $menuType
  * @property-read Company $company
  * @property-read Corp $corp
@@ -195,9 +198,7 @@ HTML;
     static function subMenuIds($menuId) {
 
         static $childrenIds;
-        $firstIds = Menu::where('parent_id', $menuId)
-            ->get(['id'])
-            ->toArray();
+        $firstIds = Menu::whereParentId($menuId)->get(['id'])->toArray();
         if ($firstIds) {
             foreach ($firstIds as $firstId) {
                 $childrenIds[] = $firstId['id'];
@@ -219,9 +220,7 @@ HTML;
     private static function leafPath($id, array &$path) {
 
         $menu = self::find($id);
-        if (!$menu) {
-            return '';
-        }
+        if (!$menu) { return ''; }
         $path[] = $menu->name;
         if (isset($menu->parent_id)) {
             self::leafPath($menu->parent_id, $path);
@@ -238,7 +237,7 @@ HTML;
      * @param MenuRequest $request
      * @return bool|mixed
      * @throws Exception
-     * @throws \Throwable
+     * @throws Throwable
      */
     static function store(MenuRequest $request) {
 
@@ -311,8 +310,7 @@ HTML;
      * @param $id
      * @param bool $fireEvent
      * @return bool
-     * @throws Exception
-     * @throws \Throwable
+     * @throws Throwable
      */
     static function purge($id, $fireEvent = false) {
 
@@ -340,8 +338,7 @@ HTML;
      *
      * @param $menuId
      * @return bool|mixed
-     * @throws Exception
-     * @throws \Throwable
+     * @throws Throwable
      */
     static function remove($menuId) {
 
@@ -373,8 +370,7 @@ HTML;
      * @param MenuRequest $request
      * @param $menuId
      * @return bool|mixed
-     * @throws Exception
-     * @throws \Throwable
+     * @throws Throwable
      */
     static function modify(MenuRequest $request, $menuId) {
 
@@ -574,25 +570,18 @@ HTML;
     static function rootMenuId() {
 
         $user = Auth::user();
-        $rootMenuId = 1;
         switch ($user->group->name) {
-            case '运营':
-                break;
+            case '运营': return 1;
             case '企业':
-                $rootMenuId = Corp::whereDepartmentId($user->topDeptId())
+                return Corp::whereDepartmentId($user->topDeptId())
                     ->first()->menu_id;
-                break;
             case '学校':
-                $rootMenuId = School::whereDepartmentId($user->topDeptId())
+                return School::whereDepartmentId($user->topDeptId())
                     ->first()->menu_id;
-                break;
             default:
-                $rootMenuId = School::find(Group::find($user->group->id)->school_id)
+                return School::find(Group::find($user->group->id)->school_id)
                     ->menu_id;
-                break;
         }
-
-        return $rootMenuId;
 
     }
 
@@ -736,16 +725,17 @@ HTML;
     }
 
     /**
-     * 根据菜单ID返回其父级菜单中类型为“学校”的菜单ID
+     * 根据菜单ID返回其父级菜单中类型为$type的菜单ID
      *
      * @param $id
+     * @param string $type
      * @return int|mixed
      */
-    static function schoolMenuId($id) {
+    static function menuId($id, $type = '学校') {
 
         $menu = self::find($id);
         $menuType = $menu->menuType->name;
-        while ($menuType != '学校') {
+        while ($menuType != $type) {
             $menu = $menu->parent;
             if (!$menu) { return null; }
             $menuType = $menu->menuType->name;

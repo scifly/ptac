@@ -28,7 +28,7 @@ class EducatorIndexComposer {
                 ->pluck('name', 'id');
         } else {
             $topDepartmentId = User::topDeptId();
-            $departmentType = Department::whereId($topDepartmentId)->first()->departmentType;
+            $departmentType = Department::find($topDepartmentId)->departmentType;
             switch ($departmentType->name) {
                 case '根':
                 case '运营':
@@ -61,6 +61,10 @@ class EducatorIndexComposer {
                 ->where('enabled', 1)
                 ->pluck('name', 'id');
         }
+        if (empty($grades)) {$grades[] = '' ;}
+        if (empty($schools)) {$schools[] = '' ;}
+        if (empty($classes)) {$classes[] = '' ;}
+
         $view->with([
             'schools' => $schools,
             'grades' => $grades,

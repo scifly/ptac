@@ -2,7 +2,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\SubjectModuleRequest;
-use App\Models\Subject;
 use App\Models\SubjectModule;
 use Exception;
 use Illuminate\Http\JsonResponse;

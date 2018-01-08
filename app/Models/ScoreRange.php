@@ -130,7 +130,7 @@ class ScoreRange extends Model {
                 ],
             ],
         ];
-        $condition = 'ScoreRange.school_id = ' . School::id();
+        $condition = 'ScoreRange.school_id = ' . School::schoolId();
         
         return Datatable::simple(self::getModel(), $columns, $joins, $condition);
 

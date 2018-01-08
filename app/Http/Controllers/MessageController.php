@@ -192,7 +192,7 @@ class MessageController extends Controller {
     private function departmentChildIds($id) {
         
         static $childIds = [];
-        $firstIds = Department::where('parent_id', $id)->get(['id'])->toArray();
+        $firstIds = Department::whereParentId($id)->get(['id'])->toArray();
         if ($firstIds) {
             foreach ($firstIds as $firstId) {
                 $childIds[] = $firstId['id'];

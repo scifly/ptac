@@ -72,7 +72,7 @@ class Major extends Model {
      */
     static function majors() {
 
-        return self::whereSchoolId(School::id())->get()->pluck('name', 'id');
+        return self::whereSchoolId(School::schoolId())->get()->pluck('name', 'id');
 
     }
     
@@ -196,7 +196,7 @@ class Major extends Model {
                 ],
             ],
         ];
-        $condition = 'Major.school_id = ' . School::id();
+        $condition = 'Major.school_id = ' . School::schoolId();
 
         return DataTable::simple(self::getModel(), $columns, $joins, $condition);
 
