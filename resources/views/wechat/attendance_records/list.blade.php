@@ -109,7 +109,7 @@
             @foreach($students as $s)
                 <div class="list-item">
                     <div class="list-item-info">
-                        <div class="username">姓名 : <span>{{ $s->user_id }}</span></div>
+                        <div class="username">姓名 : <span>{{ $s->studentname }}</span></div>
                         <div class="school">学校 : <span>{{ $s->schoolname }}</span></div>
                         <div class="grade">班级 : <span>{{ $s->class_id }}</span></div>
                     </div>
@@ -120,13 +120,13 @@
                             <td>
                                 <div class="kaoqin-date-circle okstatus"></div>
                                 <span class="pl10">正常:</span>
-                                <span>14天</span>
+                                <span>{{$s->normal}}天</span>
                             </td>
 
                             <td>
                                 <div class="kaoqin-date-circle notstatus"></div>
                                 <span class="pl10">异常:</span>
-                                <span>0天</span>
+                                <span>{{$s->abnormal }}天</span>
                             </td>
 
                             <td>
