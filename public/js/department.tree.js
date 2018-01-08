@@ -154,7 +154,7 @@ var dept = {
             }
             dept.to = setTimeout(function () {
                 var v = $('#search_node').val();
-                dept.$tree.jstree(true).search(v);
+                dept.$tree().jstree(true).search(v);
             }, 250);
         });
     },

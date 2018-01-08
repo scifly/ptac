@@ -165,7 +165,7 @@ var contacts = {
             }
             contacts.to = setTimeout(function () {
                 var v = $('#search_node').val();
-                contacts.$tree.jstree(true).search(v);
+                contacts.$tree().jstree(true).search(v);
             }, 250);
         });
     },

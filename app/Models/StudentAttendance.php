@@ -100,7 +100,14 @@ class StudentAttendance extends Model {
                     return $d == 0 ? ' ' : $d;
                 },
             ],
-            ['db' => 'StudentAttendance.created_at', 'dt' => 8],
+            ['db' => 'StudentAttendanceSetting.name', 'dt' => 8],
+            ['db' => 'StudentAttendance.status', 'dt' => 9,
+                'formatter' => function ($d) {
+//                    return $d == 1 ? '正常' : '异常';
+                    return $d == 1 ? '<span class="badge bg-green">正常</span>' : '<span class="badge bg-red">异常</span>';
+
+                },],
+            ['db' => 'StudentAttendance.created_at', 'dt' => 10],
         ];
         $joins = [
             [
@@ -125,6 +132,14 @@ class StudentAttendance extends Model {
                 'type'       => 'INNER',
                 'conditions' => [
                     'User.id = Student.user_id',
+                ],
+            ],
+            [
+                'table'      => 'student_attendance_settings',
+                'alias'      => 'StudentAttendanceSetting',
+                'type'       => 'INNER',
+                'conditions' => [
+                    'StudentAttendanceSetting.id = StudentAttendance.sas_id',
                 ],
             ],
         ];
