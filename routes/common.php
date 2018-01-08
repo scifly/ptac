@@ -27,7 +27,7 @@ function routes($ctlr) {
 function routeItem($ctlr) {
     return function () use ($ctlr) {
         Route::get('index', $ctlr . '@index');
-        Route::get('create{id?}', $ctlr . '@create');
+        Route::get('create/{id?}', $ctlr . '@create');
         Route::post('store', $ctlr . '@store');
         Route::get('show/{id}', $ctlr . '@show');
         Route::get('edit/{id}', $ctlr . '@edit');
