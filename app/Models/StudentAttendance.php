@@ -3,10 +3,9 @@ namespace App\Models;
 
 use App\Events\StudentAttendanceCreate;
 use App\Facades\DatatableFacade as Datatable;
-use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Queue;
 
 /**
  * App\Models\StudentAttendance
@@ -64,7 +63,8 @@ class StudentAttendance extends Model {
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function studentAttendancesetting(){ return $this->belongsTo('App\Models\StudentAttendanceSetting','sas_id', 'id'); }
+    public function studentAttendancesetting() { return $this->belongsTo('App\Models\StudentAttendanceSetting', 'sas_id', 'id'); }
+    
     /**
      * 学生考勤记录列表
      *
@@ -100,14 +100,7 @@ class StudentAttendance extends Model {
                     return $d == 0 ? ' ' : $d;
                 },
             ],
-            ['db' => 'StudentAttendanceSetting.name', 'dt' => 8],
-            ['db' => 'StudentAttendance.status', 'dt' => 9,
-                'formatter' => function ($d) {
-//                    return $d == 1 ? '正常' : '异常';
-                    return $d == 1 ? '<span class="badge bg-green">正常</span>' : '<span class="badge bg-red">异常</span>';
-
-                },],
-            ['db' => 'StudentAttendance.created_at', 'dt' => 10],
+            ['db' => 'StudentAttendance.created_at', 'dt' => 8],
         ];
         $joins = [
             [
@@ -134,14 +127,6 @@ class StudentAttendance extends Model {
                     'User.id = Student.user_id',
                 ],
             ],
-            [
-                'table'      => 'student_attendance_settings',
-                'alias'      => 'StudentAttendanceSetting',
-                'type'       => 'INNER',
-                'conditions' => [
-                    'StudentAttendanceSetting.id = StudentAttendance.sas_id',
-                ],
-            ],
         ];
         $condition = 'AttendanceMachine.school_id = ' . School::schoolId();
         
@@ -151,10 +136,13 @@ class StudentAttendance extends Model {
     
     /**
      * @param $input
+     * @return bool
      */
     static function storeByFace($input) {
-        #触发事件调用队列
+
+        #触发事件调用队列，这个是异步处理的因此错误信息不能返回
         event(new StudentAttendanceCreate($input));
+        return true;
     }
     
 }
