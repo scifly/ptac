@@ -109,9 +109,14 @@ Route::group(['prefix' => 'score_ranges'], function () {
 Route::group(['prefix' => 'attendance_machines'], routes('AttendanceMachineController'));
 Route::group(['prefix' => 'educator_attendance_settings'], routes('EducatorAttendanceSettingController'));
 Route::group(['prefix' => 'student_attendance_settings'], routes('StudentAttendanceSettingController'));
-// 考勤查询/统计
+// 学生考勤记录
 Route::group(['prefix' => 'student_attendances'], function (){
     $ctrl = 'StudentAttendanceController';
+    Route::get('index', $ctrl . '@index');
+});
+// 考勤查询/统计
+Route::group(['prefix' => 'student_attendance_statistics'], function (){
+    $ctrl = 'StudentAttendanceStatisticsController';
     Route::get('index', $ctrl . '@index');
 });
 /** 课程表管理 */
