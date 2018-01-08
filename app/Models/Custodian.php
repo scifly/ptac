@@ -311,7 +311,7 @@ class Custodian extends Model {
             [
                 'db' => 'User.enabled', 'dt' => 7,
                 'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($d, $row);
+                    return Datatable::dtOps($d, $row, false);
                 },
             ],
         ];

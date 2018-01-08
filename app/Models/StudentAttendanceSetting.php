@@ -68,6 +68,14 @@ class StudentAttendanceSetting extends Model {
     }
     
     /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function studentAttendance() {
+        
+        return $this->hasOne('App\Models\StudentAttdance', 'id', 'sas_id');
+        
+    }
+    /**
      * 学生考勤设置记录列表
      *
      * @return array
