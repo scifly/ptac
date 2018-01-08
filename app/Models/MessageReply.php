@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Helpers\ModelTrait;
@@ -33,11 +32,7 @@ class MessageReply extends Model {
     protected $fillable = [
         'msl_id', 'user_id', 'content',
     ];
-
-    public static function where( $string, $msl_id ) { }
-
-    public static function find( $id ) { }
-
+    
     /**
      * 返回所属的用户对象
      *
@@ -50,11 +45,9 @@ class MessageReply extends Model {
      * @return bool
      */
     static function store($data) {
-        
         $messageReply = self::create($data);
         
         return $messageReply ? true : false;
-        
     }
     
 }

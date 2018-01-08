@@ -59,7 +59,7 @@ class MessageCenterController extends Controller {
              $userId = $userInfo['UserId'];
              Session::put('userId',$userId);
          }
-        //$userId = 'yuanhongbin';
+        // $userId = 'user_5a4c9eed43eb8';
         // Session::put('userId',$userId);
         $user = User::whereUserid($userId)->first();
         if (Request::isMethod('post')) {
@@ -181,6 +181,7 @@ class MessageCenterController extends Controller {
      * @throws \Throwable
      */
     public function store() {
+     
         return $this->frontStore() ? $this->succeed() : $this->fail();
     }
     
@@ -404,7 +405,7 @@ class MessageCenterController extends Controller {
      * @throws \Throwable
      */
     private function frontStore() {
-        
+
         $user = $this->user->where('userid', Session::get('userId'))->first();
         $input = Request::all();
         $userIds = [];
@@ -504,6 +505,7 @@ class MessageCenterController extends Controller {
                             'sent'            => 0,
                         ];
                         $message = $this->message->create($messageData);
+                        //这里的判断是无效的，应该放在应用发送后返回正确的状态值后
                         $message->sent = 1;
                         $message->save();
                         #更新msl表
@@ -511,8 +513,8 @@ class MessageCenterController extends Controller {
                         $msl->save();
                     }
                     #推送微信服务器且显示详情页
-                    $message = $this->message->where('msl_id', $input['msl_id'])->first();
-                    $url = 'weixin.028lk.com/message_show/' . $message->id;
+                    $msg = $this->message->where('msl_id', $input['msl_id'])->first();
+                    $url = 'weixin.028lk.com/message_show/' . $msg->id;
                     
                     return $this->frontSendMessage($input, $url);
                 });
