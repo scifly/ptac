@@ -514,7 +514,7 @@ class MessageCenterController extends Controller {
                     }
                     #推送微信服务器且显示详情页
                     $msg = $this->message->where('msl_id', $input['msl_id'])->first();
-                    $url = 'weixin.028lk.com/message_show/' . $msg->id;
+                    $url = 'http://weixin.028lk.com/message_show/' . $msg->id;
                     
                     return $this->frontSendMessage($input, $url);
                 });
