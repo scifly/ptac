@@ -1,4 +1,10 @@
-$('#reservation').daterangepicker();
+$('#reservation').daterangepicker({
+	ranges : {  
+        '最近7日': [moment().subtract('days', 6), moment()],  
+    },  
+    startDate: moment().subtract('days', 6),
+    endDate: moment(),
+});
 
 //模拟图标数据
 getdata();
