@@ -35,10 +35,17 @@ class StudentAttendanceStatisticsController extends Controller {
      * @throws \Throwable
      */
     public function index() {
-        
 
+        if (Request::method() === 'POST') {
+            $field = Request::query('field');
+            $id = Request::query('id');
+
+            $this->result['html'] = School::getFieldList($field, $id);
+            return response()->json($this->result);
+
+        }
         
-        return $this->output();
+        return $this->output(['addBtn' => true]);
         
     }
 

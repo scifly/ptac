@@ -1,30 +1,34 @@
 <link rel="stylesheet" href="{{ URL::asset('js/bootstrap-daterangepicker/daterangepicker.css') }}">
 <div class="box box-default box-solid">
     <div class="box-header with-border">
-    	
+			@include('partials.list_header')
     </div>
     <div class="box-bod">
         <div class="row" style="margin-top: 10px;">
 			<div class="form-horizontal">
 				<div class="col-md-6">
-				    <div class="form-group">
-					    <label class="col-sm-3 control-label">
-					        	班级
-					    </label>
-					    <div class="col-sm-6">
-					        <div class="input-group">
-					            <div class="input-group-addon">
-					                <i class="fa fa-users"></i>
-					            </div>
-					            <select name="classes" class='form-control select2' style="width: 100%;">
-					                
-					               	<option value="1">1</option>
-					                <option value="2">2</option>
-					                <option value="3">3</option>
-					                <option value="4">4</option>    
-					            </select>
-					        </div>
-					    </div>
+					<div class="form-horizontal">
+						<!-- 年级 -->
+						<div class="form-group">
+							@if(isset($grades))
+								@include('partials.single_select', [
+                                        'id' => 'gradeId',
+                                        'label' => '年级:',
+                                        'items' => $grades
+                                    ])
+
+							@endif
+						</div>
+						<!-- 班级 -->
+						<div class="form-group">
+							@if(isset($classes))
+								@include('partials.single_select', [
+                                        'id' => 'classId',
+                                        'label' => '班级:',
+                                        'items' => $classes
+                                    ])
+							@endif
+						</div>
 					</div>
 			   	</div>
 			    

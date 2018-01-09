@@ -118,6 +118,7 @@ Route::group(['prefix' => 'student_attendances'], function (){
 Route::group(['prefix' => 'student_attendance_statistics'], function (){
     $ctrl = 'StudentAttendanceStatisticsController';
     Route::get('index', $ctrl . '@index');
+    Route::post('index', $ctrl . '@index');
 });
 /** 课程表管理 */
 // 课程表设置

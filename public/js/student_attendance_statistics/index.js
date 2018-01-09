@@ -1,3 +1,17 @@
+page.initSelect2({
+    templateResult: page.formatStateImg,
+    templateSelection: page.formatStateImg,
+    language: "zh-CN",
+});
+/** 选择年级班级 */
+var item = 'student_attendance_statistics/';
+var type = 'index';
+if (typeof custodian === 'undefined') {
+    $.getMultiScripts(['js/custodian.relationship.js'], page.siteRoot())
+        .done(function() { custodian.init(item, type, ''); });
+} else { custodian.init(item, type, ''); }
+
+
 $('#reservation').daterangepicker();
 
 //模拟图标数据
