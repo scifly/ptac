@@ -85,10 +85,10 @@
                     @if (!empty($school['id']))
                         {{ Form::hidden('id', $school['id'], ['id' => 'id']) }}
                     @endif
-                    {{ csrf_field() }}
+                        {{ csrf_field() }}
                     <div class="box box-primary" style="margin-top:10px;">
                         <div class="box-body box-profile" style="position: relative;padding: 20px;text-align: center;">
-                            <img class="avater" src='{{asset("../public/img/avatar5.png")}}' alt="User profile picture">
+                            <img class="avater" src='{{asset("../img/school-1.png")}}' alt="User profile picture">
                             <div class="maininfo">
                                 <input class="profile-username edit-school" id="name" name="name"
                                        value="{{$school->name}}" style="border: 0;background-color: #fff"
@@ -135,6 +135,7 @@
                             </div>
                             {{ Form::hidden('department_id', $school->department_id, ['id' => 'department_id']) }}
                             {{ Form::hidden('menu_id', $school->menu_id, ['id' => 'menu_id']) }}
+                            {{ Form::hidden('signature', $school->signature, ['id' => 'signature']) }}
                         </div>
                     </div>
                 </form>

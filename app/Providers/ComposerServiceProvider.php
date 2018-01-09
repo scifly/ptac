@@ -40,7 +40,9 @@ class ComposerServiceProvider extends ServiceProvider {
 
         View::composer('subject.create_edit', 'App\Http\ViewComposers\SubjectComposer');
         View::composer('subject.index', 'App\Http\ViewComposers\SubjectIndexComposer');
+        
         View::composer('subject_module.create_edit', 'App\Http\ViewComposers\SubjectModuleComposer');
+        View::composer('subject_module.index', 'App\Http\ViewComposers\SubjectModuleIndexComposer');
     
         View::composer('group.create_edit', 'App\Http\ViewComposers\GroupComposer');
         View::composer('group.create', 'App\Http\ViewComposers\GroupCreateComposer');
