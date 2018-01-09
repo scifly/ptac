@@ -1,3 +1,5 @@
+
+$('.select2').select2()
 $('#reservation').daterangepicker({
 	ranges : {  
         '最近7日': [moment().subtract('days', 6), moment()],  

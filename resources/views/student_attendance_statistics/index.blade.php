@@ -1,4 +1,10 @@
 <link rel="stylesheet" href="{{ URL::asset('js/bootstrap-daterangepicker/daterangepicker.css') }}">
+<link rel="stylesheet" href="{{ URL::asset('js/plugins/select2/css/select2.min.css') }}">
+<style>
+	.select2-container .select2-selection--single{
+		height: 34px;
+	}
+</style>
 <div class="box box-default box-solid">
     <div class="box-header with-border">
     	
@@ -6,7 +12,30 @@
     <div class="box-bod">
         <div class="row" style="margin-top: 10px;">
 			<div class="form-horizontal">
-				<div class="col-md-6">
+				
+				<div class="col-md-4">
+				    <div class="form-group">
+					    <label class="col-sm-3 control-label">
+					        	年级
+					    </label>
+					    <div class="col-sm-6">
+					        <div class="input-group">
+					            <div class="input-group-addon">
+					                <i class="fa fa-users"></i>
+					            </div>
+					            <select name="grades" class='form-control select2 select2-hidden-accessible' style="width: 100%;">
+					                
+					               	<option value="1">一年级</option>
+					                <option value="2">2</option>
+					                <option value="3">3</option>
+					                <option value="4">4</option>    
+					            </select>
+					        </div>
+					    </div>
+					</div>
+			   	</div>
+				
+				<div class="col-md-4">
 				    <div class="form-group">
 					    <label class="col-sm-3 control-label">
 					        	班级
@@ -28,10 +57,10 @@
 					</div>
 			   	</div>
 			    
-			    <div class="col-md-6">
+			    <div class="col-md-4">
 		        	<div class="form-group">
-		                <label class="col-sm-3 control-label">时间范围:</label>
-						<div class="col-sm-9">
+		                <label class="col-sm-3 control-label">时间</label>
+						<div class="col-sm-6">
 							<div class="input-group">
 			                  	<div class="input-group-addon">
 			                    	<i class="fa fa-calendar"></i>
@@ -46,6 +75,9 @@
 	       	</div>
 	        
         </div>
+        
+        
+        
         
         
         <table id="data-table" style="width: 100%;"
@@ -79,6 +111,8 @@
                 
     </div>
 </div>
+
 <script src="{{ URL::asset('js/student_attendance_statistics/echarts.simple.min.js') }}"></script>
 <script src="{{ URL::asset('js/moment/min/moment.min.js') }}"></script>
 <script src="{{ URL::asset('js/bootstrap-daterangepicker/daterangepicker.js') }}"></script>
+<script src="{{ URL::asset('js/plugins/select2/js/select2.full.min.js') }}"></script>
