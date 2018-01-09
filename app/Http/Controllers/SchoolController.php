@@ -138,7 +138,6 @@ class SchoolController extends Controller {
      * @throws Throwable
      */
     public function showInfo(){
-        
         $menuId = Request::input('menuId');
         $menu = Menu::find($menuId);
         if (!$menu) {
@@ -152,9 +151,9 @@ class SchoolController extends Controller {
                 'user'    => Auth::user(),
             ]);
         }
-        $school = School::find(School::schoolId())->first();
         session(['menuId' => $menuId]);
-        
+        $school = School::find(School::schoolId())->first();
+
         return response()->json([
             'statusCode' => 200,
             'html'       => view('school.show_info', [

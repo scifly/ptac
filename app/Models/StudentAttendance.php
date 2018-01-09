@@ -5,7 +5,6 @@ use App\Events\StudentAttendanceCreate;
 use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Queue;
 
 /**
  * App\Models\StudentAttendance
@@ -34,6 +33,11 @@ use Illuminate\Support\Facades\Queue;
  * @property-read \App\Models\AttendanceMachine $attendanceMachine
  * @property-read \App\Models\Media $medias
  * @property-read \App\Models\Student $student
+ * @property int $sas_id 关联规则id
+ * @property int $status 考勤状态
+ * @property-read \App\Models\StudentAttendanceSetting $studentAttendancesetting
+ * @method static Builder|StudentAttendance whereSasId($value)
+ * @method static Builder|StudentAttendance whereStatus($value)
  */
 class StudentAttendance extends Model {
     
