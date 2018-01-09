@@ -64,11 +64,11 @@ class StudentAttendanceController extends Controller {
             $classId = Request::query('class_id');
             $startTime = Request::query('start_time');
             $endTime = Request::query('end_time');
-            if ($classId && $startTime && $endTime) {
-                return response()->json($this->studentAttendance->getData($classId , $startTime , $endTime));
-            }else{
+            if ($field && $id) {
                 $this->result['html'] = School::getFieldList($field, $id);
                 return response()->json($this->result);
+            }else{
+                return response()->json($this->studentAttendance->getData($classId , $startTime , $endTime));
             }
 
         }

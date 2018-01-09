@@ -22,52 +22,68 @@ $('#reservation').daterangepicker({
     startDate: moment().subtract('days', 6),
     endDate: moment(),
 });
+var $search = $('#search');
+var $token = $('#csrf_token');
+$search.click(function () {
+	$('#data-table tbody').html('');
 
+    getdata();
+})
 //模拟图标数据
 getdata();
 function getdata(){
-	var item1 = {
-		normal : 4,
-		abnormal : 2,
-		surplus : 1,
-	};
-	var item2 = {
-		normal : 5,
-		abnormal : 3,
-		surplus : 2,
-	};
-	var item3 = {
-		normal : 2,
-		abnormal : 4,
-		surplus : 2,
-	};
-	var data = {
-		1 : item1,
-		2 : item2,
-		3 : item3,
-	};
-	var arrayTime = new Array();
-	$.each(data, function (index, obj) {
-        var datacon = obj;
-//      console.log(datacon)
-		arrayTime.length=0;
-		var json1 = {
-			value:datacon.normal,
-			name:'打卡'
-		};
-		var json2 = {
-			value:datacon.abnormal,
-			name:'异常'
-		};
-		var json3 = {
-			value:datacon.surplus,
-			name:'未打'
-		};
-		arrayTime.push(json1);
-		arrayTime.push(json2);
-		arrayTime.push(json3);
-        showtable_pie(index,arrayTime);
-    });
+	var time = $('#reservation').val();
+	// console.log(time);
+	var time_arr = time.split('-');
+    var formData = new FormData();
+
+    formData.append('_token', $token.attr('content'));
+    formData.append('class_id', $('#classId').val());
+    formData.append('start_time', $.trim(time_arr[0]));
+    formData.append('end_time', $.trim(time_arr[1]));
+
+
+	$.ajax({
+        url: page.siteRoot() + "student_attendances/count",
+        type: 'POST',
+        cache: false,
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function (result) {
+            var arrayTime = new Array();
+            arrayTime.length = 0;
+			var html = '';
+            $.each(result, function (index, obj) {
+                var datacon = obj;
+            	html += '<tr><td>'+datacon.date+'</td>' +
+							'<td>'+datacon.normal+'/'+datacon.abnormal+'/'+datacon.surplus+'</td>' +
+							'<td><div id="main'+index+'" style="height: 80px;width: 160px;"></div></td></tr>';
+                $('#data-table tbody').html(html);
+            	//饼图数据
+
+                arrayTime.length=0;
+                var json1 = {
+                    value: datacon.normal,
+                    name: '打卡'
+                };
+                var json2 = {
+                    value: datacon.abnormal,
+                    name: '异常'
+                };
+                var json3 = {
+                    value: datacon.surplus,
+                    name: '未打'
+                };
+                arrayTime.push(json1);
+                arrayTime.push(json2);
+                arrayTime.push(json3);
+                showtable_pie(index,arrayTime);
+            });
+		}
+
+	});
+
 }
 function showtable_pie(index,arrayTime){
 	var myChart = echarts.init(document.getElementById('main'+index));

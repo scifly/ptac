@@ -61,7 +61,7 @@
 
 		<div class="row">
 			<div class="btns col-md-12" style="width: 120px;float: right;margin-bottom: 10px;">
-				<button type="button" class="btn btn-block btn-primary">查询</button>
+				<button type="button" class="btn btn-block btn-primary" id="search">查询</button>
 			</div>
 		</div>
         <table id="data-table" style="width: 100%;"
@@ -74,15 +74,15 @@
             </tr>
             </thead>
             <tbody>
-				@if($item)
-					@foreach($item as $i)
-						<tr>
-							<td>{{$i['date']}}</td>
-							<td>{{$i['normal']}}/{{$i['abnormal']}}/{{$i['surplus']}}/{{$i['all']}}</td>
-							<td><div id="main1" style="height: 80px;width: 160px;"></div></td>
-						</tr>
-					@endforeach
-				@endif
+				{{--@if($item)--}}
+					{{--@foreach($item as $t =>$i)--}}
+						{{--<tr>--}}
+							{{--<td>{{$i['date']}}</td>--}}
+							{{--<td>{{$i['normal']}}/{{$i['abnormal']}}/{{$i['surplus']}}/{{$i['all']}}</td>--}}
+							{{--<td><div id="main{{$t}}" style="height: 80px;width: 160px;"></div></td>--}}
+						{{--</tr>--}}
+					{{--@endforeach--}}
+				{{--@endif--}}
 
             </tbody>
         </table>
