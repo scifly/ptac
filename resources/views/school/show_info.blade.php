@@ -84,6 +84,7 @@
                 <form id="school-form">
                     @if (!empty($school['id']))
                         {{ Form::hidden('id', $school['id'], ['id' => 'id']) }}
+                        {{ Form::hidden('signature', $school->signature, ['id' => 'signature']) }}
                     @endif
                     {{ csrf_field() }}
                     <div class="box box-primary" style="margin-top:10px;">
