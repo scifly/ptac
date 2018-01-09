@@ -141,7 +141,7 @@ class SchoolController extends Controller {
         $menuId = Request::input('menuId');
         $menu = Menu::find($menuId);
         if (!$menu) {
-            $menuId = Menu::whereUri('schools/show')->first()->id;
+            $menuId = Menu::whereUri('schools/showInfo')->first()->id;
             session(['menuId' => $menuId]);
         
             return view('home.home', [
