@@ -173,7 +173,6 @@ var custodian = {
         custodian.schoolChange(item, type, id);
         custodian.gradeChange(item, type, id);
         custodian.classChange(item, type, id);
-console.log(item);
         if (item === 'students/') {
             page.initSelect2();
             custodian.exportStudent();
