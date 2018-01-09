@@ -148,13 +148,13 @@
                 <td>
                     <div class="kaoqin-date-circle okstatus"></div>
                     <span class="pl10">正常:</span>
-                    <span>14天</span>
+                    <span>{{ count($data['adays']) }}天</span>
                 </td>
 
                 <td>
                     <div class="kaoqin-date-circle notstatus"></div>
                     <span class="pl10">异常:</span>
-                    <span>0天</span>
+                    <span>{{ count($data['ndays']) }}天</span>
                 </td>
 
                 <td>
@@ -168,17 +168,24 @@
 
     <div class="kaoqin-day-detail js-kaoqin-day-detail">
         <div class="js-kaoqin-detail-date kaoqin-detail-date">
-            2017-07-06
+            {{ $time }}
         </div>
         <div class="mt20 history-list-con" style="">
             <span class="js-kaoqin-status-morning" style="display:inline-block">上班</span>
-            <span class="kaoqin-detail-status c-83db74">正常</span>
-            <span class="time">2018-01-03 16:39</span>
+            @if(sizeof($into) != 0)
+            <span class="kaoqin-detail-status c-83db74">{{ $into[0]->status == 1 ? '正常' : '异常' }}</span>
+            <span class="time">{{ $into[0]->punch_time }}</span>
+                @else
+                <span class="kaoqin-detail-status c-83db74">{{ '暂无数据' }}</span>
+                <span class="time">暂无数据</span>
+            @endif
         </div>
         <div class="mt20 history-list-con" style="">
             <span class="js-kaoqin-status-morning" style="display:inline-block">下班</span>
-            <span class="kaoqin-detail-status c-83db74">正常</span>
-            <span class="time">2018-01-03 16:39</span>
+            @if(sizeof($out) != 0)
+            <span class="kaoqin-detail-status c-83db74">{{ $out[0]->status == 1 ?'正常' : '异常' }}</span>
+            <span class="time">{{ $out[0]->punch_time }}</span>
+            @endif
         </div>
     </div>
 </div>
@@ -192,7 +199,13 @@
     });
 </script>
 <script src="{{URL::asset('js/jquery-weui.min.js')}}"></script>
+<script>
+    var days =$.parseJSON('{{$days}}'.replace(/&quot;/g,'"'));
+    var id = '{{ $id }}';
+    var ndays = days.ndays;
+    var adays = days.adays;
 
+</script>
 <script>
     showdata();
     function showdata(){
@@ -201,10 +214,100 @@
         });
 
     }
+    for(var i in ndays){
+        $('.picker-calendar-month-current .picker-calendar-day').eq(ndays[i].substring(8,10)-1).addClass('picker-calendar-day-normal');
+    }
+    for(var j in adays)
+    {
+        $('.picker-calendar-month-current .picker-calendar-day').eq(adays[j].substring(8,10)-1).addClass('picker-calendar-day-abnormal');
+    }
+    $('.picker-calendar-month-current .picker-calendar-day').eq(1).addClass('picker-calendar-day-leave');
 
-    $('.picker-calendar-month-current .picker-calendar-day').eq(0).addClass('picker-calendar-day-normal');
-    $('.picker-calendar-month-current .picker-calendar-day').eq(1).addClass('picker-calendar-day-abnormal');
-    $('.picker-calendar-month-current .picker-calendar-day').eq(3).addClass('picker-calendar-day-leave');
+    $('.picker-calendar-month-current .picker-calendar-day').click(function () {
+
+    });
+
+    // 点击年份
+    $('.picker-calendar-year-picker a').click(function () {
+
+    });
+
+    $('.picker-calendar-month-picker a').click(function () {
+        console.log(1);
+
+        var year = $('.current-year-value').html();
+        console.log(year);
+    });
+
+    // 点击日期
+    $('.picker-calendar-day').click(function () {
+        var year = $(this).attr('data-year');
+        var month = parseInt($(this).attr('data-month'))+1;
+        if(month<10){
+            month = '0'+month;
+        }
+        var day = $(this).attr('data-day');
+        if(day < 10){
+            day = '0'+day;
+        }
+        var date = year+'-'+month+'-'+day;
+        $.ajax({
+            type:'post',
+            dataType:'json',
+            url: 'attendance_records',
+            data: { id:id,date:date,_token:$('#csrf_token').attr('content')},
+            success: function ($data) {
+                var str = '';
+                var time = $data.time;
+                str += ' <div class="js-kaoqin-detail-date kaoqin-detail-date">' + time +
+                    '</div>';
+                if ($data.into.length > 0) {
+                    for (var i = 0; i < $data.into.length; i++) {
+                        var into = $data.into[i];
+                        str += ' <div class="mt20 history-list-con" style="">' +
+                            '<span class="js-kaoqin-status-morning" style="display:inline-block">上班</span>';
+                        if (into.status === 1) {
+                            str += '<span class="kaoqin-detail-status c-83db74">' + '正常' + '</span>';
+                        } else {
+                            str += '<span class="kaoqin-detail-status c-83db74">' + '异常' + '</span>';
+
+                        }
+                        str += '<span class="time">' + into.punch_time + '</span>' +
+                            '</div>';
+                    }
+                } else {
+                    str += ' <div class="mt20 history-list-con" style="">' +
+                        '<span class="js-kaoqin-status-morning" style="display:inline-block">上班</span>' +
+                        '<span class="kaoqin-detail-status c-83db74">' + '暂无数据' + '</span>' +
+                        '<span class="time">' + '暂无' + '</span>' +
+                        '</div>';
+                }
+                if ($data.out.length > 0) {
+                    for (var j = 0; j < $data.out.length; j++) {
+                        var out = $data.out[j];
+                        str += ' <div class="mt20 history-list-con" style="">' +
+                            '<span class="js-kaoqin-status-morning" style="display:inline-block">下班</span>';
+                        if (out.status === 1) {
+                            str += '<span class="kaoqin-detail-status c-83db74">' + '正常' + '</span>';
+                        } else {
+                            str += '<span class="kaoqin-detail-status c-83db74">' + '异常' + '</span>';
+
+                        }
+                        str += '<span class="time">' + out.punch_time + '</span>' +
+                            '</div>';
+                    }
+                } else {
+                    str += ' <div class="mt20 history-list-con" style="">' +
+                        '<span class="js-kaoqin-status-morning" style="display:inline-block">下班</span>' +
+                        '<span class="kaoqin-detail-status c-83db74">' + '暂无数据' + '</span>' +
+                        '<span class="time">' + '暂无' + '</span>' +
+                        '</div>';
+                }
+                $('.kaoqin-day-detail').html(str)
+            }
+        });
+    });
+
 </script>
 </body>
 </html>
