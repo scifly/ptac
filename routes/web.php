@@ -302,4 +302,5 @@ Route::get('wapsite', 'Wechat\MobileSiteController@index');
 // 考勤
 Route::get('lists', 'Wechat\AttendanceController@index');
 Route::get('attendance_records/{id}', 'Wechat\AttendanceController@records');
+Route::post('attendance_records/{id?}', 'Wechat\AttendanceController@records');
 

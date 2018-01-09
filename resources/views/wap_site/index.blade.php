@@ -104,7 +104,7 @@
     @endif
     <div class="box box-primary" style="margin-top:10px;">
         <div class="box-body box-profile" style="position: relative;padding: 20px;text-align: center;">
-            <img class="avater" src='{{asset("../public/img/avatar5.png")}}' alt="User profile picture">
+            <img class="avater" src='{{ asset("../img/window-icon.png") }}'>
 
             <div class="maininfo">
                 <h3 class="profile-username">{{$wapSite->site_title}}</h3>
