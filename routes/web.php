@@ -113,13 +113,10 @@ Route::group(['prefix' => 'student_attendance_settings'], routes('StudentAttenda
 Route::group(['prefix' => 'student_attendances'], function (){
     $ctrl = 'StudentAttendanceController';
     Route::get('index', $ctrl . '@index');
+    Route::get('count', $ctrl . '@count');
+    Route::post('count', $ctrl . '@count');
 });
-// 考勤查询/统计
-Route::group(['prefix' => 'student_attendance_statistics'], function (){
-    $ctrl = 'StudentAttendanceStatisticsController';
-    Route::get('index', $ctrl . '@index');
-    Route::post('index', $ctrl . '@index');
-});
+
 /** 课程表管理 */
 // 课程表设置
 Route::group(['prefix' => 'events'], routes('EventController'));
@@ -220,7 +217,7 @@ Route::group(['prefix' => 'combo_types'], routes('ComboTypeController'));
 Route::group(['prefix' => 'schools'], routes('SchoolController'));
 Route::group(['prefix' => 'schools'], function (){
     $ctrl = 'SchoolController';
-    Route::get('show', $ctrl . '@showInfo');
+    Route::get('showInfo', $ctrl . '@showInfo');
 });
 Route::group(['prefix' => 'semesters'], routes('SemesterController'));
 Route::group(['prefix' => 'teams'], routes('TeamController'));

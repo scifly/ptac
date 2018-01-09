@@ -8,13 +8,11 @@ use App\Models\School;
 use App\Models\Squad;
 use Illuminate\Contracts\View\View;
 
-class StudentAttendanceStatisticsIndexComposer {
-    
+class StudentAttendanceCountComposer {
+
     use ModelTrait;
 
     public function compose(View $view) {
-
-
 
         $schools = null;
         $grades = null;

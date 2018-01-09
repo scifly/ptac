@@ -1,3 +1,4 @@
+
 page.initSelect2({
     templateResult: page.formatStateImg,
     templateSelection: page.formatStateImg,
@@ -13,6 +14,16 @@ if (typeof custodian === 'undefined') {
 
 
 $('#reservation').daterangepicker();
+
+
+$('.select2').select2();
+$('#reservation').daterangepicker({
+	ranges : {  
+        '最近7日': [moment().subtract('days', 6), moment()],  
+    },  
+    startDate: moment().subtract('days', 6),
+    endDate: moment(),
+});
 
 //模拟图标数据
 getdata();
