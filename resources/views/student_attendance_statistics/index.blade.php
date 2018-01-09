@@ -18,7 +18,7 @@
 					    <label class="col-sm-3 control-label">
 					        	年级
 					    </label>
-					    <div class="col-sm-6">
+					    <div class="col-sm-9">
 					        <div class="input-group">
 					            <div class="input-group-addon">
 					                <i class="fa fa-users"></i>
@@ -40,7 +40,7 @@
 					    <label class="col-sm-3 control-label">
 					        	班级
 					    </label>
-					    <div class="col-sm-6">
+					    <div class="col-sm-9">
 					        <div class="input-group">
 					            <div class="input-group-addon">
 					                <i class="fa fa-users"></i>
@@ -60,7 +60,7 @@
 			    <div class="col-md-4">
 		        	<div class="form-group">
 		                <label class="col-sm-3 control-label">时间</label>
-						<div class="col-sm-6">
+						<div class="col-sm-9">
 							<div class="input-group">
 			                  	<div class="input-group-addon">
 			                    	<i class="fa fa-calendar"></i>
