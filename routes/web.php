@@ -219,7 +219,7 @@ Route::group(['prefix' => 'combo_types'], routes('ComboTypeController'));
 Route::group(['prefix' => 'schools'], routes('SchoolController'));
 Route::group(['prefix' => 'schools'], function (){
     $ctrl = 'SchoolController';
-    Route::get('show', $ctrl . '@showInfo');
+    Route::get('showInfo', $ctrl . '@showInfo');
 });
 Route::group(['prefix' => 'semesters'], routes('SemesterController'));
 Route::group(['prefix' => 'teams'], routes('TeamController'));
