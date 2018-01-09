@@ -189,6 +189,10 @@
                         {!! Form::close() !!}
                     </div>
                 </div>
+                <style>
+                	.dataTables_scrollHeadInner{width: 100% !important;}
+                	.table-striped.table-bordered{width: 100% !important;}
+                </style>
                 <div class="tab-pane" id="tab02">
                     <table id="data-table" style="width: 100%"
                            class="display nowrap table table-striped table-bordered table-hover table-condensed">
