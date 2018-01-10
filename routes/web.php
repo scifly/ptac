@@ -115,6 +115,7 @@ Route::group(['prefix' => 'student_attendances'], function (){
     Route::get('index', $ctrl . '@index');
     Route::get('count', $ctrl . '@count');
     Route::post('count', $ctrl . '@count');
+    Route::post('student', $ctrl . '@student');
 });
 
 /** 课程表管理 */
