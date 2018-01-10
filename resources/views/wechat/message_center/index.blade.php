@@ -76,7 +76,7 @@
                                                             <div class="titleinfo-head">
                                                                 <div class="titleinfo-head-left fl">
                                                                     <div class="title ml12">{{$s->title}}</div>
-                                                                    <div class="title-info ml12">接收者：{{ $s->receiveUser->realname }}等</div>
+                                                                    <div class="title-info ml12">接收者：{{ $s->receiveUser->realname }}...</div>
                                                                 </div>
                                                                 <span class="worktime">
 														{{substr($s->created_at,0,-8)}}

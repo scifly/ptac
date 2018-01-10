@@ -77,7 +77,6 @@ function getdata(){
 								'<div id="main'+index+'" style="height: 80px;width: 160px;"></div>'+
 							'</td>'+
 						'</tr>';
-                
             });
             $('#data-table tbody').html(html);
             show_list();

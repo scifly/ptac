@@ -6,7 +6,7 @@
                 <i class="weui-icon-checked"></i>
             </div>
             <div class="weui-cell__bd">
-                <img src="http://shp.qpic.cn/bizmp/UsXhSsnUkjjG5UGo8OES72Sw7U1CJYHXEkg1UlGkono5lDEiaZeBFlw/64" style="border-radius: 0;" class="js-go-detail lazy" width="75" height="75">
+                <img src="{{ asset('img/department.png') }}" style="border-radius: 0;" class="js-go-detail lazy" width="75" height="75">
                 <span class="contacts-text">{{ $department->name }}</span>
             </div>
         </label>
@@ -22,8 +22,8 @@
                 <i class="weui-icon-checked"></i>
             </div>
             <div class="weui-cell__bd">
-                <img src="http://shp.qpic.cn/bizmp/UsXhSsnUkjgYesvoOibygyRfgukxHDouo6ovRRicAKOphkKd0Licg3I2w/64" class="js-go-detail lazy" width="75" height="75">
-                <span class="contacts-text">{{ $user->realname }}</span>
+                <img src="{{ asset('img/personal.png') }}" class="js-go-detail lazy" width="75" height="75">
+                <span class="contacts-text">{{ $user->realname . '-' . $user->mobiles->first()->mobile }}</span>
             </div>
         </label>
     </div>
