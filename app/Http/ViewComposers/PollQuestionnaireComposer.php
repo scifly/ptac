@@ -12,10 +12,8 @@ class PollQuestionnaireComposer {
 
     public function compose(View $view) {
 
-        $view->with([
-            'schools' => School::pluck('name', 'id'),
-            'uris' => $this->uris()
-        ]);
+        $view->with(['uris' => $this->uris()]);
+
     }
 
 }

@@ -12,11 +12,6 @@
                 'id' => 'procedure_type_id',
                 'items' => $procedureTypes
             ])
-            @include('partials.single_select', [
-                'label' => '所属学校',
-                'id' => 'school_id',
-                'items' => $schools
-            ])
             <div class="form-group">
                 {!! Form::label('name', '名称', [
                     'class' => 'col-sm-3 control-label'
