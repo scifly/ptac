@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StudentAttendanceRequest;
 use App\Models\AttendanceMachine;
 use App\Models\Media;
+use App\Models\School;
 use App\Models\Semester;
 use App\Models\Student;
 use App\Models\StudentAttendance;
 use App\Models\StudentAttendanceSetting;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 
 /**
@@ -47,7 +49,37 @@ class StudentAttendanceController extends Controller {
         return $this->output(['addBtn' => true]);
         
     }
-    
+
+    /**
+     * 考勤统计
+     *
+     * @return bool|\Illuminate\Http\JsonResponse
+     * @throws \Throwable
+     */
+    public function count() {
+
+        if (Request::method() === 'POST') {
+            $field = Request::query('field');
+            $id = Request::query('id');
+            $classId = Request::input('class_id');
+            $startTime = Request::input('start_time');
+            $endTime = Request::input('end_time');
+            if ($field && $id) {
+                $this->result['html'] = School::getFieldList($field, $id);
+                return response()->json($this->result);
+            }else{
+                return response()->json($this->studentAttendance->getData($classId , $startTime , $endTime));
+
+            }
+
+        }
+
+        return $this->output([
+            'addBtn' => true,
+//            'item' => $this->studentAttendance->getData(),
+        ]);
+
+    }
     /**
      * 写入学生考勤记录接口
      *

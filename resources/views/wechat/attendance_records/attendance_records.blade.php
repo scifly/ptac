@@ -229,7 +229,48 @@
 
     // 点击年份
     $('.picker-calendar-year-picker a').click(function () {
+        var y = $('.current-year-value').html();
+        var m = $('.current-month-value').html();
+        switch (m){
+            case '一月': m = '01'; break;
+            case '二月': m = '02'; break;
+            case '三月': m = '03'; break;
+            case '四月': m = '04'; break;
+            case '五月': m = '05'; break;
+            case '六月': m = '06'; break;
+            case '七月': m = '07'; break;
+            case '八月': m = '08'; break;
+            case '九月': m = '09'; break;
+            case '十月': m = '10'; break;
+            case '十一月': m = '11'; break;
+            case '十二月': m = '12'; break;
+            default:
 
+        }
+        var ym =  y+'-'+m;
+        $.ajax({
+            type:'post',
+            dataType:'json',
+            url: 'attendance_records',
+            data: { id:id,ym:ym,_token:$('#csrf_token').attr('content')},
+            success: function ($data) {
+                var normal = $data.datas.ndays;
+                var abnormal = $data.datas.adays;
+                for(var k in normal){
+                    var tmp = y+'-'+(m-1)+'-'+parseInt((normal[k].substring(8,10)));
+                    $("[data-date = "+tmp+" ]").addClass('picker-calendar-day-normal')
+                    // $('.picker-calendar-month-current .picker-calendar-day').eq(normal[k].substring(8,10)-1).addClass('picker-calendar-day-normal');
+
+                }
+                for(var l in abnormal)
+                {
+                    var temp = y+'-'+(m-1)+'-'+parseInt((abnormal[l].substring(8,10)));
+                    $("[data-date = "+temp+" ]").addClass('picker-calendar-day-abnormal')
+                    // $('.picker-calendar-month-current .picker-calendar-day').eq(abnormal[l].substring(8,10)-1).addClass('picker-calendar-day-abnormal');
+                }
+                $('.picker-calendar-month-current .picker-calendar-day').eq(11).addClass('picker-calendar-day-leave');
+            }
+        });
     });
 
     $('.picker-calendar-month-picker a').click(function () {
