@@ -455,7 +455,6 @@ var page = {
             $.getMultiScripts([page.plugins.select2.js], page.siteRoot())
                 .done(function() {
                     $.getMultiScripts([page.plugins.select2.jscn], page.siteRoot()).done(function () {
-                        console.log(typeof options);
                         $('select').select2(typeof options !== 'undefined' ? options : { language: "zh-CN" });
                     });
                 });
