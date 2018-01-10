@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -26,8 +27,8 @@ use Illuminate\Support\Facades\Auth;
  * @property int $conference_room_id 会议室ID
  * @property string $attendance_qrcode_url 扫码签到用二维码URL
  * @property int $event_id 相关日程ID
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @method static Builder|ConferenceQueue whereAttendanceQrcodeUrl($value)
  * @method static Builder|ConferenceQueue whereAttendedEducatorIds($value)
  * @method static Builder|ConferenceQueue whereConferenceRoomId($value)
@@ -134,11 +135,11 @@ class ConferenceQueue extends Model {
         $columns = [
             ['db' => 'ConferenceQueue.id', 'dt' => 0],
             ['db' => 'ConferenceQueue.name', 'dt' => 1],
-            ['db' => 'ConferenceQueue.remark', 'dt' => 2],
-            ['db' => 'ConferenceQueue.start', 'dt' => 3],
-            ['db' => 'ConferenceQueue.end', 'dt' => 4],
-            ['db' => 'User.realname', 'dt' => 5],
-            ['db' => 'ConferenceRoom.name as conferenceroomname', 'dt' => 6],
+            ['db' => 'User.realname', 'dt' => 2],
+            ['db' => 'ConferenceRoom.name as conferenceroomname', 'dt' => 3],
+            ['db' => 'ConferenceQueue.start', 'dt' => 4],
+            ['db' => 'ConferenceQueue.end', 'dt' => 5],
+            ['db' => 'ConferenceQueue.remark', 'dt' => 6],
             [
                 'db' => 'ConferenceQueue.status', 'dt' => 7,
                 'formatter' => function ($d, $row) {
@@ -183,24 +184,18 @@ class ConferenceQueue extends Model {
                 ],
             ],
             [
-                'table' => 'educators',
-                'alias' => 'Educator',
-                'type' => 'INNER',
-                'conditions' => [
-                    'Educator.id = ConferenceQueue.educator_id',
-                ],
-            ],
-            [
                 'table' => 'users',
                 'alias' => 'User',
                 'type' => 'INNER',
                 'conditions' => [
-                    'User.id = Educator.user_id',
+                    'User.id = ConferenceQueue.user_id',
                 ],
             ],
         ];
-
         $condition = 'ConferenceRoom.school_id = ' . School::schoolId();
+        if (!in_array(Auth::user()->group->name, ['运营', '企业', '学校'])) {
+            $condition .= ' AND ConferenceQueue.user_id = ' . Auth::id();
+        }
 
         return Datatable::simple(self::getModel(), $columns, $joins, $condition);
 

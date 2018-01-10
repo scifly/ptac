@@ -46,7 +46,7 @@ use Illuminate\Support\Facades\Session;
  * @property-read Collection|Grade[] $grades
  * @property-read Collection|School[] $schools
  * @property-read Collection|Team[] $teams
- * @property-read \App\Models\Department $department
+ * @property-read Department $department
  * @property-read Menu $menu
  */
 class Corp extends Model {

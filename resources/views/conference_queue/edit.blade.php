@@ -1,4 +1,4 @@
-{!! Form::model($conferenceQueue, [
+{!! Form::model($cq, [
     'method' => 'put',
     'id' => 'formConferenceQueue',
     'data-parsley-validate' => 'true'
