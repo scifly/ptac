@@ -121,6 +121,7 @@ class StudentController extends Controller {
         $items = Student::gradeClasses(
             $student->squad->grade_id
         );
+
         $student->{'grade_id'} = $student->squad->grade_id;
         return $this->output([
             'student' => $student,

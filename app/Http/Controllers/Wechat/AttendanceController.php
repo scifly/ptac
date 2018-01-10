@@ -94,7 +94,7 @@ class AttendanceController extends Controller {
         $out = StudentAttendance::whereDate('punch_time',$time)
             ->where('student_id',$id)
             ->where('inorout',0)
-            ->orderBy('punch_time','desc')
+            ->orderBy('punch_time','ASC')
             ->get();
         $data = $this->getDays($id,$beginTime,$endTime);
 
