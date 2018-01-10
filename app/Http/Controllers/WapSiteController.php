@@ -139,10 +139,15 @@ class WapSiteController extends Controller {
             $result['message'] = '上传成功！';
             $result['data'] = $mes;
             $token = '';
-            $path = dirname(public_path()) . '/' . $mes['path'];
-            $data = ["media" => curl_file_create($path)];
+            if ($mes) {
+                $path = '';
+                foreach ($mes AS $m)
+                    $path = dirname(public_path()) . '/' . $m['path'];
+                    $data = ["media" => curl_file_create($path)];
 
-            $result = Wechat::uploadMedia($token, 'image', $data);
+                    Wechat::uploadMedia($token, 'image', $data);
+            }
+
         }
         
         return response()->json($result);
