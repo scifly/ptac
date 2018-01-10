@@ -24,13 +24,12 @@
         <div class="col-sm-6">
             <p id="filevideo">
             	<form id="form-cover" enctype="multipart/form-data">
-                	<a href="#" style="position: relative;">
+                <span class="text-gray" style="display: block">tips：视频格式支持mp4，大小不能超过10MB</span>
+                <a href="#" style="position: relative;">
                 		添加视频
                 		<input type="hidden" value="video" name="type" />
                         <input type="file" id="file-video" onchange="uploadfile(this)" name="input-video" accept="video/mp4" style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/>
                 	</a>
-                	&nbsp;&nbsp;<span class="text-gray">(支持MP4)</span>
-                	
                </form>
             </p>
         </div>

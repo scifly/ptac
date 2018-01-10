@@ -1,7 +1,6 @@
 page.initSelect2({
     templateResult: page.formatStateImg,
-    // templateSelection: page.formatStateImg,
-    language: "zh-CN",
+    templateSelection: page.formatStateImg,
 });
 page.index('messages');
 
