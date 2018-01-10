@@ -147,14 +147,26 @@ class StudentAttendance extends Model {
         if ($classId && $startTime && $endTime) {
             $all = Student::whereClassId($classId)->get()->pluck('id')->toArray();
             $normal = $this->where('status', 1)
-                ->select(array(DB::Raw('count(*) as total'),DB::Raw('count(student_id) count'),DB::Raw('DATE(punch_time) day')))
+                ->select(
+                    array(
+                        DB::Raw('count(*) as total'),
+                        DB::Raw('count(student_id) count'),
+                        DB::Raw('DATE(punch_time) day')
+                        )
+                    )
                 ->whereIn('student_id', $all)
                 ->where('punch_time', '>=', $startTime)
                 ->where('punch_time', '<', $endTime)
                 ->groupBy('day')
                 ->get();
             $abnormal = $this->where('status', 0)
-                ->select(array(DB::Raw('count(*) as total'),DB::Raw('count(student_id) count'),DB::Raw('DATE(punch_time) day')))
+                ->select(
+                    array(
+                        DB::Raw('count(*) as total'),
+                        DB::Raw('count(student_id) count'),
+                        DB::Raw('DATE(punch_time) day')
+                        )
+                    )
                 ->whereIn('student_id', $all)
                 ->where('punch_time', '>=', $startTime)
                 ->where('punch_time', '<', $endTime)
