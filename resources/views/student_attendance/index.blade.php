@@ -15,8 +15,6 @@
                 <th>考勤机</th>
                 <th>经度</th>
                 <th>纬度</th>
-                <th>考勤名称</th>
-                <th>状态</th>
                 <th>创建时间</th>
             </tr>
             </thead>

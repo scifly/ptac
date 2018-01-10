@@ -276,7 +276,7 @@ class DatatableFacade extends Facade {
             $_data = (array)$data[$i];
             $j = 0;
             foreach ($_data as $name => $value) {
-                if (isset($value) && self::validateDate($value) && $name != 'birthday') {
+                if (isset($value) && self::validateDate($value) && $name != 'birthday' && $name = 'punch_time') {
                     Carbon::setLocale('zh');
                     $dt = Carbon::createFromFormat('Y-m-d H:i:s', $value);
                     $value = $dt->diffForhumans();

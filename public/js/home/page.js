@@ -59,6 +59,7 @@ var page = {
             js: 'js/plugins/UEditor/ueditor.config.js'
         },
         ueditor_all: {
+            css: 'js/plugins/UEditor/themes/default/css/ueditor.css',
             js: 'js/plugins/UEditor/ueditor.all.js'
         },
         datepicker: {
@@ -83,7 +84,7 @@ var page = {
             ? window.location.origin + '/'
             : window.location.protocol + '/' + window.location.host + '/';
         if (window.location.href.indexOf('public') > -1) {
-            return siteRoot + 'pppp/public/';
+            return siteRoot + 'ptac/public/';
         }
         return siteRoot;
     },
