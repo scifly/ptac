@@ -144,6 +144,7 @@
         </div>
 
         <table class="kaoqin-tongji js-kaoqin-tongji">
+            <tbody>
             <tr>
                 <td>
                     <div class="kaoqin-date-circle okstatus"></div>
@@ -163,6 +164,7 @@
                     <span>0天</span>
                 </td>
             </tr>
+            </tbody>
         </table>
     </div>
 
@@ -223,9 +225,6 @@
     }
     $('.picker-calendar-month-current .picker-calendar-day').eq(1).addClass('picker-calendar-day-leave');
 
-    $('.picker-calendar-month-current .picker-calendar-day').click(function () {
-
-    });
 
     // 点击年份
     $('.picker-calendar-year-picker a').click(function () {
@@ -245,7 +244,6 @@
             case '十一月': m = '11'; break;
             case '十二月': m = '12'; break;
             default:
-
         }
         var ym =  y+'-'+m;
         $.ajax({
@@ -256,28 +254,104 @@
             success: function ($data) {
                 var normal = $data.datas.ndays;
                 var abnormal = $data.datas.adays;
+                var str = '';
+
                 for(var k in normal){
                     var tmp = y+'-'+(m-1)+'-'+parseInt((normal[k].substring(8,10)));
                     $("[data-date = "+tmp+" ]").addClass('picker-calendar-day-normal')
                     // $('.picker-calendar-month-current .picker-calendar-day').eq(normal[k].substring(8,10)-1).addClass('picker-calendar-day-normal');
-
                 }
                 for(var l in abnormal)
                 {
                     var temp = y+'-'+(m-1)+'-'+parseInt((abnormal[l].substring(8,10)));
-                    $("[data-date = "+temp+" ]").addClass('picker-calendar-day-abnormal')
+                    $("[data-date = "+temp+"]").addClass('picker-calendar-day-abnormal')
                     // $('.picker-calendar-month-current .picker-calendar-day').eq(abnormal[l].substring(8,10)-1).addClass('picker-calendar-day-abnormal');
                 }
                 $('.picker-calendar-month-current .picker-calendar-day').eq(11).addClass('picker-calendar-day-leave');
+                str += '<tr>' +
+                    '<td>' +
+                    '<div class="kaoqin-date-circle okstatus"></div>' +
+                    '<span class="pl10">正常:</span>' +
+                    '<span>'+ $data.datas.nsum +'天</span>' +
+                    '</td>' +
+                    '<td>' +
+                    '<div class="kaoqin-date-circle notstatus"></div>' +
+                    '<span class="pl10">异常:</span>' +
+                    '<span>'+ $data.datas.asum +'天</span>' +
+                    '</td>' +
+                    '<td>' +
+                    '<div class="kaoqin-date-circle reststatus"></div>' +
+                    '<span class="pl10">请假:</span>' +
+                    '<span>0天</span>' +
+                    '</td>' +
+                    '</tr>';
+                $('.kaoqin-tongji tbody').html(str);
             }
         });
     });
 
+    // 点击月份
     $('.picker-calendar-month-picker a').click(function () {
-        console.log(1);
-
         var year = $('.current-year-value').html();
-        console.log(year);
+        var month =$('.current-month-value').html();
+        switch (month){
+            case '一月': month = '01'; break;
+            case '二月': month = '02'; break;
+            case '三月': month = '03'; break;
+            case '四月': month = '04'; break;
+            case '五月': month = '05'; break;
+            case '六月': month = '06'; break;
+            case '七月': month = '07'; break;
+            case '八月': month = '08'; break;
+            case '九月': month = '09'; break;
+            case '十月': month = '10'; break;
+            case '十一月': month = '11'; break;
+            case '十二月': month = '12'; break;
+            default:
+        }
+        var years =  year+'-'+month;
+        $.ajax({
+            type:'post',
+            dataType:'json',
+            url: 'attendance_records',
+            data: { id:id,years:years,_token:$('#csrf_token').attr('content')},
+            success: function ($data) {
+                var nor = $data.date.ndays;
+                var abnor = $data.date.adays;
+                var str = '';
+                for(var s in nor){
+                    var tmp = year+'-'+(month-1)+'-'+parseInt((nor[s].substring(8,10)));
+                    $("[data-date = "+tmp+" ]").addClass('picker-calendar-day-normal')
+                    // $('.picker-calendar-month-current .picker-calendar-day').eq(normal[k].substring(8,10)-1).addClass('picker-calendar-day-normal');
+                }
+                for(var n in abnor)
+                {
+                    var temp = year+'-'+(month-1)+'-'+parseInt((abnor[n].substring(8,10)));
+                    $("[data-date = "+temp+"]").addClass('picker-calendar-day-abnormal')
+                    // $('.picker-calendar-month-current .picker-calendar-day').eq(abnormal[l].substring(8,10)-1).addClass('picker-calendar-day-abnormal');
+                }
+                $('.picker-calendar-month-current .picker-calendar-day').eq(11).addClass('picker-calendar-day-leave');
+                str += '<tr>' +
+                        '<td>' +
+                        '<div class="kaoqin-date-circle okstatus"></div>' +
+                        '<span class="pl10">正常:</span>' +
+                        '<span>'+ $data.date.nsum +'天</span>' +
+                        '</td>' +
+                        '<td>' +
+                        '<div class="kaoqin-date-circle notstatus"></div>' +
+                        '<span class="pl10">异常:</span>' +
+                        '<span>'+ $data.date.asum +'天</span>' +
+                        '</td>' +
+                        '<td>' +
+                        '<div class="kaoqin-date-circle reststatus"></div>' +
+                        '<span class="pl10">请假:</span>' +
+                        '<span>0天</span>' +
+                        '</td>' +
+                        '</tr>';
+                $('.kaoqin-tongji tbody').html(str);
+            }
+        });
+
     });
 
     // 点击日期
@@ -348,6 +422,7 @@
             }
         });
     });
+
 
 </script>
 </body>
