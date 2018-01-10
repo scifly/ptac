@@ -55,6 +55,9 @@ class MessageCenterController extends Controller {
              return redirect($codeUrl);
          }elseif(!empty($code) && empty($userId)){
              $accessToken = Wechat::getAccessToken($corpId, $secret);
+             print_r($accessToken);
+             die;
+             
              $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
              $userId = $userInfo['UserId'];
              Session::put('userId',$userId);
