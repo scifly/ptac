@@ -9,10 +9,20 @@ if (typeof custodian === 'undefined') {
 } else { custodian.init(item, type, ''); }
 
 
-// $('#reservation').daterangepicker();
 $('.select2').select2();
 $('#reservation').daterangepicker({
-    format: 'YYYY-MM-DD',
+    "locale": {
+                format: 'YYYY-MM-DD',
+                separator: ' ~ ',
+                applyLabel: "应用",
+                cancelLabel: "取消",
+                resetLabel: "重置",
+                daysOfWeek: ['日', '一', '二', '三', '四', '五', '六'],
+			    monthNames: ['一月', '二月', '三月', '四月', '五月', '六月',
+			     '七月', '八月', '九月', '十月', '十一月', '十二月'
+			    ],
+			    customRangeLabel: "日历",
+            },
 	ranges : {
         '最近7日': [moment().subtract('days', 6), moment()],
     },
@@ -31,15 +41,15 @@ getdata();
 function getdata(){
 	var time = $('#reservation').val();
 	// console.log(time);
-	var time_arr = time.split('-');
+	var time_arr = time.split('~');
     var formData = new FormData();
-
+    var days = diy_time($.trim(time_arr[0]),$.trim(time_arr[1])); // 获取总共多少天
     formData.append('_token', $token.attr('content'));
     formData.append('class_id', $('#classId').val());
     formData.append('start_time', $.trim(time_arr[0]));
     formData.append('end_time', $.trim(time_arr[1]));
-
-
+	
+	
 	$.ajax({
         url: page.siteRoot() + "student_attendances/count",
         type: 'POST',
@@ -86,6 +96,13 @@ function getdata(){
 	});
 
 }
+
+function diy_time(time1,time2){
+    time1 = Date.parse(new Date(time1));
+    time2 = Date.parse(new Date(time2));
+    return time3 = Math.abs(parseInt((time2 - time1)/1000/3600/24) + 1);
+}
+
 function showtable_pie(index,arrayTime){
 	var myChart = echarts.init(document.getElementById('main'+index));
 	option = {
