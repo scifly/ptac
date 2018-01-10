@@ -30,7 +30,6 @@ class SubjectRequest extends FormRequest {
                 // 'max_score,' . $this->input('max_score') . ',' .
                 // 'pass_score,' . $this->input('pass_score') . ',' .
                 // 'isaux,' . $this->input('isaux'),
-                'school_id,' . $this->input('school_id') . ',' ,
             'max_score'  => 'required|numeric',
             'pass_score' => 'required|numeric',
             'school_id'  => 'required|integer',
