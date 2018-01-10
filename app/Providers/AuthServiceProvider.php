@@ -2,9 +2,11 @@
 namespace App\Providers;
 
 use App\Models\App;
+use App\Models\ConferenceQueue;
 use App\Models\Corp;
 use App\Policies\ActionPolicy;
 use App\Policies\AppPolicy;
+use App\Policies\ConferenceQueuePolicy;
 use App\Policies\CorpPolicy;
 use App\Policies\SchoolPolicy;
 use App\Policies\Route;
@@ -23,6 +25,7 @@ class AuthServiceProvider extends ServiceProvider {
         Route::class => ActionPolicy::class,
         Corp::class => CorpPolicy::class,
         App::class => AppPolicy::class,
+        ConferenceQueue::class => ConferenceQueuePolicy::class
     ];
     
     /**

@@ -32,7 +32,9 @@ class ConferenceRoomController extends Controller {
     public function index() {
         
         if (Request::get('draw')) {
-            return response()->json(ConferenceRoom::datatable());
+            return response()->json(
+                ConferenceRoom::datatable()
+            );
         }
         
         return $this->output();

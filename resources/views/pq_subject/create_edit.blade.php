@@ -8,7 +8,7 @@
                 {{ Form::hidden('id', $pqSubject['id'], ['id' => 'id']) }}
             @endif
             <div class="form-group">
-                {!! Form::label('subject', '题目名称', [
+                {!! Form::label('subject', '名称', [
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">

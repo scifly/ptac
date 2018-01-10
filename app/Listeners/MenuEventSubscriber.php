@@ -11,6 +11,7 @@ use App\Models\Menu;
 use App\Models\MenuType;
 use App\Models\School;
 use Illuminate\Events\Dispatcher;
+use Throwable;
 
 class MenuEventSubscriber {
     
@@ -118,25 +119,27 @@ class MenuEventSubscriber {
         return $this->menu->alter($data, $$model->menu_id);
         
     }
-    
+
     /**
      * 删除运营者对应的菜单
      *
      * @param $event
      * @return bool
+     * @throws Throwable
      */
     public function onCompanyDeleted($event) {
         
         return $this->deleteMenu($event, 'company');
         
     }
-    
+
     /**
      * 删除菜单
      *
      * @param $event
      * @param $model
      * @return bool
+     * @throws Throwable
      */
     private function deleteMenu($event, $model) {
         
@@ -167,12 +170,13 @@ class MenuEventSubscriber {
         return $this->UpdateMenu($event, '企业', 'corp');
         
     }
-    
+
     /**
      * 删除企业对应的菜单
      *
      * @param $event
      * @return bool
+     * @throws Throwable
      */
     public function onCorpDeleted($event) {
         
@@ -203,12 +207,13 @@ class MenuEventSubscriber {
         return $this->updateMenu($event, '学校', 'school');
         
     }
-    
+
     /**
      * 删除学校对应的菜单
      *
      * @param $event
      * @return bool
+     * @throws Throwable
      */
     public function onSchoolDeleted($event) {
         

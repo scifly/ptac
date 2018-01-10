@@ -4,21 +4,25 @@
     </div>
     <div class="box-body">
         <div class="form-horizontal">
-            @if(!empty($am['id']))
-            {{ Form::hidden('id', $am['id'], ['id' => 'id']) }}
+            @if (!empty($am['id']))
+                {{ Form::hidden('id', $am['id'], ['id' => 'id']) }}
             @endif
-            {{ Form::hidden('school_id', $schoolId, ['id' => 'school_id']) }}
             <div class="form-group">
                 {!! Form::label('name', '名称', [
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
-                    {!! Form::text('name', null, [
-                        'class' => 'form-control',
-                        'placeholder' => '(不得超过20个汉字)',
-                        'required' => 'true',
-                        'maxlength' => '60'
-                    ]) !!}
+                    <div class="input-group">
+                        <span class="input-group-addon">
+                            <i class="fa fa-print"></i>
+                        </span>
+                        {!! Form::text('name', null, [
+                            'class' => 'form-control',
+                            'placeholder' => '(不得超过20个汉字)',
+                            'required' => 'true',
+                            'maxlength' => '60'
+                        ]) !!}
+                    </div>
                 </div>
             </div>
             <div class="form-group">
@@ -26,12 +30,17 @@
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
-                    {!! Form::text('location', null, [
-                        'class' => 'form-control',
-                        'placeholder' => '(不得超过80个汉字)',
-                        'required' => 'true',
-                        'maxlength' => '255'
-                    ]) !!}
+                    <div class="input-group">
+                        <span class="input-group-addon">
+                            <i class="fa fa-location-arrow"></i>
+                        </span>
+                        {!! Form::text('location', null, [
+                            'class' => 'form-control',
+                            'placeholder' => '(不得超过80个汉字)',
+                            'required' => 'true',
+                            'maxlength' => '255'
+                        ]) !!}
+                    </div>
                 </div>
             </div>
             <div class="form-group">

@@ -4,13 +4,14 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Http\Requests\CustodianRequest;
+use Carbon\Carbon;
+use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -18,22 +19,16 @@ use Illuminate\Support\Facades\DB;
  *
  * @property int $id
  * @property int $user_id 监护人用户ID
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
- * @property string $expiry 服务到期时间
- * @property-read \App\Models\User $user
- * @method static Builder|Custodian whereCreatedAt($value)
- * @method static Builder|Custodian whereExpiry($value)
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @method static Builder|Custodian whereId($value)
- * @method static Builder|Custodian whereUpdatedAt($value)
  * @method static Builder|Custodian whereUserId($value)
- * @mixin \Eloquent
+ * @method static Builder|Custodian whereCreatedAt($value)
+ * @method static Builder|Custodian whereUpdatedAt($value)
+ * @mixin Eloquent
+ * @property-read User $user
  * @property-read Collection|Student[] $students
  * @property-read Collection|CustodianStudent[] $custodianStudent
- * @property int $menu_id
- * @property int $department_id
- * @method static Builder|Custodian whereDepartmentId($value)
- * @method static Builder|Custodian whereMenuId($value)
  * @property-read Collection|CustodianStudent[] $custodianStudents
  */
 class Custodian extends Model {
@@ -52,7 +47,7 @@ class Custodian extends Model {
     public function user() { return $this->belongsTo('App\Models\User'); }
 
     /**
-     * 返回对应的学生对象
+     * 返回绑定的学生对象
      *
      * @return BelongsToMany
      */
@@ -67,11 +62,6 @@ class Custodian extends Model {
         
     }
 
-    /**
-     * @return HasMany
-     */
-    public function custodianStudents() { return $this->hasMany('App\Models\CustodianStudent'); }
-    
     /**
      * 保存新创建的监护人记录
      *
@@ -94,15 +84,16 @@ class Custodian extends Model {
                     $studentId_relationship[$studentId] = $relationships[$key];
                 }
                 # 创建用户
+                $userid = uniqid('custodian_'); // 企业号会员userid
                 $u = User::create([
-                    'username' => uniqid('custodian_'),
+                    'username' => $userid,
                     'group_id' => $user['group_id'],
                     'password' => bcrypt('custodian8888'),
                     'email' => $user['email'],
                     'realname' => $user['realname'],
                     'gender' => $user['gender'],
                     'avatar_url' => '00001.jpg',
-                    'userid' => uniqid('custodian_'),
+                    'userid' => $userid,
                     'isleader' => 0,
                     'english_name' => $user['english_name'],
                     'telephone' => $user['telephone'],
@@ -122,11 +113,7 @@ class Custodian extends Model {
                     }
                 }
                 $c = self::create(['user_id' => $u->id]);
-                # 向部门用户表添加数据
-                // $departmentUser = new DepartmentUser();
-                // $departmentIds = $request->input('selectedDepartments');
-                // $departmentUser->storeByUserId($u->id, $departmentIds);
-                // unset($departmentUser);
+                // TODO: 向部门用户表(department_users)添加数据
                 # 向监护人学生表中添加数据
                 if (isset($studentId_relationship)) {
                     CustodianStudent::storeByCustodianId($c->id, $studentId_relationship);
@@ -197,13 +184,7 @@ class Custodian extends Model {
                     }
                     unset($mobile);
                 }
-                # 向部门用户表添加数据
-                // $departmentIds = $request->input('selectedDepartments');
-                // sort($departmentIds);
-                // $departmentUser = new DepartmentUser();
-                // $departmentUser::where('user_id', $userId)->delete();
-                // $departmentUser->storeByUserId($userId, $departmentIds);
-                // unset($departmentUser);
+                // TODO: 向部门用户表添加数据
                 # 向监护人学生表中添加数据
                 CustodianStudent::whereCustodianId($custodianId)->delete();
                 CustodianStudent::storeByCustodianId($custodianId, $studentId_Relationship);
@@ -214,6 +195,7 @@ class Custodian extends Model {
         }
         
         return true;
+
     }
     
     /**
@@ -247,8 +229,11 @@ class Custodian extends Model {
         
     }
 
-
-
+    /**
+     * 导出监护人记录
+     *
+     * @return array
+     */
     static function export() {
 
         $custodians = self::all();
@@ -276,6 +261,7 @@ class Custodian extends Model {
         }
 
         return $data;
+
     }
 
     /**

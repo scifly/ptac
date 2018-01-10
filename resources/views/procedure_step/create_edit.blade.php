@@ -13,13 +13,13 @@
                 'items' => $procedures
             ])
             <div class="form-group">
-                {!! Form::label('name', '步骤', [
+                {!! Form::label('name', '名称', [
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
                     {!! Form::text('name', null, [
                         'class' => 'form-control',
-                        'placeholder' => '(不得超过20个汉字)',
+                        'placeholder' => '(请输入步骤名称，不得超过20个汉字)',
                         'required' => 'true',
                         'maxlength' => '60'
                     ]) !!}

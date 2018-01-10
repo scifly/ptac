@@ -42,7 +42,7 @@ trait ModelTrait {
     static function uris() {
 
         $controller = class_basename(Request::route()->controller);
-        $routes = Action::whereController(class_basename($controller))
+        $routes = Action::whereController($controller)
             ->where('route', '<>', null)
             ->pluck('route', 'method')
             ->toArray();

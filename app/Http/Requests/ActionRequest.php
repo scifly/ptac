@@ -18,6 +18,7 @@ class ActionRequest extends FormRequest {
      * @return array
      */
     public function rules() {
+
         return [
             'name'            => 'required|string|between:2,255',
             'method'          => 'required|string|between:2,255',
@@ -29,17 +30,12 @@ class ActionRequest extends FormRequest {
             'enabled'         => 'required|boolean',
             'action_type_ids' => 'nullable|string|between:1,60',
         ];
+
     }
     
     protected function prepareForValidation() {
         
         $input = $this->all();
-        if (isset($input['enabled']) && $input['enabled'] === 'on') {
-            $input['enabled'] = 1;
-        }
-        if (!isset($input['enabled'])) {
-            $input['enabled'] = 0;
-        }
         if (isset($input['action_type_ids'])) {
             $input['action_type_ids'] = implode(',', $input['action_type_ids']);
         }

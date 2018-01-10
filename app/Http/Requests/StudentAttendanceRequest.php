@@ -10,9 +10,7 @@ class StudentAttendanceRequest extends FormRequest {
      *
      * @return bool
      */
-    public function authorize() {
-        return true;
-    }
+    public function authorize() { return true; }
     
     /**
      * Get the validation rules that apply to the request.
@@ -20,6 +18,7 @@ class StudentAttendanceRequest extends FormRequest {
      * @return array
      */
     public function rules() {
+        
         return [
             'punch_time'            => 'required|date',
             'inorout'               => 'required|integer',
@@ -27,6 +26,7 @@ class StudentAttendanceRequest extends FormRequest {
             'longitude'             => 'required|numeric',
             'latitude'              => 'required|numeric',
         ];
+        
     }
     
     protected function prepareForValidation() {

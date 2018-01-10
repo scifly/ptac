@@ -7,6 +7,9 @@
             @if (!empty($cq['id']))
                 {{ Form::hidden('id', $cq['id'], ['id' => 'id']) }}
             @endif
+            @if (!empty($cq['user_id']))
+                {{ Form::hidden('user_id', $cq['user_id'], ['id' => 'user_id']) }}
+            @endif
             <div class="form-group">
                 {!! Form::label('name', '名称', [
                     'class' => 'col-sm-3 control-label'

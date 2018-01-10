@@ -20,11 +20,6 @@
                     ]) !!}
                 </div>
             </div>
-            {{--@include('partials.single_select', [--}}
-                {{--'label' => '所属学校',--}}
-                {{--'id' => 'school_id',--}}
-                {{--'items' => $schools--}}
-            {{--])--}}
             <div class="form-group">
                 {!! Form::label('media_ids', '轮播图', [
                     'class' => 'col-sm-3 control-label'
