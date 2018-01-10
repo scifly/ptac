@@ -199,7 +199,7 @@
 												<i class="weui-icon-checked"></i>
 											</div>
 											<div class="weui-cell__bd">
-												<img src="{{asset('img/personal.jpg')}}" class="js-go-detail lazy" width="75" height="75">
+												<img src="{{asset('img/personal.png')}}" class="js-go-detail lazy" width="75" height="75">
 												<span class="contacts-text">{{ $user->realname }}</span>
 											</div>
 										</label>
