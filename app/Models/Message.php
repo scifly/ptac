@@ -328,6 +328,7 @@ class Message extends Model {
             ];
             $id = MessageSendingLog::create($msl)->id;
             foreach ($apps as $app) {
+
                 $token = Wechat::getAccessToken($corp->corpid, $app['secret']);
                 $message = [
                     'touser' => $touser,
@@ -387,7 +388,7 @@ class Message extends Model {
                     } else {
                         $result = [
                             'statusCode' => 0,
-                            'message' => '消息发送失败！',
+                            'message' => '消息发送失败！'.$status->errcode,
                         ];
                         return response()->json($result);
                     }
