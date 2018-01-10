@@ -1,9 +1,5 @@
 
-page.initSelect2({
-    templateResult: page.formatStateImg,
-    templateSelection: page.formatStateImg,
-    language: "zh-CN",
-});
+page.initSelect2();
 /** 选择年级班级 */
 var item = 'student_attendances/';
 var type = 'count';
@@ -13,22 +9,23 @@ if (typeof custodian === 'undefined') {
 } else { custodian.init(item, type, ''); }
 
 
-$('#reservation').daterangepicker();
+// $('#reservation').daterangepicker();
 $('.select2').select2();
 $('#reservation').daterangepicker({
-	ranges : {  
-        '最近7日': [moment().subtract('days', 6), moment()],  
-    },  
+    format: 'YYYY-MM-DD',
+	ranges : {
+        '最近7日': [moment().subtract('days', 6), moment()],
+    },
     startDate: moment().subtract('days', 6),
     endDate: moment(),
+
 });
 var $search = $('#search');
 var $token = $('#csrf_token');
 $search.click(function () {
 	$('#data-table tbody').html('');
-
     getdata();
-})
+});
 //模拟图标数据
 getdata();
 function getdata(){
@@ -60,7 +57,11 @@ function getdata(){
 							'<td>'+datacon.normal+'/'+datacon.abnormal+'/'+datacon.surplus+'</td>' +
 							'<td><div id="main'+index+'" style="height: 80px;width: 160px;"></div></td></tr>';
                 $('#data-table tbody').html(html);
-            	//饼图数据
+            });
+            $.each(result, function (index, obj) {
+                var datacon = obj;
+
+                //饼图数据
 
                 arrayTime.length=0;
                 var json1 = {

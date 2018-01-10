@@ -454,10 +454,13 @@ var page = {
             page.loadCss(page.plugins.select2.css);
             $.getMultiScripts([page.plugins.select2.js], page.siteRoot())
                 .done(function() {
-                    $('select').select2(typeof options !== 'undefined' ? options : {});
+                    $.getMultiScripts([page.plugins.select2.jscn], page.siteRoot()).done(function () {
+                        console.log(typeof options);
+                        $('select').select2(typeof options !== 'undefined' ? options : { language: "zh-CN" });
+                    });
                 });
         } else {
-            $('select').select2(typeof options !== 'undefined' ? options : {});
+            $('select').select2(typeof options !== 'undefined' ? options : { language: "zh-CN" });
         }
     },
     initICheck: function (object) {

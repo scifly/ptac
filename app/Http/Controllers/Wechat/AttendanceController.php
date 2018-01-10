@@ -36,21 +36,39 @@ class AttendanceController extends Controller {
         ]);
     }
 
-    public function records($id = null)
+    /**
+     * @param null $id
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\JsonResponse|\Illuminate\View\View|\think\response\View
+     */
+    public function records( $id = null)
     {
         if(Request::isMethod('post')){
-            $date = Request::get('date');
-            $intoAttendance = StudentAttendance::whereStudentId(Request::get('id'))
-                ->whereDate('punch_time',$date)
-                ->where('inorout',1)
-                ->orderBy('punch_time','ASC')
-                ->get();
-            $outAttendance = StudentAttendance::whereStudentId(Request::get('id'))
-                ->whereDate('punch_time',$date)
-                ->where('inorout',0)
-                ->orderBy('punch_time','desc')
-                ->get();
-            return response()->json(['time'=> $date, 'into'=> $intoAttendance,'out'=>$outAttendance]);
+            if(array_key_exists('ym',Request::all()))
+            {
+                $ym = Request::get('ym');
+                # 该月第一天
+                $begin = $ym.'-01';
+                # 该月最后一天
+                $end = date('Y-m-d', strtotime("$begin +1 month -1 day"));
+                $datas = $this->getDays(Request::get('id'),$begin,$end);
+                return response()->json(['datas' => $datas]);
+
+            } elseif(array_key_exists('date',Request::all()))
+            {
+                $date = Request::get('date');
+                $intoAttendance = StudentAttendance::whereStudentId(Request::get('id'))
+                    ->whereDate('punch_time',$date)
+                    ->where('inorout',1)
+                    ->orderBy('punch_time','ASC')
+                    ->get();
+                $outAttendance = StudentAttendance::whereStudentId(Request::get('id'))
+                    ->whereDate('punch_time',$date)
+                    ->where('inorout',0)
+                    ->orderBy('punch_time','desc')
+                    ->get();
+                return response()->json(['time'=> $date, 'into'=> $intoAttendance,'out'=>$outAttendance]);
+            }
+
         }
         # 当月第一天
         $beginTime=date('Y-m-01', strtotime(date("Y-m-d"))).' 00:00:00';
