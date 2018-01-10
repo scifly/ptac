@@ -22,7 +22,8 @@ class StudentRequest extends FormRequest {
      */
     public function rules() {
         $rules = [
-            'card_number'    => 'required|alphanum|between:2,32',
+            'card_number'    => 'required|alphanum|between:2,32|unique:students,card_number,'
+            . $this->input('user_id') . ',user_id',
             'user.realname'          => 'required|string',
             'user.gender'            => 'required|boolean',
             'user.email'             => 'nullable|email|unique:users,email,' .
@@ -31,8 +32,7 @@ class StudentRequest extends FormRequest {
                 'required', new Mobiles(),
             ],
             'student_number' => 'required|alphanum|between:2,32|unique:students,student_number,'
-                . $this->input('user_id') . ',user_id,' .
-                'card_number,' . $this->input('student.card_number'),
+                . $this->input('user_id') . ',user_id',
             'birthday'       => 'required',
         ];
         return $rules;
@@ -44,7 +44,9 @@ class StudentRequest extends FormRequest {
             'student_number.required' => '学号不能为空!',
             'student_number.max' => '学号长度最大为32位!',
             'student_number.min' => '学号最小长度为2位!',
+            'student_number.unique' => '已有该学号！',
             'card_number.required' => '卡号不能为空!',
+            'card_number.unique' => '已有该卡号!',
             'birthday' => '生日不能为空!',
             'user.email.email' => '邮箱格式不正确!',
         ];
