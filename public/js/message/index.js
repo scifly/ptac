@@ -1,6 +1,6 @@
 page.initSelect2({
     templateResult: page.formatStateImg,
-    templateSelection: page.formatStateImg,
+    // templateSelection: page.formatStateImg,
     language: "zh-CN",
 });
 page.index('messages');
@@ -178,7 +178,7 @@ function uploadfile(obj){
 								'<input type="hidden" value="video" name="type" />'+
 								'<input type="file" id="file-video" onchange="uploadfile(this)" name="uploadFile" accept="video/mp4" style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/>'+
 							'</a>'+
-							'<a class="delfile file-del" style="margin-left: 45px;display: inline-block;cursor: pointer;">删除</a>'+
+							'<a class="delfile file-del video-del" style="margin-left: 45px;display: inline-block;cursor: pointer;">删除</a>'+
 							'</form>';
 				 	$('#filevideo').html(html);
 				 	removevideo();
