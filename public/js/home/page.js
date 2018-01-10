@@ -83,7 +83,7 @@ var page = {
             ? window.location.origin + '/'
             : window.location.protocol + '/' + window.location.host + '/';
         if (window.location.href.indexOf('public') > -1) {
-            return siteRoot + 'pppp/public/';
+            return siteRoot + 'ptac/public/';
         }
         return siteRoot;
     },
@@ -454,10 +454,12 @@ var page = {
             page.loadCss(page.plugins.select2.css);
             $.getMultiScripts([page.plugins.select2.js], page.siteRoot())
                 .done(function() {
-                    $('select').select2(typeof options !== 'undefined' ? options : {});
+                    $.getMultiScripts([page.plugins.select2.jscn], page.siteRoot()).done(function () {
+                        $('select').select2(typeof options !== 'undefined' ? options : { language: "zh-CN" });
+                    });
                 });
         } else {
-            $('select').select2(typeof options !== 'undefined' ? options : {});
+            $('select').select2(typeof options !== 'undefined' ? options : { language: "zh-CN" });
         }
     },
     initICheck: function (object) {

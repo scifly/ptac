@@ -6,6 +6,7 @@ use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 /**
  * App\Models\StudentAttendance
@@ -138,22 +139,37 @@ class StudentAttendance extends Model {
         return Datatable::simple(self::getModel(), $columns, $joins, $condition);
         
     }
-    public function getData($classId = null, $startTime = null, $endTime = null) {
+    public function getData($classId = null, $startTime = null, $endTime = null, $days = null) {
         if (!$classId) { $classId = $this->getClass(); }
         if (!$startTime) { $startTime = date('Y-m-d',strtotime('-7 day')); }
         if (!$endTime) { $endTime = date('Y-m-d'); }
         $item = [];
         if ($classId && $startTime && $endTime) {
             $all = Student::whereClassId($classId)->get()->pluck('id')->toArray();
+            if (empty($all)) {
+                return $item;
+            }
             $normal = $this->where('status', 1)
-                ->select(array(DB::Raw('count(*) as total'),DB::Raw('count(student_id) count'),DB::Raw('DATE(punch_time) day')))
+                ->select(
+                    array(
+                        DB::Raw('count(*) as total'),
+                        DB::Raw('count(student_id) count'),
+                        DB::Raw('DATE(punch_time) day')
+                        )
+                    )
                 ->whereIn('student_id', $all)
                 ->where('punch_time', '>=', $startTime)
                 ->where('punch_time', '<', $endTime)
                 ->groupBy('day')
                 ->get();
             $abnormal = $this->where('status', 0)
-                ->select(array(DB::Raw('count(*) as total'),DB::Raw('count(student_id) count'),DB::Raw('DATE(punch_time) day')))
+                ->select(
+                    array(
+                        DB::Raw('count(*) as total'),
+                        DB::Raw('count(student_id) count'),
+                        DB::Raw('DATE(punch_time) day')
+                        )
+                    )
                 ->whereIn('student_id', $all)
                 ->where('punch_time', '>=', $startTime)
                 ->where('punch_time', '<', $endTime)
@@ -174,7 +190,7 @@ class StudentAttendance extends Model {
                 }
             }
 
-            for ($i=1;$i<8;$i++)
+            for ($i = 1;$i < $days+1; $i++)
             {
                 $date = strtotime($startTime);
                 $date = date("Y-m-d",$date+(86400*$i));

@@ -328,6 +328,7 @@ class Message extends Model {
             ];
             $id = MessageSendingLog::create($msl)->id;
             foreach ($apps as $app) {
+
                 $token = Wechat::getAccessToken($corp->corpid, $app['secret']);
                 $message = [
                     'touser' => $touser,
