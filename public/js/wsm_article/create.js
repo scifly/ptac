@@ -1,5 +1,7 @@
 page.create('formWsmArticle', 'wsm_articles');
 $(function () {
+    $.getMultiScripts(page.plugins.ueditor_all);
+    $.getMultiScripts(page.plugins.ueditor_config);
     // var editor = UE.getEditor('container').render('container');//初始化富文本编辑器
     UE.delEditor('container');
     var ue = UE.getEditor('container',{
