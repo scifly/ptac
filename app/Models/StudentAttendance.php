@@ -161,6 +161,7 @@ class StudentAttendance extends Model {
                 ->where('punch_time', '>=', $startTime)
                 ->where('punch_time', '<', $endTime)
                 ->groupBy('day')
+                ->groupBy('student_id')
                 ->get();
             $abnormal = $this->where('status', 0)
                 ->select(
@@ -174,6 +175,7 @@ class StudentAttendance extends Model {
                 ->where('punch_time', '>=', $startTime)
                 ->where('punch_time', '<', $endTime)
                 ->groupBy('day')
+                ->groupBy('student_id')
                 ->get();
             $n = [];
             $a = [];
