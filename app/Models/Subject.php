@@ -134,9 +134,12 @@ class Subject extends Model {
                     'isaux' => $request->input('isaux'),
                     'enabled' => $request->input('enabled'),
                 ]);
-                MajorSubject::storeBySubjectId(
-                    $subject->id, $request->input('major_ids')
-                );
+                if( !empty($request->input('major_ids'))){
+                    MajorSubject::storeBySubjectId(
+                        $subject->id, $request->input('major_ids')
+                    );
+                }
+
             });
 
         } catch (Exception $e) {

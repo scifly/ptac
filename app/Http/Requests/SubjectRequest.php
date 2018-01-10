@@ -23,7 +23,13 @@ class SubjectRequest extends FormRequest {
         return [
             'name'       => 'required|string|between:2,20|unique:subjects,name,' .
                 $this->input('id') . ',id,' .
-                'school_id,' . $this->input('school_id') . ',' ,
+                'school_id,' . $this->input('school_id'),
+            // 'max_score,' . $this->input('max_score') . ',' .
+            // 'pass_score,' . $this->input('pass_score') . ',' .
+            // 'isaux,' . $this->input('isaux'),
+                // 'max_score,' . $this->input('max_score') . ',' .
+                // 'pass_score,' . $this->input('pass_score') . ',' .
+                // 'isaux,' . $this->input('isaux'),
             'max_score'  => 'required|numeric',
             'pass_score' => 'required|numeric',
             'school_id'  => 'required|integer',
@@ -39,7 +45,6 @@ class SubjectRequest extends FormRequest {
             $input['grade_ids'] = implode(',', $input['grade_ids']);
         }
         $input['school_id'] = School::schoolId();
-        
         $this->replace($input);
         
     }
