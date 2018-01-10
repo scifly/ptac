@@ -20,7 +20,7 @@ class StudentRequest extends FormRequest {
      * @return array
      */
     public function rules() {
-        
+
         return [
             'card_number' => 'required|alphanum|between:2,32',
             'user.realname' => 'required|string',
@@ -33,7 +33,7 @@ class StudentRequest extends FormRequest {
                 'card_number,' . $this->input('student.card_number'),
             'birthday' => 'required',
         ];
-        
+
     }
 
     protected function prepareForValidation() {
@@ -55,9 +55,9 @@ class StudentRequest extends FormRequest {
                 }
             }
         }
-        
+
         $this->replace($input);
-        
+
     }
 
 }

@@ -37,7 +37,6 @@ class ManageStudentAttendance implements ShouldQueue {
      */
     public function __construct($data) {
         $this->data = $data;
-        print_r($this->data);
     }
     
     /**
@@ -60,13 +59,17 @@ class ManageStudentAttendance implements ShouldQueue {
                 $punch_time = date("H:i:s", $time);
                 $date_time = date("Y-m-d", $time);
                 $schoolSemesters = Semester::where('school_id', $school->id)->get();
-                $semester = '';
                 $timeDiff = [];
+                $status = 0;
                 //找出对应的学期 根据打卡时间
                 foreach ($schoolSemesters as $se) {
                     if ($se->start_date <= $date_time && $se->end_date >= $date_time) {
                         $semester = $se->id;
                     }
+                }
+                if (!isset($semester)) {
+                    #没有找到打卡对应的学期
+                    $semester = '';
                 }
                 //找出对应的考勤机id
                 $attendance = AttendanceMachine::whereMachineid($input['attendId'])
@@ -77,6 +80,7 @@ class ManageStudentAttendance implements ShouldQueue {
                     ->where('day', $weekDay)
                     ->where('inorout', $input['inorout'])
                     ->get();
+                //规则为空时，失败
                 foreach ($rules as $rule) {
                     if ($rule->start <= $punch_time && $rule->end >= $punch_time) {
                         $sasId = $rule->id;
@@ -87,7 +91,6 @@ class ManageStudentAttendance implements ShouldQueue {
                 }
                 //如果没有满足一个规则，异常，判断打卡时间距离那一个时间段最近
                 if (!isset($sasId)) {
-                    $status = 0;
                     $sasId = array_search(min($timeDiff), $timeDiff);
                 }
                 #存储到数据表

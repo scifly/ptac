@@ -43,6 +43,8 @@ class ComposerServiceProvider extends ServiceProvider {
         View::composer('student_attendance_setting.create_edit', 'App\Http\ViewComposers\StudentAttendanceSettingComposer');
         View::composer('student_attendance_setting.index', 'App\Http\ViewComposers\StudentAttendanceSettingIndexComposer');
 
+        View::composer('student_attendance.count', 'App\Http\ViewComposers\StudentAttendanceCountComposer');
+
         View::composer('student.index', 'App\Http\ViewComposers\StudentIndexComposer');
         View::composer('student.create_edit', 'App\Http\ViewComposers\StudentComposer');
     
@@ -52,6 +54,7 @@ class ComposerServiceProvider extends ServiceProvider {
 
         View::composer('subject.create_edit', 'App\Http\ViewComposers\SubjectComposer');
         View::composer('subject.index', 'App\Http\ViewComposers\SubjectIndexComposer');
+
         View::composer('subject_module.create_edit', 'App\Http\ViewComposers\SubjectModuleComposer');
     
         View::composer('group.create_edit', 'App\Http\ViewComposers\GroupComposer');

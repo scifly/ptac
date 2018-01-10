@@ -48,7 +48,8 @@
                             'class' => 'form-control',
                             'placeholder' => '请填写英文名(可选)',
                             'type' => 'string',
-                            'data-parsley-length' => '[2, 255]'
+                            'data-parsley-length' => '[2, 255]',
+                            'data-parsley-type' => 'alphanum',
                         ]) }}
                     </div>
                 </div>

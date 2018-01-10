@@ -3,10 +3,10 @@ namespace App\Models;
 
 use App\Events\StudentAttendanceCreate;
 use App\Facades\DatatableFacade as Datatable;
-use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 /**
  * App\Models\StudentAttendance
@@ -35,6 +35,11 @@ use Illuminate\Support\Facades\DB;
  * @property-read \App\Models\AttendanceMachine $attendanceMachine
  * @property-read \App\Models\Media $medias
  * @property-read \App\Models\Student $student
+ * @property int $sas_id 关联规则id
+ * @property int $status 考勤状态
+ * @property-read \App\Models\StudentAttendanceSetting $studentAttendancesetting
+ * @method static Builder|StudentAttendance whereSasId($value)
+ * @method static Builder|StudentAttendance whereStatus($value)
  */
 class StudentAttendance extends Model {
     
@@ -64,7 +69,8 @@ class StudentAttendance extends Model {
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function studentAttendancesetting(){ return $this->belongsTo('App\Models\StudentAttendanceSetting','sas_id', 'id'); }
+    public function studentAttendancesetting() { return $this->belongsTo('App\Models\StudentAttendanceSetting', 'sas_id', 'id'); }
+    
     /**
      * 学生考勤记录列表
      *
@@ -133,13 +139,117 @@ class StudentAttendance extends Model {
         return Datatable::simple(self::getModel(), $columns, $joins, $condition);
         
     }
-    
+    public function getData($classId = null, $startTime = null, $endTime = null, $days = null) {
+        if (!$classId) { $classId = $this->getClass(); }
+        if (!$startTime) { $startTime = date('Y-m-d',strtotime('-7 day')); }
+        if (!$endTime) { $endTime = date('Y-m-d'); }
+        $item = [];
+        if ($classId && $startTime && $endTime) {
+            $all = Student::whereClassId($classId)->get()->pluck('id')->toArray();
+            if (empty($all)) {
+                return $item;
+            }
+            $normal = $this->where('status', 1)
+                ->select(
+                    array(
+                        DB::Raw('student_id'),
+                        DB::Raw('count(*) as total'),
+                        DB::Raw('count(student_id) count'),
+                        DB::Raw('DATE(punch_time) day')
+                        )
+                    )
+                ->whereIn('student_id', $all)
+                ->where('punch_time', '>=', $startTime)
+                ->where('punch_time', '<', $endTime)
+                ->groupBy(['day','student_id'])
+                ->get();
+            $abnormal = $this->where('status', 0)
+                ->select(
+                    array(
+                        DB::Raw('student_id'),
+                        DB::Raw('count(*) as total'),
+                        DB::Raw('count(student_id) count'),
+                        DB::Raw('DATE(punch_time) day')
+                        )
+                    )
+                ->whereIn('student_id', $all)
+                ->where('punch_time', '>=', $startTime)
+                ->where('punch_time', '<', $endTime)
+                ->groupBy(['day','student_id'])
+                ->get();
+            $n = [];
+            $a = [];
+            if ($normal) {
+                foreach ($normal as $key => &$val)
+                {
+                    if(isset($n[$val['day']])) {
+
+                        $n[$val['day']] = ($n[$val['day']]+1);
+                    }else{
+                        $n[$val['day']] = 1;
+                    }
+                }
+            }
+            if ($abnormal) {
+                foreach ($abnormal as $key => &$val)
+                {
+                    if(isset($n[$val['day']])) {
+                        $n[$val['day']] = ($n[$val['day']]+1);
+                    }else{
+                        $n[$val['day']] = 1;
+                    }
+                }
+            }
+            Log::debug($normal);
+            Log::debug($n);
+
+            for ($i = 1;$i < $days+1; $i++)
+            {
+                $date = strtotime($startTime);
+                $date = date("Y-m-d",$date+(86400*$i));
+                $item[$i]['date'] = $date;
+                $item[$i]['all'] = count($all);
+                $item[$i]['normal'] = isset($n[$date]) ? $n[$date] : 0;
+                $item[$i]['abnormal'] = isset($a[$date]) ? $a[$date] : 0;
+                $item[$i]['surplus'] = $item[$i]['all']-$item[$i]['normal']-$item[$i]['abnormal'];
+            }
+            return $item;
+        }
+        return $item;
+    }
+    private function getClass() {
+        $schools = null;
+        $grades = null;
+        $classes = null;
+
+        $schoolId = School::schoolId();
+        $schools = School::whereId($schoolId)
+            ->where('enabled', 1)
+            ->pluck('name', 'id');
+        if ($schools) {
+            $grades = Grade::whereSchoolId($schoolId)
+                ->where('enabled', 1)
+                ->pluck('name', 'id');
+        }
+        if ($grades) {
+            $classes = Squad::whereGradeId($grades->keys()->first())
+                ->where('enabled', 1)
+                ->pluck('name', 'id');
+            return $classes->keys()->first();
+        }
+
+    }
     /**
      * @param $input
+     * @return bool
      */
     static function storeByFace($input) {
-        #触发事件调用队列
+
+        #触发事件调用队列，这个是异步处理的因此错误信息不能返回
         event(new StudentAttendanceCreate($input));
+        return true;
     }
+
+
     
 }

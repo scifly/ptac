@@ -150,8 +150,9 @@
 
                                         </div>-->
                                         <div class="tab-pane" id="content_video">
+                                            <span class="text-gray">tips：视频格式支持mp4，大小不能超过10MB</span>
                                         	<button id="add-video" class="btn btn-box-tool" type="button"
-                                                    style="margin-top: 3px;">
+                                                    style="margin-top: 3px; display: block">
                                                 <i class="fa fa-plus text-blue">&nbsp;添加视频</i>
                                             </button>
                                             <!--<form id="uploadVideoForm" enctype="multipart/form-data">
@@ -189,6 +190,10 @@
                         {!! Form::close() !!}
                     </div>
                 </div>
+                <style>
+                	.dataTables_scrollHeadInner{width: 100% !important;}
+                	.table-striped.table-bordered{width: 100% !important;}
+                </style>
                 <div class="tab-pane" id="tab02">
                     <table id="data-table" style="width: 100%"
                            class="display nowrap table table-striped table-bordered table-hover table-condensed">

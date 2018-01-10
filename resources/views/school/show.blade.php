@@ -27,7 +27,7 @@
         @endif
     <div class="box box-primary" style="margin-top:10px;">
         <div class="box-body box-profile" style="position: relative;padding: 20px;text-align: center;">
-            <img class="avater" src='{{asset("../public/img/avatar5.png")}}' alt="User profile picture">
+            <img class="avater" src='{{asset("../img/school-1.png")}}' alt="User profile picture">
 
             <div class="maininfo">
                 <h3 class="profile-username">{{$school->name}}</h3>

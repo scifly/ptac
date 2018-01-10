@@ -448,7 +448,7 @@ class MessageCenterController extends Controller {
                         $messageData = [
                             'title'           => $input['title'],
                             'comm_type_id'    => CommType::whereName('短信')->first()->id,
-                            'app_id'          => App::whereName('信息发送')->first()->id,
+                            'app_id'          => App::whereName('消息中心')->first()->id,
                             'msl_id'          => $input['msl_id'],
                             'content'         => $input['content'],
                             'serviceid'       => 0,
@@ -491,7 +491,7 @@ class MessageCenterController extends Controller {
                         $messageData = [
                             'title'           => $input['title'],
                             'comm_type_id'    => CommType::whereName('应用')->first()->id,
-                            'app_id'          => App::whereName('信息发送')->first()->id,
+                            'app_id'          => App::whereName('消息中心')->first()->id,
                             'msl_id'          => $input['msl_id'],
                             'content'         => $input['content'],
                             'serviceid'       => 0,
@@ -514,7 +514,7 @@ class MessageCenterController extends Controller {
                     }
                     #推送微信服务器且显示详情页
                     $msg = $this->message->where('msl_id', $input['msl_id'])->first();
-                    $url = 'weixin.028lk.com/message_show/' . $msg->id;
+                    $url = 'http://weixin.028lk.com/message_show/' . $msg->id;
                     
                     return $this->frontSendMessage($input, $url);
                 });

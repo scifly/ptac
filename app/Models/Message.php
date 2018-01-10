@@ -306,7 +306,7 @@ class Message extends Model {
             $us = [];
             foreach ($obj as $o) {
                 $item = explode('-', $o);
-                if ($item[1]) {
+                if (isset($item[1])) {
                     $users[] = User::find($item[1])->userid;
                     $us[] = User::find($item[1])->id;
                 } else {
@@ -328,6 +328,7 @@ class Message extends Model {
             ];
             $id = MessageSendingLog::create($msl)->id;
             foreach ($apps as $app) {
+
                 $token = Wechat::getAccessToken($corp->corpid, $app['secret']);
                 $message = [
                     'touser' => $touser,
