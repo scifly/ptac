@@ -152,6 +152,7 @@ class StudentAttendance extends Model {
             $normal = $this->where('status', 1)
                 ->select(
                     array(
+                        DB::Raw('student_id'),
                         DB::Raw('count(*) as total'),
                         DB::Raw('count(student_id) count'),
                         DB::Raw('DATE(punch_time) day')
@@ -160,11 +161,12 @@ class StudentAttendance extends Model {
                 ->whereIn('student_id', $all)
                 ->where('punch_time', '>=', $startTime)
                 ->where('punch_time', '<', $endTime)
-                ->groupBy('day')
+                ->groupBy(['day','student_id'])
                 ->get();
             $abnormal = $this->where('status', 0)
                 ->select(
                     array(
+                        DB::Raw('student_id'),
                         DB::Raw('count(*) as total'),
                         DB::Raw('count(student_id) count'),
                         DB::Raw('DATE(punch_time) day')
@@ -173,22 +175,33 @@ class StudentAttendance extends Model {
                 ->whereIn('student_id', $all)
                 ->where('punch_time', '>=', $startTime)
                 ->where('punch_time', '<', $endTime)
-                ->groupBy('day')
+                ->groupBy(['day','student_id'])
                 ->get();
             $n = [];
             $a = [];
             if ($normal) {
-                foreach ($normal as $key=>$val)
+                foreach ($normal as $key => &$val)
                 {
-                    $n[$val['day']] = $val['total'];
+                    if(isset($n[$val['day']])) {
+
+                        $n[$val['day']] = ($n[$val['day']]+1);
+                    }else{
+                        $n[$val['day']] = 1;
+                    }
                 }
             }
             if ($abnormal) {
-                foreach ($abnormal as $key=>$val)
+                foreach ($abnormal as $key => &$val)
                 {
-                    $a[$val['day']] = $val['total'];
+                    if(isset($n[$val['day']])) {
+                        $n[$val['day']] = ($n[$val['day']]+1);
+                    }else{
+                        $n[$val['day']] = 1;
+                    }
                 }
             }
+            Log::debug($normal);
+            Log::debug($n);
 
             for ($i = 1;$i < $days+1; $i++)
             {

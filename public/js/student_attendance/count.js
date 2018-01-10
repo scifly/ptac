@@ -65,7 +65,7 @@ function getdata(){
             $.each(result, function (index, obj) {
                 var datacon = obj;
             	html += '<tr><td>'+datacon.date+'</td>' +
-							'<td>'+datacon.normal+'/'+datacon.abnormal+'/'+datacon.surplus+'</td>' +
+							'<td>'+datacon.normal+'/'+datacon.abnormal+'/'+datacon.surplus+'/'+datacon.all+'</td>' +
 							'<td><div id="main'+index+'" style="height: 80px;width: 160px;"></div></td></tr>';
                 $('#data-table tbody').html(html);
             });

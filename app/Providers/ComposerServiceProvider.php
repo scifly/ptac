@@ -17,6 +17,7 @@ class ComposerServiceProvider extends ServiceProvider {
         View::composer('app.edit', 'App\Http\ViewComposers\AppComposer');
 
         View::composer('alert_type.index', 'App\Http\ViewComposers\AlertTypeIndexComposer');
+        View::composer('alert_type.create_edit', 'App\Http\ViewComposers\AlertTypeIndexComposer');
 
         View::composer('company.index', 'App\Http\ViewComposers\CompanyIndexComposer');
         View::composer('company.create_edit', 'App\Http\ViewComposers\CompanyComposer');
@@ -99,6 +100,7 @@ class ComposerServiceProvider extends ServiceProvider {
         View::composer('message.index', 'App\Http\ViewComposers\MessageIndexComposer');
         
         View::composer('message_type.index', 'App\Http\ViewComposers\MessageTypeIndexComposer');
+        View::composer('message_type.create_edit', 'App\Http\ViewComposers\MessageTypeIndexComposer');
 
         View::composer('combo_type.create_edit', 'App\Http\ViewComposers\ComboTypeComposer');
         View::composer('combo_type.index', 'App\Http\ViewComposers\ComboTypeIndexComposer');
@@ -130,6 +132,7 @@ class ComposerServiceProvider extends ServiceProvider {
         View::composer('school.show', 'App\Http\ViewComposers\SchoolShowComposer');
 
         View::composer('school_type.index', 'App\Http\ViewComposers\SchoolTypeIndexComposer');
+        View::composer('school_type.create_edit', 'App\Http\ViewComposers\SchoolTypeIndexComposer');
 
         View::composer('corp.index', 'App\Http\ViewComposers\CorpIndexComposer');
         View::composer('corp.create_edit', 'App\Http\ViewComposers\CorpComposer');
@@ -150,6 +153,7 @@ class ComposerServiceProvider extends ServiceProvider {
         View::composer('department.index', 'App\Http\ViewComposers\DepartmentIndexComposer');
         
         View::composer('department_type.index', 'App\Http\ViewComposers\DepartmentTypeIndexComposer');
+        View::composer('department_type.create_edit', 'App\Http\ViewComposers\DepartmentTypeIndexComposer');
 
         View::composer('attendance_machine.create_edit', 'App\Http\ViewComposers\AttendanceMachineComposer');
         View::composer('attendance_machine.index', 'App\Http\ViewComposers\AttendanceMachineIndexComposer');

@@ -89,8 +89,8 @@
                 
     </div>
 </div>
-
-<script src="{{ URL::asset('js/student_attendance/echarts.simple.min.js') }}"></script>
-<script src="{{ URL::asset('js/moment/min/moment.min.js') }}"></script>
-<script src="{{ URL::asset('js/bootstrap-daterangepicker/daterangepicker.js') }}"></script>
-<script src="{{ URL::asset('js/plugins/select2/js/select2.full.min.js') }}"></script>
+<!--<script src="{{ URL::asset('js/jquery.min.js') }}"></script>-->
+<script type="text/javascript" src="{{ URL::asset('js/student_attendance/echarts.simple.min.js') }}"></script>
+<script type="text/javascript" src="{{ URL::asset('js/moment/min/moment.min.js') }}"></script>
+<script type="text/javascript" src="{{ URL::asset('js/bootstrap-daterangepicker/daterangepicker.js') }}"></script>
+<script type="text/javascript" src="{{ URL::asset('js/plugins/select2/js/select2.full.min.js') }}"></script>

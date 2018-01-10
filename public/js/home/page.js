@@ -59,6 +59,7 @@ var page = {
             js: 'js/plugins/UEditor/ueditor.config.js'
         },
         ueditor_all: {
+            css: 'js/plugins/UEditor/themes/default/css/ueditor.css',
             js: 'js/plugins/UEditor/ueditor.all.js'
         },
         datepicker: {
