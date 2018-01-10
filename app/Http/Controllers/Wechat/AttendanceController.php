@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Request;
 class AttendanceController extends Controller {
 
     /**
+     * 考勤记录列表
+     *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|\think\response\View
      */
     public function index() {

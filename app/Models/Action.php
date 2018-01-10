@@ -19,7 +19,7 @@ use ReflectionMethod;
 use Throwable;
 
 /**
- * App\Models\Action
+ * App\Models\Action 功能
  *
  * @property int $id
  * @property string $name method/function名称
