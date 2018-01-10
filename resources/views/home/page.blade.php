@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="{{ URL::asset('css/AdminLTE.min.css') }}">
     <link rel="stylesheet" href="{{ URL::asset('css/skins/_all-skins.min.css') }}">
     <link rel="shortcut icon" href="{{ URL::asset('favicon.ico') }}">
+    <script src="{{ URL::asset('js/jquery.min.js') }}"></script>	
     <!--[if lt IE 9]>
     <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
     <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -40,7 +41,7 @@
     <!-- 页面尾部 -->
     @include('partials.site_footer')
 </div>
-<script src="{{ URL::asset('js/jquery.min.js') }}"></script>
+
 <script src="{{ URL::asset('js/jquery-ui.min.js') }}"></script>
 {{--<script src="{{ URL::asset('js/app.js') }}"></script>--}}
 <script src="{{ URL::asset('js/bootstrap.min.js') }}"></script>
@@ -50,6 +51,7 @@
 <script src="{{ URL::asset('js/plugins/parsley/i18n/zh_cn.js') }}"></script>
 <script src="{{ URL::asset('js/plugins/parsley/i18n/zh_cn.extra.js') }}"></script>
 <script src="{{ URL::asset($js) }}"></script>
+
 {{--<script src="{{ URL::asset('js/plugins/select2/js/i18n/zh-CN.js') }}"></script>--}}
 </body>
 </html>
