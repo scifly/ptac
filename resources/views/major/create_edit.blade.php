@@ -7,7 +7,6 @@
             @if (!empty($major['id']))
                 {{ Form::hidden('id', $major['id'], ['id' => 'id']) }}
             @endif
-            {{ Form::hidden('school_id', $schoolId, ['id' => 'school_id']) }}
             <div class="form-group">
                 {!! Form::label('name', '名称', [
                     'class' => 'col-sm-3 control-label'
