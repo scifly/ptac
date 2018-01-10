@@ -217,6 +217,45 @@ class StudentAttendance extends Model {
         }
         return $item;
     }
+    public function getStudentData($date , $type, $classId) {
+        $startTime = date('Y-m-d H:i:s', strtotime($date));
+        $endTime = date('Y-m-d H:i:s', strtotime($date)+24*3600-1);
+        $all = Student::whereClassId($classId)->get()->pluck('id')->toArray();
+        $result = [];
+        switch ($type) {
+            case 'normal':
+                $data = $this->where('status', 1)
+                    ->whereIn('student_id', $all)
+                    ->where('punch_time', '>=', $startTime)
+                    ->where('punch_time', '<', $endTime)
+                    ->groupBy(['student_id'])
+                    ->get();
+                foreach ($data as $datum) {
+                    $result[] = [
+                        'name' => $datum->student->user->realname,
+                        'custodian' => $datum->student->custodians,
+//                        'custodian' => $datum->student->custodians-,
+                    ];
+                }
+                break;
+            case 'abnormal':
+                $data = $this->where('status', 0)
+                    ->whereIn('student_id', $all)
+                    ->where('punch_time', '>=', $startTime)
+                    ->where('punch_time', '<', $endTime)
+                    ->groupBy(['student_id'])
+                    ->get();
+                break;
+            case  'surplus':
+                $items = $this->whereIn('student_id', $all)
+                    ->where('punch_time', '>=', $startTime)
+                    ->where('punch_time', '<', $endTime)
+                    ->get()
+                    ->pluck('student_id');
+                $data = Student::whereNotIn('id', $items)->get();
+                break;
+        }
+    }
     private function getClass() {
         $schools = null;
         $grades = null;
