@@ -1,5 +1,5 @@
 page.create('formWsmArticle', 'wsm_articles');
-page.loadCss(page.plugins.ueditor_all.css);
+// page.loadCss(page.plugins.ueditor_all.css);
 page.loadCss(page.plugins.fileinput.css);
 $.getMultiScripts([page.plugins.fileinput.js], page.siteRoot());
 $.getMultiScripts([page.plugins.ueditor_config.js, page.plugins.ueditor_all.js], page.siteRoot()).done(function () {
