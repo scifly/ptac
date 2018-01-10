@@ -19,7 +19,9 @@ class MessageIndexComposer {
             ->get(['id', 'name', 'square_logo_url']);
         $apps = [];
         foreach ($data as $datum) {
-            $apps[$datum['id']] = $datum['name'] . '|' . $datum['square_logo_url'];
+            if ($datum['agentid'] != 999) {
+                $apps[$datum['id']] = $datum['name'] . '|' . $datum['square_logo_url'];
+            }
         }
 
         $view->with([
