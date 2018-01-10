@@ -61,21 +61,22 @@ class StudentAttendanceController extends Controller {
         if (Request::method() === 'POST') {
             $field = Request::query('field');
             $id = Request::query('id');
-            $classId = Request::query('class_id');
-            $startTime = Request::query('start_time');
-            $endTime = Request::query('end_time');
+            $classId = Request::input('class_id');
+            $startTime = Request::input('start_time');
+            $endTime = Request::input('end_time');
             if ($field && $id) {
                 $this->result['html'] = School::getFieldList($field, $id);
                 return response()->json($this->result);
             }else{
                 return response()->json($this->studentAttendance->getData($classId , $startTime , $endTime));
+
             }
 
         }
 
         return $this->output([
             'addBtn' => true,
-            'item' => $this->studentAttendance->getData(),
+//            'item' => $this->studentAttendance->getData(),
         ]);
 
     }
