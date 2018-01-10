@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
+use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -13,21 +15,21 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $custodian_id 监护人ID
  * @property int $student_id 学生ID
  * @property string $relationship 关系
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property int $enabled 是否启用
+ * @property string|null $expiration
+ * @property-read Custodian $custodian
+ * @property-read Student $student
  * @method static Builder|CustodianStudent whereCreatedAt($value)
  * @method static Builder|CustodianStudent whereCustodianId($value)
+ * @method static Builder|CustodianStudent whereEnabled($value)
+ * @method static Builder|CustodianStudent whereExpiration($value)
  * @method static Builder|CustodianStudent whereId($value)
  * @method static Builder|CustodianStudent whereRelationship($value)
  * @method static Builder|CustodianStudent whereStudentId($value)
  * @method static Builder|CustodianStudent whereUpdatedAt($value)
- * @mixin \Eloquent
- * @property int $enabled 是否启用
- * @property-read \App\Models\Custodian $custodian
- * @property-read \App\Models\Student $student
- * @method static Builder|CustodianStudent whereEnabled($value)
- * @property string|null $expiration
- * @method static Builder|CustodianStudent whereExpiration($value)
+ * @mixin Eloquent
  */
 class CustodianStudent extends Model {
 

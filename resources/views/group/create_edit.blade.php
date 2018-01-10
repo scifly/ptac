@@ -56,7 +56,7 @@
                         <!-- 状态 -->
                         @include('partials.enabled', [
                             'id' => 'enabled',
-                            'value' => $group['enabled'] ?? NULL
+                            'value' => $group['enabled'] ?? null
                         ])
                     </div>
                 </div>

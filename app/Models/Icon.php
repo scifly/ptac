@@ -4,6 +4,8 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
+use Carbon\Carbon;
+use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -18,10 +20,12 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string $name 图标的css类名
  * @property int $icon_type_id 所属图标类型ID
  * @property string|null $remark 备注
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property int $enabled
- * @property-read \App\Models\IconType $iconType
+ * @property-read IconType $iconType
+ * @property-read Collection|Menu[] $menus
+ * @property-read Collection|Tab[] $tabs
  * @method static Builder|Icon whereCreatedAt($value)
  * @method static Builder|Icon whereEnabled($value)
  * @method static Builder|Icon whereIconTypeId($value)
@@ -29,9 +33,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static Builder|Icon whereName($value)
  * @method static Builder|Icon whereRemark($value)
  * @method static Builder|Icon whereUpdatedAt($value)
- * @mixin \Eloquent
- * @property-read Collection|Menu[] $menus
- * @property-read Collection|Tab[] $tabs
+ * @mixin Eloquent
  */
 class Icon extends Model {
 

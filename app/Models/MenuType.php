@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Helpers\ModelTrait;
+use Carbon\Carbon;
+use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -15,8 +17,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int $id
  * @property string $name 菜单类型
  * @property string $remark 备注
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property int $enabled
  * @method static Builder|MenuType whereCreatedAt($value)
  * @method static Builder|MenuType whereEnabled($value)
@@ -24,7 +26,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static Builder|MenuType whereName($value)
  * @method static Builder|MenuType whereRemark($value)
  * @method static Builder|MenuType whereUpdatedAt($value)
- * @mixin \Eloquent
+ * @mixin Eloquent
  * @property-read Collection|\App\Models\Menu[] $menus
  */
 class MenuType extends Model {

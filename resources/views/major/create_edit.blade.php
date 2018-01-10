@@ -29,13 +29,13 @@
                 'label' => '包含科目',
                 'id' => 'subject_ids',
                 'items' => $subjects,
-                'selectedItems' => $selectedSubjects ?? NULL,
+                'selectedItems' => $selectedSubjects ?? null,
                 'icon' => 'fa fa-book'
             ])
             @include('partials.remark')
             @include('partials.enabled', [
                 'id' => 'enabled',
-                'value' => $major['enabled'] ?? NULL
+                'value' => $major['enabled'] ?? null
             ])
         </div>
     </div>

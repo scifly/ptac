@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
+use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -10,12 +12,11 @@ use Illuminate\Support\Facades\DB;
 /**
  * App\Models\ActionGroup
  *
- * @mixin \Eloquent
  * @property int $id
  * @property int $action_id
  * @property int $group_id
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property int $enabled
  * @method static Builder|ActionGroup whereActionId($value)
  * @method static Builder|ActionGroup whereCreatedAt($value)
@@ -23,6 +24,7 @@ use Illuminate\Support\Facades\DB;
  * @method static Builder|ActionGroup whereGroupId($value)
  * @method static Builder|ActionGroup whereId($value)
  * @method static Builder|ActionGroup whereUpdatedAt($value)
+ * @mixin Eloquent
  */
 class ActionGroup extends Model {
 

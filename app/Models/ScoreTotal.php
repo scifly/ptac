@@ -3,14 +3,17 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use Carbon\Carbon;
+use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\DB;
 
+
 /**
- * App\Models\ScoreTotal
+ * App\Models\ScoreTotal 总分
  *
  * @property int $id
  * @property int $student_id 学生ID
@@ -20,10 +23,15 @@ use Illuminate\Support\Facades\DB;
  * @property string $na_subject_ids 未计入总成绩的科目IDs
  * @property int $class_rank 班级排名
  * @property int $grade_rank 年级排名
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property int $enabled
+ * @property-read Exam $exam
+ * @property-read Student $student
+ * @property-read \App\Models\Subject $subject
  * @method static Builder|ScoreTotal whereClassRank($value)
  * @method static Builder|ScoreTotal whereCreatedAt($value)
+ * @method static Builder|ScoreTotal whereEnabled($value)
  * @method static Builder|ScoreTotal whereExamId($value)
  * @method static Builder|ScoreTotal whereGradeRank($value)
  * @method static Builder|ScoreTotal whereId($value)
@@ -32,27 +40,15 @@ use Illuminate\Support\Facades\DB;
  * @method static Builder|ScoreTotal whereStudentId($value)
  * @method static Builder|ScoreTotal whereSubjectIds($value)
  * @method static Builder|ScoreTotal whereUpdatedAt($value)
- * @mixin \Eloquent
- * 总分数
- * @property int $enabled
- * @property-read Exam $exam
- * @property-read Student $student
- * @property-read Subject $subjects
- * @method static Builder|ScoreTotal whereEnabled($value)
- * @property-read \App\Models\Subject $subject
+ * @mixin Eloquent
  */
 class ScoreTotal extends Model {
 
     protected $table = 'score_totals';
     protected $fillable = [
-        'student_id',
-        'exam_id',
-        'score',
-        'subject_ids',
-        'na_subject_ids',
-        'class_rank',
-        'grade_rank',
-        'enabled',
+        'student_id', 'exam_id', 'score',
+        'subject_ids', 'na_subject_ids', 'class_rank',
+        'grade_rank', 'enabled',
     ];
     
     /**
@@ -129,6 +125,7 @@ class ScoreTotal extends Model {
             ],
         ];
 
+        // todo: 增加过滤条件
         return Datatable::simple(self::getModel(), $columns, $joins);
         
     }

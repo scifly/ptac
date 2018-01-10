@@ -68,24 +68,24 @@
                 'id' => 'grade_ids',
                 'items' => $grades,
                 'icon' => 'fa fa-object-group',
-                'selectedItems' => $selectedGrades ?? NULL
+                'selectedItems' => $selectedGrades ?? null
             ])
             @include('partials.multiple_select', [
                 'label' => '包含专业',
                 'id' => 'major_ids',
                 'items' => $majors,
                 'icon' => 'fa fa-graduation-cap',
-                'selectedItems' => $selectedMajors ?? NULL
+                'selectedItems' => $selectedMajors ?? null
             ])
             @include('partials.enabled', [
                 'label' => '是否为副科',
                 'id' => 'isaux',
                 'options' => ['是', '否'],
-                'value' => $subject['isaux'] ?? NULL
+                'value' => $subject['isaux'] ?? null
             ])
             @include('partials.enabled', [
                 'id' => 'enabled',
-                'value' => $subject['enabled'] ?? NULL
+                'value' => $subject['enabled'] ?? null
             ])
         </div>
     </div>

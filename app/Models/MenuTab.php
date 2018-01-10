@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
+use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -10,13 +12,13 @@ use Illuminate\Support\Facades\DB;
 /**
  * App\Models\MenuTab
  *
- * @mixin \Eloquent
+ * @mixin Eloquent
  * @property int $id
  * @property int $menu_id 卡片所属菜单ID
  * @property int $tab_id 卡片ID
  * @property int|null $tab_order 卡片顺序值
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property int $enabled
  * @method static Builder|MenuTab whereCreatedAt($value)
  * @method static Builder|MenuTab whereEnabled($value)

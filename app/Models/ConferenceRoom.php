@@ -4,6 +4,8 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
+use Carbon\Carbon;
+use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -18,8 +20,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int $school_id 会议室所属学校ID
  * @property int $capacity 会议室容量
  * @property string $remark 会议室备注
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property int $enabled
  * @method static Builder|ConferenceRoom whereCapacity($value)
  * @method static Builder|ConferenceRoom whereCreatedAt($value)
@@ -29,7 +31,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static Builder|ConferenceRoom whereRemark($value)
  * @method static Builder|ConferenceRoom whereSchoolId($value)
  * @method static Builder|ConferenceRoom whereUpdatedAt($value)
- * @mixin \Eloquent
+ * @mixin Eloquent
  * @property-read School $schools
  * @property-read ConferenceQueue[] $conferenceQueues
  * @property-read School $school

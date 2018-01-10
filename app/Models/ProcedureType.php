@@ -4,6 +4,8 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
+use Carbon\Carbon;
+use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -15,8 +17,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int $id
  * @property string $name 流程种类名称
  * @property string $remark 流程种类备注
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property int $enabled
  * @method static Builder|ProcedureType whereCreatedAt($value)
  * @method static Builder|ProcedureType whereEnabled($value)
@@ -24,7 +26,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static Builder|ProcedureType whereName($value)
  * @method static Builder|ProcedureType whereRemark($value)
  * @method static Builder|ProcedureType whereUpdatedAt($value)
- * @mixin \Eloquent
+ * @mixin Eloquent
  * @property-read Collection|Procedure[] $procedures
  */
 class ProcedureType extends Model {

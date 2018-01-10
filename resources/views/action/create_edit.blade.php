@@ -87,12 +87,12 @@
                 'label' => 'HTTP请求类型',
                 'id' => 'action_type_ids',
                 'items' => $actionTypes,
-                'selectedItems' => $selectedActionTypes ?? NULL
+                'selectedItems' => $selectedActionTypes ?? null
             ])
             @include('partials.remark')
             @include('partials.enabled', [
                 'id' => 'enabled',
-                'value' => $action['enabled'] ?? NULL
+                'value' => $action['enabled'] ?? null
             ])
         </div>
     </div>

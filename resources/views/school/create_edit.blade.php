@@ -62,7 +62,7 @@
             @endif
             @include('partials.enabled', [
                 'id' => 'enabled',
-                'value' => $school['enabled'] ?? NULL
+                'value' => $school['enabled'] ?? null
             ])
         </div>
     </div>

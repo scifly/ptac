@@ -36,7 +36,7 @@
             @include('partials.remark')
             @include('partials.enabled', [
                 'id' => 'enabled',
-                'value' => $cr['enabled'] ?? NULL
+                'value' => $cr['enabled'] ?? null
             ])
         </div>
     </div>

@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
+use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -12,8 +14,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int $id
  * @property string $name 附件类型名称
  * @property string $remark 附件类型备注
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property int $enabled
  * @method static Builder|AttachmentType whereCreatedAt($value)
  * @method static Builder|AttachmentType whereEnabled($value)
@@ -21,7 +23,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static Builder|AttachmentType whereName($value)
  * @method static Builder|AttachmentType whereRemark($value)
  * @method static Builder|AttachmentType whereUpdatedAt($value)
- * @mixin \Eloquent
+ * @mixin Eloquent
  * @property-read Attachment[] $attachments
  */
 class AttachmentType extends Model {

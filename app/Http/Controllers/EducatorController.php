@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Http\Requests\EducatorRequest;
@@ -20,13 +21,13 @@ use Throwable;
  * @package App\Http\Controllers
  */
 class EducatorController extends Controller {
-    
+
     public function __construct() {
-    
+
         $this->middleware(['auth', 'checkrole']);
-        
+
     }
-    
+
     /**
      * 教职员工列表
      *
@@ -34,15 +35,15 @@ class EducatorController extends Controller {
      * @throws \Throwable
      */
     public function index() {
-        
+
         if (Request::get('draw')) {
             return response()->json(Educator::datatable());
         }
-        
+
         return $this->output();
-        
+
     }
-    
+
     /**
      * 创建教职员工
      *
@@ -50,7 +51,7 @@ class EducatorController extends Controller {
      * @throws \Throwable
      */
     public function create() {
-        
+
         $this->authorize('c', Educator::class);
         if (Request::method() === 'POST') {
             $school = School::find(School::schoolId());
@@ -58,11 +59,11 @@ class EducatorController extends Controller {
                 Department::tree($school->department_id)
             );
         }
-        
+
         return $this->output();
-        
+
     }
-    
+
     /**
      * 保存教职员工
      *
@@ -71,13 +72,13 @@ class EducatorController extends Controller {
      * @throws \Throwable
      */
     public function store(EducatorRequest $request) {
-        
+
         $this->authorize('c', Educator::class);
-        
+
         return $this->result(Educator::store($request));
-        
+
     }
-    
+
     /**
      * 教职员工详情
      *
@@ -86,14 +87,14 @@ class EducatorController extends Controller {
      * @throws \Throwable
      */
     public function show($id) {
-        
+
         $educator = Educator::find($id);
         $this->authorize('rud', $educator);
-        
-        return $this->output(['educator'  => $educator]);
-        
+
+        return $this->output(['educator' => $educator]);
+
     }
-    
+
     /**
      * 编辑教职员工
      *
@@ -102,7 +103,7 @@ class EducatorController extends Controller {
      * @throws \Throwable
      */
     public function edit($id) {
-    
+
         $educator = Educator::find($id);
         $this->authorize('rud', $educator);
         if (Request::method() === 'POST') {
@@ -118,15 +119,15 @@ class EducatorController extends Controller {
         }
         $selectedDepartments = Department::selectedNodes($selectedDepartmentIds);
         return $this->output([
-            'mobiles'               => $educator->user->mobiles,
-            'educator'              => $educator,
-            'selectedTeams'         => $selectedTeams,
+            'mobiles' => $educator->user->mobiles,
+            'educator' => $educator,
+            'selectedTeams' => $selectedTeams,
             'selectedDepartmentIds' => implode(',', $selectedDepartmentIds),
-            'selectedDepartments'   => $selectedDepartments,
+            'selectedDepartments' => $selectedDepartments,
         ]);
-        
+
     }
-    
+
     /**
      * 教职员工充值
      *
@@ -135,14 +136,14 @@ class EducatorController extends Controller {
      * @throws \Throwable
      */
     public function recharge($id) {
-        
+
         $educator = Educator::find($id);
         $this->authorize('rud', $educator);
-        
+
         return $this->output(['educator' => $educator]);
-        
+
     }
-    
+
     /**
      * 更新教职员工
      *
@@ -153,14 +154,14 @@ class EducatorController extends Controller {
      * @throws Throwable
      */
     public function update(EducatorRequest $request, $id) {
-        
+
         $educator = Educator::find($id);
         $this->authorize('rud', $educator);
-        
+
         return $this->result($educator->modify($request));
-        
+
     }
-    
+
     /**
      * 更新教职员工充值
      *
@@ -169,17 +170,17 @@ class EducatorController extends Controller {
      * @throws AuthorizationException
      */
     public function rechargeStore($id) {
-        
+
         $educator = Educator::find($id);
         $this->authorize('rud', $educator);
-        
+
         $recharge = Request::get('recharge');
         $educator->sms_quote += $recharge;
-        
+
         return $educator->save() ? $this->succeed() : $this->fail();
-        
+
     }
-    
+
     /**
      * 删除教职员工
      *
@@ -188,14 +189,14 @@ class EducatorController extends Controller {
      * @throws Exception
      */
     public function destroy($id) {
-        
+
         $educator = Educator::find($id);
         $this->authorize('rud', $educator);
-        
+
         return $this->result($educator->remove($id, true));
-        
+
     }
-    
+
     /**
      * 导入教职员工
      *
@@ -203,7 +204,7 @@ class EducatorController extends Controller {
      * @throws PHPExcel_Exception
      */
     public function import() {
-        
+
         if (Request::isMethod('post')) {
             $file = Request::file('file');
             if (empty($file)) {
@@ -219,14 +220,15 @@ class EducatorController extends Controller {
                 return response()->json($result);
             }
         }
-        
+
         return null;
-        
+
     }
-    
+
     /**
      * 导出教职员工
      *
+     * @return JsonResponse|string
      */
     public function export() {
 
@@ -243,20 +245,25 @@ class EducatorController extends Controller {
             /** @noinspection PhpUndefinedMethodInspection */
             Excel::create(iconv('UTF-8', 'GBK', '教职员工列表'), function ($excel) use ($data) {
                 /** @noinspection PhpUndefinedMethodInspection */
-                $excel->sheet('score', function($sheet) use ($data) {
+                $excel->sheet('score', function ($sheet) use ($data) {
                     /** @noinspection PhpUndefinedMethodInspection */
                     $sheet->rows($data);
                     /** @noinspection PhpUndefinedMethodInspection */
                     $sheet->setWidth(array(
-                        'A'     =>  30,
-                        'B'     =>  30,
-                        'C'     =>  30,
-                        'D'     =>  30,
-                        'E'     =>  30,
-                        'F'     =>  30,
+                        'A' => 30,
+                        'B' => 30,
+                        'C' => 30,
+                        'D' => 30,
+                        'E' => 30,
+                        'F' => 30,
                     ));
                 });
-            },'UTF-8')->export('xls');
+            }, 'UTF-8')->export('xls');
+            return $this->result(true);
         }
+
+        return $this->result(false);
+
     }
+
 }

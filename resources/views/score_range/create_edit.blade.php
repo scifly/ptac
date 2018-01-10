@@ -55,7 +55,7 @@
             ])
             @include('partials.enabled', [
                 'id' => 'enabled',
-                'value' => $subject['enabled'] ?? NULL
+                'value' => $subject['enabled'] ?? null
             ])
         </div>
     </div>

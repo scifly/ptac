@@ -60,12 +60,12 @@
             @include('partials.enabled', [
                 'label' => '进或出',
                 'id' => 'inorout',
-                'value' => $eas['inorout'] ?? NULL,
+                'value' => $eas['inorout'] ?? null,
                 'options' => ['进', '出']
             ])
             @include('partials.enabled', [
                 'id' => 'enabled',
-                'value' => $eas['enabled'] ?? NULL
+                'value' => $eas['enabled'] ?? null
             ])
         </div>
     </div>

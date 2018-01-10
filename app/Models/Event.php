@@ -3,16 +3,18 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use Carbon\Carbon;
+use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\JsonResponse;
 
 /**
- * App\Models\Event
+ * App\Models\Event 事件(日程)
  *
  * @property int $id
- * @property string $name 事件名称
+ * @property string $title 事件名称
  * @property string $remark 事件备注
  * @property string $location 时间相关地点
  * @property string $contact 事件联系人
@@ -26,9 +28,12 @@ use Illuminate\Http\JsonResponse;
  * @property int $alertable 是否提醒
  * @property int $alert_mins 提醒时间(分钟)
  * @property int $user_id 事件创建者用户ID
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property int $enabled
+ * @property-read Educator $educator
+ * @property-read Subject $subject
+ * @property-read User $user
  * @method static Builder|Event whereAlertMins($value)
  * @method static Builder|Event whereAlertable($value)
  * @method static Builder|Event whereContact($value)
@@ -40,19 +45,14 @@ use Illuminate\Http\JsonResponse;
  * @method static Builder|Event whereIscourse($value)
  * @method static Builder|Event whereIspublic($value)
  * @method static Builder|Event whereLocation($value)
- * @method static Builder|Event whereName($value)
  * @method static Builder|Event whereRemark($value)
  * @method static Builder|Event whereStart($value)
  * @method static Builder|Event whereSubjectId($value)
+ * @method static Builder|Event whereTitle($value)
  * @method static Builder|Event whereUpdatedAt($value)
  * @method static Builder|Event whereUrl($value)
  * @method static Builder|Event whereUserId($value)
- * @mixin \Eloquent
- * @property-read \App\Models\Educator $educator
- * @property-read \App\Models\Subject $subject
- * @property-read \App\Models\User $user
- * @property string $title 事件名称
- * @method static Builder|Event whereTitle($value)
+ * @mixin Eloquent
  */
 class Event extends Model {
 

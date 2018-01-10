@@ -23,7 +23,7 @@
             @include('partials.remark')
             @include('partials.enabled', [
                 'id' => 'enabled',
-                'value' => $messageType['enabled'] ?? NULL
+                'value' => $messageType['enabled'] ?? null
             ])
         </div>
     </div>

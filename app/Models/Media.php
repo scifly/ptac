@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Helpers\ModelTrait;
+use Carbon\Carbon;
+use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -16,15 +18,15 @@ use Illuminate\Support\Facades\Storage;
 /**
  * App\Models\Media 媒体
  *
- * @mixin \Eloquent
+ * @mixin Eloquent
  * @property int $id
  * @property string $path 媒体文件路径
  * @property string $remark 媒体文件备注
  * @property int $media_type_id 媒体类型ID
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property int $enabled
- * @property-read \App\Models\MediaType $mediaType
+ * @property-read MediaType $mediaType
  * @method static Builder|Media whereCreatedAt($value)
  * @method static Builder|Media whereEnabled($value)
  * @method static Builder|Media whereId($value)
@@ -124,7 +126,7 @@ class Media extends Model {
     }
     
     /**
-     * 删除删除媒体
+     * 删除媒体
      *
      * @param $id
      * @return bool|null
@@ -138,7 +140,6 @@ class Media extends Model {
         return $media->removable($media) ? $media->delete() : false;
 
     }
-
 
     /**
      * 文件上传公共方法

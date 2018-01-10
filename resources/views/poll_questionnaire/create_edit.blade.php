@@ -38,7 +38,7 @@
             </div>
             @include('partials.enabled', [
                 'id' => 'enabled',
-                'value' => $pollQuestionnaire['enabled'] ?? NULL
+                'value' => $pollQuestionnaire['enabled'] ?? null
             ])
         </div>
     </div>

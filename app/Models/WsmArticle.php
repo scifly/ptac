@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Facades\DatatableFacade as Datatable;
 use App\Http\Requests\WsmArticleRequest;
 use Carbon\Carbon;
+use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -12,7 +13,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 /**
- * App\Models\WsmArticle 网站内容
+ * App\Models\WsmArticle 微网站栏目文章
  *
  * @property int $id
  * @property int $wsm_id 所属网站模块ID
@@ -34,7 +35,7 @@ use Illuminate\Support\Facades\Storage;
  * @method static Builder|WsmArticle whereThumbnailMediaId($value)
  * @method static Builder|WsmArticle whereUpdatedAt($value)
  * @method static Builder|WsmArticle whereWsmId($value)
- * @mixin \Eloquent
+ * @mixin Eloquent
  * @property-read WapSiteModule $wapSiteModule
  * @property-read WapSiteModule $wapsitemodule
  * @property-read Media $thumbnailmedia
@@ -42,6 +43,7 @@ use Illuminate\Support\Facades\Storage;
 class WsmArticle extends Model {
 
     protected $table = 'wsm_articles';
+
     protected $fillable = [
         'id', 'wsm_id', 'name',
         'summary', 'thumbnail_media_id', 'content',
