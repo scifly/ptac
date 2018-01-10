@@ -7,7 +7,7 @@ $.getMultiScripts([page.plugins.ueditor_config.js, page.plugins.ueditor_all.js],
     // $(function () {
     UE.delEditor('container');
     var ue = UE.getEditor('container', {
-        initialFrameHeight: 500
+        initialFrameHeight: 300
     });
     var $pre = $('.preview');
     var $uploadFile = $('#uploadFile');
