@@ -23,7 +23,7 @@
             </div>
             <div class="weui-cell__bd">
                 <img src="{{ asset('img/personal.png') }}" class="js-go-detail lazy" width="75" height="75">
-                <span class="contacts-text">{{ $user->realname }}</span>
+                <span class="contacts-text">{{ $user->realname . '-' . $user->mobiles->first()->mobile }}</span>
             </div>
         </label>
     </div>
