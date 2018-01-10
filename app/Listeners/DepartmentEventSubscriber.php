@@ -59,11 +59,12 @@ class DepartmentEventSubscriber {
             'order'              => $this->department->all()->max('order') + 1,
             'enabled'            => $$model->enabled,
         ];
-        $department = $this->department->store($data, true);
-        Log::debug('department:'. json_encode($department));
-        ManageWechatDepartment::dispatch($department, 'create');
-        
-        return $department ? true : false;
+        $d = $this->department->store($data, true);
+        if ($d && !in_array($type, ['运营', '企业'])) {
+            ManageWechatDepartment::dispatch($d, 'create');
+        }
+
+        return $d ? true : false;
         
     }
     
@@ -110,12 +111,12 @@ class DepartmentEventSubscriber {
             'department_type_id' => $this->typeId($type),
             'enabled'            => $$model->enabled,
         ];
-        $departments = $this->department->modify($data, $$model->department_id);
-        $job = new ManageWechatDepartment($departments, 'update');
-        $this->dispatch($job);
+        $d = $this->department->modify($data, $$model->department_id);
+        if ($d && !in_array($type, ['运营', '企业'])) {
+            ManageWechatDepartment::dispatch($d, 'update');
+        }
 
-        ManageWechatDepartment::dispatch($departments, 'update');
-        return $departments ? true : false;
+        return $d ? true : false;
         
     }
     
@@ -141,9 +142,13 @@ class DepartmentEventSubscriber {
      * @throws Throwable
      */
     private function deleteDepartment($event, $model) {
-        $department = $this->department->find($event->{$model}->department_id);
-        ManageWechatDepartment::dispatch($department, 'delete');
+
+        $d = $this->department->find($event->{$model}->department_id);
+        if ($d && !in_array($d->departmentType->name, ['运营', '企业'])) {
+            ManageWechatDepartment::dispatch($d, 'delete');
+        }
         $result = $this->department->remove($event->{$model}->department_id);
+
         return $result;
         
     }

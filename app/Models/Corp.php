@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 
 /**
  * App\Models\Corp 企业
@@ -45,7 +46,7 @@ use Illuminate\Support\Facades\Auth;
  * @property-read Collection|Grade[] $grades
  * @property-read Collection|School[] $schools
  * @property-read Collection|Team[] $teams
- * @property-read \App\Models\Department $department
+ * @property-read Department $department
  * @property-read Menu $menu
  */
 class Corp extends Model {
@@ -234,6 +235,7 @@ class Corp extends Model {
     static function corpId() {
 
         $user = Auth::user();
+        if (!Session::exists('menuId')) { return null; }
         switch ($user->group->name) {
             case '运营':
             case '企业':

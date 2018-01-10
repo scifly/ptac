@@ -9,8 +9,7 @@
 			<tr class="bg-info">
                 <th>#</th>
                 <th>名称</th>
-                <th>地址</th>
-                <th>所属学校</th>
+                <th>安装位置</th>
                 <th>考勤机id</th>
                 <th>创建于</th>
                 <th>更新于</th>

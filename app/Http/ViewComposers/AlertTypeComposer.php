@@ -5,7 +5,7 @@ namespace App\Http\ViewComposers;
 use App\Helpers\ModelTrait;
 use Illuminate\Contracts\View\View;
 
-class AttendanceMachineIndexComposer {
+class AlertTypeComposer {
 
     use ModelTrait;
 

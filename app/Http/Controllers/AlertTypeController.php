@@ -31,7 +31,9 @@ class AlertTypeController extends Controller {
     public function index() {
         
         if (Request::get('draw')) {
-            return response()->json(AlertType::datatable());
+            return response()->json(
+                AlertType::datatable()
+            );
         }
         
         return $this->output();
@@ -58,9 +60,10 @@ class AlertTypeController extends Controller {
      */
     public function store(AlertTypeRequest $request) {
         
-        return AlertType::create($request->all())
-            ? $this->succeed() : $this->fail();
-        
+        return $this->result(
+            AlertType::create($request->all())
+        );
+
     }
     
     /**
@@ -91,9 +94,10 @@ class AlertTypeController extends Controller {
         $alertType = AlertType::find($id);
         if (!$alertType) { return $this->notFound(); }
         
-        return $alertType->update($request->all())
-            ? $this->succeed() : $this->fail();
-        
+        return $this->result(
+            $alertType->update($request->all())
+        );
+
     }
     
     /**
@@ -108,9 +112,10 @@ class AlertTypeController extends Controller {
         $alertType = AlertType::find($id);
         if (!$alertType) { return $this->notFound(); }
         
-        return $alertType->delete()
-            ? $this->succeed() : $this->fail();
-        
+        return $this->result(
+            $alertType->delete()
+        );
+
     }
     
 }

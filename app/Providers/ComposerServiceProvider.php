@@ -16,18 +16,29 @@ class ComposerServiceProvider extends ServiceProvider {
         View::composer('app.index', 'App\Http\ViewComposers\AppIndexComposer');
         View::composer('app.edit', 'App\Http\ViewComposers\AppComposer');
 
-        View::composer('alert_type.index', 'App\Http\ViewComposers\AlertTypeIndexComposer');
-        View::composer('alert_type.create_edit', 'App\Http\ViewComposers\AlertTypeIndexComposer');
+        View::composer(
+            ['alert_type.index', 'alert_type.create_edit'],
+            'App\Http\ViewComposers\AlertTypeComposer'
+        );
 
-        View::composer('company.index', 'App\Http\ViewComposers\CompanyIndexComposer');
-        View::composer('company.create_edit', 'App\Http\ViewComposers\CompanyComposer');
-        
+        View::composer(
+            ['company.index', 'company.create_edit'],
+            'App\Http\ViewComposers\CompanyComposer'
+        );
+
+        View::composer(
+            ['comm_type.index', 'comm_type.create_edit'],
+            'App\Http\ViewComposers\CommTypeComposer'
+        );
+
         View::composer('educator.index', 'App\Http\ViewComposers\EducatorIndexComposer');
         View::composer('educator.create_edit', 'App\Http\ViewComposers\EducatorComposer');
         View::composer('educator.recharge', 'App\Http\ViewComposers\EducatorComposer');
         
-        View::composer('educator_attendance_setting.create_edit', 'App\Http\ViewComposers\EducatorAttendanceSettingComposer');
-        View::composer('educator_attendance_setting.index', 'App\Http\ViewComposers\EducatorAttendanceSettingIndexComposer');
+        View::composer(
+            ['educator_attendance_setting.create_edit', 'educator_attendance_setting.index'],
+            'App\Http\ViewComposers\EducatorAttendanceSettingComposer'
+        );
 
         View::composer('student_attendance_setting.create_edit', 'App\Http\ViewComposers\StudentAttendanceSettingComposer');
         View::composer('student_attendance_setting.index', 'App\Http\ViewComposers\StudentAttendanceSettingIndexComposer');
@@ -43,9 +54,8 @@ class ComposerServiceProvider extends ServiceProvider {
 
         View::composer('subject.create_edit', 'App\Http\ViewComposers\SubjectComposer');
         View::composer('subject.index', 'App\Http\ViewComposers\SubjectIndexComposer');
-        
+
         View::composer('subject_module.create_edit', 'App\Http\ViewComposers\SubjectModuleComposer');
-        View::composer('subject_module.index', 'App\Http\ViewComposers\SubjectModuleIndexComposer');
     
         View::composer('group.create_edit', 'App\Http\ViewComposers\GroupComposer');
         View::composer('group.create', 'App\Http\ViewComposers\GroupCreateComposer');
@@ -100,11 +110,11 @@ class ComposerServiceProvider extends ServiceProvider {
         View::composer('message.index', 'App\Http\ViewComposers\MessageIndexComposer');
         
         View::composer('message_type.index', 'App\Http\ViewComposers\MessageTypeIndexComposer');
-        View::composer('message_type.create_edit', 'App\Http\ViewComposers\MessageTypeIndexComposer');
 
-        View::composer('combo_type.create_edit', 'App\Http\ViewComposers\ComboTypeComposer');
-        View::composer('combo_type.index', 'App\Http\ViewComposers\ComboTypeIndexComposer');
-
+        View::composer(
+            ['combo_type.create_edit', 'combo_type.index'],
+            'App\Http\ViewComposers\ComboTypeComposer'
+        );
 
         View::composer('wap_site.create_edit', 'App\Http\ViewComposers\WapSiteComposer');
         View::composer('wap_site.index', 'App\Http\ViewComposers\WapSiteIndexComposer');
@@ -132,7 +142,6 @@ class ComposerServiceProvider extends ServiceProvider {
         View::composer('school.show', 'App\Http\ViewComposers\SchoolShowComposer');
 
         View::composer('school_type.index', 'App\Http\ViewComposers\SchoolTypeIndexComposer');
-        View::composer('school_type.create_edit', 'App\Http\ViewComposers\SchoolTypeIndexComposer');
 
         View::composer('corp.index', 'App\Http\ViewComposers\CorpIndexComposer');
         View::composer('corp.create_edit', 'App\Http\ViewComposers\CorpComposer');
@@ -153,10 +162,11 @@ class ComposerServiceProvider extends ServiceProvider {
         View::composer('department.index', 'App\Http\ViewComposers\DepartmentIndexComposer');
         
         View::composer('department_type.index', 'App\Http\ViewComposers\DepartmentTypeIndexComposer');
-        View::composer('department_type.create_edit', 'App\Http\ViewComposers\DepartmentTypeIndexComposer');
 
-        View::composer('attendance_machine.create_edit', 'App\Http\ViewComposers\AttendanceMachineComposer');
-        View::composer('attendance_machine.index', 'App\Http\ViewComposers\AttendanceMachineIndexComposer');
+        View::composer(
+            ['attendance_machine.create_edit', 'attendance_machine.index'],
+            'App\Http\ViewComposers\AttendanceMachineComposer'
+        );
 
         View::composer('semester.create_edit', 'App\Http\ViewComposers\SemesterComposer');
         View::composer('semester.index', 'App\Http\ViewComposers\SemesterIndexComposer');
