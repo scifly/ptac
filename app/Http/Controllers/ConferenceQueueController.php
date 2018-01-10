@@ -50,8 +50,6 @@ class ConferenceQueueController extends Controller {
      */
     public function create() {
         
-        $this->authorize('c', ConferenceQueue::class);
-        
         return $this->output();
         
     }
@@ -83,7 +81,7 @@ class ConferenceQueueController extends Controller {
     public function show($id) {
         
         $cq = ConferenceQueue::find($id);
-        $this->authorize('rud', $cq);
+        $this->authorize('eud', $cq);
         
         return $this->output(['cq' => $cq]);
         
@@ -116,7 +114,7 @@ class ConferenceQueueController extends Controller {
     public function update(ConferenceQueueRequest $request, $id) {
         
         $cq = ConferenceQueue::find($id);
-        $this->authorize('rud', $cq);
+        $this->authorize('eud', $cq);
         
         return $this->result(
             $cq::modify($request->all(), $id)
@@ -134,7 +132,7 @@ class ConferenceQueueController extends Controller {
     public function destroy($id) {
         
         $cq = ConferenceQueue::find($id);
-        $this->authorize('rud', $cq);
+        $this->authorize('eud', $cq);
         
         return $this->result($cq->remove($id));
         

@@ -10,9 +10,7 @@ class ScoreTotalRequest extends FormRequest {
      *
      * @return bool
      */
-    public function authorize() {
-        return true;
-    }
+    public function authorize() { return true; }
     
     /**
      * Get the validation rules that apply to the request.
@@ -26,25 +24,5 @@ class ScoreTotalRequest extends FormRequest {
         ];
     }
     
-    public function messages() {
-        return [
-            'score.required'       => '成绩不能为空',
-            'score.max'            => '成绩不能超过3位数字',
-            'score.numeric'        => '成绩不能超过5位数字',
-            'subject_ids.required' => '请选择计入总成绩科目',
-            'subject_ids.string'   => '必须是字符串',
-        ];
-    }
-    
-    public function wantsJson() {
-        return true;
-    }
-
-//    protected function prepareForValidation() {
-//
-//        $input = $this->all();
-//        $input['subject_ids'] = implode(',', $input['subject_ids']);
-//        $this->replace($input);
-//        dd($input);
-//    }
 }
+

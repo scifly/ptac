@@ -32,7 +32,9 @@ class CorpController extends Controller {
     public function index() {
         
         if (Request::get('draw')) {
-            return response()->json(Corp::datatable());
+            return response()->json(
+                Corp::datatable()
+            );
         }
         
         return $this->output();

@@ -66,7 +66,9 @@ class AppController extends Controller {
         $app = App::find($id);
         $this->authorize('eum', $app);
 
-        return $this->result($app->update($request->all()));
+        return $this->result(
+            $app->update($request->all())
+        );
 
     }
     

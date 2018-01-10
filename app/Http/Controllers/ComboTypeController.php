@@ -32,7 +32,9 @@ class ComboTypeController extends Controller {
     public function index() {
         
         if (Request::get('draw')) {
-            return response()->json(ComboType::datatable());
+            return response()->json(
+                ComboType::datatable()
+            );
         }
         
         return $this->output();

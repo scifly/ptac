@@ -1,21 +1,22 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-class AddSasIdToStudentAttendancesTable extends Migration
-{
+class AddSasIdToStudentAttendancesTable extends Migration {
+
     /**
      * Run the migrations.
      *
      * @return void
      */
-    public function up()
-    {
+    public function up() {
+
         Schema::table('student_attendances', function (Blueprint $table) {
             $table->boolean('sas_id')->after('student_id')->comment('关联规则id');
         });
+
     }
 
     /**
@@ -23,10 +24,12 @@ class AddSasIdToStudentAttendancesTable extends Migration
      *
      * @return void
      */
-    public function down()
-    {
+    public function down() {
+
         Schema::table('student_attendances', function (Blueprint $table) {
             $table->dropColumn('sas_id');
         });
+
     }
+
 }

@@ -18,6 +18,7 @@ class OrderRequest extends FormRequest {
      * @return array
      */
     public function rules() {
+        
         return [
             'ordersn'       => 'required|string|size:20|unique:orders,ordersn,' .
                 $this->input('id') . ',id',
@@ -27,5 +28,7 @@ class OrderRequest extends FormRequest {
             'transactionid' => 'required|string',
             'status'        => 'required|integer',
         ];
+        
     }
+    
 }

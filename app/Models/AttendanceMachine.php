@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use Carbon\Carbon;
+use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -16,8 +18,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string $location 考勤机位置
  * @property int $school_id 所属学校ID
  * @property string $machineid 考勤机id
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property int $enabled
  * @method static Builder|AttendanceMachine whereCreatedAt($value)
  * @method static Builder|AttendanceMachine whereEnabled($value)
@@ -27,7 +29,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static Builder|AttendanceMachine whereName($value)
  * @method static Builder|AttendanceMachine whereSchoolId($value)
  * @method static Builder|AttendanceMachine whereUpdatedAt($value)
- * @mixin \Eloquent
+ * @mixin Eloquent
  * @property-read School $school
  * @property-read StudentAttendance[] $studentAttendances
  */
@@ -48,7 +50,7 @@ class AttendanceMachine extends Model {
     public function school() { return $this->belongsTo('App\Models\School'); }
 
     /**
-     * 获取指定考勤机记录的学生考勤记录对象
+     * 获取指定考勤机的学生考勤记录对象
      *
      * @return HasMany
      */

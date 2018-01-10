@@ -23,7 +23,7 @@
                         ]) }}
                         <!-- 角色名称 -->
                         <div class="form-group">
-                            {!! Form::label('name', '角色名称', [
+                            {!! Form::label('name', '名称', [
                                 'class' => 'col-sm-3 control-label'
                             ]) !!}
                             <div class="col-sm-6">

@@ -323,7 +323,28 @@ class User extends Authenticatable {
         event(new UserDeleted(self::find($id)->userid));
 
     }
-    
+
+    /**
+     * 返回指定用户所属的所有部门id
+     *
+     * @param integer $id 用户id
+     * @return array
+     */
+    static function departmentIds($id) {
+
+        $departments = self::find($id)->departments;
+        $departmentIds = [];
+        foreach ($departments as $d) {
+            $departmentIds[] = $d->id;
+            $departmentIds = array_merge(
+                $departmentIds, Department::subDepartmentIds($d->id)
+            );
+        }
+
+        return array_unique($departmentIds);
+
+    }
+
     /**
      * 用户列表
      *

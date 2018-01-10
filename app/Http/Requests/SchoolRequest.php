@@ -36,12 +36,6 @@ class SchoolRequest extends FormRequest {
     protected function prepareForValidation() {
 
         $input = $this->all();
-        if (isset($input['enabled']) && $input['enabled'] === 'on') {
-            $input['enabled'] = 1;
-        }
-        if (!isset($input['enabled'])) {
-            $input['enabled'] = 0;
-        }
         if (!isset($input['department_id'])) {
             $input['department_id'] = 0;
         }

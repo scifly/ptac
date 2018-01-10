@@ -8,7 +8,7 @@
                 {!! Form::hidden('id', $iconType['id'], ['id' => 'id']) !!}
             @endif
             <div class="form-group">
-                {!! Form::label('name', 'Icon类型名称',[
+                {!! Form::label('name', '名称',[
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">

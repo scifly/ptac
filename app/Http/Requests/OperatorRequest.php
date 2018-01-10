@@ -39,12 +39,6 @@ class OperatorRequest extends FormRequest {
     protected function prepareForValidation() {
         
         $input = $this->all();
-        if (isset($input['user']['enabled']) && $input['user']['enabled'] === 'on') {
-            $input['user']['enabled'] = 1;
-        }
-        if (!isset($input['user']['enabled'])) {
-            $input['user']['enabled'] = 0;
-        }
         if (isset($input['operator']['school_ids'])) {
             $input['operator']['school_ids'] = implode(',', $input['operator']['school_ids']);
         }
@@ -63,7 +57,6 @@ class OperatorRequest extends FormRequest {
                     $input['mobile'][$i]['enabled'] = 0;
                 }
             }
-            
         }
         $this->replace($input);
         

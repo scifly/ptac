@@ -14,7 +14,9 @@ class ActionComposer {
 
     public function compose(View $view) {
 
-        $actionTypeIds = explode(',', Action::find(Request::route('id'))->action_type_ids);
+        $actionTypeIds = explode(
+            ',', Action::find(Request::route('id'))->action_type_ids
+        );
         $selectedActionTypes = [];
         foreach ($actionTypeIds as $actionTypeId) {
             $actionType = ActionType::find($actionTypeId)->toArray();

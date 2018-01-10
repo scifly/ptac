@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * App\Models\ConferenceQueue 会议队列
@@ -19,7 +20,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string $remark 会议备注
  * @property string $start 会议开始时间
  * @property string $end 会议结束时间
- * @property int $educator_id 发起人教职员工ID
+ * @property int $user_id 发起人用户ID
  * @property string $educator_ids （应到）与会者教职员工ID
  * @property string $attended_educator_ids （应到）与会者教职员工ID
  * @property int $conference_room_id 会议室ID
@@ -31,7 +32,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static Builder|ConferenceQueue whereAttendedEducatorIds($value)
  * @method static Builder|ConferenceQueue whereConferenceRoomId($value)
  * @method static Builder|ConferenceQueue whereCreatedAt($value)
- * @method static Builder|ConferenceQueue whereEducatorId($value)
+ * @method static Builder|ConferenceQueue whereUserId($value)
  * @method static Builder|ConferenceQueue whereEducatorIds($value)
  * @method static Builder|ConferenceQueue whereEnd($value)
  * @method static Builder|ConferenceQueue whereEventId($value)
@@ -52,7 +53,7 @@ class ConferenceQueue extends Model {
 
     protected $fillable = [
         'name', 'remark', 'start', 'end',
-        'educator_id', 'educator_ids', 'attended_educator_ids',
+        'user_id', 'educator_ids', 'attended_educator_ids',
         'conference_room_id', 'attendance_qrcode_url', 'event_id',
     ];
 
@@ -69,6 +70,13 @@ class ConferenceQueue extends Model {
      * @return HasMany
      */
     public function conferenceParticipants() { return $this->hasMany('App\Models\ConferenceParticipant'); }
+
+    /**
+     * 获取会议发起者的用户对象
+     *
+     * @return BelongsTo
+     */
+    public function user() { return $this->belongsTo('App\Model\User'); }
 
     /**
      * 保存会议
@@ -132,9 +140,36 @@ class ConferenceQueue extends Model {
             ['db' => 'User.realname', 'dt' => 5],
             ['db' => 'ConferenceRoom.name as conferenceroomname', 'dt' => 6],
             [
-                'db' => 'ConferenceQueue.end', 'dt' => 7,
+                'db' => 'ConferenceQueue.status', 'dt' => 7,
                 'formatter' => function ($d, $row) {
-                    // 进行中, 已结束, 已取消; 查看, 编辑, 删除
+                    $user = Auth::user();
+                    $id = $row['id'];
+                    $statusHtml = '<i class="fa fa-circle text-%s" title="%s"></i>';
+                    $status = '';
+                    switch ($d) {
+                        case 0:
+                            $status = sprintf($statusHtml, 'green', '进行中');
+                            break;
+                        case 1:
+                            $status = sprintf($statusHtml, 'red', '已结束');
+                            break;
+                        case 2:
+                            $status = sprintf($statusHtml, 'gray', '已取消');
+                            break;
+                        default: break;
+                    }
+                    $showLink = str_repeat(Datatable::DT_SPACE, 3) .
+                        sprintf(Datatable::DT_LINK_SHOW, 'show_' . $id);
+                    $editLink = str_repeat(Datatable::DT_SPACE, 3) .
+                        sprintf(Datatable::DT_LINK_EDIT, 'edit_' . $id);
+                    $delLink = str_repeat(Datatable::DT_SPACE, 2) .
+                        sprintf(Datatable::DT_LINK_DEL, $id);
+
+                    return
+                        $status .
+                        ($user->can('act', self::uris()['show']) ? $showLink : '') .
+                        ($user->can('act', self::uris()['edit']) ? $editLink : '') .
+                        ($user->can('act', self::uris()['destroy']) ? $delLink : '');
                 },
             ],
         ];
@@ -165,7 +200,9 @@ class ConferenceQueue extends Model {
             ],
         ];
 
-        return Datatable::simple(ConferenceQueue::getModel(), $columns, $joins);
+        $condition = 'ConferenceRoom.school_id = ' . School::schoolId();
+
+        return Datatable::simple(self::getModel(), $columns, $joins, $condition);
 
     }
 

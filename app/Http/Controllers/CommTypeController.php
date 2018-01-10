@@ -31,7 +31,9 @@ class CommTypeController extends Controller {
     public function index() {
         
         if (Request::get('draw')) {
-            return response()->json(CommType::datatable());
+            return response()->json(
+                CommType::datatable()
+            );
         }
         
         return $this->output();
@@ -58,7 +60,9 @@ class CommTypeController extends Controller {
      */
     public function store(CommTypeRequest $request) {
         
-        return $this->result(CommType::create($request->all()));
+        return $this->result(
+            CommType::create($request->all())
+        );
         
     }
     
@@ -74,7 +78,9 @@ class CommTypeController extends Controller {
         $commType = CommType::find($id);
         if (!$commType) { return $this->notFound(); }
         
-        return $this->output(['commType' => $commType]);
+        return $this->output([
+            'commType' => $commType
+        ]);
         
     }
     
@@ -90,7 +96,9 @@ class CommTypeController extends Controller {
         $commType = CommType::find($id);
         if (!$commType) { return $this->notFound(); }
         
-        return $this->result($commType->update($request->all()));
+        return $this->result(
+            $commType->update($request->all())
+        );
         
     }
     
@@ -106,7 +114,9 @@ class CommTypeController extends Controller {
         $commType = CommType::find($id);
         if (!$commType) { return $this->notFound(); }
         
-        return $this->result($commType->delete());
+        return $this->result(
+            $commType->delete()
+        );
         
     }
     

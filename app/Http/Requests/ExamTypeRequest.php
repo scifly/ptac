@@ -1,22 +1,10 @@
 <?php
 namespace App\Http\Requests;
 
+use App\Models\School;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ExamTypeRequest extends FormRequest {
-    
-    protected $strings_key = [
-        'name'      => '考试类型',
-        'remark'    => '备注',
-        'school_id' => '学校id',
-    ];
-    protected $strings_val = [
-        'required' => '为必填项',
-        'string'   => '为字符串',
-        'max'      => '最大为:max',
-        'unique'   => '不唯一',
-        'integer'  => '必须为整数',
-    ];
     
     /**
      * Determine if the user is authorized to make this request.
@@ -24,27 +12,6 @@ class ExamTypeRequest extends FormRequest {
      * @return bool
      */
     public function authorize() { return true; }
-    
-    public function messages() {
-        
-        $rules = $this->rules();
-        $k_array = $this->strings_key;
-        $v_array = $this->strings_val;
-        $array = [];
-        foreach ($rules as $key => $value) {
-            $new_arr = explode('|', $value);//分割成数组
-            foreach ($new_arr as $k => $v) {
-                $head = strstr($v, ':', true);//截取:之前的字符串
-                if ($head) {
-                    $v = $head;
-                }
-                $array[$key . '.' . $v] = $k_array[$key] . $v_array[$v];
-            }
-        }
-        
-        return $array;
-        
-    }
     
     public function rules() {
         
@@ -58,17 +25,11 @@ class ExamTypeRequest extends FormRequest {
         
     }
     
-    public function wantsJson() { return true; }
-    
     protected function prepareForValidation() {
         
         $input = $this->all();
-        if (isset($input['enabled']) && $input['enabled'] === 'on') {
-            $input['enabled'] = 1;
-        }
-        if (!isset($input['enabled'])) {
-            $input['enabled'] = 0;
-        }
+        $input['school_id'] = School::schoolId();
+        
         $this->replace($input);
         
     }

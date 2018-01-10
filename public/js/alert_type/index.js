@@ -1,4 +1,3 @@
-var options = [
-    { className: 'text-center', targets: [0, 1, 3, 4]}
-];
-page.index('alert_types', options);
+page.index('alert_types', [
+    { className: 'text-center', targets: [1, 3, 4]}
+]);

@@ -13,7 +13,9 @@
                 {!! Form::open(['method' => 'post', 'id' => 'formEvent', 'data-parsley-validate' => 'true']) !!}
                 <div class="form-horizontal">
                     <div class="form-group">
-                        {!! Form::label('title', '名称',['class' => 'col-sm-3 control-label']) !!}
+                        {!! Form::label('title', '名称', [
+                            'class' => 'col-sm-3 control-label'
+                        ]) !!}
                         <div class="col-sm-6">
                             {!! Form::text('title', null, [
                                 'class' => 'form-control',
