@@ -48,7 +48,8 @@ function getdata(){
     formData.append('class_id', $('#classId').val());
     formData.append('start_time', $.trim(time_arr[0]));
     formData.append('end_time', $.trim(time_arr[1]));
-	
+    formData.append('days', days);
+
 	
 	$.ajax({
         url: page.siteRoot() + "student_attendances/count",

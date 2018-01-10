@@ -354,17 +354,17 @@ $(function () {
 
             // 如果类型不在允许的类型范围内
             if (allowTypes.indexOf(file.type) === -1) {
-                $.weui.alert({text: '该类型不允许上传'});
+                $.alert({text: '该类型不允许上传'});
                 continue;
             }
 
             if (file.size > maxSize) {
-                $.weui.alert({text: '图片太大，不允许上传'});
+                $.alert({text: '图片太大，不允许上传'});
                 continue;
             }
 
             if ($('.weui_uploader_file').length >= maxCount) {
-                $.weui.alert({text: '最多只能上传' + maxCount + '张图片'});
+                $.alert({text: '最多只能上传' + maxCount + '张图片'});
                 return;
             }
 

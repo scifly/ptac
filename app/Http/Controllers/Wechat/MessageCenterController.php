@@ -448,7 +448,7 @@ class MessageCenterController extends Controller {
                         $messageData = [
                             'title'           => $input['title'],
                             'comm_type_id'    => CommType::whereName('短信')->first()->id,
-                            'app_id'          => App::whereName('信息发送')->first()->id,
+                            'app_id'          => 1,
                             'msl_id'          => $input['msl_id'],
                             'content'         => $input['content'],
                             'serviceid'       => 0,
@@ -491,7 +491,7 @@ class MessageCenterController extends Controller {
                         $messageData = [
                             'title'           => $input['title'],
                             'comm_type_id'    => CommType::whereName('应用')->first()->id,
-                            'app_id'          => App::whereName('信息发送')->first()->id,
+                            'app_id'          => 1,
                             'msl_id'          => $input['msl_id'],
                             'content'         => $input['content'],
                             'serviceid'       => 0,

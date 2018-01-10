@@ -139,13 +139,16 @@ class StudentAttendance extends Model {
         return Datatable::simple(self::getModel(), $columns, $joins, $condition);
         
     }
-    public function getData($classId = null, $startTime = null, $endTime = null) {
+    public function getData($classId = null, $startTime = null, $endTime = null, $days = null) {
         if (!$classId) { $classId = $this->getClass(); }
         if (!$startTime) { $startTime = date('Y-m-d',strtotime('-7 day')); }
         if (!$endTime) { $endTime = date('Y-m-d'); }
         $item = [];
         if ($classId && $startTime && $endTime) {
             $all = Student::whereClassId($classId)->get()->pluck('id')->toArray();
+            if (empty($all)) {
+                return $item;
+            }
             $normal = $this->where('status', 1)
                 ->select(
                     array(
@@ -187,7 +190,7 @@ class StudentAttendance extends Model {
                 }
             }
 
-            for ($i=1;$i<8;$i++)
+            for ($i = 1;$i < $days+1; $i++)
             {
                 $date = strtotime($startTime);
                 $date = date("Y-m-d",$date+(86400*$i));

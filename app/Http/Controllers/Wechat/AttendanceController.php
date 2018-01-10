@@ -53,7 +53,14 @@ class AttendanceController extends Controller {
                 $datas = $this->getDays(Request::get('id'),$begin,$end);
                 return response()->json(['datas' => $datas]);
 
-            } elseif(array_key_exists('date',Request::all()))
+            } elseif(array_key_exists('years',Request::all())){
+                $years = Request::get('years');
+                # 该月第一天
+                $start = $years.'-01';
+                $ends = date('Y-m-d', strtotime("$start +1 month -1 day"));
+                $date = $this->getDays(Request::get('id'),$start,$ends);
+                return response()->json(['date' => $date]);
+            }elseif(array_key_exists('date',Request::all()))
             {
                 $date = Request::get('date');
                 $intoAttendance = StudentAttendance::whereStudentId(Request::get('id'))
@@ -110,6 +117,7 @@ class AttendanceController extends Controller {
      */
     public function getDays( $id, $beginTime, $endTime){
         $ids = $adays =$ndays = $data = [];
+        $asum = $nsum = 0;
         # 查询考勤异常的数据
         $abnormal = StudentAttendance::whereStudentId($id)
             ->where('punch_time','>',$beginTime)
@@ -127,6 +135,7 @@ class AttendanceController extends Controller {
                 $adays[] = substr($sa->punch_time,0,10);
             }
             $adays = array_unique($adays);
+            $asum = count($adays);
         }
         # 查询考勤正常天数的数据
         $normal = StudentAttendance::whereNotIn('id',$ids)
@@ -137,8 +146,8 @@ class AttendanceController extends Controller {
             $ndays[] = substr($n->punch_time,0,10);
         }
         $ndays = array_unique($ndays);
-
-        $data = ['adays'=> $adays,'ndays' => $ndays ];
+        $nsum = count($ndays);
+        $data = ['adays'=> $adays,'ndays' => $ndays,'asum'=> $asum,'nsum' => $nsum ];
         return $data;
     }
 }
