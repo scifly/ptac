@@ -324,6 +324,7 @@ var tree = {
             icon: 'fa fa-navicon',
             action: function (node) {
                 nodeid = tree.getSelector(node).id;
+                console.log(nodeid);
                 var url = tree.urlMenuTabs(table) + tree.getSelector(node).id;
                 page.getTabContent($activeTabPane, url);
             }

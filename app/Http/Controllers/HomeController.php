@@ -110,7 +110,10 @@ class HomeController extends Controller {
         # 获取卡片列表
         $tabArray = [];
         $isTabLegit = true;
-        $tabIds = MenuTab::whereMenuId($id)->pluck('tab_id')->toArray();
+        $tabIds = MenuTab::whereMenuId($id)
+            ->orderBy('tab_order')
+            ->pluck('tab_id')
+            ->toArray();
         $allowedTabIds = $this->tab->allowedTabIds();
         if (empty($tabIds)) { $isTabLegit = false; };
         foreach ($tabIds as $tabId) {
