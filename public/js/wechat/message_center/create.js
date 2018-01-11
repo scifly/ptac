@@ -182,6 +182,7 @@ show_group();
 function show_group() {
     $('.show-group').click(function () {
         //展示下一个分组
+        $(this).unbind("click");
         var id = $(this).prev().attr('data-uid');
         var name = $(this).prev().find('span').html();
         var choose_box = $('.air-choose-group');
@@ -566,7 +567,7 @@ $(function () {
 });
 
 function getdept() {
-    $(".js-choose-breadcrumb-ol li").on('click', function () {
+    $(".js-choose-breadcrumb-ol li").off('click').click( function () {
         var id = $(this).attr("data-id");
         // var name = $(this).find('a').html();
         var choose_box = $('.air-choose-group');
