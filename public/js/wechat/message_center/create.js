@@ -182,6 +182,7 @@ show_group();
 function show_group() {
     $('.show-group').click(function () {
         //展示下一个分组
+        $(this).css({'pointer-events':'none'});
         var id = $(this).prev().attr('data-uid');
         var name = $(this).prev().find('span').html();
         var choose_box = $('.air-choose-group');
