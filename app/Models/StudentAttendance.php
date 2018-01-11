@@ -3,24 +3,33 @@ namespace App\Models;
 
 use App\Events\StudentAttendanceCreate;
 use App\Facades\DatatableFacade as Datatable;
+use Carbon\Carbon;
+use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
+
 /**
- * App\Models\StudentAttendance
+ * App\Models\StudentAttendance 学生考勤记录
  *
  * @property int $id
  * @property int $student_id 学生ID
+ * @property int $sas_id 关联规则id
  * @property string $punch_time 打卡时间
  * @property int $inorout 进或出
  * @property int $attendance_machine_id 考勤机ID
  * @property int $media_id 考勤照片多媒体ID
+ * @property int $status 考勤状态
  * @property float $longitude 打卡时所处经度
  * @property float $latitude 打卡时所处纬度
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read AttendanceMachine $attendanceMachine
+ * @property-read Media $medias
+ * @property-read Student $student
+ * @property-read StudentAttendanceSetting $studentAttendancesetting
  * @method static Builder|StudentAttendance whereAttendanceMachineId($value)
  * @method static Builder|StudentAttendance whereCreatedAt($value)
  * @method static Builder|StudentAttendance whereId($value)
@@ -29,17 +38,11 @@ use Illuminate\Support\Facades\Log;
  * @method static Builder|StudentAttendance whereLongitude($value)
  * @method static Builder|StudentAttendance whereMediaId($value)
  * @method static Builder|StudentAttendance wherePunchTime($value)
- * @method static Builder|StudentAttendance whereStudentId($value)
- * @method static Builder|StudentAttendance whereUpdatedAt($value)
- * @mixin \Eloquent 考勤
- * @property-read \App\Models\AttendanceMachine $attendanceMachine
- * @property-read \App\Models\Media $medias
- * @property-read \App\Models\Student $student
- * @property int $sas_id 关联规则id
- * @property int $status 考勤状态
- * @property-read \App\Models\StudentAttendanceSetting $studentAttendancesetting
  * @method static Builder|StudentAttendance whereSasId($value)
  * @method static Builder|StudentAttendance whereStatus($value)
+ * @method static Builder|StudentAttendance whereStudentId($value)
+ * @method static Builder|StudentAttendance whereUpdatedAt($value)
+ * @mixin Eloquent
  */
 class StudentAttendance extends Model {
     
@@ -134,11 +137,20 @@ class StudentAttendance extends Model {
                 ],
             ],
         ];
+        // todo: 增加角色过滤条件
         $condition = 'AttendanceMachine.school_id = ' . School::schoolId();
         
         return Datatable::simple(self::getModel(), $columns, $joins, $condition);
         
     }
+
+    /**
+     * @param null $classId
+     * @param null $startTime
+     * @param null $endTime
+     * @param null $days
+     * @return array
+     */
     public function getData($classId = null, $startTime = null, $endTime = null, $days = null) {
         if (!$classId) { $classId = $this->getClass(); }
         if (!$startTime) { $startTime = date('Y-m-d',strtotime('-7 day')); }

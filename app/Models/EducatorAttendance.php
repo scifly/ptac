@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
+use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -16,8 +18,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property float $latitude 签到时所处纬度
  * @property int $inorout 进或出
  * @property int $eas_id 所属考勤设置ID
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @method static Builder|EducatorAttendance whereCreatedAt($value)
  * @method static Builder|EducatorAttendance whereEasId($value)
  * @method static Builder|EducatorAttendance whereEducatorId($value)
@@ -27,7 +29,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static Builder|EducatorAttendance whereLongitude($value)
  * @method static Builder|EducatorAttendance wherePunchTime($value)
  * @method static Builder|EducatorAttendance whereUpdatedAt($value)
- * @mixin \Eloquent
+ * @mixin Eloquent
  * @property-read EducatorAppeal $educatorAppeal
  * @property-read EducatorAttendanceSetting $educatorAttendanceSetting
  * @property-read Educator $educator

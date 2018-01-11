@@ -22,60 +22,49 @@ use Illuminate\Support\Facades\Storage;
  * App\Models\Message
  *
  * @property int $id
+ * @property int $comm_type_id 通信方式id
+ * @property int $app_id 应用id
+ * @property int $msl_id 消息发送批次id
+ * @property string $title 消息标题
  * @property string $content 消息内容
  * @property string $serviceid 业务id
  * @property int $message_id 关联的消息ID
  * @property string $url HTML页面地址
  * @property string $media_ids 多媒体IDs
- * @property int $user_id 发送者用户ID
- * @property string $user_ids 接收者用户IDs
- * @property int $message_type_id 消息类型ID
- * @property int $read_count 已读数量
- * @property int $received_count 消息发送成功数
- * @property int $recipient_count 接收者数量
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- * @property int $comm_type_id 通信方式id
- * @property int $app_id 应用id
- * @property int $msl_id 消息发送批次id
  * @property int $s_user_id 发送者用户ID
  * @property int $r_user_id 接收者用户IDs
- * @property int $readed 是否已读
+ * @property int $message_type_id 消息类型ID
+ * @property int $read 是否已读
  * @property int $sent 消息发送是否成功
- * @mixin Eloquent
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read CommType $commType
+ * @property-read MessageSendingLog $messageSendinglogs
+ * @property-read MessageType $messageType
+ * @property-read User $receiveUser
+ * @property-read User $user
+ * @method static Builder|Message whereAppId($value)
+ * @method static Builder|Message whereCommTypeId($value)
  * @method static Builder|Message whereContent($value)
  * @method static Builder|Message whereCreatedAt($value)
  * @method static Builder|Message whereId($value)
  * @method static Builder|Message whereMediaIds($value)
  * @method static Builder|Message whereMessageId($value)
  * @method static Builder|Message whereMessageTypeId($value)
- * @method static Builder|Message whereReadCount($value)
- * @method static Builder|Message whereReceivedCount($value)
- * @method static Builder|Message whereRecipientCount($value)
- * @method static Builder|Message whereServiceid($value)
- * @method static Builder|Message whereUpdatedAt($value)
- * @method static Builder|Message whereUrl($value)
- * @method static Builder|Message whereUserId($value)
- * @method static Builder|Message whereUserIds($value)
- * @method static Builder|Message whereAppId($value)
- * @method static Builder|Message whereCommTypeId($value)
  * @method static Builder|Message whereMslId($value)
  * @method static Builder|Message whereRUserId($value)
- * @method static Builder|Message whereReaded($value)
+ * @method static Builder|Message whereRead($value)
  * @method static Builder|Message whereSUserId($value)
  * @method static Builder|Message whereSent($value)
- * @property-read MessageType $messageType
- * @property-read User $user
- * @property-read CommType $commType
- * @property-read MessageSendingLog $messageSendinglog
- * @property-read MessageSendingLog $messageSendinglogs
- * @property string $title 消息标题
- * @property int $read 是否已读
- * @property-read \App\Models\User $receiveUser
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Message whereRead($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Message whereTitle($value)
+ * @method static Builder|Message whereServiceid($value)
+ * @method static Builder|Message whereTitle($value)
+ * @method static Builder|Message whereUpdatedAt($value)
+ * @method static Builder|Message whereUrl($value)
+ * @mixin Eloquent
  */
 class Message extends Model {
+
+    // todo: needs to be optimized
 
     use ModelTrait;
     
@@ -84,7 +73,8 @@ class Message extends Model {
     protected $fillable = [
         'comm_type_id', 'app_id', 'msl_id', 'content',
         'serviceid', 'message_id', 'url', 'media_ids',
-        's_user_id', 'r_user_id', 'message_type_id', 'readed', 'sent','title'
+        's_user_id', 'r_user_id', 'message_type_id',
+        'read', 'sent','title'
     ];
 
     /**

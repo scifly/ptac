@@ -10,6 +10,7 @@ use App\Http\Requests\CustodianRequest;
 use App\Http\Requests\EducatorRequest;
 use App\Rules\Mobiles;
 use Carbon\Carbon;
+use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -32,27 +33,23 @@ use PHPExcel_Exception;
  *
  * @property int $id
  * @property int $user_id 教职员工用户ID
- * @property string $team_ids 所属组
  * @property int $school_id 所属学校ID
  * @property int $sms_quote 可用短信条数
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property int $enabled
+ * @property-read Collection|Squad[] $classes
+ * @property-read School $school
+ * @property-read Collection|Team[] $teams
+ * @property-read User $user
  * @method static Builder|Educator whereCreatedAt($value)
+ * @method static Builder|Educator whereEnabled($value)
  * @method static Builder|Educator whereId($value)
  * @method static Builder|Educator whereSchoolId($value)
  * @method static Builder|Educator whereSmsQuote($value)
- * @method static Builder|Educator whereTeamIds($value)
  * @method static Builder|Educator whereUpdatedAt($value)
  * @method static Builder|Educator whereUserId($value)
- * @method static Builder|Educator whereEnabled($value)
- * @mixin \Eloquent
- * @property-read User $user
- * @property-read School $school
- * @property-read Squad[] $classes
- * @property-read EducatorClass $educatorClass
- * @property-read Team[] $teams
- * @property-read Collection|EducatorClass[] $educatorClasses
+ * @mixin Eloquent
  */
 class Educator extends Model {
     
@@ -118,13 +115,6 @@ class Educator extends Model {
     }
 
     /**
-     *  获取指定教职员工的班级科目关系
-     *
-     * @return HasMany
-     */
-    public function educatorClasses() { return $this->hasMany('App\Models\EducatorClass'); }
-
-    /**
      * 获取指定年级的年级主任教职员工对象
      *
      * @param $gradeId
@@ -132,10 +122,14 @@ class Educator extends Model {
      */
     static function gradeDeans($gradeId) {
 
-        $educatorIds = Grade::whereEnabled(1)->where('id', $gradeId)->first()->educator_ids;
+        $educatorIds = Grade::whereEnabled(1)
+            ->where('id', $gradeId)
+            ->first()
+            ->educator_ids;
         
         return self::whereIn('id', explode(',', $educatorIds))
-            ->where('enabled', 1)->get();
+            ->where('enabled', 1)
+            ->get();
 
     }
 
@@ -155,27 +149,6 @@ class Educator extends Model {
         return self::whereIn('id', explode(',', $educatorIds))
             ->where('enabled', 1)
             ->get();
-
-    }
-
-    /**
-     * 获取指定学校的教职员工列表
-     *
-     * @param array $schoolIds
-     * @return array
-     */
-    static function educators(array $schoolIds = []) {
-
-        $educatorList = [];
-        if (empty($schoolIds)) {
-            $educators = self::all();
-        } else {
-            $educators = self::whereIn('school_id', $schoolIds)->get();
-        }
-        foreach ($educators as $educator) {
-            $educatorList[$educator->id] = $educator->user->realname;
-        }
-        return $educatorList;
 
     }
 
@@ -331,29 +304,7 @@ class Educator extends Model {
         }
         
         return true;
-    }
-    
-    /**
-     * 删除教职员工
-     *
-     * @param $id
-     * @param bool $fireEvent
-     * @return bool
-     * @throws Exception
-     */
-    static function remove($id, $fireEvent = false) {
-        
-        $school = self::find($id);
-        /** @var School $school */
-        $removed = self::removable($school) ? $school->delete() : false;
-        if ($removed && $fireEvent) {
-            /** @var School $school */
-            event(new SchoolDeleted($school));
-            return true;
-        }
-        
-        return $removed ? true : false;
-        
+
     }
     
     /**
@@ -462,7 +413,30 @@ class Educator extends Model {
         return true;
         
     }
-    
+
+    /**
+     * 删除教职员工
+     *
+     * @param $id
+     * @param bool $fireEvent
+     * @return bool
+     * @throws Exception
+     */
+    static function remove($id, $fireEvent = false) {
+
+        $school = self::find($id);
+        /** @var School $school */
+        $removed = self::removable($school) ? $school->delete() : false;
+        if ($removed && $fireEvent) {
+            /** @var School $school */
+            event(new SchoolDeleted($school));
+            return true;
+        }
+
+        return $removed ? true : false;
+
+    }
+
     /**
      * 批量导入
      *
@@ -605,6 +579,7 @@ class Educator extends Model {
                 ],
             ],
         ];
+        // todo: 根据角色显示教职员工列表，[运营/企业/学校]角色显示当前学校的所有教职员工，其他角色显示所属所有部门的教职员工
         $condition = 'Educator.school_id = ' . School::schoolId();
         
         return Datatable::simple(self::getModel(), $columns, $joins, $condition);

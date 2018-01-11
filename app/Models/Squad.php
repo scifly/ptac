@@ -7,6 +7,8 @@ use App\Events\ClassDeleted;
 use App\Events\ClassUpdated;
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
+use Carbon\Carbon;
+use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -22,24 +24,23 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int $grade_id 所属年级ID
  * @property string $name 班级名称
  * @property string $educator_ids 班主任教职员工ID
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property int $enabled
+ * @property int $department_id 对应的部门ID
+ * @property-read Department $department
+ * @property-read Collection|Educator[] $educators
+ * @property-read Grade $grade
+ * @property-read Collection|Student[] $students
  * @method static Builder|Squad whereCreatedAt($value)
+ * @method static Builder|Squad whereDepartmentId($value)
  * @method static Builder|Squad whereEducatorIds($value)
  * @method static Builder|Squad whereEnabled($value)
  * @method static Builder|Squad whereGradeId($value)
  * @method static Builder|Squad whereId($value)
  * @method static Builder|Squad whereName($value)
  * @method static Builder|Squad whereUpdatedAt($value)
- * @mixin \Eloquent
- * @property-read Grade $grade
- * @property-read Collection|Student[] $students
- * @property-read Collection|EducatorClass[] $educatorClass
- * @property-read Collection|Educator[] $educators
- * @property int $department_id 对应的部门ID
- * @property-read Department $department
- * @method static Builder|Squad whereDepartmentId($value)
+ * @mixin Eloquent
  */
 class Squad extends Model {
 
@@ -216,6 +217,7 @@ class Squad extends Model {
                 ],
             ],
         ];
+        // todo: 增加角色过滤条件
         $condition = 'Grade.school_id = ' . School::schoolId();
         
         return Datatable::simple(self::getModel(), $columns, $joins, $condition);

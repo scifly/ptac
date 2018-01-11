@@ -7,6 +7,7 @@ use App\Events\DepartmentMoved;
 use App\Events\DepartmentUpdated;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
+use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -18,43 +19,42 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
+
 /**
  * App\Models\Department 部门
  *
  * @property int $id
  * @property int|null $parent_id 父部门ID
- * @property int $corp_id 所属企业ID
- * @property int $school_id 所属学校ID
  * @property string $name 部门名称
  * @property string|null $remark 部门备注
  * @property int|null $order 在父部门中的次序值。order值大的排序靠前
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property int $enabled
- * @method static Builder|Department whereCorpId($value)
+ * @property int $department_type_id 所属部门类型ID
+ * @property-read Collection|Department[] $children
+ * @property-read Company $company
+ * @property-read Corp $corp
+ * @property-read DepartmentType $departmentType
+ * @property-read Grade $grade
+ * @property-read Department|null $parent
+ * @property-read School $school
+ * @property-read Squad $squad
+ * @property-read Collection|\App\Models\User[] $users
  * @method static Builder|Department whereCreatedAt($value)
+ * @method static Builder|Department whereDepartmentTypeId($value)
  * @method static Builder|Department whereEnabled($value)
  * @method static Builder|Department whereId($value)
  * @method static Builder|Department whereName($value)
  * @method static Builder|Department whereOrder($value)
  * @method static Builder|Department whereParentId($value)
  * @method static Builder|Department whereRemark($value)
- * @method static Builder|Department whereSchoolId($value)
  * @method static Builder|Department whereUpdatedAt($value)
- * @mixin \Eloquent
- * @property-read Corp $corp
- * @property-read School $school
- * @property-read Collection|Menu[] $children
- * @property-read Department|null $parent
- * @property-read Collection|Department[] $users
- * @property int $department_type_id 所属部门类型ID
- * @property-read Company $company
- * @property-read Grade $grade
- * @property-read Squad $squad
- * @method static Builder|Department whereDepartmentTypeId($value)
- * @property-read DepartmentType $departmentType
+ * @mixin Eloquent
  */
 class Department extends Model {
+
+    // todo: needs to be optimized
 
     use ModelTrait;
 
@@ -179,7 +179,6 @@ class Department extends Model {
         return $nodes;
 
     }
-
 
     /**
      * 获取指定部门的完整路径
@@ -811,6 +810,7 @@ class Department extends Model {
         }
 
     }
+
     /**
      * 根据Department ID返回所有下级部门 含本身
      *

@@ -45,7 +45,7 @@
             </div>
             @include('partials.enabled', [
                 'id' => 'enabled',
-                'value' => $wapSite['enabled'] ?? NULL
+                'value' => $wapSite['enabled'] ?? null
             ])
 
         </div>

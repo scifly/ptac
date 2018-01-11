@@ -3,8 +3,8 @@
 namespace App\Http\ViewComposers;
 
 use App\Helpers\ModelTrait;
-use App\Models\School;
-use App\Models\Subject;
+
+
 use Illuminate\Contracts\View\View;
 
 class SubjectModuleIndexComposer {

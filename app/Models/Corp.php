@@ -54,8 +54,8 @@ class Corp extends Model {
     use ModelTrait;
 
     protected $fillable = [
-        'name', 'company_id', 'corpid', 'menu_id',
-        'department_id', 'enabled',
+        'name', 'company_id', 'corpid',
+        'menu_id', 'department_id', 'enabled',
     ];
 
     /**
@@ -117,52 +117,6 @@ class Corp extends Model {
 
         return $this->hasManyThrough('App\Models\Team', 'App\Models\School');
 
-    }
-    
-    /**
-     * 企业列表
-     *
-     * @return mixed
-     */
-    static function datatable() {
-        
-        $columns = [
-            ['db' => 'Corp.id', 'dt' => 0],
-            [
-                'db' => 'Corp.name', 'dt' => 1,
-                'formatter' => function ($d) {
-                    return '<i class="fa fa-weixin"></i> &nbsp;' . $d;
-                }
-            ],
-            [
-                'db' => 'Company.name as companyname', 'dt' => 2,
-                'formatter' => function ($d) {
-                    return '<i class="fa fa-building"></i>&nbsp;' . $d;
-                }
-            ],
-            ['db' => 'Corp.corpid', 'dt' => 3],
-            ['db' => 'Corp.created_at', 'dt' => 4],
-            ['db' => 'Corp.updated_at', 'dt' => 5],
-            [
-                'db' => 'Corp.enabled', 'dt' => 6,
-                'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($d, $row, false);
-                },
-            ],
-        ];
-        $joins = [
-            [
-                'table' => 'companies',
-                'alias' => 'Company',
-                'type' => 'INNER',
-                'conditions' => [
-                    'Company.id = Corp.company_id',
-                ],
-            ],
-        ];
-        
-        return Datatable::simple(self::getModel(), $columns, $joins);
-        
     }
     
     /**
@@ -247,6 +201,52 @@ class Corp extends Model {
             default:
                 return School::find($user->educator->school_id)->corp_id;
         }
+
+    }
+
+    /**
+     * 企业列表
+     *
+     * @return mixed
+     */
+    static function datatable() {
+
+        $columns = [
+            ['db' => 'Corp.id', 'dt' => 0],
+            [
+                'db' => 'Corp.name', 'dt' => 1,
+                'formatter' => function ($d) {
+                    return '<i class="fa fa-weixin"></i> &nbsp;' . $d;
+                }
+            ],
+            [
+                'db' => 'Company.name as companyname', 'dt' => 2,
+                'formatter' => function ($d) {
+                    return '<i class="fa fa-building"></i>&nbsp;' . $d;
+                }
+            ],
+            ['db' => 'Corp.corpid', 'dt' => 3],
+            ['db' => 'Corp.created_at', 'dt' => 4],
+            ['db' => 'Corp.updated_at', 'dt' => 5],
+            [
+                'db' => 'Corp.enabled', 'dt' => 6,
+                'formatter' => function ($d, $row) {
+                    return Datatable::dtOps($d, $row, false);
+                },
+            ],
+        ];
+        $joins = [
+            [
+                'table' => 'companies',
+                'alias' => 'Company',
+                'type' => 'INNER',
+                'conditions' => [
+                    'Company.id = Corp.company_id',
+                ],
+            ],
+        ];
+
+        return Datatable::simple(self::getModel(), $columns, $joins);
 
     }
 

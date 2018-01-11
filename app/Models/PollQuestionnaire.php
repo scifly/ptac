@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
+
 /**
  * App\Models\PollQuestionnaire 调查问卷
  *
@@ -24,6 +25,11 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property int $enabled
+ * @property-read PollQuestionnaireAnswer $poll_questionnaire_answer
+ * @property-read PollQuestionnaireParticipant $poll_questionnaire_partcipant
+ * @property-read Collection|PollQuestionnaireSubject[] $poll_questionnaire_subject
+ * @property-read School $school
+ * @property-read User $user
  * @method static Builder|PollQuestionnaire whereCreatedAt($value)
  * @method static Builder|PollQuestionnaire whereEnabled($value)
  * @method static Builder|PollQuestionnaire whereEnd($value)
@@ -34,13 +40,6 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @method static Builder|PollQuestionnaire whereUpdatedAt($value)
  * @method static Builder|PollQuestionnaire whereUserId($value)
  * @mixin \Eloquent
- * @property-read PollQuestionnaireAnswer $pollquestionnaireAnswer
- * @property-read PollQuestionnaireParticipant $pollquestionnairePartcipant
- * @property-read School $school
- * @property-read User $user
- * @property-read PollQuestionnaireAnswer $poll_questionnaire_answer
- * @property-read PollQuestionnaireParticipant $poll_questionnaire_partcipant
- * @property-read Collection|PollQuestionnaireSubject[] $poll_questionnaire_subject
  */
 class PollQuestionnaire extends Model {
 
@@ -152,7 +151,7 @@ class PollQuestionnaire extends Model {
                 ],
             ],
         ];
-        
+        // todo: 根据学校和角色进行过滤
         return Datatable::simple(self::getModel(), $columns, $joins);
         
     }

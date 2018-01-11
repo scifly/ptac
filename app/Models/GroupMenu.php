@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Carbon\Carbon;
+use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -11,7 +12,7 @@ use Illuminate\Support\Facades\DB;
 /**
  * App\Models\GroupMenu
  *
- * @mixin \Eloquent
+ * @mixin Eloquent
  * @property int $id
  * @property int $group_id
  * @property int $menu_id
@@ -32,6 +33,8 @@ class GroupMenu extends Model {
     protected $fillable = ['group_id', 'menu_id', 'enabled'];
     
     /**
+     * 根据角色id保存所有菜单id
+     *
      * @param $groupId
      * @param array $ids
      * @return bool

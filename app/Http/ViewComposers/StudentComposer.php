@@ -26,7 +26,6 @@ class StudentComposer {
         if (empty($classes)) {$classes[] = '' ;}
         if (empty($grades)) {$grades[] = '' ;}
         $view->with([
-            'schoolId' => $schoolId,
             'grades' => $grades,
             'classes' => $classes,
             'uris' => $this->uris()

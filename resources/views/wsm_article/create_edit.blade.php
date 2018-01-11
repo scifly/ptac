@@ -75,7 +75,7 @@
             </div>
                 @include('partials.enabled', [
                     'id' => 'enabled',
-                    'value' => $article['enabled'] ?? NULL
+                    'value' => $article['enabled'] ?? null
                 ])
         </div>
     </div>

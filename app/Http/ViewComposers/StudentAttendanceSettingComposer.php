@@ -26,7 +26,6 @@ class StudentAttendanceSettingComposer {
         $schoolId = School::schoolId();
 
         $view->with([
-            'schoolId' => $schoolId,
             'grades' => Grade::pluck('name', 'id'),
             'semesters' => Semester::whereSchoolId($schoolId)->pluck('name', 'id'),
             'days' => $days,

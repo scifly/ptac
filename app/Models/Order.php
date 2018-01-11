@@ -4,12 +4,13 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use Carbon\Carbon;
+use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * App\Models\Order
+ * App\Models\Order 订单
  *
  * @property int $id
  * @property string $ordersn 订单序列号
@@ -31,7 +32,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static Builder|Order whereTransactionid($value)
  * @method static Builder|Order whereUpdatedAt($value)
  * @method static Builder|Order whereUserId($value)
- * @mixin \Eloquent
+ * @mixin Eloquent
  * @property-read ComboType $comboType
  * @property-read User $user
  */
@@ -59,6 +60,11 @@ class Order extends Model {
      */
     public function comboType() { return $this->belongsTo('App\models\ComboType'); }
 
+    /**
+     * 订单列表
+     *
+     * @return array
+     */
     public function datatable() {
         
         $columns = [
@@ -96,6 +102,7 @@ class Order extends Model {
             ],
         ];
 
+        // todo: 根据角色和学校进行过滤
         return Datatable::simple($this, $columns, $joins);
 
     }

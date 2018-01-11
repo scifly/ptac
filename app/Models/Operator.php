@@ -6,6 +6,7 @@ use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
 use App\Http\Requests\OperatorRequest;
 use Carbon\Carbon;
+use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -30,10 +31,12 @@ use Illuminate\Support\Facades\DB;
  * @method static Builder|Operator whereType($value)
  * @method static Builder|Operator whereUpdatedAt($value)
  * @method static Builder|Operator whereUserId($value)
- * @mixin \Eloquent
+ * @mixin Eloquent
  * @property-read User $user
  */
 class Operator extends Model {
+
+    // todo: needs to be re-assessed
 
     use ModelTrait;
 

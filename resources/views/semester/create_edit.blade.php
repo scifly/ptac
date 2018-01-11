@@ -7,8 +7,7 @@
             @if (isset($semester['id']))
                 {!! Form::hidden('id', $semester['id'], ['id' => 'id']) !!}
             @endif
-                {{ Form::hidden('school_id', $schoolId, ['id' => 'school_id']) }}
-                <div class="form-group">
+            <div class="form-group">
                 {!! Form::label('name', '名称', [
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
@@ -56,7 +55,7 @@
             @include('partials.remark')
             @include('partials.enabled', [
                 'id' => 'enabled',
-                'value' => $semester['enabled'] ?? NULL
+                'value' => $semester['enabled'] ?? null
             ])
         </div>
     </div>

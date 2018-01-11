@@ -20,7 +20,6 @@
                     ]) !!}
                 </div>
             </div>
-            {!! Form::hidden('school_id', $schoolId, ['id' => 'school_id']) !!}
             <div class="form-group">
                 {!! Form::label('capacity', '容量', [
                     'class' => 'col-sm-3 control-label'
@@ -37,7 +36,7 @@
             @include('partials.remark')
             @include('partials.enabled', [
                 'id' => 'enabled',
-                'value' => $cr['enabled'] ?? NULL
+                'value' => $cr['enabled'] ?? null
             ])
         </div>
     </div>

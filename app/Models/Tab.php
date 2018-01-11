@@ -16,35 +16,32 @@ use ReflectionClass;
 use Throwable;
 
 /**
- * App\Models\Tab
+ * App\Models\Tab 卡片
  *
  * @property int $id
  * @property string $name 卡片名称
+ * @property int $group_id 所属角色Id
+ * @property int $action_id 默认加载的Action ID
+ * @property int|null $icon_id 图标ID
+ * @property string $controller 控制器名称
  * @property string|null $remark 卡片备注
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property int $enabled
+ * @property-read Action $action
+ * @property-read Icon|null $icon
+ * @property-read Collection|Menu[] $menus
+ * @method static Builder|Tab whereActionId($value)
+ * @method static Builder|Tab whereController($value)
  * @method static Builder|Tab whereCreatedAt($value)
  * @method static Builder|Tab whereEnabled($value)
+ * @method static Builder|Tab whereGroupId($value)
+ * @method static Builder|Tab whereIconId($value)
  * @method static Builder|Tab whereId($value)
  * @method static Builder|Tab whereName($value)
  * @method static Builder|Tab whereRemark($value)
  * @method static Builder|Tab whereUpdatedAt($value)
- * @method static Builder|Tab whereGroupId($value)
  * @mixin Eloquent
- * @property-read Collection|Action[] $actions
- * @property-read Collection|Menu[] $menus
- * @property int|null $icon_id 图标ID
- * @method static Builder|Tab whereIconId($value)
- * @property-read Icon|null $icon
- * @property int $action_id 默认加载的Action ID
- * @property-read Action $action
- * @method static Builder|Tab whereActionId($value)
- * @property string $controller 控制器名称
- * @method static Builder|Tab whereController($value)
- * @property int $group_id
- * @property int|null $new_column
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Tab whereNewColumn($value)
  */
 class Tab extends Model {
 

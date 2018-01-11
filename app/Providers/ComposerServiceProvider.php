@@ -68,8 +68,10 @@ class ComposerServiceProvider extends ServiceProvider {
         View::composer('procedure_step.create_edit', 'App\Http\ViewComposers\ProcedureStepComposer');
         View::composer('procedure_step.index', 'App\Http\ViewComposers\ProcedureStepIndexComposer');
 
-        View::composer('poll_questionnaire.create_edit', 'App\Http\ViewComposers\PollQuestionnaireComposer');
-        View::composer('poll_questionnaire.index', 'App\Http\ViewComposers\PollQuestionnaireIndexComposer');
+        View::composer(
+            ['poll_questionnaire.create_edit', 'poll_questionnaire.index'],
+            'App\Http\ViewComposers\PollQuestionnaireComposer'
+        );
 
         View::composer('pq_subject.create_edit', 'App\Http\ViewComposers\PqSubjectComposer');
         View::composer('pq_subject.index', 'App\Http\ViewComposers\PqSubjectIndexComposer');
@@ -90,15 +92,19 @@ class ComposerServiceProvider extends ServiceProvider {
         View::composer('exam.create_edit', 'App\Http\ViewComposers\ExamComposer');
         View::composer('exam.index', 'App\Http\ViewComposers\ExamIndexComposer');
 
-        View::composer('exam_type.create_edit', 'App\Http\ViewComposers\ExamTypeComposer');
-        View::composer('exam_type.index', 'App\Http\ViewComposers\ExamTypeIndexComposer');
+        View::composer(
+            ['exam_type.create_edit', 'exam_type.index'],
+            'App\Http\ViewComposers\ExamTypeComposer'
+        );
 
         View::composer('operator.create', 'App\Http\ViewComposers\OperatorCreateComposer');
         View::composer('operator.edit', 'App\Http\ViewComposers\OperatorEditComposer');
         View::composer('operator.index', 'App\Http\ViewComposers\OperatorIndexComposer');
 
-        View::composer('conference_room.create_edit', 'App\Http\ViewComposers\ConferenceRoomComposer');
-        View::composer('conference_room.index', 'App\Http\ViewComposers\ConferenceRoomIndexComposer');
+        View::composer(
+            ['conference_room.create_edit', 'conference_room.index'],
+            'App\Http\ViewComposers\ConferenceRoomComposer'
+        );
 
         View::composer('conference_queue.create_edit', 'App\Http\ViewComposers\ConferenceQueueComposer');
         View::composer('conference_queue.edit', 'App\Http\ViewComposers\ConferenceQueueEditComposer');
@@ -170,9 +176,11 @@ class ComposerServiceProvider extends ServiceProvider {
             'App\Http\ViewComposers\AttendanceMachineComposer'
         );
 
-        View::composer('semester.create_edit', 'App\Http\ViewComposers\SemesterComposer');
-        View::composer('semester.index', 'App\Http\ViewComposers\SemesterIndexComposer');
-    
+        View::composer(
+            ['semester.create_edit', 'semester.index'],
+            'App\Http\ViewComposers\SemesterComposer'
+        );
+
         View::composer('wechat.message_center.index', 'App\Http\ViewComposers\MessageCenterComposer');
     }
     

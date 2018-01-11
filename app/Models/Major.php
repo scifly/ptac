@@ -4,6 +4,8 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Http\Requests\MajorRequest;
+use Carbon\Carbon;
+use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -19,8 +21,8 @@ use Illuminate\Support\Facades\DB;
  * @property string $name 专业名称
  * @property string $remark 专业备注
  * @property int $school_id 所属学校ID
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property string $enabled
  * @method static Builder|Major whereCreatedAt($value)
  * @method static Builder|Major whereEnabled($value)
@@ -29,7 +31,7 @@ use Illuminate\Support\Facades\DB;
  * @method static Builder|Major whereRemark($value)
  * @method static Builder|Major whereSchoolId($value)
  * @method static Builder|Major whereUpdatedAt($value)
- * @mixin \Eloquent
+ * @mixin Eloquent
  * @property-read MajorSubject $majorSubject
  * @property-read School $school
  * @property-read Collection|Subject[] $subjects

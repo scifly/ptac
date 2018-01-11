@@ -81,13 +81,13 @@
             @include('partials.enabled', [
                 'label' => '打开地理位置上报',
                 'id' => 'report_location_flag',
-                'value' => $app['report_location_flag'] ?? NULL,
+                'value' => $app['report_location_flag'] ?? null,
                 'options' => ['是', '否']
             ])
             @include('partials.enabled', [
                 'label' => '上报用户进入应用事件',
                 'id' => 'isreportenter',
-                'value' => $app['isreportenter'] ?? NULL,
+                'value' => $app['isreportenter'] ?? null,
                 'options' => ['是', '否']
             ])
         </div>

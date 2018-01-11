@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use Carbon\Carbon;
+use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -18,9 +20,13 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string $start 考勤设置起始时间
  * @property string $end 考勤设置结束时间
  * @property int $inorout 进或出
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property int $enabled
+ * @property-read Collection|EducatorAttendance[] $educatorAttendances
+ * @property-read School $school
  * @method static Builder|EducatorAttendanceSetting whereCreatedAt($value)
+ * @method static Builder|EducatorAttendanceSetting whereEnabled($value)
  * @method static Builder|EducatorAttendanceSetting whereEnd($value)
  * @method static Builder|EducatorAttendanceSetting whereId($value)
  * @method static Builder|EducatorAttendanceSetting whereInorout($value)
@@ -28,13 +34,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static Builder|EducatorAttendanceSetting whereSchoolId($value)
  * @method static Builder|EducatorAttendanceSetting whereStart($value)
  * @method static Builder|EducatorAttendanceSetting whereUpdatedAt($value)
- * @mixin \Eloquent
- * @property-read EducatorAttendance[] $educatorAttendance
- * @property-read School $schools
- * @property-read Collection|EducatorAttendance[] $educatorAttendances
- * @property-read \App\Models\School $school
- * @property int $enabled
- * @method static Builder|EducatorAttendanceSetting whereEnabled($value)
+ * @mixin Eloquent
  */
 class EducatorAttendanceSetting extends Model {
 
@@ -59,6 +59,11 @@ class EducatorAttendanceSetting extends Model {
      */
     public function school() { return $this->belongsTo('App\Models\School'); }
 
+    /**
+     * 教职员工考勤设置列表
+     *
+     * @return array
+     */
     static function datatable() {
         
         $columns = [

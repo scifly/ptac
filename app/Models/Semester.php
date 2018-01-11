@@ -4,37 +4,37 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use Carbon\Carbon;
+use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
- * App\Models\Semester
+ * App\Models\Semester 学期
  *
  * @property int $id
  * @property int $school_id 所属学校ID
  * @property string $name 学期名称
+ * @property string|null $remark 备注
  * @property string $start_date 学期开始日期
  * @property string $end_date 学期截止日期
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property int $enabled
+ * @property-read School $school
+ * @property-read Collection|StudentAttendanceSetting[] $studentAttendanceSettings
  * @method static Builder|Semester whereCreatedAt($value)
  * @method static Builder|Semester whereEnabled($value)
  * @method static Builder|Semester whereEndDate($value)
  * @method static Builder|Semester whereId($value)
  * @method static Builder|Semester whereName($value)
+ * @method static Builder|Semester whereRemark($value)
  * @method static Builder|Semester whereSchoolId($value)
  * @method static Builder|Semester whereStartDate($value)
  * @method static Builder|Semester whereUpdatedAt($value)
- * @mixin \Eloquent
- * 学期
- * @property string|null $remark 备注
- * @property-read School $school
- * @method static Builder|Semester whereRemark($value)
- * @property-read StudentAttendanceSetting $studentAttendanceSetting
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\StudentAttendanceSetting[] $studentAttendanceSettings
+ * @mixin Eloquent
  */
 class Semester extends Model {
 

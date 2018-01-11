@@ -8,6 +8,7 @@ use App\Events\GradeUpdated;
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
+use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -26,23 +27,21 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property int $enabled
+ * @property int $department_id 对应的部门ID
+ * @property-read Collection|Squad[] $classes
+ * @property-read Department $department
+ * @property-read School $school
+ * @property-read Collection|StudentAttendanceSetting[] $studentAttendanceSetting
+ * @property-read Collection|Student[] $students
  * @method static Builder|Grade whereCreatedAt($value)
+ * @method static Builder|Grade whereDepartmentId($value)
  * @method static Builder|Grade whereEducatorIds($value)
  * @method static Builder|Grade whereEnabled($value)
  * @method static Builder|Grade whereId($value)
  * @method static Builder|Grade whereName($value)
  * @method static Builder|Grade whereSchoolId($value)
  * @method static Builder|Grade whereUpdatedAt($value)
- * @mixin \Eloquent
- * @property-read \App\Models\School $school
- * @property-read Collection|Squad[] $squads
- * @property-read Collection|Subject[] $subject
- * @property-read Collection|Squad[] $classes
- * @property-read Collection|Student[] $students
- * @property int $department_id 对应的部门ID
- * @property-read Department $department
- * @property-read StudentAttendanceSetting $studentAttendanceSetting
- * @method static Builder|Grade whereDepartmentId($value)
+ * @mixin Eloquent
  */
 class Grade extends Model {
 
@@ -226,6 +225,7 @@ class Grade extends Model {
                 ],
             ],
         ];
+        // todo: 增加角色过滤条件
         $condition = 'Grade.school_id = ' . School::schoolId();
         
         return Datatable::simple(self::getModel(), $columns, $joins, $condition);

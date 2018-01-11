@@ -4,13 +4,15 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
+use Carbon\Carbon;
+use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\DB;
 
 /**
- * App\Models\ScoreRange
+ * App\Models\ScoreRange 分数统计范围
  *
  * @property int $id
  * @property string $name 成绩统计项名称
@@ -18,8 +20,8 @@ use Illuminate\Support\Facades\DB;
  * @property int $school_id 成绩统计项所属学校ID
  * @property float $start_score 成绩统计项起始分数
  * @property float $end_score 成绩统计项截止分数
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property int $enabled 是否统计
  * @method static Builder|ScoreRange whereCreatedAt($value)
  * @method static Builder|ScoreRange whereEnabled($value)
@@ -30,7 +32,7 @@ use Illuminate\Support\Facades\DB;
  * @method static Builder|ScoreRange whereStartScore($value)
  * @method static Builder|ScoreRange whereSubjectIds($value)
  * @method static Builder|ScoreRange whereUpdatedAt($value)
- * @mixin \Eloquent
+ * @mixin Eloquent
  * @property-read School $school
  */
 class ScoreRange extends Model {

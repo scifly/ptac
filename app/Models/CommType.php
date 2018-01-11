@@ -3,7 +3,9 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use Carbon\Carbon;
 use Doctrine\Common\Collections\Collection;
+use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
@@ -13,8 +15,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $id
  * @property string $name 通信方式名称
  * @property string $remark 通信方式备注
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property int $enabled
  * @method static Builder|CommType whereCreatedAt($value)
  * @method static Builder|CommType whereEnabled($value)
@@ -22,7 +24,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|CommType whereName($value)
  * @method static Builder|CommType whereRemark($value)
  * @method static Builder|CommType whereUpdatedAt($value)
- * @mixin \Eloquent
+ * @mixin Eloquent
  * @property-read Collection|Message[] $messages
  */
 class CommType extends Model {
@@ -31,6 +33,11 @@ class CommType extends Model {
 
     protected $fillable = ['name', 'remark', 'enabled'];
 
+    /**
+     * 返回指定通信方式包含的所有消息对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function messages() { return $this->hasMany('App\Models\Message'); }
     
     /**

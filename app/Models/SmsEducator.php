@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * App\Models\SmsEducator
+ * App\Models\SmsEducator 教职员工短信配额
  *
  * @property int $id
  * @property int $educator_id 被充值者教职员工ID

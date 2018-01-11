@@ -29,7 +29,7 @@
             @include('partials.remark')
             @include('partials.enabled', [
                 'id' => 'enabled',
-                'value' => $icon['enabled'] ?? NULL
+                'value' => $icon['enabled'] ?? null
             ])
         </div>
     </div>

@@ -17,7 +17,6 @@ class SubjectComposer {
         $schoolId = School::schoolId();
 
         $view->with([
-            'schoolId' => $schoolId,
             'grades' => Grade::whereSchoolId($schoolId)->pluck('name', 'id'),
             'majors' => Major::whereSchoolId($schoolId)->pluck('name', 'id'),
             'uris' => $this->uris()

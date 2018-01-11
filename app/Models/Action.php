@@ -7,6 +7,7 @@ use App\Http\Requests\ActionRequest;
 use App\Models\ActionType as ActionType;
 use Carbon\Carbon;
 use Doctrine\Common\Inflector\Inflector;
+use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -21,41 +22,31 @@ use Throwable;
  * App\Models\Action 功能
  *
  * @property int $id
- * @property string $name 功能名称
- * @property string $method 方法名称
- * @property string $remark 备注
+ * @property string $name method/function名称
+ * @property string|null $action_type_ids HTTP请求类型IDs
+ * @property string|null $remark 备注
  * @property string $controller 所属controller类名
  * @property string|null $view 对应的blade view名
- * @property string|null $route 对应的route名称
- * @property string|null $js 定制JS脚本路径
- * @property int|null $datatable 是否使用datatable
- * @property int|null $parsley 是否使用parsley
- * @property int|null $select2 是否使用select2
- * @property int|null $chart 是否使用chart
- * @property int|null $map 是否使用map
+ * @property string $method
+ * @property string|null $js
+ * @property string|null $route
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property int $enabled
- * @property string|null $action_type_ids HTTP请求类型IDs
+ * @property-read Collection|Tab[] $tabs
  * @method static Builder|Action whereActionTypeIds($value)
- * @method static Builder|Action whereChart($value)
  * @method static Builder|Action whereController($value)
  * @method static Builder|Action whereCreatedAt($value)
- * @method static Builder|Action whereDatatable($value)
  * @method static Builder|Action whereEnabled($value)
  * @method static Builder|Action whereId($value)
  * @method static Builder|Action whereJs($value)
- * @method static Builder|Action whereMap($value)
  * @method static Builder|Action whereMethod($value)
  * @method static Builder|Action whereName($value)
- * @method static Builder|Action whereParsley($value)
  * @method static Builder|Action whereRemark($value)
  * @method static Builder|Action whereRoute($value)
- * @method static Builder|Action whereSelect2($value)
  * @method static Builder|Action whereUpdatedAt($value)
  * @method static Builder|Action whereView($value)
- * @mixin \Eloquent
- * @property-read Collection|Tab[] $tabs
+ * @mixin Eloquent
  */
 class Action extends Model {
 
@@ -526,7 +517,6 @@ class Action extends Model {
                 case 'relationship':
                     $viewPath = 'custodian.relationship';
                     break;
-
                 default:
                     $viewPath = Inflector::singularize(self::getTableName($controller)) . '.' . $action;
                     break;
