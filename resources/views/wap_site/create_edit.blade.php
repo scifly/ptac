@@ -7,6 +7,9 @@
             @if (!empty($schoolId['id']))
                 {{ Form::hidden('id', $schoolId['id'], ['id' => 'id']) }}
             @endif
+            @if (!empty($wapSite['id']))
+                {{ Form::hidden('id', $wapSite['id'], ['id' => 'id']) }}
+            @endif
             <div class="form-group">
                 {!! Form::label('site_title', '首页抬头', [
                     'class' => 'col-sm-3 control-label'

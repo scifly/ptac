@@ -6,7 +6,7 @@ $(function () {
     $uploadFile.fileinput({
         language: 'zh',
         theme: 'explorer',
-        uploadUrl: "../wap_sites/uploadImages",
+        uploadUrl: page.siteRoot() + "/wap_sites/uploadImages",
         uploadAsync: false,
         maxFileCount: 5,
         minImageWidth: 50, //图片的最小宽度
@@ -28,7 +28,7 @@ $(function () {
         // 填充数据
         var response = data.response.data;
         $.each(response, function (index, obj) {
-            $pre.append('<div class="img-item"><img src="../' + obj.path + '" id="' + obj.id + '"><div class="del-mask"><i class="delete glyphicon glyphicon-trash"></i></div></div>');
+            $pre.append('<div class="img-item"><img src="../../' + obj.path + '" id="' + obj.id + '"><div class="del-mask"><i class="delete glyphicon glyphicon-trash"></i></div></div>');
             $pre.append('<input type="hidden" name="media_id" value="' + obj.id + '">');
         });
         // 成功后关闭弹窗

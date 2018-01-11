@@ -18,11 +18,6 @@
 
 <script src="{{ asset('/js/jquery.min.js') }}"></script>
 <script src="{{ asset('/js/fastclick.js') }}"></script>
-<script>
-    $(function () {
-        FastClick.attach(document.body);
-    });
-</script>
 <script src="{{ asset('/js/jquery-weui.min.js') }}"></script>
 @yield('script')
 </body>

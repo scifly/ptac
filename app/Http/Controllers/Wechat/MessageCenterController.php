@@ -327,7 +327,7 @@ class MessageCenterController extends Controller {
             if ($mes) {
                 $result['statusCode'] = 1;
                 $result['message'] = '上传成功！';
-                $path = dirname(public_path()) . '/' . $mes['path'];
+                $path = $mes['path'];
                 $data = ["media" => curl_file_create($path)];
                 $crop = Corp::whereName('万浪软件')->first();
                 $app = App::whereAgentid('999')->first();
