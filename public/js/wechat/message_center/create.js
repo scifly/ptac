@@ -180,7 +180,7 @@ $('.js-search-input').bind("input propertychange change", function (event) {
 show_group();
 
 function show_group() {
-    $('.show-group').click(function () {
+    $('.show-group').off('click').click(function () {
         //展示下一个分组
         var id = $(this).prev().attr('data-uid');
         var name = $(this).prev().find('span').html();
@@ -195,11 +195,11 @@ function show_group() {
             success: function (result) {
                 if (result.statusCode === 200) {
                     choose_box.html(result.message);
+                    choose_dept.append(html);
                     show_group();
                     choose_item();
                     remove_choose_result();
                     getdept();
-                    choose_dept.append(html);
                 } else {
                     choose_box.empty();
                 }
