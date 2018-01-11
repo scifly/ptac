@@ -175,7 +175,9 @@ class Subject extends Model {
                     'enabled' => $request->input('enabled'),
                 ]);
                 MajorSubject::whereSubjectId($id)->delete();
-                MajorSubject::storeBySubjectId($id, $request->input('major_ids'));
+                if(!empty($request->input('major_ids'))){
+                    MajorSubject::storeBySubjectId($id, $request->input('major_ids'));
+                }
             });
 
         } catch (Exception $e) {
