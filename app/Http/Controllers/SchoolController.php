@@ -62,7 +62,9 @@ class SchoolController extends Controller {
      */
     public function store(SchoolRequest $request) {
         
-        return $this->result(School::store($request->all(), true));
+        return $this->result(
+            School::store($request->all(), true)
+        );
         
     }
     
