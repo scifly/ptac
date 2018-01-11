@@ -154,7 +154,7 @@ class ManageSendMessage implements ShouldQueue {
                             's_user_id' => $i->id,
                             'r_user_id' => Auth::id(),
                             'message_type_id' => MessageType::whereName('消息通知')->first()->id,
-                            'readed' => $read,
+                            'read' => $read,
                             'sent' => $sent,
                         ];
                         Log::debug(json_encode($m));
