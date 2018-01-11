@@ -188,7 +188,6 @@ function show_group() {
         var choose_dept = $('.js-choose-breadcrumb-ol');
         var html =
             '<li data-id="' + id + '" class="js-choose-breadcrumb-li headclick"><a>>' + name + '</a></li>';
-        choose_dept.append(html);
         $.ajax({
             type: 'GET',
             data: {},
@@ -196,6 +195,7 @@ function show_group() {
             success: function (result) {
                 if (result.statusCode === 200) {
                     choose_box.html(result.message);
+                    choose_dept.append(html);
                     show_group();
                     choose_item();
                     remove_choose_result();
