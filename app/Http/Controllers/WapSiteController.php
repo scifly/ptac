@@ -175,7 +175,7 @@ class WapSiteController extends Controller {
             // 使用新建的uploads本地存储空间（目录）
             if (Storage::disk('uploads')->put($filename, file_get_contents($realPath))) {
                 // $filePath = 'storage/app/uploads/' . date('Y') . '/' . date('m') . '/' . date('d') . '/' . $filename;
-                $filePath = 'public/uploads/' .
+                $filePath = 'uploads/' .
                     date('Y') . '/' .
                     date('m') . '/' .
                     date('d') . '/' .
