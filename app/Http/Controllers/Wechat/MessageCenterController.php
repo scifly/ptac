@@ -227,7 +227,7 @@ class MessageCenterController extends Controller {
         $message = $this->message->find($id);
         if(count($message->content) == 0){
             if(!empty($message->media_ids)){
-                $message->content = $_SERVER['HTTP_HOST'] . Media::whereId($message->media_ids)->first()->path;
+                $message->content = $_SERVER['HTTP_HOST'] . '/' . Media::whereId($message->media_ids)->first()->path;
             }
         }
         $edit = ($user->id == $message->s_user_id ? true : false);
