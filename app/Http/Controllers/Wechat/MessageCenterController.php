@@ -565,7 +565,7 @@ class MessageCenterController extends Controller {
             case 'textcard':
                 $message['textcard'] = [
                     'title'       => $input['title'],
-                    'description' => strip_tags($input['content']) ?? '图片',
+                    'description' => strip_tags($input['content']),
                     'url'         => $url,
                 ];
                 break;
