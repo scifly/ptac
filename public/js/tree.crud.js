@@ -105,12 +105,14 @@ var tree = {
             for (var i = 0; i < $tabs.length; i++) {
                 ranks[$tabs[i].id] = i;
             }
+            $('.overlay').show();
             $.ajax({
                 type: 'POST',
                 dataType: 'json',
-                url: tree.urlRankTabs(table) + nodeid,
+                url: tree.urlRankTabs(table) + $('#menuId').val(),
                 data: {data: ranks, _token: tree.csrfToken()},
                 success: function (result) {
+                    $('.overlay').hide();
                     page.inform(
                         '操作结果', result.message,
                         result.statusCode === 200 ? page.success : page.failure
@@ -324,7 +326,6 @@ var tree = {
             icon: 'fa fa-navicon',
             action: function (node) {
                 nodeid = tree.getSelector(node).id;
-                console.log(nodeid);
                 var url = tree.urlMenuTabs(table) + tree.getSelector(node).id;
                 page.getTabContent($activeTabPane, url);
             }
@@ -349,7 +350,11 @@ var tree = {
                     case 'school':
                         return {createItem: create};
                     case 'other':
-                        return {createItem: create, renameItem: edit, delItem: del, rankTabs: rank};
+                        console.log(node);
+                        if (node.children.length === 0) {
+                            return {createItem: create, renameItem: edit, delItem: del, rankTabs: rank};
+                        }
+                        return {createItem: create, renameItem: edit, delItem: del};
                     default:
                         return {}
                 }
