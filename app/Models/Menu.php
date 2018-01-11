@@ -65,6 +65,7 @@ class Menu extends Model {
 
     // todo: needs to be optimized
 
+    const SUPER_ROLES = ['运营', '企业', '学校'];
     # 不含子菜单的HTML模板
     const SIMPLE = '<li%s><a id="%s" href="%s" class="leaf"><i class="%s"></i> %s</a></li>';
     # 包含子菜单的HTML模板
@@ -502,14 +503,14 @@ HTML;
                     ->get();
             } else {
                 $role = Auth::user()->group->name;
-                if ($role != '学校' && $role != '企业') {
+                if (!in_array($role, self::SUPER_ROLES)) {
                     $menuIds = GroupMenu::whereGroupId(Auth::user()->group_id)
                         ->get(['menu_id'])
                         ->toArray();
                     $data = self::whereIn('id', $menuIds)
                         ->orderBy('position')
                         ->get();
-                }else{
+                } else {
                     $data = self::whereIn('id', $childrenIds)
                         ->orderBy('position')
                         ->get();
@@ -522,9 +523,8 @@ HTML;
                     ->orderBy('position')
                     ->get();
             } else {
-
                 $role = Auth::user()->group->name;
-                if ($role != '学校' && $role != '企业') {
+                if (!in_array($role, self::SUPER_ROLES)) {
                     $menuIds = GroupMenu::whereGroupId(Auth::user()->group_id)
                         ->get(['menu_id'])
                         ->toArray();
@@ -532,7 +532,7 @@ HTML;
                         ->whereIn('id', $menuIds)
                         ->orderBy('position')
                         ->get();
-                }else{
+                } else {
                     $data = self::whereEnabled(1)
                         ->whereIn('id', $childrenIds)
                         ->orderBy('position')
