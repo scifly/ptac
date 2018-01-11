@@ -183,29 +183,33 @@ function show_group() {
     $('.show-group').click(function () {
         //展示下一个分组
         $(this).unbind("click");
-        var id = $(this).prev().attr('data-uid');
-        var name = $(this).prev().find('span').html();
-        var choose_box = $('.air-choose-group');
-        var choose_dept = $('.js-choose-breadcrumb-ol');
-        var html =
-            '<li data-id="' + id + '" class="js-choose-breadcrumb-li headclick"><a>>' + name + '</a></li>';
-        $.ajax({
-            type: 'GET',
-            data: {},
-            url: '../message_dept/' + id,
-            success: function (result) {
-                if (result.statusCode === 200) {
-                    choose_box.html(result.message);
-                    choose_dept.append(html);
-                    show_group();
-                    choose_item();
-                    remove_choose_result();
-                    getdept();
-                } else {
-                    choose_box.empty();
+        setTimeout(function () {
+            var id = $(this).prev().attr('data-uid');
+            var name = $(this).prev().find('span').html();
+            var choose_box = $('.air-choose-group');
+            var choose_dept = $('.js-choose-breadcrumb-ol');
+            var html =
+                '<li data-id="' + id + '" class="js-choose-breadcrumb-li headclick"><a>>' + name + '</a></li>';
+            $.ajax({
+                type: 'GET',
+                data: {},
+                url: '../message_dept/' + id,
+                success: function (result) {
+                    if (result.statusCode === 200) {
+
+                        choose_box.html(result.message);
+                        choose_dept.append(html);
+                        show_group();
+                        choose_item();
+                        remove_choose_result();
+                        getdept();
+                    } else {
+                        choose_box.empty();
+                    }
                 }
-            }
-        });
+            });
+        }, 500);
+
     });
 }
 
