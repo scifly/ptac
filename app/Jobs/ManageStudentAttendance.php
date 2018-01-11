@@ -153,7 +153,7 @@ class ManageStudentAttendance implements ShouldQueue {
                         's_user_id'       => 1,
                         'r_user_id'       => $u,
                         'message_type_id' => MessageType::whereName('考勤消息')->first()->id,
-                        'readed'          => 0,
+                        'read'          => 0,
                         'sent'            => 1,
                     ];
                     $this->message->create($messageData);

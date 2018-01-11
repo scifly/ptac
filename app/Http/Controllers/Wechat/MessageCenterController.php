@@ -115,7 +115,7 @@ class MessageCenterController extends Controller {
         }
         $sendMessages = $this->message->where('s_user_id', $user->id)->get()->unique('msl_id')->groupBy('message_type_id');
         $receiveMessages = $this->message->where('r_user_id', $user->id)->get()->groupBy('message_type_id');
-        $count = $this->message->where('r_user_id', $user->id)->where('readed', '0')->count();
+        $count = $this->message->where('r_user_id', $user->id)->where('read', '0')->count();
         
         return view('wechat.message_center.index', [
             'receiveMessages' => $receiveMessages,
@@ -383,7 +383,7 @@ class MessageCenterController extends Controller {
         }
         try {
             DB::transaction(function () use ($message, $id) {
-                $message->readed = 1;
+                $message->read = 1;
                 $message->save();
                 $msl = MessageSendingLog::whereId($message->msl_id)->first();
                 $msl->read_count = $msl->read_count + 1;
@@ -458,7 +458,7 @@ class MessageCenterController extends Controller {
                             's_user_id'       => $user->id,
                             'r_user_id'       => $receiveUserId,
                             'message_type_id' => MessageType::whereName('消息通知')->first()->id,
-                            'readed'          => 1,
+                            'read'          => 1,
                             'sent'            => 1,
                         ];
                         $this->message->create($messageData);
@@ -501,7 +501,7 @@ class MessageCenterController extends Controller {
                             's_user_id'       => $user->id,
                             'r_user_id'       => $receiveUserId,
                             'message_type_id' => MessageType::whereName('消息通知')->first()->id,
-                            'readed'          => 0,
+                            'read'          => 0,
                             'sent'            => 0,
                         ];
                         $message = $this->message->create($messageData);
