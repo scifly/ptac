@@ -34,7 +34,7 @@ class MessageRequest extends FormRequest {
         $input['url'] = "http://";
         $input['message_id'] = 0;
         $input['serviceid'] = 0;
-        $input['readed'] = 0;
+        $input['read'] = 0;
         $input['sent'] = 0;
         $input['media_ids'] = 1;
         $input['s_user_id'] = 1;

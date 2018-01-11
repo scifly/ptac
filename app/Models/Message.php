@@ -204,7 +204,7 @@ class Message extends Model {
             ['db' => 'Message.msl_id', 'dt' => 3],
             ['db' => 'User.realname', 'dt' => 4],
             ['db' => 'MessageType.name as messagetypename', 'dt' => 5],
-            ['db' => 'Message.readed', 'dt' => 6,
+            ['db' => 'Message.read', 'dt' => 6,
                 'formatter' => function ($d) {
                     return $d === 0 ? "否" : "是";
                 },
@@ -403,7 +403,7 @@ class Message extends Model {
                         's_user_id' => $i->id,
                         'r_user_id' => Auth::id(),
                         'message_type_id' => MessageType::whereName('消息通知')->first()->id,
-                        'readed' => $read,
+                        'read' => $read,
                         'sent' => $sent,
                     ];
                     Log::debug(json_encode($m));
