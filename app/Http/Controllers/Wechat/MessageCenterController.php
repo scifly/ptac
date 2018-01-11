@@ -225,11 +225,11 @@ class MessageCenterController extends Controller {
 //      $userId = "yuanhongbin";
         $user = $this->user->where('userid', $userId)->first();
         $message = $this->message->find($id);
-        if(count($message->content) == 0){
-            if(!empty($message->media_ids)){
-                $message->content = $_SERVER['HTTP_HOST'] . '/' . Media::whereId($message->media_ids)->first()->path;
-            }
-        }
+        // if(count($message->content) == 0){
+        //     if(!empty($message->media_ids)){
+        //         $message->content = $_SERVER['HTTP_HOST'] . '/' . Media::whereId($message->media_ids)->first()->path;
+        //     }
+        // }
         $edit = ($user->id == $message->s_user_id ? true : false);
         
         return view('wechat.message_center.show', ['message' => $message, 'edit' => $edit, 'show' => true]);
