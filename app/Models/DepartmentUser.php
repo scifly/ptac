@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
+use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -13,8 +15,8 @@ use Illuminate\Support\Facades\DB;
  * @property int $id
  * @property int $department_id 部门ID
  * @property int $user_id 用户ID
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property int $enabled
  * @method static Builder|DepartmentUser whereCreatedAt($value)
  * @method static Builder|DepartmentUser whereDepartmentId($value)
@@ -22,7 +24,7 @@ use Illuminate\Support\Facades\DB;
  * @method static Builder|DepartmentUser whereId($value)
  * @method static Builder|DepartmentUser whereUpdatedAt($value)
  * @method static Builder|DepartmentUser whereUserId($value)
- * @mixin \Eloquent
+ * @mixin Eloquent
  */
 class DepartmentUser extends Model {
 

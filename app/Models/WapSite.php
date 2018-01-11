@@ -4,6 +4,8 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Http\Requests\WapSiteRequest;
+use Carbon\Carbon;
+use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -15,16 +17,17 @@ use Illuminate\Support\Facades\Storage;
 use Throwable;
 
 /**
- * 网站
- * App\Models\WapSite
+ * App\Models\WapSite 微网站
  *
  * @property int $id
  * @property int $school_id 所属学校ID
  * @property string $site_title 首页抬头
  * @property string $media_ids 首页幻灯片图片多媒体ID
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property int $enabled
+ * @property-read School $school
+ * @property-read Collection|\App\Models\WapSiteModule[] $wapSiteModules
  * @method static Builder|WapSite whereCreatedAt($value)
  * @method static Builder|WapSite whereEnabled($value)
  * @method static Builder|WapSite whereId($value)
@@ -32,11 +35,7 @@ use Throwable;
  * @method static Builder|WapSite whereSchoolId($value)
  * @method static Builder|WapSite whereSiteTitle($value)
  * @method static Builder|WapSite whereUpdatedAt($value)
- * @mixin \Eloquent
- * @property-read Collection|WapSiteModule[] $hasManyWsm
- * @property-read School $school
- * @property-read Collection|WapSiteModule[] $wapsiteModules
- * @property-read Collection|WapSiteModule[] $wapSiteModules
+ * @mixin Eloquent
  */
 class WapSite extends Model {
 
@@ -59,8 +58,7 @@ class WapSite extends Model {
      * @return BelongsTo
      */
     public function school() { return $this->belongsTo('App\Models\School'); }
-    
-    
+
     /**
      * 微网站列表
      *

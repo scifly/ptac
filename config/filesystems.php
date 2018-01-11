@@ -41,7 +41,7 @@ return [
         ],
         'public'  => [
             'driver'     => 'local',
-            'root'       => storage_path('app/public/' . date('Y') . '/' . date('m') . '/' . date('d')),
+            'root'       => public_path('app/public/' . date('Y') . '/' . date('m') . '/' . date('d')),
             'url'        => env('APP_URL') . '/storage',
             'visibility' => 'public',
         ],
@@ -54,7 +54,7 @@ return [
         ],
         'uploads' => [
             'driver' => 'local',
-            'root'   => storage_path('app/uploads/' . date('Y') . '/' . date('m') . '/' . date('d')),
+            'root'   =>  public_path('uploads/' . date('Y') . '/' . date('m') . '/' . date('d')),
             'visibility' => 'public',
 
         ],

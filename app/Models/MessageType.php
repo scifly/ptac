@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
+use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -12,7 +13,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
- * App\Models\MessageType
+ * App\Models\MessageType 消息类型
  *
  * @property int $id
  * @property string $name 消息类型名称
@@ -20,15 +21,14 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property int $enabled
+ * @property-read Collection|Message[] $messages
  * @method static Builder|MessageType whereCreatedAt($value)
  * @method static Builder|MessageType whereEnabled($value)
  * @method static Builder|MessageType whereId($value)
  * @method static Builder|MessageType whereName($value)
  * @method static Builder|MessageType whereRemark($value)
  * @method static Builder|MessageType whereUpdatedAt($value)
- * @mixin \Eloquent
- * @property-read Message[] $message
- * @property-read Collection|Message[] $messages
+ * @mixin Eloquent
  */
 class MessageType extends Model {
 

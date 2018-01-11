@@ -8,6 +8,8 @@ use App\Events\StudentUpdated;
 use App\Facades\DatatableFacade as Datatable;
 use App\Http\Requests\StudentRequest;
 use App\Rules\Mobiles;
+use Carbon\Carbon;
+use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -18,7 +20,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
@@ -27,7 +28,7 @@ use Maatwebsite\Excel\Readers\LaravelExcelReader;
 use PHPExcel_Exception;
 
 /**
- * App\Models\Student
+ * App\Models\Student 学生
  *
  * @property int $id
  * @property int $user_id 用户ID
@@ -37,31 +38,26 @@ use PHPExcel_Exception;
  * @property int $oncampus 是否住校
  * @property string $birthday 生日
  * @property string $remark 备注
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
- * @property-read \App\Models\User $user
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property int $enabled
+ * @property-read Collection|Custodian[] $custodians
+ * @property-read Collection|ScoreTotal[] $scoreTotals
+ * @property-read Collection|Score[] $scores
+ * @property-read Squad $squad
+ * @property-read User $user
  * @method static Builder|Student whereBirthday($value)
  * @method static Builder|Student whereCardNumber($value)
  * @method static Builder|Student whereClassId($value)
  * @method static Builder|Student whereCreatedAt($value)
+ * @method static Builder|Student whereEnabled($value)
  * @method static Builder|Student whereId($value)
  * @method static Builder|Student whereOncampus($value)
  * @method static Builder|Student whereRemark($value)
  * @method static Builder|Student whereStudentNumber($value)
  * @method static Builder|Student whereUpdatedAt($value)
  * @method static Builder|Student whereUserId($value)
- * @mixin \Eloquent
- * @property int $enabled
- * @property-read \App\Models\Squad $beLongsToSquad
- * @property-read Collection|CustodianStudent[] $custodianStudent
- * @property-read Collection|Score[] $score
- * @property-read Collection|ScoreTotal[] $scoreTotal
- * @property-read \App\Models\Squad $squad
- * @method static Builder|Student whereEnabled($value)
- * @property-read Collection|Custodian[] $custodians
- * @property-read Collection|ScoreTotal[] $scoreTotals
- * @property-read Collection|Score[] $scores
- * @property-read Collection|CustodianStudent[] $custodianStudents
+ * @mixin Eloquent
  */
 class Student extends Model {
 

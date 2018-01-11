@@ -190,7 +190,7 @@
             </div>
             @include('partials.enabled', [
                 'id' => 'user[enabled]',
-                'value' => $operator->user->enabled ?? NULL
+                'value' => $operator->user->enabled ?? null
             ])
         </div>
     </div>

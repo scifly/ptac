@@ -26,12 +26,12 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|MessageReply whereUserId($value)
  */
 class MessageReply extends Model {
-    
+
+    // todo: needs to be optimized
+
     use ModelTrait;
     
-    protected $fillable = [
-        'msl_id', 'user_id', 'content',
-    ];
+    protected $fillable = ['msl_id', 'user_id', 'content'];
     
     /**
      * 返回所属的用户对象
@@ -45,9 +45,11 @@ class MessageReply extends Model {
      * @return bool
      */
     static function store($data) {
+
         $messageReply = self::create($data);
         
         return $messageReply ? true : false;
+
     }
     
 }

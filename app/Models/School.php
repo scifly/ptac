@@ -20,62 +20,62 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\Auth;
 
 /**
- * App\Models\School
+ * App\Models\School 学校
  *
  * @property int $id
  * @property int $school_type_id 学校类型ID
- * @property int $corp_id 学校所属企业ID
- * @property int $menu_id 对应的菜单ID
- * @property int $department_id 对应的部门ID
+ * @property int $menu_id
  * @property string $name 学校名称
  * @property string $signature 签名
  * @property string $address 学校地址
- * @property float $longitude 学校所处经度
- * @property float $latitude 学校所处纬度
- * @property int $sms_max_cnt 学校短信配额
- * @property int $sms_used 短信已使用量
+ * @property float|null $longitude 学校所处经度
+ * @property float|null $latitude 学校所处纬度
+ * @property int $corp_id 学校所属企业ID
+ * @property int|null $sms_max_cnt 学校短信配额
+ * @property int|null $sms_used 短信已使用量
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property int $enabled
+ * @property int $department_id 对应的部门ID
+ * @property-read Collection|AttendanceMachine[] $attendanceMachines
+ * @property-read Collection|Squad[] $classes
+ * @property-read Collection|ConferenceRoom[] $conferenceRooms
+ * @property-read Corp $corp
+ * @property-read Department $department
+ * @property-read Collection|Educator[] $educators
+ * @property-read Collection|ExamType[] $examTypes
+ * @property-read Collection|Grade[] $grades
+ * @property-read Collection|Group[] $groups
+ * @property-read Collection|Major[] $majors
+ * @property-read Menu $menu
+ * @property-read Collection|PollQuestionnaire[] $pollQuestionnaires
+ * @property-read Collection|Procedure[] $procedures
+ * @property-read SchoolType $schoolType
+ * @property-read Collection|Semester[] $semesters
+ * @property-read Collection|Subject[] $subjects
+ * @property-read Collection|Team[] $teams
+ * @property-read WapSite $wapSite
+ * @property-read Collection|WapSiteModule[] $wapSiteModules
  * @method static Builder|School whereAddress($value)
  * @method static Builder|School whereCorpId($value)
  * @method static Builder|School whereCreatedAt($value)
+ * @method static Builder|School whereDepartmentId($value)
  * @method static Builder|School whereEnabled($value)
  * @method static Builder|School whereId($value)
  * @method static Builder|School whereLatitude($value)
  * @method static Builder|School whereLongitude($value)
+ * @method static Builder|School whereMenuId($value)
  * @method static Builder|School whereName($value)
  * @method static Builder|School whereSchoolTypeId($value)
+ * @method static Builder|School whereSignature($value)
  * @method static Builder|School whereSmsMaxCnt($value)
  * @method static Builder|School whereSmsUsed($value)
  * @method static Builder|School whereUpdatedAt($value)
- * @method static Builder|School whereDepartmentId($value)
- * @method static Builder|School whereMenuId($value)
- * @method static Builder|School whereSignature($value)
  * @mixin Eloquent
- * @property-read Corp $corp
- * @property-read Department $department
- * @property-read Menu $menu
- * @property-read SchoolType $schoolType
- * @property-read WapSite $wapSite
- * @property-read Collection|Semester[] $semesters
- * @property-read Collection|AttendanceMachine[] $attendanceMachines
- * @property-read Collection|Squad[] $classes
- * @property-read Collection|ConferenceRoom[] $conferenceRooms
- * @property-read Collection|Department[] $departments
- * @property-read Collection|Educator[] $educators
- * @property-read Collection|Grade[] $grades
- * @property-read Collection|Major[] $majors
- * @property-read Collection|Menu[] $menus
- * @property-read Collection|PollQuestionnaire[] $pollQuestionnaires
- * @property-read Collection|Procedure[] $procedures
- * @property-read Collection|Subject[] $subjects
- * @property-read Collection|Team[] $teams
- * @property-read Collection|WapSiteModule[] $wapSiteModules
- * @property-read Collection|ExamType[] $examTypes
- * @property-read Collection|Group[] $groups
  */
 class School extends Model {
+
+    // todo: needs to be optimized
 
     use ModelTrait;
 
@@ -366,6 +366,7 @@ class School extends Model {
         }
 
     }
+
     /**
      * 获取字段列表
      *
@@ -430,4 +431,5 @@ class School extends Model {
         ];
 
     }
+
 }

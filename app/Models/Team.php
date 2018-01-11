@@ -4,32 +4,34 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use Carbon\Carbon;
+use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
+
 /**
  * App\Models\Team 教职员工组
  *
  * @property int $id
  * @property string $name 教职员工组名称
+ * @property int $school_id 所属学校ID
+ * @property string|null $remark 备注
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property int $enabled
+ * @property-read Collection|Educator[] $educators
+ * @property-read School $school
  * @method static Builder|Team whereCreatedAt($value)
  * @method static Builder|Team whereEnabled($value)
  * @method static Builder|Team whereId($value)
  * @method static Builder|Team whereName($value)
- * @method static Builder|Team whereUpdatedAt($value)
- * @mixin \Eloquent
- * @property int $school_id 所属学校ID
- * @property string|null $remark 备注
  * @method static Builder|Team whereRemark($value)
  * @method static Builder|Team whereSchoolId($value)
- * @property-read Collection|Educator[] $educators
- * @property-read School $school
+ * @method static Builder|Team whereUpdatedAt($value)
+ * @mixin Eloquent
  */
 class Team extends Model {
 
@@ -60,7 +62,7 @@ class Team extends Model {
         $teams = [];
         foreach ($teamIds as $id) {
             $team = self::find($id);
-            $teams[$team['id']] = $team['name'];
+            $teams[$team->id] = $team['name'];
         }
 
         return $teams;
@@ -98,7 +100,7 @@ class Team extends Model {
                 ],
             ],
         ];
-        
+        // todo: 增加过滤条件
         return Datatable::simple(self::getModel(), $columns, $joins);
 
     }

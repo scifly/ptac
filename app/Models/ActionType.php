@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Carbon\Carbon;
+use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
@@ -21,11 +22,10 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|School whereName($value)
  * @method static Builder|School whereRemark($value)
  * @method static Builder|School whereUpdatedAt($value)
- * @mixin \Eloquent
+ * @mixin Eloquent
  */
 class ActionType extends Model {
 
     protected $fillable = ['name', 'remark', 'enabled'];
 
 }
-

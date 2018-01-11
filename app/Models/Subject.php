@@ -15,7 +15,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\DB;
 
 /**
- * App\Models\Subject
+ * App\Models\Subject 科目
  *
  * @property int $id
  * @property int $school_id 所属学校ID

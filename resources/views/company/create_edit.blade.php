@@ -13,9 +13,9 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        <div class="input-group-addon">
+                        <span class="input-group-addon">
                             <i class="fa fa-building"></i>
-                        </div>
+                        </span>
                         {!! Form::text('name', null, [
                             'class' => 'form-control',
                             'placeholder' => '(不超过40个汉字)',
@@ -34,7 +34,7 @@
             @include('partials.remark')
             @include('partials.enabled', [
                 'id' => 'enabled',
-                'value' => $company['enabled'] ?? NULL
+                'value' => $company['enabled'] ?? null
             ])
         </div>
     </div>

@@ -7,7 +7,6 @@
             @if (!empty($eas['id']))
                 {{ Form::hidden('id', $eas['id'], ['id' => 'id']) }}
             @endif
-                {{ Form::hidden('school_id', $schoolId, ['id' => 'school_id']) }}
             <div class="form-group">
                 {!! Form::label('name', '名称', [
                     'class' => 'col-sm-3 control-label'
@@ -61,12 +60,12 @@
             @include('partials.enabled', [
                 'label' => '进或出',
                 'id' => 'inorout',
-                'value' => $eas['inorout'] ?? NULL,
+                'value' => $eas['inorout'] ?? null,
                 'options' => ['进', '出']
             ])
             @include('partials.enabled', [
                 'id' => 'enabled',
-                'value' => $eas['enabled'] ?? NULL
+                'value' => $eas['enabled'] ?? null
             ])
         </div>
     </div>

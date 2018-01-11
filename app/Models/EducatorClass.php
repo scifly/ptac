@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * App\Models\EducatorClass 教职员工与班级
+ * App\Models\EducatorClass 教职员工与班级关系
  *
  * @property int $id
  * @property int $educator_id 教职员工ID

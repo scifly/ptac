@@ -3,13 +3,15 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use Carbon\Carbon;
+use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\DB;
 
 /**
- * App\Models\Score
+ * App\Models\Score 分数
  *
  * @property int $id
  * @property int $student_id 学生ID
@@ -18,8 +20,8 @@ use Illuminate\Support\Facades\DB;
  * @property int $class_rank 班级排名
  * @property int $grade_rank 年级排名
  * @property float $score 分数
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property int $enabled 是否参加考试
  * @method static Builder|Score whereClassRank($value)
  * @method static Builder|Score whereCreatedAt($value)
@@ -31,10 +33,10 @@ use Illuminate\Support\Facades\DB;
  * @method static Builder|Score whereStudentId($value)
  * @method static Builder|Score whereSubjectId($value)
  * @method static Builder|Score whereUpdatedAt($value)
- * @mixin \Eloquent
- * @property-read \App\Models\Exam $exam
- * @property-read \App\Models\Student $student
- * @property-read \App\Models\Subject $subject
+ * @mixin Eloquent
+ * @property-read Exam $exam
+ * @property-read Student $student
+ * @property-read Subject $subject
  */
 class Score extends Model {
 
@@ -132,7 +134,7 @@ class Score extends Model {
                 ],
             ],
         ];
-
+        // todo: 增加过滤条件
         return Datatable::simple(self::getModel(), $columns, $joins);
         
     }

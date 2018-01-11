@@ -13,18 +13,16 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Request;
 
 /**
- * App\Models\App 微信企业应用
+ * App\Models\App
  *
  * @property int $id
- * @property string $corp_id 企业id
+ * @property int $corp_id 所属企业id
  * @property string $name 应用名称
+ * @property string $secret 应用Secret
  * @property string $description 应用备注
- * @property string $secret 应用密匙
- * @property int $agentid 应用id
- * @property string $url 推送请求的访问协议和地址
- * @property string $token 用于生成签名
+ * @property string $agentid 应用id
  * @property int $report_location_flag 企业应用是否打开地理位置上报 0：不上报；1：进入会话上报；2：持续上报
- * @property int square_logo_url 企业头像url
+ * @property string $square_logo_url 企业应用方形头像
  * @property string $redirect_domain 企业应用可信域名
  * @property int $isreportenter 是否上报用户进入应用事件。0：不接收；1：接收。
  * @property string $home_url 主页型应用url。url必须以http或者https开头。消息型应用无需该参数
@@ -32,38 +30,32 @@ use Illuminate\Support\Facades\Request;
  * @property string $allow_userinfos 企业应用可见范围（人员），其中包括userid
  * @property string $allow_partys 企业应用可见范围（部门）
  * @property string $allow_tags 企业应用可见范围（标签）
+ * @property string|null $access_token
+ * @property string|null $expire_at
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property int $enabled
+ * @method static Builder|App whereAccessToken($value)
  * @method static Builder|App whereAgentid($value)
+ * @method static Builder|App whereAllowPartys($value)
+ * @method static Builder|App whereAllowTags($value)
+ * @method static Builder|App whereAllowUserinfos($value)
  * @method static Builder|App whereCorpId($value)
- * @method static Builder|App whereChatExtensionUrl($value)
  * @method static Builder|App whereCreatedAt($value)
  * @method static Builder|App whereDescription($value)
  * @method static Builder|App whereEnabled($value)
- * @method static Builder|App whereEncodingaeskey($value)
+ * @method static Builder|App whereExpireAt($value)
  * @method static Builder|App whereHomeUrl($value)
  * @method static Builder|App whereId($value)
  * @method static Builder|App whereIsreportenter($value)
- * @method static Builder|App whereIsreportuser($value)
- * @method static Builder|App whereLogoMediaid($value)
  * @method static Builder|App whereMenu($value)
  * @method static Builder|App whereName($value)
  * @method static Builder|App whereRedirectDomain($value)
  * @method static Builder|App whereReportLocationFlag($value)
- * @method static Builder|App whereToken($value)
- * @method static Builder|App whereUpdatedAt($value)
- * @method static Builder|App whereUrl($value)
- * @property string|null $access_token
- * @property string|null $expire_at
- * @mixin Eloquent
- * @method static Builder|App whereAccessToken($value)
- * @method static Builder|App whereAllowPartys($value)
- * @method static Builder|App whereAllowTags($value)
- * @method static Builder|App whereAllowUserinfos($value)
- * @method static Builder|App whereExpireAt($value)
  * @method static Builder|App whereSecret($value)
  * @method static Builder|App whereSquareLogoUrl($value)
+ * @method static Builder|App whereUpdatedAt($value)
+ * @mixin Eloquent
  */
 class App extends Model {
 
@@ -140,7 +132,6 @@ class App extends Model {
 
     }
 
-    
     /**
      * 更新App
      *

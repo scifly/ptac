@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
+use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -16,29 +17,28 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 /**
- * App\Models\Group
+ * App\Models\Group 角色
  *
  * @property int $id
  * @property string $name 角色名称
+ * @property int|null $school_id
  * @property string $remark 角色备注
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property int $enabled
+ * @property-read Collection|Action[] $actions
+ * @property-read Collection|Menu[] $menus
+ * @property-read School|null $school
+ * @property-read Collection|Tab[] $tabs
+ * @property-read Collection|User[] $users
  * @method static Builder|Group whereCreatedAt($value)
  * @method static Builder|Group whereEnabled($value)
  * @method static Builder|Group whereId($value)
  * @method static Builder|Group whereName($value)
  * @method static Builder|Group whereRemark($value)
- * @method static Builder|Group whereUpdatedAt($value)
  * @method static Builder|Group whereSchoolId($value)
- * @mixin \Eloquent
- * @property-read Collection|User[] $users
- * @property-read Collection|Menu[] $menus
- * @property-read Collection|Tab[] $tabs
- * @property-read Collection|Action[] $actions
- * @property int|null $school_id
- * @property-read GroupType $groupType
- * @property-read School|null $school
+ * @method static Builder|Group whereUpdatedAt($value)
+ * @mixin Eloquent
  */
 class Group extends Model {
 
@@ -65,32 +65,25 @@ class Group extends Model {
     public function school() { return $this->belongsTo('App\Models\School'); }
     
     /**
-     * 获取对象的菜单对象
+     * 获取指定角色可以访问的菜单对象
      *
      * @return BelongsToMany
      */
     public function menus() { return $this->belongsToMany('App\Models\Menu', 'groups_menus'); }
     
     /**
-     * 获取对象的功能对象
+     * 获取指定角色可以访问的功能对象
      *
      * @return BelongsToMany
      */
     public function actions() { return $this->belongsToMany('App\Models\Action', 'actions_groups'); }
     
     /**
-     * 获取对应的卡片对象
+     * 获取指定角色可以访问的卡片对象
      *
      * @return BelongsToMany
      */
     public function tabs() { return $this->belongsToMany('App\Models\Tab', 'groups_tabs'); }
-    
-    /**
-     * 返回所属的角色类型对象
-     *
-     * @return BelongsTo
-     */
-    public function groupType() { return $this->belongsTo('App\Models\GroupType'); }
     
     /**
      * 保存角色

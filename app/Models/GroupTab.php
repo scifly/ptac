@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
+use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -10,12 +12,12 @@ use Illuminate\Support\Facades\DB;
 /**
  * App\Models\GroupTab
  *
- * @mixin \Eloquent
+ * @mixin Eloquent
  * @property int $id
  * @property int $group_id
  * @property int $tab_id
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property int $enabled
  * @method static Builder|GroupTab whereCreatedAt($value)
  * @method static Builder|GroupTab whereEnabled($value)
@@ -31,6 +33,8 @@ class GroupTab extends Model {
     protected $fillable = ['group_id', 'tab_id', 'enabled'];
     
     /**
+     * 根据角色id保存所有卡片id
+     *
      * @param $groupId
      * @param array $ids
      * @return bool

@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Helpers\ModelTrait;
+use Carbon\Carbon;
+use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -14,8 +16,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int $id
  * @property string $name 媒体类型名称
  * @property string $remark 媒体类型备注
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property int $enabled
  * @method static Builder|MediaType whereCreatedAt($value)
  * @method static Builder|MediaType whereEnabled($value)
@@ -23,7 +25,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static Builder|MediaType whereName($value)
  * @method static Builder|MediaType whereRemark($value)
  * @method static Builder|MediaType whereUpdatedAt($value)
- * @mixin \Eloquent
+ * @mixin Eloquent
  * @property-read Media[] $medias
  */
 class MediaType extends Model {

@@ -49,12 +49,12 @@
                 'label' => '所属菜单',
                 'id' => 'menu_ids',
                 'items' => $menus,
-                'selectedItems' => $selectedMenus ?? NULL
+                'selectedItems' => $selectedMenus ?? null
             ])
             @include('partials.remark')
             @include('partials.enabled', [
                 'id' => 'enabled',
-                'value' => $tab['enabled'] ?? NULL
+                'value' => $tab['enabled'] ?? null
             ])
         </div>
     </div>

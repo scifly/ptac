@@ -7,6 +7,8 @@ use App\Events\CompanyDeleted;
 use App\Events\CompanyUpdated;
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
+use Carbon\Carbon;
+use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -22,26 +24,26 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
  * @property string $name 运营者公司名称
  * @property string $remark 运营者公司备注
  * @property string $corpid 与运营者公司对应的企业号id
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
+ * @property int $menu_id 对应的菜单ID
+ * @property int $department_id 对应的部门ID
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property int $enabled
  * @method static Builder|Company whereCorpid($value)
- * @method static Builder|Company whereCreatedAt($value)
- * @method static Builder|Company whereEnabled($value)
  * @method static Builder|Company whereId($value)
  * @method static Builder|Company whereName($value)
  * @method static Builder|Company whereRemark($value)
+ * @method static Builder|Company whereCreatedAt($value)
  * @method static Builder|Company whereUpdatedAt($value)
- * @mixin \Eloquent
+ * @method static Builder|Company whereDepartmentId($value)
+ * @method static Builder|Company whereMenuId($value)
+ * @method static Builder|Company whereEnabled($value)
+ * @mixin Eloquent
  * @property-read Collection|Company[] $corps
  * @property-read Collection|Operator[] $operators
  * @property-read Collection|School[] $schools
- * @property int $department_id 对应的部门ID
- * @property-read \App\Models\Department $department
- * @method static Builder|Company whereDepartmentId($value)
- * @property int $menu_id 对应的菜单ID
+ * @property-read Department $department
  * @property-read Menu $menu
- * @method static Builder|Company whereMenuId($value)
  */
 class Company extends Model {
 
@@ -79,6 +81,7 @@ class Company extends Model {
      * @return HasManyThrough
      */
     public function schools() {
+
         return $this->hasManyThrough('App\Models\School', 'App\Models\Corp');
 
     }
@@ -102,7 +105,6 @@ class Company extends Model {
         $company = self::create($data);
         if ($company && $fireEvent) {
             event(new CompanyCreated($company));
-
             return true;
         }
 
@@ -124,7 +126,6 @@ class Company extends Model {
         $updated = $company->update($data);
         if ($updated && $fireEvent) {
             event(new CompanyUpdated($company));
-
             return true;
         }
 
@@ -147,7 +148,6 @@ class Company extends Model {
         $removed = Company::removable($company) ? $company->delete() : false;
         if ($removed && $fireEvent) {
             event(new CompanyDeleted($company));
-
             return true;
         }
 

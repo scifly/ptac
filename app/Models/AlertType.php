@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use Carbon\Carbon;
+use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
@@ -12,8 +14,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $id
  * @property string $name 提前提醒的时间
  * @property string $english_name 提前提醒时间的英文名称
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property int $enabled
  * @method static Builder|AlertType whereCreatedAt($value)
  * @method static Builder|AlertType whereEnabled($value)
@@ -21,7 +23,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|AlertType whereId($value)
  * @method static Builder|AlertType whereName($value)
  * @method static Builder|AlertType whereUpdatedAt($value)
- * @mixin \Eloquent
+ * @mixin Eloquent
  */
 class AlertType extends Model {
 

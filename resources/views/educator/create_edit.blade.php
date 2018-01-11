@@ -214,7 +214,7 @@
             <!-- 状态 -->
             @include('partials.enabled', [
                 'id' => 'user[enabled]',
-                'value' => $educator['enabled'] ?? NULL
+                'value' => $educator['enabled'] ?? null
             ])
         </div>
     </div>

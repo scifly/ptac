@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
+use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -38,7 +39,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static Builder|Exam whereStartDate($value)
  * @method static Builder|Exam whereSubjectIds($value)
  * @method static Builder|Exam whereUpdatedAt($value)
- * @mixin \Eloquent
+ * @mixin Eloquent
  * @property-read ExamType $examType
  */
 class Exam extends Model {
@@ -137,7 +138,7 @@ class Exam extends Model {
     }
 
     /**
-     * 获取指定考试包含的的所有科目列表
+     * 获取指定考试包含的的科目列表
      *
      * @param $id
      * @return array
@@ -236,6 +237,7 @@ class Exam extends Model {
                 ],
             ],
         ];
+        // todo: 增加角色过滤条件
         $condition = 'ExamType.school_id = ' . School::schoolId();
         
         return Datatable::simple(self::getModel(), $columns, $joins, $condition);

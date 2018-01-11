@@ -9,6 +9,7 @@ use App\Events\MenuUpdated;
 use App\Http\Requests\MenuRequest;
 use App\Models\MenuTab as MenuTab;
 use Carbon\Carbon;
+use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -21,53 +22,48 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
+
 /**
  * App\Models\Menu
  *
  * @property int $id
  * @property int|null $parent_id 父菜单ID
- * @property int $menu_type_id 所属菜单类型ID
+ * @property int $menu_type_id
  * @property string $name 菜单名称
- * @property int|null $position 菜单所处位置
+ * @property string|null $uri
  * @property string|null $remark 菜单备注
- * @property int $school_id 所属学校ID
- * @property int|null $lft
- * @property int|null $rght
  * @property int|null $media_id 图片ID
- * @property int|null $action_id 对应的控制器action ID
+ * @property int|null $position 菜单所处位置
+ * @property int|null $icon_id 图标ID
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property int|null $icon_id 图标ID
- * @property string|null $uri
  * @property int $enabled
- * @method static Builder|Menu whereActionId($value)
- * @method static Builder|Menu whereCreatedAt($value)
- * @method static Builder|Menu whereEnabled($value)
- * @method static Builder|Menu whereId($value)
- * @method static Builder|Menu whereLft($value)
- * @method static Builder|Menu whereMediaId($value)
- * @method static Builder|Menu whereName($value)
- * @method static Builder|Menu whereMenuTypeId($value)
- * @method static Builder|Menu whereParentId($value)
- * @method static Builder|Menu whereRemark($value)
- * @method static Builder|Menu whereRght($value)
- * @method static Builder|Menu whereUpdatedAt($value)
- * @method static Builder|Menu wherePosition($value)
- * @method static Builder|Menu whereUri($value)
- * @method static Builder|Menu whereIconId($value)
- * @mixin \Eloquent
- * @property-read Collection|\App\Models\Tab[] $tabs
  * @property-read Collection|Menu[] $children
- * @property-read Menu|null $parent
- * @property-read Icon|null $icon
- * @property-read Action|null $action
- * @property-read School $school
- * @property-read MenuType $menuType
  * @property-read Company $company
  * @property-read Corp $corp
- * @property-read \App\Models\Media|null $media
+ * @property-read Icon|null $icon
+ * @property-read Media|null $media
+ * @property-read MenuType $menuType
+ * @property-read Menu|null $parent
+ * @property-read School $school
+ * @property-read Collection|\App\Models\Tab[] $tabs
+ * @method static Builder|Menu whereCreatedAt($value)
+ * @method static Builder|Menu whereEnabled($value)
+ * @method static Builder|Menu whereIconId($value)
+ * @method static Builder|Menu whereId($value)
+ * @method static Builder|Menu whereMediaId($value)
+ * @method static Builder|Menu whereMenuTypeId($value)
+ * @method static Builder|Menu whereName($value)
+ * @method static Builder|Menu whereParentId($value)
+ * @method static Builder|Menu wherePosition($value)
+ * @method static Builder|Menu whereRemark($value)
+ * @method static Builder|Menu whereUpdatedAt($value)
+ * @method static Builder|Menu whereUri($value)
+ * @mixin Eloquent
  */
 class Menu extends Model {
+
+    // todo: needs to be optimized
 
     # 不含子菜单的HTML模板
     const SIMPLE = '<li%s><a id="%s" href="%s" class="leaf"><i class="%s"></i> %s</a></li>';

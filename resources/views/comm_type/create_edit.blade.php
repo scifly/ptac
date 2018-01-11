@@ -28,7 +28,7 @@
             @include('partials.remark')
             @include('partials.enabled', [
                 'id' => 'enabled',
-                'value' => $commType['enabled'] ?? NULL
+                'value' => $commType['enabled'] ?? null
             ])
         </div>
     </div>

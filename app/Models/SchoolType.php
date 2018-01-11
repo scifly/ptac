@@ -3,19 +3,20 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
- * App\Models\SchoolType
+ * App\Models\SchoolType 学校类型
  *
  * @property int $id
  * @property string $name 学校类型名称
  * @property string $remark 学校类型备注
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property int $enabled
  * @method static Builder|SchoolType whereCreatedAt($value)
  * @method static Builder|SchoolType whereEnabled($value)

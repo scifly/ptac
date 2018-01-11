@@ -19,7 +19,6 @@ class ScoreRangeComposer {
             ->pluck('name', 'id');
 
         $view->with([
-            'schoolId' => $schoolId,
             'subjects' => $subjects,
             'uris' => $this->uris()
         ]);

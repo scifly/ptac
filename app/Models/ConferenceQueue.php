@@ -56,6 +56,7 @@ class ConferenceQueue extends Model {
         'name', 'remark', 'start', 'end',
         'user_id', 'educator_ids', 'attended_educator_ids',
         'conference_room_id', 'attendance_qrcode_url', 'event_id',
+        'status'
     ];
 
     /**

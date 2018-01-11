@@ -4,8 +4,11 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
+use Carbon\Carbon;
+use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -14,23 +17,22 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * App\Models\ExamType 考试类型
  *
  * @property int $id
+ * @property int $school_id
  * @property string $name 考试类型名称
  * @property string $remark 考试类型备注
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property int $enabled
+ * @property-read Collection|Exam[] $exams
+ * @property-read School $school
  * @method static Builder|ExamType whereCreatedAt($value)
  * @method static Builder|ExamType whereEnabled($value)
  * @method static Builder|ExamType whereId($value)
  * @method static Builder|ExamType whereName($value)
  * @method static Builder|ExamType whereRemark($value)
- * @method static Builder|ExamType whereUpdatedAt($value)
- * @mixin \Eloquent
- * @property-read Exam $Exam
- * @property-read Exam[] $exams
- * @property-read \App\Models\School $school
- * @property int $school_id
  * @method static Builder|ExamType whereSchoolId($value)
+ * @method static Builder|ExamType whereUpdatedAt($value)
+ * @mixin Eloquent
  */
 class ExamType extends Model {
 

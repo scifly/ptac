@@ -21,69 +21,62 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Auth;
 
 /**
- * App\User 用户
+ * App\Models\User 用户
  *
- * @mixin Eloquent
  * @property int $id
  * @property int $group_id 所属角色/权限ID
  * @property string $username 用户名
- * @property string $remember_token “记住我”令牌，登录时用
+ * @property string|null $remember_token "记住我"令牌，登录时用
  * @property string $password 密码
- * @property string $email 电子邮件地址
+ * @property string|null $email 电子邮箱
  * @property int $gender 性别
  * @property string $realname 真实姓名
  * @property string $avatar_url 头像URL
- * @property string $wechatid 微信号
+ * @property string|null $wechatid 微信号
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property int $enabled
  * @property string $userid 成员userid
  * @property string|null $english_name 英文名
- * @property string $department_ids 用户所属部门IDs
  * @property int|null $isleader 上级字段，标识是否为上级。第三方暂不支持
  * @property string|null $position 职位信息
  * @property string|null $telephone 座机号码
  * @property int|null $order 部门内的排序值，默认为0。数量必须和department一致，数值越大排序越前面
- * @property string|null $mobile 手机号码
  * @property string|null $avatar_mediaid 成员头像的mediaid，通过多媒体接口上传图片获得的mediaid
+ * @property-read Custodian $custodian
+ * @property-read Collection|Department[] $departments
+ * @property-read Educator $educator
+ * @property-read Group $group
+ * @property-read Collection|Message[] $messages
+ * @property-read Collection|Mobile[] $mobiles
+ * @property-read DatabaseNotificationCollection|DatabaseNotification[] $notifications
+ * @property-read Operator $operator
+ * @property-read Collection|Order[] $orders
+ * @property-read Collection|PollQuestionnaireAnswer[] $pollQuestionnaireAnswers
+ * @property-read Collection|PollQuestionnaireParticipant[] $pollQuestionnairePartcipants
+ * @property-read Collection|PollQuestionnaire[] $pollQuestionnaires
+ * @property-read Student $student
+ * @method static Builder|User whereAvatarMediaid($value)
  * @method static Builder|User whereAvatarUrl($value)
  * @method static Builder|User whereCreatedAt($value)
  * @method static Builder|User whereEmail($value)
  * @method static Builder|User whereEnabled($value)
+ * @method static Builder|User whereEnglishName($value)
  * @method static Builder|User whereGender($value)
  * @method static Builder|User whereGroupId($value)
  * @method static Builder|User whereId($value)
+ * @method static Builder|User whereIsleader($value)
+ * @method static Builder|User whereOrder($value)
  * @method static Builder|User wherePassword($value)
+ * @method static Builder|User wherePosition($value)
  * @method static Builder|User whereRealname($value)
  * @method static Builder|User whereRememberToken($value)
+ * @method static Builder|User whereTelephone($value)
  * @method static Builder|User whereUpdatedAt($value)
+ * @method static Builder|User whereUserid($value)
  * @method static Builder|User whereUsername($value)
  * @method static Builder|User whereWechatid($value)
- * @method static Builder|User whereAvatarMediaid($value)
- * @method static Builder|User whereDepartmentIds($value)
- * @method static Builder|User whereEnglishName($value)
- * @method static Builder|User whereIsleader($value)
- * @method static Builder|User whereMobile($value)
- * @method static Builder|User whereOrder($value)
- * @method static Builder|User wherePosition($value)
- * @method static Builder|User whereTelephone($value)
- * @method static Builder|User whereUserid($value)
- * @property-read Custodian $custodian
- * @property-read Educator $educator
- * @property-read Student $student
- * @property-read Group $group
- * @property-read Operator $operator
- * @property-read PollQuestionnaireAnswer $pollquestionnaireAnswer
- * @property-read PollQuestionnaireParticipant $pollquestionnairePartcipant
- * @property-read PollQuestionnaire $pollquestionnaires
- * @property-read Collection|Message[] $messages
- * @property-read Collection|PollQuestionnaireAnswer[] $pollQuestionnaireAnswers
- * @property-read Collection|PollQuestionnaireParticipant[] $pollQuestionnairePartcipants
- * @property-read Collection|PollQuestionnaire[] $pollQuestionnaires
- * @property-read Collection|Department[] $departments
- * @property-read Collection|Mobile[] $mobiles
- * @property-read Collection|Order[] $orders
- * @property-read DatabaseNotificationCollection|DatabaseNotification[] $notifications
+ * @mixin Eloquent
  */
 class User extends Authenticatable {
 

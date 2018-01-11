@@ -4,19 +4,21 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
+use Carbon\Carbon;
+use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
- * App\Models\IconType
+ * App\Models\IconType 图标类型
  *
  * @property int $id
  * @property string $name 图标类型名称
  * @property string|null $remark 备注
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property int $enabled
  * @property-read Icon[] $icons
  * @method static Builder|IconType whereCreatedAt($value)
@@ -25,7 +27,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static Builder|IconType whereName($value)
  * @method static Builder|IconType whereRemark($value)
  * @method static Builder|IconType whereUpdatedAt($value)
- * @mixin \Eloquent
+ * @mixin Eloquent
  */
 class IconType extends Model {
 
