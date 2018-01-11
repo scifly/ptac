@@ -204,7 +204,7 @@ class Message extends Model {
             ['db' => 'Message.msl_id', 'dt' => 3],
             ['db' => 'User.realname', 'dt' => 4],
             ['db' => 'MessageType.name as messagetypename', 'dt' => 5],
-            ['db' => 'Message.readed', 'dt' => 6,
+            ['db' => 'Message.read', 'dt' => 6,
                 'formatter' => function ($d) {
                     return $d === 0 ? "否" : "是";
                 },
@@ -306,6 +306,7 @@ class Message extends Model {
             $userItems = implode('|', $us);
             $touser = implode('|', $users);
             $toparty = implode('|', $depts);
+            Log::debug($us);
             # 推送的所有用户以及电话
             $userDatas = $this->getMobiles($us, $depts);
             $title = '';
@@ -327,9 +328,9 @@ class Message extends Model {
                 ];
                 # 短信推送
                 if ($data['type'] == 'sms') {
-                    $code = $this->sendSms($userItems, $toparty, $data['content']['sms']);
+                    $code = $this->sendSms($us, $depts, $data['content']['sms']);
                     $content = $data['content']['sms'] . '【成都外国语】';
-                    if ($code > 0) {
+                    if ($code != '0' && $code != '-1') {
                         $result = [
                             'statusCode' => 200,
                             'message' => '消息已发送！',
@@ -403,7 +404,7 @@ class Message extends Model {
                         's_user_id' => $i->id,
                         'r_user_id' => Auth::id(),
                         'message_type_id' => MessageType::whereName('消息通知')->first()->id,
-                        'readed' => $read,
+                        'read' => $read,
                         'sent' => $sent,
                     ];
                     Log::debug(json_encode($m));
@@ -460,7 +461,8 @@ class Message extends Model {
         $mobiles = [];
         $userDatas = [];
         if ($touser) {
-            // $userIds = explode('|', $touser);
+            Log::debug($touser);
+//             $userIds = explode('|', $touser);
             foreach ($touser as $i) {
                 $user = User::find($i);
                 $m = Mobile::whereUserId($i)->where('enabled', 1)->first();

@@ -115,7 +115,7 @@ class MessageCenterController extends Controller {
         }
         $sendMessages = $this->message->where('s_user_id', $user->id)->get()->unique('msl_id')->groupBy('message_type_id');
         $receiveMessages = $this->message->where('r_user_id', $user->id)->get()->groupBy('message_type_id');
-        $count = $this->message->where('r_user_id', $user->id)->where('readed', '0')->count();
+        $count = $this->message->where('r_user_id', $user->id)->where('read', '0')->count();
         
         return view('wechat.message_center.index', [
             'receiveMessages' => $receiveMessages,
@@ -225,6 +225,11 @@ class MessageCenterController extends Controller {
 //      $userId = "yuanhongbin";
         $user = $this->user->where('userid', $userId)->first();
         $message = $this->message->find($id);
+        // if(count($message->content) == 0){
+        //     if(!empty($message->media_ids)){
+        //         $message->content = $_SERVER['HTTP_HOST'] . '/' . Media::whereId($message->media_ids)->first()->path;
+        //     }
+        // }
         $edit = ($user->id == $message->s_user_id ? true : false);
         
         return view('wechat.message_center.show', ['message' => $message, 'edit' => $edit, 'show' => true]);
@@ -327,7 +332,7 @@ class MessageCenterController extends Controller {
             if ($mes) {
                 $result['statusCode'] = 1;
                 $result['message'] = '上传成功！';
-                $path = dirname(public_path()) . '/' . $mes['path'];
+                $path = $mes['path'];
                 $data = ["media" => curl_file_create($path)];
                 $crop = Corp::whereName('万浪软件')->first();
                 $app = App::whereAgentid('999')->first();
@@ -383,7 +388,7 @@ class MessageCenterController extends Controller {
         }
         try {
             DB::transaction(function () use ($message, $id) {
-                $message->readed = 1;
+                $message->read = 1;
                 $message->save();
                 $msl = MessageSendingLog::whereId($message->msl_id)->first();
                 $msl->read_count = $msl->read_count + 1;
@@ -458,7 +463,7 @@ class MessageCenterController extends Controller {
                             's_user_id'       => $user->id,
                             'r_user_id'       => $receiveUserId,
                             'message_type_id' => MessageType::whereName('消息通知')->first()->id,
-                            'readed'          => 1,
+                            'read'          => 1,
                             'sent'            => 1,
                         ];
                         $this->message->create($messageData);
@@ -501,7 +506,7 @@ class MessageCenterController extends Controller {
                             's_user_id'       => $user->id,
                             'r_user_id'       => $receiveUserId,
                             'message_type_id' => MessageType::whereName('消息通知')->first()->id,
-                            'readed'          => 0,
+                            'read'          => 0,
                             'sent'            => 0,
                         ];
                         $message = $this->message->create($messageData);
