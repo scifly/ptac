@@ -74,7 +74,7 @@ class Message extends Model {
         'comm_type_id', 'app_id', 'msl_id', 'content',
         'serviceid', 'message_id', 'url', 'media_ids',
         's_user_id', 'r_user_id', 'message_type_id',
-        'read', 'sent','title'
+        'readed', 'sent','title'
     ];
 
     /**
