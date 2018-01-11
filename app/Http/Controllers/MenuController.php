@@ -34,7 +34,7 @@ class MenuController extends Controller {
     public function index() {
         
         if (Request::method() === 'POST') {
-            return Menu::tree(Menu::rootMenuId());
+            return Menu::tree(Menu::rootMenuId(true));
         }
 
         return $this->output();

@@ -557,20 +557,31 @@ HTML;
 
         return $menus;
     }
-
+    
     /**
      * 获取当前登录用户的根菜单ID
      *
+     * @param bool $subRoot
      * @return int|mixed
      */
-    static function rootMenuId() {
+    static function rootMenuId($subRoot = false) {
 
         $user = Auth::user();
+        $menuId = session('menuId');
         switch ($user->group->name) {
-            case '运营': return 1;
+            case '运营':
+                if (!$subRoot) { return 1; };
+                $schoolMenuId = self::menuId($menuId);
+                if ($schoolMenuId) {
+                    return $schoolMenuId;
+                } else {
+                    return self::menuId($menuId, '企业');
+                }
             case '企业':
-                return Corp::whereDepartmentId($user->topDeptId())
-                    ->first()->menu_id;
+                $corpMenuId = self::menuId($menuId, '企业');
+                if (!$subRoot) { return $corpMenuId; }
+                $schoolMenuId = self::menuId($menuId);
+                return $schoolMenuId ?? $corpMenuId;
             case '学校':
                 return School::whereDepartmentId($user->topDeptId())
                     ->first()->menu_id;

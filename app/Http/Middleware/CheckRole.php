@@ -97,7 +97,6 @@ class CheckRole {
         if ($role == '企业') {
             $corpId = Corp::whereDepartmentId($user->topDeptId())->first()->id;
             $allowedCorpActions = [
-                '/corps/show/' . $corpId,
                 '/corps/edit/' . $corpId,
                 '/corps/update/' . $corpId,
             ];
