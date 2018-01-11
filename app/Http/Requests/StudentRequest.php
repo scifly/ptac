@@ -43,7 +43,13 @@ class StudentRequest extends FormRequest {
             'mobile.*' => ['required', new Mobiles()],
             'student_number' => [
                 'required', 'alphanum', 'between:2,32',
-                Rule::unique('students')->ignore($this->input('user_id', 'user_id'))],
+                Rule::unique('students')->ignore($this->input('user_id', 'user_id'))
+                    ->where(function ($query){
+                    $query->join('classes', 'students.class_id', '=', 'classes.id')
+                          ->join('grades', 'classes.grade_id', '=', 'grades.id')
+                          ->join('schools', 'grades.school_id', '=', 'schools.id');
+                })
+            ],
             'birthday' => 'required',
         ];
 
