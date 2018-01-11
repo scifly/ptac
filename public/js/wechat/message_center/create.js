@@ -180,7 +180,7 @@ $('.js-search-input').bind("input propertychange change", function (event) {
 show_group();
 
 function show_group() {
-    $('.show-group').off('click').click(function () {
+    $('.show-group').click(function () {
         //展示下一个分组
         var id = $(this).prev().attr('data-uid');
         var name = $(this).prev().find('span').html();
