@@ -138,7 +138,7 @@ function uploadfile(obj){
 				case 'image':
 				//图片
 				  	html+='<div class="fileshow" style="display: inline-block;width: auto;position: relative;">'+
-                            	'<img src="../'+result.data.path+'" style="height: 200px;">'+
+                            	'<img src="'+result.data.path+'" style="height: 200px;">'+
                             	'<input id="image_media_id" type="hidden" value="'+result.data.media_id+'"/>'+
                             	'<input id="image-media-id" type="hidden" value="'+result.data.id+'"/>'+
                             	'<input type="hidden" value="image" name="type" />'+
@@ -167,7 +167,7 @@ function uploadfile(obj){
 				 	break;
 				case 'video':
 				//视频
-				  	html+=	'<video src="../'+result.data.path+'" controls="controls" style="height:180px">'+
+				  	html+=	'<video src="'+result.data.path+'" controls="controls" style="height:180px">'+
 							'</video>'+                             
 							'<div class="btns">'+
 							'<a class="changefile" style="position: relative;margin-left: 10px;">'+
@@ -256,7 +256,7 @@ function upload_cover(obj){
 			if(result.statusCode){
                 page.inform("操作结果", result.message, page.success);
                 var html = '<form id="uploadForm" enctype="multipart/form-data">'+
-	                			'<div class="show-cover" style="position: relative;height: 130px;width: 130px;background-image: url(../'+result.data.path+');background-size: cover;">'+
+	                			'<div class="show-cover" style="position: relative;height: 130px;width: 130px;background-image: url('+result.data.path+');background-size: cover;">'+
 			                		'<input type="hidden" value="'+result.data.media_id+'" name="media_id" />'+
 			                		'<input type="hidden" value="'+result.data.id+'" name="news-media-id" />'+
 			                		'<input type="hidden" value="image" name="type" />'+
