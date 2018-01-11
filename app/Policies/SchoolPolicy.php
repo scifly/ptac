@@ -26,11 +26,12 @@ class SchoolPolicy {
      */
     public function c(User $user) {
         
-        $role = $user->group->name;
-        if ($role == '运营') { return true; }
-        if ($role == '企业') {
+        if ($user->group->name == '企业') {
             $corp = Corp::whereDepartmentId($user->topDeptId())->first();
-            return in_array(School::schoolId(), $corp->schools->pluck('id')->toArray());
+            return in_array(
+                School::schoolId(),
+                $corp->schools->pluck('id')->toArray()
+            );
         }
         
         return true;

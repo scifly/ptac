@@ -139,10 +139,15 @@ class WapSiteController extends Controller {
             $result['message'] = '上传成功！';
             $result['data'] = $mes;
             $token = '';
-            $path = dirname(public_path()) . '/' . $mes['path'];
-            $data = ["media" => curl_file_create($path)];
+            if ($mes) {
+                $path = '';
+                foreach ($mes AS $m)
+                    $path = dirname(public_path()) . '/' . $m['path'];
+                    $data = ["media" => curl_file_create($path)];
 
-            $result = Wechat::uploadMedia($token, 'image', $data);
+                    Wechat::uploadMedia($token, 'image', $data);
+            }
+
         }
         
         return response()->json($result);
@@ -168,9 +173,13 @@ class WapSiteController extends Controller {
             // 上传图片
             $filename = uniqid() . '.' . $ext;
             // 使用新建的uploads本地存储空间（目录）
-            if (Storage::disk('public')->put($filename, file_get_contents($realPath))) {
+            if (Storage::disk('uploads')->put($filename, file_get_contents($realPath))) {
                 // $filePath = 'storage/app/uploads/' . date('Y') . '/' . date('m') . '/' . date('d') . '/' . $filename;
-                $filePath = Storage::url('public/' . date('Y') . '/' . date('m') . '/' . date('d') . '/' . $filename);
+                $filePath = 'storage/app/uploads/' .
+                    date('Y') . '/' .
+                    date('m') . '/' .
+                    date('d') . '/' .
+                    $filename;
                 $mediaId = Media::insertGetId([
                     'path'          => $filePath,
                     'remark'        => '微网站轮播图',

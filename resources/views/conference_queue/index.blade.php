@@ -9,11 +9,11 @@
 			<tr class="bg-info">
                 <th>#</th>
                 <th>名称</th>
+                <th>发起人</th>
+                <th>会议室</th>
                 <th>开始时间</th>
                 <th>结束时间</th>
-                <th>发起人</th>
                 <th>备注</th>
-                <th>会议室</th>
                 <th>状态</th>
             </tr>
             </thead>

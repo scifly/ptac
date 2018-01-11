@@ -20,7 +20,7 @@ class ActionController extends Controller {
 
     function __construct(Action $action) {
 
-        $this->middleware(['auth']);
+        $this->middleware(['auth', 'checkrole']);
         $this->action = $action;
 
     }
@@ -35,9 +35,13 @@ class ActionController extends Controller {
     public function index() {
 
         if (Request::get('draw')) {
-            return response()->json($this->action->datatable());
+            return response()->json(
+                $this->action->datatable()
+            );
         }
-        if (!$this->action->scan()) { return $this->notFound(); }
+        if (!$this->action->scan()) {
+            return $this->notFound();
+        }
 
         return $this->output();
 

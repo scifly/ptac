@@ -34,16 +34,12 @@ class TabRequest extends FormRequest {
     protected function prepareForValidation() {
         
         $input = $this->all();
-        if (isset($input['enabled']) && $input['enabled'] === 'on') {
-            $input['enabled'] = 1;
-        }
-        if (!isset($input['enabled'])) {
-            $input['enabled'] = 0;
-        }
         if (!isset($input['menu_ids'])) {
             $input['menu_ids'] = [];
         }
+        
         $this->replace($input);
         
     }
+    
 }

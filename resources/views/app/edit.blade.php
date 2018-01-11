@@ -12,9 +12,6 @@
             @if (!empty($app['id']))
                 {{ Form::hidden('id', $app['id'], ['id' => 'id']) }}
             @endif
-            @if (!empty($app['corp_id']))
-                {{ Form::hidden('corp_id', $app['corp_id'], ['id' => 'corp_id']) }}
-            @endif
             <div class="form-group">
                 {!! Form::label('agentid', '应用id', [
                     'class' => 'col-sm-3 control-label'

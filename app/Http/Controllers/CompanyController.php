@@ -31,7 +31,9 @@ class CompanyController extends Controller {
     public function index() {
 
         if (Request::get('draw')) {
-            return response()->json(Company::datatable());
+            return response()->json(
+                Company::datatable()
+            );
         }
         
         return $this->output();
@@ -58,7 +60,9 @@ class CompanyController extends Controller {
      */
     public function store(CompanyRequest $request) {
         
-        return $this->result(Company::store($request->all(), true));
+        return $this->result(
+            Company::store($request->all(), true)
+        );
         
     }
     
@@ -90,7 +94,9 @@ class CompanyController extends Controller {
         $company = Company::find($id);
         if (!$company) { return $this->notFound(); }
         
-        return $this->result($company->modify($request->all(), $id, true));
+        return $this->result(
+            $company->modify($request->all(), $id, true)
+        );
         
     }
     
@@ -106,7 +112,9 @@ class CompanyController extends Controller {
         $company = Company::find($id);
         if (!$company) { return $this->notFound(); }
         
-        return $this->result($company->remove($id, true));
+        return $this->result(
+            $company->remove($id, true)
+        );
         
     }
     

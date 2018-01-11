@@ -32,6 +32,7 @@ $('#reservation').daterangepicker({
 });
 var $search = $('#search');
 var $token = $('#csrf_token');
+
 $search.click(function () {
 	$('#data-table tbody').html('');
     getdata();
@@ -64,11 +65,21 @@ function getdata(){
 			var html = '';
             $.each(result, function (index, obj) {
                 var datacon = obj;
-            	html += '<tr><td>'+datacon.date+'</td>' +
-							'<td>'+datacon.normal+'/'+datacon.abnormal+'/'+datacon.surplus+'/'+datacon.all+'</td>' +
-							'<td><div id="main'+index+'" style="height: 80px;width: 160px;"></div></td></tr>';
-                $('#data-table tbody').html(html);
+            	html += '<tr>'+
+            				'<td class="attendances-date">'+datacon.date+'</td>' +
+							'<td class="attendances-data">'+
+								'<a class="js-show-list normal" data-toggle="modal" data-target="#student-list" data-type="normal">'+datacon.normal+'</a>'+
+								'/<a class="js-show-list abnormal" data-toggle="modal" data-target="#student-list" data-type="abnormal">'+datacon.abnormal+'</a>'+
+								'/<a class="js-show-list surplus" data-toggle="modal" data-target="#student-list" data-type="surplus">'+datacon.surplus+'</a>'+
+								'/<a class="all">'+datacon.all+'</a>'+
+							'</td>' +
+							'<td>'+
+								'<div id="main'+index+'" style="height: 80px;width: 160px;"></div>'+
+							'</td>'+
+						'</tr>';
             });
+            $('#data-table tbody').html(html);
+            show_list();
             $.each(result, function (index, obj) {
                 var datacon = obj;
 
@@ -110,7 +121,7 @@ function showtable_pie(index,arrayTime){
 	    title : {
 	        text: '打卡详情',
 	    },
-	    color:['#9FDABF','#334B5C','#C23531'],
+	    color:['#83db74','#fdde52','#fc7f4e'],
 	    series : [
 	        {
 	            name: '访问来源',
@@ -128,4 +139,10 @@ function showtable_pie(index,arrayTime){
 	    ]
 	};
 	myChart.setOption(option);
+}
+
+function show_list(){
+	$('.js-show-list').click(function(){
+		console.log(1);
+	});
 }

@@ -9,7 +9,9 @@
             @endif
             {{ Form::hidden('school_id', $schoolId, ['id' => 'school_id']) }}
             <div class="form-group">
-                {!! Form::label('name', '名称', ['class' => 'col-sm-3 control-label']) !!}
+                {!! Form::label('name', '名称', [
+                    'class' => 'col-sm-3 control-label']
+                ) !!}
                 <div class="col-sm-6">
                     {!! Form::text('name', null, [
                         'class' => 'form-control',

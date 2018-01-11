@@ -59,9 +59,25 @@ class ComboType extends Model {
         $columns = [
             ['db' => 'ComboType.id', 'dt' => 0],
             ['db' => 'ComboType.name', 'dt' => 1],
-            ['db' => 'ComboType.amount', 'dt' => 2],
-            ['db' => 'ComboType.discount', 'dt' => 3],
-            ['db' => 'School.name as schoolname', 'dt' => 4],
+            [
+                'db' => 'ComboType.amount', 'dt' => 2,
+                'formatter' => function($d) {
+                    setlocale(LC_MONETARY, 'zh_CN.UTF-8');
+                    return money_format('%.2n', $d);
+                }
+            ],
+            [
+                'db' => 'ComboType.discount', 'dt' => 3,
+                'formatter' => function($d) {
+                    return $d . '%';
+                }
+            ],
+            [
+                'db' => 'School.name as schoolname', 'dt' => 4,
+                'formatter' => function($d) {
+                    return '<i class="fa fa-university"></i>&nbsp;' . $d;
+                }
+            ],
             ['db' => 'ComboType.months', 'dt' => 5],
             ['db' => 'ComboType.created_at', 'dt' => 6],
             ['db' => 'ComboType.updated_at', 'dt' => 7],

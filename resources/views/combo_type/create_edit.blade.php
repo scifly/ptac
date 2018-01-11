@@ -7,9 +7,8 @@
             @if (!empty($comboType['id']))
                 {{ Form::hidden('id', $comboType['id'], ['id' => 'id']) }}
             @endif
-            {{ Form::hidden('school_id', $schoolId, ['id' => 'school_id']) }}
             <div class="form-group">
-                {!! Form::label('name', '套餐名称', [
+                {!! Form::label('name', '名称', [
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
@@ -26,12 +25,16 @@
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
-                    {!! Form::text('amount', null, [
-                        'class' => 'form-control',
-                        'placeholder' => '(请输入套餐金额)',
-                        'required' => 'true',
-                        'type' => 'number',
-                    ]) !!}
+                    <div class="input-group">
+                        <span class="input-group-addon">&yen;</span>
+                        {!! Form::text('amount', null, [
+                            'class' => 'form-control',
+                            'placeholder' => '(请输入套餐金额)',
+                            'required' => 'true',
+                            'type' => 'number',
+                        ]) !!}
+                        <span class="input-group-addon">.00</span>
+                    </div>
                 </div>
             </div>
             <div class="form-group">

@@ -749,7 +749,30 @@ class Department extends Model {
                 }
             }
         }
+
         return $users;
+
+    }
+
+    /**
+     * 返回指定部门所有子部门的id
+     *
+     * @param $id
+     * @return array
+     */
+    static function subDepartmentIds($id) {
+
+        static $childrenIds;
+        $firstIds = Department::whereParentId($id)->get(['id'])->toArray();
+        if ($firstIds) {
+            foreach ($firstIds as $firstId) {
+                $childrenIds[] = $firstId['id'];
+                self::subDepartmentIds($firstId['id']);
+            }
+        }
+
+        return $childrenIds;
+
     }
 
     /**
@@ -804,6 +827,5 @@ class Department extends Model {
         }
 
     }
-
 
 }

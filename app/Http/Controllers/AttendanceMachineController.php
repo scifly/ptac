@@ -31,7 +31,9 @@ class AttendanceMachineController extends Controller {
     public function index() {
 
         if (Request::get('draw')) {
-            return response()->json(AttendanceMachine::datatable());
+            return response()->json(
+                AttendanceMachine::datatable()
+            );
         }
         
         return $this->output();
@@ -39,7 +41,7 @@ class AttendanceMachineController extends Controller {
     }
     
     /**
-     * 创建考勤机记录
+     * 创建考勤机
      *
      * @return bool|JsonResponse
      * @throws \Throwable
@@ -47,12 +49,13 @@ class AttendanceMachineController extends Controller {
     public function create() {
         
         $this->authorize('c', AttendanceMachine::class);
+
         return $this->output();
         
     }
     
     /**
-     * 保存考勤机记录
+     * 保存考勤机
      *
      * @param AttendanceMachineRequest $request
      * @return JsonResponse
@@ -61,12 +64,15 @@ class AttendanceMachineController extends Controller {
     public function store(AttendanceMachineRequest $request) {
 
         $this->authorize('c', AttendanceMachine::class);
-        return $this->result(AttendanceMachine::create($request->all()));
+
+        return $this->result(
+            AttendanceMachine::create($request->all())
+        );
         
     }
     
     /**
-     * 编辑考勤机记录
+     * 编辑考勤机
      *
      * @param $id
      * @return bool|JsonResponse
@@ -82,7 +88,7 @@ class AttendanceMachineController extends Controller {
     }
     
     /**
-     * 更新考勤机记录
+     * 更新考勤机
      *
      * @param AttendanceMachineRequest $request
      * @param $id
@@ -99,7 +105,7 @@ class AttendanceMachineController extends Controller {
     }
     
     /**
-     * 删除考勤机记录
+     * 删除考勤机
      *
      * @param $id
      * @return JsonResponse
