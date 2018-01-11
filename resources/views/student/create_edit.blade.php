@@ -188,7 +188,7 @@
             @include('partials.enabled', [
                 'label' => '住校',
                 'id' => 'oncampus',
-                'value' => $student['oncampus'] ?? NULL,
+                'value' => $student['oncampus'] ?? null,
                 'options' => ['是', '否']
             ])
             <!-- 备注 -->
@@ -198,7 +198,7 @@
             <!-- 状态 -->
             @include('partials.enabled', [
                 'id' => 'user[enabled]',
-                'value' => $student['enabled'] ?? NULL
+                'value' => $student['enabled'] ?? null
             ])
         </div>
     </div>

@@ -45,7 +45,7 @@
             </div>
             @include('partials.enabled', [
                 'id' => 'enabled',
-                'value' => $wsm['enabled'] ?? NULL
+                'value' => $wsm['enabled'] ?? null
             ])
         </div>
     </div>

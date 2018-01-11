@@ -45,7 +45,7 @@
             </div>
             @include('partials.enabled', [
                 'id' => 'enabled',
-                'value' => $alertType['enabled'] ?? NULL
+                'value' => $alertType['enabled'] ?? null
             ])
         </div>
     </div>

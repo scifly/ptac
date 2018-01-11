@@ -4,13 +4,15 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
+use Carbon\Carbon;
+use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * App\Models\ProcedureLog
+ * App\Models\ProcedureLog 审批流程日志
  *
  * @property int $id
  * @property int $initiator_user_id 发起人用户ID
@@ -22,9 +24,15 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $operator_msg （操作者）步骤相关留言
  * @property string $operator_media_ids （操作者）步骤相关附件媒体IDs
  * @property int $step_status 步骤状态：0-通过、1-拒绝、2-待定
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
+ * @property int $first_log_id 该申请第一条记录的id
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read User $initiatorUser
+ * @property-read User $operatorUser
+ * @property-read Procedure $procedure
+ * @property-read ProcedureStep $procedureStep
  * @method static Builder|ProcedureLog whereCreatedAt($value)
+ * @method static Builder|ProcedureLog whereFirstLogId($value)
  * @method static Builder|ProcedureLog whereId($value)
  * @method static Builder|ProcedureLog whereInitiatorMediaIds($value)
  * @method static Builder|ProcedureLog whereInitiatorMsg($value)
@@ -36,19 +44,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static Builder|ProcedureLog whereProcedureStepId($value)
  * @method static Builder|ProcedureLog whereStepStatus($value)
  * @method static Builder|ProcedureLog whereUpdatedAt($value)
- * @mixin \Eloquent
- * @property-read Procedure $procedure
- * @property-read ProcedureStep $procedureStep
- * @property-read User $user
- * @property int $first_log_id 该申请第一条记录的id
- * @property-read User $initiator_user
- * @property-read User $operator_user
- * @property-read ProcedureStep $procedure_step
- * @method static Builder|ProcedureLog whereFirstLogId($value)
- * @property-read \App\Models\User $initiatorUser
- * @property-read \App\Models\User $operatorUser
+ * @mixin Eloquent
  */
 class ProcedureLog extends Model {
+
+    // todo: needs to be refactored
     
     const DT_PEND = '<span class="badge bg-orange">%s</span>';
 

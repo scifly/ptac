@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -13,14 +14,14 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
- * App\Models\PollQuestionnaireSubject
+ * App\Models\PollQuestionnaireSubject 调查问卷题目
  *
  * @property int $id
  * @property string $subject 题目名称
  * @property int $pq_id 调查问卷ID
  * @property int $subject_type 题目类型：0 - 单选，1 - 多选, 2 - 填空
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @method static Builder|PollQuestionnaireSubject whereCreatedAt($value)
  * @method static Builder|PollQuestionnaireSubject whereId($value)
  * @method static Builder|PollQuestionnaireSubject wherePqId($value)
@@ -34,9 +35,9 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property-read PollQuestionnaire $poll_questionnaire
  * @property-read PollQuestionnaireAnswer $poll_questionnaire_answer
  * @property-read Collection|PollQuestionnaireSubjectChoice[] $poll_questionnaire_choice
- * @property-read \App\Models\PollQuestionnaire $pollQuestionnaire
- * @property-read \App\Models\PollQuestionnaireAnswer $pollQuestionnaireAnswer
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\PollQuestionnaireSubjectChoice[] $pollQuestionnaireSubjectChoice
+ * @property-read PollQuestionnaire $pollQuestionnaire
+ * @property-read PollQuestionnaireAnswer $pollQuestionnaireAnswer
+ * @property-read Collection|PollQuestionnaireSubjectChoice[] $pollQuestionnaireSubjectChoice
  */
 class PollQuestionnaireSubject extends Model {
 
@@ -127,7 +128,10 @@ class PollQuestionnaireSubject extends Model {
                 ],
             ],
         ];
+        // todo: 根据学校和角色进行过滤
+
         return Datatable::simple(self::getModel(), $columns, $joins);
+
     }
     
     /**
@@ -139,14 +143,10 @@ class PollQuestionnaireSubject extends Model {
     private static function subjectType($type) {
 
         switch ($type) {
-            case 0:
-                return '单选';
-            case 1:
-                return '多选';
-            case 2:
-                return '填空';
-            default:
-                return '错误';
+            case 0: return '单选';
+            case 1: return '多选';
+            case 2: return '填空';
+            default: return '错误';
         }
 
     }

@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
+use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -16,8 +18,8 @@ use Illuminate\Support\Facades\DB;
  * @property int $read_count 已读数量
  * @property int $received_count 消息发送成功数
  * @property int $recipient_count 接收者数量
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property-read Collection|Message[] $messages
  * @method static Builder|MessageSendingLog whereCreatedAt($value)
  * @method static Builder|MessageSendingLog whereId($value)
@@ -25,7 +27,7 @@ use Illuminate\Support\Facades\DB;
  * @method static Builder|MessageSendingLog whereReceivedCount($value)
  * @method static Builder|MessageSendingLog whereRecipientCount($value)
  * @method static Builder|MessageSendingLog whereUpdatedAt($value)
- * @mixin \Eloquent
+ * @mixin Eloquent
  */
 class MessageSendingLog extends Model {
 

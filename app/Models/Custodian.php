@@ -14,22 +14,21 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Facades\DB;
 
+
 /**
- * App\Models\Custodian
+ * App\Models\Custodian 监护人
  *
  * @property int $id
  * @property int $user_id 监护人用户ID
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @method static Builder|Custodian whereId($value)
- * @method static Builder|Custodian whereUserId($value)
- * @method static Builder|Custodian whereCreatedAt($value)
- * @method static Builder|Custodian whereUpdatedAt($value)
- * @mixin Eloquent
- * @property-read User $user
  * @property-read Collection|Student[] $students
- * @property-read Collection|CustodianStudent[] $custodianStudent
- * @property-read Collection|CustodianStudent[] $custodianStudents
+ * @property-read \App\Models\User $user
+ * @method static Builder|Custodian whereCreatedAt($value)
+ * @method static Builder|Custodian whereId($value)
+ * @method static Builder|Custodian whereUpdatedAt($value)
+ * @method static Builder|Custodian whereUserId($value)
+ * @mixin Eloquent
  */
 class Custodian extends Model {
 
@@ -343,6 +342,7 @@ class Custodian extends Model {
                 ],
             ],
         ];
+        // todo: 根据角色显示监护人列表，[运营/企业/学校]角色显示隶属当前学校的所有监护人，其他角色显示所属所有部门下的监护人
         $condition = 'Grade.school_id = ' . School::schoolId();
         
         return Datatable::simple(self::getModel(), $columns, $joins, $condition);

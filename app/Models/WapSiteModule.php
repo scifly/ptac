@@ -12,9 +12,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
+
 /**
- * 网站类型
- * App\Models\WapSiteModule
+ * App\Models\WapSiteModule 微网站栏目
  *
  * @property int $id
  * @property int $wap_site_id 所属微网站ID
@@ -23,6 +23,9 @@ use Illuminate\Support\Facades\Storage;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property int $enabled
+ * @property-read Media $media
+ * @property-read WapSite $wapsite
+ * @property-read Collection|WsmArticle[] $wsmArticles
  * @method static Builder|WapSiteModule whereCreatedAt($value)
  * @method static Builder|WapSiteModule whereEnabled($value)
  * @method static Builder|WapSiteModule whereId($value)
@@ -31,16 +34,11 @@ use Illuminate\Support\Facades\Storage;
  * @method static Builder|WapSiteModule whereUpdatedAt($value)
  * @method static Builder|WapSiteModule whereWapSiteId($value)
  * @mixin \Eloquent
- * @property-read WapSite $belongsToWs
- * @property-read Collection|WsmArticle[] $hasManyArticle
- * @property-read WapSite $wapsite
- * @property-read Collection|WsmArticle[] $wsmarticles
- * @property-read Media $media
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\WsmArticle[] $wsmArticles
  */
 class WapSiteModule extends Model {
 
     protected $table = 'wap_site_modules';
+
     protected $fillable = [
         'id', 'wap_site_id', 'name',
         'media_id', 'created_at', 'updated_at',

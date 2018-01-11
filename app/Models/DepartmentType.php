@@ -4,6 +4,8 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
+use Carbon\Carbon;
+use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -16,8 +18,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int $id
  * @property string $name 部门类型名称
  * @property string|null $remark 备注
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property int $enabled
  * @property-read Collection|Department[] $departments
  * @method static Builder|DepartmentType whereCreatedAt($value)
@@ -26,7 +28,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static Builder|DepartmentType whereName($value)
  * @method static Builder|DepartmentType whereRemark($value)
  * @method static Builder|DepartmentType whereUpdatedAt($value)
- * @mixin \Eloquent
+ * @mixin Eloquent
  */
 class DepartmentType extends Model {
 

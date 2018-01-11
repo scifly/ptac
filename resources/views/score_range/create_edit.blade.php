@@ -7,8 +7,7 @@
             @if (isset($scoreRange)&&!empty($scoreRange['id']))
                 {{ Form::hidden('id', $scoreRange['id'], ['id' => 'id']) }}
             @endif
-                {{ Form::hidden('school_id', $schoolId, ['id' => 'school_id']) }}
-                <div class="form-group">
+            <div class="form-group">
                 {!! Form::label('name', '名称', [
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
@@ -56,7 +55,7 @@
             ])
             @include('partials.enabled', [
                 'id' => 'enabled',
-                'value' => $subject['enabled'] ?? NULL
+                'value' => $subject['enabled'] ?? null
             ])
         </div>
     </div>

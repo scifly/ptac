@@ -40,6 +40,7 @@ class EducatorAttendanceSettingRequest extends FormRequest {
         $input = $this->all();
         $input['startend'] = [$input['start'], $input['end'], 'educator', $input['id'] ?? null];
         $input['school_id'] = School::schoolId();
+
         $this->replace($input);
 
     }

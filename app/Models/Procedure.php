@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
+use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -31,7 +32,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static Builder|Procedure whereRemark($value)
  * @method static Builder|Procedure whereSchoolId($value)
  * @method static Builder|Procedure whereUpdatedAt($value)
- * @mixin \Eloquent
+ * @mixin Eloquent
  * @property-read ProcedureType $procedureType
  * @property-read School $school
  * @property-read Collection|ProcedureLog[] $procedureLogs
@@ -163,6 +164,7 @@ class Procedure extends Model {
             ],
         ];
 
+        // todo: 增加过滤条件
         return Datatable::simple(self::getModel(), $columns, $joins);
         
     }

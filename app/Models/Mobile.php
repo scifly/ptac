@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
+use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -19,7 +20,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property Carbon|null $updated_at
  * @property int $enabled
  * @property int $isdefault 是否为默认的手机号码
- * @property-read \App\Models\User $user
+ * @property-read User $user
  * @method static Builder|Mobile whereCreatedAt($value)
  * @method static Builder|Mobile whereEnabled($value)
  * @method static Builder|Mobile whereId($value)
@@ -27,9 +28,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static Builder|Mobile whereMobile($value)
  * @method static Builder|Mobile whereUpdatedAt($value)
  * @method static Builder|Mobile whereUserId($value)
- * @mixin \Eloquent
+ * @mixin Eloquent
  */
 class Mobile extends Model {
+
+    // todo: needs to be optimized
 
     use ModelTrait;
 

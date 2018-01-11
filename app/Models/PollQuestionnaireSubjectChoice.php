@@ -3,20 +3,22 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use Carbon\Carbon;
+use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+
 /**
- * App\Models\PollQuestionnaireChoice
+ * App\Models\PollQuestionnaireSubjectChoice 调查问卷题目选项
  *
- * @mixin \Eloquent
  * @property int $id
  * @property int $pqs_id 题目ID
  * @property string $choice 选项内容
  * @property int $seq_no 选项排序编号
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property-read PollQuestionnaireSubject $pollquestionnaireSubject
  * @method static Builder|PollQuestionnaireSubjectChoice whereChoice($value)
  * @method static Builder|PollQuestionnaireSubjectChoice whereCreatedAt($value)
@@ -24,10 +26,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static Builder|PollQuestionnaireSubjectChoice wherePqsId($value)
  * @method static Builder|PollQuestionnaireSubjectChoice whereSeqNo($value)
  * @method static Builder|PollQuestionnaireSubjectChoice whereUpdatedAt($value)
+ * @mixin Eloquent
  */
 class PollQuestionnaireSubjectChoice extends Model {
 
-    //
     protected $table = 'poll_questionnaire_subject_choices';
 
     protected $fillable = ['pqs_id', 'choice', 'seq_no', 'created_at', 'updated_at'];
@@ -75,7 +77,7 @@ class PollQuestionnaireSubjectChoice extends Model {
                 ],
             ],
         ];
-        
+        // todo: 增加过滤条件
         return Datatable::simple(self::getModel(), $columns, $joins);
         
     }

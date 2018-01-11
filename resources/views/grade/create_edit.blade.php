@@ -7,8 +7,7 @@
             @if (isset($grade) && !empty($grade['id']))
                 {{ Form::hidden('id', $grade['id'], ['id' => 'id']) }}
             @endif
-                {{ Form::hidden('school_id', $schoolId, ['id' => 'school_id']) }}
-                <div class="form-group">
+            <div class="form-group">
                 {!! Form::label('name', '名称', [
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
@@ -37,7 +36,7 @@
             @endif
             @include('partials.enabled', [
                 'id' => 'enabled',
-                'value' => $grade['enabled'] ?? NULL
+                'value' => $grade['enabled'] ?? null
             ])
         </div>
     </div>

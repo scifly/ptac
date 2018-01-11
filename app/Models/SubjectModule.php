@@ -3,20 +3,23 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use Carbon\Carbon;
+use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * App\Models\SubjectModule
+ * App\Models\SubjectModule 科目次分类
  *
  * @property int $id
  * @property int $subject_id 所属科目ID
  * @property string $name 科目次分类名称
  * @property int $weight 科目次分类权重
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property int $enabled
+ * @property-read Subject $subject
  * @method static Builder|SubjectModule whereCreatedAt($value)
  * @method static Builder|SubjectModule whereEnabled($value)
  * @method static Builder|SubjectModule whereId($value)
@@ -24,13 +27,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static Builder|SubjectModule whereSubjectId($value)
  * @method static Builder|SubjectModule whereUpdatedAt($value)
  * @method static Builder|SubjectModule whereWeight($value)
- * @mixin \Eloquent
- * @property int $wap_site_id 所属微网站ID
- * @property int $media_id 模块图片多媒体ID
- * @property-read \App\Models\Subject $belongsToWs
- * @method static Builder|SubjectModule whereMediaId($value)
- * @method static Builder|SubjectModule whereWapSiteId($value)
- * @property-read \App\Models\Subject $subject
+ * @mixin Eloquent
  */
 class SubjectModule extends Model {
 

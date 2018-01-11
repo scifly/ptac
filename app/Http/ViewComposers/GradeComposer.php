@@ -24,7 +24,6 @@ class GradeComposer {
         }
 
         $view->with([
-            'schoolId' => $schoolId,
             'educators' => $educatorUsers,
             'uris' => $this->uris()
         ]);

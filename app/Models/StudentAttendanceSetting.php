@@ -4,12 +4,13 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use Carbon\Carbon;
+use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * App\Models\StudentAttendanceSetting
+ * App\Models\StudentAttendanceSetting 学生考勤设置
  *
  * @property int $id
  * @property string $name 学生考勤设置名称
@@ -35,7 +36,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static Builder|StudentAttendanceSetting whereSemesterId($value)
  * @method static Builder|StudentAttendanceSetting whereStart($value)
  * @method static Builder|StudentAttendanceSetting whereUpdatedAt($value)
- * @mixin \Eloquent
+ * @mixin Eloquent
  * @property-read Grade $grade
  * @property-read Semester $semester
  */
@@ -75,6 +76,7 @@ class StudentAttendanceSetting extends Model {
         return $this->hasOne('App\Models\StudentAttdance', 'id', 'sas_id');
         
     }
+
     /**
      * 学生考勤设置记录列表
      *
@@ -132,4 +134,5 @@ class StudentAttendanceSetting extends Model {
         return Datatable::simple(self::getModel(), $columns, $joins, $condition);
 
     }
+
 }

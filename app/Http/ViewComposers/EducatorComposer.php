@@ -38,7 +38,6 @@ class EducatorComposer {
         array_unshift($subjects, '(请选择)');
 
         $view->with([
-            'schoolId' => $schoolId,
             'squads' => $squads,
             'subjects' => $subjects,
             'groups' => $groups,

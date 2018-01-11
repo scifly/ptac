@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * App\Models\ProcedureStep
+ * App\Models\ProcedureStep 审批流程步骤
  *
  * @property int $id
  * @property int $procedure_id 流程ID
@@ -34,6 +34,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property-read Procedure $procedure
  */
 class ProcedureStep extends Model {
+
+    // todo: needs to be refactored
 
     use ModelTrait;
 

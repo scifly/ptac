@@ -7,7 +7,6 @@
             @if (!empty($sas['id']))
                 {{ Form::hidden('id', $sas['id'], ['id' => 'id']) }}
             @endif
-            {{ Form::hidden('school_id', $schoolId, ['id' => 'school_id']) }}
             <div class="form-group">
                 {!! Form::label('name', '名称', [
                     'class' => 'col-sm-3 control-label'
@@ -90,13 +89,13 @@
             @include('partials.enabled', [
                 'label' => '是否为公用',
                 'id' => 'ispublic',
-                'value' => $sas['ispublic'] ?? NULL,
+                'value' => $sas['ispublic'] ?? null,
                 'options' => ['是', '否']                
             ])
             @include('partials.enabled', [
               'label' => '进或出',
               'id' => 'inorout',
-              'value' => $sas['ispublic'] ?? NULL,
+              'value' => $sas['ispublic'] ?? null,
               'options' => ['进', '出']
           ])
         </div>
