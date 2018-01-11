@@ -631,7 +631,7 @@ class Student extends Model {
             [
                 'db' => 'Student.birthday', 'dt' => 8,
                 'formatter' => function ($d) {
-                    return $d;
+                 return $d ? substr($d,0,10) : '';
                 },
             ],
             ['db' => 'Student.created_at', 'dt' => 9],
