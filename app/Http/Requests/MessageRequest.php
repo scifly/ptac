@@ -16,11 +16,11 @@ class MessageRequest extends FormRequest {
     public function rules() {
         
         return [
-            'content' => 'required|string|max:255',
-            'serviceid' => 'required|string|max:255',
+//            'content' => 'required|string|max:255',
+//            'serviceid' => 'required|string|max:255',
             'message_id' => 'required|integer',
             'url' => 'required|string|max:255',
-            'message_type_id' => 'required|integer',
+//            'message_type_id' => 'required|integer',
         ];
         
     }
