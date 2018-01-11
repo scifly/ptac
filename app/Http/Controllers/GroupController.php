@@ -107,7 +107,9 @@ class GroupController extends Controller {
         $group = Group::find($id);
         if (!$group) { return $this->notFound(); }
         
-        return $this->result($group->modify($request->all(), $id));
+        return $this->result(
+            $group->modify($request->all(), $id)
+        );
         
     }
     

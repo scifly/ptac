@@ -575,8 +575,10 @@ HTML;
                 if ($schoolMenuId) {
                     return $schoolMenuId;
                 } else {
-                    return self::menuId($menuId, '企业');
+                    $corpMenuId = self::menuId($menuId, '企业');
+                    if ($corpMenuId) { return $corpMenuId; }
                 }
+                return 1;
             case '企业':
                 $corpMenuId = self::menuId($menuId, '企业');
                 if (!$subRoot) { return $corpMenuId; }
