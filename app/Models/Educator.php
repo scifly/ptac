@@ -545,8 +545,8 @@ class Educator extends Model {
                     $id = $row['id'];
                     $status = $d ? Datatable::DT_ON : Datatable::DT_OFF;
                     $user = Auth::user();
-                    $showLink = sprintf(Datatable::DT_LINK_SHOW, 'show_' . $id) .
-                        str_repeat(Datatable::DT_SPACE, 3);
+                    // $showLink = sprintf(Datatable::DT_LINK_SHOW, 'show_' . $id) .
+                    //     str_repeat(Datatable::DT_SPACE, 3);
                     $editLink = sprintf(Datatable::DT_LINK_EDIT, 'edit_' . $id) .
                         str_repeat(Datatable::DT_SPACE, 2);
                     $delLink = sprintf(Datatable::DT_LINK_DEL, $id) .
@@ -554,7 +554,7 @@ class Educator extends Model {
                     $rechargeLink = sprintf(Datatable::DT_LINK_RECHARGE, 'recharge_' . $id);
                     return
                         $status . str_repeat(Datatable::DT_SPACE, 3) .
-                        ($user->can('act', self::uris()['show']) ? $showLink : '') .
+                        // ($user->can('act', self::uris()['show']) ? $showLink : '') .
                         ($user->can('act', self::uris()['edit']) ? $editLink : '') .
                         ($user->can('act', self::uris()['destroy']) ? $delLink : '') .
                         ($user->can('act', self::uris()['recharge']) ? $rechargeLink : '');

@@ -10,7 +10,6 @@
             @if (isset($educator['user_id']))
                 {{ Form::hidden('user_id', $educator['user_id'], ['id' => 'user_id']) }}
             @endif
-            {{ Form::hidden('educator[school_id]', $schoolId, ['id' => 'school_id']) }}
             <!-- 真实姓名 -->
             <div class="form-group">
                 {!! Form::label('user[realname]', '姓名', [
