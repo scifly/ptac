@@ -195,11 +195,11 @@ function show_group() {
             success: function (result) {
                 if (result.statusCode === 200) {
                     choose_box.html(result.message);
-                    choose_dept.append(html);
                     show_group();
                     choose_item();
                     remove_choose_result();
                     getdept();
+                    choose_dept.append(html);
                 } else {
                     choose_box.empty();
                 }
