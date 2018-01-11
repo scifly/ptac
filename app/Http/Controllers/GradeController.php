@@ -83,7 +83,7 @@ class GradeController extends Controller {
         $selectedEducators = [];
         if ($grade->educator_ids != '0') {
             $selectedEducators = Educator::educatorList(
-                explode(",", $grade->educator_ids)
+                explode(",", rtrim($grade->educator_ids,","))
             );
         }
         
