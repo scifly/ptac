@@ -128,15 +128,16 @@ class ManageStudentAttendance implements ShouldQueue {
                 }
                 if($sasId != null) {
                     $msgTemplate = $studentAttendance->studentAttendancesetting->msg_template;
-                    // $msg = '尊敬的XX家长, 你的孩子于XX在校打卡, 打卡状态：XX';
-                    $msg = str_replace_array('XX', [
-                        $student->user->realname,
-                        $studentAttendance->punch_time,
-                        $studentAttendance->status == 1 ? '正常' : '异常',
-                        // $studentAttendance->inorout == 1 ? '进' : '出'
-                    ], $msgTemplate);
+                    // $msg = '尊敬的{name}家长, 你的孩子于{time}在校打卡, 打卡规则：{rule}, 状态：{status}';
+                    $repl = [
+                        '{name}' => $student->user->realname,
+                        '{time}' => $studentAttendance->punch_time,
+                        '{rule}' => $studentAttendance->studentAttendancesetting->name,
+                        '{status}' => $studentAttendance->status == 1 ? '正常' : '异常',
+                    ];
+                    $msg = strtr($msgTemplate, $repl);
                 } else {
-                    $msg = '尊敬的' . $student->user->realname . '家长,你的孩子于' . $studentAttendance->punch_time . '在校打卡,打卡状态：异常';
+                    $msg = '尊敬的' . $student->user->realname . '家长,你的孩子于' . $studentAttendance->punch_time . '在校打卡,未在规定时间打卡';
                 }
                 //在本地创建消息记录
                 $messageSendingLog = new MessageSendingLog();
