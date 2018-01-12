@@ -248,6 +248,7 @@ class Educator extends Model {
                             ];
                         }
                         $classSubjects = self::array_unique_fb($uniqueArray);
+
                         foreach ($classSubjects as $key => $row) {
                             if ($row['class_id'] != 0 && $row['class_id'] != 0) {
                                 EducatorClass::create([
@@ -380,8 +381,9 @@ class Educator extends Model {
                         ];
                     }
                     $classSubjects = self::array_unique_fb($uniqueArray);
+
                     foreach ($classSubjects as $key => $row) {
-                        if ($row['class_id'] != 0 && $row['class_id'] != 0) {
+                        if ($row['class_id'] != 0 && $row['subject_id'] != 0) {
                             EducatorClass::create([
                                 'educator_id' => $request->input('id'),
                                 'class_id' => $row['class_id'],

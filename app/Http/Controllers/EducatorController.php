@@ -105,6 +105,7 @@ class EducatorController extends Controller {
     public function edit($id) {
 
         $educator = Educator::find($id);
+     
         $this->authorize('rud', $educator);
         if (Request::method() === 'POST') {
             return response()->json(Department::tree());
