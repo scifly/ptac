@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use ReflectionClass;
 use Throwable;
@@ -265,6 +266,38 @@ class Tab extends Model {
         
         return true;
 
+    }
+    
+    /**
+     * 根据角色返回可访问的卡片ids
+     *
+     * @return array
+     */
+    function allowedTabIds() {
+    
+        $user = Auth::user();
+        $role = $user->group->name;
+        switch ($role) {
+            case '运营':
+                return self::whereEnabled(1)
+                    ->pluck('id')
+                    ->toArray();
+            case '企业':
+                return self::whereEnabled(1)
+                    ->whereIn('group_id', [0, 2, 3])
+                    ->pluck('id')
+                    ->toArray();
+            case '学校':
+                return self::whereEnabled(1)
+                    ->whereIn('group_id', [0, 3])
+                    ->pluck('id')
+                    ->toArray();
+            default:
+                return GroupTab::whereGroupId($user->group_id)
+                    ->pluck('tab_id')
+                    ->toArray();
+        }
+        
     }
     
     /**

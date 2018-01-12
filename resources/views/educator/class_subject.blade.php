@@ -11,8 +11,8 @@
             </thead>
             <tbody>
 
-            @if(isset($educator->educatorClasses) && count($educator->educatorClasses) !=0 )
-                @foreach($educator->educatorClasses  as $index=> $class)
+            @if(isset($educator->classes) && count($educator->classes) !=0 )
+                @foreach($educator->classes  as $index=> $class)
                     <tr>
                         <td class="text-left">
                             <label for="classSubject[class_ids][]"></label>
@@ -41,7 +41,7 @@
                             </select>
                         </td>
                         <td class="text-center">
-                            @if($index == sizeof($educator->educatorClasses) - 1)
+                            @if($index == sizeof($educator->classes) - 1)
                                 <span class="input-group-btn">
                                             <button class="btn btn-box-tool  btn-class-add btn-add" type="button">
                                                 <i class="fa fa-plus text-blue"></i>

@@ -151,7 +151,6 @@ class StudentAttendanceController extends Controller {
         $rules = StudentAttendanceSetting::where('grade_id', $grade->id)
             ->where('semester_id', $semester)
             ->where('day', $weekDay)
-            ->where('inorout', $input['inorout'])
             ->get();
         if (count($rules) == 0) {
             return response()->json('考勤规则有误！', 500);

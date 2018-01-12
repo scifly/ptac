@@ -59,7 +59,6 @@ class ManageStudentAttendance implements ShouldQueue {
                 $punch_time = date("H:i:s", $time);
                 $date_time = date("Y-m-d", $time);
                 $schoolSemesters = Semester::where('school_id', $school->id)->get();
-                $timeDiff = [];
                 $status = 0;
                 //找出对应的学期 根据打卡时间
                 foreach ($schoolSemesters as $se) {
@@ -78,20 +77,23 @@ class ManageStudentAttendance implements ShouldQueue {
                 $rules = StudentAttendanceSetting::where('grade_id', $grade->id)
                     ->where('semester_id', $semester)
                     ->where('day', $weekDay)
-                    ->where('inorout', $input['inorout'])
                     ->get();
+                
                 //规则为空时，失败
                 foreach ($rules as $rule) {
                     if ($rule->start <= $punch_time && $rule->end >= $punch_time) {
                         $sasId = $rule->id;
-                        $status = 1;
-                    } else {
-                        $timeDiff[$rule->id] = $time - strtotime($rule->start);
+                        //对比进出状态判断是否匹配
+                        if($input['inorout'] == $rule->inorout){
+                            $status = 1;
+                        } else {
+                            $status = 0;
+                        }
                     }
                 }
-                //如果没有满足一个规则，异常，判断打卡时间距离那一个时间段最近
+                //如果没有满足一个规则，异常，且状态写为空
                 if (!isset($sasId)) {
-                    $sasId = array_search(min($timeDiff), $timeDiff);
+                    $sasId = null;
                 }
                 #存储到数据表
                 // 先处理照片 $input['img'] 为照片路径
@@ -124,9 +126,19 @@ class ManageStudentAttendance implements ShouldQueue {
                 foreach ($custodians as $custodian) {
                     $userId[] = $custodian->user->id;
                 }
-                $msgTemplate = $studentAttendance->studentAttendancesetting->msg_template;
-                // $msg = '尊敬的XX家长, 你的孩子于XX在校打卡, 打卡状态：XX';
-                $msg = str_replace_array('XX', [$student->user->realname, $studentAttendance->punch_time, $studentAttendance->status == 1 ? '正常' : '异常'], $msgTemplate);
+                if($sasId != null) {
+                    $msgTemplate = $studentAttendance->studentAttendancesetting->msg_template;
+                    // $msg = '尊敬的{name}家长, 你的孩子于{time}在校打卡, 打卡规则：{rule}, 状态：{status}';
+                    $repl = [
+                        '{name}' => $student->user->realname,
+                        '{time}' => $studentAttendance->punch_time,
+                        '{rule}' => $studentAttendance->studentAttendancesetting->name,
+                        '{status}' => $studentAttendance->status == 1 ? '正常' : '异常',
+                    ];
+                    $msg = strtr($msgTemplate, $repl);
+                } else {
+                    $msg = '尊敬的' . $student->user->realname . '家长,你的孩子于' . $studentAttendance->punch_time . '在校打卡,未在规定时间打卡';
+                }
                 //在本地创建消息记录
                 $messageSendingLog = new MessageSendingLog();
                 //新增一条日志记录（指定批次）
@@ -143,7 +155,7 @@ class ManageStudentAttendance implements ShouldQueue {
                     $messageData = [
                         'title'           => $date_time . '-考勤信息',
                         'comm_type_id'    => CommType::whereName('应用')->first()->id,
-                        'app_id'          => App::whereName('信息发送')->first()->id,
+                        'app_id'          => App::whereName('考勤中心')->first()->id,
                         'msl_id'          => $mslId,
                         'content'         => $msg,
                         'serviceid'       => 0,

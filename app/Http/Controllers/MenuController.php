@@ -34,7 +34,7 @@ class MenuController extends Controller {
     public function index() {
         
         if (Request::method() === 'POST') {
-            return Menu::tree(Menu::rootMenuId());
+            return Menu::tree(Menu::rootMenuId(true));
         }
 
         return $this->output();
@@ -186,7 +186,10 @@ class MenuController extends Controller {
             $tabs[] = Tab::find($rank['tab_id']);
         }
 
-        return $this->output(['tabs' => $tabs]);
+        return $this->output([
+            'tabs' => $tabs,
+            'menuId' => $id
+        ]);
 
     }
     

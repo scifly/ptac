@@ -31,7 +31,14 @@ class GroupMenu extends Model {
     protected $table = 'groups_menus';
 
     protected $fillable = ['group_id', 'menu_id', 'enabled'];
-    
+
+    /**
+     * 返回指定记录所属的菜单对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function menu() { return $this->belongsTo('App\Models\Menu'); }
+
     /**
      * 根据角色id保存所有菜单id
      *
