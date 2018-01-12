@@ -14,7 +14,7 @@ class AddSasIdToStudentAttendancesTable extends Migration {
     public function up() {
 
         Schema::table('student_attendances', function (Blueprint $table) {
-            $table->boolean('sas_id')->after('student_id')->comment('关联规则id');
+            $table->boolean('sas_id')->after('student_id')->nullable()->comment('关联规则id');
         });
 
     }
