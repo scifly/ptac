@@ -186,7 +186,10 @@ class MenuController extends Controller {
             $tabs[] = Tab::find($rank['tab_id']);
         }
 
-        return $this->output(['tabs' => $tabs]);
+        return $this->output([
+            'tabs' => $tabs,
+            'menuId' => $id
+        ]);
 
     }
     

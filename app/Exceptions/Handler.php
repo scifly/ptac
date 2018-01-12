@@ -80,6 +80,9 @@ class Handler extends ExceptionHandler {
                 case 'TokenMismatchException':
                     $status = 498;
                     break;
+                case 'ErrorException':
+                    $status = 500;
+                    break;
                 default:
                     break;
             }
@@ -95,6 +98,7 @@ class Handler extends ExceptionHandler {
             $response['exception'] = $eName;
             return response()->json($response, $status);
         }
+
         return parent::render($request, $exception);
         
     }
