@@ -109,8 +109,9 @@ class StudentController extends Controller {
      */
     public function edit($id) {
         if (Request::method() === 'POST') {
-            $field = Request::query('field');
-            $id = Request::query('id');
+            $field = Request::get('field');
+            $id = Request::get('id');
+
             $this->result['html'] = School::getFieldList($field, $id);
             return response()->json($this->result);
         }
