@@ -199,9 +199,9 @@ class StudentAttendance extends Model {
         return $item;
     }
     public function getStudentData($date , $type, $classId) {
-        $date = '2018-01-07';
-        $type = 'surplus';
-        $classId = '1';
+//        $date = '2018-01-07';
+//        $type = 'surplus';
+//        $classId = '1';
         $startTime = date('Y-m-d H:i:s', strtotime($date));
         $endTime = date('Y-m-d H:i:s', strtotime($date)+24*3600-1);
         $all = Student::whereClassId($classId)->get()->pluck('id')->toArray();
