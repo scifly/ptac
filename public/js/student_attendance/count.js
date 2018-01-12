@@ -144,5 +144,17 @@ function showtable_pie(index,arrayTime){
 function show_list(){
 	$('.js-show-list').click(function(){
 		console.log(1);
+        var formData = new FormData();
+        formData.append('_token', $token.attr('content'));
+        $.ajax({
+            url: page.siteRoot() + "student_attendances/student",
+            type: 'POST',
+            cache: false,
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (result) {
+            }
+	    });
 	});
 }
