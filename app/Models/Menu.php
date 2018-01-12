@@ -22,9 +22,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
-
 /**
- * App\Models\Menu
+ * App\Models\Menu 菜单
  *
  * @property int $id
  * @property int|null $parent_id 父菜单ID
@@ -41,6 +40,7 @@ use Throwable;
  * @property-read Collection|Menu[] $children
  * @property-read Company $company
  * @property-read Corp $corp
+ * @property-read Collection|Group[] $groups
  * @property-read Icon|null $icon
  * @property-read Media|null $media
  * @property-read MenuType $menuType
@@ -65,6 +65,7 @@ class Menu extends Model {
 
     // todo: needs to be optimized
 
+    const SUPER_ROLES = ['运营', '企业', '学校'];
     # 不含子菜单的HTML模板
     const SIMPLE = '<li%s><a id="%s" href="%s" class="leaf"><i class="%s"></i> %s</a></li>';
     # 包含子菜单的HTML模板
@@ -119,6 +120,20 @@ HTML;
      * @return HasOne
      */
     public function school() { return $this->hasOne('App\Models\School'); }
+
+    /**
+     * 获取指定菜单所属的所有角色对象
+     *
+     * @return BelongsToMany
+     */
+    public function groups() { return $this->belongsToMany('App\Models\Group', 'groups_menus'); }
+
+    /**
+     * 获取指定菜单包含的所有角色菜单对象
+     *
+     * @return HasMany
+     */
+    public function groupMenus() { return $this->hasMany('App\Models\GroupMenu'); }
 
     /**
      * 获取菜单包含的卡片
@@ -495,82 +510,78 @@ HTML;
     private static function subMenus($rootId, $childrenIds = null, $disabled = false) {
 
         $menus = [];
-        if ($disabled) {
-            if ($rootId == 1) {
-                $data = self::where('id', '<>', 1)
-                    ->orderBy('position')
-                    ->get();
-            } else {
-                $role = Auth::user()->group->name;
-                if ($role != '学校' && $role != '企业') {
-                    $menuIds = GroupMenu::whereGroupId(Auth::user()->group_id)
-                        ->get(['menu_id'])
-                        ->toArray();
-                    $data = self::whereIn('id', $menuIds)
-                        ->orderBy('position')
-                        ->get();
-                }else{
-                    $data = self::whereIn('id', $childrenIds)
-                        ->orderBy('position')
-                        ->get();
-                }
-            }
-        } else {
-            if ($rootId == 1) {
-                $data = self::whereEnabled(1)
-                    ->where('id', '<>', 1)
-                    ->orderBy('position')
-                    ->get();
-            } else {
+        $user = Auth::user();
+        $role = $user->group->name;
 
-                $role = Auth::user()->group->name;
-                if ($role != '学校' && $role != '企业') {
-                    $menuIds = GroupMenu::whereGroupId(Auth::user()->group_id)
-                        ->get(['menu_id'])
-                        ->toArray();
-                    $data = self::whereEnabled(1)
-                        ->whereIn('id', $menuIds)
-                        ->orderBy('position')
-                        ->get();
-                }else{
-                    $data = self::whereEnabled(1)
-                        ->whereIn('id', $childrenIds)
-                        ->orderBy('position')
-                        ->get();
+        if ($rootId == 1) {
+            $data = self::where('id', '<>', 1)
+                ->orderBy('position')
+                ->get()->toArray();
+        } else {
+            if (!in_array($role, self::SUPER_ROLES)) {
+                $data = GroupMenu::with('menu')
+                    ->where('group_id', $user->group_id)
+                    ->get()->pluck('menu')
+                    ->toArray();
+                $arr = [];
+                foreach ($data as $key => $menu) {
+                    $arr[$key] = $menu['position'];
                 }
+                array_multisort($arr, SORT_ASC, $data);
+            } else {
+                $data = self::whereIn('id', $childrenIds)
+                    ->orderBy('position')
+                    ->get()->toArray();
             }
         }
 
         foreach ($data as $datum) {
             $icon = 'fa fa-circle-o';
-            if (isset($datum->icon_id)) {
-                $icon = Icon::find($datum->icon_id)->name;
+            if (isset($datum['icon_id'])) {
+                $icon = Icon::find($datum['icon_id'])->name;
             }
-            $menus[$datum->id] = [
-                'parent_id' => $datum->parent_id,
-                'name' => $datum->name,
-                'uri' => $datum->uri,
+            if (!$disabled && !$datum['enabled']) { continue; }
+            $menus[$datum['id']] = [
+                'parent_id' => $datum['parent_id'],
+                'name' => $datum['name'],
+                'uri' => $datum['uri'],
                 'icon' => $icon,
-                'menu_type_id' => $datum->menu_type_id,
+                'menu_type_id' => $datum['menu_type_id'],
             ];
         }
 
         return $menus;
-    }
 
+    }
+    
     /**
      * 获取当前登录用户的根菜单ID
      *
+     * @param bool $subRoot
+     *      false 返回当前角色可访问的最顶级菜单id,
+     *      true  返回当前菜单的上级菜单中类型为“学校”、“企业”的id
      * @return int|mixed
      */
-    static function rootMenuId() {
+    static function rootMenuId($subRoot = false) {
 
         $user = Auth::user();
+        $menuId = session('menuId');
         switch ($user->group->name) {
-            case '运营': return 1;
+            case '运营':
+                if (!$subRoot) { return 1; };
+                $schoolMenuId = self::menuId($menuId);
+                if ($schoolMenuId) {
+                    return $schoolMenuId;
+                } else {
+                    $corpMenuId = self::menuId($menuId, '企业');
+                    if ($corpMenuId) { return $corpMenuId; }
+                }
+                return 1;
             case '企业':
-                return Corp::whereDepartmentId($user->topDeptId())
-                    ->first()->menu_id;
+                $corpMenuId = self::menuId($menuId, '企业');
+                if (!$subRoot) { return $corpMenuId; }
+                $schoolMenuId = self::menuId($menuId);
+                return $schoolMenuId ?? $corpMenuId;
             case '学校':
                 return School::whereDepartmentId($user->topDeptId())
                     ->first()->menu_id;

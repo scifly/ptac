@@ -79,7 +79,7 @@ class SchoolEventSubscriber {
         if ($department->department_type_id == $this->departmentTypeId) {
             $school = School::whereDepartmentId($department->id)->first();
             $parentDeparment = $department->parent;
-            $corpId = Corp::whereDepartmentId($parentDeparment->id);
+            $corpId = Corp::whereDepartmentId($parentDeparment->id)->first()->id;
             if ($school->corp_id != $corpId) {
                 return $school->modify(['corp_id' => $corpId], $school->id);
             }
@@ -104,7 +104,7 @@ class SchoolEventSubscriber {
         if ($menu->menu_type_id == $this->menuTypeId) {
             $school = School::whereMenuId($menu->id)->first();
             $parentMenu = $menu->parent;
-            $corpId = Corp::whereMenuId($parentMenu->id);
+            $corpId = Corp::whereMenuId($parentMenu->id)->first()->id;
             if ($school->corp_id != $corpId) {
                 return $school->modify(['corp_id' => $corpId], $school->id);
             }

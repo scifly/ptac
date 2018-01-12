@@ -149,8 +149,8 @@ var page = {
         $('.overlay').hide();
         switch (obj['statusCode']) {
             case 400:
-                var response = JSON.parse(e.responseText);
-                var errors = response['errors'];
+                // var response = JSON.parse(e.responseText);
+                var errors = obj['errors'];
                 $.each(errors, function() {
                     page.inform('验证错误', this, page.failure);
                 });
@@ -164,6 +164,10 @@ var page = {
                 break;
             case 498:
                 window.location.reload();
+                break;
+            case 500:
+                var message = obj['message'] + '\n' + obj['file'] + ' : ' + obj['line'];
+                page.inform('500错误', message, page.failure);
                 break;
             default:
                 page.inform('出现异常', obj['message'], page.failure);

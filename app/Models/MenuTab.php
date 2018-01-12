@@ -8,6 +8,7 @@ use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Throwable;
 
 /**
  * App\Models\MenuTab
@@ -91,15 +92,14 @@ class MenuTab extends Model {
         return true;
 
     }
-    
+
     /**
      * 保存卡片排序
      *
      * @param $menuId
      * @param array $ranks
      * @return bool
-     * @throws Exception
-     * @throws \Throwable
+     * @throws Throwable
      */
     static function storeTabRanks($menuId, array $ranks) {
         

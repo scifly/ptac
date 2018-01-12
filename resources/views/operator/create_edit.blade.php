@@ -36,27 +36,12 @@
                     ]) }}
                 </div>
             </div>
-            <div class="form-group">
-                <label for="user[gender]" class="col-sm-3 control-label">性别</label>
-                <div class="col-sm-6">
-                    <label id="user[gender]">
-                        <input id="user[gender]"
-                               @if((isset($operator) && $operator->user->gender) || !isset($operator))
-                                   checked
-                               @endif
-                               type="radio" name="user[gender]" class="minimal" value="1"
-                        />
-                    </label> 男
-                    <label id="user[gender]">
-                        <input id="user[gender]"
-                               @if((isset($operator) && $operator->user->gender == 0 ))
-                                   checked
-                               @endif
-                               type="radio" name="user[gender]" class="minimal" value="0"
-                        />
-                    </label> 女
-                </div>
-            </div>
+            @include('partials.enabled', [
+                'label' => '性别',
+                'id' => 'user[gender]',
+                'value' => $operator->user->gender ?? null,
+                'options' => ['男', '女']
+            ])
             @if(!isset($operator))
                 {!! Form::hidden('role', $role, ['id' => 'role']) !!}
                 @include('partials.single_select', [

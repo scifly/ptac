@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Models\Action;
 use App\Models\Corp;
 use App\Models\GroupTab;
 use App\Models\Menu;
@@ -26,9 +25,12 @@ use Throwable;
  */
 class HomeController extends Controller {
 
-    public function __construct() {
+    protected $tab;
+    
+    public function __construct(Tab $tab) {
         
         $this->middleware(['auth', 'checkrole']);
+        $this->tab = $tab;
 
     }
 
@@ -42,7 +44,7 @@ class HomeController extends Controller {
         $menuId = Request::query('menuId');
         $menu = Menu::find($menuId);
         if (!$menu) {
-            list($view, $parentMenuId) = self::parentMenuId();
+            list($view, $parentMenuId) = self::getVars();
             $menuId = Menu::whereParentId($parentMenuId)
                 ->whereIn('uri', ['home', '/'])
                 ->first()
@@ -104,25 +106,19 @@ class HomeController extends Controller {
         } else {
             Session::forget('menuChanged');
         }
-        $user = Auth::user();
-        $role = $user->group->name;
 
         # 获取卡片列表
         $tabArray = [];
         $isTabLegit = true;
-        $tabRanks = MenuTab::whereMenuId($id)
-            ->get()->sortBy('tab_order')
-            ->toArray();
-        $allowedTabIds = GroupTab::whereGroupId($user->group_id)
+        $tabIds = MenuTab::whereMenuId($id)
+            ->orderBy('tab_order')
             ->pluck('tab_id')
             ->toArray();
-        if (empty($tabRanks)) { $isTabLegit = false; };
-        foreach ($tabRanks as $rank) {
-            $tab = Tab::find($rank['tab_id']);
-            if (
-                !in_array($role, ['运营', '企业', '学校']) &&
-                !in_array($rank['tab_id'], $allowedTabIds)
-            ) { continue; }
+        $allowedTabIds = $this->tab->allowedTabIds();
+        if (empty($tabIds)) { $isTabLegit = false; };
+        foreach ($tabIds as $tabId) {
+            $tab = Tab::find($tabId);
+            if (!in_array($tabId, $allowedTabIds)) { continue; }
             if (!empty($tab->action->route)) {
                 $tabArray[] = [
                     'id'     => 'tab_' . $tab->id,
@@ -151,38 +147,13 @@ class HomeController extends Controller {
                 $tabArray[0]['active'] = true;
             }
         } else {
-            $tabArray = [];
-        }
-        # 如果菜单没有配置或配置有误, 则显示菜单配置卡片
-        if (!$isTabLegit) {
-            session(['menuId' => 0]);
-            $actionId = Action::whereEnabled(1)
-                ->where('controller', 'MenuController')
-                ->where('method', 'index')
-                ->first()
-                ->id;
-            $tab = Tab::whereEnabled('1')
-                ->where('controller', 'MenuController')
-                ->where('action_id', $actionId)
-                ->first();
-            $tabArray[] = [
-                'id'     => 'tab_' . $tab->id,
-                'name'   => $tab->name,
-                'icon'   => isset($tab->icon_id) ? $tab->icon->name : null,
-                'active' => true,
-                'url'    => $tab->action->route,
-            ];
+            abort(404);
         }
         # 获取并返回wrapper-content层中的html内容
-        try {
-            $html = view('partials.site_content', ['tabs' => $tabArray])->render();
-        } catch (Exception $e) {
-            throw $e;
-        }
         if (Request::ajax()) {
             return response()->json([
                 'statusCode' => 200,
-                'html' => $html 
+                'html' => view('partials.site_content', ['tabs' => $tabArray])->render()
             ]);
         }
         # 获取菜单列表
@@ -200,7 +171,7 @@ class HomeController extends Controller {
     /**
      * @return array
      */
-    private static function parentMenuId(): array {
+    private static function getVars(): array {
 
         $user = Auth::user();
         switch ($user->group->name) {
@@ -229,5 +200,5 @@ class HomeController extends Controller {
         return array($view, $parentMenuId);
 
     }
-
+    
 }
