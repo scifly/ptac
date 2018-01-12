@@ -77,7 +77,7 @@ class SquadController extends Controller {
         if (!$class) { return $this->notFound(); }
         if ($class->educator_ids != '0') {
             $selectedEducators = Educator::educatorList(
-                explode(",", $class->educator_ids)
+                explode(",", rtrim($class->educator_ids,","))
             );
         }
         

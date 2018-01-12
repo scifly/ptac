@@ -29,7 +29,7 @@
                             <i class="fa fa-calendar"></i>
                         </div>
                         {!! Form::text('start_date', null, [
-                            'class' => 'form-control pull-right',
+                            'class' => 'form-control pull-right start_date',
                             'placeholder' => '(请选择起始日期)',
                             'required' => 'true',
                         ]) !!}
@@ -45,7 +45,7 @@
                             <i class="fa fa-calendar"></i>
                         </div>
                         {!! Form::text('end_date', null, [
-                            'class' => 'form-control pull-right',
+                            'class' => 'form-control pull-right start_date',
                             'placeholder' => '(请选择结束日期)',
                             'required' => 'true',
                         ]) !!}
