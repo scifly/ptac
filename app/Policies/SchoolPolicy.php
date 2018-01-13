@@ -53,7 +53,10 @@ class SchoolPolicy {
         $schoolId = $model->{'school_id'} ?? null;
         if ($role == '企业') {
             $corp = Corp::whereDepartmentId($user->topDeptId())->first();
-            return in_array($schoolId, $corp->schools->pluck('id')->toArray());
+            return in_array(
+                $schoolId,
+                $corp->schools->pluck('id')->toArray()
+            );
         }
         
         return $schoolId == School::schoolId();

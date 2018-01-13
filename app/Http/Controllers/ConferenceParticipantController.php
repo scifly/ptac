@@ -49,9 +49,14 @@ class ConferenceParticipantController extends Controller {
      */
     public function store(ConferenceParticipantRequest $request) {
         
-        $this->authorize('c', ConferenceParticipant::class);
+        $this->authorize(
+            'store',
+            ConferenceParticipant::class
+        );
         
-        return $this->result(ConferenceParticipant::create($request->all()));
+        return $this->result(
+            ConferenceParticipant::create($request->all())
+        );
         
     }
     
@@ -65,7 +70,7 @@ class ConferenceParticipantController extends Controller {
     public function show($id) {
         
         $cp = ConferenceParticipant::find($id);
-        $this->authorize('rud', $cp);
+        $this->authorize('show', $cp);
         
         return $this->output(['cp' => $cp]);
         
