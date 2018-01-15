@@ -207,9 +207,7 @@ class StudentAttendance extends Model {
         $all = Student::whereClassId($classId)->get()->pluck('id')->toArray();
         $result = [];
         $data =$this->getSqlData(implode(',',$all), $startTime, $endTime);
-<<<<<<< HEAD
-        Log::debug();
-=======
+
         if ($type == 'surplus') {
             $items = $this->whereIn('student_id', $all)
                 ->where('punch_time', '>=', $startTime)
@@ -243,7 +241,7 @@ class StudentAttendance extends Model {
                 }
             }
         }
->>>>>>> refs/remotes/origin/master
+
         if ($data) {
             switch ($type) {
                 case 'normal':
@@ -287,49 +285,7 @@ class StudentAttendance extends Model {
                         ];
                     }
                     break;
-<<<<<<< HEAD
-                case  'surplus':
-                    $items = $this->whereIn('student_id', $all)
-                        ->where('punch_time', '>=', $startTime)
-                        ->where('punch_time', '<', $endTime)
-                        ->get()
-                        ->pluck('student_id');
-                        Log::debug($items);
-                        Log::debug(Student::whereNotIn('id', $items)->get()	);
-                        if($items) {
-                    $s = Student::whereNotIn('id', $items)->where('class_id', $classId)->get();
-                        	
-                        }else{
-                    $s = Student::whereClassId($classId)->get();
-                        	
-                        }
 
-                    if ($s) {
-                        foreach ($s as $datum) {
-                            if ($datum->custodians) {
-                                $cu = User::whereIn('id', array_column(json_decode($datum->custodians), 'user_id'))
-                                    ->get()
-                                    ->pluck('realname');
-                            }else{
-                                $cu = [];
-                            }
-                            if (json_decode($datum->user['mobiles'])) {
-                                $mo = array_column(json_decode($datum->user['mobiles']), 'mobile');
-                            }else{
-                                $mo = [];
-                            }
-                            $result[] = [
-                                'name' => $datum->user['realname'],
-                                'custodian' => $cu,
-                                'moblie' => $mo,
-                                'punch_time' => '',
-                                'inorout' => '',
-                            ];
-                        }
-                    }
-                    break;
-=======
->>>>>>> refs/remotes/origin/master
             }
         }
 
