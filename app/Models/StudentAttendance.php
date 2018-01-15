@@ -207,6 +207,7 @@ class StudentAttendance extends Model {
         $all = Student::whereClassId($classId)->get()->pluck('id')->toArray();
         $result = [];
         $data =$this->getSqlData(implode(',',$all), $startTime, $endTime);
+        Log::debug();
         if ($data) {
             switch ($type) {
                 case 'normal':
@@ -256,7 +257,16 @@ class StudentAttendance extends Model {
                         ->where('punch_time', '<', $endTime)
                         ->get()
                         ->pluck('student_id');
-                    $s = Student::whereNotIn('id', $items)->get();
+                        Log::debug($items);
+                        Log::debug(Student::whereNotIn('id', $items)->get()	);
+                        if($items) {
+                    $s = Student::whereNotIn('id', $items)->where('class_id', $classId)->get();
+                        	
+                        }else{
+                    $s = Student::whereClassId($classId)->get();
+                        	
+                        }
+
                     if ($s) {
                         foreach ($s as $datum) {
                             if ($datum->custodians) {

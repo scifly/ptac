@@ -70,7 +70,18 @@ var page = {
             css: 'js/plugins/jqueryui/css/jquery-ui.css',
             js: 'js/plugins/jqueryui/js/jquery-ui-timepicker-addon.js',
             jscn: 'js/plugins/jqueryui/js/datepicker-zh-CN.js'
-        }
+        },
+        moment: {
+        	js: 'js/plugins/moment/min/moment.min.js',
+        },
+        daterangepicker: {
+        	css: 'js/plugins/bootstrap-daterangepicker/daterangepicker.css',
+        	js: 'js/plugins/bootstrap-daterangepicker/daterangepicker.js',
+        },
+        echarts: {
+        	js: 'js/plugins/echarts.simple.min.js',
+        },
+        
     },
     backToList: function (table) {
         var $activeTabPane = $('#tab_' + page.getActiveTabId());
@@ -84,7 +95,7 @@ var page = {
             ? window.location.origin + '/'
             : window.location.protocol + '/' + window.location.host + '/';
         if (window.location.href.indexOf('public') > -1) {
-            return siteRoot + 'pppp/public/';
+            return siteRoot + 'ptac/public/';
         }
         return siteRoot;
     },
@@ -467,6 +478,7 @@ var page = {
             $('select').select2(typeof options !== 'undefined' ? options : { language: "zh-CN" });
         }
     },
+    
     initICheck: function (object) {
         var init = function(object) {
             if (typeof object === 'undefined') {

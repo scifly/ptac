@@ -90,9 +90,10 @@ class StudentAttendanceController extends Controller {
     public function student() {
 
         if (Request::method() === 'POST') {
-            $date = Request::query('date');
-            $type = Request::query('type');
-            $classId = Request::query('class_id');
+            $date = Request::input('date');
+            $type = Request::input('type');
+            $classId = Request::input('class_id');
+            
             if ($date && $type && $classId) {
 
                 return response()->json($this->studentAttendance->getStudentData($date , $type, $classId));

@@ -1,9 +1,4 @@
-<link rel="stylesheet" href="{{ URL::asset('js/bootstrap-daterangepicker/daterangepicker.css') }}">
-<link rel="stylesheet" href="{{ URL::asset('js/plugins/select2/css/select2.min.css') }}">
 <style>
-	.select2-container .select2-selection--single{
-		height: 34px;
-	}
 	.attendances-date,.attendances-data{
 		font-size: 18px;
 		line-height: 100%;
@@ -150,8 +145,3 @@
     	</div>
   	</div>
 </div>
-
-<script type="text/javascript" src="{{ URL::asset('js/student_attendance/echarts.simple.min.js') }}"></script>
-<script type="text/javascript" src="{{ URL::asset('js/moment/min/moment.min.js') }}"></script>
-<script type="text/javascript" src="{{ URL::asset('js/bootstrap-daterangepicker/daterangepicker.js') }}"></script>
-<script type="text/javascript" src="{{ URL::asset('js/plugins/select2/js/select2.full.min.js') }}"></script>
