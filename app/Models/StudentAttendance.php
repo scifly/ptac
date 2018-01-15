@@ -256,7 +256,9 @@ class StudentAttendance extends Model {
                         ->where('punch_time', '<', $endTime)
                         ->get()
                         ->pluck('student_id');
-                    $s = Student::whereNotIn('id', $items)->get();
+                    $s = Student::whereClassId($classId)
+                        ->whereNotIn('id', $items)
+                        ->get();
                     if ($s) {
                         foreach ($s as $datum) {
                             if ($datum->custodians) {
