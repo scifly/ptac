@@ -111,7 +111,6 @@ class StudentController extends Controller {
         if (Request::method() === 'POST') {
             $field = Request::get('field');
             $id = Request::get('id');
-
             $this->result['html'] = School::getFieldList($field, $id);
             return response()->json($this->result);
         }

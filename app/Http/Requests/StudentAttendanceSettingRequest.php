@@ -26,10 +26,12 @@ class StudentAttendanceSettingRequest extends FormRequest {
             'name' => 'required|string|between:2,60|unique:student_attendance_settings,name,' .
                 $this->input('id') . ',id,' .
                 'grade_id,' . $this->input('grade_id') . ',' .
+                'day,' . $this->input('day') . ',' .
                 'semester_id,' . $this->input('semester_id'),
             'msg_template' => 'required|string|between:2,255',
             'start' => 'required',
             'end' => 'required',
+
             'startend' => [
                 'required', new StartEnd(), new Overlaid()
             ]
