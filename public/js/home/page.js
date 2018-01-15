@@ -72,6 +72,7 @@ var page = {
             jscn: 'js/plugins/jqueryui/js/datepicker-zh-CN.js'
         },
         moment: {
+        	css: 'js/student_attendance/count.css',
         	js: 'js/plugins/moment/min/moment.min.js',
         },
         daterangepicker: {

@@ -1,4 +1,5 @@
 page.initSelect2();
+page.loadCss(page.plugins.moment.css);
 page.loadCss(page.plugins.daterangepicker.css);
 $.getMultiScripts([page.plugins.echarts.js], page.siteRoot());
 $.getMultiScripts([page.plugins.moment.js], page.siteRoot()).done(function(){

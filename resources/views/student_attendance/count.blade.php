@@ -1,22 +1,4 @@
-<style>
-	.attendances-date,.attendances-data{
-		font-size: 18px;
-		line-height: 100%;
-		height: 100%;
-	}
-	.attendances-data .normal,.attendances-data .abnormal,.attendances-data .surplus{
-		cursor: pointer;
-	}
-	.normal{
-		color: #83db74;
-	}
-	.abnormal{
-		color:#fdde52 ;
-	}
-	.surplus{
-		color: #fc7f4e;
-	}
-</style>
+
 <div class="content clearfix">
 	<div class="col-lg-12">
 		<div class="box box-default box-solid" style="padding: 10px;">
