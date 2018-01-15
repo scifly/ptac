@@ -76,25 +76,27 @@ class Score extends Model {
 
         $columns = [
             ['db' => 'Score.id', 'dt' => 0],
-            ['db' => 'Student.student_number', 'dt' => 1],
-            ['db' => 'User.realname', 'dt' => 2],
-            ['db' => 'Subject.name as subjectname', 'dt' => 3],
-            ['db' => 'Exam.name as examname', 'dt' => 4],
-            ['db' => 'Score.class_rank', 'dt' => 5,
+            ['db' => 'User.realname', 'dt' => 1],
+            ['db' => 'Grade.name as gradename', 'dt' => 2],
+            ['db' => 'Squad.name', 'dt' => 3],
+            ['db' => 'Student.student_number', 'dt' => 4],
+            ['db' => 'Subject.name as subjectname', 'dt' => 5],
+            ['db' => 'Exam.name as examname', 'dt' => 6],
+            ['db' => 'Score.class_rank', 'dt' => 7,
                 'formatter' => function ($d) {
                     return $d === 0 ? "未统计" : $d;
                 },
             ],
-            ['db' => 'Score.grade_rank', 'dt' => 6,
+            ['db' => 'Score.grade_rank', 'dt' => 8,
                 'formatter' => function ($d) {
                     return $d === 0 ? "未统计" : $d;
                 },
             ],
-            ['db' => 'Score.score', 'dt' => 7],
-            ['db' => 'Score.created_at', 'dt' => 8],
-            ['db' => 'Score.updated_at', 'dt' => 9],
+            ['db' => 'Score.score', 'dt' => 9],
+            ['db' => 'Score.created_at', 'dt' => 10],
+            ['db' => 'Score.updated_at', 'dt' => 11],
             [
-                'db' => 'Score.enabled', 'dt' => 10,
+                'db' => 'Score.enabled', 'dt' => 12,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($d, $row);
                 },
@@ -131,6 +133,23 @@ class Score extends Model {
                 'type' => 'INNER',
                 'conditions' => [
                     'User.id = Student.user_id',
+                ],
+            ],
+
+            [
+                'table' => 'classes',
+                'alias' => 'Squad',
+                'type' => 'INNER',
+                'conditions' => [
+                    'Squad.id = Student.class_id',
+                ],
+            ],
+            [
+                'table' => 'grades',
+                'alias' => 'Grade',
+                'type' => 'INNER',
+                'conditions' => [
+                    'Grade.id = Squad.grade_id',
                 ],
             ],
         ];
