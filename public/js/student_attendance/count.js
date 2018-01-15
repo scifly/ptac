@@ -165,9 +165,16 @@ function show_list(){
                 var html = '';
                 for(var i=0;i<result.length;i++){
                     var data = result[i];
-                    console.log
+                    html += '<tr>'+
+                    			'<td>'+data.name+'</td>'+
+		                    	'<td>'+data.custodian+'</td>'+
+		                    	'<td>'+data.moblie+'</td>'+
+		                    	'<td>'+data.punch_time+'</td>'+
+		                    	'<td>'+data.inorout+'</td>'+
+		                    '</tr>';
                 }
-
+                $('#student-table tbody').html(html);
+				
             }
 	    });
 	});
