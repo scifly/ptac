@@ -143,9 +143,13 @@ function showtable_pie(index,arrayTime){
 
 function show_list(){
 	$('.js-show-list').click(function(){
-		console.log(1);
         var formData = new FormData();
         formData.append('_token', $token.attr('content'));
+        var mydate = $(this).parent().prev().text();
+        var type = $(this).attr('data-type');
+        formData.append('class_id', $('#classId').val());
+        formData.append('type', type);
+        formData.append('date', mydate);
         $.ajax({
             url: page.siteRoot() + "student_attendances/student",
             type: 'POST',
@@ -159,6 +163,7 @@ function show_list(){
                     var data = result[i];
                     console.log
                 }
+
             }
 	    });
 	});

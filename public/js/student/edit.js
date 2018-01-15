@@ -81,7 +81,7 @@ $(document).on('change', '#grade_id', function (e) {
         type: 'POST',
         dataType: 'json',
         url: page.siteRoot() + 'students/edit/'+id,
-        data:{ field:grade,id:gradeId, _token:token},
+        data:{ id:gradeId, field:grade, _token:token},
         success: function (result) {
             $next.remove();
             $classId.remove();
