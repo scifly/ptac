@@ -1,0 +1,18 @@
+
+.attendances-date,.attendances-data{
+	font-size: 18px;
+	line-height: 100%;
+	height: 100%;
+}
+.attendances-data .normal,.attendances-data .abnormal,.attendances-data .surplus{
+	cursor: pointer;
+}
+.normal{
+	color: #83db74;
+}
+.abnormal{
+	color:#fdde52 ;
+}
+.surplus{
+	color: #fc7f4e;
+}

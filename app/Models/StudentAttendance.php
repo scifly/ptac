@@ -207,6 +207,41 @@ class StudentAttendance extends Model {
         $all = Student::whereClassId($classId)->get()->pluck('id')->toArray();
         $result = [];
         $data =$this->getSqlData(implode(',',$all), $startTime, $endTime);
+
+        if ($type == 'surplus') {
+            $items = $this->whereIn('student_id', $all)
+                ->where('punch_time', '>=', $startTime)
+                ->where('punch_time', '<', $endTime)
+                ->get()
+                ->pluck('student_id');
+            $s = Student::whereClassId($classId)
+                ->whereNotIn('id', $items)
+                ->get();
+            if ($s) {
+                foreach ($s as $datum) {
+                    if ($datum->custodians) {
+                        $cu = User::whereIn('id', array_column(json_decode($datum->custodians), 'user_id'))
+                            ->get()
+                            ->pluck('realname');
+                    }else{
+                        $cu = [];
+                    }
+                    if (json_decode($datum->user['mobiles'])) {
+                        $mo = array_column(json_decode($datum->user['mobiles']), 'mobile');
+                    }else{
+                        $mo = [];
+                    }
+                    $result[] = [
+                        'name' => $datum->user['realname'],
+                        'custodian' => $cu,
+                        'moblie' => $mo,
+                        'punch_time' => '',
+                        'inorout' => '',
+                    ];
+                }
+            }
+        }
+
         if ($data) {
             switch ($type) {
                 case 'normal':
@@ -250,40 +285,10 @@ class StudentAttendance extends Model {
                         ];
                     }
                     break;
-                case  'surplus':
-                    $items = $this->whereIn('student_id', $all)
-                        ->where('punch_time', '>=', $startTime)
-                        ->where('punch_time', '<', $endTime)
-                        ->get()
-                        ->pluck('student_id');
-                    $s = Student::whereNotIn('id', $items)->get();
-                    if ($s) {
-                        foreach ($s as $datum) {
-                            if ($datum->custodians) {
-                                $cu = User::whereIn('id', array_column(json_decode($datum->custodians), 'user_id'))
-                                    ->get()
-                                    ->pluck('realname');
-                            }else{
-                                $cu = [];
-                            }
-                            if (json_decode($datum->user['mobiles'])) {
-                                $mo = array_column(json_decode($datum->user['mobiles']), 'mobile');
-                            }else{
-                                $mo = [];
-                            }
-                            $result[] = [
-                                'name' => $datum->user['realname'],
-                                'custodian' => $cu,
-                                'moblie' => $mo,
-                                'punch_time' => '',
-                                'inorout' => '',
-                            ];
-                        }
-                    }
-                    break;
-            }
 
+            }
         }
+
         return $result;
     }
 
