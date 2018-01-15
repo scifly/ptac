@@ -41,7 +41,7 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            {!! Form::label('password', '请输入新密码', [
+                            {!! Form::label('pwd1', '请输入新密码', [
                                 'class' => 'col-sm-3 control-label'
                             ]) !!}
                             <div class="col-sm-6">
@@ -53,7 +53,7 @@
                                         'class' => 'form-control',
                                         'placeholder' => '(请输入密码)',
                                         'required' => 'true',
-                                        'minlength' => '6'
+                                        'minlength' => '6',
                                     ]) !!}
                                 </div>
                             </div>
@@ -71,7 +71,10 @@
                                         'class' => 'form-control',
                                         'placeholder' => '(请确认密码)',
                                         'required' => 'true',
-                                        'minlength' => '6'
+                                        'minlength' => '6',
+                                        'data-parsley-equalto' => ''
+
+
                                     ]) !!}
                                 </div>
                             </div>

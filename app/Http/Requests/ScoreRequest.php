@@ -26,5 +26,11 @@ class ScoreRequest extends FormRequest {
             'score'      => 'required|numeric',
         ];
     }
-    
+
+    protected function prepareForValidation() {
+        $input = $this->all();
+        $input['class_rank'] = 0;
+        $input['grade_rank'] = 0;
+        $this->replace($input);
+    }
 }
