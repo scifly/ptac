@@ -3,7 +3,11 @@
 @endisset
 
 {!! Form::open([
-'method' => 'post','id' => 'formUser','class' => 'form-horizontal form-bordered','data-parsley-validate' => 'true']) !!}
+    'method' => 'post',
+    'id' => 'formUser',
+    'class' => 'form-horizontal form-bordered',
+    'data-parsley-validate' => 'true'
+]) !!}
 <section class="content clearfix">
     <div class="col-lg-12">
         <div class="nav-tabs-custom">
@@ -18,7 +22,6 @@
                 </div>
                 <div class="box-body">
                     <div class="form-horizontal">
-
                         @if (isset($user['id']))
                             {{ Form::hidden('user_id', $user['id'], ['id' => 'user_id']) }}
                         @endif

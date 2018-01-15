@@ -17,29 +17,55 @@ class Controller extends BaseController {
     
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
     
-    const HTTP_STATUSCODE_OK = 200;
-    const HTTP_STATUSCODE_BAD_REQUEST = 400;
-    const HTTP_STATUSCODE_UNAUTHORIZED = 401;
-    const HTTP_STATUSCODE_FORBIDDEN = 403;
-    const HTTP_STATUSCODE_NOT_FOUND = 404;
-    const HTTP_STATUSCODE_METHOD_NOT_ALLOWED = 405;
-    const HTTP_STATUSCODE_INTERNAL_SERVER_ERROR = 500;
-    
-    const MSG_OK = '操作成功';
-    const MSG_FAIL = '操作失败';
-    const MSG_CREATE_OK = '添加成功';
-    const MSG_DEL_OK = '删除成功';
-    const MSG_EDIT_OK = '保存成功';
-    const MSG_BAD_REQUEST = '请求错误';
-    const MSG_UNAUTHORIZED = '无权访问';
-    const MSG_FORBIDDEN = '禁止访问';
-    const MSG_NOT_FOUND = '找不到需要访问的页面';
-    const MSG_METHOD_NOT_ALLOWED = '不支持该请求方法';
-    const MSG_INTERNAL_SERVER_ERROR = '内部服务器错误';
+    # Informational 1xx
+    const CONTINUE = 100;
+    const SWITCHING_PROTOCOLS = 101;
+    # Success 2xx
+    const OK = 200;
+    const CREATED = 201;
+    const ACCEPTED = 202;
+    const NONAUTHORITATIVE_INFORMATION = 203;
+    const NO_CONTENT = 204;
+    const RESET_CONTENT = 205;
+    const PARTIAL_CONTENT = 206;
+    # Redirection 3xx
+    const MULTIPLE_CHOICES = 300;
+    const MOVED_PERMANENTLY = 301;
+    const MOVED_TEMPORARILY = 302;
+    const SEE_OTHER = 303;
+    const NOT_MODIFIED = 304;
+    const USE_PROXY = 305;
+    # Client Error 4xx
+    const BAD_REQUEST = 400;
+    const UNAUTHORIZED = 401;
+    const PAYMENT_REQUIRED = 402;
+    const FORBIDDEN = 403;
+    const NOT_FOUND = 404;
+    const METHOD_NOT_ALLOWED = 405;
+    const NOT_ACCEPTABLE = 406;
+    const PROXY_AUTHENTICATION_REQUIRED = 407;
+    const REQUEST_TIMEOUT = 408;
+    const CONFLICT = 408;
+    const GONE = 410;
+    const LENGTH_REQUIRED = 411;
+    const PRECONDITION_FAILED = 412;
+    const REQUEST_ENTITY_TOO_LARGE = 413;
+    const REQUESTURI_TOO_LARGE = 414;
+    const UNSUPPORTED_MEDIA_TYPE = 415;
+    const REQUESTED_RANGE_NOT_SATISFIABLE = 416;
+    const EXPECTATION_FAILED = 417;
+    const IM_A_TEAPOT = 418;
+    # Server Error 5xx
+    const INTERNAL_SERVER_ERROR = 500;
+    const NOT_IMPLEMENTED = 501;
+    const BAD_GATEWAY = 502;
+    const SERVICE_UNAVAILABLE = 503;
+    const GATEWAY_TIMEOUT = 504;
+    const HTTP_VERSION_NOT_SUPPORTED = 505;
     
     protected $result = [
-        'statusCode' => self::HTTP_STATUSCODE_OK,
-        'message'    => self::MSG_OK,
+        'statusCode' => self::OK,
+        'message'    => '操作成功',
     ];
     
     /**
@@ -55,11 +81,11 @@ class Controller extends BaseController {
         $method = Request::route()->getActionMethod();
         $controller = class_basename(Request::route()->controller);
         $action = Action::whereMethod($method)->where('controller', $controller)->first();
-        if (!$action) { return $this->fail('功能不存在'); }
+        if (!$action) { return $this->fail(__('messages.nonexistent_action')); }
 
         # 获取功能对应的View
         $view = $action->view;
-        if (!$view) { return $this->fail('功能配置错误'); }
+        if (!$view) { return $this->fail(__('messages.misconfigured_action')); }
 
         # 获取功能对应的菜单/卡片对象
         $menu = Menu::find(session('menuId'));
@@ -81,13 +107,13 @@ class Controller extends BaseController {
                     $params['breadcrumb'] = $menu->name . ' / ' . $tab->name . ' / ' . $action->name;
                 } else {
                     return response()->json([
-                        'statusCode' => self::HTTP_STATUSCODE_UNAUTHORIZED,
+                        'statusCode' => self::UNAUTHORIZED,
                         'mId' => Request::get('menuId'),
                         'tId' => Request::get('tabId')
                     ]);
                 }
                 return response()->json([
-                    'statusCode' => self::HTTP_STATUSCODE_OK,
+                    'statusCode' => self::OK,
                     'html'       => view($view, $params)->render(),
                     'js'         => $action->js,
                     'breadcrumb' => $params['breadcrumb'],
@@ -99,7 +125,7 @@ class Controller extends BaseController {
                 $menu = Menu::find(session('menuId'));
                 $params['breadcrumb'] = $menu->name . ' / ' . $action->name;
                 return response()->json([
-                    'statusCode' => self::HTTP_STATUSCODE_OK,
+                    'statusCode' => self::OK,
                     'title' => $params['breadcrumb'],
                     'uri' => Request::path(),
                     'html' => view($view, $params)->render(),
@@ -137,42 +163,54 @@ class Controller extends BaseController {
         
     }
 
-    protected function notFound() {
+    protected function notFound($message = null) {
 
+        $statusCode = self::NOT_FOUND;
+        $message = $message ?? __('messages.not_found');
         if (Request::ajax()) {
             return response()->json([
-                'statusCode' => self::HTTP_STATUSCODE_NOT_FOUND,
-                'message'    => self::MSG_NOT_FOUND,
+                'statusCode' => $statusCode,
+                'message'    => $message,
             ]);
         }
 
-        return abort(self::HTTP_STATUSCODE_NOT_FOUND, self::MSG_NOT_FOUND);
+        return abort($statusCode, $message);
+
+    }
+    
+    /**
+     * 返回"操作成功"消息
+     *
+     * @param string $message
+     * @return JsonResponse|string
+     */
+    protected function succeed($message = null) {
+
+        $statusCode = self::OK;
+        $message = $message ?? __('messages.ok');
+        if (Request::ajax()) {
+            return response()->json([
+                'statusCode' => $statusCode,
+                'message' => $message,
+            ]);
+        }
+
+        return $statusCode . ' : ' . $message;
 
     }
 
-    protected function succeed($msg = self::MSG_OK) {
+    protected function fail($message = null) {
 
+        $statusCode = self::INTERNAL_SERVER_ERROR;
+        $message = $message ?? __('messages.fail');
         if (Request::ajax()) {
             return response()->json([
-                'statusCode' => self::HTTP_STATUSCODE_OK,
-                'message' => $msg,
+                'statusCode' => $statusCode,
+                'message'    => $message,
             ]);
         }
 
-        return self::HTTP_STATUSCODE_OK . ' : ' . $msg;
-
-    }
-
-    protected function fail($msg = self::MSG_FAIL) {
-
-        if (Request::ajax()) {
-            return response()->json([
-                'statusCode' => self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR,
-                'message'    => $msg,
-            ]);
-        }
-
-        return abort(self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR, $msg);
+        return abort($statusCode, $message);
 
     }
 
@@ -184,17 +222,19 @@ class Controller extends BaseController {
      * @param String $failure
      * @return JsonResponse|string
      */
-    protected function result($result, String $success = self::MSG_OK, String $failure = self::MSG_FAIL) {
+    protected function result($result, String $success = null, String $failure = null) {
         
+        $statusCode = $result ? self::OK : self::INTERNAL_SERVER_ERROR;
+        $message = $result
+            ? ($success ?? __('messages.ok'))
+            : ($failure ?? __('messages.fail'));
         if (Request::ajax()) {
-            $this->result = $result
-                ? ['statusCode' => self::HTTP_STATUSCODE_OK, 'message' => $success]
-                : ['statusCode' => self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR, 'message' => $failure];
-            return response()->json($this->result);
+            return response()->json([
+                'statusCode' => $statusCode,
+                'message' => $message
+            ]);
         }
-        return $result
-            ? self::HTTP_STATUSCODE_OK . ' : ' . $success
-            : self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR . ' : ' . $failure;
+        return $statusCode . ' : ' . $message;
         
     }
     

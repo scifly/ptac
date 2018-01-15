@@ -2,7 +2,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Corp;
-use App\Models\GroupTab;
 use App\Models\Menu;
 use App\Models\MenuTab;
 use App\Models\MenuType;
@@ -25,6 +24,8 @@ use Throwable;
  */
 class HomeController extends Controller {
 
+    const PAGEJS = 'js/home/page.js';
+    
     protected $tab;
     
     public function __construct(Tab $tab) {
@@ -53,7 +54,7 @@ class HomeController extends Controller {
             return view('home.home', [
                 'menu' => Menu::menuHtml(Menu::rootMenuId()),
                 'content' => view('home.' . $view),
-                'js' => 'js/home/page.js',
+                'js' => self::PAGEJS,
                 'user' => Auth::user()
             ]);
         } else {
@@ -72,7 +73,7 @@ class HomeController extends Controller {
             }
             if (Request::ajax()) {
                 return response()->json([
-                    'statusCode' => 200,
+                    'statusCode' => self::OK,
                     'title' => '首页',
                     'uri' => Request::path(),
                     'html' => view('home.' . $view)->render()
@@ -83,7 +84,7 @@ class HomeController extends Controller {
                 'menu' => Menu::menuHtml(Menu::rootMenuId()),
                 'menuId' => $menuId,
                 'content' => view('home.' . $view),
-                'js' => 'js/home/page.js',
+                'js' => self::PAGEJS,
             ]);
 
         }
@@ -117,8 +118,8 @@ class HomeController extends Controller {
         $allowedTabIds = $this->tab->allowedTabIds();
         if (empty($tabIds)) { $isTabLegit = false; };
         foreach ($tabIds as $tabId) {
-            $tab = Tab::find($tabId);
             if (!in_array($tabId, $allowedTabIds)) { continue; }
+            $tab = Tab::find($tabId);
             if (!empty($tab->action->route)) {
                 $tabArray[] = [
                     'id'     => 'tab_' . $tab->id,
@@ -147,12 +148,12 @@ class HomeController extends Controller {
                 $tabArray[0]['active'] = true;
             }
         } else {
-            abort(404);
+            abort(self::NOT_FOUND);
         }
         # 获取并返回wrapper-content层中的html内容
         if (Request::ajax()) {
             return response()->json([
-                'statusCode' => 200,
+                'statusCode' => self::OK,
                 'html' => view('partials.site_content', ['tabs' => $tabArray])->render()
             ]);
         }
@@ -163,7 +164,7 @@ class HomeController extends Controller {
             'menu'   => $menu,
             'tabs'   => $tabArray,
             'menuId' => $id,
-            'js'     => 'js/home/page.js',
+            'js'     => self::PAGEJS,
         ]);
 
     }
@@ -197,7 +198,7 @@ class HomeController extends Controller {
                 break;
         }
 
-        return array($view, $parentMenuId);
+        return [$view, $parentMenuId];
 
     }
     

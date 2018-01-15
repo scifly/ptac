@@ -174,7 +174,7 @@ class StudentController extends Controller {
             $file = Request::file('file');
             if (empty($file)) {
                 $result = [
-                    'statusCode' => 500,
+                    'statusCode' => self::INTERNAL_SERVER_ERROR,
                     'message'    => '您还没选择文件！',
                 ];
                 return response()->json($result);
