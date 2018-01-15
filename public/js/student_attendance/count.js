@@ -161,7 +161,12 @@ function show_list(){
             processData: false,
             contentType: false,
             success: function (result) {
-            	console.log(result);
+                var html = '';
+                for(var i=0;i<result.length;i++){
+                    var data = result[i];
+                    console.log
+                }
+
             }
 	    });
 	});

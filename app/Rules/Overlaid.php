@@ -21,8 +21,9 @@ class Overlaid implements Rule
     /**
      * Determine if the validation rule passes.
      *
-     * @param  string  $attribute
-     * @param  mixed  $value
+     * @param  string $attribute
+     * @param  mixed $value
+     * @param null $day
      * @return bool
      */
     public function passes($attribute, $value)
