@@ -22,17 +22,7 @@ class StudentRequest extends FormRequest {
      * @return array
      */
     public function rules() {
-// print_r(['student_number' => [
-//             'required', 'alphanum', 'between:2,32',
-//             Rule::unique('students')
-//                 ->ignore($this->input('user_id', 'user_id'))->where(function ($query){
-//                     $query->where('card_number','1111');
-//                     // $query->join('classes', 'students.class_id', '=', 'classes.id')
-//                     //     ->join('grades', 'classes.grade_id', '=', 'grades.id')
-//                     //     ->join('schools', 'grades.school_id', '=', 'schools.id');
-//                 })
-//         ]]);
-// die;
+
         return [
             'card_number' => 'required|alphanum|between:2,32|unique:students,card_number,'
             . $this->input('user_id') . ',user_id',
