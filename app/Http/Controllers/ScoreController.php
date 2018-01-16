@@ -137,7 +137,16 @@ class ScoreController extends Controller {
         return $this->result($score->delete());
         
     }
-    
+
+    /**
+     * 成绩发送
+     *
+     * @return void
+     */
+    public function send() {
+        
+    }
+
     /**
      * 统计成绩排名
      *
@@ -145,10 +154,10 @@ class ScoreController extends Controller {
      * @return JsonResponse
      */
     public function statistics($examId) {
-        
+
         return $this->result(Score::statistics($examId));
     }
-    
+
     /**
      * Excel模板生成
      * @param $examId
