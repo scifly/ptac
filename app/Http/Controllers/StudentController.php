@@ -10,6 +10,7 @@ use App\Models\Squad;
 use App\Models\Student;
 use Exception;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use Throwable;
@@ -123,7 +124,6 @@ class StudentController extends Controller {
         $items = Student::gradeClasses(
             $student->squad->grade_id
         );
-
         $student->{'grade_id'} = $student->squad->grade_id;
         return $this->output([
             'student' => $student,

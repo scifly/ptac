@@ -5,16 +5,16 @@
     <div class="box-body">
         <div class="form-horizontal">
             <!-- 学生ID -->
-            @if (!empty($student['id']))
-                <!-- 学生ID -->
-                {{ Form::hidden('id', $student['id'], ['id' => 'id']) }}
-            @endif
+        @if (!empty($student['id']))
+            <!-- 学生ID -->
+            {{ Form::hidden('id', $student['id'], ['id' => 'id']) }}
+        @endif
+        <!-- 学生UserID -->
+        @if (!empty($student['user_id']))
             <!-- 学生UserID -->
-            @if (!empty($student['user_id']))
-                <!-- 学生UserID -->
-                {{ Form::hidden('user_id', $student['user_id'], ['id' => 'user_id']) }}
-            @endif
-            <!-- 学生姓名 -->
+            {{ Form::hidden('user_id', $student['user_id'], ['id' => 'user_id']) }}
+        @endif
+        <!-- 学生姓名 -->
             <!-- 真实姓名 -->
             <div class="form-group">
                 {{ Form::label('user[realname]', '姓名', [
@@ -55,15 +55,15 @@
                 </div>
             </div>
             <!-- 性别 -->
-            @include('partials.enabled', [
-                'id' => 'user[gender]',
-                'label' => '性别',
-                'value' => $user['gender'] ?? null,
-                'options' => ['男', '女']
-            ])
-            <!-- 手机号码 -->
-            @include('partials.mobile')
-            <!-- 座机号码 -->
+        @include('partials.enabled', [
+            'id' => 'user[gender]',
+            'label' => '性别',
+            'value' => $user['gender'] ?? null,
+            'options' => ['男', '女']
+        ])
+        <!-- 手机号码 -->
+        @include('partials.mobile')
+        <!-- 座机号码 -->
             <div class="form-group">
                 {{ Form::label('user[telephone]', '座机', [
                     'class' => 'col-sm-3 control-label'
@@ -122,7 +122,7 @@
                     </div>
                 @endif
             @endif
-            <!-- 所属班级 -->
+        <!-- 所属班级 -->
             <div class="form-group">
                 {!! Form::label('class_id', '所属班级', [
                     'class' => 'col-sm-3 control-label',
@@ -176,12 +176,16 @@
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
-                    {!! Form::text('birthday', null, [
-                        'required' => 'true',
-                        'class' => 'form-control',
-                        'placeholder' => '生日格式为2000-08-12形式',
-                    ]) !!}
-
+                    <div class="input-group">
+                        <div class="input-group-addon">
+                            <i class="fa fa-calendar"></i>
+                        </div>
+                        {!! Form::date('birthday', null, [
+                            'required' => 'true',
+                            'class' => 'form-control',
+                            'data-parsley-type' => 'date',
+                        ]) !!}
+                    </div>
                 </div>
             </div>
             <!-- 是否住校 -->
@@ -191,11 +195,11 @@
                 'value' => $student['oncampus'] ?? null,
                 'options' => ['是', '否']
             ])
-            <!-- 备注 -->
+        <!-- 备注 -->
             @include('partials.remark', [
                 'field' => 'user[remark]'
             ])
-            <!-- 状态 -->
+        <!-- 状态 -->
             @include('partials.enabled', [
                 'id' => 'user[enabled]',
                 'value' => $student['enabled'] ?? null

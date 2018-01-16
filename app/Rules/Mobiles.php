@@ -3,19 +3,20 @@ namespace App\Rules;
 
 use App\Models\Mobile;
 use Illuminate\Contracts\Validation\Rule;
+use Illuminate\Support\Facades\Log;
 
 class Mobiles implements Rule {
     
     const PHONEREG = '/^1[34578][0-9]{9}$/';
     private $value;
-    
+
+
     public function passes($attribute, $value) {
         $this->value = $value;
-        $mobileModel = new Mobile();
         if (!isset($value['id'])) {
             $value['id'] = 0;
         }
-        $mobile = $mobileModel->where('mobile', $value['mobile'])
+        $mobile = Mobile::whereMobile($value['mobile'])
             ->where('id', '!=', $value['id'])
             ->get()->toArray();
         if ($mobile || !preg_match(self::PHONEREG, $value['mobile'])) {
