@@ -40,23 +40,8 @@
 	   				<div class="form-group">
 				    	<label class="col-sm-2 control-label">发布内容</label>
 				    	<div class="col-sm-10">
-				    		<div class="checkbox">
-					    		<label> 
-					   				<input type="checkbox" class="minimal">
-					   				总分
-					   			</label>
-					   			<label>
-					   				<input type="checkbox" class="minimal">
-					   				数学
-					   			</label>
-					   			<label>
-					   				<input type="checkbox" class="minimal">
-					   				英语
-					   			</label>
-					   			<label>
-					   				<input type="checkbox" class="minimal">
-					   				科学
-					   			</label>
+				    		<div class="checkbox" id="subject-list">
+					    		
 				   			</div>
 				    	</div>
 				    </div>

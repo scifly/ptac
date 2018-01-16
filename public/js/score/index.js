@@ -33,15 +33,22 @@ $exam_id.on('change',function(){
         processData: false,
         contentType: false,
         success: function (result) {
-        	console.log(result);
-            var html = '';
-            $.each(result, function (index, obj) {
+            var html1 = '';
+            $.each(result.classes, function (index, obj) {
                 var data = obj;
-            	html += '<option value="'+data.id+'">'+data.name+'</option>'
+            	html1 += '<option value="'+data.id+'">'+data.name+'</option>'
             });
-            
-            $('#squad_id').html(html);
-			
+            $('#squad_id').html(html1);
+            page.initSelect2();
+            var html2 = '';
+            $.each(result.subjects, function (index, obj) {
+                var datacon = obj;
+            	html2 +='<label>'+ 
+			   				'<input type="checkbox" class="minimal" value="'+datacon.id+'">'+datacon.name+''+
+		   				'</label>';
+            });
+            $('#subject-list').html(html2);
+			page.initMinimalIcheck();
         }
     });
 })
