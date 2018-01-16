@@ -207,6 +207,7 @@ class StudentAttendance extends Model {
         $all = Student::whereClassId($classId)->get()->pluck('id')->toArray();
         $result = [];
         $data =$this->getSqlData(implode(',',$all), $startTime, $endTime);
+
         if ($type == 'surplus') {
             $items = $this->whereIn('student_id', $all)
                 ->where('punch_time', '>=', $startTime)
@@ -240,6 +241,7 @@ class StudentAttendance extends Model {
                 }
             }
         }
+
         if ($data) {
             switch ($type) {
                 case 'normal':
@@ -283,6 +285,7 @@ class StudentAttendance extends Model {
                         ];
                     }
                     break;
+
             }
         }
 

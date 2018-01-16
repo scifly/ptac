@@ -108,7 +108,7 @@
                         'label' => '所属年级',
                         'id' => 'grade_id',
                         'items' => $grades,
-                        'icon' => 'fa fa-object-group'
+                        'icon' => 'fa fa-object-group',
                     ])
                 @else
                     <div class="form-group">

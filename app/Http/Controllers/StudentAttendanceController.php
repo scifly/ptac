@@ -93,6 +93,7 @@ class StudentAttendanceController extends Controller {
             $date = Request::input('date');
             $type = Request::input('type');
             $classId = Request::input('class_id');
+
             if ($date && $type && $classId) {
 
                 return response()->json($this->studentAttendance->getStudentData($date , $type, $classId));

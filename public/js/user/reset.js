@@ -5,7 +5,7 @@ $('#reset').on('click',function (e) {
         var password=document.getElementsByName("password")[0];
         var pwd1=document.getElementsByName('password')[1];
         var pwd2=document.getElementsByName('password')[2];
-       
+
         if(password.value === '')
         {
             $.gritter.add({
