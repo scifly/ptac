@@ -13,11 +13,11 @@ class ScoreIndexComposer {
 
     public function compose(View $view) {
 
-        $exams = Exam::get()->toArray();
+        $exams = Exam::get()->pluck('name', 'id')->toArray();
         if ($exams) {
             $ids = Exam::whereId(array_keys($exams)[0])->first();
 
-            $classes = Squad::where('id', explode(',', $ids->class_ids))
+            $classes = Squad::whereIn('id', explode(',', $ids['class_ids']))
                 ->pluck('name', 'id')
                 ->toArray();
         }

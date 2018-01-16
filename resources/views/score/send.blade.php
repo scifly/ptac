@@ -9,10 +9,11 @@
 				            'class' => 'col-sm-3 control-label'
 				        ]) !!}
 					    <div class="col-sm-6">
-							<select class="form-control select2 select2-hidden-accessible" style="width: 100%;" id="examsName" name="examsName" tabindex="-1" aria-hidden="true">
-								<option value="1">考试1</option>
-								<option value="2">考试2</option>
-							</select>
+							@include('partials.single_select', [
+								'label' => '考试名称',
+								'id' => 'exam_id',
+								'items' => $exams
+							])
 					    </div>
 					</div>
 			   	</div>
@@ -23,10 +24,11 @@
 				            'class' => 'col-sm-3 control-label'
 				        ]) !!}
 					    <div class="col-sm-6">
-							<select class="form-control select2 select2-hidden-accessible" style="width: 100%;" id="examsRange" name="examsRange" tabindex="-1" aria-hidden="true">
-								
-								
-							</select>
+							@include('partials.single_select', [
+								'label' => '考试范围',
+								'id' => 'squad_id',
+								'items' => $classes
+							])
 					    </div>
 					</div>
 			   	</div>
