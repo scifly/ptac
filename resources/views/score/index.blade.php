@@ -1,4 +1,5 @@
-<div class="box box-default box-solid">
+@include('score.send')
+<div class="box box-default box-solid" id="score" style="display: none;">
     <div class="box-header with-border">
         @include('partials.list_header', [
             'buttons' => [
@@ -34,4 +35,5 @@
         </table>
     </div>
     @include('partials.form_overlay')
+    
 </div>
