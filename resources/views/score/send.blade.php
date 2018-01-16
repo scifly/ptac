@@ -116,7 +116,7 @@
 	   	</div>
 	   	
 	   	<div class="row">
-	   		<div class="col-md-6 " style="text-align: right;">
+	   		<div class="col-md-6" style="text-align: right;">
 	   			<button type="button" id="btn-browse" class="btn btn-primary">浏览</button>
 	   		</div>
 	   		<div class="col-md-6">
@@ -127,18 +127,16 @@
         <table id="send-table" style="width: 100%;margin-top: 20px;"
                class="display nowrap table table-striped table-bordered table-hover table-condensed">
             <thead>
-			<tr class="bg-info">
-                <th width="40">#</th>
-                <th width="120">家长姓名</th>
-                <th width="120">姓名</th>
-                <th width="300">手机号</th>
-                <th>内容</th>
-            </tr>
+				<tr class="bg-info">
+	                <th width="40">#</th>
+	                <th width="120">家长姓名</th>
+	                <th width="120">姓名</th>
+	                <th width="300">手机号</th>
+	                <th>内容</th>
+	            </tr>
             </thead>
             <tbody></tbody>
         </table>
 	    
-	   	
-	   	
    </div>
 </div>
