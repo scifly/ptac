@@ -154,7 +154,14 @@ class ScoreController extends Controller {
                 $classes = Squad::whereIn('id', explode(',', $ids['class_ids']))
                     ->get()
                     ->toArray();
-                return response()->json($classes);
+                $subjects = Subject::whereIn('id', explode(',', $ids['subject_ids']))
+                    ->get()
+                    ->toArray();
+                $result = [
+                    'classes' => $classes,
+                    'subjects' => $subjects,
+                ];
+                return response()->json($result);
             }
         }
     }
