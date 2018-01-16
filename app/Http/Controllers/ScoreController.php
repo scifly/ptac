@@ -151,8 +151,8 @@ class ScoreController extends Controller {
             if($exam) {
                 $ids = Exam::whereId($exam)->first();
 
-                $classes = Squad::where('id', explode(',', $ids->class_ids))
-                    ->pluck('name', 'id')
+                $classes = Squad::where('id', explode(',', $ids['class_ids']))
+                    ->get()
                     ->toArray();
                 return response()->json($classes);
             }
