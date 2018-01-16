@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StudentRequest;
 use App\Models\Custodian;
 use App\Models\Department;
+use App\Models\DepartmentUser;
 use App\Models\School;
+use App\Models\Squad;
 use App\Models\Student;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -109,8 +111,8 @@ class StudentController extends Controller {
      */
     public function edit($id) {
         if (Request::method() === 'POST') {
-            $field = Request::query('field');
-            $id = Request::query('id');
+            $field = Request::get('field');
+            $id = Request::get('id');
             $this->result['html'] = School::getFieldList($field, $id);
             return response()->json($this->result);
         }

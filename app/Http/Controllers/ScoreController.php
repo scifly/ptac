@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ScoreRequest;
 use App\Models\Exam;
 use App\Models\Score;
+use App\Models\Squad;
 use App\Models\Student;
 use App\Models\Subject;
 use Excel;
@@ -137,7 +138,28 @@ class ScoreController extends Controller {
         return $this->result($score->delete());
         
     }
-    
+
+    /**
+     * 成绩发送
+     *
+     * @return JsonResponse
+     */
+    public function send() {
+
+        if (Request::method() === 'POST') {
+            $exam = Request::input('exam');
+            if($exam) {
+                $ids = Exam::whereId($exam)->first();
+
+                $classes = Squad::where('id', explode(',', $ids->class_ids))
+                    ->pluck('name', 'id')
+                    ->toArray();
+                return response()->json($classes);
+            }
+        }
+    }
+
+
     /**
      * 统计成绩排名
      *
@@ -145,10 +167,10 @@ class ScoreController extends Controller {
      * @return JsonResponse
      */
     public function statistics($examId) {
-        
+
         return $this->result(Score::statistics($examId));
     }
-    
+
     /**
      * Excel模板生成
      * @param $examId

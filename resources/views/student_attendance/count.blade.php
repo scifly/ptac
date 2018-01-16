@@ -1,27 +1,4 @@
-<link rel="stylesheet" href="{{ URL::asset('js/bootstrap-daterangepicker/daterangepicker.css') }}">
-<link rel="stylesheet" href="{{ URL::asset('js/plugins/select2/css/select2.min.css') }}">
-<style>
-	.select2-container .select2-selection--single{
-		height: 34px;
-	}
-	.attendances-date,.attendances-data{
-		font-size: 18px;
-		line-height: 100%;
-		height: 100%;
-	}
-	.attendances-data .normal,.attendances-data .abnormal,.attendances-data .surplus{
-		cursor: pointer;
-	}
-	.normal{
-		color: #83db74;
-	}
-	.abnormal{
-		color:#fdde52 ;
-	}
-	.surplus{
-		color: #fc7f4e;
-	}
-</style>
+
 <div class="content clearfix">
 	<div class="col-lg-12">
 		<div class="box box-default box-solid" style="padding: 10px;">
@@ -150,8 +127,3 @@
     	</div>
   	</div>
 </div>
-
-<script type="text/javascript" src="{{ URL::asset('js/student_attendance/echarts.simple.min.js') }}"></script>
-<script type="text/javascript" src="{{ URL::asset('js/moment/min/moment.min.js') }}"></script>
-<script type="text/javascript" src="{{ URL::asset('js/bootstrap-daterangepicker/daterangepicker.js') }}"></script>
-<script type="text/javascript" src="{{ URL::asset('js/plugins/select2/js/select2.full.min.js') }}"></script>

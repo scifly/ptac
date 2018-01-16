@@ -161,60 +161,29 @@ class StudentAttendance extends Model {
             if (empty($all)) {
                 return $item;
             }
-            $normal = $this->where('status', 1)
-                ->select(
-                    array(
-                        DB::Raw('student_id'),
-                        DB::Raw('count(*) as total'),
-                        DB::Raw('count(student_id) count'),
-                        DB::Raw('DATE(punch_time) day')
-                        )
-                    )
-                ->whereIn('student_id', $all)
-                ->where('punch_time', '>=', $startTime)
-                ->where('punch_time', '<', $endTime)
-                ->groupBy(['day','student_id'])
-                ->get();
-            $abnormal = $this->where('status', 0)
-                ->select(
-                    array(
-                        DB::Raw('student_id'),
-                        DB::Raw('count(*) as total'),
-                        DB::Raw('count(student_id) count'),
-                        DB::Raw('DATE(punch_time) day')
-                        )
-                    )
-                ->whereIn('student_id', $all)
-                ->where('punch_time', '>=', $startTime)
-                ->where('punch_time', '<', $endTime)
-                ->groupBy(['day','student_id'])
-                ->get();
+            $data =$this->getSqlData(implode(',',$all), $startTime, $endTime);
+
             $n = [];
             $a = [];
-            if ($normal) {
-                foreach ($normal as $key => &$val)
+            if ($data) {
+                foreach ($data as $key => &$val)
                 {
-                    if(isset($n[$val['day']])) {
-
-                        $n[$val['day']] = ($n[$val['day']]+1);
+                    if ($val->lastest) {
+                        if(isset($n[$val->day])) {
+                            $n[$val->day] = ($n[$val->day]+1);
+                        }else{
+                            $n[$val->day] = 1;
+                        }
                     }else{
-                        $n[$val['day']] = 1;
+                        if(isset($a[$val->day])) {
+                            $a[$val->day] = ($a[$val->day]+1);
+                        }else{
+                            $a[$val->day] = 1;
+                        }
                     }
+
                 }
             }
-            if ($abnormal) {
-                foreach ($abnormal as $key => &$val)
-                {
-                    if(isset($n[$val['day']])) {
-                        $n[$val['day']] = ($n[$val['day']]+1);
-                    }else{
-                        $n[$val['day']] = 1;
-                    }
-                }
-            }
-            Log::debug($normal);
-            Log::debug($n);
-
             for ($i = 1;$i < $days+1; $i++)
             {
                 $date = strtotime($startTime);
@@ -230,43 +199,125 @@ class StudentAttendance extends Model {
         return $item;
     }
     public function getStudentData($date , $type, $classId) {
+//        $date = '2018-01-07';
+//        $type = 'surplus';
+//        $classId = '1';
         $startTime = date('Y-m-d H:i:s', strtotime($date));
         $endTime = date('Y-m-d H:i:s', strtotime($date)+24*3600-1);
         $all = Student::whereClassId($classId)->get()->pluck('id')->toArray();
         $result = [];
-        switch ($type) {
-            case 'normal':
-                $data = $this->where('status', 1)
-                    ->whereIn('student_id', $all)
-                    ->where('punch_time', '>=', $startTime)
-                    ->where('punch_time', '<', $endTime)
-                    ->groupBy(['student_id'])
-                    ->get();
-                foreach ($data as $datum) {
+        $data =$this->getSqlData(implode(',',$all), $startTime, $endTime);
+
+        if ($type == 'surplus') {
+            $items = $this->whereIn('student_id', $all)
+                ->where('punch_time', '>=', $startTime)
+                ->where('punch_time', '<', $endTime)
+                ->get()
+                ->pluck('student_id');
+            $s = Student::whereClassId($classId)
+                ->whereNotIn('id', $items)
+                ->get();
+            if ($s) {
+                foreach ($s as $datum) {
+                    if ($datum->custodians) {
+                        $cu = User::whereIn('id', array_column(json_decode($datum->custodians), 'user_id'))
+                            ->get()
+                            ->pluck('realname');
+                    }else{
+                        $cu = [];
+                    }
+                    if (json_decode($datum->user['mobiles'])) {
+                        $mo = array_column(json_decode($datum->user['mobiles']), 'mobile');
+                    }else{
+                        $mo = [];
+                    }
                     $result[] = [
-                        'name' => $datum->student->user->realname,
-                        'custodian' => $datum->student->custodians,
-//                        'custodian' => $datum->student->custodians-,
+                        'name' => $datum->user['realname'],
+                        'custodian' => $cu,
+                        'moblie' => $mo,
+                        'punch_time' => '',
+                        'inorout' => '',
                     ];
                 }
-                break;
-            case 'abnormal':
-                $data = $this->where('status', 0)
-                    ->whereIn('student_id', $all)
-                    ->where('punch_time', '>=', $startTime)
-                    ->where('punch_time', '<', $endTime)
-                    ->groupBy(['student_id'])
-                    ->get();
-                break;
-            case  'surplus':
-                $items = $this->whereIn('student_id', $all)
-                    ->where('punch_time', '>=', $startTime)
-                    ->where('punch_time', '<', $endTime)
-                    ->get()
-                    ->pluck('student_id');
-                $data = Student::whereNotIn('id', $items)->get();
-                break;
+            }
         }
+
+        if ($data) {
+            switch ($type) {
+                case 'normal':
+                    $n = [];
+                    foreach ($data as $d) {
+                        if ($d->lastest) {
+                            $n[] = $d->id;
+                        }
+                    }
+                    $items = $this::whereIn('id', $n)->get();
+                    foreach ($items as $datum) {
+                        $result[] = [
+                            'name' => $datum->student->user->realname,
+                            'custodian' => User::whereIn('id', array_column($datum->student->custodians->toArray(), 'user_id'))
+                                ->get()
+                                ->pluck('realname'),
+                            'moblie' => array_column($datum->student->user->mobiles->toArray(), 'mobile'),
+                            'punch_time' => $datum->punch_time,
+                            'inorout' => $datum->inorout,
+                        ];
+                    }
+
+                    break;
+                case 'abnormal':
+                    $a = [];
+                    foreach ($data as $d) {
+                        if ($d->lastest == 0) {
+                            $a[] = $d->id;
+                        }
+                    }
+                    $items = $this::whereIn('id', $a)->get();
+                    foreach ($items as $datum) {
+                        $result[] = [
+                            'name' => $datum->student->user->realname,
+                            'custodian' => User::whereIn('id', array_column($datum->student->custodians->toArray(), 'user_id'))
+                                ->get()
+                                ->pluck('realname'),
+                            'moblie' => array_column($datum->student->user->mobiles->toArray(), 'mobile'),
+                            'punch_time' => $datum->punch_time,
+                            'inorout' => $datum->inorout,
+                        ];
+                    }
+                    break;
+
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param $studentIds
+     * @param $start
+     * @param $end
+     * @return array
+     */
+    private function getSqlData($studentIds, $start, $end) {
+        $data = DB::select("
+          select max(t.id) id,t.student_id, substring_index(group_concat( t.status order by t.punch_time DESC),',',1) lastest, DATE(t.punch_time) day 
+          from (
+            select ord.id,ord.student_id, ord.inorout,ord.status, ord.punch_time 
+              from student_attendances ord where ord.punch_time >= '". $start."' and ord.punch_time < '". $end."' order by ord.student_id asc , ord.punch_time desc) t 
+              where t.student_id in (" . $studentIds . ") 
+          group by t.student_id,day"
+        );
+//        foreach ($data as $d) {
+//            Log::debug("
+//          select max(t.id) id,t.student_id, substring_index(group_concat( t.status order by t.punch_time DESC),',',1) lastest, DATE(t.punch_time) day
+//          from (
+//            select ord.id,ord.student_id, ord.inorout,ord.status, ord.punch_time
+//              from student_attendances ord where ord.punch_time >= '". $start."' and ord.punch_time < '". $end."' order by ord.student_id asc , ord.punch_time desc) t
+//              where t.student_id in (" . $studentIds . ")
+//          group by t.student_id,day"
+//            );
+//        }
+        return $data;
     }
     private function getClass() {
         $schools = null;

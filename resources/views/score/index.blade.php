@@ -1,6 +1,15 @@
-<div class="box box-default box-solid">
+@include('score.send')
+<div class="box box-default box-solid" id="score" style="display: none;">
     <div class="box-header with-border">
-        @include('partials.list_header')
+        @include('partials.list_header', [
+            'buttons' => [
+                'import' => [
+                    'id' => 'send',
+                    'label' => '成绩发送',
+                    'icon' => 'fa fa-arrow-circle-up',
+                ]
+            ]
+        ])
     </div>
     <div class="box-body">
         <table id="data-table" style="width: 100%"
@@ -8,8 +17,10 @@
             <thead>
 			<tr class="bg-info">
                 <th>#</th>
-                <th>学号</th>
                 <th>姓名</th>
+                <th>年级</th>
+                <th>班级</th>
+                <th>学号</th>
                 <th>科目名称</th>
                 <th>考试名称</th>
                 <th>班级排名</th>
@@ -24,4 +35,5 @@
         </table>
     </div>
     @include('partials.form_overlay')
+    
 </div>

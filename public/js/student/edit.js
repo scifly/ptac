@@ -75,12 +75,13 @@ $(document).on('change', '#grade_id', function (e) {
     var $classId = $('#classId');
     var $next = $classId.next();
     var $prev = $classId.prev();
-
+    var grade = 'grade';
     var token = $('#csrf_token').attr('content');
     $.ajax({
         type: 'POST',
         dataType: 'json',
-        url: page.siteRoot() + 'students/edit/'+id+'/?field=grade' + '&id=' + gradeId + '&_token=' + token,
+        url: page.siteRoot() + 'students/edit/'+id,
+        data:{ id:gradeId, field:grade, _token:token},
         success: function (result) {
             $next.remove();
             $classId.remove();
