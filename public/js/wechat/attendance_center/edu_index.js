@@ -1,56 +1,84 @@
- //班级列表
-    $("#classlist").select({
+$("#my-date").calendar();
+var token = $('#csrf_token').attr('content');
+var data = {'_token': token};
+$('#choose .close-popup').on('click', function () {
+    var squad = $('#squad').attr('data-values');
+    var rule = $('#rule').attr('data-values');
+    var date = $('#my-date').val();
+    if (!squad) {
+        $.alert('请先选择班级！');
+        return false;
+    }
+    if (!rule) {
+        $.alert('请先选择规则！');
+        return false;
+    }
+    if (!date) {
+        $.alert('请先选择日期！');
+        return false;
+    }
+    var data = {'_token': token, 'squad': squad, 'rule': rule, 'date': date};
+    getdata(data);
+});
+//班级列表
+function getclasses(squads) {
+    $("#squad").select({
         title: "选择班级",
-        items: ["一年级1班", "一年级2班", "一年级3班", "一年级4班", "一年级5班", "一年级6班"]
-    });
-//模拟图标数据
-getdata();
-function getdata(){
-    var item1 = {
-        daka : 4,
-        yichang : 2,
-        weida : 1,
-    };
-    var data = {
-        1 : item1,
-    };
-    var arrayTime = new Array();
-    $.each(data, function (index, obj) {
-        var datacon = obj;
-        //      console.log(datacon)
-        arrayTime.length=0;
-        var json1 = {
-            value:datacon.daka,
-            name:'打卡'
-        };
-        var json2 = {
-            value:datacon.yichang,
-            name:'异常'
-        };
-        var json3 = {
-            value:datacon.weida,
-            name:'未打'
-        };
-        arrayTime.push(json1);
-        arrayTime.push(json2);
-        arrayTime.push(json3);
-        showtable_pie(arrayTime);
-        console.log(arrayTime);
+        items: squads
     });
 }
-function showtable_pie(arrayTime){
+//规则列表
+function getrules(rules) {
+    $("#rule").select({
+        title: "选择规则",
+        items: rules
+    });
+}
+//默认显示当天饼图数据
+getdata(data);
+function getdata(data) {
+
+    $.ajax({
+        type: 'POST',
+        data: data,
+        url: '../public/attendance_charts',
+        success: function (result) {
+            console.log(result.data);
+            if (result.statusCode === 200) {
+                //返回数据 渲染饼图
+                console.log(result);
+                getclasses(result.data.squadnames);
+                getrules(result.data.rulenames);
+                showtable_pie(result.data.charts, ['打卡', '异常', '未打卡']);
+                $('.status-value').each(function (i) {
+                    $(this).html(result.data.charts[i].value);
+                });
+                    $('.modal-content').html(result.data.view);
+                }
+        }
+    });
+}
+
+function showtable_pie(arrayTime, legendData) {
     var myChart = echarts.init(document.getElementById('main'));
-    option = {
-        title : {
-            text: '打卡详情',
+    var option = {
+        title: {
+            text: '打卡详情'
         },
-        color:['#83db74','#fdde52','#fc7f4e'],
-        series : [
+        legend: {
+            show: true,
+            bottom: 10,
+            left: 'center',
+            data: legendData
+        },
+        color: ['#83db74', '#fdde52', '#fc7f4e'],
+        series: [
             {
-                name: '访问来源',
+                name: '',
                 type: 'pie',
-                radius : '50%',
-                data:arrayTime,
+                radius: '50%',
+                center: ['50%', '40%'],
+                data: arrayTime,
                 itemStyle: {
                     emphasis: {
                         shadowBlur: 10,
@@ -63,3 +91,8 @@ function showtable_pie(arrayTime){
     };
     myChart.setOption(option);
 }
+$('.kaoqin-tongji .open-popup').click(function () {
+    var type = $(this).attr('data-type');
+    $('.modal-content .list').hide();
+    $('.modal-content .list-' + type).show();
+});
