@@ -82,6 +82,18 @@ var page = {
         echarts: {
         	js: 'js/plugins/echarts.simple.min.js',
         },
+        minimal_icheck: {
+            css: 'js/plugins/icheck/all.css',
+            js: 'js/plugins/icheck/icheck.min.js',
+            selector: 'input[type="checkbox"].minimal, input[type="radio"].minimal',
+            params: {
+                checkboxClass: 'icheckbox_minimal-blue',
+                radioClass: 'iradio_minimal-blue'
+            }
+        },
+        send_css: {
+        	css: 'js/score/send.css',
+        },
         
     },
     backToList: function (table) {
@@ -491,6 +503,20 @@ var page = {
         if (!($.fn.iCheck)) {
             page.loadCss(page.plugins.icheck.css);
             $.getMultiScripts([page.plugins.icheck.js], page.siteRoot())
+                .done(function() { init(object); });
+        } else { init(object); }
+    },
+    initMinimalIcheck: function (object) {
+        var init = function(object) {
+            if (typeof object === 'undefined') {
+                $(page.plugins.minimal_icheck.selector).iCheck(page.plugins.minimal_icheck.params);
+            } else {
+                object.find(page.plugins.minimal_icheck.selector).iCheck(page.plugins.minimal_icheck.params);
+            }
+        };
+        if (!($.fn.iCheck)) {
+            page.loadCss(page.plugins.minimal_icheck.css);
+            $.getMultiScripts([page.plugins.minimal_icheck.js], page.siteRoot())
                 .done(function() { init(object); });
         } else { init(object); }
     },
