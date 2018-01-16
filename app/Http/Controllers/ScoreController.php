@@ -150,11 +150,17 @@ class ScoreController extends Controller {
             $exam = Request::input('exam');
             if($exam) {
                 $ids = Exam::whereId($exam)->first();
-
-                $classes = Squad::where('id', explode(',', $ids['class_ids']))
+                $classes = Squad::whereIn('id', explode(',', $ids['class_ids']))
                     ->get()
                     ->toArray();
-                return response()->json($classes);
+                $subjects = Subject::whereIn('id', explode(',', $ids['subject_ids']))
+                    ->get()
+                    ->toArray();
+                $result = [
+                    'classes' => $classes,
+                    'subjects' => $subjects,
+                ];
+                return response()->json($result);
             }
         }
     }
