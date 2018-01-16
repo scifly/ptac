@@ -59,8 +59,7 @@ class CustodianController extends Controller {
             $this->result['html'] = School::getFieldList($field, $id);
             return response()->json($this->result);
         }
-        // $this->authorize('c', Custodian::class);
-        
+
         return $this->output();
 
     }
@@ -75,8 +74,6 @@ class CustodianController extends Controller {
      */
     public function store(CustodianRequest $request) {
 
-        // $this->authorize('c', Custodian::class);
-        
         return $this->result(Custodian::store($request));
 
     }
@@ -91,8 +88,7 @@ class CustodianController extends Controller {
     public function show($id){
         
         $custodian = Custodian::find($id);
-        // $this->authorize('rud', $custodian);
-        
+
         return $this->output(['custodian'  => $custodian]);
         
     }
@@ -112,13 +108,12 @@ class CustodianController extends Controller {
             if($field && $id) {
                 $this->result['html'] = School::getFieldList($field, $id);
                 return response()->json($this->result);
-            }else{
+            } else {
                 return response()->json(Department::tree());
             }
         }
         $custodian = Custodian::find($id);
-        // $this->authorize('rud', $custodian);
-        $pupils = $custodian->custodianStudents;
+        $pupils = $custodian->students;
 
         return $this->output([
             'mobiles'   => $custodian->user->mobiles,

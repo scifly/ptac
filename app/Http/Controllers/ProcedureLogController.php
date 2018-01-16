@@ -198,7 +198,7 @@ class ProcedureLogController extends Controller {
                     'step_status'         => 2,
                     'first_log_id'        => $request['first_log_id'],
                     'initiator_msg'       => $request['initiator_msg'],
-                    'initiator_media_ids' => empty($request['initiator_media_ids']) ? 0 : $request['initiator_media_ids'],
+                    'initiator_media_ids' => $request['initiator_media_ids'] ?? 0,
                 ];
                 ProcedureLog::insertGetId($data);
             }
@@ -217,7 +217,7 @@ class ProcedureLogController extends Controller {
         
         $files = Request::file('medias');
         if (empty($files)) {
-            $result['statusCode'] = 500;
+            $result['statusCode'] = self::INTERNAL_SERVER_ERROR;
             $result['message'] = '您还未选择文件！';
         } else {
             $result['data'] = [];
@@ -225,7 +225,7 @@ class ProcedureLogController extends Controller {
             foreach ($files as $file) {
                 $mes [] = Media::upload($file, '上传审批流程相关文件');
             }
-            $result['statusCode'] = 200;
+            $result['statusCode'] = self::OK;
             $result['message'] = '上传成功！';
             $result['data'] = $mes;
         }
@@ -246,11 +246,11 @@ class ProcedureLogController extends Controller {
         $path_arr = explode("/", Media::find($id)->path);
         Storage::disk('uploads')->delete($path_arr[5]);
         if (Media::find($id)->delete()) {
-            $result['statusCode'] = self::HTTP_STATUSCODE_OK;
-            $result['message'] = self::MSG_DEL_OK;
+            $result['statusCode'] = self::OK;
+            $result['message'] = __('messages.del_ok');
         } else {
-            $result['statusCode'] = self::HTTP_STATUSCODE_INTERNAL_SERVER_ERROR;
-            $result['message'] = self::MSG_BAD_REQUEST;
+            $result['statusCode'] = self::INTERNAL_SERVER_ERROR;
+            $result['message'] = __('messages.bad_request');
         }
         
         return response()->json($result);

@@ -8,6 +8,7 @@ use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * App\Models\ConferenceParticipant 与会者
@@ -98,10 +99,17 @@ class ConferenceParticipant extends Model {
                 'conditions' => [
                     'ConferenceQueue.id = ConferenceParticipant.conference_queue_id',
                 ],
-            ],
+            ]
         ];
-        // todo: 按角色与学校过滤与会者
-        return Datatable::simple(self::getModel(), $columns, $joins);
+        $condition = 'Educator.school_id = ' . School::schoolId();
+        $user = Auth::user();
+        # 普通角色用户只能查看自己发起会议的与会者列表
+        if (!in_array($user->group->name, ['运营', '企业', '学校'])) {
+            $condition .= ' AND ConferenceQueue.user_id = ' . $user->id;
+        }
+
+
+        return Datatable::simple(self::getModel(), $columns, $joins, $condition);
 
     }
 

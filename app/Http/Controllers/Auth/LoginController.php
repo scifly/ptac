@@ -59,9 +59,8 @@ class LoginController extends Controller {
             $returnUrl = urldecode($request->get('returnUrl'));
         }
         if (Auth::id()) {
-            Log::debug('AJAX request');
             return response()->json([
-                'statusCode' => 200,
+                'statusCode' => self::OK,
                 'url' => $returnUrl ? $returnUrl : '/'
             ]);
         }
@@ -82,7 +81,9 @@ class LoginController extends Controller {
             $mobile = Mobile::whereMobile($input)
                 ->where('isdefault', 1)->first();
             if (!$mobile || !$mobile->user_id) {
-                return response()->json(['statusCode' => 500]);
+                return response()->json([
+                    'statusCode' => self::INTERNAL_SERVER_ERROR
+                ]);
             }
             # 通过默认手机号码查询对应的用户名
             $username = User::find($mobile->user_id)->username;
@@ -94,11 +95,13 @@ class LoginController extends Controller {
             )) {
                 Session::put('user', $user);
                 return response()->json([
-                    'statusCode' => 200,
+                    'statusCode' => self::OK,
                     'url'        => $returnUrl ? $returnUrl : '/',
                 ]);
             } else {
-                return response()->json(['statusCode' => 500]);
+                return response()->json([
+                    'statusCode' => self::INTERNAL_SERVER_ERROR
+                ]);
             }
         }
         # 登录(用户名或邮箱)
@@ -108,12 +111,14 @@ class LoginController extends Controller {
         )) {
             Session::put('user', $user);
             return response()->json([
-                'statusCode' => 200,
+                'statusCode' => self::OK,
                 'url'        => $returnUrl ? $returnUrl : '/',
             ]);
         }
         
-        return response()->json(['statusCode' => 500]);
+        return response()->json([
+            'statusCode' => self::INTERNAL_SERVER_ERROR
+        ]);
         
     }
     
