@@ -134,7 +134,18 @@ $score_send.on('click',function(){
         processData: false,
         contentType: false,
         success: function (result) {
-            alert('发送成功');
+            console.log(result);
+
+            if (result.original.statusCode!== 0) {
+                page.inform("操作成功",result.message, page.success);
+            }else {
+                page.inform("操作失败",result.message, page.failure);
+            }
+        },
+        error: function (result) {
+            console.log(result);
+            page.inform("操作失败",result.message, page.failure);
+
         }
     });
 });

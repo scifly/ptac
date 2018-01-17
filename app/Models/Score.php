@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Facades\Wechat;
 use Carbon\Carbon;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
@@ -405,6 +406,61 @@ class Score extends Model {
 
 
     public function sendMessage($data) {
+        $corp = Corp::whereName('万浪软件')->first();
+        $app = App::whereName('成绩中心')->first();
+        $token = Wechat::getAccessToken($corp->corpid, $app->secret);
+        $result = [];
+        $school = School::whereId(School::schoolId())->first();
+        foreach ($data as $d) {
+            if (isset($d->mobile)) {
+                $mobiles = explode(',', $d->mobile);
+                foreach ($mobiles as $m){
+                    if ($m) {
+                        $user = User::whereId(Mobile::where('mobile', $m)->first()->user_id)->first();
+                        $message = [
+                            'touser' => $user->userid,
+                            "msgtype" => "text",
+                            "agentid" => $app->agentid,
+                            'text' => [
+                                'content' => $d->content
+                            ],
+                        ];
+                        $status = json_decode(Wechat::sendMessage($token, $message));
+                        if ($status->errcode == 0) {
+                            $result = [
+                                'statusCode' => 200,
+                                'message' => '消息已发送！',
+                            ];
+                        } else if($status->errcode == 82001) {
+                            $code = json_encode(Wechat::batchSend('LKJK004923', "654321@", $m, $d->content . $school->signature));
+                            if ($code != '0' && $code != '-1') {
+                                $result = [
+                                    'statusCode' => 200,
+                                    'message' => '消息已发送！',
+                                ];
+                            } else {
+                                $result = [
+                                    'statusCode' => 0,
+                                    'message' => '短信推送失败！',
+                                ];
+                            }
+
+                        }else {
+                            $result = [
+                                'statusCode' => 0,
+                                'message' => '消息发送失败！',
+                            ];
+//                            return response()->json($result);
+                        }
+                    }
+
+                }
+
+            }
+
+
+        }
+        return $result;
 
     }
 }
