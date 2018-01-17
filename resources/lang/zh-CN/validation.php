@@ -100,8 +100,11 @@ return [
     */
 
     'custom'               => [
-        'attribute-name' => [
-            'rule-name' => 'custom-message',
+        'avatar_url' => [
+            'url' => 'users avatar_url is not correct',
+        ],
+        'student_number' => [
+            'unique' => ':attribute不唯一',
         ],
     ],
 
@@ -119,6 +122,8 @@ return [
     'attributes'           => [
         'name'                  => '名称',
         'english_name'          => '英文名',
+        'card_number'           => '卡号',
+        'student_number'        => '学号',
         'discount'              => '折扣(discount)',
         'machineid'             => '考勤机id',
         'username'              => '用户名',

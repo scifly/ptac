@@ -387,6 +387,7 @@ class Student extends Model {
         // 上传文件
         $filename = date('His') . uniqid() . '.' . $ext;
         $stored = Storage::disk('uploads')->put($filename, file_get_contents($realPath));
+        Log::debug(file_get_contents($realPath));
         if ($stored) {
             $filePath =
                 'storage/app/uploads/'
@@ -397,7 +398,9 @@ class Student extends Model {
                 . date('d')
                 . '/'
                 . $filename;
+
             /** @var LaravelExcelReader $reader */
+
             $reader = Excel::load($filePath);
             $sheet = $reader->getExcel()->getSheet(0);
             $students = $sheet->toArray();

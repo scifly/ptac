@@ -18,3 +18,4 @@ app/Http/Controllers/TestController.php
 resources/views/test/
 public/css/test.css
 public/js/test/
+storage/app/uploades/
