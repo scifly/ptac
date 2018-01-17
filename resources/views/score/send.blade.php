@@ -41,7 +41,16 @@
 				    	<label class="col-sm-2 control-label">发布内容</label>
 				    	<div class="col-sm-10">
 				    		<div class="checkbox" id="subject-list">
-					    		
+					    		<label>
+									<input type="checkbox" class="minimal">
+									总分
+								</label>
+								@foreach($subjects as $s)
+									<label>
+										<input type="checkbox" class="minimal">
+										{{$s['name']}}
+									</label>
+								@endforeach
 				   			</div>
 				    	</div>
 				    </div>
