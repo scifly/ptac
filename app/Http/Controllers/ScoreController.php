@@ -10,6 +10,7 @@ use App\Models\Subject;
 use Excel;
 use Exception;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Maatwebsite\Excel\Classes\PHPExcel;
 use Maatwebsite\Excel\Files\ExcelFile;
@@ -188,11 +189,11 @@ class ScoreController extends Controller {
      */
     public function send_message() {
         if (Request::method() === 'POST') {
-            $mobile = Request::input('mobile');
-            $content = Request::input('content');
+            $data = Request::input('data');
             $score = new Score();
+                Log::debug($data);
+            $score->sendMessage($data);
 
-            $score->sendMessage($mobile, $content);
             return response()->json();
 
 

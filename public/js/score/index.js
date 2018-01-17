@@ -113,18 +113,21 @@ function table_checkAll(){
 }
 
 $score_send.on('click',function(){
-	var data = new Array();
+	var data = [];
 	$('#send-table tbody .checked').each(function(i,vo){
-    	data[i] = new Array();
-    	var $this = $(vo).parent().parent().parent();
-    	data[i]['mobile'] = $this.find('.mobile').text();
-    	data[i]['content'] = $this.find('.content').text();
+        var $this = $(vo).parent().parent().parent();
+	    data[i] = {
+    	    'mobile' : $this.find('.mobile').text(),
+            'content' : $this.find('.content').text(),
+        };
+
     });
     var formData = new FormData();
     formData.append('_token', $token.attr('content'));
-    formData.append('data', data);
+    formData.append('data', JSON.stringify(data));
+    console.log(data);
     $.ajax({
-        url: page.siteRoot() + "scores/send",
+        url: page.siteRoot() + "scores/send_message",
         type: 'POST',
         cache: false,
         data: formData,

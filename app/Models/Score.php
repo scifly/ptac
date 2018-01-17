@@ -404,7 +404,7 @@ class Score extends Model {
     }
 
 
-    public function sendMessage($mobile, $content) {
+    public function sendMessage($data) {
 
     }
 }
