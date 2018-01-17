@@ -228,12 +228,16 @@ class Score extends Model {
     public function scores($exam, $squad, $subject, $project) {
         $student = $this->where('exam_id', $exam)
             ->get()->pluck('student_id');
-        # 当前班级下的所有学生
+        # 当前班级下的所有参加考试的学生
         $students = Student::whereClassId($squad)->whereIn('id', $student)->get();
         # 当前选择班级的所属年级下 的所有班级 id
-        $classes = Squad::where('grade_id', Squad::whereId($squad)->first()->grade_id)->get()->pluck('id');
-        # 统计当前学生年级 的所有学生
-        $gradeStudents = Student::whereIn('class_id', $classes)->get();
+        $classes = Squad::where('grade_id', Squad::whereId($squad)->first()->grade_id)
+            ->get()
+            ->pluck('id');
+        # 统计当前学生年级 的所有参加考试的学生
+        $gradeStudents = Student::whereIn('class_id', $classes)
+            ->whereIn('id', $student)
+            ->get();
         $result = [];
         foreach ($students as $s) {
             $user = User::whereIn('id', array_column(json_decode($s->custodians), 'user_id'))
@@ -242,6 +246,8 @@ class Score extends Model {
             $score = $this->where('exam_id', $exam)
                 ->where('student_id', $s->id)
                 ->get();
+            $message = [];
+
             foreach ($subject as $j) {
                 $sub = Subject::whereId($j)->first();
                 $subScore = $this::where('exam_id', $exam)
@@ -250,7 +256,6 @@ class Score extends Model {
                     ->first();
                 $subName = isset($sub->name) ? $sub->name : '';
                 $sum = $score->sum('score');
-                $message = [];
 
                 foreach ($project as $p) {
                     if ($p == 'score') {
@@ -381,22 +386,25 @@ class Score extends Model {
                     }
 
                 }
-                $result[] = [
-                    'custodian' => $user->pluck('realname'),
-                    'name' => $student,
-                    'mobile' => Mobile::whereIn('user_id', $user->pluck('id'))->get()->pluck('mobile'),
-                    'content' => '尊敬的' . $student . '家长,'
-                        . Exam::whereId($exam)->first()->name . '考试成绩已出:' . implode(',', $message) . '。'
-                ];
-                unset($message);
-
             }
-
+            $result[] = [
+                'custodian' => $user->pluck('realname'),
+                'name' => $student,
+                'mobile' => Mobile::whereIn('user_id', $user->pluck('id'))->get()->pluck('mobile'),
+                'content' => '尊敬的' . $student . '家长,'
+                    . Exam::whereId($exam)->first()->name . '考试成绩已出:' . implode(',', $message) . '。'
+            ];
+            unset($message);
 
 
         }
 
         return $result;
+
+    }
+
+
+    public function sendMessage($mobile, $content) {
 
     }
 }

@@ -145,14 +145,14 @@ class ScoreController extends Controller {
      * @return JsonResponse
      */
     public function send() {
-//        $score = new Score();
-//        $exam = 1;
-//        $squad = 1;
-//        $subject = [-1,1,2];
-//        $project = ['score', 'grade_rank', 'class_rank', 'grade_average', 'class_average', 'grade_max', 'class_max', 'grade_min', 'class_min'];
-//
-//        $result = $score->scores($exam, $squad, $subject, $project);
-//        return response()->json($result);die;
+        $score = new Score();
+        $exam = 1;
+        $squad = 1;
+        $subject = [1,2];
+        $project = ['class_rank', 'grade_average', 'class_average'];
+
+        $result = $score->scores($exam, $squad, $subject, $project);
+        return response()->json($result);die;
         if (Request::method() === 'POST') {
             $exam = Request::input('exam');
             $squad = Request::input('squad');
@@ -162,9 +162,7 @@ class ScoreController extends Controller {
                 $score = new Score();
                 $result = $score->scores($exam, $squad, $subject, $project);
                 return response()->json($result);
-            }
-
-            if($exam) {
+            }else{
                 $ids = Exam::whereId($exam)->first();
 
                 $classes = Squad::whereIn('id', explode(',', $ids['class_ids']))
@@ -184,7 +182,22 @@ class ScoreController extends Controller {
         }
     }
 
+    /**
+     * 发送成绩信息
+     *
+     */
+    public function send_message() {
+        if (Request::method() === 'POST') {
+            $mobile = Request::input('mobile');
+            $content = Request::input('content');
+            $score = new Score();
 
+            $score->sendMessage($mobile, $content);
+            return response()->json();
+
+
+        }
+    }
     /**
      * 统计成绩排名
      *

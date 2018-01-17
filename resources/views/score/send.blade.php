@@ -47,7 +47,7 @@
 								</label>
 								@foreach($subjects as $s)
 									<label>
-										<input type="checkbox" class="minimal">
+										<input type="checkbox" class="minimal" value="{{$s['id']}}">
 										{{$s['name']}}
 									</label>
 								@endforeach
