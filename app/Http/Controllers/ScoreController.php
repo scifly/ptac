@@ -155,6 +155,15 @@ class ScoreController extends Controller {
 //        return response()->json($result);die;
         if (Request::method() === 'POST') {
             $exam = Request::input('exam');
+            $squad = Request::input('squad');
+            $subject = Request::input('subject');
+            $project = Request::input('project');
+            if ($exam && $squad ) {
+                $score = new Score();
+                $result = $score->scores($exam, $squad, $subject, $project);
+                return response()->json($result);
+            }
+
             if($exam) {
                 $ids = Exam::whereId($exam)->first();
 
@@ -168,14 +177,6 @@ class ScoreController extends Controller {
                     'classes' => $classes,
                     'subjects' => $subjects,
                 ];
-                return response()->json($result);
-            }
-            $squad = Request::input('squad');
-            $subject = Request::input('subject');
-            $project = Request::input('project');
-            if ($exam && $squad) {
-                $score = new Score();
-                $result = $score->scores($exam, $squad, $subject, $project);
                 return response()->json($result);
             }
 
