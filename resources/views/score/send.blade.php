@@ -110,12 +110,11 @@
 	   	</div>
 	   	
 	   	<div class="row">
-	   		<div class="col-md-6" style="text-align: right;">
-	   			<button type="button" id="btn-browse" class="btn btn-primary">浏览</button>
-	   		</div>
-	   		<div class="col-md-6">
+	   		<div class="col-md-12" style="text-align: center;">
+	   			<button type="button" id="btn-browse" class="btn btn-primary" style="margin-right: 30px;">浏览</button>
 	   			<button type="button" id="btn-send-message" class="btn btn-success">发送</button>
 	   		</div>
+	   		
 	   	</div>
 	   	
         <table id="send-table" style="width: 100%;margin-top: 20px;"

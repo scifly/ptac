@@ -113,28 +113,32 @@ function table_checkAll(){
 }
 
 $score_send.on('click',function(){
-	var data = [];
-	$('#send-table tbody .checked').each(function(i,vo){
-        var $this = $(vo).parent().parent().parent();
-	    data[i] = {
-    	    'mobile' : $this.find('.mobile').text(),
-            'content' : $this.find('.content').text(),
-        };
-
-    });
-    var formData = new FormData();
-    formData.append('_token', $token.attr('content'));
-    formData.append('data', JSON.stringify(data));
-    console.log(data);
-    $.ajax({
-        url: page.siteRoot() + "scores/send_message",
-        type: 'POST',
-        cache: false,
-        data: formData,
-        processData: false,
-        contentType: false,
-        success: function (result) {
-            alert('发送成功');
-        }
-    });
+	if($('#send-table .icheckbox_minimal-blue').hasClass('checked')){
+		var data = [];
+		$('#send-table tbody .checked').each(function(i,vo){
+	        var $this = $(vo).parent().parent().parent();
+		    data[i] = {
+	    	    'mobile' : $this.find('.mobile').text(),
+	            'content' : $this.find('.content').text(),
+	        };
+	
+	    });
+	    var formData = new FormData();
+	    formData.append('_token', $token.attr('content'));
+	    formData.append('data', JSON.stringify(data));
+	    $.ajax({
+	        url: page.siteRoot() + "scores/send_message",
+	        type: 'POST',
+	        cache: false,
+	        data: formData,
+	        processData: false,
+	        contentType: false,
+	        success: function (result) {
+	            alert('发送成功');
+	        }
+	    });
+	}else{
+		alert('请先选择发送内容');
+	}
+		
 });
