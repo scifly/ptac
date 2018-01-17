@@ -145,41 +145,42 @@ class ScoreController extends Controller {
      * @return JsonResponse
      */
     public function send() {
-        $score = new Score();
-        $exam = 1;
-        $squad = 1;
-        $subject = [1,2];
-        $project = ['class_rank', 'grade_average', 'grade_max', 'class_max'];
-        $result = $score->scores($exam, $squad, $subject, $project);
-        return response()->json($result);die;
-//        if (Request::method() === 'POST') {
-//            $exam = Request::input('exam');
-//            if($exam) {
-//                $ids = Exam::whereId($exam)->first();
+//        $score = new Score();
+//        $exam = 1;
+//        $squad = 1;
+//        $subject = [-1,1,2];
+//        $project = ['score', 'grade_rank', 'class_rank', 'grade_average', 'class_average', 'grade_max', 'class_max', 'grade_min', 'class_min'];
 //
-//                $classes = Squad::whereIn('id', explode(',', $ids['class_ids']))
-//                    ->get()
-//                    ->toArray();
-//                $subjects = Subject::whereIn('id', explode(',', $ids['subject_ids']))
-//                    ->get()
-//                    ->toArray();
-//                $result = [
-//                    'classes' => $classes,
-//                    'subjects' => $subjects,
-//                ];
-//                return response()->json($result);
-//            }
-//            $squad = Request::input('squad');
-//            $subject = Request::input('subject');
-//            $project = Request::input('project');
-//            if ($exam && $squad) {
-//                $score = new Score();
-//                $result = $score->scores($exam, $squad, $subject, $project);
-//                return response()->json($result);
-//            }
-//
-//
-//        }
+//        $result = $score->scores($exam, $squad, $subject, $project);
+//        return response()->json($result);die;
+        if (Request::method() === 'POST') {
+            $exam = Request::input('exam');
+            if($exam) {
+                $ids = Exam::whereId($exam)->first();
+
+                $classes = Squad::whereIn('id', explode(',', $ids['class_ids']))
+                    ->get()
+                    ->toArray();
+                $subjects = Subject::whereIn('id', explode(',', $ids['subject_ids']))
+                    ->get()
+                    ->toArray();
+                $result = [
+                    'classes' => $classes,
+                    'subjects' => $subjects,
+                ];
+                return response()->json($result);
+            }
+            $squad = Request::input('squad');
+            $subject = Request::input('subject');
+            $project = Request::input('project');
+            if ($exam && $squad) {
+                $score = new Score();
+                $result = $score->scores($exam, $squad, $subject, $project);
+                return response()->json($result);
+            }
+
+
+        }
     }
 
 
