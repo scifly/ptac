@@ -1,4 +1,11 @@
-.icheckbox_minimal-blue{
+#subject-list .icheckbox_minimal-blue,#project-list .icheckbox_minimal-blue{
 	margin-top: -3px !important;
 	margin-right: 2px !important;
+}
+#send-table .icheckbox_minimal-blue{
+	margin-top: 5px !important;
+	margin-left: 5px !important;
+}
+#send-table{
+	overflow: auto;
 }

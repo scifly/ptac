@@ -160,7 +160,7 @@ class ScoreController extends Controller {
             $project = Request::input('project');
             if ($exam && $squad ) {
                 $score = new Score();
-                $result = $score->scores($exam, $squad, $subject, $project);
+                $result = $score->scores($exam, $squad, explode(',', $subject), explode(',', $project));
                 return response()->json($result);
             }else{
                 $ids = Exam::whereId($exam)->first();
