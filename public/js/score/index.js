@@ -41,7 +41,7 @@ $exam_id.on('change',function(){
             });
             $('#squad_id').html(html1);
             page.initSelect2();
-            var html2 = '';
+            var html2 = '<label><input  type="checkbox" class="minimal" value="-1">总分</label>';
             $.each(result.subjects, function (index, obj) {
                 var datacon = obj;
             	html2 +='<label>'+ 
@@ -56,16 +56,32 @@ $exam_id.on('change',function(){
 
 $browse.on('click', function() {
     var exam = $('#exam_id').val();
-    var squad_id = $('#squad_id').val();
-    var subject_ids = new Array();
-    
+    var squad = $('#squad_id').val();
+    var subject = new Array();
+    var project = new Array();
     $('#subject-list .checked').each(function(){
-    	subject_ids.push($(this).find('.minimal').val());
+    	subject.push($(this).find('.minimal').val());
     });
     $('#project-list .checked').each(function(){
-    	subject_ids.push($(this).find('.minimal').val());
+    	project.push($(this).find('.minimal').val());
     });
     
-    console.log(subject_ids);
+    var formData = new FormData();
+    formData.append('_token', $token.attr('content'));
+    formData.append('exam', exam);
+    formData.append('squad', squad);
+    formData.append('subject', subject);
+    formData.append('project', project);
+    $.ajax({
+        url: page.siteRoot() + "scores/send",
+        type: 'POST',
+        cache: false,
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function (result) {
+            console.log(result);
+        }
+    });
     
 });

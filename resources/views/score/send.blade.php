@@ -66,39 +66,39 @@
 				    	<div class="col-sm-10">
 				    		<div class="checkbox" id="project-list">
 					    		<label>
-					   				<input type="checkbox" class="minimal" value="1">
+					   				<input type="checkbox" class="minimal" value="score">
 					   				分数
 					   			</label>
 					   			<label>
-					   				<input type="checkbox" class="minimal" value="2">
+					   				<input type="checkbox" class="minimal" value="grade_rank">
 					   				年排名
 					   			</label>
 					   			<label>
-					   				<input type="checkbox" class="minimal" value="3">
+					   				<input type="checkbox" class="minimal" value="class_rank">
 					   				班排名
 					   			</label>
 					   			<label>
-					   				<input type="checkbox" class="minimal" value="4">
+					   				<input type="checkbox" class="minimal" value="grade_average">
 					   				年平均
 					   			</label>
 					   			<label>
-					   				<input type="checkbox" class="minimal" value="5">
+					   				<input type="checkbox" class="minimal" value="class_average">
 					   				班平均
 					   			</label>
 					   			<label>
-					   				<input type="checkbox" class="minimal" value="6">
+					   				<input type="checkbox" class="minimal" value="grade_max">
 					   				年最高
 					   			</label>
 					   			<label>
-					   				<input type="checkbox" class="minimal" value="7">
+					   				<input type="checkbox" class="minimal" value="class_max">
 					   				班最高
 					   			</label>
 					   			<label>
-					   				<input type="checkbox" class="minimal" value="8">
+					   				<input type="checkbox" class="minimal" value="grade_min">
 					   				年最低
 					   			</label>
 					   			<label>
-					   				<input type="checkbox" class="minimal" value="9">
+					   				<input type="checkbox" class="minimal" value="class_min">
 					   				班最低
 					   			</label>
 					   			
