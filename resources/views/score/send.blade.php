@@ -64,41 +64,41 @@
 		   			<div class="form-group">
 				    	<label class="col-sm-2 control-label">发送项目</label>
 				    	<div class="col-sm-10">
-				    		<div class="checkbox">
+				    		<div class="checkbox" id="project-list">
 					    		<label>
-					   				<input type="checkbox" class="minimal">
+					   				<input type="checkbox" class="minimal" value="1">
 					   				分数
 					   			</label>
 					   			<label>
-					   				<input type="checkbox" class="minimal">
+					   				<input type="checkbox" class="minimal" value="2">
 					   				年排名
 					   			</label>
 					   			<label>
-					   				<input type="checkbox" class="minimal">
+					   				<input type="checkbox" class="minimal" value="3">
 					   				班排名
 					   			</label>
 					   			<label>
-					   				<input type="checkbox" class="minimal">
+					   				<input type="checkbox" class="minimal" value="4">
 					   				年平均
 					   			</label>
 					   			<label>
-					   				<input type="checkbox" class="minimal">
+					   				<input type="checkbox" class="minimal" value="5">
 					   				班平均
 					   			</label>
 					   			<label>
-					   				<input type="checkbox" class="minimal">
+					   				<input type="checkbox" class="minimal" value="6">
 					   				年最高
 					   			</label>
 					   			<label>
-					   				<input type="checkbox" class="minimal">
+					   				<input type="checkbox" class="minimal" value="7">
 					   				班最高
 					   			</label>
 					   			<label>
-					   				<input type="checkbox" class="minimal">
+					   				<input type="checkbox" class="minimal" value="8">
 					   				年最低
 					   			</label>
 					   			<label>
-					   				<input type="checkbox" class="minimal">
+					   				<input type="checkbox" class="minimal" value="9">
 					   				班最低
 					   			</label>
 					   			
