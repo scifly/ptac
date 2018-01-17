@@ -148,4 +148,5 @@ $score_send.on('click',function(){
 
         }
     });
+
 });
