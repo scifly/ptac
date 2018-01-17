@@ -9,6 +9,7 @@ var $send_main = $('#send_main');
 var $exam_id = $('#exam_id');
 var $token = $('#csrf_token');
 var $close_send = $('#close-send');
+var $browse = $('#btn-browse');
 
 $send.on('click', function() {
     $score.hide();
@@ -51,4 +52,20 @@ $exam_id.on('change',function(){
 			page.initMinimalIcheck();
         }
     });
-})
+});
+
+$browse.on('click', function() {
+    var exam = $('#exam_id').val();
+    var squad_id = $('#squad_id').val();
+    var subject_ids = new Array();
+    
+    $('#subject-list .checked').each(function(){
+    	subject_ids.push($(this).find('.minimal').val());
+    });
+    $('#project-list .checked').each(function(){
+    	subject_ids.push($(this).find('.minimal').val());
+    });
+    
+    console.log(subject_ids);
+    
+});
