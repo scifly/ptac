@@ -45,7 +45,9 @@ class ComposerServiceProvider extends ServiceProvider {
 
         View::composer('student_attendance.count', 'App\Http\ViewComposers\StudentAttendanceCountComposer');
 
-        View::composer('student.index', 'App\Http\ViewComposers\StudentIndexComposer');
+        View::composer(
+            ['student.index','student.show'],
+            'App\Http\ViewComposers\StudentIndexComposer');
         View::composer('student.create', 'App\Http\ViewComposers\StudentComposer');
         View::composer('student.edit', 'App\Http\ViewComposers\StudentEditComposer');
 

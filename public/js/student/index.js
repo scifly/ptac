@@ -11,6 +11,8 @@ var $importPupils = $('#import-pupils');
 var $file = $('#confirm-import');
 $import.on('click', function () {
     $importPupils.modal({backdrop: true});
+
+
     $file.on('click', function () {
         var formData = new FormData();
         formData.append('file', $('#fileupload')[0].files[0]);
@@ -27,7 +29,6 @@ $import.on('click', function () {
                 }
             },
             error: function (result) {
-                console.log(result);
                 page.inform("操作失败",result.message, page.failure);
 
             }
