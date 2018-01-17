@@ -1,12 +1,17 @@
-@include('score.send')
-<div class="box box-default box-solid" id="score" style="display: none;">
+{{--@include('score.send')--}}
+<div class="box box-default box-solid">
     <div class="box-header with-border">
         @include('partials.list_header', [
             'buttons' => [
                 'import' => [
-                    'id' => 'send',
-                    'label' => '成绩发送',
+                    'id' => 'import',
+                    'label' => '批量导入',
                     'icon' => 'fa fa-arrow-circle-up',
+                ],
+                'export' => [
+                    'id' => 'export',
+                    'label' => '批量导出',
+                    'icon' => 'fa fa-arrow-circle-down'
                 ]
             ]
         ])
@@ -35,5 +40,118 @@
         </table>
     </div>
     @include('partials.form_overlay')
-    
+</div>
+
+<!-- 导入excel -->
+<form class='import' method='post' enctype='multipart/form-data' id="form-import">
+    {{csrf_field()}}
+    <div class="modal fade" id="import-pupils">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">批量导入</h4>
+                </div>
+                <div class="modal-body with-border">
+                    <div class="form-horizontal">
+                        <!-- 选择考试 -->
+                        <div class="form-group">
+                            @if(isset($exams))
+                                @include('partials.single_select', [
+                                        'id' => 'exam',
+                                        'label' => '选择考试',
+                                        'items' => $exams
+                                    ])
+                            @endif
+                        </div>
+                        <!-- 年级 -->
+                        <div class="form-group">
+                            @if(isset($grades))
+                                @include('partials.single_select', [
+                                        'id' => 'gradeId',
+                                        'label' => '年级',
+                                        'items' => $grades
+                                    ])
+
+                            @endif
+                        </div>
+                        <!-- 班级 -->
+                        <div class="form-group">
+                            @if(isset($classes))
+                                @include('partials.single_select', [
+                                        'id' => 'classId',
+                                        'label' => '班级',
+                                        'items' => $classes
+                                    ])
+                            @endif
+                        </div>
+                        <div class="form-group">
+                            {{ Form::label('import', '选择导入文件', [
+                                'class' => 'control-label col-sm-3'
+                            ]) }}
+
+                            <div class="col-sm-6">
+                                <input type="file" id="fileupload" accept=".xls,.xlsx" name="file">
+                                <p class="help-block">下载<a href="{{URL::asset('files/students.xlsx')}}">模板</a></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <a href="#" class="btn btn-sm btn-white" data-dismiss="modal">取消</a>
+                    <a id="confirm-import" href="#" class="btn btn-sm btn-success" data-dismiss="modal">确定</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<!-- 导出excel -->
+<div class="modal fade" id="export-pupils">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title">导出</h4>
+            </div>
+            <div class="modal-body with-border">
+                <div class="form-horizontal">
+                    <!-- 所属学校 -->
+                    <div class="form-group">
+                        @if(isset($schools))
+                            @include('partials.single_select', [
+                                    'id' => 'schoolId',
+                                    'label' => '所属学校',
+                                    'items' => $schools
+                                ])
+                        @endif
+                    </div>
+                    <!-- 所属年级 -->
+                    <div class="form-group">
+                        @if(isset($grades))
+                            @include('partials.single_select', [
+                                    'id' => 'gradeId',
+                                    'label' => '所属年级',
+                                    'items' => $grades
+                                ])
+
+                        @endif
+                    </div>
+                    <!-- 所属班级 -->
+                    <div class="form-group">
+                        @if(isset($classes))
+                            @include('partials.single_select', [
+                                    'id' => 'classId',
+                                    'label' => '所属班级',
+                                    'items' => $classes
+                                ])
+                        @endif
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a href="#" class="btn btn-sm btn-white" data-dismiss="modal">取消</a>
+                <a id="confirm-bind" href="javascript:" class="btn btn-sm btn-success">确定</a>
+            </div>
+        </div>
+    </div>
 </div>

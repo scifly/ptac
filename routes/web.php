@@ -78,7 +78,7 @@ Route::group(['prefix' => 'scores'], function () {
     $c = 'ScoreController';
     Route::get('statistics/{examId}', $c . '@statistics');
     Route::get('export/{examId}', $c . '@export');
-    Route::get('import', $c . '@import');
+    Route::post('import', $c . '@import');
     Route::post('send', $c . '@send');
 });
 Route::group(['prefix' => 'score_totals'], function () {

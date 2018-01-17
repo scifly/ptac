@@ -1,14 +1,20 @@
 <?php
-
 namespace App\Models;
 
+use App\Events\ScoreImported;
+use App\Events\StudentUpdated;
 use App\Facades\DatatableFacade as Datatable;
 use Carbon\Carbon;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
+use Maatwebsite\Excel\Facades\Excel;
+use Maatwebsite\Excel\Readers\LaravelExcelReader;
 
 /**
  * App\Models\Score 分数
@@ -39,7 +45,12 @@ use Illuminate\Support\Facades\DB;
  * @property-read Subject $subject
  */
 class Score extends Model {
-
+    
+    #表头必须包含字段
+    const EXCEL_FILE_TITLE = [
+        '班级', '学号', '姓名',
+    ];
+    
     protected $fillable = [
         'student_id', 'subject_id', 'exam_id',
         'class_rank', 'grade_rank', 'score',
@@ -48,21 +59,21 @@ class Score extends Model {
     
     /**
      * 返回分数记录所属的学生对象
-     * 
+     *
      * @return BelongsTo
      */
     public function student() { return $this->belongsTo('App\Models\Student'); }
     
     /**
      * 返回分数记录所属的科目对象
-     * 
+     *
      * @return BelongsTo
      */
     public function subject() { return $this->belongsTo('App\Models\Subject'); }
     
     /**
      * 返回分数记录所述的考试对象
-     * 
+     *
      * @return BelongsTo
      */
     public function exam() { return $this->belongsTo('App\Models\Exam'); }
@@ -73,7 +84,7 @@ class Score extends Model {
      * @return array
      */
     static function datatable() {
-
+        
         $columns = [
             ['db' => 'Score.id', 'dt' => 0],
             ['db' => 'User.realname', 'dt' => 1],
@@ -82,21 +93,21 @@ class Score extends Model {
             ['db' => 'Student.student_number', 'dt' => 4],
             ['db' => 'Subject.name as subjectname', 'dt' => 5],
             ['db' => 'Exam.name as examname', 'dt' => 6],
-            ['db' => 'Score.class_rank', 'dt' => 7,
-                'formatter' => function ($d) {
-                    return $d === 0 ? "未统计" : $d;
-                },
+            ['db'        => 'Score.class_rank', 'dt' => 7,
+             'formatter' => function ($d) {
+                 return $d === 0 ? "未统计" : $d;
+             },
             ],
-            ['db' => 'Score.grade_rank', 'dt' => 8,
-                'formatter' => function ($d) {
-                    return $d === 0 ? "未统计" : $d;
-                },
+            ['db'        => 'Score.grade_rank', 'dt' => 8,
+             'formatter' => function ($d) {
+                 return $d === 0 ? "未统计" : $d;
+             },
             ],
             ['db' => 'Score.score', 'dt' => 9],
             ['db' => 'Score.created_at', 'dt' => 10],
             ['db' => 'Score.updated_at', 'dt' => 11],
             [
-                'db' => 'Score.enabled', 'dt' => 12,
+                'db'        => 'Score.enabled', 'dt' => 12,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($d, $row);
                 },
@@ -104,60 +115,60 @@ class Score extends Model {
         ];
         $joins = [
             [
-                'table' => 'students',
-                'alias' => 'Student',
-                'type' => 'INNER',
+                'table'      => 'students',
+                'alias'      => 'Student',
+                'type'       => 'INNER',
                 'conditions' => [
                     'Student.id = Score.student_id',
                 ],
             ],
             [
-                'table' => 'subjects',
-                'alias' => 'Subject',
-                'type' => 'INNER',
+                'table'      => 'subjects',
+                'alias'      => 'Subject',
+                'type'       => 'INNER',
                 'conditions' => [
                     'Subject.id = Score.subject_id',
                 ],
             ],
             [
-                'table' => 'exams',
-                'alias' => 'Exam',
-                'type' => 'INNER',
+                'table'      => 'exams',
+                'alias'      => 'Exam',
+                'type'       => 'INNER',
                 'conditions' => [
                     'Exam.id = Score.exam_id',
                 ],
             ],
             [
-                'table' => 'users',
-                'alias' => 'User',
-                'type' => 'INNER',
+                'table'      => 'users',
+                'alias'      => 'User',
+                'type'       => 'INNER',
                 'conditions' => [
                     'User.id = Student.user_id',
                 ],
             ],
-
             [
-                'table' => 'classes',
-                'alias' => 'Squad',
-                'type' => 'INNER',
+                'table'      => 'classes',
+                'alias'      => 'Squad',
+                'type'       => 'INNER',
                 'conditions' => [
                     'Squad.id = Student.class_id',
                 ],
             ],
             [
-                'table' => 'grades',
-                'alias' => 'Grade',
-                'type' => 'INNER',
+                'table'      => 'grades',
+                'alias'      => 'Grade',
+                'type'       => 'INNER',
                 'conditions' => [
                     'Grade.id = Squad.grade_id',
                 ],
             ],
         ];
+        
         // todo: 增加过滤条件
         return Datatable::simple(self::getModel(), $columns, $joins);
         
     }
-
+    
     static function statistics($exam_id) {
         
         $class_ids = DB::table('exams')->where('id', $exam_id)->value('class_ids');
@@ -220,8 +231,177 @@ class Score extends Model {
                 }
             }
         }
-
+        
         return true;
     }
-
+    
+    /**
+     * @param UploadedFile $file
+     * @param $input
+     * @return array
+     * @throws \PHPExcel_Exception
+     */
+    static function upload(UploadedFile $file, $input) {
+        
+        $ext = $file->getClientOriginalExtension();     // 扩展名//xls
+        $realPath = $file->getRealPath();   //临时文件的绝对路径
+        // 上传文件
+        $filename = date('His') . uniqid() . '.' . $ext;
+        $stored = Storage::disk('uploads')->put($filename, file_get_contents($realPath));
+        if ($stored) {
+            $filePath =
+                'uploads/'
+                . date('Y')
+                . '/'
+                . date('m')
+                . '/'
+                . date('d')
+                . '/'
+                . $filename;
+            /** @var LaravelExcelReader $reader */
+            $reader = Excel::load($filePath);
+            $sheet = $reader->getExcel()->getSheet(0);
+            $scores = $sheet->toArray();
+            #考虑删除读取过后的xml文件
+            if (is_file($filePath)) {
+                unlink($filePath);
+            }
+            if (self::checkFileFormat($scores[0])) {
+                return [
+                    'error'   => 1,
+                    'message' => '文件格式错误',
+                ];
+            }
+            $schoolId = School::schoolId();
+            #这次考试对应的科目id
+            $exam = Exam::whereId($input['exam_id'])->first();
+            $subjectIds = explode(',', $exam->subject_ids);
+            $scoreArr = $scores;
+            #去除表头后的数据
+            array_shift($scoreArr);
+            $scoreArr = array_values($scoreArr);
+            if (count($scoreArr) != 0) {
+                # 去除表格的空数据
+                foreach ($scoreArr as $key => $v) {
+                    if ((array_filter($v)) == null) {
+                        unset($scoreArr[$key]);
+                    }
+                }
+            }
+            #处理表头循环单列的数据插入分数
+            for ($i = 3; $i < count($scores[0]); $i++) {
+                $data = [];
+                $sub = $scores[0][$i];
+                $subject = Subject::where('school_id', $schoolId)
+                    ->where('name', $sub)->first();
+                #判断录入科目分数是否在这次考试中  在
+                if (in_array($subject->id, $subjectIds)) {
+                    foreach ($scoreArr as $arr) {
+                        $data[] = [
+                            'class'          => $arr[0],
+                            'student_number' => $arr[1],
+                            'student_name'   => $arr[2],
+                            'subject_id'     => $subject->id,
+                            'score'          => $arr[$i],
+                            'exam_id'        => $input['exam_id'],
+                        ];
+                        
+                    }
+                    self::checkData($data);
+                }
+            }
+            unset($scores);
+            unset($scoreArr);
+        }
+        // return [
+        //     'error'   => 2,
+        //     'message' => '上传失败',
+        // ];
+    }
+    
+    /**
+     * 检查表头是否合法
+     * @param array $fileTitle
+     * @return bool
+     */
+    private static function checkFileFormat(array $fileTitle) {
+        
+        return count(array_diff(self::EXCEL_FILE_TITLE, $fileTitle)) != 0;
+        
+    }
+    
+    /**
+     *  检查每行数据 是否符合导入数据
+     * @param array $data
+     */
+    private static function checkData(array $data) {
+        #[0] => Array
+        #(
+        #   [class] => 1班
+        #   [student_number] => cc001
+        #   [student_name] => 杨一
+        #   [subject_id] => 12
+        #   [score] => 45
+        #   [exam_id] => 3
+        # )
+    
+        $rules = [
+            'student_number' => 'required',
+            'subject_id'     => 'required|integer',
+            'exam_id'        => 'required|integer',
+            'score'          => 'required|numeric',
+        ];
+        # 不合法的数据
+        $invalidRows = [];
+        # 更新的数据
+        $updateRows = [];
+        # 需要添加的数据
+        $rows = [];
+        
+        for ($i = 0; $i < count($data); $i++) {
+            
+            $datum = $data[$i];
+            $score = [
+                'student_number' => $datum['student_number'],
+                'subject_id'     => $datum['subject_id'],
+                'exam_id'        => $datum['exam_id'],
+                'score'          => $datum['score'],
+            ];
+       
+            $status = Validator::make($score, $rules);
+            if ($status->fails()) {
+                $invalidRows[] = $datum;
+                unset($data[$i]);
+                continue;
+            }
+          
+            $student = Student::whereStudentNumber($score['student_number'])->first();
+            
+            # 数据非法
+            if (!$student) {
+                $invalidRows[] = $datum;
+                unset($data[$i]);
+                continue;
+            }
+         
+            #判断当前学生是否是属于 选择的班级
+            //$studentSquad = $student->squad;
+            
+            $existScore = Score::whereEnabled(1)
+                ->whereExamId($score['exam_id'])
+                ->whereStudentId($student->id)
+                ->whereSubjectId($score['subject_id'])
+                ->first();
+            // if ($existScore) {
+            //     $updateRows[] = $score;
+            // } else {
+            //     $rows[] = $score;
+            // }
+           
+            $rows[] = $score;
+            unset($score);
+        }
+        // event(new StudentUpdated($updateRows));
+        event(new ScoreImported($rows));
+    }
 }
