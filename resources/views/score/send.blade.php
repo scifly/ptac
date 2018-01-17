@@ -42,12 +42,12 @@
 				    	<div class="col-sm-10">
 				    		<div class="checkbox" id="subject-list">
 					    		<label>
-									<input type="checkbox" class="minimal">
+									<input type="checkbox" class="minimal" value="-1">
 									总分
 								</label>
 								@foreach($subjects as $s)
 									<label>
-										<input type="checkbox" class="minimal">
+										<input type="checkbox" class="minimal" value="{{$s['id']}}">
 										{{$s['name']}}
 									</label>
 								@endforeach
@@ -122,10 +122,14 @@
                class="display nowrap table table-striped table-bordered table-hover table-condensed">
             <thead>
 				<tr class="bg-info">
-	                <th width="40">#</th>
-	                <th width="120">家长姓名</th>
-	                <th width="120">姓名</th>
-	                <th width="300">手机号</th>
+	                <th width="40">
+	                	<label>
+							<input type="checkbox" class="minimal" id="table-checkAll">
+						</label>
+					</th>
+	                <th>家长姓名</th>
+	                <th>姓名</th>
+	                <th>手机号</th>
 	                <th>内容</th>
 	            </tr>
             </thead>
