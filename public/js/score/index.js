@@ -120,5 +120,18 @@ $score_send.on('click',function(){
     	data[i]['mobile'] = $this.find('.mobile').text();
     	data[i]['content'] = $this.find('.content').text();
     });
-    console.log(data);
+    var formData = new FormData();
+    formData.append('_token', $token.attr('content'));
+    formData.append('data', data);
+    $.ajax({
+        url: page.siteRoot() + "scores/send",
+        type: 'POST',
+        cache: false,
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function (result) {
+            alert('发送成功');
+        }
+    });
 });
