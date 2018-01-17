@@ -93,8 +93,7 @@ var page = {
         },
         send_css: {
         	css: 'js/score/send.css',
-        },
-        
+        }
     },
     backToList: function (table) {
         var $activeTabPane = $('#tab_' + page.getActiveTabId());
@@ -339,6 +338,7 @@ var page = {
             url: url,
             data: data,
             success: function (result) {
+                $('.overlay').hide();
                 switch (result.statusCode) {
                     case 200:
                         switch (requestType) {
@@ -352,7 +352,6 @@ var page = {
                             default:
                                 break;
                         }
-                        $('.overlay').hide();
                         page.inform(
                             '操作结果', result.message,
                             result.statusCode === 200 ? page.success : page.failure
@@ -360,6 +359,9 @@ var page = {
                         break;
                     case 401:
                         window.location = page.siteRoot() + 'login?returnUrl=' + page.getTabUrl();
+                        break;
+                    case 500:
+                        page.inform('操作失败',result.message,page.failure);
                         break;
                     default:
                         break;

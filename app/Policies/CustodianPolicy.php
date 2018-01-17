@@ -2,11 +2,10 @@
 
 namespace App\Policies;
 
-use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class ConferenceQueueStorePolicy
-{
+class CustodianPolicy {
+
     use HandlesAuthorization;
 
     /**
@@ -14,8 +13,8 @@ class ConferenceQueueStorePolicy
      *
      * @return void
      */
-    public function __construct()
-    {
-        //
-    }
+    public function __construct() { }
+
+
+
 }

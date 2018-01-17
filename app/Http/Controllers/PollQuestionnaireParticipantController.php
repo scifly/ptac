@@ -118,7 +118,7 @@ class PollQuestionnaireParticipantController extends Controller {
             else $Answer->update();
         }
         
-        return response()->json(['msg' => '提交成功', '' => self::HTTP_STATUSCODE_OK]);
+        return response()->json(['msg' => '提交成功', '' => self::OK]);
         
     }
     
