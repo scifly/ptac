@@ -151,7 +151,7 @@ class Company extends Model {
             return true;
         }
 
-        return $removed ? true : false;
+        return $removed ?? false;
 
     }
 

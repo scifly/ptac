@@ -311,3 +311,6 @@ Route::get('attendance_records/{id}', 'Wechat\AttendanceController@records');
 Route::post('attendance_records/{id?}', 'Wechat\AttendanceController@records');
 Route::post('attendance_charts', 'Wechat\AttendanceController@stuChart');
 
+
+
+

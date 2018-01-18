@@ -62,7 +62,7 @@ class ScoreRangeController extends Controller {
      * 保存成绩统计项
      *
      * @param ScoreRangeRequest $request
-     * @return Response
+     * @return JsonResponse|Response|string
      */
     public function store(ScoreRangeRequest $request) {
         
