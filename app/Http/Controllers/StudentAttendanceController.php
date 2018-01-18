@@ -9,7 +9,7 @@ use App\Models\Semester;
 use App\Models\Student;
 use App\Models\StudentAttendance;
 use App\Models\StudentAttendanceSetting;
-use Illuminate\Support\Facades\Log;
+
 use Illuminate\Support\Facades\Request;
 
 /**

@@ -45,6 +45,9 @@ use Illuminate\Support\Facades\Auth;
  * @mixin \Eloquent
  * @property-read Collection|ConferenceParticipant[] $conferenceParticipants
  * @property-read ConferenceRoom $conferenceRoom
+ * @property int $educator_id 发起人教职员工ID
+ * @property-read \App\Models\User $user
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ConferenceQueue whereEducatorId($value)
  */
 class ConferenceQueue extends Model {
 
@@ -78,7 +81,7 @@ class ConferenceQueue extends Model {
      *
      * @return BelongsTo
      */
-    public function user() { return $this->belongsTo('App\Model\User'); }
+    public function user() { return $this->belongsTo('App\Models\User'); }
 
     /**
      * 保存会议

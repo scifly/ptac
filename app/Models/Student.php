@@ -211,7 +211,10 @@ class Student extends Model {
                 $deptClass = Department::whereName($class)
                     ->where('parent_id', $deptGrade->id)
                     ->first();
-                return $deptClass->id;
+                if($deptClass)
+                    return $deptClass->id;
+                else
+                    return 0;
             }
             return 0;
         }
@@ -353,14 +356,14 @@ class Student extends Model {
     static function remove($studentId) {
 
         $student = self::find($studentId);
-        if (!isset($custodian)) { return false; }
+        #if (!isset($custodian)) { return false; }
         try {
             DB::transaction(function () use ($studentId, $student) {
                 # 删除指定的学生记录
                 $student->delete();
                 # 删除与指定学生绑定的监护人记录
                 CustodianStudent::whereStudentId($studentId)->delete();
-                # 删除与指定学生绑定的部门记录
+                # custodian删除与指定学生绑定的部门记录
                 DepartmentUser::whereUserId($student['user_id'])->delete();
                 # 删除与指定学生绑定的手机记录
                 Mobile::whereUserId($student['user_id'])->delete();
@@ -387,10 +390,10 @@ class Student extends Model {
         // 上传文件
         $filename = date('His') . uniqid() . '.' . $ext;
         $stored = Storage::disk('uploads')->put($filename, file_get_contents($realPath));
-        Log::debug(file_get_contents($realPath));
+
         if ($stored) {
             $filePath =
-                'storage/app/uploads/'
+                'public/uploads/'
                 . date('Y')
                 . '/'
                 . date('m')
@@ -400,15 +403,11 @@ class Student extends Model {
                 . $filename;
 
             /** @var LaravelExcelReader $reader */
-
             $reader = Excel::load($filePath);
             $sheet = $reader->getExcel()->getSheet(0);
             $students = $sheet->toArray();
             if (self::checkFileFormat($students[0])) {
-                return [
-                    'error' => 1,
-                    'message' => '文件格式错误',
-                ];
+                return abort(406, '文件格式错误');
             }
             unset($students[0]);
             $students = array_values($students);
@@ -424,11 +423,12 @@ class Student extends Model {
             $data['user'] = Auth::user();
             $data['type'] = 'student';
             event(new ContactImportTrigger($data));
+            return [
+                'statusCode' => 200,
+                'message' => '上传成功'
+            ];
         }
-        return [
-            'error' => 2,
-            'message' => '上传失败',
-        ];
+        return abort(500, '上传失败');
     }
 
     /**

@@ -114,7 +114,6 @@ class CustodianController extends Controller {
         }
         $custodian = Custodian::find($id);
         $pupils = $custodian->students;
-
         return $this->output([
             'mobiles'   => $custodian->user->mobiles,
             'custodian' => $custodian,

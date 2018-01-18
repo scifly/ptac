@@ -154,6 +154,7 @@ return [
         'time'                  => '时间',
         'available'             => '可用的',
         'size'                  => '大小',
-        'enabled'               => '状态'
+        'enabled'               => '状态',
+        'selectedDepartments'  => '所属部门',
     ],
 ];
