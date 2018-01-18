@@ -111,11 +111,11 @@
                 <div class="form-horizontal">
                     <!-- 选择考试 -->
                     <div class="form-group">
-                        @if(isset($exams))
+                        @if(isset($examarr))
                             @include('partials.single_select', [
                                     'id' => 'exam-sta',
                                     'label' => '选择考试',
-                                    'items' => $exams
+                                    'items' => $examarr
                                 ])
                         @endif
                     </div>
