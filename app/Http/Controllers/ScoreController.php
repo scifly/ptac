@@ -256,7 +256,7 @@ class ScoreController extends Controller {
     }
     
     /**
-     * 数据分析
+     * 成绩分析
      *
      * @throws Throwable
      */
