@@ -227,7 +227,10 @@ class ScoreController extends Controller {
      * @return mixed
      */
     public function statistics($id){
-
+        #先判断这个考试录入分数没有
+        if(!Score::whereExamId($id)->first()){
+            return response()->json(['message' => '本次考试还未录入成绩！', 'statusCode' => 500]);
+        }
        return Score::statistics($id) ? $this->succeed() : $this->fail();
        
     }
