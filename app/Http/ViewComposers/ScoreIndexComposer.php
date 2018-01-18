@@ -5,6 +5,7 @@ namespace App\Http\ViewComposers;
 use App\Helpers\ModelTrait;
 use App\Models\Exam;
 use App\Models\Squad;
+use App\Models\Subject;
 use Illuminate\Contracts\View\View;
 
 class ScoreIndexComposer {
@@ -20,16 +21,21 @@ class ScoreIndexComposer {
             $classes = Squad::whereIn('id', explode(',', $ids['class_ids']))
                 ->pluck('name', 'id')
                 ->toArray();
+            $subjects = Subject::whereIn('id', explode(',', $ids['subject_ids']))
+                ->get()
+                ->toArray();
         }
 
 
         if (empty($exams)) {$exams[] = '' ;}
         if (empty($classes)) {$classes[] = '' ;}
+        if (empty($subjects)) {$subjects[] = '' ;}
 
         $view->with([
             'uris' => $this->uris(),
             'exams' => $exams,
             'classes' => $classes,
+            'subjects' => $subjects,
             ]);
         
     }

@@ -10,9 +10,10 @@ use App\Models\Subject;
 use Excel;
 use Exception;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
-use Maatwebsite\Excel\Classes\PHPExcel;
-use Maatwebsite\Excel\Files\ExcelFile;
+
+
 use Throwable;
 
 /**
@@ -145,10 +146,24 @@ class ScoreController extends Controller {
      * @return JsonResponse
      */
     public function send() {
-
+//        $score = new Score();
+//        $exam = 1;
+//        $squad = 1;
+//        $subject = [1,2];
+//        $project = ['class_rank', 'grade_average', 'class_average'];
+//
+//        $result = $score->scores($exam, $squad, $subject, $project);
+//        return response()->json($result);die;
         if (Request::method() === 'POST') {
             $exam = Request::input('exam');
-            if($exam) {
+            $squad = Request::input('squad');
+            $subject = Request::input('subject');
+            $project = Request::input('project');
+            if ($exam && $squad ) {
+                $score = new Score();
+                $result = $score->scores($exam, $squad, explode(',', $subject), explode(',', $project));
+                return response()->json($result);
+            }else{
                 $ids = Exam::whereId($exam)->first();
 
                 $classes = Squad::whereIn('id', explode(',', $ids['class_ids']))
@@ -163,10 +178,24 @@ class ScoreController extends Controller {
                 ];
                 return response()->json($result);
             }
+
+
         }
     }
 
+    /**
+     * 发送成绩信息
+     *
+     */
+    public function send_message() {
+        if (Request::method() === 'POST') {
+            $data = Request::input('data');
+            $score = new Score();
+            return response()->json($score->sendMessage(json_decode($data)));
 
+
+        }
+    }
     /**
      * 统计成绩排名
      *

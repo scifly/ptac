@@ -39,6 +39,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @mixin Eloquent
  * @property-read Grade $grade
  * @property-read Semester $semester
+ * @property-read \App\Models\StudentAttendance $studentAttendance
  */
 class StudentAttendanceSetting extends Model {
 
@@ -73,7 +74,7 @@ class StudentAttendanceSetting extends Model {
      */
     public function studentAttendance() {
         
-        return $this->hasOne('App\Models\StudentAttdance', 'id', 'sas_id');
+        return $this->hasOne('App\Models\StudentAttendance', 'id', 'sas_id');
         
     }
 

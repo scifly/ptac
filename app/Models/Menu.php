@@ -60,6 +60,7 @@ use Throwable;
  * @method static Builder|Menu whereUpdatedAt($value)
  * @method static Builder|Menu whereUri($value)
  * @mixin Eloquent
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\GroupMenu[] $groupMenus
  */
 class Menu extends Model {
 
