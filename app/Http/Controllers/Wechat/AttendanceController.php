@@ -59,6 +59,8 @@ class AttendanceController extends Controller {
     }
     
     /**
+     * 考勤记录
+     *
      * @param null $id
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\JsonResponse|\Illuminate\View\View|\think\response\View
      */
@@ -132,6 +134,7 @@ class AttendanceController extends Controller {
     
     /**
      * 获取考勤异常和正常的天数
+     *
      * @param $id
      * @param $beginTime
      * @param $endTime
