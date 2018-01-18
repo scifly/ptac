@@ -72,6 +72,7 @@ $browse.on('click', function() {
     formData.append('squad', squad);
     formData.append('subject', subject);
     formData.append('project', project);
+    $('.overlay').show();
     $.ajax({
         url: page.siteRoot() + "scores/send",
         type: 'POST',
@@ -81,6 +82,7 @@ $browse.on('click', function() {
         contentType: false,
         success: function (result) {
             var html = '';
+            $('.overlay').hide();
             for(var i=0;i<result.length;i++){
             	var data = result[i];
             	html += '<tr>'+
@@ -126,6 +128,7 @@ $score_send.on('click',function(){
 	    var formData = new FormData();
 	    formData.append('_token', $token.attr('content'));
 	    formData.append('data', JSON.stringify(data));
+	    $('.overlay').show();
 	    $.ajax({
 	        url: page.siteRoot() + "scores/send_message",
 	        type: 'POST',
@@ -134,6 +137,7 @@ $score_send.on('click',function(){
 	        processData: false,
 	        contentType: false,
 	        success: function (result) {
+	        	$('.overlay').hide();
 	            alert('发送成功');
 	        }
 	    });
