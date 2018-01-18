@@ -56,6 +56,7 @@ var custodian = {
         });
     },
     schoolChange: function(item, type, id) {
+        $(document).off('change', '#schoolId');
         $(document).on('change', '#schoolId', function () {
             var schoolId = $('#schoolId').val();
 
@@ -103,6 +104,7 @@ var custodian = {
     },
 
     gradeChange: function (item, type, id) {
+        $(document).on('change', '#gradeId');
         $(document).on('change', '#gradeId', function () {
             var gradeId = $('#gradeId').val();
 
@@ -138,6 +140,7 @@ var custodian = {
         });
     },
     classChange: function (item, type, id) {
+        $(document).off('change', '#classId');
         $(document).on('change', '#classId', function () {
             var classId = $('#classId').val();
             var $studentId = $('#studentId');

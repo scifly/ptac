@@ -390,7 +390,7 @@ class Student extends Model {
         Log::debug(file_get_contents($realPath));
         if ($stored) {
             $filePath =
-                'storage/app/uploads/'
+                'public/uploads/'
                 . date('Y')
                 . '/'
                 . date('m')
@@ -400,7 +400,6 @@ class Student extends Model {
                 . $filename;
 
             /** @var LaravelExcelReader $reader */
-
             $reader = Excel::load($filePath);
             $sheet = $reader->getExcel()->getSheet(0);
             $students = $sheet->toArray();
@@ -426,7 +425,7 @@ class Student extends Model {
             event(new ContactImportTrigger($data));
         }
         return [
-            'error' => 2,
+            'statusCode' => 500,
             'message' => '上传失败',
         ];
     }
