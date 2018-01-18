@@ -6,7 +6,7 @@
                 'send' => [
                     'id' => 'send',
                     'label' => '成绩发送',
-                    'icon' => 'fa fa-arrow-circle-up',
+                    'icon' => 'fa fa-send-o',
                 ],
                 'import' => [
                     'id' => 'import',
@@ -16,7 +16,7 @@
                  'statistics' => [
                     'id' => 'statistics',
                     'label' => ' 排名统计',
-                    'icon' => 'fa fa-arrow-circle-down'
+                    'icon' => 'fa fa-bar-chart-o'
                 ]
             ]
         ])
