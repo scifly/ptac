@@ -6,7 +6,7 @@
                 'send' => [
                     'id' => 'send',
                     'label' => '成绩发送',
-                    'icon' => 'fa fa-arrow-circle-up',
+                    'icon' => 'fa fa-send-o',
                 ],
                 'import' => [
                     'id' => 'import',
@@ -16,7 +16,7 @@
                  'statistics' => [
                     'id' => 'statistics',
                     'label' => ' 排名统计',
-                    'icon' => 'fa fa-arrow-circle-down'
+                    'icon' => 'fa fa-bar-chart-o'
                 ]
             ]
         ])
@@ -85,7 +85,7 @@
 
                             <div class="col-sm-6">
                                 <input type="file" id="fileupload" accept=".xls,.xlsx" name="file">
-                                <p class="help-block">下载<a href="{{URL::asset('files/students.xlsx')}}">模板</a></p>
+                                <p class="help-block">下载<a href="{{URL::asset('files/scores.xls')}}">模板</a></p>
                             </div>
                         </div>
                     </div>
