@@ -104,7 +104,7 @@ var custodian = {
     },
 
     gradeChange: function (item, type, id) {
-        $(document).on('change', '#gradeId');
+        $(document).off('change', '#gradeId');
         $(document).on('change', '#gradeId', function () {
             var gradeId = $('#gradeId').val();
 
