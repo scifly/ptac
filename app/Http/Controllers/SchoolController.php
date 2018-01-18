@@ -157,7 +157,7 @@ class SchoolController extends Controller {
         $school = School::find(School::schoolId())->first();
 
         return response()->json([
-            'statusCode' => 200,
+            'statusCode' => self::OK,
             'html'       => view('school.show_info', [
                 'school' => $school,
                 'js' => 'js/school/show_info.js',

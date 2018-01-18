@@ -20,8 +20,6 @@ class ScoreIndexComposer {
             ->where('school_id', $schoolId)
             ->pluck('name', 'id')
             ->toArray();
-
-      
         #获取学校下所有班级
         $squadIds = [];
         $exams = [];
@@ -32,11 +30,11 @@ class ScoreIndexComposer {
         #显示的考试
         $examAll = Exam::whereEnabled(1)->get();
         foreach ($examAll as $item){
+            #筛选出属于本校的考试
             if(empty(array_diff(explode(',', $item->class_ids), $squadIds))){
                 $exams[$item->id] = $item->name;
             }
         }
-        
         #默认显示的班级
         $classes = Squad::whereEnabled(1)
             ->where('grade_id', array_keys($grades)[0])

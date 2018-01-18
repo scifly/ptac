@@ -2,6 +2,7 @@
 namespace App\Listeners;
 
 use App\Jobs\ManageImportScore;
+use App\Jobs\ManageUpdateScore;
 use Illuminate\Events\Dispatcher;
 
 class ScoreEventSubscriber {

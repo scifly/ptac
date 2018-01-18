@@ -82,7 +82,18 @@ var page = {
         echarts: {
         	js: 'js/plugins/echarts.simple.min.js',
         },
-        
+        minimal_icheck: {
+            css: 'js/plugins/icheck/all.css',
+            js: 'js/plugins/icheck/icheck.min.js',
+            selector: 'input[type="checkbox"].minimal, input[type="radio"].minimal',
+            params: {
+                checkboxClass: 'icheckbox_minimal-blue',
+                radioClass: 'iradio_minimal-blue'
+            }
+        },
+        send_css: {
+        	css: 'js/score/send.css',
+        }
     },
     backToList: function (table) {
         var $activeTabPane = $('#tab_' + page.getActiveTabId());
@@ -327,6 +338,7 @@ var page = {
             url: url,
             data: data,
             success: function (result) {
+                $('.overlay').hide();
                 switch (result.statusCode) {
                     case 200:
                         switch (requestType) {
@@ -340,7 +352,6 @@ var page = {
                             default:
                                 break;
                         }
-                        $('.overlay').hide();
                         page.inform(
                             '操作结果', result.message,
                             result.statusCode === 200 ? page.success : page.failure
@@ -348,6 +359,9 @@ var page = {
                         break;
                     case 401:
                         window.location = page.siteRoot() + 'login?returnUrl=' + page.getTabUrl();
+                        break;
+                    case 500:
+                        page.inform('操作失败',result.message,page.failure);
                         break;
                     default:
                         break;
@@ -491,6 +505,20 @@ var page = {
         if (!($.fn.iCheck)) {
             page.loadCss(page.plugins.icheck.css);
             $.getMultiScripts([page.plugins.icheck.js], page.siteRoot())
+                .done(function() { init(object); });
+        } else { init(object); }
+    },
+    initMinimalIcheck: function (object) {
+        var init = function(object) {
+            if (typeof object === 'undefined') {
+                $(page.plugins.minimal_icheck.selector).iCheck(page.plugins.minimal_icheck.params);
+            } else {
+                object.find(page.plugins.minimal_icheck.selector).iCheck(page.plugins.minimal_icheck.params);
+            }
+        };
+        if (!($.fn.iCheck)) {
+            page.loadCss(page.plugins.minimal_icheck.css);
+            $.getMultiScripts([page.plugins.minimal_icheck.js], page.siteRoot())
                 .done(function() { init(object); });
         } else { init(object); }
     },

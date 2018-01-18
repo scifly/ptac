@@ -4,8 +4,30 @@ var $token = $('#csrf_token').attr('content');
 var $import = $('#import');
 var $importPupils = $('#import-pupils');
 var $file = $('#confirm-import');
+var $statistics = $('#statistics');
+var $exam = $('#exam');
+//根据成绩变动更新班级列表
+$exam.on('change', function () {
+    var $examId = $(this).val();
+    getSquadList($examId);
+});
+function getSquadList($id) {
+    var $data = {'_token': $token};
+    $.ajax({
+        type: 'GET',
+        data: $data,
+        url: '../scores/clalists/' + $id,
+        success: function (result) {
+            $('#classId').html(result.message);
+        }
+    });
+}
+//学生成绩导入
 $import.on('click', function () {
     $importPupils.modal({backdrop: true});
+    //初始化班级列表
+    getSquadList($('#exam').val());
+
     $file.off('click').click(function () {
         var $exam = $('#exam').val();
         var $grade = $('#gradeId').val();
@@ -23,15 +45,35 @@ $import.on('click', function () {
             contentType: false,
             processData: false,
             success: function (result) {
-                if (result.error !== 0) {
-                    console.log(result);
-                    // page.inform("操作失败", result.message, page.failure);
-                }
+                page.inform(
+                    '操作结果', result.message,
+                    result.statusCode === 200 ? page.success : page.failure
+                );
             },
             error: function (result) {
                 console.log(result);
-                // page.inform("操作失败", result.message, page.failure);
+                page.inform("操作失败", result.message, page.failure);
 
+            }
+        });
+    });
+});
+
+//学生成绩统计
+$statistics.on('click', function () {
+    $('#statistics-modal').modal({backdrop: true});
+    $('#confirm-statistics').off('click').click(function () {
+        var $examSta = $('#exam-sta').val();
+        var $data = {'_token': $token};
+        $.ajax({
+            type: 'GET',
+            data: $data,
+            url: '../scores/statistics/' + $examSta,
+            success: function (result) {
+                page.inform(
+                    '操作结果', result.message,
+                    result.statusCode === 200 ? page.success : page.failure
+                );
             }
         });
     });

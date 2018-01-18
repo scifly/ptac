@@ -2,7 +2,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ScoreRequest;
+use App\Models\Exam;
 use App\Models\Score;
+use App\Models\Squad;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
@@ -159,6 +161,49 @@ class ScoreController extends Controller {
         return response()->json(['statusCode' => 500, 'message' => '上传失败！']);
     }
     
+    /**
+     * 分数统计
+     *
+     * @param $id
+     * @return mixed
+     */
+    public function statistics($id){
+
+       return Score::statistics($id) ? $this->succeed() : $this->fail();
+       
+    }
+    
+    /**
+     * 根据考试异步加载班级列表
+     *
+     * @param $exam_id
+     * @return JsonResponse|string
+     */
+    public function claLists($exam_id){
+        $exam = Exam::whereId($exam_id)->first();
+        $lists = Squad::whereIn('id', explode(',', $exam->class_ids))
+            ->whereEnabled(1)
+            ->pluck('name', 'id')
+            ->toArray();
+        #返回下拉列表的字符串
+        $html = '';
+        foreach ($lists as $key => $value) {
+            $html .= '<option value="' . $key . '">' . $value . '</option>';
+        }
+        return $lists ? $this->succeed($html) : $this->fail();
+    }
+    
+    /**
+     * 数据分析
+     *
+     * @throws Throwable
+     */
+    public function analysis(){
+        return $this->output();
+    }
+  
+  
+  
     // /**
     //  * 成绩发送
     //  *

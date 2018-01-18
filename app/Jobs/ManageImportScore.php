@@ -25,7 +25,6 @@ class ManageImportScore implements ShouldQueue {
      */
     public function __construct($data) {
         $this->data = $data;
-        print_r($data);
     }
     
     /**
@@ -38,25 +37,6 @@ class ManageImportScore implements ShouldQueue {
         $rows = $this->data;
         #rows 多批次进来
         Log::info($rows);
-        # [2018-01-17 10:27:29] local.INFO: array (
-        #     0 =>
-        #         array (
-        #             'student_number' => 463407990.0,
-        #             'subject_id' => 12,
-        #             'exam_id' => '3',
-        #             'score' => 45.0,
-        #             'class_rank' => '',
-        #             'grade_rank' => '',
-        #             'enabled' => 1,
-        #         ),
-        #     1 =>
-        #         array (
-        #             'student_number' => 554852513.0,
-        #             'subject_id' => 12,
-        #             'exam_id' => '3',
-        #             'score' => 50.0,
-        #         ),
-        # )
         try {
             DB::transaction(function () use ($rows) {
                 foreach ($rows as $row) {

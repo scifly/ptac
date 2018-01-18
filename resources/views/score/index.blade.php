@@ -8,9 +8,9 @@
                     'label' => '批量导入',
                     'icon' => 'fa fa-arrow-circle-up',
                 ],
-                'export' => [
-                    'id' => 'export',
-                    'label' => '批量导出',
+                 'statistics' => [
+                    'id' => 'statistics',
+                    'label' => ' 排名统计',
                     'icon' => 'fa fa-arrow-circle-down'
                 ]
             ]
@@ -63,17 +63,6 @@
                                     ])
                             @endif
                         </div>
-                        <!-- 年级 -->
-                        <div class="form-group">
-                            @if(isset($grades))
-                                @include('partials.single_select', [
-                                        'id' => 'gradeId',
-                                        'label' => '年级',
-                                        'items' => $grades
-                                    ])
-
-                            @endif
-                        </div>
                         <!-- 班级 -->
                         <div class="form-group">
                             @if(isset($classes))
@@ -105,44 +94,23 @@
     </div>
 </form>
 
-<!-- 导出excel -->
-<div class="modal fade" id="export-pupils">
+<!-- 成绩统计 -->
+<div class="modal fade" id="statistics-modal">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                <h4 class="modal-title">导出</h4>
+                <h4 class="modal-title">成绩统计</h4>
             </div>
             <div class="modal-body with-border">
                 <div class="form-horizontal">
-                    <!-- 所属学校 -->
+                    <!-- 选择考试 -->
                     <div class="form-group">
-                        @if(isset($schools))
+                        @if(isset($exams))
                             @include('partials.single_select', [
-                                    'id' => 'schoolId',
-                                    'label' => '所属学校',
-                                    'items' => $schools
-                                ])
-                        @endif
-                    </div>
-                    <!-- 所属年级 -->
-                    <div class="form-group">
-                        @if(isset($grades))
-                            @include('partials.single_select', [
-                                    'id' => 'gradeId',
-                                    'label' => '所属年级',
-                                    'items' => $grades
-                                ])
-
-                        @endif
-                    </div>
-                    <!-- 所属班级 -->
-                    <div class="form-group">
-                        @if(isset($classes))
-                            @include('partials.single_select', [
-                                    'id' => 'classId',
-                                    'label' => '所属班级',
-                                    'items' => $classes
+                                    'id' => 'exam-sta',
+                                    'label' => '选择考试',
+                                    'items' => $exams
                                 ])
                         @endif
                     </div>
@@ -150,8 +118,59 @@
             </div>
             <div class="modal-footer">
                 <a href="#" class="btn btn-sm btn-white" data-dismiss="modal">取消</a>
-                <a id="confirm-bind" href="javascript:" class="btn btn-sm btn-success">确定</a>
+                <a id="confirm-statistics" href="javascript:" class="btn btn-sm btn-success" data-dismiss="modal">确定</a>
             </div>
         </div>
     </div>
 </div>
+
+<!-- 导出excel -->
+{{--<div class="modal fade" id="export-pupils">--}}
+    {{--<div class="modal-dialog">--}}
+        {{--<div class="modal-content">--}}
+            {{--<div class="modal-header">--}}
+                {{--<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>--}}
+                {{--<h4 class="modal-title">导出</h4>--}}
+            {{--</div>--}}
+            {{--<div class="modal-body with-border">--}}
+                {{--<div class="form-horizontal">--}}
+                    {{--<!-- 所属学校 -->--}}
+                    {{--<div class="form-group">--}}
+                        {{--@if(isset($schools))--}}
+                            {{--@include('partials.single_select', [--}}
+                                    {{--'id' => 'schoolId',--}}
+                                    {{--'label' => '所属学校',--}}
+                                    {{--'items' => $schools--}}
+                                {{--])--}}
+                        {{--@endif--}}
+                    {{--</div>--}}
+                    {{--<!-- 所属年级 -->--}}
+                    {{--<div class="form-group">--}}
+                        {{--@if(isset($grades))--}}
+                            {{--@include('partials.single_select', [--}}
+                                    {{--'id' => 'gradeId',--}}
+                                    {{--'label' => '所属年级',--}}
+                                    {{--'items' => $grades--}}
+                                {{--])--}}
+
+                        {{--@endif--}}
+                    {{--</div>--}}
+                    {{--<!-- 所属班级 -->--}}
+                    {{--<div class="form-group">--}}
+                        {{--@if(isset($classes))--}}
+                            {{--@include('partials.single_select', [--}}
+                                    {{--'id' => 'classId',--}}
+                                    {{--'label' => '所属班级',--}}
+                                    {{--'items' => $classes--}}
+                                {{--])--}}
+                        {{--@endif--}}
+                    {{--</div>--}}
+                {{--</div>--}}
+            {{--</div>--}}
+            {{--<div class="modal-footer">--}}
+                {{--<a href="#" class="btn btn-sm btn-white" data-dismiss="modal">取消</a>--}}
+                {{--<a id="confirm-bind" href="javascript:" class="btn btn-sm btn-success">确定</a>--}}
+            {{--</div>--}}
+        {{--</div>--}}
+    {{--</div>--}}
+{{--</div>--}}

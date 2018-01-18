@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use App\Models\School;
 use App\Rules\Mobiles;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Request;
 use Illuminate\Validation\Rule;
 
 class StudentRequest extends FormRequest {
@@ -23,6 +24,7 @@ class StudentRequest extends FormRequest {
      */
     public function rules() {
 
+
         return [
             'card_number' => 'required|alphanum|between:2,32|unique:students,card_number,'
             . $this->input('user_id') . ',user_id',
@@ -30,16 +32,10 @@ class StudentRequest extends FormRequest {
             'user.gender' => 'required|boolean',
             'user.email' => 'nullable|email|unique:users,email,' .
                 $this->input('user_id') . ',id',
-            'mobile.*' => ['required', new Mobiles()],
-            'student_number' => [
-                'required', 'alphanum', 'between:2,32',
-                Rule::unique('students')->ignore($this->input('user_id', 'user_id'))
-                    ->where(function ($query){
-                    $query->join('classes', 'students.class_id', '=', 'classes.id')
-                          ->join('grades', 'classes.grade_id', '=', 'grades.id')
-                          ->join('schools', 'grades.school_id', '=', 'schools.id');
-                })
-            ],
+
+            'mobile.*' => ['required', new Mobiles()] ,
+            'student_number' => 'required|alphanum|between:2,32|unique:students,student_number,'
+                . $this->input('user_id') . ',user_id',
             'birthday' => 'required',
         ];
 

@@ -2,7 +2,7 @@
 namespace App\Models;
 
 use App\Events\ScoreImported;
-use App\Events\StudentUpdated;
+use App\Events\ScoreUpdated;
 use App\Facades\DatatableFacade as Datatable;
 use Carbon\Carbon;
 use Eloquent;
@@ -10,7 +10,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
@@ -169,70 +168,116 @@ class Score extends Model {
         
     }
     
+    /**
+     * @param $exam_id
+     * @return boolean
+     */
     static function statistics($exam_id) {
-        
-        $class_ids = DB::table('exams')->where('id', $exam_id)->value('class_ids');
-        $class = DB::table('classes')
-            ->whereIn('id', explode(',', $class_ids))
-            ->select('id', 'grade_id')
-            ->get();
-        //通过年级分组
-        $grades = [];
-        foreach ($class as $item) {
-            $grades[$item->grade_id][] = $item->id;
+        #取到当前的学校id
+        // $schoolId = School::schoolId();
+        $exam = Exam::whereId($exam_id)->first();
+        #找到考试对应的科目存到数组 ids
+        $examSub = explode(',', $exam->subject_ids);
+        #找到考试对应的班级存到数组 ids
+        $examCla = explode(',', $exam->class_ids);
+        #找到班级下面对应所有的学生 ids
+        $claStuIds = [];
+        foreach ($examCla as $cla) {
+            $squad = Squad::whereId($cla)->first();
+            foreach ($squad->students as $student) {
+                $claStuIds[] = $student->id;
+            }
         }
-        //循环每个年级
-        foreach ($grades as $class_ids_arr) {
-            //查找此年级所有班级的学生的各科成绩
-            $score = self::join('students', 'students.id', '=', 'scores.student_id')
-                ->whereIn('students.class_id', $class_ids_arr)
-                ->where('scores.exam_id', $exam_id)
-                ->select(['scores.id', 'scores.student_id', 'scores.subject_id', 'scores.score', 'students.class_id'])
-                ->orderBy('scores.score', 'desc')
+        foreach ($examSub as $sub) {
+            #一次处理一个科目  查出这个科目下 班级下所有学生的成绩
+            # 若该学生id没有对应的score则不会在结果数组中
+            $scores = Score::whereExamId($exam_id)
+                ->whereSubjectId($sub)
+                ->whereIn('student_id', $claStuIds)
+                ->whereEnabled(1)
+                ->orderBy('score', 'desc')
                 ->get();
-            //通过科目分组
-            $subject = [];
-            foreach ($score as $item) {
-                $subject[$item->subject_id][] = $item;
+            #这个时候key就是排名 处理班级排名
+            foreach ($scores as $key => $score) {
+                $score->class_rank = $key + 1;
+                $score->save();
             }
-            //循环每个科目
-            foreach ($subject as $val) {
-                foreach ($val as $k => $v) {
-                    $v->grade_rank = $k + 1;
-                    if ($k > 0) {
-                        if ($v->score == $val[$k - 1]->score) {
-                            $v->grade_rank = $val[$k - 1]->grade_rank;
-                        }
-                    }
-                }
-                //写入年级排名
-                foreach ($val as $grade_rank) {
-                    self::find($grade_rank->id)->update(['grade_rank' => $grade_rank->grade_rank]);
-                }
-                //通过班级分组
-                $classes = [];
-                foreach ($val as $item) {
-                    $classes[$item->class_id][] = $item;
-                }
-                //循环每个班级
-                foreach ($classes as $v) {
-                    foreach ($v as $class_k => $class_v) {
-                        $class_v->class_rank = $class_k + 1;
-                        if ($class_k > 0) {
-                            if ($class_v->score == $v[$class_k - 1]->score) {
-                                $class_v->class_rank = $v[$class_k - 1]->class_rank;
-                            }
-                        }
-                    }
-                    //写入年级排名
-                    foreach ($v as $class_rank) {
-                        self::find($class_rank->id)->update(['class_rank' => $class_rank->class_rank]);
-                    }
-                }
+            #年级排名
+            $scoresAll = Score::whereExamId($exam_id)
+                ->whereSubjectId($sub)
+                ->whereEnabled(1)
+                ->orderBy('score', 'desc')
+                ->get();
+            foreach ($scoresAll as $key => $score) {
+                $score->grade_rank = $key + 1;
+                $score->save();
             }
+            #参加这个科目 这个考试的人数
+            // print_r($scores);
         }
         
         return true;
+        // $class_ids = DB::table('exams')->where('id', $exam_id)->value('class_ids');
+        // $class = DB::table('classes')
+        //     ->whereIn('id', explode(',', $class_ids))
+        //     ->select('id', 'grade_id')
+        //     ->get();
+        // //通过年级分组
+        // $grades = [];
+        // foreach ($class as $item) {
+        //     $grades[$item->grade_id][] = $item->id;
+        // }
+        // //循环每个年级
+        // foreach ($grades as $class_ids_arr) {
+        //     //查找此年级所有班级的学生的各科成绩
+        //     $score = self::join('students', 'students.id', '=', 'scores.student_id')
+        //         ->whereIn('students.class_id', $class_ids_arr)
+        //         ->where('scores.exam_id', $exam_id)
+        //         ->select(['scores.id', 'scores.student_id', 'scores.subject_id', 'scores.score', 'students.class_id'])
+        //         ->orderBy('scores.score', 'desc')
+        //         ->get();
+        //     //通过科目分组
+        //     $subject = [];
+        //     foreach ($score as $item) {
+        //         $subject[$item->subject_id][] = $item;
+        //     }
+        //     //循环每个科目
+        //     foreach ($subject as $val) {
+        //         foreach ($val as $k => $v) {
+        //             $v->grade_rank = $k + 1;
+        //             if ($k > 0) {
+        //                 if ($v->score == $val[$k - 1]->score) {
+        //                     $v->grade_rank = $val[$k - 1]->grade_rank;
+        //                 }
+        //             }
+        //         }
+        //         //写入年级排名
+        //         foreach ($val as $grade_rank) {
+        //             self::find($grade_rank->id)->update(['grade_rank' => $grade_rank->grade_rank]);
+        //         }
+        //         //通过班级分组
+        //         $classes = [];
+        //         foreach ($val as $item) {
+        //             $classes[$item->class_id][] = $item;
+        //         }
+        //         //循环每个班级
+        //         foreach ($classes as $v) {
+        //             foreach ($v as $class_k => $class_v) {
+        //                 $class_v->class_rank = $class_k + 1;
+        //                 if ($class_k > 0) {
+        //                     if ($class_v->score == $v[$class_k - 1]->score) {
+        //                         $class_v->class_rank = $v[$class_k - 1]->class_rank;
+        //                     }
+        //                 }
+        //             }
+        //             //写入年级排名
+        //             foreach ($v as $class_rank) {
+        //                 self::find($class_rank->id)->update(['class_rank' => $class_rank->class_rank]);
+        //             }
+        //         }
+        //     }
+        // }
+        //
     }
     
     /**
@@ -307,16 +352,20 @@ class Score extends Model {
                         ];
                         
                     }
-                    self::checkData($data);
+                    if (!self::checkData($data, $input)) {
+                        return ['statusCode' => 500, 'message' => '数据有误!',];
+                    }
+                } else {
+                    unset($sub);
                 }
             }
             unset($scores);
             unset($scoreArr);
+            
+            return ['statusCode' => 200, 'message' => '上传成功'];
         }
-        // return [
-        //     'error'   => 2,
-        //     'message' => '上传失败',
-        // ];
+        
+        return ['statusCode' => 500, 'message' => '上传失败'];
     }
     
     /**
@@ -333,18 +382,9 @@ class Score extends Model {
     /**
      *  检查每行数据 是否符合导入数据
      * @param array $data
+     * @return bool
      */
-    private static function checkData(array $data) {
-        #[0] => Array
-        #(
-        #   [class] => 1班
-        #   [student_number] => cc001
-        #   [student_name] => 杨一
-        #   [subject_id] => 12
-        #   [score] => 45
-        #   [exam_id] => 3
-        # )
-    
+    private static function checkData(array $data, $input) {
         $rules = [
             'student_number' => 'required',
             'subject_id'     => 'required|integer',
@@ -357,9 +397,7 @@ class Score extends Model {
         $updateRows = [];
         # 需要添加的数据
         $rows = [];
-        
         for ($i = 0; $i < count($data); $i++) {
-            
             $datum = $data[$i];
             $score = [
                 'student_number' => $datum['student_number'],
@@ -367,41 +405,43 @@ class Score extends Model {
                 'exam_id'        => $datum['exam_id'],
                 'score'          => $datum['score'],
             ];
-       
             $status = Validator::make($score, $rules);
             if ($status->fails()) {
                 $invalidRows[] = $datum;
                 unset($data[$i]);
                 continue;
             }
-          
             $student = Student::whereStudentNumber($score['student_number'])->first();
-            
             # 数据非法
             if (!$student) {
                 $invalidRows[] = $datum;
                 unset($data[$i]);
                 continue;
             }
-         
-            #判断当前学生是否是属于 选择的班级
-            //$studentSquad = $student->squad;
-            
+            #判断这个学生是否在这个班级
+            if ($student->class_id != $input['class_id']) {
+                $invalidRows[] = $datum;
+                unset($data[$i]);
+                continue;
+            }
             $existScore = Score::whereEnabled(1)
                 ->whereExamId($score['exam_id'])
                 ->whereStudentId($student->id)
                 ->whereSubjectId($score['subject_id'])
                 ->first();
-            // if ($existScore) {
-            //     $updateRows[] = $score;
-            // } else {
-            //     $rows[] = $score;
-            // }
-           
-            $rows[] = $score;
+            if ($existScore) {
+                $updateRows[] = $score;
+            } else {
+                $rows[] = $score;
+            }
             unset($score);
         }
-        // event(new StudentUpdated($updateRows));
+        event(new ScoreUpdated($updateRows));
         event(new ScoreImported($rows));
+        if (empty($rows) && empty($updateRows)) {
+            return false;
+        }
+        
+        return true;
     }
 }
