@@ -2,12 +2,14 @@
 
 namespace App\Http\ViewComposers;
 
+use App\Helpers\ModelTrait;
 use App\Models\Department;
 use App\Models\Operator;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Request;
 
 class OperatorEditComposer {
+    use ModelTrait;
 
     public function compose(View $view) {
 
@@ -16,7 +18,8 @@ class OperatorEditComposer {
         $view->with([
             'selectedDepartmentIds' => implode(',', $selectedDepartmentIds),
             'selectedDepartments' => Department::selectedNodes($selectedDepartmentIds),
-            'mobiles' => $operator->user->mobiles
+            'mobiles' => $operator->user->mobiles,
+            'uris' => $this->uris()
         ]);
 
     }

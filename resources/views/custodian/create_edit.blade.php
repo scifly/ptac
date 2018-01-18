@@ -102,35 +102,38 @@
                     <div style="display: block; overflow-x: auto; clear: both; width: 100%; margin-top: 10px;">
                         <table class="table table-striped table-bordered table-hover table-condensed"
                                style="white-space: nowrap; width: 100%;">
-                        <thead>
-                        <tr class="bg-info">
-                            <th>学生</th>
-                            <th>学号</th>
-                            <th>监护人关系</th>
-                            <th>操作</th>
-                        </tr>
-                        </thead>
-                        <tbody id="tBody">
-                        @if(!empty($pupils))
-                            @foreach($pupils as $key => $pupil)
-                                <tr>
-                                    <input type="hidden" value="{{$pupil->student_id}}" name="student_ids[{{$key}}]" id="student_ids">
-                                    <td>{{$pupil->student->user->realname}}</td>
-                                    <td>{{$pupil->student->student_number}}</td>
-                                    <td>
-                                        <input type="text" name="relationships[{{$key}}]" id="" readonly class="no-border" style="background: none" value="{{$pupil->relationship}}">
-                                    </td>
-                                    <td>
-                                        <a href="javascript:" class="delete">
-                                            <i class="fa fa-trash-o text-blue"></i>
-                                        </a>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        @endif
+                            <thead>
+                            <tr class="bg-info">
+                                <th>学生</th>
+                                <th>学号</th>
+                                <th>监护人关系</th>
+                                <th>操作</th>
+                            </tr>
+                            </thead>
+                            <tbody id="tBody">
+                            @if(!empty($pupils))
+                                @foreach($pupils as $key => $pupil)
+                                    <tr>
+                                        <input type="hidden" value="{{$pupil->student_id}}" name="student_ids[{{$key}}]"
+                                               id="student_ids">
+                                        <td>{{$pupil->user->realname}}</td>
+                                        <td>{{$pupil->student_number}}</td>
+                                        <td>
+                                            <input type="text" name="relationships[{{$key}}]" id="" readonly
+                                                   class="no-border" style="background: none"
+                                                   value="{{$pupil->relationship}}">
+                                        </td>
+                                        <td>
+                                            <a href="javascript:" class="delete">
+                                                <i class="fa fa-trash-o text-blue"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            @endif
 
-                        </tbody>
-                    </table>
+                            </tbody>
+                        </table>
                     </div>
                     <button id="add-pupil" class="btn btn-box-tool" type="button">
                         <i class="fa fa-user-plus text-blue">&nbsp;新增</i>

@@ -12,7 +12,7 @@ var $file = $('#confirm-import');
 $import.on('click', function () {
     $importPupils.modal({backdrop: true});
 
-
+    $file.off('click');
     $file.on('click', function () {
         var formData = new FormData();
         formData.append('file', $('#fileupload')[0].files[0]);

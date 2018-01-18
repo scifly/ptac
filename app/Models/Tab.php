@@ -43,6 +43,8 @@ use Throwable;
  * @method static Builder|Tab whereRemark($value)
  * @method static Builder|Tab whereUpdatedAt($value)
  * @mixin Eloquent
+ * @property int|null $new_column
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Tab whereNewColumn($value)
  */
 class Tab extends Model {
 

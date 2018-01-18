@@ -387,10 +387,10 @@ class Student extends Model {
         // 上传文件
         $filename = date('His') . uniqid() . '.' . $ext;
         $stored = Storage::disk('uploads')->put($filename, file_get_contents($realPath));
-        Log::debug(file_get_contents($realPath));
+
         if ($stored) {
             $filePath =
-                'storage/app/uploads/'
+                'public/uploads/'
                 . date('Y')
                 . '/'
                 . date('m')
@@ -405,10 +405,7 @@ class Student extends Model {
             $sheet = $reader->getExcel()->getSheet(0);
             $students = $sheet->toArray();
             if (self::checkFileFormat($students[0])) {
-                return [
-                    'error' => 1,
-                    'message' => '文件格式错误',
-                ];
+                return abort(406, '文件格式错误');
             }
             unset($students[0]);
             $students = array_values($students);
@@ -424,11 +421,12 @@ class Student extends Model {
             $data['user'] = Auth::user();
             $data['type'] = 'student';
             event(new ContactImportTrigger($data));
+            return [
+                'statusCode' => 200,
+                'message' => '上传成功'
+            ];
         }
-        return [
-            'error' => 2,
-            'message' => '上传失败',
-        ];
+        return abort(500, '上传失败');
     }
 
     /**
