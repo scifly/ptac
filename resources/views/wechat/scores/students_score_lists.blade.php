@@ -67,7 +67,12 @@
 
             <div class="weui-cell">
                 <div class="weui-cell__bd title-name">
-                    <input style="text-align: center;" id="classlist" class="weui-input" type="text" value="一年级1班" readonly="" data-values="一年级1班">
+                    <select name="" class="" id="classlist" style="text-align: center;">
+                        @foreach($studentName as $k=>$s)
+                        <option value={{$k}}>{{$s}}</option>
+                        @endforeach
+                    </select>
+                    {{--<input style="text-align: center;" id="classlist" class="weui-input" type="text" value="一年级1班" readonly="" data-values="一年级1班">--}}
                 </div>
             </div>
 
@@ -115,15 +120,6 @@
     });
 </script>
 <script src="{{URL::asset('js/jquery-weui.min.js')}}"></script>
-<script>
-    //班级列表
-    $("#classlist").select({
-        title: "选择班级",
-        items: ["一年级1班", "一年级2班", "一年级3班", "一年级4班", "一年级5班", "一年级6班"]
-    });
 
-
-
-</script>
 </body>
 </html>
