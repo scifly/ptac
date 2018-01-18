@@ -4,12 +4,14 @@ namespace App\Models;
 use App\Events\ScoreImported;
 use App\Events\ScoreUpdated;
 use App\Facades\DatatableFacade as Datatable;
+use App\Facades\Wechat;
 use Carbon\Carbon;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
@@ -281,6 +283,251 @@ class Score extends Model {
     }
     
     /**
+     * @param $exam
+     * @param $squad
+     * @param $subject
+     * @param $project
+     * @return array
+     */
+    public function scores($exam, $squad, $subject, $project) {
+        $student = $this->where('exam_id', $exam)
+            ->get()->pluck('student_id');
+        # 当前班级下的所有参加考试的学生
+        $students = Student::whereClassId($squad)->whereIn('id', $student)->get();
+        # 当前选择班级的所属年级下 的所有班级 id
+        $classes = Squad::where('grade_id', Squad::whereId($squad)->first()->grade_id)
+            ->get()
+            ->pluck('id');
+        # 统计当前学生年级 的所有参加考试的学生
+        $gradeStudents = Student::whereIn('class_id', $classes)
+            ->whereIn('id', $student)
+            ->get();
+        $result = [];
+        foreach ($students as $s) {
+            $user = User::whereIn('id', array_column(json_decode($s->custodians), 'user_id'))
+                ->get();
+            $student = $s->user['realname'];
+            $score = $this->where('exam_id', $exam)
+                ->where('student_id', $s->id)
+                ->get();
+            $message = [];
+            
+            foreach ($subject as $j) {
+                $sub = Subject::whereId($j)->first();
+                $subScore = $this::where('exam_id', $exam)
+                    ->where('subject_id', $j)
+                    ->where('student_id', $s->id)
+                    ->first();
+                $subName = isset($sub->name) ? $sub->name : '';
+                $sum = $score->sum('score');
+                
+                foreach ($project as $p) {
+                    if ($p == 'score') {
+                        if ($j == '-1') {
+                            $message[]= '总分:'.$sum;
+                        }else{
+                            $message[]= $sub->name .':' . $subScore->score;
+                        }
+                    }
+                    if ($p == 'grade_rank') {
+                        if ($j == '-1') {
+                            $total = ScoreTotal::where('student_id', $s->id)
+                                ->where('exam_id', $exam)
+                                ->first();
+                            $message[]= '年排名:'.$total->grade_rank;
+                        }else{
+                            $stotal = Score::where('student_id', $s->id)
+                                ->where('exam_id', $exam)
+                                ->where('subject_id', $j)
+                                ->first();
+                            $message[]= $subName . '(年排):' . $stotal->grade_rank;
+                        }
+                    }
+                    if ($p == 'class_rank') {
+                        if ($j == '-1') {
+                            $total = ScoreTotal::where('student_id', $s->id)
+                                ->where('exam_id', $exam)
+                                ->first();
+                            $message[]= '班排名:'.$total->class_rank;
+                        }else{
+                            $stotal = Score::where('student_id', $s->id)
+                                ->where('exam_id', $exam)
+                                ->where('subject_id', $j)
+                                ->first();
+                            $message[]= $subName . '(班排):' . $stotal->class_rank;
+                        }
+                    }
+                    if ($p == 'grade_average') {
+                        if ($j == '-1') {
+                            $gaToTal = ScoreTotal::whereIn('student_id', $gradeStudents->pluck('id'))
+                                ->where('exam_id', $exam)
+                                ->get();
+                            $ga = $gaToTal->sum('score') / $gaToTal->count();
+                            $message[]= '年平均:' . $ga;
+                        }else{
+                            $sgaToTal = Score::whereIn('student_id', $gradeStudents->pluck('id'))
+                                ->where('exam_id', $exam)
+                                ->where('subject_id', $j)
+                                ->get();
+                            $sga = $sgaToTal->sum('score') / $sgaToTal->count();
+                            
+                            $message[]= $subName . '(年平均):' . $sga;
+                        }
+                    }
+                    if ($p == 'class_average') {
+                        if ($j == '-1') {
+                            $caToTal = ScoreTotal::whereIn('student_id', $students->pluck('id'))
+                                ->where('exam_id', $exam)
+                                ->get();
+                            $ca = $caToTal->sum('score') / $caToTal->count();
+                            $message[]= '班平均:' . $ca;
+                        }else{
+                            $scaToTal = Score::whereIn('student_id', $students->pluck('id'))
+                                ->where('exam_id', $exam)
+                                ->where('subject_id', $j)
+                                ->get();
+                            $sca = $scaToTal->sum('score') / $scaToTal->count();
+                            
+                            $message[]= $subName . '(班平均):' . $sca;
+                        }
+                    }
+                    if ($p == 'grade_max') {
+                        if ($j == '-1') {
+                            $maxTotal = ScoreTotal::whereIn('student_id', $gradeStudents->pluck('id'))
+                                ->where('exam_id', $exam)
+                                ->max('score');
+                            $message[]= '年最高:' . $maxTotal;
+                        }else{
+                            $maxSub = Score::whereIn('student_id', $gradeStudents->pluck('id'))
+                                ->where('exam_id', $exam)
+                                ->where('subject_id', $j)
+                                ->max('score');
+                            $message[]= $subName . '(年最高):' . $maxSub;
+                        }
+                    }
+                    if ($p == 'class_max') {
+                        if ($j == '-1') {
+                            $cmaxTotal = ScoreTotal::whereIn('student_id', $students->pluck('id'))
+                                ->where('exam_id', $exam)
+                                ->max('score');
+                            $message[]= '班最高:' . $cmaxTotal;
+                        }else{
+                            $cmaxSub = Score::whereIn('student_id', $students->pluck('id'))
+                                ->where('exam_id', $exam)
+                                ->where('subject_id', $j)
+                                ->max('score');
+                            $message[]= $subName . '(班最高):' . $cmaxSub;
+                        }
+                        
+                    }
+                    if ($p == 'grade_min') {
+                        if ($j == '-1') {
+                            $minTotal = ScoreTotal::whereIn('student_id', $gradeStudents->pluck('id'))
+                                ->where('exam_id', $exam)
+                                ->min('score');
+                            $message[]= '年最低:' . $minTotal;
+                        }else{
+                            $minSub = Score::whereIn('student_id', $gradeStudents->pluck('id'))
+                                ->where('exam_id', $exam)
+                                ->where('subject_id', $j)
+                                ->min('score');
+                            $message[]= $subName . '(年最低):' . $minSub;
+                        }
+                    }
+                    if ($p == 'class_min') {
+                        if ($j == '-1') {
+                            $cminTotal = ScoreTotal::whereIn('student_id', $students->pluck('id'))
+                                ->where('exam_id', $exam)
+                                ->min('score');
+                            $message[]= '班最低:' . $cminTotal;
+                        }else{
+                            $cminSub = Score::whereIn('student_id', $students->pluck('id'))
+                                ->where('exam_id', $exam)
+                                ->where('subject_id', $j)
+                                ->min('score');
+                            $message[]= $subName . '(班最低):' . $cminSub;
+                        }
+                    }
+                    
+                }
+            }
+            $result[] = [
+                'custodian' => $user->pluck('realname'),
+                'name' => $student,
+                'mobile' => Mobile::whereIn('user_id', $user->pluck('id'))->get()->pluck('mobile'),
+                'content' => '尊敬的' . $student . '家长,'
+                    . Exam::whereId($exam)->first()->name . '考试成绩已出:' . implode(',', $message) . '。'
+            ];
+            unset($message);
+            
+            
+        }
+        
+        return $result;
+        
+    }
+    
+    /**
+     * @param $data
+     * @return array
+     */
+    public function sendMessage($data) {
+        $corp = Corp::whereName('万浪软件')->first();
+        $app = App::whereName('成绩中心')->first();
+        $token = Wechat::getAccessToken($corp->corpid, $app->secret);
+        $success = [];
+        $failure = [];
+        $school = School::whereId(School::schoolId())->first();
+        foreach ($data as $d) {
+            if (isset($d->mobile)) {
+                $mobiles = explode(',', $d->mobile);
+                foreach ($mobiles as $m){
+                    if ($m) {
+                        $user = User::whereId(Mobile::where('mobile', $m)->first()->user_id)->first();
+                        $userInfo = json_decode(Wechat::getUser($token, $user->userid));
+                        if ($userInfo->errcode == 0) {
+                            $message = [
+                                'touser' => $user->userid,
+                                "msgtype" => "text",
+                                "agentid" => $app->agentid,
+                                'text' => [
+                                    'content' => $d->content
+                                ],
+                            ];
+                            $status = json_decode(Wechat::sendMessage($token, $message));
+                            if ($status->errcode == 0) {
+                                $success[] = $m;
+                            } else {
+                                $failure[] = $m;
+                            }
+                        }else{
+                            $code = json_encode(Wechat::batchSend('LKJK004923', "654321@", $m, $d->content . $school->signature));
+                            if ($code != '0' && $code != '-1') {
+                                Log::debug($code);
+                                $success[] = $m;
+                            } else {
+                                $failure[] = $m;
+                            }
+                        }
+                        
+                    }
+                    
+                }
+                
+            }
+            
+            
+        }
+        $result = [
+            'message' => '成功:'.count($success).'条数据;'.'失败:'.count($failure).'条数据。',
+            'success' => implode(',', $success),
+            'failure' => implode(',', $failure),
+        ];
+        return $result;
+        
+    }
+    
+    /**
      * @param UploadedFile $file
      * @param $input
      * @return array
@@ -350,7 +597,7 @@ class Score extends Model {
                             'score'          => $arr[$i],
                             'exam_id'        => $input['exam_id'],
                         ];
-                        
+                
                     }
                     if (!self::checkData($data, $input)) {
                         return ['statusCode' => 500, 'message' => '数据有误!',];
@@ -361,10 +608,10 @@ class Score extends Model {
             }
             unset($scores);
             unset($scoreArr);
-            
+    
             return ['statusCode' => 200, 'message' => '上传成功'];
         }
-        
+    
         return ['statusCode' => 500, 'message' => '上传失败'];
     }
     
@@ -382,6 +629,7 @@ class Score extends Model {
     /**
      *  检查每行数据 是否符合导入数据
      * @param array $data
+     * @param $input
      * @return bool
      */
     private static function checkData(array $data, $input) {

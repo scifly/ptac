@@ -7,6 +7,7 @@ use App\Models\Exam;
 use App\Models\Grade;
 use App\Models\School;
 use App\Models\Squad;
+use App\Models\Subject;
 use Illuminate\Contracts\View\View;
 
 class ScoreIndexComposer {
@@ -14,15 +15,23 @@ class ScoreIndexComposer {
     use ModelTrait;
 
     public function compose(View $view) {
+        $exams = Exam::get()->pluck('name', 'id')->toArray();
+        if ($exams) {
+            $ids = Exam::whereId(array_keys($exams)[0])->first();
+        
+            $classes = Squad::whereIn('id', explode(',', $ids['class_ids']))
+                ->pluck('name', 'id')
+                ->toArray();
+            $subjects = Subject::whereIn('id', explode(',', $ids['subject_ids']))
+                ->get()
+                ->toArray();
+        }
+        
         $schoolId = School::schoolId();
         $school = School::whereId($schoolId)->first();
-        $grades = Grade::whereEnabled(1)
-            ->where('school_id', $schoolId)
-            ->pluck('name', 'id')
-            ->toArray();
-        #获取学校下所有班级
+        #获取学校下所有班级 和 考试
         $squadIds = [];
-        $exams = [];
+        $examarr = [];
         $squads = $school->classes;
         foreach ($squads as $squad){
             $squadIds[] = $squad->id;
@@ -32,26 +41,22 @@ class ScoreIndexComposer {
         foreach ($examAll as $item){
             #筛选出属于本校的考试
             if(empty(array_diff(explode(',', $item->class_ids), $squadIds))){
-                $exams[$item->id] = $item->name;
+                $examarr[$item->id] = $item->name;
             }
         }
-        #默认显示的班级
-        $classes = Squad::whereEnabled(1)
-            ->where('grade_id', array_keys($grades)[0])
-            ->pluck('name', 'id')
-            ->toArray();
-            
-        if (empty($classes)) {$classes[] = '' ;}
-        if (empty($grades)) {$grades[] = '' ;}
+        
         if (empty($exams)) {$exams[] = '' ;}
-
+        if (empty($examarr)) {$examarr[] = '' ;}
+        if (empty($classes)) {$classes[] = '' ;}
+        if (empty($subjects)) {$subjects[] = '' ;}
+    
         $view->with([
             'uris' => $this->uris(),
-            'grades' => $grades,
             'classes' => $classes,
             'exams' => $exams,
+            'examarr' => $examarr,
+            'subjects' => $subjects,
             ]);
         
     }
-
 }

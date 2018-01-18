@@ -5,6 +5,7 @@ use App\Http\Requests\ScoreRequest;
 use App\Models\Exam;
 use App\Models\Score;
 use App\Models\Squad;
+use App\Models\Subject;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
@@ -135,6 +136,64 @@ class ScoreController extends Controller {
     }
     
     /**
+     * 成绩发送
+     *
+     * @return JsonResponse
+     */
+    public function send() {
+//        $score = new Score();
+//        $exam = 1;
+//        $squad = 1;
+//        $subject = [1,2];
+//        $project = ['class_rank', 'grade_average', 'class_average'];
+//
+//        $result = $score->scores($exam, $squad, $subject, $project);
+//        return response()->json($result);die;
+        if (Request::method() === 'POST') {
+            $exam = Request::input('exam');
+            $squad = Request::input('squad');
+            $subject = Request::input('subject');
+            $project = Request::input('project');
+            if ($exam && $squad ) {
+                $score = new Score();
+                $result = $score->scores($exam, $squad, explode(',', $subject), explode(',', $project));
+                return response()->json($result);
+            }else{
+                $ids = Exam::whereId($exam)->first();
+                
+                $classes = Squad::whereIn('id', explode(',', $ids['class_ids']))
+                    ->get()
+                    ->toArray();
+                $subjects = Subject::whereIn('id', explode(',', $ids['subject_ids']))
+                    ->get()
+                    ->toArray();
+                $result = [
+                    'classes' => $classes,
+                    'subjects' => $subjects,
+                ];
+                return response()->json($result);
+            }
+            
+            
+        }
+    }
+    
+    /**
+     * 发送成绩信息
+     *
+     */
+    public function send_message() {
+        if (Request::method() === 'POST') {
+            $data = Request::input('data');
+            $score = new Score();
+            return response()->json($score->sendMessage(json_decode($data)));
+            
+            
+        }
+    }
+    
+    
+    /**
      * 导入学生考试成绩
      *
      * @throws \PHPExcel_Exception
@@ -201,7 +260,6 @@ class ScoreController extends Controller {
     public function analysis(){
         return $this->output();
     }
-  
   
   
     // /**

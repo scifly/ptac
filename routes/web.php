@@ -83,6 +83,7 @@ Route::group(['prefix' => 'scores'], function () {
     Route::get('analysis', $c . '@analysis');
     Route::post('import', $c . '@import');
     Route::post('send', $c . '@send');
+    Route::post('send_message', $c . '@send_message');
 });
 Route::group(['prefix' => 'score_totals'], function () {
     $c = 'ScoreTotalController';
