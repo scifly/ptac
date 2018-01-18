@@ -403,7 +403,6 @@ class Student extends Model {
                 . $filename;
 
             /** @var LaravelExcelReader $reader */
-
             $reader = Excel::load($filePath);
             $sheet = $reader->getExcel()->getSheet(0);
             $students = $sheet->toArray();
