@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Facades\Wechat;
 use Carbon\Carbon;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
@@ -405,6 +406,58 @@ class Score extends Model {
 
 
     public function sendMessage($data) {
+        $corp = Corp::whereName('万浪软件')->first();
+        $app = App::whereName('成绩中心')->first();
+        $token = Wechat::getAccessToken($corp->corpid, $app->secret);
+        $success = [];
+        $failure = [];
+        $school = School::whereId(School::schoolId())->first();
+        foreach ($data as $d) {
+            if (isset($d->mobile)) {
+                $mobiles = explode(',', $d->mobile);
+                foreach ($mobiles as $m){
+                    if ($m) {
+                        $user = User::whereId(Mobile::where('mobile', $m)->first()->user_id)->first();
+                        $userInfo = json_decode(Wechat::getUser($token, $user->userid));
+                        if ($userInfo->errcode == 0) {
+                            $message = [
+                                'touser' => $user->userid,
+                                "msgtype" => "text",
+                                "agentid" => $app->agentid,
+                                'text' => [
+                                    'content' => $d->content
+                                ],
+                            ];
+                            $status = json_decode(Wechat::sendMessage($token, $message));
+                            if ($status->errcode == 0) {
+                                $success[] = $m;
+                            } else {
+                                $failure[] = $m;
+                            }
+                        }else{
+                            $code = json_encode(Wechat::batchSend('LKJK004923', "654321@", $m, $d->content . $school->signature));
+                            if ($code != '0' && $code != '-1') {
+                                Log::debug($code);
+                                $success[] = $m;
+                            } else {
+                                $failure[] = $m;
+                            }
+                        }
+
+                    }
+
+                }
+
+            }
+
+
+        }
+        $result = [
+            'message' => '成功:'.count($success).'条数据;'.'失败:'.count($failure).'条数据。',
+            'success' => implode(',', $success),
+            'failure' => implode(',', $failure),
+        ];
+        return $result;
 
     }
 }

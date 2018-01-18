@@ -191,10 +191,7 @@ class ScoreController extends Controller {
         if (Request::method() === 'POST') {
             $data = Request::input('data');
             $score = new Score();
-                Log::debug($data);
-            $score->sendMessage($data);
-
-            return response()->json();
+            return response()->json($score->sendMessage(json_decode($data)));
 
 
         }
