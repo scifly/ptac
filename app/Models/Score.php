@@ -409,7 +409,8 @@ class Score extends Model {
         $corp = Corp::whereName('万浪软件')->first();
         $app = App::whereName('成绩中心')->first();
         $token = Wechat::getAccessToken($corp->corpid, $app->secret);
-        $result = [];
+        $success = [];
+        $failure = [];
         $school = School::whereId(School::schoolId())->first();
         foreach ($data as $d) {
             if (isset($d->mobile)) {
@@ -417,41 +418,32 @@ class Score extends Model {
                 foreach ($mobiles as $m){
                     if ($m) {
                         $user = User::whereId(Mobile::where('mobile', $m)->first()->user_id)->first();
-                        $message = [
-                            'touser' => $user->userid,
-                            "msgtype" => "text",
-                            "agentid" => $app->agentid,
-                            'text' => [
-                                'content' => $d->content
-                            ],
-                        ];
-                        $status = json_decode(Wechat::sendMessage($token, $message));
-                        if ($status->errcode == 0) {
-                            $result = [
-                                'statusCode' => 200,
-                                'message' => '消息已发送！',
+                        $userInfo = json_decode(Wechat::getUser($token, $user->userid));
+                        if ($userInfo->errcode == 0) {
+                            $message = [
+                                'touser' => $user->userid,
+                                "msgtype" => "text",
+                                "agentid" => $app->agentid,
+                                'text' => [
+                                    'content' => $d->content
+                                ],
                             ];
-                        } else if($status->errcode == 82001) {
+                            $status = json_decode(Wechat::sendMessage($token, $message));
+                            if ($status->errcode == 0) {
+                                $success[] = $m;
+                            } else {
+                                $failure[] = $m;
+                            }
+                        }else{
                             $code = json_encode(Wechat::batchSend('LKJK004923', "654321@", $m, $d->content . $school->signature));
                             if ($code != '0' && $code != '-1') {
-                                $result = [
-                                    'statusCode' => 200,
-                                    'message' => '消息已发送！',
-                                ];
+                                Log::debug($code);
+                                $success[] = $m;
                             } else {
-                                $result = [
-                                    'statusCode' => 0,
-                                    'message' => '短信推送失败！',
-                                ];
+                                $failure[] = $m;
                             }
-
-                        }else {
-                            $result = [
-                                'statusCode' => 0,
-                                'message' => '消息发送失败！',
-                            ];
-//                            return response()->json($result);
                         }
+
                     }
 
                 }
@@ -460,6 +452,11 @@ class Score extends Model {
 
 
         }
+        $result = [
+            'message' => '成功:'.count($success).'条数据;'.'失败:'.count($failure).'条数据。',
+            'success' => implode(',', $success),
+            'failure' => implode(',', $failure),
+        ];
         return $result;
 
     }

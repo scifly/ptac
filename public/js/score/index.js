@@ -135,16 +135,12 @@ $score_send.on('click',function(){
         contentType: false,
         success: function (result) {
             console.log(result);
+            page.inform("操作成功",result.message, page.success);
 
-            if (result.original.statusCode!== 0) {
-                page.inform("操作成功",result.message, page.success);
-            }else {
-                page.inform("操作失败",result.message, page.failure);
-            }
         },
         error: function (result) {
             console.log(result);
-            page.inform("操作失败",result.message, page.failure);
+            page.inform("操作失败",'出现异常！', page.failure);
 
         }
     });
