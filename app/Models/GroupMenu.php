@@ -25,6 +25,7 @@ use Illuminate\Support\Facades\DB;
  * @method static Builder|GroupMenu whereId($value)
  * @method static Builder|GroupMenu whereMenuId($value)
  * @method static Builder|GroupMenu whereUpdatedAt($value)
+ * @property-read \App\Models\Menu $menu
  */
 class GroupMenu extends Model {
 

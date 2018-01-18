@@ -78,7 +78,10 @@ Route::group(['prefix' => 'scores'], function () {
     $c = 'ScoreController';
     Route::get('statistics/{examId}', $c . '@statistics');
     Route::get('export/{examId}', $c . '@export');
-    Route::get('import', $c . '@import');
+    Route::get('clalists/{examId}', $c . '@claLists');
+    Route::post('analysis', $c . '@analysis');
+    Route::get('analysis', $c . '@analysis');
+    Route::post('import', $c . '@import');
     Route::post('send', $c . '@send');
     Route::post('send_message', $c . '@send_message');
 });
@@ -307,4 +310,7 @@ Route::get('lists', 'Wechat\AttendanceController@index');
 Route::get('attendance_records/{id}', 'Wechat\AttendanceController@records');
 Route::post('attendance_records/{id?}', 'Wechat\AttendanceController@records');
 Route::post('attendance_charts', 'Wechat\AttendanceController@stuChart');
+
+
+
 

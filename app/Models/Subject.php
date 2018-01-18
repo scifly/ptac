@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Facades\DatatableFacade as Datatable;
 use App\Http\Requests\SubjectRequest;
 use Carbon\Carbon;
+use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -37,7 +38,7 @@ use Illuminate\Support\Facades\DB;
  * @method static Builder|Subject wherePassScore($value)
  * @method static Builder|Subject whereSchoolId($value)
  * @method static Builder|Subject whereUpdatedAt($value)
- * @mixin \Eloquent
+ * @mixin Eloquent
  * @property-read Grade $grade
  * @property-read School $school
  * @property-read Collection|SubjectModule[] $subjectModules

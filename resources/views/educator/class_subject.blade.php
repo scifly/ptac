@@ -23,7 +23,7 @@
                             >
                                 @foreach($squads as $key => $squad )
                                     <option value='{{$key}}'
-                                            @if($key == $class->class_id) selected @endif>{{$squad}}</option>
+                                            @if($key == $class->id) selected @endif>{{$squad}}</option>
                                 @endforeach
                             </select>
                         </td>

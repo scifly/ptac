@@ -4,6 +4,8 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
+use Carbon\Carbon;
+use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -18,8 +20,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $approver_user_ids 审批人用户IDs
  * @property string $related_user_ids 相关人用户IDs
  * @property string $remark 流程步骤备注
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property int $enabled
  * @method static Builder|ProcedureStep whereApproverUserIds($value)
  * @method static Builder|ProcedureStep whereCreatedAt($value)
@@ -30,7 +32,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static Builder|ProcedureStep whereRelatedUserIds($value)
  * @method static Builder|ProcedureStep whereRemark($value)
  * @method static Builder|ProcedureStep whereUpdatedAt($value)
- * @mixin \Eloquent
+ * @mixin Eloquent
  * @property-read Procedure $procedure
  */
 class ProcedureStep extends Model {
