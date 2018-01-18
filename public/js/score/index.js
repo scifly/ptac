@@ -85,6 +85,7 @@ $browse.on('click', function() {
     formData.append('squad', squad);
     formData.append('subject', subject);
     formData.append('project', project);
+    $('.overlay').show();
     $.ajax({
         url: page.siteRoot() + "scores/send",
         type: 'POST',
@@ -94,6 +95,7 @@ $browse.on('click', function() {
         contentType: false,
         success: function (result) {
             var html = '';
+            $('.overlay').hide();
             for(var i=0;i<result.length;i++){
                 var data = result[i];
                 html += '<tr>'+
@@ -128,37 +130,41 @@ function table_checkAll(){
 }
 
 $score_send.on('click',function(){
-    var data = [];
-    $('#send-table tbody .checked').each(function(i,vo){
-        var $this = $(vo).parent().parent().parent();
-        data[i] = {
-            'mobile' : $this.find('.mobile').text(),
-            'content' : $this.find('.content').text(),
-        };
 
-    });
-    var formData = new FormData();
-    formData.append('_token', $token.attr('content'));
-    formData.append('data', JSON.stringify(data));
-    console.log(data);
-    $.ajax({
-        url: page.siteRoot() + "scores/send_message",
-        type: 'POST',
-        cache: false,
-        data: formData,
-        processData: false,
-        contentType: false,
-        success: function (result) {
-            console.log(result);
-            page.inform("操作成功",result.message, page.success);
-
-        },
-        error: function (result) {
-            console.log(result);
-            page.inform("操作失败",'出现异常！', page.failure);
-
-        }
-    });
+	if($('#send-table .icheckbox_minimal-blue').hasClass('checked')){
+		var data = [];
+		$('#send-table tbody .checked').each(function(i,vo){
+	        var $this = $(vo).parent().parent().parent();
+		    data[i] = {
+	    	    'mobile' : $this.find('.mobile').text(),
+	            'content' : $this.find('.content').text(),
+	        };
+	
+	    });
+	    var formData = new FormData();
+	    formData.append('_token', $token.attr('content'));
+	    formData.append('data', JSON.stringify(data));
+	    $('.overlay').show();
+	    $.ajax({
+	        url: page.siteRoot() + "scores/send_message",
+	        type: 'POST',
+	        cache: false,
+	        data: formData,
+	        processData: false,
+	        contentType: false,
+	        success: function (result) {
+	        	$('.overlay').hide();
+	            page.inform("操作成功",result.message, page.success);
+	        },
+	        error: function (result) {
+	        	$('.overlay').hide();
+	            page.inform("操作失败",'出现异常！', page.failure);
+	
+	        }
+	    });
+	}else{
+		alert('请先选择发送内容');
+	}
 });
 
 //根据成绩变动更新班级列表
@@ -233,4 +239,3 @@ $statistics.on('click', function () {
         });
     });
 });
-

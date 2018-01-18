@@ -1,8 +1,11 @@
 <div class="box box-default box-solid" id="send_main" style="display: none;">
 	<div class="box-body">
+		<div class="overlay">
+		    <i class="fa fa-refresh fa-spin"></i>
+		</div>
 		<div class="row">
 	        <div class="box-tools pull-right">
-	            <i class="fa fa-close " id="close-send" style="cursor: pointer;font-size: 22px;margin-right: 20px;"></i>
+	            <i class="fa fa-close " id="close-send"></i>
 	        </div>
 		</div>
 
