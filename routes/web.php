@@ -308,6 +308,11 @@ Route::get('attendance_records/{id}', 'Wechat\AttendanceController@records');
 Route::post('attendance_records/{id?}', 'Wechat\AttendanceController@records');
 Route::post('attendance_charts', 'Wechat\AttendanceController@stuChart');
 
+//成绩中心
+Route::get('wechat/score/detail', 'Wechat\ScoreController@detail');
+Route::any('wechat/score/show', 'Wechat\ScoreController@show');
+
+
 
 
 

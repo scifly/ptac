@@ -26,15 +26,17 @@ use Throwable;
 class ScoreController extends Controller {
 
 
-    protected $score;
+    protected $score, $exam;
 
     /**
      * MessageCenterController constructor.
      * @param Score $score
+     * @param Exam $exam
      */
-    public function __construct(Score $score) {
+    public function __construct(Score $score, Exam $exam) {
         // $this->middleware();
         $this->score = $score;
+        $this->exam = $exam;
 
     }
     /**
@@ -44,16 +46,49 @@ class ScoreController extends Controller {
      * @return bool|JsonResponse
      * @throws Throwable
      */
-    public function show($id) {
+    public function detail() {
 
-        $score = Score::find($id);
-        if (!$score) { return $this->notFound(); }
+        $classId = Request::input('class_id');
+        $examId = Request::input('exam_id');
+        $classId = 1;
+        $examId = 1;
+        if ($classId && $examId) {
+            $data = $this->score->getExamClass($examId, $classId);
+//            return response()->json($this->score->getExamClass($examId, $classId));
+            return view('wechat.score.detail', [
+                'data' => $data,
+            ]);
 
-        return $this->output([
-            'score'       => $score,
-            'studentName' => $score->student->user->realname,
+        }
+
+    }
+
+    /**
+     * 图表成绩详情
+     *
+     * @return bool|JsonResponse
+     */
+    public function show() {
+
+        $studentId = Request::input('student');
+        $examId = Request::input('exam');
+
+        $subjectId = Request::input('subject');
+        if (Request::method() == 'POST') {
+            if ($examId && $subjectId) {
+                return response()->json($this->score->getGraphData($studentId, $examId, $subjectId));
+            }
+
+        }
+        $exam = Exam::whereId($examId)->first();
+        $student = Student::whereId($studentId)->first();
+        $data = Subject::whereIn('id', explode(',', $exam->subject_ids))->get();
+        return view('wechat.score.show', [
+            'data' => $data,
+            'student' => $student,
+            'exam' => $exam,
         ]);
-        
+
     }
     
 }
