@@ -128,8 +128,6 @@ class Wechat extends Facade {
     # 接收短信回复
     const URL_GET_RESPONSE_SMS = "http://sdk2.028lk.com:9880/sdk2/Get.aspx?CorpID=%s&Pwd=%s";
 
-
-    
     /**
      * 获取access_token
      *

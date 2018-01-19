@@ -7,18 +7,11 @@
             <div class="box box-default box-solid">
                 <div class="box-header with-border">
                     <span id="breadcrumb" style="color: #999; font-size: 13px;">用户中心/修改个人信息</span>
-                    <div class="box-tools pull-right">
-                        <button id="record-list" type="button" class="btn btn-box-tool">
-                            <i class="fa fa-mail-reply text-blue"> 返回列表</i>
-                        </button>
-                    </div>
                 </div>
                 <div class="box-body">
                     <div class="form-horizontal">
 
-                        @if (isset($user['id']))
-                            {{ Form::hidden('id', $user['id'], ['id' => 'id']) }}
-                        @endif
+                        {{ Form::hidden('id', Auth::user()->id, ['id' => 'id']) }}
                         <div class="form-group">
                             {!! Form::label('avatar_url', '头像', [
                                 'class' => 'col-sm-3 control-label',
@@ -26,8 +19,8 @@
                             ]) !!}
                             <div class="col-sm-6">
                                 <div class="input-group">
-                                    @if( !empty(Auth::user()->avatar_url))
-                                    <img src="{{Auth::user()->avatar_url}}" style="height: 80px;border-radius: 40px;">
+                                    @if(Auth::user()->avatar_url)
+                                        <img src="{{Auth::user()->avatar_url}}" style="height: 80px;border-radius: 40px;">
                                         @else
                                         <img src="{{asset('img/user2-160x160.jpg')}}" style="height: 80px;border-radius: 40px;">
                                     @endif

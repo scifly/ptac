@@ -106,6 +106,9 @@ return [
         'student_number' => [
             'unique' => ':attribute不唯一',
         ],
+        'student_ids'=>[
+            'required'=>'请先设置:attribute'
+        ],
     ],
 
     /*
@@ -155,6 +158,7 @@ return [
         'available'             => '可用的',
         'size'                  => '大小',
         'enabled'               => '状态',
-        'selectedDepartments'  => '所属部门',
+        'selectedDepartments'   => '所属部门',
+        'student_ids'           => '被监护人',
     ],
 ];

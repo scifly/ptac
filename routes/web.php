@@ -78,7 +78,11 @@ Route::group(['prefix' => 'scores'], function () {
     $c = 'ScoreController';
     Route::get('statistics/{examId}', $c . '@statistics');
     Route::get('export/{examId}', $c . '@export');
-    Route::get('import', $c . '@import');
+    Route::get('clalists/{examId}', $c . '@claLists');
+    Route::post('analysis', $c . '@analysis');
+    Route::get('analysis', $c . '@analysis');
+    Route::post('analysis_data', $c . '@analysisData');
+    Route::post('import', $c . '@import');
     Route::post('send', $c . '@send');
     Route::post('send_message', $c . '@send_message');
 });
@@ -186,6 +190,7 @@ Route::get('users/reset','UserController@reset');
 Route::post('users/reset','UserController@reset');
 Route::get('users/messages','UserController@messages');
 Route::get('users/events','UserController@event');
+Route::Put('users/update','UserController@update');
 // 个人通讯录
 // 消息中心
 Route::group(['prefix' => 'messages'], routes('MessageController'));
@@ -307,6 +312,8 @@ Route::get('lists', 'Wechat\AttendanceController@index');
 Route::get('attendance_records/{id}', 'Wechat\AttendanceController@records');
 Route::post('attendance_records/{id?}', 'Wechat\AttendanceController@records');
 Route::post('attendance_charts', 'Wechat\AttendanceController@stuChart');
+// 成绩中心
+Route::get('score_lists', 'Wechat\ScoreController@index');
 
 //成绩中心
 Route::get('wechat/score/detail', 'Wechat\ScoreController@detail');

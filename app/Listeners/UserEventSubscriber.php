@@ -42,7 +42,7 @@ class UserEventSubscriber {
      */
     public function onUserDeleted($event) {
         
-        $job = new ManageWechatMember($event->userId, 'delete');
+        $job = new ManageWechatMember($event->userid, 'delete');
         $this->dispatch($job);
         
     }

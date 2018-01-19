@@ -7,34 +7,26 @@ use App\Models\Exam;
 use App\Models\Grade;
 use App\Models\School;
 use App\Models\Squad;
+use App\Models\Student;
 use App\Models\Subject;
 use Illuminate\Contracts\View\View;
 
-class ScoreIndexComposer {
+class ScoreAnalysisComposer {
     
     use ModelTrait;
 
     public function compose(View $view) {
-        $exams = Exam::get()->pluck('name', 'id')->toArray();
-        if ($exams) {
-            $ids = Exam::whereId(array_keys($exams)[0])->first();
-        
-            $classes = Squad::whereIn('id', explode(',', $ids['class_ids']))
-                ->pluck('name', 'id')
-                ->toArray();
-            $subjects = Subject::whereIn('id', explode(',', $ids['subject_ids']))
-                ->get()
-                ->toArray();
-        }
-        
+
         $schoolId = School::schoolId();
         $school = School::whereId($schoolId)->first();
         #获取学校下所有班级 和 考试
         $squadIds = [];
         $examarr = [];
+        $classes = [];
         $squads = $school->classes;
         foreach ($squads as $squad){
             $squadIds[] = $squad->id;
+            $classes[$squad->id] = $squad->name;
         }
         #显示的考试
         $examAll = Exam::whereEnabled(1)->get();
@@ -45,17 +37,22 @@ class ScoreIndexComposer {
             }
         }
         
-        if (empty($exams)) {$exams[] = '' ;}
+        $stuData = Student::whereEnabled(1)
+            ->whereClassId(array_keys($classes)[0])
+            ->get();
+        $students = [];
+            foreach ($stuData as $stu){
+                $students[$stu->id] = $stu->student_number . '-' . $stu->user->realname;
+            }
         if (empty($examarr)) {$examarr[] = '' ;}
         if (empty($classes)) {$classes[] = '' ;}
-        if (empty($subjects)) {$subjects[] = '' ;}
+        if (empty($students)) {$students[] = '' ;}
     
         $view->with([
             'uris' => $this->uris(),
             'classes' => $classes,
-            'exams' => $exams,
             'examarr' => $examarr,
-            'subjects' => $subjects,
+            'students' => $students
             ]);
         
     }
