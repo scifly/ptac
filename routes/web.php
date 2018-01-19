@@ -189,6 +189,7 @@ Route::get('users/reset','UserController@reset');
 Route::post('users/reset','UserController@reset');
 Route::get('users/messages','UserController@messages');
 Route::get('users/events','UserController@event');
+Route::Put('users/update','UserController@update');
 // 个人通讯录
 // 消息中心
 Route::group(['prefix' => 'messages'], routes('MessageController'));

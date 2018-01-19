@@ -30,7 +30,8 @@ use Illuminate\Support\Facades\DB;
  * @method static Builder|Custodian whereUserId($value)
  * @mixin Eloquent
  */
-class Custodian extends Model {
+class Custodian extends Model
+{
 
     const EXCEL_EXPORT_TITLE = [
         '监护人姓名', '性别', '电子邮箱',
@@ -43,22 +44,26 @@ class Custodian extends Model {
      *
      * @return BelongsTo
      */
-    public function user() { return $this->belongsTo('App\Models\User'); }
+    public function user()
+    {
+        return $this->belongsTo('App\Models\User');
+    }
 
     /**
      * 返回绑定的学生对象
      *
      * @return BelongsToMany
      */
-    public function students() {
-        
+    public function students()
+    {
+
         return $this->belongsToMany(
             'App\Models\Student',
             'custodians_students',
             'custodian_id',
             'student_id'
         );
-        
+
     }
 
     /**
@@ -69,7 +74,8 @@ class Custodian extends Model {
      * @throws Exception
      * @throws \Throwable
      */
-    static function store(CustodianRequest $request) {
+    static function store(CustodianRequest $request)
+    {
 
         try {
             DB::transaction(function () use ($request) {
@@ -79,6 +85,7 @@ class Custodian extends Model {
                 # 与学生之间的关系
                 $relationships = $request->input('relationships');
                 $studentId_relationship = [];
+
                 foreach ($studentIds as $key => $studentId) {
                     $studentId_relationship[$studentId] = $relationships[$key];
                 }
@@ -127,7 +134,7 @@ class Custodian extends Model {
         return true;
 
     }
-    
+
     /**
      * 更新指定的监护人记录
      *
@@ -137,10 +144,13 @@ class Custodian extends Model {
      * @throws Exception
      * @throws \Throwable
      */
-    static function modify(CustodianRequest $request, $custodianId) {
+    static function modify(CustodianRequest $request, $custodianId)
+    {
 
         $custodian = self::find($custodianId);
-        if (!isset($custodian)) { return false; }
+        if (!isset($custodian)) {
+            return false;
+        }
         try {
             DB::transaction(function () use ($request, $custodianId, $custodian) {
                 $userId = $request->input('user_id');
@@ -192,11 +202,11 @@ class Custodian extends Model {
         } catch (Exception $e) {
             throw $e;
         }
-        
+
         return true;
 
     }
-    
+
     /**
      * 删除指定的监护人记录
      *
@@ -205,10 +215,13 @@ class Custodian extends Model {
      * @throws Exception
      * @throws \Throwable
      */
-    static function remove($custodianId) {
+    static function remove($custodianId)
+    {
 
         $custodian = self::find($custodianId);
-        if (!isset($custodian)) { return false; }
+        if (!isset($custodian)) {
+            return false;
+        }
         try {
             DB::transaction(function () use ($custodianId, $custodian) {
                 # 删除指定的监护人记录
@@ -223,9 +236,9 @@ class Custodian extends Model {
         } catch (Exception $e) {
             throw $e;
         }
-        
+
         return true;
-        
+
     }
 
     /**
@@ -233,7 +246,8 @@ class Custodian extends Model {
      *
      * @return array
      */
-    static function export() {
+    static function export()
+    {
 
         $custodians = self::all();
         $data = array(self::EXCEL_EXPORT_TITLE);
@@ -268,7 +282,8 @@ class Custodian extends Model {
      *
      * @return array
      */
-    static function datatable() {
+    static function datatable()
+    {
 
         $columns = [
             ['db' => 'Custodian.id', 'dt' => 0],
@@ -344,7 +359,7 @@ class Custodian extends Model {
         ];
         // todo: 根据角色显示监护人列表，[运营/企业/学校]角色显示隶属当前学校的所有监护人，其他角色显示所属所有部门下的监护人
         $condition = 'Grade.school_id = ' . School::schoolId();
-        
+
         return Datatable::simple(self::getModel(), $columns, $joins, $condition);
 
     }

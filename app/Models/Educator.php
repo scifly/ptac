@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\Events\EducatorImported;
-use App\Events\SchoolDeleted;
+use App\Events\UserDeleted;
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
 use App\Http\Requests\CustodianRequest;
@@ -96,6 +96,23 @@ class Educator extends Model {
             'educators_classes',
             'educator_id',
             'class_id'
+        );
+
+    }
+
+
+    /**
+     * 获取指定教职员工所属的所管理班级科目对象
+     *
+     * @return HasMany
+     */
+    public function educatorClasses() {
+
+        return $this->hasMany(
+            'App\Models\EducatorClass',
+            'educator_id',
+            'id'
+
         );
 
     }
@@ -426,12 +443,13 @@ class Educator extends Model {
      */
     static function remove($id, $fireEvent = false) {
 
-        $school = self::find($id);
-        /** @var School $school */
-        $removed = self::removable($school) ? $school->delete() : false;
+        $educator = self::find($id);
+        /** @var Educator $educator */
+        $removed = self::removable($educator) ? $educator->delete() : false;
         if ($removed && $fireEvent) {
             /** @var School $school */
-            event(new SchoolDeleted($school));
+
+            event(new UserDeleted($educator->user_id));
             return true;
         }
 

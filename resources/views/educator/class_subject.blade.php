@@ -11,8 +11,8 @@
             </thead>
             <tbody>
 
-            @if(isset($educator->classes) && count($educator->classes) !=0 )
-                @foreach($educator->classes  as $index=> $class)
+            @if(isset($educator->educatorClasses) && count($educator->educatorClasses) !=0 )
+                @foreach($educator->educatorClasses  as $index=> $educatorClass)
                     <tr>
                         <td class="text-left">
                             <label for="classSubject[class_ids][]"></label>
@@ -23,7 +23,7 @@
                             >
                                 @foreach($squads as $key => $squad )
                                     <option value='{{$key}}'
-                                            @if($key == $class->id) selected @endif>{{$squad}}</option>
+                                            @if($key == $educatorClass->class_id) selected @endif>{{$squad}}</option>
                                 @endforeach
                             </select>
                         </td>
@@ -36,12 +36,12 @@
                             >
                                 @foreach($subjects as $key => $subject )
                                     <option value='{{$key}}'
-                                            @if($key == $class->subject_id) selected @endif>{{$subject}}</option>
+                                            @if($key == $educatorClass->subject_id) selected @endif>{{$subject}}</option>
                                 @endforeach
                             </select>
                         </td>
                         <td class="text-center">
-                            @if($index == sizeof($educator->classes) - 1)
+                            @if($index == sizeof($educator->$educatorClass) - 1)
                                 <span class="input-group-btn">
                                             <button class="btn btn-box-tool  btn-class-add btn-add" type="button">
                                                 <i class="fa fa-plus text-blue"></i>
