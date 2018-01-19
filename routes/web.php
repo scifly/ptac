@@ -190,6 +190,7 @@ Route::get('users/reset','UserController@reset');
 Route::post('users/reset','UserController@reset');
 Route::get('users/messages','UserController@messages');
 Route::get('users/events','UserController@event');
+Route::Put('users/update','UserController@update');
 // 个人通讯录
 // 消息中心
 Route::group(['prefix' => 'messages'], routes('MessageController'));
@@ -313,6 +314,13 @@ Route::post('attendance_records/{id?}', 'Wechat\AttendanceController@records');
 Route::post('attendance_charts', 'Wechat\AttendanceController@stuChart');
 // 成绩中心
 Route::get('score_lists', 'Wechat\ScoreController@index');
+Route::post('score_lists', 'Wechat\ScoreController@index');
+
+
+//成绩中心
+Route::get('wechat/score/detail', 'Wechat\ScoreController@detail');
+Route::any('wechat/score/show', 'Wechat\ScoreController@show');
+
 
 
 

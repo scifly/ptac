@@ -20,7 +20,8 @@ class EducatorComposer {
 
         $squads = $school->classes->where('enabled', 1)
             ->pluck('name', 'id')->toArray();
-        array_unshift($squads, '(请选择)');
+        $squads[0]='(请选择)';
+        ksort($squads);
         $subjects = Subject::whereSchoolId($schoolId)
             ->where('enabled', 1)
             ->pluck('name', 'id')
@@ -35,8 +36,8 @@ class EducatorComposer {
             ->where('enabled', 1)
             ->pluck('name', 'id')
             ->toArray();
-        array_unshift($subjects, '(请选择)');
-
+        $subjects[0]='(请选择)';
+        ksort($subjects);
         $view->with([
             'squads' => $squads,
             'subjects' => $subjects,

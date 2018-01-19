@@ -833,4 +833,86 @@ class Score extends Model {
         }
         return false;
     }
+
+    public function getExamClass($examId, $classId) {
+        $student = $this->where('exam_id', $examId)
+            ->get()->pluck('student_id');
+        # 当前班级下的所有参加考试的学生
+        $students = Student::whereClassId($classId)->whereIn('id', $student)->get();
+        $result = [
+            'exam' => Exam::whereId($examId)->first()->name,
+            'squad' => Squad::whereId($classId)->first()->name,
+            'items' => [],
+        ];
+        foreach ($students as $s) {
+            $total = ScoreTotal::whereExamId($examId)->where('student_id', $s->id)->first();
+            $scores = $this::whereExamId($examId)->where('student_id', $s->id)->get();
+            $detail = [];
+            foreach ($scores as $c) {
+                $detail[] = [
+                    'subject' => $c->subject->name,
+                    'score' => $c->score,
+                ];
+            }
+            $result['items'][] = [
+                'student_id' => $s->id,
+                'exam_id' => $examId,
+                'realname' => $s->user['realname'],
+                'student_number' => $s->student_number,
+//                'class_rank' => $total->class_rank,
+//                'grade_rank' => $total->grade_rank,
+                'class_rank' => 3,
+                'grade_rank' => 5,
+                'total' => 623,
+//                'total' => $total->score,
+                'detail' => $detail,
+            ];
+            unset($detail);
+        }
+        return $result;
+    }
+
+    public function getGraphData($studentId, $examId, $subjectId) {
+        $exam = Exam::whereId($examId)->first();
+        if ($subjectId == '-1') {
+            $exams = Exam::whereId($examId)->where('start_date', '<=', $exam->start_date)
+                ->orderBy('start_date', 'asc')
+                ->limit(10)
+                ->get();
+            $es = [];
+            $class_rank = [];
+            $grade_rank = [];
+            foreach ($exams as $e) {
+                $total = ScoreTotal::whereExamId($e->id)->where('student_id', $studentId)->first();
+                $es[] = $e->name;
+                $class_rank[] = $total->class_rank;
+                $grade_rank[] = $total->grade_rank;
+            }
+
+        }else{
+            $es = [];
+            $class_rank = [];
+            $grade_rank = [];
+            $scores = DB::table('scores')
+                ->join('exams', 'exams.id', '=', 'scores.exam_id')
+//                ->select('users.id', 'contacts.phone', 'orders.price')
+                ->where('subject_id', $subjectId)
+                ->where('student_id', $studentId)
+                ->orderBy('exams.start_date', 'asc')
+                ->limit(10)
+                ->get();
+            foreach ($scores as $s) {
+                $es[] = $s->name;
+                $class_rank[] = $s->class_rank;
+                $grade_rank[] = $s->grade_rank;
+            }
+        }
+        $result = [
+            'exam' => $es,
+            'class_rank' => $class_rank,
+            'grade_rank' => $grade_rank,
+        ];
+
+        return $result;
+    }
 }

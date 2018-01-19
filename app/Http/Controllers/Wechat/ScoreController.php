@@ -1,15 +1,44 @@
 <?php
-
 namespace App\Http\Controllers\Wechat;
 
-use App\Facades\Wechat;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ScoreRequest;
 use App\Models\Exam;
+use App\Models\Score;
+use App\Models\Squad;
+use App\Models\Student;
+use App\Models\Subject;
 use App\Models\User;
+use Excel;
+use Exception;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
-use Illuminate\Support\Facades\Session;
+use Maatwebsite\Excel\Classes\PHPExcel;
+use Maatwebsite\Excel\Files\ExcelFile;
+use Throwable;
 
-class ScoreController extends Controller{
+/**
+ * 微信端成绩
+ *
+ * Class ScoreController
+ * @package App\Http\Controllers
+ */
+class ScoreController extends Controller {
+
+
+    protected $score, $exam;
+    /**
+     * MessageCenterController constructor.
+     * @param Score $score
+     * @param Exam $exam
+     */
+    public function __construct(Score $score, Exam $exam) {
+        // $this->middleware();
+        $this->score = $score;
+        $this->exam = $exam;
+
+    }
 
     public function index()
     {
@@ -29,29 +58,24 @@ class ScoreController extends Controller{
         // }
         $userId = 'wangdongxi';
         $role = User::whereUserid($userId)->first()->group->name;
+        $pageSize = 4;
+        $start = Request::get('start') ? Request::get('start') * $pageSize : 0;
         switch ($role){
             case '监护人':
-                $students = User::whereUserid($userId)->first()->custodian->students;
-                $score = $studentName =[];
-                foreach ($students as $k=>$s)
+                if(Request::isMethod('post'))
                 {
-                    $exams = Exam::where('class_ids','like','%' . $s->class_id . '%')
-                        ->get();
-                    foreach ($exams as $e)
-                    {
-                        $score[$k]['name'] = $e->name;
-                        $score[$k]['strat_date'] = $e->start_date;
-                    }
-                    $score[$k]['user_id'] = $s->user_id;
-                    $score[$k]['realname'] = $s->user->realname;
-                    $score[$k]['class_id'] = $s->class_id;
-                    $studentName[$s->user_id] = $s->user->realname;
-                    ksort($studentName);
-
+                    $data = $this->getStudentScore($userId);
+                    $score = $data['score'];
+                    $scores=array_slice($score[0],$start,$pageSize);
+                    return response()->json(['data' => $scores ,'statusCode' => 200 ]);
                 }
+                $data = $this->getStudentScore($userId);
+                $score = $data['score'];
+                $studentName = $data['studentName'];
+                $scores=array_slice($score[0],$start,$pageSize);
                 return view('wechat.scores.students_score_lists',[
-                    'scores' => $score,
-                    'studentName' => $studentName,
+                    'scores' => $scores,
+                    'studentName' => json_encode($studentName, JSON_UNESCAPED_UNICODE),
                 ]);
                 break;
             case '教职员工':
@@ -60,4 +84,94 @@ class ScoreController extends Controller{
                 break;
         }
     }
+
+    /**
+     * 根据监护人获取学生相关考试信息
+     * @param $userId
+     * @return array
+     */
+    public function getStudentScore( $userId)
+    {
+        $students = User::whereUserid($userId)->first()->custodian->students;
+        $score = $data =[];
+        foreach ($students as $k=>$s)
+        {
+            $exams = Exam::where('class_ids','like','%' . $s->class_id . '%')
+                ->get();
+            foreach ($exams as $key=>$e)
+            {
+                $score[$k][$key]['id'] = $e->id;
+                $score[$k][$key]['name'] = $e->name;
+                $score[$k][$key]['start_date'] = $e->start_date;
+                $score[$k][$key]['user_id'] = $s->user_id;
+                $score[$k][$key]['realname'] = $s->user->realname;
+                $score[$k][$key]['class_id'] = $s->class_id;
+            }
+            // $studentName['title'] = '选择学生';
+            $studentName[]= [
+                'title' => $s->user->realname,
+                'value' => $s->user_id,
+            ];
+        }
+        $data = [
+            'score' => $score,
+            'studentName' => $studentName
+        ];
+
+        return $data;
+    }
+
+
+
+    /**
+     * 成绩详情
+     *
+     * @return bool|JsonResponse
+     */
+    public function detail() {
+
+        $classId = Request::input('class_id');
+        $examId = Request::input('exam_id');
+        $classId = 1;
+        $examId = 1;
+        if ($classId && $examId) {
+            $data = $this->score->getExamClass($examId, $classId);
+//            return response()->json($this->score->getExamClass($examId, $classId));
+            return view('wechat.score.detail', [
+                'data' => $data,
+            ]);
+
+        }
+
+    }
+
+    /**
+     * 图表成绩详情
+     *
+     * @return bool|JsonResponse
+     */
+    public function show() {
+
+        $studentId = Request::input('student');
+        $examId = Request::input('exam');
+
+        $subjectId = Request::input('subject');
+        if (Request::method() == 'POST') {
+            if ($examId && $subjectId) {
+                return response()->json($this->score->getGraphData($studentId, $examId, $subjectId));
+            }
+
+        }
+        $exam = Exam::whereId($examId)->first();
+        $student = Student::whereId($studentId)->first();
+        $data = Subject::whereIn('id', explode(',', $exam->subject_ids))->get();
+        return view('wechat.score.show', [
+            'data' => $data,
+            'student' => $student,
+            'exam' => $exam,
+        ]);
+
+    }
+    
 }
+

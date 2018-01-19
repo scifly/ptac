@@ -63,6 +63,12 @@ class Exam extends Model {
     public function examType() { return $this->belongsTo('App\models\ExamType'); }
 
     /**
+     * 返回考试
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function score() { return $this->hasMany('App\Models\Score'); }
+    /**
      * 获取参与指定考试的所有班级列表
      *
      * @param $classIds
