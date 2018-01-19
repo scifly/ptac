@@ -1,0 +1,69 @@
+body, html {
+    height: 100%;
+    width: 100%;
+    overflow-x: hidden;
+}
+body{
+    margin: 0;
+    padding:0;
+    background-color: #f2f2f2;
+    font-family: "微软雅黑";
+}
+a{
+    color: #333;
+}
+::-webkit-scrollbar {
+    width: 0em;
+}
+::-webkit-scrollbar:horizontal {
+    height: 0em;
+}
+.header{height: 90px;width: 90%;margin: 0;padding:0 5%;background-color: #1aad19;}
+.header .title{height: 60px;line-height: 60px;text-align: center;font-size: 24px;color: #fff;}
+.header .myclass{height: 30px;width: 100%;text-align: center;color:#fff;}
+
+.footerTab{
+    position: fixed;
+    bottom: 0;
+    height: 50px;
+    width: 100%;
+    background-color: #fff;
+    opacity: 0.7;
+    border-top: 1px solid #ddd;
+}
+.footerTab .btnItem{
+    display: inline-block;
+    width: 50%;
+    float: left;
+    height: 100%;
+    text-align: center;
+    position: relative;
+}
+.footerTab .btnItem i{
+    font-size: 24px;
+    margin-top: -3px;
+}
+.footerTab .btnItem p{
+    font-size: 14px;
+    top: 28px;
+    position: absolute;
+    width: 100%;
+}
+.footer-active {
+    color: #1aad19;
+}
+#main{
+    width: 100%;
+    height: 360px;
+}
+
+.main{width: 96 %;margin:10px 2%;}
+.tongji-table{width: 100%;font-size: 14px;text-align: center;}
+.tongji-table thead tr{color: #fff;background-color:#1aad19;width: 100%;}
+.tongji-table tbody tr{background-color: #fff;}
+.tongji-table td{word-wrap:break-word;word-break:break-all;}
+.tongji-table tbody td{border-bottom: 5px solid #F2F2F2;}
+.tongji-table td div{width: 100%;}
+.tongji-table td div span{margin:2px 4px;}
+.tongji-table td div .subj{float: left;}
+.tongji-table td div .score{float: right;}

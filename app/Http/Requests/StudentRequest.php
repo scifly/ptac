@@ -32,7 +32,6 @@ class StudentRequest extends FormRequest {
             'user.gender' => 'required|boolean',
             'user.email' => 'nullable|email|unique:users,email,' .
                 $this->input('user_id') . ',id',
-
             'mobile.*' => ['required', new Mobiles()] ,
             'student_number' => 'required|alphanum|between:2,32|unique:students,student_number,'
                 . $this->input('user_id') . ',user_id',

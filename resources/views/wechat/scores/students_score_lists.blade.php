@@ -186,7 +186,6 @@
                 var html = '';
                 if($data.data.length !== 0)
                 {
-                    console.log($data.data);
                     for(var i=0; i< $data.data.length;i++)
                     {
                         // console.log(html);
@@ -197,7 +196,6 @@
                                 '</div>' +
                                 '<div class="weui-cell__ft time">'+ score.start_date+'</div>' +
                                 '</a>';
-                        console.log(html);
                     }
                     $('.weui-cells').append(html);
                     $('.loadmore').hide();
