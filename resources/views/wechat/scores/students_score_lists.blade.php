@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
     <meta name="csrf_token" content="{{ csrf_token() }}" id="csrf_token">
-    <title>WeUI</title>
+    <title>学生考试列表</title>
     <link rel="stylesheet" href="{{ URL::asset('css/weui.min.css') }}"/>
     <link rel="stylesheet" href="{{ URL::asset('css/jquery-weui.min.css') }}">
     <link rel="stylesheet" href="{{ URL::asset('css/wechat/icon/iconfont.css') }}">
@@ -104,12 +104,7 @@
 
                 <div class="weui-cell">
                     <div class="weui-cell__bd title-name">
-                        {{--<select name="" class="" id="classlist" style="text-align: center;">--}}
-                            {{--@foreach($studentName as $k=>$s)--}}
-                            {{--<option value={{$k}}>{{$s}}</option>--}}
-                            {{--@endforeach--}}
-                        {{--</select>--}}
-                        <input style="text-align: center;" id="classlist" class="weui-input" type="text" value="一年级1班" readonly="" data-values="一年级1班">
+                        <input style="text-align: center;" id="classlist" class="weui-input" type="text" value="@if(!empty($scores)) {{$scores[0]['realname']}} @endif" readonly="" data-values="一年级1班">
                     </div>
                 </div>
 
@@ -165,8 +160,35 @@
 
     //班级列表
     $("#classlist").select({
-        title: "选择班级",
+        title: "选择学生",
         items: studentName
+    });
+
+    $("#classlist").on('change',function () {
+        var class_id = $(this).attr('data-values');
+        $.ajax({
+            type: 'post',
+            dataType: 'json',
+            url: 'score_lists',
+            data: {class_id: class_id, _token: $('#csrf_token').attr('content')},
+            success: function ($data) {
+                var html = '';
+                if($data.data.length !== 0)
+                {
+                    for(var j=0 ; j< $data.data.length; j++)
+                    {
+                        var data = $data.data[j];
+                        html += '<a class="weui-cell weui-cell_access" href="count.html">' +
+                            '<div class="weui-cell__bd">' +
+                            '<p>'+data.name +'</p>' +
+                            '</div>' +
+                            '<div class="weui-cell__ft time">'+ data.start_date+'</div>' +
+                            '</a>';
+                    }
+                    $('.weui-cells').html(html);
+                }
+            }
+        });
     });
 
     var start = 0;
@@ -174,9 +196,10 @@
         start++;
 
         loadmore(start);
-    })
+    });
 
     function loadmore() {
+
         $.ajax({
             type: 'post',
             dataType: 'json',
@@ -188,7 +211,6 @@
                 {
                     for(var i=0; i< $data.data.length;i++)
                     {
-                        // console.log(html);
                         var score = $data.data[i];
                          html += '<a class="weui-cell weui-cell_access" href="count.html">' +
                                 '<div class="weui-cell__bd">' +
@@ -200,7 +222,6 @@
                     $('.weui-cells').append(html);
                     $('.loadmore').hide();
                 }
-
             }
         });
 
