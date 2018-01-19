@@ -701,6 +701,8 @@ class Score extends Model {
             $firstTableData = [];
             #存放满足当前科目的分数段设置和统计人数的数组（第二个表格数据--一个数据一个表格）
             $rangs = [];
+            #存放总分分数段设置和统计人数的数组
+            $scoreToRanges = [];
             $exam = Exam::whereId($input['exam_id'])->first();
             $squad = Squad::whereId($input['squad_id'])->first();
             #找到考试对应的科目存到数组 ids
@@ -722,6 +724,9 @@ class Score extends Model {
                     ->whereIn('student_id', $claStuIds)
                     ->whereEnabled(1)
                     ->get();
+                if(count($scores) == 0){
+                    return false;
+                }
                 #参与考试的总人数
                 $countAll = $scores->count();
                 #该科目的最高分
@@ -758,6 +763,7 @@ class Score extends Model {
                         if ($subject->max_score == $maxRange) {
                             $count = Score::whereEnabled(1)
                                 ->whereExamId($exam->id)
+                                ->whereIn('student_id', $claStuIds)
                                 ->whereSubjectId($sub)
                                 ->where('score', '>=', $minRange)
                                 ->where('score', '<=', $maxRange)
@@ -765,6 +771,7 @@ class Score extends Model {
                         } else {
                             $count = Score::whereEnabled(1)
                                 ->whereExamId($exam->id)
+                                ->whereIn('student_id', $claStuIds)
                                 ->whereSubjectId($sub)
                                 ->where('score', '>=', $minRange)
                                 ->where('score', '<', $maxRange)
@@ -772,33 +779,59 @@ class Score extends Model {
                         }
                         $rangs[$sub][] = [
                             'range' =>
-                                 [
-                                     'min' => $minRange,
-                                     'max' => $maxRange,
-                                 ],
-                             'score' =>
-                                 [
-                                     'sub'    => $subject->name,
-                                     'count'  => $countAll,
-                                     'number' => $count,
-                                 ],
+                                [
+                                    'min' => $minRange,
+                                    'max' => $maxRange,
+                                ],
+                            'score' =>
+                                [
+                                    'sub'    => $subject->name,
+                                    'count'  => $countAll,
+                                    'number' => $count,
+                                ],
                         ];
                     }
                 }
             }
-            // print_r($rangs);
-            // die;
+            #总分分数段
+            $totalRanges = $rangAll->where('subject_ids', 0);
+            #查询考试对应的总分 班级
+            $scoreTotal = ScoreTotal::whereExamId($input['exam_id'])
+                ->whereIn('student_id', $claStuIds)
+                ->whereEnabled(1)
+                ->get();
+            #总分总人数
+            $totalCount = $scoreTotal->count();
+            #处理每个总分分数段的人数
+            foreach ($totalRanges as $totalRange) {
+                $minTotalRange = $totalRange->start_score;
+                $maxTotalRange = $totalRange->end_score;
+                $totalNumber = $scoreTotal->where('score', '>=', $minTotalRange)
+                    ->where('score', '<', $maxTotalRange)
+                    ->count();
+                $scoreToRanges[] = [
+                    'totalRange' => [
+                        'min' => $minTotalRange,
+                        'max' => $maxTotalRange,
+                    ],
+                    'totalScore' => [
+                        'count'  => $totalCount,
+                        'number' => $totalNumber,
+                    ],
+                ];
+            }
             $view = view('score.analysis_data', [
-                'className' => $squad->name,
-                'examName'  => $exam->name,
-                'oneData'   => $firstTableData,
-                'rangs'     => $rangs,
+                'className'   => $squad->name,
+                'examName'    => $exam->name,
+                'oneData'     => $firstTableData,
+                'rangs'       => $rangs,
+                'totalRanges' => $scoreToRanges,
             ])->render();
             
             return $view ?? false;
             
         }
-        die;
+        return false;
     }
 
     public function getExamClass($examId, $classId) {

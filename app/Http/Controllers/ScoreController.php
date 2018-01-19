@@ -271,7 +271,7 @@ class ScoreController extends Controller {
     public function analysisData(){
         $input = Request::all();
         $view = Score::analysis($input);
-      return $view ? $this->succeed($view) : $this->fail();
+      return $view ? $this->succeed($view) : $this->fail('未录入或未统计成绩！');
     }
   
     // /**

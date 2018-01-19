@@ -51,62 +51,47 @@
 		                <th>科目</th>
 		                <th>统计人数</th>
 						@foreach($ran as $r)
-		                <th>{{ $r['range']['min'] }}-{{ $r['range']['max'] }}</th>
+		                <th>{{ $r['range']['min'] }}-{{ $r['range']['max'] }} 分</th>
 						@endforeach
 					</tr>
 	            </thead>
 	            <tbody>
 				<tr>
-					<td>{{ $ran[0]['score']['sub'] }}</td>
+					<td>{{ $ran[0]['score']['sub'] }}(人)</td>
 					<td>{{ $ran[0]['score']['count'] }}</td>
 					@foreach($ran as $rs)
-					<td>{{ $rs['score']['number'] }}</td>
+					<td>{{ $rs['score']['number'] }} </td>
 					@endforeach
 				</tr>
 				</tbody>
 				@endforeach
 	        </table>
 		</div>
-
-		{{--<div class="row">--}}
-			{{--<div class="subtitle">--}}
-				{{--总分分数段成绩分布情况--}}
-			{{--</div>--}}
-	        {{--<table id="sumscore" style="width: 100%;"--}}
-               {{--class="display nowrap table table-striped table-bordered table-hover table-condensed">--}}
-	            {{--<thead>--}}
-					{{--<tr class="bg-info">--}}
-		                {{--<th>科目</th>--}}
-		                {{--<th>统计人数</th>--}}
-		                {{--<th>900分以上</th>--}}
-		                {{--<th>825-900分</th>--}}
-		                {{--<th>750-825分</th>--}}
-		                {{--<th>675-750分</th>--}}
-		                {{--<th>600-675分</th>--}}
-		                {{--<th>525-600分</th>--}}
-		                {{--<th>450-525分</th>--}}
-		                {{--<th>450-375分</th>--}}
-		                {{--<th>375-300分</th>--}}
-		                {{--<th>300分以下</th>--}}
-		            {{--</tr>--}}
-	            {{--</thead>--}}
-	            {{--<tbody>--}}
-	            	{{--<tr>--}}
-	            		{{--<td>总分</td>--}}
-	            		{{--<td>58</td>--}}
-	            		{{--<td>0</td>--}}
-	            		{{--<td>0</td>--}}
-	            		{{--<td>0</td>--}}
-	            		{{--<td>0</td>--}}
-	            		{{--<td>0</td>--}}
-	            		{{--<td>7</td>--}}
-	            		{{--<td>28</td>--}}
-	            		{{--<td>18</td>--}}
-	            		{{--<td>3</td>--}}
-	            		{{--<td>2</td>--}}
-	            	{{--</tr>--}}
-	            {{--</tbody>--}}
-	        {{--</table>--}}
-		{{--</div>--}}
-		{{--<div class="table-pie">--}}
-		{{--</div>--}}
+		<div class="row">
+			<div class="subtitle">
+				总分分数段成绩分布情况
+			</div>
+	        <table id="sumscore" style="width: 100%;"
+               class="display nowrap table table-striped table-bordered table-hover table-condensed">
+	            <thead>
+					<tr class="bg-info">
+		                <th>考试</th>
+		                <th>统计人数</th>
+		                @foreach($totalRanges as $total)
+		                <th>{{ $total['totalRange']['min'] }}-{{ $total['totalRange']['max'] }} 分</th>
+						@endforeach
+		            </tr>
+	            </thead>
+	            <tbody>
+	            	<tr>
+	            		<td>总分(人)</td>
+	            		<td>{{ $totalRanges[0]['totalScore']['count'] }}</td>
+						@foreach($totalRanges as $stotal)
+	            		<td>{{ $stotal['totalScore']['number'] }} </td>
+							@endforeach
+	            	</tr>
+	            </tbody>
+	        </table>
+		</div>
+		<div class="table-pie" style=" width: 100%;height:550px;">
+		</div>

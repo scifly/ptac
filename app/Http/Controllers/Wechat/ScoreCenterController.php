@@ -24,7 +24,7 @@ use Throwable;
  * Class ScoreController
  * @package App\Http\Controllers
  */
-class ScoreController extends Controller {
+class ScoreCenterController extends Controller {
 
 
     protected $score, $exam;

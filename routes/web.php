@@ -318,8 +318,8 @@ Route::post('score_lists', 'Wechat\ScoreController@index');
 
 
 //成绩中心
-Route::get('wechat/score/detail', 'Wechat\ScoreController@detail');
-Route::any('wechat/score/show', 'Wechat\ScoreController@show');
+Route::get('wechat/score/detail', 'Wechat\ScoreCenterController@detail');
+Route::any('wechat/score/show', 'Wechat\ScoreCenterController@show');
 
 
 
