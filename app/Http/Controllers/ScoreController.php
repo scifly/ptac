@@ -256,14 +256,23 @@ class ScoreController extends Controller {
     }
     
     /**
-     * 数据分析
+     * 成绩分析
      *
      * @throws Throwable
      */
     public function analysis(){
         return $this->output();
     }
-  
+    
+    /**
+     * 成绩分析表格数据填充
+     * @throws Throwable
+     */
+    public function analysisData(){
+        $input = Request::all();
+        $view = Score::analysis($input);
+      return $view ? $this->succeed($view) : $this->fail();
+    }
   
     // /**
     //  * 成绩发送

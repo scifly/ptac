@@ -89,6 +89,7 @@ class ComposerServiceProvider extends ServiceProvider {
         
         View::composer('score.create_edit', 'App\Http\ViewComposers\ScoreComposer');
         View::composer('score.index', 'App\Http\ViewComposers\ScoreIndexComposer');
+        View::composer('score.analysis', 'App\Http\ViewComposers\ScoreAnalysisComposer');
 
         View::composer('event.index', 'App\Http\ViewComposers\EventIndexComposer');
         View::composer('event.show', 'App\Http\ViewComposers\EventComposer');

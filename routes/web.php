@@ -81,6 +81,7 @@ Route::group(['prefix' => 'scores'], function () {
     Route::get('clalists/{examId}', $c . '@claLists');
     Route::post('analysis', $c . '@analysis');
     Route::get('analysis', $c . '@analysis');
+    Route::post('analysis_data', $c . '@analysisData');
     Route::post('import', $c . '@import');
     Route::post('send', $c . '@send');
     Route::post('send_message', $c . '@send_message');
@@ -311,6 +312,8 @@ Route::get('lists', 'Wechat\AttendanceController@index');
 Route::get('attendance_records/{id}', 'Wechat\AttendanceController@records');
 Route::post('attendance_records/{id?}', 'Wechat\AttendanceController@records');
 Route::post('attendance_charts', 'Wechat\AttendanceController@stuChart');
+// 成绩中心
+Route::get('score_lists', 'Wechat\ScoreController@index');
 
 
 
