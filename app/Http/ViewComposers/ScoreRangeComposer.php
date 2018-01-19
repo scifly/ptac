@@ -16,8 +16,9 @@ class ScoreRangeComposer {
         $schoolId = School::schoolId();
         $subjects = Subject::whereSchoolId($schoolId)
             ->where('enabled', 1)
-            ->pluck('name', 'id');
-
+            ->pluck('name', 'id')
+            ->toArray();
+        array_unshift($subjects,'总分');
         $view->with([
             'subjects' => $subjects,
             'uris' => $this->uris()
