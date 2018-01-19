@@ -95,10 +95,10 @@ var page = {
             }
         },
         send_css: {
-        	css: 'js/score/send.css',
+        	css: 'js/score/send.css'
         },
         analysis_css: {
-        	css: 'js/score/analysis.css',
+        	css: 'js/score/analysis.css'
         }
     },
     backToList: function (table) {

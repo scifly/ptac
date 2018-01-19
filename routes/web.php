@@ -81,6 +81,7 @@ Route::group(['prefix' => 'scores'], function () {
     Route::get('clalists/{examId}', $c . '@claLists');
     Route::post('analysis', $c . '@analysis');
     Route::get('analysis', $c . '@analysis');
+    Route::post('analysis_data', $c . '@analysisData');
     Route::post('import', $c . '@import');
     Route::post('send', $c . '@send');
     Route::post('send_message', $c . '@send_message');
