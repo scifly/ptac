@@ -277,8 +277,7 @@ class Student extends Model {
             DB::transaction(function () use ($request, $studentId, $student) {
                 $userId = $request->input('user_id');
                 $userData = $request->input('user');
-                $user = new User();
-                $user->where('id', $userId)
+                User::find($userId)
                     ->update([
                         'group_id' => Group::whereName('学生')->first()->id,
                         'email' => $userData['email'],
@@ -331,8 +330,7 @@ class Student extends Model {
                 ];
                 DepartmentUser::create($departmentUser);
                 # 更新企业号成员
-                $user->UpdateWechatUser($userId);
-                unset($user);
+                User::UpdateWechatUser($userId);
             });
         } catch (Exception $e) {
             throw $e;

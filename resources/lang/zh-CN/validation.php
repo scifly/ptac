@@ -27,7 +27,7 @@ return [
         'numeric' => ':attribute 必须介于 :min - :max 之间',
         'file'    => ':attribute 必须介于 :min - :max kb 之间',
         'string'  => ':attribute 必须介于 :min - :max 个字符之间',
-        'array'   => ':attribute 必须只能包含 :min - :max 个值',
+        'array'   => ':attribute 只能包含 :min - :max 个值',
     ],
     'boolean'              => ':attribute 必须为布尔值',
     'confirmed'            => ':attribute 两次输入不一致',
