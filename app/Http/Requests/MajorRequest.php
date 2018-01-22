@@ -20,10 +20,11 @@ class MajorRequest extends FormRequest {
      */
     public function rules() {
         return [
-            'name'      => 'required|string|max:255',
-            'remark'    => 'required|string|max:255',
-            'school_id' => 'required|integer',
-            'enabled'   => 'required|boolean',
+            'name'        => 'required|string|max:255',
+            'remark'      => 'string|max:255|nullable',
+            'school_id'   => 'required|integer',
+            'enabled'     => 'required|boolean',
+            'subject_ids' =>'required',
         ];
     }
     

@@ -109,6 +109,9 @@ return [
         'student_ids'=>[
             'required'=>'请先设置:attribute'
         ],
+        'subject_ids'=>[
+            'required'=>':attribute是必须的'
+        ],
     ],
 
     /*
@@ -160,5 +163,6 @@ return [
         'enabled'               => '状态',
         'selectedDepartments'   => '所属部门',
         'student_ids'           => '被监护人',
+        'subject_ids'           => '科目',
     ],
 ];

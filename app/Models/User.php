@@ -317,6 +317,34 @@ class User extends Authenticatable {
 
     }
 
+
+    /**
+     * 更新用户
+     *
+     * @param array $data
+     * @param $id
+     * @param bool $fireEvent
+     * @return bool
+     */
+    static function modify(array $data, $id, $fireEvent = false) {
+
+        $user = self::find($id);
+        $user->username=$data["username"];
+        $user->english_name=$data["english_name"];
+        $user->wechatid=$data["wechatid"];
+        $user->gender=$data["gender"];
+        $user->telephone=
+        $user->email=$data["email"];
+        $updated = $user->update();
+        if ($updated && $fireEvent) {
+            #event(new SchoolUpdated(self::find($id)));
+            return true;
+        }
+
+        return $updated ? true : false;
+
+    }
+
     /**
      * 返回指定用户所属的所有部门id
      *

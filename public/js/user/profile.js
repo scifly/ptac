@@ -28,6 +28,7 @@ function save_input(input_obj) {
             page.inform('出现异常', '电子邮件格式有误,请重填!', page.failure);
             return false;
         }
+
         $.ajax({
             type: 'PUT',
             dataType: 'json',
@@ -39,7 +40,8 @@ function save_input(input_obj) {
                 }else{
                     page.inform('出现异常', '更新失败!', page.failure);
                 }
-            }
+            },
+            error: function (e) { page.errorHandler(e); }
         });
         input_obj.attr("readonly","true");
 
