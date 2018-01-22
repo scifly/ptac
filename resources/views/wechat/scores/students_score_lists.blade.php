@@ -104,7 +104,7 @@
 
                 <div class="weui-cell">
                     <div class="weui-cell__bd title-name">
-                        <input style="text-align: center;" id="classlist" class="weui-input" type="text" value="@if(!empty($scores)) {{$scores[0]['realname']}} @endif" readonly="" data-values="一年级1班">
+                        <input style="text-align: center;" id="studentList" class="weui-input" type="text" value="@if(!empty($scores)) {{$scores[0]['realname']}} @endif" readonly="" data-values="{{$scores[0]['class_id']}}">
                     </div>
                 </div>
 
@@ -129,7 +129,7 @@
     <!--列表-->
     <div class="weui-cells" style="margin-top: 89px;">
         @foreach($scores as $s)
-        <a class="weui-cell weui-cell_access" href="count.html">
+        <a class="weui-cell weui-cell_access" href='{{ url("detail/".$s['id']) }}'>
             <div class="weui-cell__bd">
                 <p>{{ $s['name'] }}</p>
             </div>
@@ -159,12 +159,13 @@
     var studentName = $.parseJSON('{{$studentName}}'.replace(/&quot;/g,'"'));
 
     //班级列表
-    $("#classlist").select({
+    $("#studentList").select({
         title: "选择学生",
         items: studentName
     });
 
-    $("#classlist").on('change',function () {
+    $("#studentList").on('change',function () {
+        $('.loadmore').show();
         var class_id = $(this).attr('data-values');
         $.ajax({
             type: 'post',
@@ -178,7 +179,7 @@
                     for(var j=0 ; j< $data.data.length; j++)
                     {
                         var data = $data.data[j];
-                        html += '<a class="weui-cell weui-cell_access" href="count.html">' +
+                        html += '<a class="weui-cell weui-cell_access" href="detail">' +
                             '<div class="weui-cell__bd">' +
                             '<p>'+data.name +'</p>' +
                             '</div>' +
@@ -186,6 +187,8 @@
                             '</a>';
                     }
                     $('.weui-cells').html(html);
+                }else{
+                    $('.loadmore').hide();
                 }
             }
         });
@@ -199,12 +202,12 @@
     });
 
     function loadmore() {
-
+        var class_id = $('input').attr('data-values');
         $.ajax({
             type: 'post',
             dataType: 'json',
             url: 'score_lists',
-            data: {start: start, _token: $('#csrf_token').attr('content')},
+            data: {start: start,class_id:class_id, _token: $('#csrf_token').attr('content')},
             success: function ($data) {
                 var html = '';
                 if($data.data.length !== 0)
@@ -220,6 +223,7 @@
                                 '</a>';
                     }
                     $('.weui-cells').append(html);
+                }else{
                     $('.loadmore').hide();
                 }
             }
