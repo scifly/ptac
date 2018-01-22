@@ -160,23 +160,23 @@
 <div class="header">
     <div class="info">
         <div class="time">
-            <div class="subtitle">2017-12</div>
-            <div class="days">12日</div>
+            <div class="subtitle">{{ substr($scores['start_date'],0,7) }}</div>
+            <div class="days">{{ substr($scores['start_date'],8,10) }}日</div>
         </div>
         <div class="subject">
             <div class="subtitle">科目</div>
-            <input style="text-align: center;" id="subjests" class="weui-input subject-choose" type="text" value="语文A卷" readonly="" data-values="语文A卷">
+            <input style="text-align: center;" id="subjests" class="weui-input subject-choose" type="text" value="{{$scores->subject->name}}"
+                   readonly="" data-values="{{$scores->subject_id}}">
         </div>
         <div class="test">
             <div class="subtitle">考试名</div>
             <div class="testName">
-               从百草园到三味书屋
+                {{$scores->exam->name}}
             </div>
         </div>
-
     </div>
     <div class="score">
-        85.0分
+        {{$scores['score']}}
     </div>
 </div>
 
@@ -235,20 +235,11 @@
 <script src="{{URL::asset('js/jquery-weui.min.js')}}"></script>
 <script src="{{URL::asset('js/plugins/echarts.common.min.js')}}"></script>
 <script>
+    var subjects = $.parseJSON('{{$subjects}}'.replace(/&quot;/g,'"'));
     //班级列表
     $("#subjests").select({
         title: "选择科目",
-        items: [
-            {
-                title : "语文A卷",
-                value : "1",
-            },
-            {
-                title : "语文B卷",
-                value : "2",
-            }
-        ],
-
+        items: subjects,
     });
     var tmp = $("#subjests").attr('data-values');
 
