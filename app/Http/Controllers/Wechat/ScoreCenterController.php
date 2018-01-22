@@ -57,6 +57,7 @@ class ScoreCenterController extends Controller {
         //     Session::put('userId',$userId);
         // }
         $userId = 'wangdongxi';
+        // $role = '教职员工';
         $role = User::whereUserid($userId)->first()->group->name;
         $pageSize = 4;
         $start = Request::get('start') ? Request::get('start') * $pageSize : 0;
@@ -64,21 +65,40 @@ class ScoreCenterController extends Controller {
             case '监护人':
                 if(Request::isMethod('post'))
                 {
-                    $data = $this->getStudentScore($userId);
-                    $score = $data['score'];
-                    $scores=array_slice($score[0],$start,$pageSize);
-                    return response()->json(['data' => $scores ,'statusCode' => 200 ]);
+                    if(array_key_exists('class_id', Request::all()))
+                    {
+                        $classId = Request::get('class_id');
+                        $exams = Exam::where('class_ids','like','%' . $classId . '%')
+                            ->get();
+                        foreach ($exams as $key=>$e)
+                        {
+                            $score[$key]['id'] = $e->id;
+                            $score[$key]['name'] = $e->name;
+                            $score[$key]['start_date'] = $e->start_date;
+                            $score[$key]['class_id'] = $classId;
+                        }
+                        $scores=array_slice($score,$start,$pageSize);
+                        return response()->json(['data' => $scores ]);
+
+                    }else{
+                        $data = $this->getStudentScore($userId);
+                        $score = $data['score'];
+                        $scores=array_slice($score[0],$start,$pageSize);
+                        return response()->json(['data' => $scores ]);
+                    }
+
                 }
                 $data = $this->getStudentScore($userId);
                 $score = $data['score'];
                 $studentName = $data['studentName'];
-                $scores=array_slice($score[0],$start,$pageSize);
+                if( sizeof($score) != 0) { $scores=array_slice($score[0],$start,$pageSize); }
                 return view('wechat.scores.students_score_lists',[
                     'scores' => $scores,
                     'studentName' => json_encode($studentName, JSON_UNESCAPED_UNICODE),
                 ]);
                 break;
             case '教职员工':
+                return view('wechat.scores.educator_score_lists');
                 break;
             default:
                 break;
@@ -93,6 +113,7 @@ class ScoreCenterController extends Controller {
     public function getStudentScore( $userId)
     {
         $students = User::whereUserid($userId)->first()->custodian->students;
+
         $score = $data =[];
         foreach ($students as $k=>$s)
         {
@@ -110,7 +131,7 @@ class ScoreCenterController extends Controller {
             // $studentName['title'] = '选择学生';
             $studentName[]= [
                 'title' => $s->user->realname,
-                'value' => $s->user_id,
+                'value' => $s->class_id,
             ];
         }
         $data = [
