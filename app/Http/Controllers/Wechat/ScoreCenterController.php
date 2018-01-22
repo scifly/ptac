@@ -286,6 +286,20 @@ class ScoreCenterController extends Controller {
     }
     
     /**
+     * 微信 教师端成绩分析
+     *
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function analysis() {
+        $input = Request::all();
+        $input['exam_id'] = 3;
+        $input['squad_id'] = 1;
+        #需要返回给视图页面的数据
+        $data = $this->score->claAnalysis($input, true);
+        return view('wechat.score.edu_analysis', ['data' => $data]);
+    }
+    
+    /**
      * 微信 监护人端综合
      */
     public function cusTotal(){
