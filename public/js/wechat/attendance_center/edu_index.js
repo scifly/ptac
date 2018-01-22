@@ -26,6 +26,7 @@ function getclasses(squads) {
         title: "选择班级",
         items: squads
     });
+    classchange();
 }
 //规则列表
 function getrules(rules) {
@@ -96,3 +97,10 @@ $('.kaoqin-tongji .open-popup').click(function () {
     $('.modal-content .list').hide();
     $('.modal-content .list-' + type).show();
 });
+
+//选择班级事件
+// function classchange() {
+//     $('#squad').change(function () {
+//         alert(2222222222222);
+//     })
+// }
