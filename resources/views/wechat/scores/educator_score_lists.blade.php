@@ -23,14 +23,25 @@
         a{
             color: #333;
         }
+        ::-webkit-scrollbar {
+            width: 0em;
+        }
+        ::-webkit-scrollbar:horizontal {
+            height: 0em;
+        }
         .main{
             height: 100%;
             width: 100%;
             background-color: #fff;
         }
+        .header{
+            position: fixed;top: 0;z-index: 999;width: 100%;background-color: #fff
+        }
         .multi-role {
             background: #fff;
             position: relative;
+            height: 100%;
+            overflow-y: auto;
         }
         .multi-role .switchclass-item {
             padding: 0px;
@@ -56,6 +67,31 @@
         .switchclass-head{
             width: 100%;
         }
+        .weui-cell__bd{
+            width:65%;
+        }
+        .weui-cell__bd p{
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            width:100%;
+        }
+        .time{
+            width: 35%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .loadmore{
+            text-align: center;
+            height: 40px;
+            line-height: 40px;
+        }
+        .loadmore i{
+            font-size: 16px;
+            margin-top: -3px;
+            margin-right: 10px;
+        }
 
     </style>
     <head>
@@ -67,7 +103,8 @@
 
             <div class="weui-cell">
                 <div class="weui-cell__bd title-name">
-                    <input style="text-align: center;" id="classlist" class="weui-input" type="text" value="一年级1班" readonly="" data-values="一年级1班">
+                    <input style="text-align: center;" id="classlist" class="weui-input" type="text" value="@if(!empty($scores)) {{$scores[0]['classname']}} @endif"
+                           readonly="" data-values="{{$scores[0]['class_id']}}">
                 </div>
             </div>
 
@@ -90,19 +127,19 @@
     </div>
 
     <!--列表-->
-    <div class="weui-cells" style="margin-top: 0;">
-        <a class="weui-cell weui-cell_access" href="count.html">
-            <div class="weui-cell__bd">
-                <p>cell standard</p>
-            </div>
-            <div class="weui-cell__ft">说明文字</div>
-        </a>
-        <a class="weui-cell weui-cell_access" href="count.html">
-            <div class="weui-cell__bd">
-                <p>cell standard</p>
-            </div>
-            <div class="weui-cell__ft">说明文字</div>
-        </a>
+    <div class="weui-cells" style="margin-top: 89px;">
+        @foreach($scores as $s)
+            <a class="weui-cell weui-cell_access" href='{{ url("detail/".$s['id']) }}'>
+                <div class="weui-cell__bd">
+                    <p>{{ $s['name'] }}</p>
+                </div>
+                <div class="weui-cell__ft time">{{ $s['start_date'] }}</div>
+            </a>
+        @endforeach
+    </div>
+
+    <div class="loadmore">
+        <span class="weui-loadmore__tips"><i class="icon iconfont icon-shuaxin"></i>加载更多 </span>
     </div>
 </div>
 
@@ -115,13 +152,79 @@
 </script>
 <script src="{{URL::asset('js/jquery-weui.min.js')}}"></script>
 <script>
+    var className = $.parseJSON('{{$className}}'.replace(/&quot;/g,'"'));
+    var pageSize = '{{$pageSize}}';
     //班级列表
     $("#classlist").select({
         title: "选择班级",
-        items: ["一年级1班", "一年级2班", "一年级3班", "一年级4班", "一年级5班", "一年级6班"]
+        items: className
     });
 
+    $("#classlist").on('change',function () {
+        $('.loadmore').show();
+        var class_id = $(this).attr('data-values');
+        $.ajax({
+            type: 'post',
+            dataType: 'json',
+            url: 'score_lists',
+            data: {class_id: class_id, _token: $('#csrf_token').attr('content')},
+            success: function ($data) {
+                var html = '';
+                if($data.data.length !== 0)
+                {
+                    for(var j=0 ; j< $data.data.length; j++)
+                    {
+                        var data = $data.data[j];
+                        html += '<a class="weui-cell weui-cell_access" href="detail">' +
+                            '<div class="weui-cell__bd">' +
+                            '<p>'+data.name +'</p>' +
+                            '</div>' +
+                            '<div class="weui-cell__ft time">'+ data.start_date+'</div>' +
+                            '</a>';
+                    }
+                    $('.weui-cells').html(html);
+                }
+            }
+        });
+    });
 
+    var start = 0;
+    $('.loadmore').click(function () {
+        start++;
+
+        loadmore(start);
+    });
+
+    function loadmore() {
+        var class_id = $('input').attr('data-values');
+        $.ajax({
+            type: 'post',
+            dataType: 'json',
+            url: 'score_lists',
+            data: {start: start, class_id: class_id, _token: $('#csrf_token').attr('content')},
+            success: function ($data) {
+                var html = '';
+                if($data.data.length !== 0)
+                {
+                    for(var i=0; i< $data.data.length;i++)
+                    {
+                        var score = $data.data[i];
+                        html += '<a class="weui-cell weui-cell_access" href="count.html">' +
+                            '<div class="weui-cell__bd">' +
+                            '<p>'+score.name +'</p>' +
+                            '</div>' +
+                            '<div class="weui-cell__ft time">'+ score.start_date+'</div>' +
+                            '</a>';
+                    }
+                    $('.weui-cells').append(html);
+                }else{
+
+                    $('.loadmore').hide();
+                }
+            }
+        });
+
+    }
 
 </script>
 </body>
