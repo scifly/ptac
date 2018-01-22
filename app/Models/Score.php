@@ -962,7 +962,7 @@ class Score extends Model {
             }
         }
         $data = [
-            'className'   => $squad->name,
+            'className'   => $exam->start_date,
             'examName'    => $exam->name,
             'oneData'     => $firstTableData,
             'rangs'       => $rangs,
@@ -1022,14 +1022,15 @@ class Score extends Model {
         $data['single'] = [];
         foreach ($scores as $score) {
             #获取当前科目下的平均分
-            $scoreGra = Score::whereEnabled(1)
+            $scoreCla = Score::whereEnabled(1)
                 ->whereExamId($input['exam_id'])
+                ->whereIn('student_id', $claStuIds)
                 ->whereSubjectId($score->subject->id)
                 ->get();
             $data['single'][] = [
                 'sub'   => $score->subject->name,
                 'score' => $score->score,
-                'avg' => number_format($scoreGra->average('score'),1)
+                'avg' => number_format($scoreCla->average('score'),1)
             ];
             
         }

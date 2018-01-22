@@ -31,7 +31,7 @@ function getdata(obj){
             var name = $(vo).find('td').eq(0).text()+'('+percent+')';
             var json1 = {
                 'name' : name,
-                'value' : val,
+                'value' : val
             };
 
             legendData.push(name);

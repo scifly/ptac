@@ -291,6 +291,7 @@ class ScoreCenterController extends Controller {
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function analysis() {
+        #需要判断当前访问者是否是教师
         $input = Request::all();
         $input['exam_id'] = 3;
         $input['squad_id'] = 1;
@@ -316,13 +317,13 @@ class ScoreCenterController extends Controller {
             return '暂未该学生相关数据';
         }
         $examName = $exam->name;
-        $studentName = $student->user->realname;
+        $examDate = $exam->start_date;
         $data = $this->score->totalAnalysis($input);
         
         return view('wechat.score.cus_total',[
             'data' => $data,
             'examName' => $examName,
-            'studentName' => $studentName,
+            'examDate' => $examDate,
             ]);
     }
 }

@@ -9,10 +9,8 @@
 	<div class="header">
 		<div class="info">
 			<div class="time">
-				<div class="subtitle">姓名</div>
-				<div class="days">{{ $studentName }}</div>
-				{{--<div class="subtitle">2017-12</div>--}}
-				{{--<div class="days">12日</div>--}}
+				<div class="subtitle">{{ date('Y-m', strtotime($examDate)) }}</div>
+				<div class="days">{{ date('d',strtotime($examDate)) }}日</div>
 			</div>
 			
 			<div class="test">
