@@ -68,17 +68,17 @@ class ScoreCenterController extends Controller {
             case '监护人':
                 if(Request::isMethod('post'))
                 {
+                    $studentId = Request::get('student_id');
+                    $classId = Student::whereId($studentId)->first()->class_id;
                     if(array_key_exists('start', Request::all()))
                     {
-                        $classId = Request::get('class_id');
                         $score = $this->getClassScore($classId);
                         $scores=array_slice($score,$start,$pageSize);
-                        return response()->json(['data' => $scores ]);
+                        return response()->json(['data' => $scores, 'studentId'=>$studentId ]);
                     }else{
-                        $classId = Request::get('class_id');
                         $score = $this->getClassScore($classId);
                         $scores=array_slice($score,$start,$pageSize);
-                        return response()->json(['data' => $scores ]);
+                        return response()->json(['data' => $scores ,'studentId'=>$studentId ]);
                     }
                 }
                 $data = $this->getStudentScore($userId);
@@ -151,6 +151,8 @@ class ScoreCenterController extends Controller {
             $score[$key]['name'] = $e->name;
             $score[$key]['start_date'] = $e->start_date;
             $score[$key]['class_id'] = $id;
+            $score[$key]['subject_ids'] = $e->subject_ids;
+
         }
         return $score;
     }
@@ -171,15 +173,16 @@ class ScoreCenterController extends Controller {
             foreach ($exams as $key=>$e)
             {
                 $score[$k][$key]['id'] = $e->id;
+                $score[$k][$key]['student_id'] = $s->id;
                 $score[$k][$key]['name'] = $e->name;
                 $score[$k][$key]['start_date'] = $e->start_date;
-                $score[$k][$key]['user_id'] = $s->user_id;
                 $score[$k][$key]['realname'] = $s->user->realname;
                 $score[$k][$key]['class_id'] = $s->class_id;
+                $score[$k][$key]['subject_ids'] = $e->subject_ids;
             }
             $studentName[]= [
                 'title' => $s->user->realname,
-                'value' => $s->class_id,
+                'value' => $s->id,
             ];
         }
         $data = [
@@ -209,6 +212,7 @@ class ScoreCenterController extends Controller {
                 $score[$k][$key]['classname'] = $c->name;
                 $score[$k][$key]['start_date'] = $e->start_date;
                 $score[$k][$key]['class_id'] = $c->id;
+                $score[$k][$key]['subject_ids'] = $e->subject_ids;
             }
 
             $className[] = [
@@ -225,16 +229,43 @@ class ScoreCenterController extends Controller {
     }
 
     /**
+     * 学生考试详情页
+     */
+    public function subjectDetail()
+    {
+        $subjects = [];
+        $examId = Request::get('examId');
+        $studentId= Request::get('studentId');
+        $exam = Exam::whereId($examId)->first();
+        $subjectIds = explode(',',$exam->subject_ids);
+        foreach ($subjectIds as $k=>$s){
+            $subjects[] = [
+                'title' => Subject::whereId($s)->first()->name,
+                'value' => $s,
+            ];
+        }
+        $scores = Score::whereStudentId($studentId)
+            ->where('exam_id',$examId)
+            ->where('subject_id',$subjectIds[0])
+            ->first();
+        $scores['start_date'] = $exam['start_date'];
+        return view('wechat.scores.student_subject_detail',[
+            'scores' => $scores,
+            'subjects' => json_encode($subjects, JSON_UNESCAPED_UNICODE),
+        ]);
+    }
+    /**
      * 成绩详情
      *
      * @return bool|JsonResponse
      */
     public function detail() {
-        $userId = 'wangdongxi';
+        $userId = 'yuanhb';
         $role = User::whereUserid($userId)->first()->group->name;
         switch ($role)
         {
             case '监护人':
+                $examId = Request::input('exam_id');
                 return view('wechat.scores.student_subject_detail');
                 break;
             case '教职员工':
