@@ -23,8 +23,8 @@ class UserRequest extends FormRequest {
             $rule=[
                 'username'      => 'required|string|unique:users,username,'.
                     $this->input('id') . ',id',
-                'user.email'         => 'nullable|email|unique:users,email,' .
-                    $this->input('user_id') . ',id',
+                'email'         => 'nullable|email|unique:users,email,' .
+                    $this->input('id') . ',id',
             ];
         }
         return $rule;

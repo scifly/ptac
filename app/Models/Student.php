@@ -218,7 +218,6 @@ class Student extends Model {
             }
             return 0;
         }
-        
         return 0;
         
     }
