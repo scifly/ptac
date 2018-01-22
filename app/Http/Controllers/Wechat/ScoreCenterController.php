@@ -173,5 +173,15 @@ class ScoreCenterController extends Controller {
 
     }
     
+    /**
+     * 微信 教师端成绩分析
+     *
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function analysis(){
+     
+        return view('wechat.score.edu_analysis');
+    }
+    
 }
 

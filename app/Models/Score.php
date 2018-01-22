@@ -171,6 +171,8 @@ class Score extends Model {
     }
     
     /**
+     * 排名统计
+     *
      * @param $exam_id
      * @return boolean
      */
@@ -199,8 +201,16 @@ class Score extends Model {
                 ->orderBy('score', 'desc')
                 ->get();
             #这个时候key就是排名 处理班级排名
+            #比较分数的临时变量 和排名值
+            $tempScore = '';
+            $rank = 0;
             foreach ($scores as $key => $score) {
-                $score->class_rank = $key + 1;
+                #说明两次的分数相等
+                if($tempScore != $score->score){
+                    $tempScore = $score->score;
+                    $rank += 1;
+                }
+                $score->class_rank = $rank;
                 if (!$score->save()) {
                     return false;
                 }
@@ -211,8 +221,15 @@ class Score extends Model {
                 ->whereEnabled(1)
                 ->orderBy('score', 'desc')
                 ->get();
+            $gradeScore = '';
+            $gradeRank = 0;
             foreach ($scoresAll as $key => $score) {
-                $score->grade_rank = $key + 1;
+                #说明两次的分数相等
+                if($gradeScore != $score->score){
+                    $gradeScore = $score->score;
+                    $gradeRank += 1;
+                }
+                $score->grade_rank = $gradeRank;
                 if (!$score->save()) {
                     return false;
                 }
@@ -261,8 +278,15 @@ class Score extends Model {
             ->whereIn('student_id', $claStuIds)
             ->orderBy('score', 'desc')
             ->get();
+        $toTmeScore = '';
+        $toTmeRank = 0;
         foreach ($scoreTotalCla as $key => $scoreToal) {
-            $scoreToal->class_rank = $key + 1;
+            #说明两次的分数相等
+            if($toTmeScore != $scoreToal->score){
+                $toTmeScore = $scoreToal->score;
+                $toTmeRank += 1;
+            }
+            $scoreToal->class_rank = $toTmeRank;
             if (!$scoreToal->save()) {
                 return false;
             }
@@ -272,8 +296,15 @@ class Score extends Model {
             ->whereExamId($exam_id)
             ->orderBy('score', 'desc')
             ->get();
+        $toGraScore = '';
+        $toGraRank = 0;
         foreach ($scoreTotalCla as $key => $scoreToal) {
-            $scoreToal->grade_rank = $key + 1;
+            #说明两次的分数相等
+            if($toGraScore != $scoreToal->score){
+                $toGraScore = $scoreToal->score;
+                $toGraRank += 1;
+            }
+            $scoreToal->grade_rank = $toGraRank;
             if (!$scoreToal->save()) {
                 return false;
             }
