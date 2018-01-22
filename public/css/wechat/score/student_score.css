@@ -1,0 +1,82 @@
+body, html {
+    height: 100%;
+    width: 100%;
+    overflow-x: hidden;
+}
+body{
+    margin: 0;
+    padding:0;
+    background-color: #f2f2f2;
+    font-family: "微软雅黑";
+}
+a{
+    color: #333;
+}
+::-webkit-scrollbar {
+    width: 0em;
+}
+::-webkit-scrollbar:horizontal {
+    height: 0em;
+}
+.header{height: 90px;width: 90%;margin: 0;padding:0 5%;background-color: #1aad19;}
+.header .title{height: 60px;line-height: 60px;text-align: center;font-size: 24px;color: #fff;}
+.header .myclass{height: 30px;width: 100%;text-align: center;color:#fff;}
+.footerTab{
+    position: fixed;
+    bottom: 0;
+    height: 50px;
+    width: 100%;
+    background-color: #fff;
+    opacity: 0.7;
+    border-top: 1px solid #ddd;
+}
+.footerTab .btnItem{
+    display: inline-block;
+    width: 50%;
+    float: left;
+    height: 100%;
+    text-align: center;
+    position: relative;
+}
+.footerTab .btnItem i{
+    font-size: 24px;
+    margin-top: -3px;
+}
+.footerTab .btnItem p{
+    font-size: 14px;
+    top: 28px;
+    position: absolute;
+    width: 100%;
+}
+.footer-active {
+    color: #1aad19;
+}
+
+.tab-bar{
+    margin-top: 10px;
+    color: #fff;
+    display: inline-block;
+    overflow-x: auto;
+    overflow-y: hidden;
+
+
+    width: 100%;
+
+    white-space: nowrap;
+}
+
+.tab-bar .tab-item{
+    background-color: #1aad19;
+    display:inline-block;
+    padding: 5px 15px;
+    margin-right: -5px;
+}
+.tab-bar .tab-item.active{
+    background-color:#039402 ;
+}
+.line-table-con{
+    background-color: #fff !important;
+    width: 94%;
+    margin:10px 3%;
+    height: 300px;
+}

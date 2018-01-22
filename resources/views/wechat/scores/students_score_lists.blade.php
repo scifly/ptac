@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
     <meta name="csrf_token" content="{{ csrf_token() }}" id="csrf_token">
-    <title>WeUI</title>
+    <title>学生考试列表</title>
     <link rel="stylesheet" href="{{ URL::asset('css/weui.min.css') }}"/>
     <link rel="stylesheet" href="{{ URL::asset('css/jquery-weui.min.css') }}">
     <link rel="stylesheet" href="{{ URL::asset('css/wechat/icon/iconfont.css') }}">
@@ -23,14 +23,25 @@
         a{
             color: #333;
         }
+        ::-webkit-scrollbar {
+            width: 0em;
+        }
+        ::-webkit-scrollbar:horizontal {
+            height: 0em;
+        }
         .main{
             height: 100%;
             width: 100%;
             background-color: #fff;
         }
+        .header{
+            position: fixed;top: 0;z-index: 999;width: 100%;background-color: #fff
+        }
         .multi-role {
             background: #fff;
             position: relative;
+            height: 100%;
+            overflow-y: auto;
         }
         .multi-role .switchclass-item {
             padding: 0px;
@@ -56,59 +67,82 @@
         .switchclass-head{
             width: 100%;
         }
+        .weui-cell__bd{
+            width:65%;
+        }
+        .weui-cell__bd p{
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            width:100%;
+        }
+        .time{
+            width: 35%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .loadmore{
+            text-align: center;
+            height: 40px;
+            line-height: 40px;
+        }
+        .loadmore i{
+            font-size: 16px;
+            margin-top: -3px;
+            margin-right: 10px;
+        }
 
     </style>
     <head>
 <body ontouchstart>
 
 <div class="multi-role">
-    <div class="switchclass-item clearfix">
-        <div class="switchclass-head">
+    <div class="header">
+        <div class="switchclass-item clearfix">
+            <div class="switchclass-head">
 
-            <div class="weui-cell">
-                <div class="weui-cell__bd title-name">
-                    <select name="" class="" id="classlist" style="text-align: center;">
-                        @foreach($studentName as $k=>$s)
-                        <option value={{$k}}>{{$s}}</option>
-                        @endforeach
-                    </select>
-                    {{--<input style="text-align: center;" id="classlist" class="weui-input" type="text" value="一年级1班" readonly="" data-values="一年级1班">--}}
+                <div class="weui-cell">
+                    <div class="weui-cell__bd title-name">
+                        <input style="text-align: center;" id="classlist" class="weui-input" type="text" value="@if(!empty($scores)) {{$scores[0]['realname']}} @endif" readonly="" data-values="一年级1班">
+                    </div>
                 </div>
-            </div>
 
-            <!--<input class="title-name" id="classlist" type="text" value="一年级一班" readonly="" data-values="一年级一班">-->
+                <!--<input class="title-name" id="classlist" type="text" value="一年级一班" readonly="" data-values="一年级一班">-->
+            </div>
+        </div>
+        <div class="weui-search-bar" id="searchBar">
+            <form class="weui-search-bar__form" action="#">
+                <div class="weui-search-bar__box">
+                    <i class="weui-icon-search"></i>
+                    <input type="search" class="weui-search-bar__input" id="searchInput" placeholder="搜索" required="">
+                    <a href="javascript:" class="weui-icon-clear" id="searchClear"></a>
+                </div>
+                <label class="weui-search-bar__label" id="searchText" style="transform-origin: 0px 0px 0px; opacity: 1; transform: scale(1, 1);">
+                    <i class="weui-icon-search"></i>
+                    <span>搜索</span>
+                </label>
+            </form>
+            <a href="javascript:" class="weui-search-bar__cancel-btn" id="searchCancel">取消</a>
         </div>
     </div>
-    <div class="weui-search-bar" id="searchBar">
-        <form class="weui-search-bar__form" action="#">
-            <div class="weui-search-bar__box">
-                <i class="weui-icon-search"></i>
-                <input type="search" class="weui-search-bar__input" id="searchInput" placeholder="搜索" required="">
-                <a href="javascript:" class="weui-icon-clear" id="searchClear"></a>
+    <!--列表-->
+    <div class="weui-cells" style="margin-top: 89px;">
+        @foreach($scores as $s)
+        <a class="weui-cell weui-cell_access" href="count.html">
+            <div class="weui-cell__bd">
+                <p>{{ $s['name'] }}</p>
             </div>
-            <label class="weui-search-bar__label" id="searchText" style="transform-origin: 0px 0px 0px; opacity: 1; transform: scale(1, 1);">
-                <i class="weui-icon-search"></i>
-                <span>搜索</span>
-            </label>
-        </form>
-        <a href="javascript:" class="weui-search-bar__cancel-btn" id="searchCancel">取消</a>
+            <div class="weui-cell__ft time">{{ $s['start_date'] }}</div>
+        </a>
+        @endforeach
+
     </div>
 
-    <!--列表-->
-    <div class="weui-cells" style="margin-top: 0;">
-        <a class="weui-cell weui-cell_access" href="count.html">
-            <div class="weui-cell__bd">
-                <p>cell standard</p>
-            </div>
-            <div class="weui-cell__ft">说明文字</div>
-        </a>
-        <a class="weui-cell weui-cell_access" href="count.html">
-            <div class="weui-cell__bd">
-                <p>cell standard</p>
-            </div>
-            <div class="weui-cell__ft">说明文字</div>
-        </a>
+    <div class="loadmore">
+        <span class="weui-loadmore__tips"><i class="icon iconfont icon-shuaxin"></i>加载更多 </span>
     </div>
+
 </div>
 
 <script src="{{URL::asset('js/jquery.min.js')}}"></script>
@@ -119,7 +153,80 @@
         FastClick.attach(document.body);
     });
 </script>
-<script src="{{URL::asset('js/jquery-weui.min.js')}}"></script>
 
+<script src="{{URL::asset('js/jquery-weui.min.js')}}"></script>
+<script>
+    var studentName = $.parseJSON('{{$studentName}}'.replace(/&quot;/g,'"'));
+
+    //班级列表
+    $("#classlist").select({
+        title: "选择学生",
+        items: studentName
+    });
+
+    $("#classlist").on('change',function () {
+        var class_id = $(this).attr('data-values');
+        $.ajax({
+            type: 'post',
+            dataType: 'json',
+            url: 'score_lists',
+            data: {class_id: class_id, _token: $('#csrf_token').attr('content')},
+            success: function ($data) {
+                var html = '';
+                if($data.data.length !== 0)
+                {
+                    for(var j=0 ; j< $data.data.length; j++)
+                    {
+                        var data = $data.data[j];
+                        html += '<a class="weui-cell weui-cell_access" href="count.html">' +
+                            '<div class="weui-cell__bd">' +
+                            '<p>'+data.name +'</p>' +
+                            '</div>' +
+                            '<div class="weui-cell__ft time">'+ data.start_date+'</div>' +
+                            '</a>';
+                    }
+                    $('.weui-cells').html(html);
+                }
+            }
+        });
+    });
+
+    var start = 0;
+    $('.loadmore').click(function () {
+        start++;
+
+        loadmore(start);
+    });
+
+    function loadmore() {
+
+        $.ajax({
+            type: 'post',
+            dataType: 'json',
+            url: 'score_lists',
+            data: {start: start, _token: $('#csrf_token').attr('content')},
+            success: function ($data) {
+                var html = '';
+                if($data.data.length !== 0)
+                {
+                    for(var i=0; i< $data.data.length;i++)
+                    {
+                        var score = $data.data[i];
+                         html += '<a class="weui-cell weui-cell_access" href="count.html">' +
+                                '<div class="weui-cell__bd">' +
+                                '<p>'+score.name +'</p>' +
+                                '</div>' +
+                                '<div class="weui-cell__ft time">'+ score.start_date+'</div>' +
+                                '</a>';
+                    }
+                    $('.weui-cells').append(html);
+                    $('.loadmore').hide();
+                }
+            }
+        });
+
+    }
+
+</script>
 </body>
 </html>

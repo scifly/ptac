@@ -100,8 +100,17 @@ return [
     */
 
     'custom'               => [
-        'attribute-name' => [
-            'rule-name' => 'custom-message',
+        'avatar_url' => [
+            'url' => 'users avatar_url is not correct',
+        ],
+        'student_number' => [
+            'unique' => ':attribute不唯一',
+        ],
+        'student_ids'=>[
+            'required'=>'请先设置:attribute'
+        ],
+        'subject_ids'=>[
+            'required'=>':attribute 是必须的'
         ],
     ],
 
@@ -119,6 +128,8 @@ return [
     'attributes'           => [
         'name'                  => '名称',
         'english_name'          => '英文名',
+        'card_number'           => '卡号',
+        'student_number'        => '学号',
         'discount'              => '折扣(discount)',
         'machineid'             => '考勤机id',
         'username'              => '用户名',
@@ -149,6 +160,9 @@ return [
         'time'                  => '时间',
         'available'             => '可用的',
         'size'                  => '大小',
-        'enabled'               => '状态'
+        'enabled'               => '状态',
+        'selectedDepartments'   => '所属部门',
+        'student_ids'           => '被监护人',
+        'subject_ids'           => '科目',
     ],
 ];
