@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UserRequest;
 use App\Models\Event;
 use App\Models\Message;
 use App\Models\User;
@@ -47,7 +48,8 @@ class UserController extends Controller {
             $password = Request::input('password');
             $pwd = bcrypt(Request::input('pwd'));
             $user = User::find(Auth::id());
-            if (!Auth::attempt(['password' => $password])) {
+
+            if (!\Hash::check($password,$user->password)) {
                 return response()->json(['statusCode' => self::BAD_REQUEST]);
             }
             $res = $user->update(['password' => $pwd]);
@@ -127,6 +129,24 @@ class UserController extends Controller {
 
         return $this->saveImg($id, $fileName);
 
+    }
+
+
+    /**
+     * 更新用户
+     *
+     * @param UserRequest $request
+     * @param $id
+     * @return JsonResponse|string|void
+     */
+    public function update(UserRequest $request, $id){
+        $user = User::find($id);
+        if (!$user) { return $this->notFound(); }
+
+
+        return $this->result(
+            User::modify($request->all(), $id, false)
+        );
     }
 
     /**

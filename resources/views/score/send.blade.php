@@ -1,16 +1,19 @@
 <div class="box box-default box-solid" id="send_main" style="display: none;">
 	<div class="box-body">
+		<div class="overlay">
+		    <i class="fa fa-refresh fa-spin"></i>
+		</div>
 		<div class="row">
 	        <div class="box-tools pull-right">
-	            <i class="fa fa-close " id="close-send" style="cursor: pointer;font-size: 22px;margin-right: 20px;"></i>
+	            <i class="fa fa-close " id="close-send"></i>
 	        </div>
 		</div>
-		
+
 		<div class="row" style="margin-top: 20px;">
 			<div class="form-horizontal">
 				<div class="col-md-6">
 				    <div class="form-group">
-				    	
+
 					    <div class="col-sm-12">
 							@include('partials.single_select', [
 								'label' => '考试名称',
@@ -20,7 +23,7 @@
 					    </div>
 					</div>
 			   	</div>
-			   	
+
 			   	<div class="col-md-6">
 				    <div class="form-group">
 					    <div class="col-sm-12">
@@ -57,7 +60,7 @@
 			   	</div>
 	   		</div>
 	   	</div>
-	   	
+
 	   	<div class="row">
 	   		<div class="form-horizontal">
 	   			<div class="col-md-12">
@@ -101,22 +104,22 @@
 					   				<input type="checkbox" class="minimal" value="class_min">
 					   				班最低
 					   			</label>
-					   			
+
 				   			</div>
 				    	</div>
 				    </div>
 	   			</div>
 	   		</div>
 	   	</div>
-	   	
+
 	   	<div class="row">
 	   		<div class="col-md-12" style="text-align: center;">
 	   			<button type="button" id="btn-browse" class="btn btn-primary" style="margin-right: 30px;">浏览</button>
 	   			<button type="button" id="btn-send-message" class="btn btn-success">发送</button>
 	   		</div>
-	   		
+
 	   	</div>
-	   	
+
         <table id="send-table" style="width: 100%;margin-top: 20px;"
                class="display nowrap table table-striped table-bordered table-hover table-condensed">
             <thead>
@@ -134,6 +137,6 @@
             </thead>
             <tbody></tbody>
         </table>
-	    
+
    </div>
 </div>

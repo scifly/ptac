@@ -28,6 +28,7 @@ $import.on('click', function () {
                 }
             },
             error: function (result) {
+                console.log(result);
                 page.inform("操作失败",result.message, page.failure);
 
             }

@@ -211,11 +211,13 @@ class Student extends Model {
                 $deptClass = Department::whereName($class)
                     ->where('parent_id', $deptGrade->id)
                     ->first();
-                return $deptClass->id;
+                if($deptClass)
+                    return $deptClass->id;
+                else
+                    return 0;
             }
             return 0;
         }
-        
         return 0;
         
     }
@@ -351,14 +353,14 @@ class Student extends Model {
     static function remove($studentId) {
 
         $student = self::find($studentId);
-        if (!isset($custodian)) { return false; }
+        #if (!isset($custodian)) { return false; }
         try {
             DB::transaction(function () use ($studentId, $student) {
                 # 删除指定的学生记录
                 $student->delete();
                 # 删除与指定学生绑定的监护人记录
                 CustodianStudent::whereStudentId($studentId)->delete();
-                # 删除与指定学生绑定的部门记录
+                # custodian删除与指定学生绑定的部门记录
                 DepartmentUser::whereUserId($student['user_id'])->delete();
                 # 删除与指定学生绑定的手机记录
                 Mobile::whereUserId($student['user_id'])->delete();

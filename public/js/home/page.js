@@ -82,6 +82,9 @@ var page = {
         echarts: {
         	js: 'js/plugins/echarts.simple.min.js',
         },
+        echarts_common: {
+        	js: 'js/plugins/echarts.common.min.js',
+        },
         minimal_icheck: {
             css: 'js/plugins/icheck/all.css',
             js: 'js/plugins/icheck/icheck.min.js',
@@ -92,7 +95,10 @@ var page = {
             }
         },
         send_css: {
-        	css: 'js/score/send.css',
+        	css: 'js/score/send.css'
+        },
+        analysis_css: {
+        	css: 'js/score/analysis.css'
         }
     },
     backToList: function (table) {

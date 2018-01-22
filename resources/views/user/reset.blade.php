@@ -14,11 +14,7 @@
             <div class="box box-default box-solid">
                 <div class="box-header with-border">
                     <span id="breadcrumb" style="color: #999; font-size: 13px;">用户中心/重置密码</span>
-                    <div class="box-tools pull-right">
-                        <button id="record-list" type="button" class="btn btn-box-tool">
-                            <i class="fa fa-mail-reply text-blue"> 返回列表</i>
-                        </button>
-                    </div>
+
                 </div>
                 <div class="box-body">
                     <div class="form-horizontal">
@@ -91,7 +87,7 @@
                     <div class="form-group">
                         <div class="col-sm-3 col-sm-offset-3">
                             {!! Form::submit('保存', ['class' => 'btn btn-primary pull-left', 'id' => 'reset']) !!}
-                            {!! Form::reset('取消', ['class' => 'btn btn-default pull-right', 'id' => 'cancel']) !!}
+                            {!! Form::reset('重置', ['class' => 'btn btn-default pull-right', 'id' => 'cancel']) !!}
                         </div>
                     </div>
                 </div>

@@ -31,6 +31,7 @@ class EventServiceProvider extends ServiceProvider {
         'App\Listeners\MessageEventSubscriber',
         'App\Listeners\AttendanceEventSubscriber',
         'App\Listeners\WapSiteEventSubscriber',
+        'App\Listeners\ScoreEventSubscriber',
     ];
     
     /**
