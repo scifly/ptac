@@ -110,7 +110,7 @@ return [
             'required'=>'请先设置:attribute'
         ],
         'subject_ids'=>[
-            'required'=>':attribute是必须的'
+            'required'=>':attribute 是必须的'
         ],
     ],
 
