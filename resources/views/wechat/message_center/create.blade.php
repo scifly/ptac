@@ -1,4 +1,7 @@
 @extends('wechat.layouts.master')
+@section('title')
+	<title>消息中心</title>
+@endsection
 @section('css')
     <link rel="stylesheet" href="{{ asset('/css/wechat/message_center/create.css') }}">
 @endsection

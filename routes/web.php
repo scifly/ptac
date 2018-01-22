@@ -313,7 +313,10 @@ Route::post('attendance_charts', 'Wechat\AttendanceController@stuChart');
 // 成绩中心
 Route::get('score_lists', 'Wechat\ScoreCenterController@index');
 Route::post('score_lists', 'Wechat\ScoreCenterController@index');
-Route::get('detail/{id}', 'Wechat\ScoreCenterController@detail');
+Route::get('wechat/score/detail/{id}', 'Wechat\ScoreCenterController@detail');
+Route::any('wechat/score/show', 'Wechat\ScoreCenterController@show');
+Route::get('wechat/score/analysis', 'Wechat\ScoreCenterController@analysis');
+
 
 
 
