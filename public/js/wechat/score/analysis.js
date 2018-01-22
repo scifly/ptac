@@ -48,7 +48,7 @@ function showtable_pie(arrayTime,legendData,obj){
         title : {
             text: '本期成绩占比',
             x:'center',
-            top:0,
+            top:0
         },
         tooltip : {
             trigger: 'item',
@@ -58,14 +58,14 @@ function showtable_pie(arrayTime,legendData,obj){
             show:true,
             bottom: 10,
             left: 'center',
-            data: legendData,
+            data: legendData
 
 
         },
 
         series : [
             {
-                name: 'scorelevel',
+                name: '成绩占比',
                 type: 'pie',
                 radius : '40%',
                 center:['50%','40%'],

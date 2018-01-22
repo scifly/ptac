@@ -290,13 +290,13 @@ class Score extends Model {
             }
         }
         #年级排名
-        $scoreTotalCla = ScoreTotal::whereEnabled(1)
+        $scoreTotalGra = ScoreTotal::whereEnabled(1)
             ->whereExamId($exam_id)
             ->orderBy('score', 'desc')
             ->get();
         $toGraScore = '';
         $toGraRank = 0;
-        foreach ($scoreTotalCla as $key => $scoreToal) {
+        foreach ($scoreTotalGra as $key => $scoreToal) {
             if ($toGraScore != $scoreToal->score) {
                 $toGraScore = $scoreToal->score;
                 $toGraRank += 1;
@@ -738,6 +738,7 @@ class Score extends Model {
                 return false;
             }
         }
+        
         #分析学生
         return false;
     }
@@ -889,7 +890,7 @@ class Score extends Model {
                 'avg'        => number_format($avg, 2),
                 'big_number' => $bigNumber,
                 'min_number' => $minNumber,
-                'subId' => $sub
+                'subId'      => $sub,
             ];
             #处理单科分数段
             foreach ($rangAll as $ran) {
@@ -968,6 +969,70 @@ class Score extends Model {
             'totalRanges' => $scoreToRanges,
         ];
         
+        return $data;
+    }
+    
+    /**
+     * 微信 监护人端 综合成绩分析
+     * @param $input
+     * @return array|bool
+     */
+    public function totalAnalysis($input) {
+        #根据当前学生取的班级
+        $student = Student::whereId($input['student_id'])->first();
+        $squad = $student->squad;
+        #找到班级下面对应所有的学生 ids
+        $claStuIds = [];
+        foreach ($squad->students as $student) {
+            $claStuIds[] = $student->id;
+        }
+        #获得当前考试当前学生的总分
+        $scoreTotal = ScoreTotal::whereExamId($input['exam_id'])
+            ->whereStudentId($input['student_id'])
+            ->first();
+        if (!$scoreTotal) {
+            return false;
+        }
+        # 获取班级参与考试的所有记录
+        $scoreTotalCla = ScoreTotal::whereEnabled(1)
+            ->whereExamId($input['exam_id'])
+            ->whereIn('student_id', $claStuIds)
+            ->get();
+        # 获取年级参与考试的所有记录
+        $scoreTotalGra = ScoreTotal::whereEnabled(1)
+            ->whereExamId($input['exam_id'])
+            ->get();
+        #总分平均分
+        $avgCla = $scoreTotalCla->average('score');
+        $avgGra = $scoreTotalGra->average('score');
+        $data['total'] = [
+            'total_score'       => $scoreTotal->score,
+            'avgcla'      => number_format($avgCla, 1),
+            'avggra'      => number_format($avgGra, 1),
+            'class_rank'  => $scoreTotal->class_rank,
+            'grade_rank'  => $scoreTotal->grade_rank,
+            'class_count' => $scoreTotalCla->count(),
+            'grade_count' => $scoreTotalGra->count(),
+        ];
+        #获取本次考试的各科成绩当前学生
+        $scores = Score::whereEnabled(1)
+            ->whereExamId($input['exam_id'])
+            ->whereStudentId($input['student_id'])
+            ->get();
+        $data['single'] = [];
+        foreach ($scores as $score) {
+            #获取当前科目下的平均分
+            $scoreGra = Score::whereEnabled(1)
+                ->whereExamId($input['exam_id'])
+                ->whereSubjectId($score->subject->id)
+                ->get();
+            $data['single'][] = [
+                'sub'   => $score->subject->name,
+                'score' => $score->score,
+                'avg' => number_format($scoreGra->average('score'),1)
+            ];
+            
+        }
         return $data;
     }
     

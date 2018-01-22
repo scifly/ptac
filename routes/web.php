@@ -321,6 +321,7 @@ Route::post('score_lists', 'Wechat\ScoreController@index');
 Route::get('wechat/score/detail', 'Wechat\ScoreCenterController@detail');
 Route::any('wechat/score/show', 'Wechat\ScoreCenterController@show');
 Route::get('wechat/score/analysis', 'Wechat\ScoreCenterController@analysis');
+Route::get('wechat/score/cus_total', 'Wechat\ScoreCenterController@cusTotal');
 
 
 
