@@ -44,7 +44,7 @@ function getdata(obj){
 }
 function showtable_pie(arrayTime,legendData,obj){
     var myChart = echarts.init(obj.find('#main')[0]);
-    option = {
+    var option = {
         title : {
             text: '本期成绩占比',
             x:'center',
@@ -58,7 +58,9 @@ function showtable_pie(arrayTime,legendData,obj){
             show:true,
             bottom: 10,
             left: 'center',
-            data: legendData
+            data: legendData,
+
+
         },
 
         series : [
