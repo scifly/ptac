@@ -31,7 +31,7 @@ function getdata(obj){
             var name = $(vo).find('td').eq(0).text()+'('+percent+')';
             var json1 = {
                 'name' : name,
-                'value' : val,
+                'value' : val
             };
 
             legendData.push(name);
@@ -44,11 +44,11 @@ function getdata(obj){
 }
 function showtable_pie(arrayTime,legendData,obj){
     var myChart = echarts.init(obj.find('#main')[0]);
-    option = {
+    var option = {
         title : {
             text: '本期成绩占比',
             x:'center',
-            top:0,
+            top:0
         },
         tooltip : {
             trigger: 'item',
@@ -59,11 +59,13 @@ function showtable_pie(arrayTime,legendData,obj){
             bottom: 10,
             left: 'center',
             data: legendData
+
+
         },
 
         series : [
             {
-                name: 'scorelevel',
+                name: '成绩占比',
                 type: 'pie',
                 radius : '40%',
                 center:['50%','40%'],
