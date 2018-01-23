@@ -279,8 +279,7 @@ class Student extends Model {
             DB::transaction(function () use ($request, $studentId, $student) {
                 $userId = $request->input('user_id');
                 $userData = $request->input('user');
-                $user = new User();
-                $user->where('id', $userId)
+                User::find($userId)
                     ->update([
                         'group_id' => Group::whereName('学生')->first()->id,
                         'email' => $userData['email'],
@@ -333,8 +332,7 @@ class Student extends Model {
                 ];
                 DepartmentUser::create($departmentUser);
                 # 更新企业号成员
-                $user->UpdateWechatUser($userId);
-                unset($user);
+                User::UpdateWechatUser($userId);
             });
         } catch (Exception $e) {
             throw $e;
@@ -570,7 +568,7 @@ class Student extends Model {
                     $student->card_number . "\t",
                     $student->oncampus == 1 ? '是' : '否',
                     $mobiles,
-                    substr($student->birthday, 0, -8),
+                    $student->birthday,
                     $student->created_at,
                     $student->updated_at,
                     $student->enabled == 1 ? '启用' : '禁用',

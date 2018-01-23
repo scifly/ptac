@@ -190,7 +190,6 @@ Route::get('users/reset','UserController@reset');
 Route::post('users/reset','UserController@reset');
 Route::get('users/messages','UserController@messages');
 Route::get('users/events','UserController@event');
-Route::Put('users/update','UserController@update');
 // 个人通讯录
 // 消息中心
 Route::group(['prefix' => 'messages'], routes('MessageController'));
@@ -312,15 +311,17 @@ Route::get('lists', 'Wechat\AttendanceController@index');
 Route::get('attendance_records/{id}', 'Wechat\AttendanceController@records');
 Route::post('attendance_records/{id?}', 'Wechat\AttendanceController@records');
 Route::post('attendance_charts', 'Wechat\AttendanceController@stuChart');
+Route::get('attendance_rules/{id}', 'Wechat\AttendanceController@getRules');
+Route::get('attendance_date', 'Wechat\AttendanceController@dateRules');
 // 成绩中心
-Route::get('score_lists', 'Wechat\ScoreController@index');
-Route::post('score_lists', 'Wechat\ScoreController@index');
-
-
-//成绩中心
+Route::any('wechat/score/score_lists', 'Wechat\ScoreCenterController@index');
 Route::get('wechat/score/detail', 'Wechat\ScoreCenterController@detail');
+Route::get('wechat/score/student_detail', 'Wechat\ScoreCenterController@subjectDetail');
+Route::post('wechat/score/student_detail', 'Wechat\ScoreCenterController@subjectDetail');
 Route::any('wechat/score/show', 'Wechat\ScoreCenterController@show');
 Route::get('wechat/score/analysis', 'Wechat\ScoreCenterController@analysis');
+Route::get('wechat/score/cus_total', 'Wechat\ScoreCenterController@cusTotal');
+
 
 
 

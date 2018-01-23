@@ -27,7 +27,7 @@ return [
         'numeric' => ':attribute 必须介于 :min - :max 之间',
         'file'    => ':attribute 必须介于 :min - :max kb 之间',
         'string'  => ':attribute 必须介于 :min - :max 个字符之间',
-        'array'   => ':attribute 必须只能包含 :min - :max 个值',
+        'array'   => ':attribute 只能包含 :min - :max 个值',
     ],
     'boolean'              => ':attribute 必须为布尔值',
     'confirmed'            => ':attribute 两次输入不一致',
@@ -87,6 +87,7 @@ return [
     'unique'               => ':attribute已经存在',
     'uploaded'             => ':attribute 上传失败',
     'url'                  => ':attribute 格式不正确',
+    'grade_id'             => ':attribute 必须的',
 
     /*
     |--------------------------------------------------------------------------
@@ -110,7 +111,7 @@ return [
             'required'=>'请先设置:attribute'
         ],
         'subject_ids'=>[
-            'required'=>':attribute是必须的'
+            'required'=>':attribute 是必须的'
         ],
     ],
 
@@ -134,8 +135,8 @@ return [
         'machineid'             => '考勤机id',
         'username'              => '用户名',
         'email'                 => '邮箱',
-        'first_name'            => '名',
-        'last_name'             => '姓',
+        'first_name'            => '名字',
+        'last_name'             => '姓氏',
         'password'              => '密码',
         'password_confirmation' => '确认密码',
         'city'                  => '城市',
@@ -164,5 +165,6 @@ return [
         'selectedDepartments'   => '所属部门',
         'student_ids'           => '被监护人',
         'subject_ids'           => '科目',
+        'grade_id'              => '年级',
     ],
 ];

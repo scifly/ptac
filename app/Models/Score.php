@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -177,61 +178,78 @@ class Score extends Model {
      * @return boolean
      */
     static function statistics($exam_id) {
-        // $schoolId = School::schoolId();
         $exam = Exam::whereId($exam_id)->first();
         #找到考试对应的科目存到数组 ids
         $examSub = explode(',', $exam->subject_ids);
         #找到考试对应的班级存到数组 ids
         $examCla = explode(',', $exam->class_ids);
-        #找到班级下面对应所有的学生 ids
+        #找到每个班级下面对应的学生 ids
         $claStuIds = [];
         foreach ($examCla as $cla) {
             $squad = Squad::whereId($cla)->first();
             foreach ($squad->students as $student) {
-                $claStuIds[] = $student->id;
+                $claStuIds[$squad->id][] = $student->id;
+            }
+        }
+        #根据班级找出参与考试的所有年级
+        $grades = [];
+        foreach ($examCla as $cla) {
+            $grades[] = Squad::whereId($cla)->first()->grade_id;
+        }
+        #找到每个年级下面的所有学生
+        $graStuIds = [];
+        foreach (array_unique($grades) as $grade) {
+            $squads = Grade::whereId($grade)->first()->classes;
+            foreach ($squads as $squad) {
+                foreach ($squad->students as $student) {
+                    $graStuIds[$grade][] = $student->id;
+                }
             }
         }
         foreach ($examSub as $sub) {
             #一次处理一个科目  查出这个科目下 班级下所有学生的成绩
-            # 若该学生id没有对应的score则不会在结果数组中
-            $scores = Score::whereExamId($exam_id)
-                ->whereSubjectId($sub)
-                ->whereIn('student_id', $claStuIds)
-                ->whereEnabled(1)
-                ->orderBy('score', 'desc')
-                ->get();
-            #这个时候key就是排名 处理班级排名
-            #比较分数的临时变量 和排名值
-            $tempScore = '';
-            $rank = 0;
-            foreach ($scores as $key => $score) {
-                #说明两次的分数相等
-                if($tempScore != $score->score){
-                    $tempScore = $score->score;
-                    $rank += 1;
-                }
-                $score->class_rank = $rank;
-                if (!$score->save()) {
-                    return false;
+            foreach ($claStuIds as $claStuId) {
+                # 若该学生id没有对应的score则不会在结果数组中
+                $scores = Score::whereExamId($exam_id)
+                    ->whereSubjectId($sub)
+                    ->whereIn('student_id', $claStuId)
+                    ->whereEnabled(1)
+                    ->orderBy('score', 'desc')
+                    ->get();
+                #比较分数的临时变量 和排名值
+                $tempScore = '';
+                $rank = 0;
+                foreach ($scores as $key => $score) {
+                    #若两次分数不相等
+                    if ($tempScore != $score->score) {
+                        $tempScore = $score->score;
+                        $rank += 1;
+                    }
+                    $score->class_rank = $rank;
+                    if (!$score->save()) {
+                        return false;
+                    }
                 }
             }
             #年级排名
-            $scoresAll = Score::whereExamId($exam_id)
-                ->whereSubjectId($sub)
-                ->whereEnabled(1)
-                ->orderBy('score', 'desc')
-                ->get();
-            $gradeScore = '';
-            $gradeRank = 0;
-            foreach ($scoresAll as $key => $score) {
-                #说明两次的分数相等
-                if($gradeScore != $score->score){
-                    $gradeScore = $score->score;
-                    $gradeRank += 1;
-                }
-                $score->grade_rank = $gradeRank;
-                if (!$score->save()) {
-                    return false;
+            foreach ($graStuIds as $graStuId) {
+                $scoresAll = Score::whereExamId($exam_id)
+                    ->whereSubjectId($sub)
+                    ->whereIn('student_id', $graStuId)
+                    ->whereEnabled(1)
+                    ->orderBy('score', 'desc')
+                    ->get();
+                $gradeScore = '';
+                $gradeRank = 0;
+                foreach ($scoresAll as $key => $score) {
+                    if ($gradeScore != $score->score) {
+                        $gradeScore = $score->score;
+                        $gradeRank += 1;
+                    }
+                    $score->grade_rank = $gradeRank;
+                    if (!$score->save()) {
+                        return false;
+                    }
                 }
             }
         }
@@ -273,43 +291,45 @@ class Score extends Model {
         }
         #创建完成后执行排名操作
         #班级排名
-        $scoreTotalCla = ScoreTotal::whereEnabled(1)
-            ->whereExamId($exam_id)
-            ->whereIn('student_id', $claStuIds)
-            ->orderBy('score', 'desc')
-            ->get();
-        $toTmeScore = '';
-        $toTmeRank = 0;
-        foreach ($scoreTotalCla as $key => $scoreToal) {
-            #说明两次的分数相等
-            if($toTmeScore != $scoreToal->score){
-                $toTmeScore = $scoreToal->score;
-                $toTmeRank += 1;
-            }
-            $scoreToal->class_rank = $toTmeRank;
-            if (!$scoreToal->save()) {
-                return false;
+        foreach ($claStuIds as $claStuId) {
+            $scoreTotalCla = ScoreTotal::whereEnabled(1)
+                ->whereExamId($exam_id)
+                ->whereIn('student_id', $claStuId)
+                ->orderBy('score', 'desc')
+                ->get();
+            $toTmeScore = '';
+            $toTmeRank = 0;
+            foreach ($scoreTotalCla as $key => $scoreToal) {
+                if ($toTmeScore != $scoreToal->score) {
+                    $toTmeScore = $scoreToal->score;
+                    $toTmeRank += 1;
+                }
+                $scoreToal->class_rank = $toTmeRank;
+                if (!$scoreToal->save()) {
+                    return false;
+                }
             }
         }
         #年级排名
-        $scoreTotalCla = ScoreTotal::whereEnabled(1)
-            ->whereExamId($exam_id)
-            ->orderBy('score', 'desc')
-            ->get();
-        $toGraScore = '';
-        $toGraRank = 0;
-        foreach ($scoreTotalCla as $key => $scoreToal) {
-            #说明两次的分数相等
-            if($toGraScore != $scoreToal->score){
-                $toGraScore = $scoreToal->score;
-                $toGraRank += 1;
-            }
-            $scoreToal->grade_rank = $toGraRank;
-            if (!$scoreToal->save()) {
-                return false;
+        foreach ($graStuIds as $graStuId) {
+            $scoreTotalGra = ScoreTotal::whereEnabled(1)
+                ->whereExamId($exam_id)
+                ->whereIn('student_id', $graStuId)
+                ->orderBy('score', 'desc')
+                ->get();
+            $toGraScore = '';
+            $toGraRank = 0;
+            foreach ($scoreTotalGra as $key => $scoreToal) {
+                if ($toGraScore != $scoreToal->score) {
+                    $toGraScore = $scoreToal->score;
+                    $toGraRank += 1;
+                }
+                $scoreToal->grade_rank = $toGraRank;
+                if (!$scoreToal->save()) {
+                    return false;
+                }
             }
         }
-        
         return true;
     }
     
@@ -728,102 +748,214 @@ class Score extends Model {
     static public function analysis($input) {
         #分析班级成绩
         if ($input['type'] == 0) {
-            #第一个表格数据
-            $firstTableData = [];
-            #存放满足当前科目的分数段设置和统计人数的数组（第二个表格数据--一个数据一个表格）
-            $rangs = [];
-            #存放总分分数段设置和统计人数的数组
-            $scoreToRanges = [];
-            $exam = Exam::whereId($input['exam_id'])->first();
-            $squad = Squad::whereId($input['squad_id'])->first();
-            #找到考试对应的科目存到数组 ids
-            $examSub = explode(',', $exam->subject_ids);
-            #找到班级下面对应所有的学生 ids
-            $claStuIds = [];
-            foreach ($squad->students as $student) {
-                $claStuIds[] = $student->id;
+            $data = (new Score)->claAnalysis($input, false);
+            if ($data) {
+                return view('score.analysis_data', [
+                    'className'   => $data['className'],
+                    'examName'    => $data['examName'],
+                    'oneData'     => $data['oneData'],
+                    'rangs'       => $data['rangs'],
+                    'totalRanges' => $data['totalRanges'],
+                ])->render();
+            } else {
+                return false;
             }
-            #查出当前学校的所有分数段设置
-            $schoolId = School::schoolId();
-            $rangAll = ScoreRange::whereSchoolId($schoolId)->get();
-            foreach ($examSub as $sub) {
-                #一次处理一个科目  查出这个科目下 班级下所有学生的成绩
-                $subject = Subject::whereId($sub)->first();
-                # 若该学生id没有对应的score则不会在结果数组中
-                $scores = Score::whereExamId($exam->id)
-                    ->whereSubjectId($sub)
-                    ->whereIn('student_id', $claStuIds)
-                    ->whereEnabled(1)
-                    ->get();
-                if(count($scores) == 0){
-                    return false;
-                }
-                #参与考试的总人数
-                $countAll = $scores->count();
-                #该科目的最高分
-                $max = $scores->max('score');
-                #该科目的最低分
-                $min = $scores->min('score');
-                #该科目的平均分
-                $avg = $scores->average('score');
-                #大于等于平均分的人数
-                $bigNumber = Score::whereExamId($exam->id)
-                    ->whereSubjectId($sub)
-                    ->whereIn('student_id', $claStuIds)
-                    ->whereEnabled(1)
-                    ->where('score', '>=', $avg)
-                    ->count();
-                #小于平均分的人数
-                $minNumber = $countAll - $bigNumber;
-                $firstTableData[] = [
-                    'sub'        => $subject->name,
-                    'count'      => $countAll,
-                    'max'        => $max,
-                    'min'        => $min,
-                    'avg'        => $avg,
-                    'big_number' => $bigNumber,
-                    'min_number' => $minNumber,
+        }
+        
+        #分析学生
+        return false;
+    }
+    
+    public function getExamClass($examId, $classId) {
+        $student = $this->where('exam_id', $examId)
+            ->get()->pluck('student_id');
+        # 当前班级下的所有参加考试的学生
+        $students = Student::whereClassId($classId)->whereIn('id', $student)->get();
+        $result = [
+            'exam'  => Exam::whereId($examId)->first()->name,
+            'squad' => Squad::whereId($classId)->first()->name,
+            'items' => [],
+        ];
+        foreach ($students as $s) {
+            $total = ScoreTotal::whereExamId($examId)->where('student_id', $s->id)->first();
+            $scores = $this::whereExamId($examId)->where('student_id', $s->id)->get();
+            $detail = [];
+            foreach ($scores as $c) {
+                $detail[] = [
+                    'subject' => $c->subject->name,
+                    'score'   => $c->score,
                 ];
-                #处理单科分数段
-                foreach ($rangAll as $ran) {
-                    #筛选出针对于这一科的所有分数段设置
-                    if (in_array($sub, explode(',', $ran->subject_ids))) {
-                        $minRange = $ran->start_score;
-                        $maxRange = $ran->end_score;
-                        #需要判断科目满分是否与最大相等
-                        if ($subject->max_score == $maxRange) {
-                            $count = Score::whereEnabled(1)
-                                ->whereExamId($exam->id)
-                                ->whereIn('student_id', $claStuIds)
-                                ->whereSubjectId($sub)
-                                ->where('score', '>=', $minRange)
-                                ->where('score', '<=', $maxRange)
-                                ->count();
-                        } else {
-                            $count = Score::whereEnabled(1)
-                                ->whereExamId($exam->id)
-                                ->whereIn('student_id', $claStuIds)
-                                ->whereSubjectId($sub)
-                                ->where('score', '>=', $minRange)
-                                ->where('score', '<', $maxRange)
-                                ->count();
-                        }
-                        $rangs[$sub][] = [
-                            'range' =>
-                                [
-                                    'min' => $minRange,
-                                    'max' => $maxRange,
-                                ],
-                            'score' =>
-                                [
-                                    'sub'    => $subject->name,
-                                    'count'  => $countAll,
-                                    'number' => $count,
-                                ],
-                        ];
+            }
+            $result['items'][] = [
+                'student_id'     => $s->id,
+                'exam_id'        => $examId,
+                'realname'       => $s->user['realname'],
+                'student_number' => $s->student_number,
+//                'class_rank' => $total->class_rank,
+//                'grade_rank' => $total->grade_rank,
+                'class_rank'     => 3,
+                'grade_rank'     => 5,
+                'total'          => 623,
+//                'total' => $total->score,
+                'detail'         => $detail,
+            ];
+            unset($detail);
+        }
+        
+        return $result;
+    }
+    
+    public function getGraphData($studentId, $examId, $subjectId) {
+        $exam = Exam::whereId($examId)->first();
+        if ($subjectId == '-1') {
+            $exams = Exam::whereId($examId)->where('start_date', '<=', $exam->start_date)
+                ->orderBy('start_date', 'asc')
+                ->limit(10)
+                ->get();
+            $es = [];
+            $class_rank = [];
+            $grade_rank = [];
+            foreach ($exams as $e) {
+                $total = ScoreTotal::whereExamId($e->id)->where('student_id', $studentId)->first();
+                $es[] = $e->name;
+                $class_rank[] = $total->class_rank;
+                $grade_rank[] = $total->grade_rank;
+            }
+            
+        } else {
+            $es = [];
+            $class_rank = [];
+            $grade_rank = [];
+            $scores = DB::table('scores')
+                ->join('exams', 'exams.id', '=', 'scores.exam_id')
+//                ->select('users.id', 'contacts.phone', 'orders.price')
+                ->where('subject_id', $subjectId)
+                ->where('student_id', $studentId)
+                ->orderBy('exams.start_date', 'asc')
+                ->limit(10)
+                ->get();
+            foreach ($scores as $s) {
+                $es[] = $s->name;
+                $class_rank[] = $s->class_rank;
+                $grade_rank[] = $s->grade_rank;
+            }
+        }
+        $result = [
+            'exam'       => $es,
+            'class_rank' => $class_rank,
+            'grade_rank' => $grade_rank,
+        ];
+        
+        return $result;
+    }
+    
+    /**
+     * 班级成绩分析
+     *
+     * @param $input
+     * @param $wechat
+     * @return array|bool
+     */
+    public function claAnalysis($input, $wechat = false) {
+        #第一个表格数据
+        $firstTableData = [];
+        #存放满足当前科目的分数段设置和统计人数的数组（第二个表格数据--一个数据一个表格）
+        $rangs = [];
+        #存放总分分数段设置和统计人数的数组
+        $scoreToRanges = [];
+        $exam = Exam::whereId($input['exam_id'])->first();
+        $squad = Squad::whereId($input['squad_id'])->first();
+        #找到考试对应的科目存到数组 ids
+        $examSub = explode(',', $exam->subject_ids);
+        #找到班级下面对应所有的学生 ids
+        $claStuIds = [];
+        foreach ($squad->students as $student) {
+            $claStuIds[] = $student->id;
+        }
+        #查出当前学校的所有分数段设置
+        $grade = $squad->grade;
+        $schoolId = $grade->school_id;
+        $rangAll = ScoreRange::whereSchoolId($schoolId)->get();
+        foreach ($examSub as $sub) {
+            #一次处理一个科目  查出这个科目下 班级下所有学生的成绩
+            $subject = Subject::whereId($sub)->first();
+            # 若该学生id没有对应的score则不会在结果数组中
+            $scores = Score::whereExamId($exam->id)
+                ->whereSubjectId($sub)
+                ->whereIn('student_id', $claStuIds)
+                ->whereEnabled(1)
+                ->get();
+            if (count($scores) == 0) {
+                return false;
+            }
+            #参与考试的总人数
+            $countAll = $scores->count();
+            #该科目的最高分
+            $max = $scores->max('score');
+            #该科目的最低分
+            $min = $scores->min('score');
+            #该科目的平均分
+            $avg = $scores->average('score');
+            #大于等于平均分的人数
+            $bigNumber = Score::whereExamId($exam->id)
+                ->whereSubjectId($sub)
+                ->whereIn('student_id', $claStuIds)
+                ->whereEnabled(1)
+                ->where('score', '>=', $avg)
+                ->count();
+            #小于平均分的人数
+            $minNumber = $countAll - $bigNumber;
+            $firstTableData[] = [
+                'sub'        => $subject->name,
+                'count'      => $countAll,
+                'max'        => $max,
+                'min'        => $min,
+                'avg'        => number_format($avg, 2),
+                'big_number' => $bigNumber,
+                'min_number' => $minNumber,
+                'subId'      => $sub,
+            ];
+            #处理单科分数段
+            foreach ($rangAll as $ran) {
+                #筛选出针对于这一科的所有分数段设置
+                if (in_array($sub, explode(',', $ran->subject_ids))) {
+                    $minRange = $ran->start_score;
+                    $maxRange = $ran->end_score;
+                    #需要判断科目满分是否与最大相等
+                    if ($subject->max_score == $maxRange) {
+                        $count = Score::whereEnabled(1)
+                            ->whereExamId($exam->id)
+                            ->whereIn('student_id', $claStuIds)
+                            ->whereSubjectId($sub)
+                            ->where('score', '>=', $minRange)
+                            ->where('score', '<=', $maxRange)
+                            ->count();
+                    } else {
+                        $count = Score::whereEnabled(1)
+                            ->whereExamId($exam->id)
+                            ->whereIn('student_id', $claStuIds)
+                            ->whereSubjectId($sub)
+                            ->where('score', '>=', $minRange)
+                            ->where('score', '<', $maxRange)
+                            ->count();
                     }
+                    $rangs[$sub][] = [
+                        'range' =>
+                            [
+                                'min' => $minRange,
+                                'max' => $maxRange,
+                            ],
+                        'score' =>
+                            [
+                                'sub'    => $subject->name,
+                                'count'  => $countAll,
+                                'number' => $count,
+                            ],
+                    ];
                 }
             }
+        }
+        if (!$wechat) {
             #总分分数段
             $totalRanges = $rangAll->where('subject_ids', 0);
             #查询考试对应的总分 班级
@@ -851,99 +983,259 @@ class Score extends Model {
                     ],
                 ];
             }
-            $view = view('score.analysis_data', [
-                'className'   => $squad->name,
-                'examName'    => $exam->name,
-                'oneData'     => $firstTableData,
-                'rangs'       => $rangs,
-                'totalRanges' => $scoreToRanges,
-            ])->render();
-            
-            return $view ?? false;
-            
         }
-        return false;
-    }
-
-    public function getExamClass($examId, $classId) {
-        $student = $this->where('exam_id', $examId)
-            ->get()->pluck('student_id');
-        # 当前班级下的所有参加考试的学生
-        $students = Student::whereClassId($classId)->whereIn('id', $student)->get();
-        $result = [
-            'exam' => Exam::whereId($examId)->first()->name,
-            'squad' => Squad::whereId($classId)->first()->name,
-            'items' => [],
+        $data = [
+            'className'   => $exam->start_date,
+            'examName'    => $exam->name,
+            'oneData'     => $firstTableData,
+            'rangs'       => $rangs,
+            'totalRanges' => $scoreToRanges,
         ];
-        foreach ($students as $s) {
-            $total = ScoreTotal::whereExamId($examId)->where('student_id', $s->id)->first();
-            $scores = $this::whereExamId($examId)->where('student_id', $s->id)->get();
-            $detail = [];
-            foreach ($scores as $c) {
-                $detail[] = [
-                    'subject' => $c->subject->name,
-                    'score' => $c->score,
-                ];
+        
+        return $data;
+    }
+    
+    /**
+     * 微信 监护人端 综合成绩分析
+     * @param $input
+     * @return array|bool
+     */
+    public function totalAnalysis($input) {
+        #根据当前学生取的班级
+        $student = Student::whereId($input['student_id'])->first();
+        $squad = $student->squad;
+        #找到班级下面对应所有的学生 ids
+        $claStuIds = [];
+        $data['total'] = [];
+        $data['single'] = [];
+        foreach ($squad->students as $student) {
+            $claStuIds[] = $student->id;
+        }
+        #找到班级对应的年级
+        $grade = $squad->grade;
+        #找到年级下对应的所有的学生ids
+        $graStuIds = [];
+        foreach ($grade->classes as $class){
+            foreach ($class->students as $student){
+                $graStuIds[] = $student->id;
             }
-            $result['items'][] = [
-                'student_id' => $s->id,
-                'exam_id' => $examId,
-                'realname' => $s->user['realname'],
-                'student_number' => $s->student_number,
-//                'class_rank' => $total->class_rank,
-//                'grade_rank' => $total->grade_rank,
-                'class_rank' => 3,
-                'grade_rank' => 5,
-                'total' => 623,
-//                'total' => $total->score,
-                'detail' => $detail,
+        }
+        #获得当前考试当前学生的总分
+        $scoreTotal = ScoreTotal::whereExamId($input['exam_id'])
+            ->whereStudentId($input['student_id'])
+            ->first();
+        # 获取班级参与考试的所有记录
+        $scoreTotalCla = ScoreTotal::whereEnabled(1)
+            ->whereExamId($input['exam_id'])
+            ->whereIn('student_id', $claStuIds)
+            ->get();
+        # 获取年级参与考试的所有记录
+        $scoreTotalGra = ScoreTotal::whereEnabled(1)
+            ->whereExamId($input['exam_id'])
+            ->whereIn('student_id', $graStuIds)
+            ->get();
+        #总分平均分
+        $avgCla = $scoreTotalCla->average('score');
+        $avgGra = $scoreTotalGra->average('score');
+        if(!$scoreTotal){
+            $data['total'] = [
+                'total_score'       => '--',
+                'avgcla'      => number_format($avgCla, 1),
+                'avggra'      => number_format($avgGra, 1),
+                'class_rank'  => '--',
+                'grade_rank'  => '--',
+                'class_count' => '',
+                'grade_count' => ''
             ];
-            unset($detail);
+        }else {
+            $data['total'] = [
+                'total_score' => $scoreTotal->score,
+                'avgcla'      => number_format($avgCla, 1),
+                'avggra'      => number_format($avgGra, 1),
+                'class_rank'  => $scoreTotal->class_rank,
+                'grade_rank'  => $scoreTotal->grade_rank,
+                'class_count' => $scoreTotalCla->count(),
+                'grade_count' => $scoreTotalGra->count(),
+            ];
         }
-        return $result;
+        #获取本次考试的各科成绩当前学生
+        $scores = Score::whereEnabled(1)
+            ->whereExamId($input['exam_id'])
+            ->whereStudentId($input['student_id'])
+            ->get();
+        foreach ($scores as $score) {
+            #获取当前科目下的平均分
+            $scoreCla = Score::whereEnabled(1)
+                ->whereExamId($input['exam_id'])
+                ->whereIn('student_id', $claStuIds)
+                ->whereSubjectId($score->subject->id)
+                ->get();
+            $data['single'][] = [
+                'sub'   => $score->subject->name,
+                'score' => $score->score,
+                'avg' => number_format($scoreCla->average('score'),1)
+            ];
+            
+        }
+        return $data;
     }
 
-    public function getGraphData($studentId, $examId, $subjectId) {
-        $exam = Exam::whereId($examId)->first();
-        if ($subjectId == '-1') {
-            $exams = Exam::whereId($examId)->where('start_date', '<=', $exam->start_date)
-                ->orderBy('start_date', 'asc')
-                ->limit(10)
-                ->get();
-            $es = [];
-            $class_rank = [];
-            $grade_rank = [];
-            foreach ($exams as $e) {
-                $total = ScoreTotal::whereExamId($e->id)->where('student_id', $studentId)->first();
-                $es[] = $e->name;
-                $class_rank[] = $total->class_rank;
-                $grade_rank[] = $total->grade_rank;
-            }
+    /**
+     * 根据class_id获取考试的相关信息
+     * @param $id
+     * @return array
+     */
+    public function getClassScore($id){
+        $score = [];
+        $exams = Exam::where('class_ids','like','%' . $id . '%')
+            ->get();
+        foreach ($exams as $key=>$e)
+        {
+            $score[$key]['id'] = $e->id;
+            $score[$key]['name'] = $e->name;
+            $score[$key]['start_date'] = $e->start_date;
+            $score[$key]['class_id'] = $id;
+            $score[$key]['subject_ids'] = $e->subject_ids;
 
-        }else{
-            $es = [];
-            $class_rank = [];
-            $grade_rank = [];
-            $scores = DB::table('scores')
-                ->join('exams', 'exams.id', '=', 'scores.exam_id')
-//                ->select('users.id', 'contacts.phone', 'orders.price')
-                ->where('subject_id', $subjectId)
-                ->where('student_id', $studentId)
-                ->orderBy('exams.start_date', 'asc')
-                ->limit(10)
-                ->get();
-            foreach ($scores as $s) {
-                $es[] = $s->name;
-                $class_rank[] = $s->class_rank;
-                $grade_rank[] = $s->grade_rank;
-            }
         }
-        $result = [
-            'exam' => $es,
-            'class_rank' => $class_rank,
-            'grade_rank' => $grade_rank,
+        return $score;
+    }
+
+    /**
+     * 根据监护人获取学生相关考试信息
+     * @param $userId
+     * @return array
+     */
+    public function getStudentScore($userId)
+    {
+        $students = User::whereUserid($userId)->first()->custodian->students;
+        $score = $data = $studentName =[];
+        foreach ($students as $k=>$s)
+        {
+            $exams = Exam::where('class_ids','like','%' . $s->class_id . '%')
+                ->get();
+            foreach ($exams as $key=>$e)
+            {
+                $score[$k][$key]['id'] = $e->id;
+                $score[$k][$key]['student_id'] = $s->id;
+                $score[$k][$key]['name'] = $e->name;
+                $score[$k][$key]['start_date'] = $e->start_date;
+                $score[$k][$key]['realname'] = $s->user->realname;
+                $score[$k][$key]['class_id'] = $s->class_id;
+                $score[$k][$key]['subject_ids'] = $e->subject_ids;
+            }
+            $studentName[]= [
+                'title' => $s->user->realname,
+                'value' => $s->id,
+            ];
+        }
+        $data = [
+            'score' => $score,
+            'studentName' => $studentName
         ];
 
-        return $result;
+        return $data;
     }
+
+    /**根据教职员工userId获取所在班级的考试
+     * @param $userId
+     * @return array
+     */
+    public function getEducatorScore($userId)
+    {
+        $score = $data = $className = [];
+        $educatorId = User::whereUserid($userId)->first()->educator->id;
+        $class = Squad::where('educator_ids','like','%' . $educatorId . '%')->get();
+        foreach ($class as $k=>$c){
+            $exams = Exam::where('class_ids','like','%' . $c->id . '%')
+                ->get();
+            foreach ($exams as $key=>$e)
+            {
+                $score[$k][$key]['id'] = $e->id;
+                $score[$k][$key]['name'] = $e->name;
+                $score[$k][$key]['classname'] = $c->name;
+                $score[$k][$key]['start_date'] = $e->start_date;
+                $score[$k][$key]['class_id'] = $c->id;
+                $score[$k][$key]['subject_ids'] = $e->subject_ids;
+            }
+
+            $className[] = [
+                'title' => $c->name,
+                'value' => $c->id
+            ];
+        }
+        $data = [
+            'score' => $score,
+            'className' => $className,
+        ];
+
+        return $data;
+    }
+
+    /**获取学生某次考试在班上的平均分
+     * @param $examId
+     * @param $subjectId
+     * @param $studentsIds
+     * @return mixed
+     */
+    public function getClassAvg($examId, $subjectId, $studentsIds)
+    {
+        $data = [];
+        $scores = Score::whereExamId($examId)
+            ->whereIn('student_id',$studentsIds)
+            ->where('subject_id',$subjectId)
+            ->where('enabled',1)
+            ->get();
+        $avg = $scores->average('score');
+        $data = [
+            'avg' => $avg ,
+            'nums' => count($scores),
+        ];
+        return $data;
+    }
+
+    /**
+     * 查询学生具体考试科目的分数
+     * @param $examId
+     * @param $subjectId
+     * @param $studentId
+     * @return array|\Illuminate\Database\Eloquent\Model|null|static
+     */
+    public function getScores( $examId, $subjectId, $studentId)
+    {
+        $scores = [];
+        # 查询该学生本次考试成绩
+        $scores = Score::whereStudentId($studentId)
+            ->where('exam_id', $examId)
+            ->where('subject_id', $subjectId)
+            ->where('enabled', 1)
+            ->first();
+        $scores->examName = $scores->exam->name;
+        $scores->score = number_format($scores->score, 2);
+        return $scores;
+    }
+
+    /**
+     * 查询某学生某科目全部的考试分数
+     * @param $subjectId
+     * @param $studentId
+     * @return array|\Illuminate\Database\Eloquent\Collection|static[]
+     */
+    public function getAllScores($subjectId, $studentId)
+    {
+        $allScores = [];
+        $allScores = Score::whereStudentId($studentId)
+            ->where('subject_id',$subjectId)
+            ->where('enabled',1)
+            ->get();
+        foreach ($allScores as $a)
+        {
+            $a->score = number_format($a->score, 2);
+        }
+        return $allScores;
+    }
+
+
+
+
 }

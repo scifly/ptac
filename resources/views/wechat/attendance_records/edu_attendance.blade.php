@@ -77,33 +77,6 @@
 							{{--<div class="otherinfo">其他信息（打卡时间、请假理由等）</div>--}}
 						{{--</div>--}}
 					{{--</div>--}}
-					{{----}}
-					{{--<div class="list-item">--}}
-						{{--<div class="list-item-info">--}}
-							{{--<div class="username">姓名 : <span>张三</span></div>--}}
-							{{--<div class="parent">监护人 : <span>张三他爸</span></div>--}}
-							{{--<div class="mobile">手机 : <span>13111111111</span></div>--}}
-							{{--<div class="otherinfo">其他信息（打卡时间、请假理由等）</div>--}}
-						{{--</div>--}}
-					{{--</div>--}}
-					{{----}}
-					{{--<div class="list-item">--}}
-						{{--<div class="list-item-info">--}}
-							{{--<div class="username">姓名 : <span>张三</span></div>--}}
-							{{--<div class="parent">监护人 : <span>张三他爸</span></div>--}}
-							{{--<div class="mobile">手机 : <span>13111111111</span></div>--}}
-							{{--<div class="otherinfo">其他信息（打卡时间、请假理由等）</div>--}}
-						{{--</div>--}}
-					{{--</div>--}}
-					{{----}}
-					{{--<div class="list-item">--}}
-						{{--<div class="list-item-info">--}}
-							{{--<div class="username">姓名 : <span>张三</span></div>--}}
-							{{--<div class="parent">监护人 : <span>张三他爸</span></div>--}}
-							{{--<div class="mobile">手机 : <span>13111111111</span></div>--}}
-							{{--<div class="otherinfo">其他信息（打卡时间、请假理由等）</div>--}}
-						{{--</div>--}}
-					{{--</div>--}}
 				{{--</div>--}}
 	        </div>
       	</div>
