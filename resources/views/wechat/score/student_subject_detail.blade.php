@@ -183,21 +183,21 @@
 <div class="otherinfo">
     <div class="average">
         <div class="byclass">
-            <p>82.2</p>
+            <p>{{ $data['avg'] }}</p>
             <p class="subtitle">班平均</p>
         </div>
         <div class="byschool">
-            <p>-</p>
+            <p>{{ $data['gradeavg'] }}</p>
             <p class="subtitle">年平均</p>
         </div>
     </div>
     <div class="ranke">
         <div class="byclass">
-            <p>22/62</p>
+            <p>{{ $scores['class_rank'] }}/{{ $data['nums'] }}</p>
             <p class="subtitle">班排名</p>
         </div>
         <div class="byschool">
-            <p>-/-</p>
+            <p>{{ $scores['grade_rank'] }}/{{ $data['gradeNums'] }}</p>
             <p class="subtitle">年排名</p>
         </div>
     </div>
@@ -236,6 +236,7 @@
 <script src="{{URL::asset('js/plugins/echarts.common.min.js')}}"></script>
 <script>
     var subjects = $.parseJSON('{{$subjects}}'.replace(/&quot;/g,'"'));
+    var total = $.parseJSON('{{$total}}'.replace(/&quot;/g,'"'));
     //班级列表
     $("#subjests").select({
         title: "选择科目",
@@ -244,20 +245,23 @@
     var tmp = $("#subjests").attr('data-values');
 
     $("#subjests").on("change",function(){
-        var name = $(this).val();
-        if(tmp != name){
-            getdata();
-        }
+        var subject_id = $(this).attr('data-values');
+        $.ajax({
+            type: 'post',
+            dataType: ''
+        });
+        // if(tmp != name){
+        //     getdata();
+        // }
 
     })
     getdata();
     function getdata(){
         tmp = $("#subjests").val();
-        var test_name = ['考试1','考试2','考试3','考试4','考试1','考试2','考试3','考试4','考试1','考试2','考试3']
-        var myscore = ['84.0','83.5','33.0','33.0','85.0','33.0','33.0','85.0','33.0','33.0','85.0'];
-        var class_score = ['77.9','80.7','32.3','32.3','85.2','32.3','32.3','85.2','32.3','32.3','85.2'];
+        var test_name = total.name;
+        var myscore = total.score;
+        var class_score = total.avg;
         showtable(myscore,class_score,test_name);
-
     }
 
     function showtable(myscore,class_score,test_name){
