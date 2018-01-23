@@ -982,6 +982,8 @@ class Score extends Model {
         $squad = $student->squad;
         #找到班级下面对应所有的学生 ids
         $claStuIds = [];
+        $data['total'] = [];
+        $data['single'] = [];
         foreach ($squad->students as $student) {
             $claStuIds[] = $student->id;
         }
@@ -990,7 +992,7 @@ class Score extends Model {
             ->whereStudentId($input['student_id'])
             ->first();
         if (!$scoreTotal) {
-            return false;
+            return $data;
         }
         # 获取班级参与考试的所有记录
         $scoreTotalCla = ScoreTotal::whereEnabled(1)
@@ -1018,7 +1020,6 @@ class Score extends Model {
             ->whereExamId($input['exam_id'])
             ->whereStudentId($input['student_id'])
             ->get();
-        $data['single'] = [];
         foreach ($scores as $score) {
             #获取当前科目下的平均分
             $scoreCla = Score::whereEnabled(1)
