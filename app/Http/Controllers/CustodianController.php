@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CustodianRequest;
 use App\Models\Custodian;
-use App\Models\CustodianStudent;
 use App\Models\Department;
 use App\Models\School;
 use Exception;
@@ -114,7 +113,7 @@ class CustodianController extends Controller {
             }
         }
         $custodian = Custodian::find($id);
-        $pupils = CustodianStudent::whereCustodianId($id)->get();
+        $pupils = $custodian->students;
         return $this->output([
             'mobiles'   => $custodian->user->mobiles,
             'custodian' => $custodian,
