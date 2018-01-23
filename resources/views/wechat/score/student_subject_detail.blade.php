@@ -183,21 +183,21 @@
 <div class="otherinfo">
     <div class="average">
         <div class="byclass">
-            <p>82.2</p>
+            <p>{{ $data['avg'] }}</p>
             <p class="subtitle">班平均</p>
         </div>
         <div class="byschool">
-            <p>-</p>
+            <p>{{ $data['gradeavg'] }}</p>
             <p class="subtitle">年平均</p>
         </div>
     </div>
     <div class="ranke">
         <div class="byclass">
-            <p>22/62</p>
+            <p>{{ $scores['class_rank'] }}/{{ $data['nums'] }}</p>
             <p class="subtitle">班排名</p>
         </div>
         <div class="byschool">
-            <p>-/-</p>
+            <p>{{ $scores['grade_rank'] }}/{{ $data['gradeNums'] }}</p>
             <p class="subtitle">年排名</p>
         </div>
     </div>
@@ -217,7 +217,7 @@
         <i class="icon iconfont icon-document"></i>
         <p>单科</p>
     </a>
-    <a class="btnItem" href="allsubject.html">
+    <a class="btnItem" href='{{url("wechat/score/cus_total?examId=".$examId."&studentId=".$studentId)}}'>
         <i class="icon iconfont icon-renzheng7"></i>
         <p>综合</p>
     </a>
@@ -236,6 +236,9 @@
 <script src="{{URL::asset('js/plugins/echarts.common.min.js')}}"></script>
 <script>
     var subjects = $.parseJSON('{{$subjects}}'.replace(/&quot;/g,'"'));
+    var total = $.parseJSON('{{$total}}'.replace(/&quot;/g,'"'));
+    var examId = '{{$examId}}';
+    var studentId = '{{$studentId}}';
     //班级列表
     $("#subjests").select({
         title: "选择科目",
@@ -244,20 +247,70 @@
     var tmp = $("#subjests").attr('data-values');
 
     $("#subjests").on("change",function(){
-        var name = $(this).val();
-        if(tmp != name){
-            getdata();
-        }
+        var subject_id = $(this).attr('data-values');
+        $.ajax({
+            type: 'post',
+            dataType: 'json',
+            url: '../score/student_detail?examId='+ examId +'&studentId='+ studentId,
+            data: {subject_id : subject_id, _token: $('#csrf_token').attr('content')},
+            success: function ($data) {
+                var html= '';
+                if($data.scores.length !==0)
+                {
+                    var scores = $data.scores;
+                    $('.time .subtitle').html(scores.start_date.substring(0,7));
+                    $('.time .days').html(scores.start_date.substring(8,10)+'日');
+                    $('.test .testName').html(scores.examName);
+                    $('.header .score').html(scores.score);
+                }
+                if($data.data.length !==0){
+                    var score = $data.scores;
+                    var data = $data.data;
+                    html += '<div class="average">' +
+                        '<div class="byclass">' +
+                        '<p>'+ data.avg +'</p>' +
+                        '<p class="subtitle">班平均</p>' +
+                        '</div>'+
+                        '<div class="byschool">' +
+                        '<p>'+ data.gradeavg+'</p>' +
+                        '<p class="subtitle">年平均</p>' +
+                        '</div>' +
+                        '</div>' +
+                        '<div class="ranke">' +
+                        '<div class="byclass">' +
+                        '<p>'+ score.class_rank +'/'+ data.nums+'</p>' +
+                        '<p class="subtitle">班排名</p>' +
+                        '</div>' +
+                        '<div class="byschool">' +
+                        '<p>'+ score.grade_rank +'/'+ data.gradeNums+'</p>' +
+                        '<p class="subtitle">年排名</p>' +
+                        '</div>' +
+                        '</div>';
+                    $('.otherinfo').html(html);
+                }
+                if($data.total.length !==0){
+                    console.log($data.total);
+                    var total = $data.total;
+                    tmp = $("#subjests").val();
+                    var test_name = total.name;
+                    var myscore = total.score;
+                    var class_score = total.avg;
+                    showtable(myscore,class_score,test_name);
+                }
+            }
+        });
+        // if(tmp != name){
+        //     getdata();
+        // }
 
     })
     getdata();
     function getdata(){
         tmp = $("#subjests").val();
-        var test_name = ['考试1','考试2','考试3','考试4','考试1','考试2','考试3','考试4','考试1','考试2','考试3']
-        var myscore = ['84.0','83.5','33.0','33.0','85.0','33.0','33.0','85.0','33.0','33.0','85.0'];
-        var class_score = ['77.9','80.7','32.3','32.3','85.2','32.3','32.3','85.2','32.3','32.3','85.2'];
+        var test_name = total.name;
+        var myscore = total.score;
+        var class_score = total.avg;
         showtable(myscore,class_score,test_name);
-
     }
 
     function showtable(myscore,class_score,test_name){
