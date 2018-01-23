@@ -49,7 +49,7 @@ function getdata(data) {
                 //返回数据 渲染饼图
                 console.log(result);
                 getclasses(result.data.squadnames);
-                getrules(result.data.rulenames);
+                // getrules(result.data.rulenames);
                 showtable_pie(result.data.charts, ['打卡', '异常', '未打卡']);
                 $('.status-value').each(function (i) {
                     $(this).html(result.data.charts[i].value);
@@ -101,6 +101,20 @@ $('.kaoqin-tongji .open-popup').click(function () {
 //选择班级事件
 // function classchange() {
 //     $('#squad').change(function () {
-//         alert(2222222222222);
-//     })
+//        var squadId = $(this).attr('data-values');
+//        var token = {'_token': token};
+//        alert(squadId);
+//         $.ajax({
+//             type: 'GET',
+//             data: token,
+//             url: '../public/attendance_rules/' + squadId,
+//             success: function (result) {
+//                 if(result.statusCode === 200){
+//                     getrules(result.data);
+//                 } else {
+//                     getrules();
+//                 }
+//             }
+//         });
+//     });
 // }
