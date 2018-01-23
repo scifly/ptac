@@ -1185,6 +1185,48 @@ class Score extends Model {
         return $data;
     }
 
+    /**
+     * 查询学生具体考试科目的分数
+     * @param $examId
+     * @param $subjectId
+     * @param $studentId
+     * @return array|\Illuminate\Database\Eloquent\Model|null|static
+     */
+    public function getScores( $examId, $subjectId, $studentId)
+    {
+        $scores = [];
+        # 查询该学生本次考试成绩
+        $scores = Score::whereStudentId($studentId)
+            ->where('exam_id', $examId)
+            ->where('subject_id', $subjectId)
+            ->where('enabled', 1)
+            ->first();
+        $scores->examName = $scores->exam->name;
+        $scores->score = number_format($scores->score, 2);
+
+        return $scores;
+    }
+
+    /**
+     * 查询某学生某科目全部的考试分数
+     * @param $subjectId
+     * @param $studentId
+     * @return array|\Illuminate\Database\Eloquent\Collection|static[]
+     */
+    public function getAllScores($subjectId, $studentId)
+    {
+        $allScores = [];
+        $allScores = Score::whereStudentId($studentId)
+            ->where('subject_id',$subjectId)
+            ->where('enabled',1)
+            ->get();
+        foreach ($allScores as $a)
+        {
+            $a->score = number_format($a->score, 2);
+        }
+        return $allScores;
+    }
+
 
 
 
