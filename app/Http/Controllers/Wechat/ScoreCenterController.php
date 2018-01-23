@@ -276,15 +276,18 @@ class ScoreCenterController extends Controller {
      */
     public function analysis() {
         #需要判断当前访问者是否是教师
-        $input = Request::all();
-        $input['exam_id'] = 3;
-        $input['squad_id'] = 1;
+        $input['exam_id'] = Request::get('examId');
+        $input['squad_id'] = Request::get('classId');
         #需要返回给视图页面的数据
         $data = $this->score->claAnalysis($input, true);
         if (!$data){
             return '该班级暂未录入成绩！';
         }
-        return view('wechat.score.edu_analysis', ['data' => $data]);
+        return view('wechat.score.edu_analysis', [
+            'data' => $data,
+            'examId' => $input['exam_id'],
+            'classId' => $input['squad_id']
+            ]);
     }
     
     /**
@@ -310,6 +313,8 @@ class ScoreCenterController extends Controller {
             'data' => $data,
             'examName' => $examName,
             'examDate' => $examDate,
+            'studentId' => $input['student_id'],
+            'examId' => $input['exam_id']
             ]);
     }
 }
