@@ -117,7 +117,7 @@
                                         <input type="hidden" value="{{$pupil->student_id}}" name="student_ids[{{$key}}]"
                                                id="student_ids">
                                         <td></td>
-                                        <td>{{$pupil->student->student_number}}</td>
+                                        <td></td>
                                         <td>
                                             <input type="text" name="relationships[{{$key}}]" id="" readonly
                                                    class="no-border" style="background: none"
