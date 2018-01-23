@@ -65,8 +65,7 @@ class SemesterController extends Controller {
         
         $this->authorize('c', Semester::class);
         
-        return Semester::create($request->all());
-        
+        return $this->result(Semester::create($request->all()));
     }
    
     /**

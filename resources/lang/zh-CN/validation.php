@@ -87,6 +87,7 @@ return [
     'unique'               => ':attribute已经存在',
     'uploaded'             => ':attribute 上传失败',
     'url'                  => ':attribute 格式不正确',
+    'grade_id'             => ':attribute 必须的',
 
     /*
     |--------------------------------------------------------------------------
@@ -164,5 +165,6 @@ return [
         'selectedDepartments'   => '所属部门',
         'student_ids'           => '被监护人',
         'subject_ids'           => '科目',
+        'grade_id'              => '年级',
     ],
 ];
