@@ -568,7 +568,7 @@ class Student extends Model {
                     $student->card_number . "\t",
                     $student->oncampus == 1 ? '是' : '否',
                     $mobiles,
-                    substr($student->birthday, 0, -8),
+                    $student->birthday,
                     $student->created_at,
                     $student->updated_at,
                     $student->enabled == 1 ? '启用' : '禁用',
