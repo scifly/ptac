@@ -132,9 +132,21 @@ class UserController extends Controller {
     }
 
 
+    /**
+     * 更新用户
+     *
+     * @param UserRequest $request
+     * @param $id
+     * @return JsonResponse|string|void
+     */
+    public function update(UserRequest $request, $id){
+        $user = User::find($id);
+        if (!$user) { return $this->notFound(); }
 
-    public function update(UserRequest $request){
-        
+
+        return $this->result(
+            User::modify($request->all(), $id, false)
+        );
     }
 
     /**

@@ -8,10 +8,6 @@ if (typeof custodian === 'undefined') {
         .done(function() { custodian.init(item, type, ''); });
 } else { custodian.init(item, type, ''); }
 
-/**
- * 批量导入教职工
- * @type {Mixed|jQuery|HTMLElement}
- */
 var $import = $('#import');
 var $importEducator = $('#import-educator');
 var $file = $('#confirm-import');
@@ -36,7 +32,6 @@ $import.on('click', function () {
             error: function (result) {
                 console.log(result);
                 page.inform("操作失败",result.message, page.failure);
-
             }
         });
     })

@@ -65,7 +65,9 @@ class Action extends Model {
         'TestController',
         'HomeWorkController',
         'MessageCenterController',
-        'MobileSiteController'
+        'AttendanceController',
+        'MobileSiteController',
+        'ScoreCenterController'
     ];
     protected $routes;
     # 控制器相对路径

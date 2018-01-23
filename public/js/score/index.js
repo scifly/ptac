@@ -226,15 +226,25 @@ $statistics.on('click', function () {
     $('#confirm-statistics').off('click').click(function () {
         var $examSta = $('#exam-sta').val();
         var $data = {'_token': $token.attr('content')};
+        $('.overlay').show();
         $.ajax({
             type: 'GET',
             data: $data,
             url: '../scores/statistics/' + $examSta,
             success: function (result) {
+                $('.overlay').hide();
+                if(result.statusCode === 200){
+                    var $activeTabPane = $('#tab_' + page.getActiveTabId());
+                    page.getTabContent($activeTabPane, '/scores/index');
+                }
                 page.inform(
                     '操作结果', result.message,
                     result.statusCode === 200 ? page.success : page.failure
                 );
+            },
+            error: function (result) {
+                $('.overlay').hide();
+                page.inform("操作失败", result.message, page.failure);
             }
         });
     });

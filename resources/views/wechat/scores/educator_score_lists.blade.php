@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
     <meta name="csrf_token" content="{{ csrf_token() }}" id="csrf_token">
-    <title>学生考试列表</title>
+    <title>班级考试列表</title>
     <link rel="stylesheet" href="{{ URL::asset('css/weui.min.css') }}"/>
     <link rel="stylesheet" href="{{ URL::asset('css/jquery-weui.min.css') }}">
     <link rel="stylesheet" href="{{ URL::asset('css/wechat/icon/iconfont.css') }}">
@@ -98,90 +98,84 @@
 <body ontouchstart>
 
 <div class="multi-role">
-    <div class="header">
-        <div class="switchclass-item clearfix">
-            <div class="switchclass-head">
+    <div class="switchclass-item clearfix">
+        <div class="switchclass-head">
 
-                <div class="weui-cell">
-                    <div class="weui-cell__bd title-name">
-                        <input style="text-align: center;" id="studentList" class="weui-input" type="text"
-                               value="@if(!empty($scores)) {{$scores[0]['realname']}} @endif"
-                               readonly="" data-values="{{$scores[0]['student_id']}}">
-                    </div>
+            <div class="weui-cell">
+                <div class="weui-cell__bd title-name">
+                    <input style="text-align: center;" id="classlist" class="weui-input" type="text" value="@if(!empty($scores)) {{$scores[0]['classname']}} @endif"
+                           readonly="" data-values="{{$scores[0]['class_id']}}">
                 </div>
-
-                <!--<input class="title-name" id="classlist" type="text" value="一年级一班" readonly="" data-values="一年级一班">-->
             </div>
-        </div>
-        <div class="weui-search-bar" id="searchBar">
-            <form class="weui-search-bar__form" action="#">
-                <div class="weui-search-bar__box">
-                    <i class="weui-icon-search"></i>
-                    <input type="search" class="weui-search-bar__input" id="searchInput" placeholder="搜索" required="">
-                    <a href="javascript:" class="weui-icon-clear" id="searchClear"></a>
-                </div>
-                <label class="weui-search-bar__label" id="searchText" style="transform-origin: 0px 0px 0px; opacity: 1; transform: scale(1, 1);">
-                    <i class="weui-icon-search"></i>
-                    <span>搜索</span>
-                </label>
-            </form>
-            <a href="javascript:" class="weui-search-bar__cancel-btn" id="searchCancel">取消</a>
+
+            <!--<input class="title-name" id="classlist" type="text" value="一年级一班" readonly="" data-values="一年级一班">-->
         </div>
     </div>
+    <div class="weui-search-bar" id="searchBar">
+        <form class="weui-search-bar__form" action="#">
+            <div class="weui-search-bar__box">
+                <i class="weui-icon-search"></i>
+                <input type="search" class="weui-search-bar__input" id="searchInput" placeholder="搜索" required="">
+                <a href="javascript:" class="weui-icon-clear" id="searchClear"></a>
+            </div>
+            <label class="weui-search-bar__label" id="searchText" style="transform-origin: 0px 0px 0px; opacity: 1; transform: scale(1, 1);">
+                <i class="weui-icon-search"></i>
+                <span>搜索</span>
+            </label>
+        </form>
+        <a href="javascript:" class="weui-search-bar__cancel-btn" id="searchCancel">取消</a>
+    </div>
+
     <!--列表-->
     <div class="weui-cells" style="margin-top: 89px;">
         @foreach($scores as $s)
-        <a class="weui-cell weui-cell_access" href='{{ url("wechat/score/student_detail?examId=".$s['id']."&studentId=".$s['student_id']) }}'>
-            <div class="weui-cell__bd">
-                <p>{{ $s['name'] }}</p>
-            </div>
-            <div class="weui-cell__ft time">{{ $s['start_date'] }}</div>
-        </a>
+            <a class="weui-cell weui-cell_access" href='{{ url("detail/".$s['id']) }}'>
+                <div class="weui-cell__bd">
+                    <p>{{ $s['name'] }}</p>
+                </div>
+                <div class="weui-cell__ft time">{{ $s['start_date'] }}</div>
+            </a>
         @endforeach
-
     </div>
 
     <div class="loadmore">
         <span class="weui-loadmore__tips"><i class="icon iconfont icon-shuaxin"></i>加载更多 </span>
     </div>
-
 </div>
 
 <script src="{{URL::asset('js/jquery.min.js')}}"></script>
 <script src="{{URL::asset('js/fastclick.js')}}"></script>
-
 <script>
     $(function() {
         FastClick.attach(document.body);
     });
 </script>
-
 <script src="{{URL::asset('js/jquery-weui.min.js')}}"></script>
 <script>
-    var studentName = $.parseJSON('{{$studentName}}'.replace(/&quot;/g,'"'));
+    var className = $.parseJSON('{{$className}}'.replace(/&quot;/g,'"'));
+    var pageSize = '{{$pageSize}}';
     //班级列表
-    $("#studentList").select({
-        title: "选择学生",
-        items: studentName
+    $("#classlist").select({
+        title: "选择班级",
+        items: className
     });
 
-    $("#studentList").on('change',function () {
+    $("#classlist").on('change',function () {
         $('.loadmore').show();
-        var student_id = $(this).attr('data-values');
+        var class_id = $(this).attr('data-values');
         $.ajax({
             type: 'post',
             dataType: 'json',
             url: 'score_lists',
-            data: {student_id: student_id, _token: $('#csrf_token').attr('content')},
+            data: {class_id: class_id, _token: $('#csrf_token').attr('content')},
             success: function ($data) {
                 var html = '';
                 if($data.data.length !== 0)
                 {
-                    var studentId = $data.studentId;
                     for(var j=0 ; j< $data.data.length; j++)
                     {
                         var data = $data.data[j];
-                        html += '<a class="weui-cell weui-cell_access" href="wechat/score/student_detail?examId='+data.id+'&studentId='+studentId+'">' +
+                        html += '<a class="weui-cell weui-cell_access" href="detail">' +
                             '<div class="weui-cell__bd">' +
                             '<p>'+data.name +'</p>' +
                             '</div>' +
@@ -189,8 +183,6 @@
                             '</a>';
                     }
                     $('.weui-cells').html(html);
-                }else{
-                    $('.loadmore').hide();
                 }
             }
         });
@@ -204,29 +196,29 @@
     });
 
     function loadmore() {
-        var student_id = $('input').attr('data-values');
+        var class_id = $('input').attr('data-values');
         $.ajax({
             type: 'post',
             dataType: 'json',
             url: 'score_lists',
-            data: {start: start,student_id:student_id, _token: $('#csrf_token').attr('content')},
+            data: {start: start, class_id: class_id, _token: $('#csrf_token').attr('content')},
             success: function ($data) {
                 var html = '';
                 if($data.data.length !== 0)
                 {
-                    var studentId = $data.studentId;
                     for(var i=0; i< $data.data.length;i++)
                     {
                         var score = $data.data[i];
-                         html += '<a class="weui-cell weui-cell_access" href="wechat/score/student_detail?examId='+score.id+'&studentId='+studentId+'">' +
-                                '<div class="weui-cell__bd">' +
-                                '<p>'+score.name +'</p>' +
-                                '</div>' +
-                                '<div class="weui-cell__ft time">'+ score.start_date+'</div>' +
-                                '</a>';
+                        html += '<a class="weui-cell weui-cell_access" href="count.html">' +
+                            '<div class="weui-cell__bd">' +
+                            '<p>'+score.name +'</p>' +
+                            '</div>' +
+                            '<div class="weui-cell__ft time">'+ score.start_date+'</div>' +
+                            '</a>';
                     }
                     $('.weui-cells').append(html);
                 }else{
+
                     $('.loadmore').hide();
                 }
             }
