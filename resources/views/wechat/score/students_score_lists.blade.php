@@ -106,7 +106,7 @@
                     <div class="weui-cell__bd title-name">
                         <input style="text-align: center;" id="studentList" class="weui-input" type="text"
                                value="@if(!empty($scores)) {{$scores[0]['realname']}} @else {{ null }}@endif"
-                               readonly="" data-values=""@if(!empty($scores)) {{$scores[0]['student_id']}} @else {{ null }}@endif">
+                               readonly="" data-values="@if(!empty($scores)) {{$scores[0]['student_id']}} @else {{ null }}@endif">
                     </div>
                 </div>
 
@@ -174,7 +174,7 @@
         $.ajax({
             type: 'post',
             dataType: 'json',
-            url: 'score_lists',
+            url: '../score/score_lists',
             data: {student_id: student_id, _token: $('#csrf_token').attr('content')},
             success: function ($data) {
                 var html = '';
@@ -211,7 +211,7 @@
         $.ajax({
             type: 'post',
             dataType: 'json',
-            url: 'score_lists',
+            url: '../score/score_lists',
             data: {start: start,student_id:student_id, _token: $('#csrf_token').attr('content')},
             success: function ($data) {
                 var html = '';

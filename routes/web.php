@@ -314,7 +314,7 @@ Route::post('attendance_charts', 'Wechat\AttendanceController@stuChart');
 Route::get('attendance_rules/{id}', 'Wechat\AttendanceController@getRules');
 Route::get('attendance_date', 'Wechat\AttendanceController@dateRules');
 // 成绩中心
-Route::any('score_lists', 'Wechat\ScoreCenterController@index');
+Route::any('wechat/score/score_lists', 'Wechat\ScoreCenterController@index');
 Route::get('wechat/score/detail', 'Wechat\ScoreCenterController@detail');
 Route::get('wechat/score/student_detail', 'Wechat\ScoreCenterController@subjectDetail');
 Route::post('wechat/score/student_detail', 'Wechat\ScoreCenterController@subjectDetail');

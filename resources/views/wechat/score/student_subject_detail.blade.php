@@ -160,8 +160,13 @@
 <div class="header">
     <div class="info">
         <div class="time">
+            @if( sizeof($scores) !== 0)
             <div class="subtitle">{{ substr($scores['start_date'],0,7) }}</div>
             <div class="days">{{ substr($scores['start_date'],8,10) }}日</div>
+                @else
+                <div class="subtitle">--</div>
+                <div class="days">--日</div>
+            @endif
         </div>
         <div class="subject">
             <div class="subtitle">科目</div>
@@ -176,18 +181,22 @@
         </div>
     </div>
     <div class="score">
-        {{$scores['score']}}
+        @if( sizeof($scores) !== 0)
+            {{$scores['score']}}
+        @else
+            --
+        @endif
     </div>
 </div>
 
 <div class="otherinfo">
     <div class="average">
         <div class="byclass">
-            <p>{{ $data['avg'] }}</p>
+            <p>@if( sizeof($data) !== 0){{ $data['avg'] }}@else -- @endif</p>
             <p class="subtitle">班平均</p>
         </div>
         <div class="byschool">
-            <p>{{ $data['gradeavg'] }}</p>
+            <p>@if( sizeof($data) !== 0){{ $data['gradeavg'] }}@else -- @endif</p>
             <p class="subtitle">年平均</p>
         </div>
     </div>
