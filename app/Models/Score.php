@@ -572,11 +572,12 @@ class Score extends Model {
         return $result;
         
     }
-
+    
     /**
      * @param UploadedFile $file
      * @param $input
      * @return array
+     * @throws \PHPExcel_Exception
      */
     static function upload(UploadedFile $file, $input) {
         
