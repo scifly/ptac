@@ -105,8 +105,8 @@
                 <div class="weui-cell">
                     <div class="weui-cell__bd title-name">
                         <input style="text-align: center;" id="studentList" class="weui-input" type="text"
-                               value="@if(!empty($scores)) {{$scores[0]['realname']}} @endif"
-                               readonly="" data-values="{{$scores[0]['student_id']}}">
+                               value="@if(!empty($scores)) {{$scores[0]['realname']}} @else {{ null }}@endif"
+                               readonly="" data-values=""@if(!empty($scores)) {{$scores[0]['student_id']}} @else {{ null }}@endif">
                     </div>
                 </div>
 
@@ -130,6 +130,7 @@
     </div>
     <!--列表-->
     <div class="weui-cells" style="margin-top: 89px;">
+        @if( sizeof($scores)!==0)
         @foreach($scores as $s)
         <a class="weui-cell weui-cell_access" href='{{ url("wechat/score/student_detail?examId=".$s['id']."&studentId=".$s['student_id']) }}'>
             <div class="weui-cell__bd">
@@ -138,9 +139,11 @@
             <div class="weui-cell__ft time">{{ $s['start_date'] }}</div>
         </a>
         @endforeach
+            @else
+            暂无数据
+       @endif
 
     </div>
-
     <div class="loadmore">
         <span class="weui-loadmore__tips"><i class="icon iconfont icon-shuaxin"></i>加载更多 </span>
     </div>
