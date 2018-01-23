@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\Controllers\Wechat;
 
-use App\Facades\Wechat;
 use App\Http\Controllers\Controller;
 use App\Models\Semester;
 use App\Models\Squad;
@@ -120,7 +119,7 @@ class AttendanceController extends Controller {
         $endTime = date('Y-m-d', strtotime("$beginTime +1 month -1 day"));
         $endTime = $endTime . ' 23:59:59';
         # 当天时间
-        $time = date('Y-m-d',time());
+        $time = date('Y-m-d', time());
         // $time = '2018-01-08';
         $into = $out = [];
         $into = StudentAttendance::whereDate('punch_time', $time)
@@ -284,79 +283,78 @@ class AttendanceController extends Controller {
         #处理列表页
         //正常的学生列表
         $normalList = [];
-        foreach ($attendances->where('status', 1) as $normal){
+        foreach ($attendances->where('status', 1) as $normal) {
             $student = $normal->student;
             $username = $student->user->realname;
             #对应的监护人
             $cusName = [];
             $cusPhone = [];
             $custodians = $student->custodians;
-            foreach ($custodians as $custodian){
+            foreach ($custodians as $custodian) {
                 $cusName[] = $custodian->user->realname;
-                foreach ($custodian->user->mobiles as $mobile){
+                foreach ($custodian->user->mobiles as $mobile) {
                     $cusPhone[] = $mobile->mobile;
                 }
             }
             $normalList[] = [
-                'username' => $username,
-                'cusname' => $cusName,
-                'cusphone' => $cusPhone,
-                'punch_time' => $normal->punch_time
+                'username'   => $username,
+                'cusname'    => $cusName,
+                'cusphone'   => $cusPhone,
+                'punch_time' => $normal->punch_time,
             ];
-        
+            
         }
         //异常的学生列表
         $abnormalList = [];
-        foreach ($attendances->where('status', 0) as $normal){
+        foreach ($attendances->where('status', 0) as $normal) {
             $student = $normal->student;
             $username = $student->user->realname;
             #对应的监护人
             $cusName = [];
             $cusPhone = [];
             $custodians = $student->custodians;
-            foreach ($custodians as $custodian){
+            foreach ($custodians as $custodian) {
                 $cusName[] = $custodian->user->realname;
-                foreach ($custodian->user->mobiles as $mobile){
+                foreach ($custodian->user->mobiles as $mobile) {
                     $cusPhone[] = $mobile->mobile;
                 }
             }
             $abnormalList[] = [
-                'username' => $username,
-                'cusname' => $cusName,
-                'cusphone' => $cusPhone,
-                'punch_time' => $normal->punch_time
+                'username'   => $username,
+                'cusname'    => $cusName,
+                'cusphone'   => $cusPhone,
+                'punch_time' => $normal->punch_time,
             ];
         }
         //未打卡的学生列表
         $ids = [];
         $noStuList = [];
-        foreach ($attendances as $attend){
+        foreach ($attendances as $attend) {
             $ids[] = $attend->student_id;
         }
         $stuIds = array_diff($studentIds, $ids);
         $stues = Student::whereIn('id', $stuIds)->get();
-        foreach ($stues as $s){
+        foreach ($stues as $s) {
             $username = $s->user->realname;
             $custodians = $s->custodians;
             $cusName = [];
             $cusPhone = [];
-            foreach ($custodians as $custodian){
+            foreach ($custodians as $custodian) {
                 $cusName[] = $custodian->user->realname;
-                foreach ($custodian->user->mobiles as $mobile){
+                foreach ($custodian->user->mobiles as $mobile) {
                     $cusPhone[] = $mobile->mobile;
                 }
             }
             $noStuList[] = [
                 'username' => $username,
-                'cusname' => $cusName,
+                'cusname'  => $cusName,
                 'cusphone' => $cusPhone,
             ];
         }
-       
-        $data['view'] = view('wechat.attendance_records.edu_lists',[
-            'normallist' => $normalList,
+        $data['view'] = view('wechat.attendance_records.edu_lists', [
+            'normallist'   => $normalList,
             'abnormallist' => $abnormalList,
-            'nostulist' => $noStuList
+            'nostulist'    => $noStuList,
         ])->render();
         
         return response()->json(['data' => $data, 'statusCode' => 200]);
@@ -394,86 +392,100 @@ class AttendanceController extends Controller {
             ['name' => '异常', 'value' => $abnormalRecords],
             ['name' => '未打卡', 'value' => $noRecords],
         ];
-        
         #处理列表页
         //正常的学生列表
         $normalList = [];
-        foreach ($attendances->where('status', 1) as $normal){
+        foreach ($attendances->where('status', 1) as $normal) {
             $student = $normal->student;
             $username = $student->user->realname;
             #对应的监护人
             $cusName = [];
             $cusPhone = [];
             $custodians = $student->custodians;
-            foreach ($custodians as $custodian){
+            foreach ($custodians as $custodian) {
                 $cusName[] = $custodian->user->realname;
-                foreach ($custodian->user->mobiles as $mobile){
+                foreach ($custodian->user->mobiles as $mobile) {
                     $cusPhone[] = $mobile->mobile;
                 }
             }
             $normalList[] = [
-                'username' => $username,
-                'cusname' => $cusName,
-                'cusphone' => $cusPhone,
-                'punch_time' => $normal->punch_time
+                'username'   => $username,
+                'cusname'    => $cusName,
+                'cusphone'   => $cusPhone,
+                'punch_time' => $normal->punch_time,
             ];
             
         }
         //异常的学生列表
         $abnormalList = [];
-        foreach ($attendances->where('status', 0) as $normal){
+        foreach ($attendances->where('status', 0) as $normal) {
             $student = $normal->student;
             $username = $student->user->realname;
             #对应的监护人
             $cusName = [];
             $cusPhone = [];
             $custodians = $student->custodians;
-            foreach ($custodians as $custodian){
+            foreach ($custodians as $custodian) {
                 $cusName[] = $custodian->user->realname;
-                foreach ($custodian->user->mobiles as $mobile){
+                foreach ($custodian->user->mobiles as $mobile) {
                     $cusPhone[] = $mobile->mobile;
                 }
             }
             $abnormalList[] = [
-                'username' => $username,
-                'cusname' => $cusName,
-                'cusphone' => $cusPhone,
-                'punch_time' => $normal->punch_time
+                'username'   => $username,
+                'cusname'    => $cusName,
+                'cusphone'   => $cusPhone,
+                'punch_time' => $normal->punch_time,
             ];
         }
         //未打卡的学生列表
         $ids = [];
         $noStuList = [];
-        foreach ($attendances as $attend){
+        foreach ($attendances as $attend) {
             $ids[] = $attend->student_id;
         }
         $stuIds = array_diff($studentIds, $ids);
         $stues = Student::whereIn('id', $stuIds)->get();
-        foreach ($stues as $s){
+        foreach ($stues as $s) {
             $username = $s->user->realname;
             $custodians = $s->custodians;
             $cusName = [];
             $cusPhone = [];
-            foreach ($custodians as $custodian){
+            foreach ($custodians as $custodian) {
                 $cusName[] = $custodian->user->realname;
-                foreach ($custodian->user->mobiles as $mobile){
+                foreach ($custodian->user->mobiles as $mobile) {
                     $cusPhone[] = $mobile->mobile;
                 }
             }
             $noStuList[] = [
                 'username' => $username,
-                'cusname' => $cusName,
+                'cusname'  => $cusName,
                 'cusphone' => $cusPhone,
             ];
         }
-        
-        $data['view'] = view('wechat.attendance_records.edu_lists',[
-            'normallist' => $normalList,
+        $data['view'] = view('wechat.attendance_records.edu_lists', [
+            'normallist'   => $normalList,
             'abnormallist' => $abnormalList,
-            'nostulist' => $noStuList
+            'nostulist'    => $noStuList,
         ])->render();
-
-        return response()->json(['data' => $data,  'statusCode' => 200]);
+        
+        return response()->json(['data' => $data, 'statusCode' => 200]);
     }
-
+    
+    /**
+     * 根据年级返回对应的规则
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getRules($id) {
+        #当前年级所有考勤规则，不分学期
+        $rules = StudentAttendanceSetting::whereGradeId($id)->get();
+        $data = [];
+        foreach ($rules as $r) {
+            $data[] = [
+                'title' => $r->name, 'value' => $r->id
+            ];
+        }
+        return response()->json(['data' => $data, 'statusCode' => 200]);
+    }
 }
