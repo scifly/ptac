@@ -1024,9 +1024,6 @@ class Score extends Model {
         $scoreTotal = ScoreTotal::whereExamId($input['exam_id'])
             ->whereStudentId($input['student_id'])
             ->first();
-        if (!$scoreTotal) {
-            return $data;
-        }
         # 获取班级参与考试的所有记录
         $scoreTotalCla = ScoreTotal::whereEnabled(1)
             ->whereExamId($input['exam_id'])
@@ -1040,15 +1037,27 @@ class Score extends Model {
         #总分平均分
         $avgCla = $scoreTotalCla->average('score');
         $avgGra = $scoreTotalGra->average('score');
-        $data['total'] = [
-            'total_score'       => $scoreTotal->score,
-            'avgcla'      => number_format($avgCla, 1),
-            'avggra'      => number_format($avgGra, 1),
-            'class_rank'  => $scoreTotal->class_rank,
-            'grade_rank'  => $scoreTotal->grade_rank,
-            'class_count' => $scoreTotalCla->count(),
-            'grade_count' => $scoreTotalGra->count(),
-        ];
+        if(!$scoreTotal){
+            $data['total'] = [
+                'total_score'       => '--',
+                'avgcla'      => number_format($avgCla, 1),
+                'avggra'      => number_format($avgGra, 1),
+                'class_rank'  => '--',
+                'grade_rank'  => '--',
+                'class_count' => '',
+                'grade_count' => ''
+            ];
+        }else {
+            $data['total'] = [
+                'total_score' => $scoreTotal->score,
+                'avgcla'      => number_format($avgCla, 1),
+                'avggra'      => number_format($avgGra, 1),
+                'class_rank'  => $scoreTotal->class_rank,
+                'grade_rank'  => $scoreTotal->grade_rank,
+                'class_count' => $scoreTotalCla->count(),
+                'grade_count' => $scoreTotalGra->count(),
+            ];
+        }
         #获取本次考试的各科成绩当前学生
         $scores = Score::whereEnabled(1)
             ->whereExamId($input['exam_id'])
