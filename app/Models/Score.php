@@ -1035,5 +1035,122 @@ class Score extends Model {
         }
         return $data;
     }
-    
+
+    /**
+     * 根据class_id获取考试的相关信息
+     * @param $id
+     * @return array
+     */
+    public function getClassScore($id){
+        $score = [];
+        $exams = Exam::where('class_ids','like','%' . $id . '%')
+            ->get();
+        foreach ($exams as $key=>$e)
+        {
+            $score[$key]['id'] = $e->id;
+            $score[$key]['name'] = $e->name;
+            $score[$key]['start_date'] = $e->start_date;
+            $score[$key]['class_id'] = $id;
+            $score[$key]['subject_ids'] = $e->subject_ids;
+
+        }
+        return $score;
+    }
+
+    /**
+     * 根据监护人获取学生相关考试信息
+     * @param $userId
+     * @return array
+     */
+    public function getStudentScore($userId)
+    {
+        $students = User::whereUserid($userId)->first()->custodian->students;
+        $score = $data = $studentName =[];
+        foreach ($students as $k=>$s)
+        {
+            $exams = Exam::where('class_ids','like','%' . $s->class_id . '%')
+                ->get();
+            foreach ($exams as $key=>$e)
+            {
+                $score[$k][$key]['id'] = $e->id;
+                $score[$k][$key]['student_id'] = $s->id;
+                $score[$k][$key]['name'] = $e->name;
+                $score[$k][$key]['start_date'] = $e->start_date;
+                $score[$k][$key]['realname'] = $s->user->realname;
+                $score[$k][$key]['class_id'] = $s->class_id;
+                $score[$k][$key]['subject_ids'] = $e->subject_ids;
+            }
+            $studentName[]= [
+                'title' => $s->user->realname,
+                'value' => $s->id,
+            ];
+        }
+        $data = [
+            'score' => $score,
+            'studentName' => $studentName
+        ];
+
+        return $data;
+    }
+
+    /**根据教职员工userId获取所在班级的考试
+     * @param $userId
+     * @return array
+     */
+    public function getEducatorScore($userId)
+    {
+        $score = $data = $className = [];
+        $educatorId = User::whereUserid($userId)->first()->educator->id;
+        $class = Squad::where('educator_ids','like','%' . $educatorId . '%')->get();
+        foreach ($class as $k=>$c){
+            $exams = Exam::where('class_ids','like','%' . $c->id . '%')
+                ->get();
+            foreach ($exams as $key=>$e)
+            {
+                $score[$k][$key]['id'] = $e->id;
+                $score[$k][$key]['name'] = $e->name;
+                $score[$k][$key]['classname'] = $c->name;
+                $score[$k][$key]['start_date'] = $e->start_date;
+                $score[$k][$key]['class_id'] = $c->id;
+                $score[$k][$key]['subject_ids'] = $e->subject_ids;
+            }
+
+            $className[] = [
+                'title' => $c->name,
+                'value' => $c->id
+            ];
+        }
+        $data = [
+            'score' => $score,
+            'className' => $className,
+        ];
+
+        return $data;
+    }
+
+    /**获取学生某次考试在班上的平均分
+     * @param $examId
+     * @param $subjectId
+     * @param $studentsIds
+     * @return mixed
+     */
+    public function getClassAvg($examId, $subjectId, $studentsIds)
+    {
+        $data = [];
+        $scores = Score::whereExamId($examId)
+            ->whereIn('student_id',$studentsIds)
+            ->where('subject_id',$subjectId)
+            ->where('enabled',1)
+            ->get();
+        $avg = $scores->average('score');
+        $data = [
+            'avg' => $avg ,
+            'nums' => count($scores),
+        ];
+        return $data;
+    }
+
+
+
+
 }
