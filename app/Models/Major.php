@@ -182,7 +182,7 @@ class Major extends Model {
             ['db' => 'Major.remark', 'dt' => 3],
             ['db' => 'Major.created_at', 'dt' => 4],
             [
-                'db' => 'Major.updated_at', 'dt' => 5,
+                'db' => 'Major.enabled', 'dt' => 5,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($d, $row, false);
                 },
