@@ -312,6 +312,7 @@ Route::get('attendance_records/{id}', 'Wechat\AttendanceController@records');
 Route::post('attendance_records/{id?}', 'Wechat\AttendanceController@records');
 Route::post('attendance_charts', 'Wechat\AttendanceController@stuChart');
 Route::get('attendance_rules/{id}', 'Wechat\AttendanceController@getRules');
+Route::get('attendance_date', 'Wechat\AttendanceController@dateRules');
 // 成绩中心
 Route::get('score_lists', 'Wechat\ScoreCenterController@index');
 Route::post('score_lists', 'Wechat\ScoreCenterController@index');

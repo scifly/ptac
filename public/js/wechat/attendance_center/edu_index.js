@@ -1,4 +1,4 @@
-$("#my-date").calendar();
+$("#my-date").calendar({value:[]});
 var token = $('#csrf_token').attr('content');
 var data = {'_token': token};
 $('#choose .close-popup').on('click', function () {
@@ -20,6 +20,7 @@ $('#choose .close-popup').on('click', function () {
     var data = {'_token': token, 'squad': squad, 'rule': rule, 'date': date};
     getdata(data);
 });
+
 //班级列表
 function getclasses(squads) {
     $("#squad").select({
@@ -28,15 +29,19 @@ function getclasses(squads) {
     });
     classchange();
 }
+
 //规则列表
 function getrules(rules) {
     $("#rule").select({
         title: "选择规则",
         items: rules
     });
+    ruleschange();
 }
+
 //默认显示当天饼图数据
 getdata(data);
+
 function getdata(data) {
 
     $.ajax({
@@ -49,13 +54,13 @@ function getdata(data) {
                 //返回数据 渲染饼图
                 console.log(result);
                 getclasses(result.data.squadnames);
-                // getrules(result.data.rulenames);
+                getrules(result.data.rulenames);
                 showtable_pie(result.data.charts, ['打卡', '异常', '未打卡']);
                 $('.status-value').each(function (i) {
                     $(this).html(result.data.charts[i].value);
                 });
-                    $('.modal-content').html(result.data.view);
-                }
+                $('.modal-content').html(result.data.view);
+            }
         }
     });
 }
@@ -92,6 +97,7 @@ function showtable_pie(arrayTime, legendData) {
     };
     myChart.setOption(option);
 }
+
 $('.kaoqin-tongji .open-popup').click(function () {
     var type = $(this).attr('data-type');
     $('.modal-content .list').hide();
@@ -99,22 +105,59 @@ $('.kaoqin-tongji .open-popup').click(function () {
 });
 
 //选择班级事件
-// function classchange() {
-//     $('#squad').change(function () {
-//        var squadId = $(this).attr('data-values');
-//        var token = {'_token': token};
-//        alert(squadId);
-//         $.ajax({
-//             type: 'GET',
-//             data: token,
-//             url: '../public/attendance_rules/' + squadId,
-//             success: function (result) {
-//                 if(result.statusCode === 200){
-//                     getrules(result.data);
-//                 } else {
-//                     getrules();
-//                 }
-//             }
-//         });
-//     });
-// }
+function classchange() {
+    $('#squad').change(function () {
+        var squadId = $(this).attr('data-values');
+        var $rule = $('#rule');
+        $.ajax({
+            type: 'GET',
+            data: token,
+            url: '../public/attendance_rules/' + squadId,
+            success: function (result) {
+                if (result.statusCode === 200) {
+                    $rule.select("update", {items: result.data});
+                } else {
+                    $.alert(result.data);
+                    $rule.select("update", {items: [{}]});
+                }
+            }
+        });
+    });
+}
+
+datechange();
+// ruleschange();
+//选择规则事件
+function ruleschange() {
+    $('#rule').change(function () {
+        var grade = $('#squad').attr('data-values');
+        if (!grade){
+            $.alert('请先选择班级');
+            $(this).val('');
+        }
+        date_rule();
+    });
+}
+
+//选择日期事件
+function datechange() {
+    $('#my-date').change(function () {
+        date_rule();
+    });
+}
+
+function date_rule() {
+    var $date = $('#my-date').val();
+    var $rule = $('#rule').attr('data-values');
+    var $data = {'_token': token, 'date': $date, 'rule': $rule};
+    $.ajax({
+        type: 'GET',
+        data: $data,
+        url: '../public/attendance_date',
+        success: function (result) {
+            if (result.statusCode !== 200) {
+                $.alert(result.message);
+            }
+        }
+    });
+}

@@ -486,6 +486,25 @@ class AttendanceController extends Controller {
                 'title' => $r->name, 'value' => $r->id
             ];
         }
+        if (empty($data)) {
+            return response()->json(['data' => '该年级下未设置考勤规则！', 'statusCode' => 500]);
+        }
         return response()->json(['data' => $data, 'statusCode' => 200]);
+    }
+    
+    /**
+     * 判断日期和规则是否匹配
+     */
+    public function dateRules(){
+        $input = Request::all();
+        if($input['date'] != null && $input['rule'] != null){
+            #获取规则的星期
+            $ruleDay = StudentAttendanceSetting::whereId($input['rule'])->first()->day;
+            $weekArray = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+            $weekDay = $weekArray[date("w", strtotime($input['date']))];
+            return $ruleDay == $weekDay ? response()->json(['message' => '', 'statusCode' => 200]) :
+            response()->json(['message' => '请选择和规则对应的星期！', 'statusCode' => 500]);
+        }
+        return response()->json(['message' => '', 'statusCode' => 200]);
     }
 }
