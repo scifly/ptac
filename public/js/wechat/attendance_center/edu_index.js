@@ -129,9 +129,7 @@ function classchange() {
         });
     });
 }
-
 datechange();
-// ruleschange();
 //选择规则事件
 function ruleschange() {
     $('#rule').change(function () {
@@ -143,14 +141,12 @@ function ruleschange() {
         date_rule();
     });
 }
-
 //选择日期事件
 function datechange() {
     $('#my-date').change(function () {
         date_rule();
     });
 }
-
 function date_rule() {
     var $date = $('#my-date').val();
     var $rule = $('#rule').attr('data-values');

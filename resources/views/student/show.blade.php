@@ -84,7 +84,7 @@
             <div class="maininfo">
                 <h3 class="profile-username">姓名 : {{$student->user->realname}}</h3>
 
-                <h3 class="profile-username">性别 : {{$student->user->gender}}</h3>
+                <h3 class="profile-username">性别 : {{$student->user->gender==0?'男':'女'}}</h3>
 
                 <h3 class="profile-username">英文名 : {{$student->user->english_name}}</h3>
             </div>
@@ -173,5 +173,6 @@
             <!-- /.box-body -->
         </div>
     </div>
+</div>
         
      
