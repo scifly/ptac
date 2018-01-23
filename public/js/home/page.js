@@ -367,6 +367,7 @@ var page = {
                     case 401:
                         window.location = page.siteRoot() + 'login?returnUrl=' + page.getTabUrl();
                         break;
+
                     case 500:
                         page.inform('操作失败',result.message,page.failure);
                         break;
