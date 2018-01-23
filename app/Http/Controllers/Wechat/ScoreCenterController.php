@@ -54,7 +54,6 @@ class ScoreCenterController extends Controller {
         // }
 
         $userId = 'wangdongxi';
-        // $role = '教职员工';
         $role = User::whereUserid($userId)->first()->group->name;
         $pageSize = 4;
         $start = Request::get('start') ? Request::get('start') * $pageSize : 0;
@@ -144,29 +143,21 @@ class ScoreCenterController extends Controller {
         # 获取该次考试该学生所在的年级id
         $gradeId = Student::whereId($studentId)->first()->squad->grade->id;
         $classes = Squad::whereGradeId($gradeId)->get();
-        foreach ($classes as $c){
-            $classIds[] = $c->id;
-        }
+        foreach ($classes as $c){ $classIds[] = $c->id; }
         # 获取该次考试所有科目id
         $subjectIds = explode(',',$exam->subject_ids);
         # 获取该班级所有学生
         $students = Student::whereId($studentId)->first()->squad->students;
-        foreach ($students as $s)
-        {
-            $studentIds[] = $s->id;
-        }
+        foreach ($students as $s) { $studentIds[] = $s->id; }
         # 获取该年级所有学生
         $allStudents = Student::whereIn('class_id',$classIds)->get();
-        foreach ($allStudents as $a){
-            $allStudentIds[] = $a->id;
-        }
+        foreach ($allStudents as $a){ $allStudentIds[] = $a->id; }
         foreach ($subjectIds as $k=>$s){
             $subjects[] = [
                 'title' => Subject::whereId($s)->first()->name,
                 'value' => $s,
             ];
         }
-
         if(Request::isMethod('post')){
             $data =$scores = $allScores =$total = [];
             $subjectId = Request::get('subject_id');
@@ -272,7 +263,7 @@ class ScoreCenterController extends Controller {
     /**
      * 微信 教师端成绩分析
      *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return string
      */
     public function analysis() {
         #需要判断当前访问者是否是教师
@@ -281,6 +272,9 @@ class ScoreCenterController extends Controller {
         $input['squad_id'] = 1;
         #需要返回给视图页面的数据
         $data = $this->score->claAnalysis($input, true);
+        if (!$data){
+            return '该班级暂未录入成绩！';
+        }
         return view('wechat.score.edu_analysis', ['data' => $data]);
     }
     

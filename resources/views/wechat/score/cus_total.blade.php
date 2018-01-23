@@ -38,11 +38,11 @@
 		</div>
 		<div class="ranke">
 			<div class="byclass">
-				<p>{{ $data['total']['class_rank'] }}/{{ $data['total']['class_count'] }}</p>
+				<p>{{ $data['total']['class_rank'] }}@if($data['total']['class_rank'] != '--')/@endif{{ $data['total']['class_count'] }}</p>
 				<p class="subtitle">班排名</p>
 			</div>
 			<div class="byschool">
-				<p>{{ $data['total']['grade_rank'] }}/{{ $data['total']['grade_count'] }}</p>
+				<p>{{ $data['total']['grade_rank'] }}@if($data['total']['grade_rank'] != '--')/@endif{{ $data['total']['grade_count'] }}</p>
 				<p class="subtitle">年排名</p>
 			</div>
 		</div>
