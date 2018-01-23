@@ -1212,7 +1212,6 @@ class Score extends Model {
             ->first();
         $scores->examName = $scores->exam->name;
         $scores->score = number_format($scores->score, 2);
-
         return $scores;
     }
 

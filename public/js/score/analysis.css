@@ -17,3 +17,9 @@
 #datas .row{
 	padding:0 15px;
 }
+.linetableitem{
+	width: 250px;
+	height: 250px;
+	margin-right: 30px;
+	display: inline-block;
+}
