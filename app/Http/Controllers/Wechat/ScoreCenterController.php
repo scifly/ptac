@@ -112,9 +112,7 @@ class ScoreCenterController extends Controller {
                         $score =  $this->score->getClassScore($classId);
                         $scores=array_slice($score,$start,$pageSize);
                         return response()->json(['data' => $scores ]);
-
                     }
-
                 }
                 $datas = $this->score->getEducatorScore($userId);
                 $score =$datas['score'];
@@ -172,8 +170,8 @@ class ScoreCenterController extends Controller {
         if(Request::isMethod('post')){
             $data =$scores = $allScores =$total = [];
             $subjectId = Request::get('subject_id');
-            $scores = $this->getScores($examId, $subjectId, $studentId);
-            $allScores = $this->getAllScores($subjectId, $studentId);
+            $scores = $this->score->getScores($examId, $subjectId, $studentId);
+            $allScores = $this->score->getAllScores($subjectId, $studentId);
 
             $scores['start_date'] = $exam['start_date'];
             foreach ($allScores as $k=>$a){
@@ -194,8 +192,8 @@ class ScoreCenterController extends Controller {
             ];
             return response()->json([ 'scores' => $scores, 'data' => $data, 'total' =>$total]);
         }
-        $scores = $this->getScores($examId, $subjectIds[0], $studentId);
-        $allScores = $this->getAllScores($subjectIds[0], $studentId);
+        $scores = $this->score->getScores($examId, $subjectIds[0], $studentId);
+        $allScores = $this->score->getAllScores($subjectIds[0], $studentId);
         foreach ($allScores as $k=>$a){
             $total['name'][] = $a->exam->name;
             $total['score'][] = $a->score;
@@ -222,47 +220,6 @@ class ScoreCenterController extends Controller {
         ]);
     }
 
-    /**
-     * 查询学生具体考试科目的分数
-     * @param $examId
-     * @param $subjectId
-     * @param $studentId
-     * @return array|\Illuminate\Database\Eloquent\Model|null|static
-     */
-    public function getScores( $examId, $subjectId, $studentId)
-    {
-        $scores = [];
-        # 查询该学生本次考试成绩
-        $scores = Score::whereStudentId($studentId)
-            ->where('exam_id', $examId)
-            ->where('subject_id', $subjectId)
-            ->where('enabled', 1)
-            ->first();
-        $scores->examName = $scores->exam->name;
-        $scores->score = number_format($scores->score, 2);
-
-       return $scores;
-    }
-
-    /**
-     * 查询某学生某科目全部的考试分数
-     * @param $subjectId
-     * @param $studentId
-     * @return array|\Illuminate\Database\Eloquent\Collection|static[]
-     */
-    public function getAllScores($subjectId, $studentId)
-    {
-        $allScores = [];
-        $allScores = Score::whereStudentId($studentId)
-            ->where('subject_id',$subjectId)
-            ->where('enabled',1)
-            ->get();
-        foreach ($allScores as $a)
-        {
-            $a->score = number_format($a->score, 2);
-        }
-        return $allScores;
-    }
 
     /**
      * 成绩详情
@@ -271,13 +228,12 @@ class ScoreCenterController extends Controller {
      */
     public function detail() {
 
-        $classId = Request::input('class_id');
-        $examId = Request::input('exam_id');
+        $classId = Request::input('classId');
+        $examId = Request::input('examId');
         $classId = 1;
         $examId = 1;
         if ($classId && $examId) {
             $data = $this->score->getExamClass($examId, $classId);
-//            return response()->json($this->score->getExamClass($examId, $classId));
             return view('wechat.score.detail', [
                 'data' => $data,
             ]);
