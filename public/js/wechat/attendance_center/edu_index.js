@@ -60,7 +60,12 @@ function getdata(data) {
                     $(this).html(result.data.charts[i].value);
                 });
                 $('.modal-content').html(result.data.view);
+            } else {
+                $.alert(result.data);
             }
+        },
+        error: function () {
+            $.alert('当前规则有误，请检查！');
         }
     });
 }

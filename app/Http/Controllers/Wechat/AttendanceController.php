@@ -219,9 +219,17 @@ class AttendanceController extends Controller {
         }
         #饼图数据填充
         if (!isset($input['squad']) && !isset($input['time']) && !isset($input['rule'])) {
-            return $this->defcharts($educator, $data);
+            $datas = $this->defcharts($educator, $data);
+            if(!$datas){
+                return response()->json(['data' => '请加入相应的考勤规则！', 'statusCode' => 500]);
+            }
+            return response()->json(['data' => $datas, 'statusCode' => 200]);
         } else {
-            return $this->fltcharts($input, $data);
+            $datas = $this->fltcharts($input, $data);
+            if(!$data){
+                return response()->json(['data' => '请加入相应的考勤规则！', 'statusCode' => 500]);
+            }
+            return response()->json(['data' => $datas, 'statusCode' => 200]);
         }
     }
     
@@ -230,7 +238,7 @@ class AttendanceController extends Controller {
      *
      * @param $educator
      * @param $data
-     * @return \Illuminate\Http\JsonResponse
+     * @return bool|\Illuminate\Http\JsonResponse
      * @throws \Throwable
      */
     private function defcharts($educator, $data) {
@@ -264,6 +272,10 @@ class AttendanceController extends Controller {
             ->where('semester_id', $semester)
             ->where('day', $weekDay)
             ->first();
+        #这个星期没有设置对应的规则
+        if (!$rule){
+            return false;
+        }
         #同一个学生这段时间打了多次记录 取这段时间最晚的一条记录
         $attendances = StudentAttendance::where('sas_id', $rule->id)
             ->whereIn('student_id', $studentIds)
@@ -357,7 +369,7 @@ class AttendanceController extends Controller {
             'nostulist'    => $noStuList,
         ])->render();
         
-        return response()->json(['data' => $data, 'statusCode' => 200]);
+        return !empty($data) ? $data : false;
     }
     
     /**
@@ -365,7 +377,7 @@ class AttendanceController extends Controller {
      *
      * @param $input
      * @param $data
-     * @return \Illuminate\Http\JsonResponse
+     * @return bool|\Illuminate\Http\JsonResponse
      * @throws \Throwable
      */
     private function fltcharts($input, $data) {
@@ -468,8 +480,8 @@ class AttendanceController extends Controller {
             'abnormallist' => $abnormalList,
             'nostulist'    => $noStuList,
         ])->render();
-        
-        return response()->json(['data' => $data, 'statusCode' => 200]);
+    
+        return !empty($data) ? $data : false;
     }
     
     /**
