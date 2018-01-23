@@ -116,7 +116,7 @@
                                     <tr>
                                         <input type="hidden" value="{{$pupil->student_id}}" name="student_ids[{{$key}}]"
                                                id="student_ids">
-                                        <td>{{$pupil->student->user->realname}}</td>
+                                        <td></td>
                                         <td>{{$pupil->student->student_number}}</td>
                                         <td>
                                             <input type="text" name="relationships[{{$key}}]" id="" readonly
