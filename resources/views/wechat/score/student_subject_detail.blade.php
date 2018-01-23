@@ -245,10 +245,14 @@
     var tmp = $("#subjests").attr('data-values');
 
     $("#subjests").on("change",function(){
-        var name = $(this).val();
-        if(tmp != name){
-            getdata();
-        }
+        var subject_id = $(this).attr('data-values');
+        $.ajax({
+            type: 'post',
+            dataType: ''
+        });
+        // if(tmp != name){
+        //     getdata();
+        // }
 
     })
     getdata();
@@ -258,7 +262,6 @@
         var myscore = total.score;
         var class_score = total.avg;
         showtable(myscore,class_score,test_name);
-
     }
 
     function showtable(myscore,class_score,test_name){

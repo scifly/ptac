@@ -129,7 +129,7 @@
     <!--列表-->
     <div class="weui-cells" style="margin-top: 89px;">
         @foreach($scores as $s)
-            <a class="weui-cell weui-cell_access" href='{{ url("detail/".$s['id']) }}'>
+            <a class="weui-cell weui-cell_access" href='{{ url("wechat/score/detail?examId=".$s['id']."&classId=".$s['class_id']) }}'>
                 <div class="weui-cell__bd">
                     <p>{{ $s['name'] }}</p>
                 </div>
@@ -175,7 +175,7 @@
                     for(var j=0 ; j< $data.data.length; j++)
                     {
                         var data = $data.data[j];
-                        html += '<a class="weui-cell weui-cell_access" href="detail">' +
+                        html += '<a class="weui-cell weui-cell_access" href="wechat/score/detail?examId='+data.id+'&classId='+class_id+'">' +
                             '<div class="weui-cell__bd">' +
                             '<p>'+data.name +'</p>' +
                             '</div>' +
@@ -209,7 +209,7 @@
                     for(var i=0; i< $data.data.length;i++)
                     {
                         var score = $data.data[i];
-                        html += '<a class="weui-cell weui-cell_access" href="count.html">' +
+                        html += '<a class="weui-cell weui-cell_access" href="wechat/score/detail?examId='+score.id+'&classId='+class_id+'">' +
                             '<div class="weui-cell__bd">' +
                             '<p>'+score.name +'</p>' +
                             '</div>' +
