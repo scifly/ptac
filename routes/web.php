@@ -314,10 +314,10 @@ Route::post('attendance_charts', 'Wechat\AttendanceController@stuChart');
 Route::get('attendance_rules/{id}', 'Wechat\AttendanceController@getRules');
 Route::get('attendance_date', 'Wechat\AttendanceController@dateRules');
 // 成绩中心
-Route::get('score_lists', 'Wechat\ScoreCenterController@index');
-Route::post('score_lists', 'Wechat\ScoreCenterController@index');
+Route::any('score_lists', 'Wechat\ScoreCenterController@index');
 Route::get('wechat/score/detail', 'Wechat\ScoreCenterController@detail');
 Route::get('wechat/score/student_detail', 'Wechat\ScoreCenterController@subjectDetail');
+Route::post('wechat/score/student_detail', 'Wechat\ScoreCenterController@subjectDetail');
 Route::any('wechat/score/show', 'Wechat\ScoreCenterController@show');
 Route::get('wechat/score/analysis', 'Wechat\ScoreCenterController@analysis');
 Route::get('wechat/score/cus_total', 'Wechat\ScoreCenterController@cusTotal');

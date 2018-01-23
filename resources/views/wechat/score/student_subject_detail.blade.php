@@ -217,7 +217,7 @@
         <i class="icon iconfont icon-document"></i>
         <p>单科</p>
     </a>
-    <a class="btnItem" href="allsubject.html">
+    <a class="btnItem" href='{{url("wechat/score/cus_total?examId=".$examId."&studentId=".$studentId)}}'>
         <i class="icon iconfont icon-renzheng7"></i>
         <p>综合</p>
     </a>
@@ -237,6 +237,8 @@
 <script>
     var subjects = $.parseJSON('{{$subjects}}'.replace(/&quot;/g,'"'));
     var total = $.parseJSON('{{$total}}'.replace(/&quot;/g,'"'));
+    var examId = '{{$examId}}';
+    var studentId = '{{$studentId}}';
     //班级列表
     $("#subjests").select({
         title: "选择科目",
@@ -248,7 +250,54 @@
         var subject_id = $(this).attr('data-values');
         $.ajax({
             type: 'post',
-            dataType: ''
+            dataType: 'json',
+            url: '../score/student_detail?examId='+ examId +'&studentId='+ studentId,
+            data: {subject_id : subject_id, _token: $('#csrf_token').attr('content')},
+            success: function ($data) {
+                var html= '';
+                if($data.scores.length !==0)
+                {
+                    var scores = $data.scores;
+                    $('.time .subtitle').html(scores.start_date.substring(0,7));
+                    $('.time .days').html(scores.start_date.substring(8,10)+'日');
+                    $('.test .testName').html(scores.examName);
+                    $('.header .score').html(scores.score);
+                }
+                if($data.data.length !==0){
+                    var score = $data.scores;
+                    var data = $data.data;
+                    html += '<div class="average">' +
+                        '<div class="byclass">' +
+                        '<p>'+ data.avg +'</p>' +
+                        '<p class="subtitle">班平均</p>' +
+                        '</div>'+
+                        '<div class="byschool">' +
+                        '<p>'+ data.gradeavg+'</p>' +
+                        '<p class="subtitle">年平均</p>' +
+                        '</div>' +
+                        '</div>' +
+                        '<div class="ranke">' +
+                        '<div class="byclass">' +
+                        '<p>'+ score.class_rank +'/'+ data.nums+'</p>' +
+                        '<p class="subtitle">班排名</p>' +
+                        '</div>' +
+                        '<div class="byschool">' +
+                        '<p>'+ score.grade_rank +'/'+ data.gradeNums+'</p>' +
+                        '<p class="subtitle">年排名</p>' +
+                        '</div>' +
+                        '</div>';
+                    $('.otherinfo').html(html);
+                }
+                if($data.total.length !==0){
+                    console.log($data.total);
+                    var total = $data.total;
+                    tmp = $("#subjests").val();
+                    var test_name = total.name;
+                    var myscore = total.score;
+                    var class_score = total.avg;
+                    showtable(myscore,class_score,test_name);
+                }
+            }
         });
         // if(tmp != name){
         //     getdata();

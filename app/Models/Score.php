@@ -1006,6 +1006,8 @@ class Score extends Model {
         $squad = $student->squad;
         #找到班级下面对应所有的学生 ids
         $claStuIds = [];
+        $data['total'] = [];
+        $data['single'] = [];
         foreach ($squad->students as $student) {
             $claStuIds[] = $student->id;
         }
@@ -1023,7 +1025,7 @@ class Score extends Model {
             ->whereStudentId($input['student_id'])
             ->first();
         if (!$scoreTotal) {
-            return false;
+            return $data;
         }
         # 获取班级参与考试的所有记录
         $scoreTotalCla = ScoreTotal::whereEnabled(1)
@@ -1052,7 +1054,6 @@ class Score extends Model {
             ->whereExamId($input['exam_id'])
             ->whereStudentId($input['student_id'])
             ->get();
-        $data['single'] = [];
         foreach ($scores as $score) {
             #获取当前科目下的平均分
             $scoreCla = Score::whereEnabled(1)
@@ -1182,6 +1183,48 @@ class Score extends Model {
             'nums' => count($scores),
         ];
         return $data;
+    }
+
+    /**
+     * 查询学生具体考试科目的分数
+     * @param $examId
+     * @param $subjectId
+     * @param $studentId
+     * @return array|\Illuminate\Database\Eloquent\Model|null|static
+     */
+    public function getScores( $examId, $subjectId, $studentId)
+    {
+        $scores = [];
+        # 查询该学生本次考试成绩
+        $scores = Score::whereStudentId($studentId)
+            ->where('exam_id', $examId)
+            ->where('subject_id', $subjectId)
+            ->where('enabled', 1)
+            ->first();
+        $scores->examName = $scores->exam->name;
+        $scores->score = number_format($scores->score, 2);
+
+        return $scores;
+    }
+
+    /**
+     * 查询某学生某科目全部的考试分数
+     * @param $subjectId
+     * @param $studentId
+     * @return array|\Illuminate\Database\Eloquent\Collection|static[]
+     */
+    public function getAllScores($subjectId, $studentId)
+    {
+        $allScores = [];
+        $allScores = Score::whereStudentId($studentId)
+            ->where('subject_id',$subjectId)
+            ->where('enabled',1)
+            ->get();
+        foreach ($allScores as $a)
+        {
+            $a->score = number_format($a->score, 2);
+        }
+        return $allScores;
     }
 
 
