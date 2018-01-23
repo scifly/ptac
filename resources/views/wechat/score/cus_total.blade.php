@@ -67,11 +67,11 @@
 	
 	<div style="height: 70px;width: 100%;"></div>
 	<div class="footerTab" >
-		<a class="btnItem " href="subjectItem.html">
+		<a class="btnItem " href='{{ url("wechat/score/student_detail?examId=". $examId ."&studentId=". $studentId) }}'>
 			<i class="icon iconfont icon-document"></i>
 			<p>单科</p>
 		</a>
-		<a class="btnItem footer-active" href="allsubject.html">
+		<a class="btnItem footer-active">
 			<i class="icon iconfont icon-renzheng7"></i>
 			<p>综合</p>
 		</a>
