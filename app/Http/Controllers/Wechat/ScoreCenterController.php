@@ -95,22 +95,10 @@ class ScoreCenterController extends Controller {
                 if(Request::isMethod('post'))
                 {
                     $classId = Request::get('class_id');
-
                     if(array_key_exists('start', Request::all()))
                     {
-                        $data =  $this->score->getEducatorScore($userId);
-                        $score = $data['score'];
-                        # 根据classId取出对应班级的考试
-                        foreach ($score as $k=> $s)
-                        {
-                            foreach ($s as $key=>$v)
-                            {
-                                if($classId == $v['class_id']){
-                                   $scores = $score[$k];
-                                };
-                            }
-                        }
-                        $scores=array_slice($scores,$start,$pageSize);
+                        $score = $this->score->getClassScore($classId);
+                        $scores=array_slice($score,$start,$pageSize);
                         return response()->json(['data' => $scores ]);
 
                     }elseif(array_key_exists('keywords',Request::all())){
@@ -118,9 +106,7 @@ class ScoreCenterController extends Controller {
                         $score = $this->score->getClassScore($classId,$keyword);
                         $scores=array_slice($score,$start,$pageSize);
                         return response()->json(['data' => $scores ]);
-
                     }else{
-                        $classId = Request::get('class_id');
                         $score =  $this->score->getClassScore($classId);
                         $scores=array_slice($score,$start,$pageSize);
                         return response()->json(['data' => $scores ]);
@@ -141,7 +127,7 @@ class ScoreCenterController extends Controller {
         }
     }
 
-  
+
     /**
      * 学生考试详情页
      */

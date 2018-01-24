@@ -1144,42 +1144,6 @@ class Score extends Model {
             'score' => $score,
             'studentName' => $studentName
         ];
-
-        return $data;
-    }
-
-    /**根据教职员工userId获取所在班级的考试
-     * @param $userId
-     * @return array
-     */
-    public function getEducatorScore($userId)
-    {
-        $score = $data = $className = [];
-        $educatorId = User::whereUserid($userId)->first()->educator->id;
-        $class = Squad::where('educator_ids','like','%' . $educatorId . '%')->get();
-        foreach ($class as $k=>$c){
-            $exams = Exam::where('class_ids','like','%' . $c->id . '%')
-                ->get();
-            foreach ($exams as $key=>$e)
-            {
-                $score[$k][$key]['id'] = $e->id;
-                $score[$k][$key]['name'] = $e->name;
-                $score[$k][$key]['classname'] = $c->name;
-                $score[$k][$key]['start_date'] = $e->start_date;
-                $score[$k][$key]['class_id'] = $c->id;
-                $score[$k][$key]['subject_ids'] = $e->subject_ids;
-            }
-
-            $className[] = [
-                'title' => $c->name,
-                'value' => $c->id
-            ];
-        }
-        $data = [
-            'score' => $score,
-            'className' => $className,
-        ];
-
         return $data;
     }
 
