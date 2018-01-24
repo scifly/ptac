@@ -20,6 +20,8 @@ class AttendanceController extends Controller {
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|string
      */
     public function index() {
+        Session::flush();
+        die;
         // $corpId = 'wxe75227cead6b8aec';
         // $secret = 'uorwAVlN3_EU31CDX0X1oQJk9lB0Or41juMH-cLcIEU';
         // $agentId = 1000007;
@@ -34,8 +36,6 @@ class AttendanceController extends Controller {
         //     $userId = $userInfo['UserId'];
         //     Session::put('userId',$userId);
         // }
-            $userId = 'user_5a4c9eed43eb8';
-            Session::put('userId',$userId);
         $user = User::whereUserid($userId)->first();
         #判断是否为教职工
         $educator = false;
