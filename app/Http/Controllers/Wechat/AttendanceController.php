@@ -249,7 +249,7 @@ class AttendanceController extends Controller {
         $squad = $educator->classes->first();
         $grade = $squad->grade;
         $school = $grade->school;
-        $schoolSemesters = Semester::where('school_id', $school->id)->get();
+        $schoolSemesters = Semester::where('school_id', $school->id)->whereEnabled(1)->get();
         $students = $squad->students;
         $studentIds = [];
         $date = date('Y-m-d', time());
