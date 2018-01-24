@@ -249,6 +249,9 @@ class AttendanceController extends Controller {
         #如果条件为空 默认当天 该老师对应的第一个班级，第一个规则图
         #班级存在多个 默认取一个
         $squad = $educator->classes->first();
+        print_r($squad);
+        print_r($squad->name);
+        die;
         $grade = $squad->grade;
         $school = $grade->school;
         $schoolSemesters = Semester::where('school_id', $school->id)->whereEnabled(1)->get();
