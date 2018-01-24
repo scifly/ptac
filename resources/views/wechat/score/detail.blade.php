@@ -52,14 +52,16 @@
 						<td>{{$d['grade_rank']}}</td>
 						<td>{{$d['total']}}</td>
 						<td>
-							@foreach($d['detail'] as $t)
+							@if($d['items'])
+								@foreach($d['detail'] as $t)
 
-								<div>
-									<span class="subj">{{$t['subject']}}</span>
-									<span class="score">{{$t['score']}}</span>
-									<div style="clear: both;"></div>
-								</div>
-							@endforeach
+									<div>
+										<span class="subj">{{$t['subject']}}</span>
+										<span class="score">{{$t['score']}}</span>
+										<div style="clear: both;"></div>
+									</div>
+								@endforeach
+							@endif
 
 						</td>
 
