@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers\Wechat;
 
+use App\Facades\Wechat;
 use App\Http\Controllers\Controller;
 use App\Models\Exam;
 use App\Models\Score;
@@ -10,6 +11,7 @@ use App\Models\Subject;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\Session;
 
 /**
  * 微信端成绩
@@ -38,22 +40,21 @@ class ScoreCenterController extends Controller {
      */
     public function index()
     {
-        // $corpId = 'wxe75227cead6b8aec';
-        // $secret = 'uorwAVlN3_EU31CDX0X1oQJk9lB0Or41juMH-cLcIEU';
-        // $agentId = 1000007;
-        // $userId = Session::get('userId') ? Session::get('userId') : null;
-        // $code = Request::input('code');
-        // if (empty($code) && empty($userId)) {
-        //     $codeUrl = Wechat::getCodeUrl($corpId, $agentId, 'http://weixin.028lk.com/score_lists');
-        //     return redirect($codeUrl);
-        // }elseif(!empty($code) && empty($userId)){
-        //     $accessToken = Wechat::getAccessToken($corpId, $secret);
-        //     $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
-        //     $userId = $userInfo['UserId'];
-        //     Session::put('userId',$userId);
-        // }
-
-        $userId = 'user_5a4c9eed43eb8';
+        $corpId = 'wxe75227cead6b8aec';
+        $secret = 'uorwAVlN3_EU31CDX0X1oQJk9lB0Or41juMH-cLcIEU';
+        $agentId = 1000007;
+        $userId = Session::get('userId') ? Session::get('userId') : null;
+        $code = Request::input('code');
+        if (empty($code) && empty($userId)) {
+            $codeUrl = Wechat::getCodeUrl($corpId, $agentId, 'http://weixin.028lk.com/score_lists');
+            return redirect($codeUrl);
+        }elseif(!empty($code) && empty($userId)){
+            $accessToken = Wechat::getAccessToken($corpId, $secret);
+            $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
+            $userId = $userInfo['UserId'];
+            Session::put('userId',$userId);
+        }
+        // $userId = 'wangdongxi';
         $role = User::whereUserid($userId)->first()->group->name;
         $pageSize = 4;
         $start = Request::get('start') ? Request::get('start') * $pageSize : 0;
