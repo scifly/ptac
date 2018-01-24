@@ -53,7 +53,7 @@ class ScoreCenterController extends Controller {
         //     Session::put('userId',$userId);
         // }
 
-        $userId = 'wangdongxi';
+        $userId = 'user_5a4c9eed43eb8';
         $role = User::whereUserid($userId)->first()->group->name;
         $pageSize = 4;
         $start = Request::get('start') ? Request::get('start') * $pageSize : 0;
@@ -308,15 +308,16 @@ class ScoreCenterController extends Controller {
         $exam = Exam::whereId($input['exam_id'])->first();
         $student = Student::whereId($input['student_id'])->first();
         if(!$exam){
-            return '暂未找到本场考试相关数据';
+            $examName = '';
+            $examDate = '';
+        } else {
+            $examName = $exam->name;
+            $examDate = $exam->start_date;
         }
         if(!$student){
             return '暂未该学生相关数据';
         }
-        $examName = $exam->name;
-        $examDate = $exam->start_date;
         $data = $this->score->totalAnalysis($input);
-  
         return view('wechat.score.cus_total',[
             'data' => $data,
             'examName' => $examName,
