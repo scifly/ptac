@@ -50,9 +50,9 @@ class ScoreCenterController extends Controller {
             $codeUrl = Wechat::getCodeUrl($corpId, $agentId, 'http://weixin.028lk.com/wechat/score/score_lists');
             return redirect($codeUrl);
         }elseif(!empty($code) && empty($userId)){
-            print_r($code);
-            die;
             $accessToken = Wechat::getAccessToken($corpId, $secret);
+            print_r($accessToken);
+            die;
             $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
             $userId = $userInfo['UserId'];
             Session::put('userId',$userId);
