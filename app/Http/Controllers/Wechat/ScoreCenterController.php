@@ -40,11 +40,9 @@ class ScoreCenterController extends Controller {
      */
     public function index()
     {
-        print_r(1111111);
-        die;
         $corpId = 'wxe75227cead6b8aec';
-        $secret = 'uorwAVlN3_EU31CDX0X1oQJk9lB0Or41juMH-cLcIEU';
-        $agentId = 1000007;
+        $secret = 'viHdGD1DaiDAOwbrxCZP5wT7QYNNqJpPnr3Sw5YPio4';
+        $agentId = 1000008;
         $userId = Session::get('userId') ? Session::get('userId') : null;
         $code = Request::input('code');
         if (empty($code) && empty($userId)) {
