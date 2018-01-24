@@ -20,22 +20,20 @@ class AttendanceController extends Controller {
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|string
      */
     public function index() {
-        // $corpId = 'wxe75227cead6b8aec';
-        // $secret = 'uorwAVlN3_EU31CDX0X1oQJk9lB0Or41juMH-cLcIEU';
-        // $agentId = 1000007;
-        // $userId = Session::get('userId') ? Session::get('userId') : null;
-        // $code = Request::input('code');
-        // if (empty($code) && empty($userId)) {
-        //     $codeUrl = Wechat::getCodeUrl($corpId, $agentId, 'http://weixin.028lk.com/lists');
-        //     return redirect($codeUrl);
-        // }elseif(!empty($code) && empty($userId)){
-        //     $accessToken = Wechat::getAccessToken($corpId, $secret);
-        //     $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
-        //     $userId = $userInfo['UserId'];
-        //     Session::put('userId',$userId);
-        // }
-            $userId = 'user_5a4c9eed43eb8';
+        $corpId = 'wxe75227cead6b8aec';
+        $secret = 'uorwAVlN3_EU31CDX0X1oQJk9lB0Or41juMH-cLcIEU';
+        $agentId = 1000007;
+        $userId = Session::get('userId') ? Session::get('userId') : null;
+        $code = Request::input('code');
+        if (empty($code) && empty($userId)) {
+            $codeUrl = Wechat::getCodeUrl($corpId, $agentId, 'http://weixin.028lk.com/lists');
+            return redirect($codeUrl);
+        }elseif(!empty($code) && empty($userId)){
+            $accessToken = Wechat::getAccessToken($corpId, $secret);
+            $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
+            $userId = $userInfo['UserId'];
             Session::put('userId',$userId);
+        }
         $user = User::whereUserid($userId)->first();
         #判断是否为教职工
         $educator = false;
@@ -248,9 +246,7 @@ class AttendanceController extends Controller {
         
         #如果条件为空 默认当天 该老师对应的第一个班级，第一个规则图
         #班级存在多个 默认取一个
-        $squad = $educator->classes;
-        print_r($squad);
-        die;
+        $squad = $educator->classes->first();
         $grade = $squad->grade;
         $school = $grade->school;
         $schoolSemesters = Semester::where('school_id', $school->id)->whereEnabled(1)->get();
