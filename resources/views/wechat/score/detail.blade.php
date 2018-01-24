@@ -42,28 +42,30 @@
 			</thead>
 
 			<tbody>
-			@foreach($data['items'] as $d)
+			@if($data['items'])
+				@foreach($data['items'] as $d)
 
-				<tr class="tongji-item" data-s="{{$d['student_id']}}" data-e="{{$d['exam_id']}}">
-					<td>{{$d['realname']}}</td>
-					<td>{{$d['student_number']}}</td>
-					<td>{{$d['class_rank']}}</td>
-					<td>{{$d['grade_rank']}}</td>
-					<td>{{$d['total']}}</td>
-					<td>
-						@foreach($d['detail'] as $t)
+					<tr class="tongji-item" data-s="{{$d['student_id']}}" data-e="{{$d['exam_id']}}">
+						<td>{{$d['realname']}}</td>
+						<td>{{$d['student_number']}}</td>
+						<td>{{$d['class_rank']}}</td>
+						<td>{{$d['grade_rank']}}</td>
+						<td>{{$d['total']}}</td>
+						<td>
+							@foreach($d['detail'] as $t)
 
-							<div>
-								<span class="subj">{{$t['subject']}}</span>
-								<span class="score">{{$t['score']}}</span>
-								<div style="clear: both;"></div>
-							</div>
-						@endforeach
+								<div>
+									<span class="subj">{{$t['subject']}}</span>
+									<span class="score">{{$t['score']}}</span>
+									<div style="clear: both;"></div>
+								</div>
+							@endforeach
 
-					</td>
+						</td>
 
-				</tr>
-			@endforeach
+					</tr>
+				@endforeach
+			@endif
 			</tbody>
 		</table>
 	</div>
