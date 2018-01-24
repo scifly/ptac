@@ -40,6 +40,8 @@ class ScoreCenterController extends Controller {
      */
     public function index()
     {
+        print_r(1111111);
+        die;
         $corpId = 'wxe75227cead6b8aec';
         $secret = 'uorwAVlN3_EU31CDX0X1oQJk9lB0Or41juMH-cLcIEU';
         $agentId = 1000007;
