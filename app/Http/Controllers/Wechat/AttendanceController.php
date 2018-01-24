@@ -250,7 +250,6 @@ class AttendanceController extends Controller {
         #班级存在多个 默认取一个
         $squad = $educator->classes->first();
         print_r($squad);
-        print_r($squad->name);
         die;
         $grade = $squad->grade;
         $school = $grade->school;
