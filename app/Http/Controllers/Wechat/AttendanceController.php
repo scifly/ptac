@@ -32,8 +32,6 @@ class AttendanceController extends Controller {
             $accessToken = Wechat::getAccessToken($corpId, $secret);
             $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
             $userId = $userInfo['UserId'];
-            print_r($userInfo);
-            die;
             Session::put('userId',$userId);
         }
         $user = User::whereUserid($userId)->first();
