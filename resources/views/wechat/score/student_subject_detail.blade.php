@@ -161,8 +161,8 @@
     <div class="info">
         <div class="time">
             @if( sizeof($scores) !== 0)
-            <div class="subtitle">{{ substr($scores['start_date'],0,7) }}</div>
-            <div class="days">{{ substr($scores['start_date'],8,10) }}日</div>
+            <div class="subtitle">{{ substr($scores->start_date,0,7) }}</div>
+            <div class="days">{{ substr($scores->start_date,8,10) }}日</div>
                 @else
                 <div class="subtitle">--</div>
                 <div class="days">--日</div>
@@ -170,19 +170,20 @@
         </div>
         <div class="subject">
             <div class="subtitle">科目</div>
-            <input style="text-align: center;" id="subjests" class="weui-input subject-choose" type="text" value="{{$scores->subject->name}}"
-                   readonly="" data-values="{{$scores->subject_id}}">
+            <input style="text-align: center;" id="subjests" class="weui-input subject-choose" type="text"
+                   value="@if(!empty($scores)){{$scores->subject->name}} @else {{null}} @endif"
+                   readonly="" data-values="@if(!empty($scores)){{$scores->subject_id}} @else {{0}} @endif">
         </div>
         <div class="test">
             <div class="subtitle">考试名</div>
             <div class="testName">
-                {{$scores->exam->name}}
+                @if(!empty($scores)){{$scores->examName}} @else -- @endif
             </div>
         </div>
     </div>
     <div class="score">
-        @if( sizeof($scores) !== 0)
-            {{$scores['score']}}
+        @if( !empty($scores))
+            {{$scores->score}}
         @else
             --
         @endif
@@ -202,11 +203,11 @@
     </div>
     <div class="ranke">
         <div class="byclass">
-            <p>{{ $scores['class_rank'] }}/{{ $data['nums'] }}</p>
+            <p>@if(!empty($scores)){{ $scores->class_rank }} @else {{0}} @endif/{{ $data['nums'] }}</p>
             <p class="subtitle">班排名</p>
         </div>
         <div class="byschool">
-            <p>{{ $scores['grade_rank'] }}/{{ $data['gradeNums'] }}</p>
+            <p>@if(!empty($scores)){{ $scores->grade_rank }} @else{{0}} @endif/{{ $data['gradeNums'] }}</p>
             <p class="subtitle">年排名</p>
         </div>
     </div>
@@ -222,7 +223,7 @@
 
 <div style="height: 70px;width: 100%;"></div>
 <div class="footerTab" >
-    <a class="btnItem footer-active" href="subjectItem.html">
+    <a class="btnItem footer-active" href="#">
         <i class="icon iconfont icon-document"></i>
         <p>单科</p>
     </a>

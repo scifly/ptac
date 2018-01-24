@@ -104,7 +104,7 @@
             <div class="weui-cell">
                 <div class="weui-cell__bd title-name">
                     <input style="text-align: center;" id="classlist" class="weui-input" type="text" value="@if(!empty($scores)) {{$scores[0]['classname']}} @endif"
-                           readonly="" data-values="{{$scores[0]['class_id']}}">
+                           readonly="" data-values="@if(!empty($scores)){{$scores[0]['class_id']}} @endif">
                 </div>
             </div>
 
@@ -128,6 +128,7 @@
 
     <!--列表-->
     <div class="weui-cells" style="margin-top: 89px;">
+        @if(sizeof($scores) !== 0)
         @foreach($scores as $s)
             <a class="weui-cell weui-cell_access" href='{{ url("wechat/score/detail?examId=".$s['id']."&classId=".$s['class_id']) }}'>
                 <div class="weui-cell__bd">
@@ -136,6 +137,7 @@
                 <div class="weui-cell__ft time">{{ $s['start_date'] }}</div>
             </a>
         @endforeach
+        @endif
     </div>
 
     <div class="loadmore">
@@ -183,6 +185,10 @@
                             '</a>';
                     }
                     $('.weui-cells').html(html);
+                }else{
+                    $('.weui-cells').html('');
+                    $('.loadmore').hide();
+
                 }
             }
         });
@@ -209,7 +215,7 @@
                     for(var i=0; i< $data.data.length;i++)
                     {
                         var score = $data.data[i];
-                        html += '<a class="weui-cell weui-cell_access" href="wechat/score/detail?examId='+score.id+'&classId='+class_id+'">' +
+                        html += '<a class="weui-cell weui-cell_access" href="detail?examId='+score.id+'&classId='+class_id+'">' +
                             '<div class="weui-cell__bd">' +
                             '<p>'+score.name +'</p>' +
                             '</div>' +
@@ -225,6 +231,43 @@
         });
 
     }
+
+    $('#searchInput').bind("input propertychange change",function(event){
+        var keywords = $(this).val();
+        var class_id = $('input').attr('data-values');
+        if(keywords === ''){
+            $('.weui-cells').html('');
+        }else{
+            $.ajax({
+                type: 'post',
+                dataType: 'json',
+                url: '../score/score_lists',
+                data: {keywords: keywords, class_id:class_id, _token: $('#csrf_token').attr('content')},
+                success: function ($data) {
+                    var html = '';
+                    if($data.data.length !== 0)
+                    {
+                        for(var k=0 ; k< $data.data.length; k++)
+                        {
+                            var data = $data.data[k];
+                            html += '<a class="weui-cell weui-cell_access" href="detail?examId='+data.id+'&classId='+class_id+'">' +
+                                '<div class="weui-cell__bd">' +
+                                '<p>'+data.name +'</p>' +
+                                '</div>' +
+                                '<div class="weui-cell__ft time">'+ data.start_date+'</div>' +
+                                '</a>';
+                        }
+                        $('.weui-cells').html(html);
+                    }else{
+                        $('.weui-cells').html('');
+                        $('.loadmore').hide();
+
+                    }
+                }
+            });
+        }
+    });
+
 
 </script>
 </body>

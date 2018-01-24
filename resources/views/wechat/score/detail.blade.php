@@ -14,10 +14,10 @@
 		</div>
 	</div>
 	<div class="weui-search-bar" id="searchBar">
-		<form class="weui-search-bar__form" action="#">
+		<form class="weui-search-bar__form" action="">
 			<div class="weui-search-bar__box">
 				<i class="weui-icon-search"></i>
-				<input type="search" class="weui-search-bar__input" id="searchInput" placeholder="搜索" required="">
+				<input type="search" class="weui-search-bar__input" name="student" id="searchInput" placeholder="搜索" required="">
 				<a href="javascript:" class="weui-icon-clear" id="searchClear"></a>
 			</div>
 			<label class="weui-search-bar__label" id="searchText" style="transform-origin: 0px 0px 0px; opacity: 1; transform: scale(1, 1);">
@@ -67,6 +67,7 @@
 
 					</tr>
 				@endforeach
+
 			@endif
 			</tbody>
 		</table>
@@ -94,6 +95,7 @@
             var exam = $(this).attr('data-e');
             window.location.href = '../score/show?student='+student+'&exam='+exam;
         });
+
 	</script>
 @endsection
 

@@ -766,11 +766,18 @@ class Score extends Model {
         return false;
     }
     
-    public function getExamClass($examId, $classId) {
+    public function getExamClass($examId, $classId, $studentName=null) {
         $student = $this->where('exam_id', $examId)
             ->get()->pluck('student_id');
-        # 当前班级下的所有参加考试的学生
-        $students = Student::whereClassId($classId)->whereIn('id', $student)->get();
+        if ($studentName) {
+            $users = User::whereRealname($studentName)->get()->pluck('id');
+            # 当前班级下的所有参加考试的学生
+            $students = Student::whereClassId($classId)->whereIn('id', $student)->whereIn('user_id', $users)->get();
+        }else{
+            # 当前班级下的所有参加考试的学生
+            $students = Student::whereClassId($classId)->whereIn('id', $student)->get();
+        }
+
         $result = [
             'exam'  => Exam::whereId($examId)->first()->name,
             'squad' => Squad::whereId($classId)->first()->name,
@@ -1083,11 +1090,15 @@ class Score extends Model {
     /**
      * 根据class_id获取考试的相关信息
      * @param $id
+     * @param null $keyword
      * @return array
      */
-    public function getClassScore($id){
+    public function getClassScore($id,$keyword = null){
         $score = [];
-        $exams = Exam::where('class_ids','like','%' . $id . '%')
+        $exams = Exam::when($keyword, function ( $query) use ($keyword) {
+            return $query->where('name', 'like','%' . $keyword . '%');
+        })
+        ->where('class_ids','like','%' . $id . '%')
             ->get();
         foreach ($exams as $key=>$e)
         {
@@ -1186,9 +1197,8 @@ class Score extends Model {
             ->where('subject_id',$subjectId)
             ->where('enabled',1)
             ->get();
-        $avg = $scores->average('score');
         $data = [
-            'avg' => $avg ,
+            'avg' => $scores->average('score') ? $scores->average('score') : 0 ,
             'nums' => count($scores),
         ];
         return $data;
@@ -1210,8 +1220,13 @@ class Score extends Model {
             ->where('subject_id', $subjectId)
             ->where('enabled', 1)
             ->first();
-        $scores->examName = $scores->exam->name;
-        $scores->score = number_format($scores->score, 2);
+        if(!empty($scores) ){
+            $scores->examName = $scores->exam->name;
+            $scores->score = number_format($scores->score, 2);
+        }else{
+            $scores = [];
+        }
+
         return $scores;
     }
 
