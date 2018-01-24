@@ -52,7 +52,7 @@
 						<td>{{$d['grade_rank']}}</td>
 						<td>{{$d['total']}}</td>
 						<td>
-							@if($d['items'])
+							@if($d['detail'])
 								@foreach($d['detail'] as $t)
 
 									<div>
