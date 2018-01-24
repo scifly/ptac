@@ -32,11 +32,10 @@ class AttendanceController extends Controller {
             $accessToken = Wechat::getAccessToken($corpId, $secret);
             $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
             $userId = $userInfo['UserId'];
+            print_r($userInfo);
+            die;
             Session::put('userId',$userId);
         }
-        print_r($userId);
-        die;
-        
         $user = User::whereUserid($userId)->first();
         #判断是否为教职工
         $educator = false;
