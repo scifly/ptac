@@ -20,8 +20,6 @@ class AttendanceController extends Controller {
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|string
      */
     public function index() {
-        Session::flush();
-        Session::forget('userId');
         $corpId = 'wxe75227cead6b8aec';
         $secret = 'uorwAVlN3_EU31CDX0X1oQJk9lB0Or41juMH-cLcIEU';
         $agentId = 1000007;
@@ -34,11 +32,10 @@ class AttendanceController extends Controller {
             $accessToken = Wechat::getAccessToken($corpId, $secret);
             $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
             $userId = $userInfo['UserId'];
-            print_r($userId);
-            die;
             Session::put('userId',$userId);
         }
-        
+        print_r($userId);
+        die;
         
         $user = User::whereUserid($userId)->first();
         #判断是否为教职工
