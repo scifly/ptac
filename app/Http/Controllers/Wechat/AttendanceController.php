@@ -248,7 +248,7 @@ class AttendanceController extends Controller {
         
         #如果条件为空 默认当天 该老师对应的第一个班级，第一个规则图
         #班级存在多个 默认取一个
-        $squad = $educator->classes->first();
+        $squad = $educator->classes;
         print_r($squad);
         die;
         $grade = $squad->grade;
