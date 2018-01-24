@@ -37,7 +37,7 @@ class AttendanceController extends Controller {
         $user = User::whereUserid($userId)->first();
         #判断是否为教职工
         $educator = false;
-        if (empty($user)) {
+        if (!$user) {
             return '<h4>你暂不是教职员工或监护人</h4>';
         }
         if ($user->group->name != '教职员工' && $user->group->name != '监护人') {
