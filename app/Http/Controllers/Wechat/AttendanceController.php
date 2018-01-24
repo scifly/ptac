@@ -202,6 +202,9 @@ class AttendanceController extends Controller {
         $educator = $user->educator;
         #班级列表 可能存在多个年级
         $squadLists = $educator->classes;
+        if(count($squadLists) == 0){
+            return response()->json(['data' => '老师，您还未绑定班级关系！', 'statusCode' => 500]);
+        }
         $data['squadnames'] = [];
         $gradeIds = [];
         foreach ($squadLists as $s) {
