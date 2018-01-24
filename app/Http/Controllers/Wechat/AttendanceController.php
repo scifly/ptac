@@ -218,6 +218,9 @@ class AttendanceController extends Controller {
                 'title' => $r->name, 'value' => $r->id
             ];
         }
+        print_r($educator);
+        print_r($data);
+        die;
         #饼图数据填充
         if (!isset($input['squad']) && !isset($input['time']) && !isset($input['rule'])) {
             $datas = $this->defcharts($educator, $data);
