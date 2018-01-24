@@ -278,8 +278,6 @@ class AttendanceController extends Controller {
             ->where('semester_id', $semester)
             ->where('day', $weekDay)
             ->first();
-        print_r($rule);
-        die;
         #这个星期没有设置对应的规则
         if (!$rule){
             return false;
