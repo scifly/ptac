@@ -227,6 +227,7 @@ class ScoreCenterController extends Controller {
             $data = $this->score->getExamClass($examId, $classId);
             return view('wechat.score.detail', [
                 'data' => $data,
+                'classId' => $classId,
             ]);
         }
 
