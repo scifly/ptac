@@ -40,7 +40,6 @@ class ScoreCenterController extends Controller {
      */
     public function index()
     {
-        Session::flush();
         $corpId = 'wxe75227cead6b8aec';
         $secret = 'viHdGD1DaiDAOwbrxCZP5wT7QYNNqJpPnr3Sw5YPio4';
         $agentId = 1000008;
@@ -51,8 +50,6 @@ class ScoreCenterController extends Controller {
             return redirect($codeUrl);
         }elseif(!empty($code) && empty($userId)){
             $accessToken = Wechat::getAccessToken($corpId, $secret);
-            print_r($accessToken);
-            die;
             $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
             $userId = $userInfo['UserId'];
             Session::put('userId',$userId);
