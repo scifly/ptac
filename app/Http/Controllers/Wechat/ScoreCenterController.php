@@ -54,7 +54,7 @@ class ScoreCenterController extends Controller {
         //     $userId = $userInfo['UserId'];
         //     Session::put('userId',$userId);
         // }
-        $userId = 'wangdongxi';
+        $userId = 'yuanhb';
         $role = User::whereUserid($userId)->first()->group->name;
         $pageSize = 4;
         $start = Request::get('start') ? Request::get('start') * $pageSize : 0;
@@ -94,9 +94,10 @@ class ScoreCenterController extends Controller {
             case '教职员工':
                 if(Request::isMethod('post'))
                 {
+                    $classId = Request::get('class_id');
+
                     if(array_key_exists('start', Request::all()))
                     {
-                        $classId = Request::get('class_id');
                         $data =  $this->score->getEducatorScore($userId);
                         $score = $data['score'];
                         # 根据classId取出对应班级的考试
@@ -110,6 +111,12 @@ class ScoreCenterController extends Controller {
                             }
                         }
                         $scores=array_slice($scores,$start,$pageSize);
+                        return response()->json(['data' => $scores ]);
+
+                    }elseif(array_key_exists('keywords',Request::all())){
+                        $keyword = Request::get('keywords');
+                        $score = $this->score->getClassScore($classId,$keyword);
+                        $scores=array_slice($score,$start,$pageSize);
                         return response()->json(['data' => $scores ]);
 
                     }else{
@@ -134,13 +141,7 @@ class ScoreCenterController extends Controller {
         }
     }
 
-    public function getKeyScore($keywords,$classId)
-    {
-        $exam = [];
-        $exams = Exam::where('class_ids','like','%' . $classId . '%')
-            ->where('name','like','%' . $classId . '%')
-            ->get();
-    }
+  
     /**
      * 学生考试详情页
      */
