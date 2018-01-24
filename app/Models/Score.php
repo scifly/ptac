@@ -1083,11 +1083,15 @@ class Score extends Model {
     /**
      * 根据class_id获取考试的相关信息
      * @param $id
+     * @param null $keyword
      * @return array
      */
-    public function getClassScore($id){
+    public function getClassScore($id,$keyword = null){
         $score = [];
-        $exams = Exam::where('class_ids','like','%' . $id . '%')
+        $exams = Exam::when($keyword, function ( $query) use ($keyword) {
+            return $query->where('name', 'like','%' . $keyword . '%');
+        })
+        ->where('class_ids','like','%' . $id . '%')
             ->get();
         foreach ($exams as $key=>$e)
         {
@@ -1186,9 +1190,8 @@ class Score extends Model {
             ->where('subject_id',$subjectId)
             ->where('enabled',1)
             ->get();
-        $avg = $scores->average('score');
         $data = [
-            'avg' => $avg ,
+            'avg' => $scores->average('score') ? $scores->average('score') : 0 ,
             'nums' => count($scores),
         ];
         return $data;
@@ -1210,8 +1213,13 @@ class Score extends Model {
             ->where('subject_id', $subjectId)
             ->where('enabled', 1)
             ->first();
-        $scores->examName = $scores->exam->name;
-        $scores->score = number_format($scores->score, 2);
+        if(!empty($scores) ){
+            $scores->examName = $scores->exam->name;
+            $scores->score = number_format($scores->score, 2);
+        }else{
+            $scores = [];
+        }
+
         return $scores;
     }
 

@@ -183,6 +183,10 @@
                             '</a>';
                     }
                     $('.weui-cells').html(html);
+                }else{
+                    $('.weui-cells').html('');
+                    $('.loadmore').hide();
+
                 }
             }
         });

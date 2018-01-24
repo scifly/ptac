@@ -40,7 +40,7 @@ class ScoreCenterController extends Controller {
     {
         // $corpId = 'wxe75227cead6b8aec';
         // $secret = 'uorwAVlN3_EU31CDX0X1oQJk9lB0Or41juMH-cLcIEU';
-        // $agentId = 1000007;
+        // $agentId = 1000008;
         // $userId = Session::get('userId') ? Session::get('userId') : null;
         // $code = Request::input('code');
         // if (empty($code) && empty($userId)) {
@@ -66,11 +66,16 @@ class ScoreCenterController extends Controller {
                     $classId = Student::whereId($studentId)->first()->class_id;
                     if(array_key_exists('start', Request::all()))
                     {
-                        $score =  $this->score->getClassScore($classId);
+                        $score = $this->score->getClassScore($classId);
                         $scores=array_slice($score,$start,$pageSize);
                         return response()->json(['data' => $scores, 'studentId'=>$studentId ]);
-                    }else{
-                        $score =  $this->score->getClassScore($classId);
+                    }elseif(array_key_exists('keywords', Request::all())){
+                        $keyword = Request::get('keywords');
+                        $score = $this->score->getClassScore($classId,$keyword);
+                        $scores=array_slice($score,$start,$pageSize);
+                        return response()->json(['data' => $scores ,'studentId'=>$studentId ]);
+                    } else{
+                        $score = $this->score->getClassScore($classId);
                         $scores=array_slice($score,$start,$pageSize);
                         return response()->json(['data' => $scores ,'studentId'=>$studentId ]);
                     }
@@ -128,7 +133,13 @@ class ScoreCenterController extends Controller {
         }
     }
 
-
+    public function getKeyScore($keywords,$classId)
+    {
+        $exam = [];
+        $exams = Exam::where('class_ids','like','%' . $classId . '%')
+            ->where('name','like','%' . $classId . '%')
+            ->get();
+    }
     /**
      * 学生考试详情页
      */
@@ -184,13 +195,19 @@ class ScoreCenterController extends Controller {
             return response()->json([ 'scores' => $scores, 'data' => $data, 'total' =>$total]);
         }
         $scores = $this->score->getScores($examId, $subjectIds[0], $studentId);
+        if(!empty($scores)){
+            $scores->start_date = $exam['start_date'];
+        }
+        if(empty($scores)){
+            $scores = [];
+        }
         $allScores = $this->score->getAllScores($subjectIds[0], $studentId);
+        $total['name'] = $total['score'] = $total['avg'] = [];
         foreach ($allScores as $k=>$a){
             $total['name'][] = $a->exam->name;
             $total['score'][] = $a->score;
             $total['avg'][] = $this->score->getClassAvg($a->exam_id,$subjectIds[0],$studentIds)['avg'];
         }
-        $scores['start_date'] = $exam['start_date'];
         $classData = $this->score->getClassAvg($examId,$subjectIds[0],$studentIds);
         $gradesData = $this->score->getClassAvg($examId,$subjectIds[0],$allStudentIds);
         $data =[
@@ -201,6 +218,7 @@ class ScoreCenterController extends Controller {
             'gradeavg' => number_format($gradesData['avg'],2),
             'gradeNums' => $gradesData['nums']
         ];
+
         return view('wechat.score.student_subject_detail',[
             'scores' => $scores,
             'data' => $data,

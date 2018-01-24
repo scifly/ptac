@@ -193,6 +193,7 @@
                     }
                     $('.weui-cells').html(html);
                 }else{
+                    $('.weui-cells').html('暂无数据');
                     $('.loadmore').hide();
                 }
             }
@@ -221,7 +222,7 @@
                     for(var i=0; i< $data.data.length;i++)
                     {
                         var score = $data.data[i];
-                         html += '<a class="weui-cell weui-cell_access" href="wechat/score/student_detail?examId='+score.id+'&studentId='+studentId+'">' +
+                         html += '<a class="weui-cell weui-cell_access" href="student_detail?examId='+score.id+'&studentId='+studentId+'">' +
                                 '<div class="weui-cell__bd">' +
                                 '<p>'+score.name +'</p>' +
                                 '</div>' +
@@ -230,12 +231,50 @@
                     }
                     $('.weui-cells').append(html);
                 }else{
+
                     $('.loadmore').hide();
                 }
             }
         });
 
     }
+
+
+    $('#searchInput').bind("input propertychange change",function(event){
+        var keywords = $(this).val();
+        var student_id = $('input').attr('data-values');
+        if(keywords === ''){
+            $('.weui-cells').html('');
+        }else{
+            $.ajax({
+                type: 'post',
+                dataType: 'json',
+                url: '../score/score_lists',
+                data: {keywords: keywords, student_id:student_id, _token: $('#csrf_token').attr('content')},
+                success: function ($data) {
+                    var html = '';
+                    if($data.data.length !== 0)
+                    {
+                        var studentId = $data.studentId;
+                        for(var k=0 ; k< $data.data.length; k++)
+                        {
+                            var data = $data.data[k];
+                            html += '<a class="weui-cell weui-cell_access" href="student_detail?examId='+data.id+'&studentId='+studentId+'">' +
+                                '<div class="weui-cell__bd">' +
+                                '<p>'+data.name +'</p>' +
+                                '</div>' +
+                                '<div class="weui-cell__ft time">'+ data.start_date+'</div>' +
+                                '</a>';
+                        }
+                        $('.weui-cells').html(html);
+                    }else{
+                        $('.weui-cells').html('');
+                        $('.loadmore').hide();
+                    }
+                }
+            });
+        }
+    });
 
 </script>
 </body>
