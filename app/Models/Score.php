@@ -1155,8 +1155,8 @@ class Score extends Model {
     public function getEducatorScore($userId)
     {
         $score = $data = $className = [];
-        $educatorId = User::whereUserid($userId)->first()->educator->id;
-        $class = Squad::where('educator_ids','like','%' . $educatorId . '%')->get();
+        $class = User::whereUserid($userId)->first()->educator->classes;
+        // $class = Squad::where('educator_ids','like','%' . $educatorId . '%')->get();
         foreach ($class as $k=>$c){
             $exams = Exam::where('class_ids','like','%' . $c->id . '%')
                 ->get();
