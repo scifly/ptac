@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers\Wechat;
 
+use App\Facades\Wechat;
 use App\Http\Controllers\Controller;
 use App\Models\Exam;
 use App\Models\Score;
@@ -10,6 +11,7 @@ use App\Models\Subject;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\Session;
 
 /**
  * 微信端成绩
@@ -39,12 +41,12 @@ class ScoreCenterController extends Controller {
     public function index()
     {
         // $corpId = 'wxe75227cead6b8aec';
-        // $secret = 'uorwAVlN3_EU31CDX0X1oQJk9lB0Or41juMH-cLcIEU';
+        // $secret = 'viHdGD1DaiDAOwbrxCZP5wT7QYNNqJpPnr3Sw5YPio4';
         // $agentId = 1000008;
         // $userId = Session::get('userId') ? Session::get('userId') : null;
         // $code = Request::input('code');
         // if (empty($code) && empty($userId)) {
-        //     $codeUrl = Wechat::getCodeUrl($corpId, $agentId, 'http://weixin.028lk.com/score_lists');
+        //     $codeUrl = Wechat::getCodeUrl($corpId, $agentId, 'http://weixin.028lk.com/wechat/score/score_lists');
         //     return redirect($codeUrl);
         // }elseif(!empty($code) && empty($userId)){
         //     $accessToken = Wechat::getAccessToken($corpId, $secret);
@@ -52,7 +54,6 @@ class ScoreCenterController extends Controller {
         //     $userId = $userInfo['UserId'];
         //     Session::put('userId',$userId);
         // }
-
         $userId = 'wangdongxi';
         $role = User::whereUserid($userId)->first()->group->name;
         $pageSize = 4;
@@ -239,12 +240,16 @@ class ScoreCenterController extends Controller {
 
         $classId = Request::input('classId');
         $examId = Request::input('examId');
-        $classId = 1;
-        $examId = 1;
+        $student = Request::input('student');
+//        $classId = 1;
+//        $examId = 1;
         if ($classId && $examId) {
-            $data = $this->score->getExamClass($examId, $classId);
+            $data = $this->score->getExamClass($examId, $classId, $student);
+//            print_r($data);die;
             return view('wechat.score.detail', [
                 'data' => $data,
+                'classId' => $classId,
+                'examId' => $examId,
             ]);
         }
 
@@ -323,15 +328,16 @@ class ScoreCenterController extends Controller {
         $exam = Exam::whereId($input['exam_id'])->first();
         $student = Student::whereId($input['student_id'])->first();
         if(!$exam){
-            return '暂未找到本场考试相关数据';
+            $examName = '';
+            $examDate = '';
+        } else {
+            $examName = $exam->name;
+            $examDate = $exam->start_date;
         }
         if(!$student){
             return '暂未该学生相关数据';
         }
-        $examName = $exam->name;
-        $examDate = $exam->start_date;
         $data = $this->score->totalAnalysis($input);
-  
         return view('wechat.score.cus_total',[
             'data' => $data,
             'examName' => $examName,

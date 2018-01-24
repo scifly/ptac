@@ -766,11 +766,18 @@ class Score extends Model {
         return false;
     }
     
-    public function getExamClass($examId, $classId) {
+    public function getExamClass($examId, $classId, $studentName=null) {
         $student = $this->where('exam_id', $examId)
             ->get()->pluck('student_id');
-        # 当前班级下的所有参加考试的学生
-        $students = Student::whereClassId($classId)->whereIn('id', $student)->get();
+        if ($studentName) {
+            $users = User::whereRealname($studentName)->get()->pluck('id');
+            # 当前班级下的所有参加考试的学生
+            $students = Student::whereClassId($classId)->whereIn('id', $student)->whereIn('user_id', $users)->get();
+        }else{
+            # 当前班级下的所有参加考试的学生
+            $students = Student::whereClassId($classId)->whereIn('id', $student)->get();
+        }
+
         $result = [
             'exam'  => Exam::whereId($examId)->first()->name,
             'squad' => Squad::whereId($classId)->first()->name,
