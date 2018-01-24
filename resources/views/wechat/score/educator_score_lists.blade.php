@@ -104,7 +104,7 @@
             <div class="weui-cell">
                 <div class="weui-cell__bd title-name">
                     <input style="text-align: center;" id="classlist" class="weui-input" type="text" value="@if(!empty($scores)) {{$scores[0]['classname']}} @endif"
-                           readonly="" data-values="{{$scores[0]['class_id']}}">
+                           readonly="" data-values="@if(!empty($scores)){{$scores[0]['class_id']}} @endif">
                 </div>
             </div>
 
