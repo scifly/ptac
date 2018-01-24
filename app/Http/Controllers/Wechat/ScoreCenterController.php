@@ -223,8 +223,8 @@ class ScoreCenterController extends Controller {
         $classId = Request::input('classId');
         $examId = Request::input('examId');
         $student = Request::input('student');
-        $classId = 1;
-        $examId = 1;
+//        $classId = 1;
+//        $examId = 1;
         if ($classId && $examId) {
             $data = $this->score->getExamClass($examId, $classId, $student);
 //            print_r($data);die;
