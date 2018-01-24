@@ -20,7 +20,6 @@ class AttendanceController extends Controller {
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|string
      */
     public function index() {
-        Session::flush();
         $corpId = 'wxe75227cead6b8aec';
         $secret = 'uorwAVlN3_EU31CDX0X1oQJk9lB0Or41juMH-cLcIEU';
         $agentId = 1000007;
@@ -31,8 +30,6 @@ class AttendanceController extends Controller {
             return redirect($codeUrl);
         }elseif(!empty($code) && empty($userId)){
             $accessToken = Wechat::getAccessToken($corpId, $secret);
-            print_r($accessToken);
-            die;
             $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
             $userId = $userInfo['UserId'];
             Session::put('userId',$userId);
