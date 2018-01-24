@@ -40,21 +40,21 @@ class ScoreCenterController extends Controller {
      */
     public function index()
     {
-        // $corpId = 'wxe75227cead6b8aec';
-        // $secret = 'viHdGD1DaiDAOwbrxCZP5wT7QYNNqJpPnr3Sw5YPio4';
-        // $agentId = 1000008;
-        // $userId = Session::get('userId') ? Session::get('userId') : null;
-        // $code = Request::input('code');
-        // if (empty($code) && empty($userId)) {
-        //     $codeUrl = Wechat::getCodeUrl($corpId, $agentId, 'http://weixin.028lk.com/wechat/score/score_lists');
-        //     return redirect($codeUrl);
-        // }elseif(!empty($code) && empty($userId)){
-        //     $accessToken = Wechat::getAccessToken($corpId, $secret);
-        //     $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
-        //     $userId = $userInfo['UserId'];
-        //     Session::put('userId',$userId);
-        // }
-        $userId = 'yuanhb';
+        $corpId = 'wxe75227cead6b8aec';
+        $secret = 'viHdGD1DaiDAOwbrxCZP5wT7QYNNqJpPnr3Sw5YPio4';
+        $agentId = 1000008;
+        $userId = Session::get('userId') ? Session::get('userId') : null;
+        $code = Request::input('code');
+        if (empty($code) && empty($userId)) {
+            $codeUrl = Wechat::getCodeUrl($corpId, $agentId, 'http://weixin.028lk.com/wechat/score/score_lists');
+            return redirect($codeUrl);
+        }elseif(!empty($code) && empty($userId)){
+            $accessToken = Wechat::getAccessToken($corpId, $secret);
+            $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
+            $userId = $userInfo['UserId'];
+            Session::put('userId',$userId);
+        }
+        // $userId = 'wangdongxi';
         $role = User::whereUserid($userId)->first()->group->name;
         $pageSize = 4;
         $start = Request::get('start') ? Request::get('start') * $pageSize : 0;
@@ -133,7 +133,7 @@ class ScoreCenterController extends Controller {
      */
     public function subjectDetail()
     {
-        $subjects = $studentIds = $allStudentIds = $classIds = $data = $allScores =$total = [];
+        $subjectIds =$subjects = $studentIds = $allStudentIds = $classIds = $data = $allScores =$total = [];
         $examId = Request::get('examId');
         $studentId= Request::get('studentId');
         // $studentId= 2;
@@ -144,7 +144,14 @@ class ScoreCenterController extends Controller {
         $classes = Squad::whereGradeId($gradeId)->get();
         foreach ($classes as $c){ $classIds[] = $c->id; }
         # 获取该次考试所有科目id
-        $subjectIds = explode(',',$exam->subject_ids);
+        if( sizeof($exam)!= 0){
+            $subjectIds = explode(',',$exam->subject_ids);
+        }else{
+            $subject = Subject::all();
+            foreach ($subject as $s){
+                $subjectIds[] = $s->id;
+            }
+        }
         # 获取该班级所有学生
         $students = Student::whereId($studentId)->first()->squad->students;
         foreach ($students as $s) { $studentIds[] = $s->id; }

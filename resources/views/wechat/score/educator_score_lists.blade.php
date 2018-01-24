@@ -128,6 +128,7 @@
 
     <!--列表-->
     <div class="weui-cells" style="margin-top: 89px;">
+        @if(sizeof($scores) !== 0)
         @foreach($scores as $s)
             <a class="weui-cell weui-cell_access" href='{{ url("wechat/score/detail?examId=".$s['id']."&classId=".$s['class_id']) }}'>
                 <div class="weui-cell__bd">
@@ -136,6 +137,7 @@
                 <div class="weui-cell__ft time">{{ $s['start_date'] }}</div>
             </a>
         @endforeach
+        @endif
     </div>
 
     <div class="loadmore">
