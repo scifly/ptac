@@ -221,10 +221,11 @@ class ScoreCenterController extends Controller {
 
         $classId = Request::input('classId');
         $examId = Request::input('examId');
-//        $classId = 2;
-//        $examId = 2;
+        $student = Request::input('student');
+        $classId = 1;
+        $examId = 1;
         if ($classId && $examId) {
-            $data = $this->score->getExamClass($examId, $classId);
+            $data = $this->score->getExamClass($examId, $classId, $student);
 //            print_r($data);die;
             return view('wechat.score.detail', [
                 'data' => $data,
