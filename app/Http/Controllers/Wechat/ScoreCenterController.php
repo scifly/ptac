@@ -56,9 +56,6 @@ class ScoreCenterController extends Controller {
         }
         // $userId = 'wangdongxi';
         $role = User::whereUserid($userId)->first()->group->name;
-        print_r(11111111111111111);
-        print_r($role);
-        die;
         $pageSize = 4;
         $start = Request::get('start') ? Request::get('start') * $pageSize : 0;
         $scores = [];
