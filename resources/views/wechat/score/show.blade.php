@@ -40,7 +40,7 @@
 			<i class="icon iconfont icon-document"></i>
 			<p>详情</p>
 		</a>
-		<a class="btnItem" href="count.html">
+		<a class="btnItem">
 			<i class="icon iconfont icon-renzheng7"></i>
 			<p>统计</p>
 		</a>
