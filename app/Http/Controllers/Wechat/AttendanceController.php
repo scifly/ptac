@@ -34,6 +34,9 @@ class AttendanceController extends Controller {
             $userId = $userInfo['UserId'];
             Session::put('userId',$userId);
         }
+        print_r($userId);
+        die;
+        
         $user = User::whereUserid($userId)->first();
         #判断是否为教职工
         $educator = false;
