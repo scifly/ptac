@@ -54,6 +54,8 @@ class ScoreCenterController extends Controller {
             $userId = $userInfo['UserId'];
             Session::put('userId',$userId);
         }
+        print_r($userId);
+        die;
         // $userId = 'wangdongxi';
         $role = User::whereUserid($userId)->first()->group->name;
         $pageSize = 4;
