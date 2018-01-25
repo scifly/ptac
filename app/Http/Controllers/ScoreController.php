@@ -25,11 +25,12 @@ class ScoreController extends Controller {
 
     }
 
+
     /**
-     * 成绩列表
+     * 录入成绩1111
      *
      * @return bool|JsonResponse
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function index() {
 
