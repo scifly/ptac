@@ -8,6 +8,7 @@ use App\Models\Squad;
 use App\Models\Subject;
 use Exception;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Throwable;
 
@@ -159,8 +160,9 @@ class ScoreController extends Controller {
                 $result = $score->scores($exam, $squad, explode(',', $subject), explode(',', $project));
                 return response()->json($result);
             }else{
+
                 $ids = Exam::whereId($exam)->first();
-                
+
                 $classes = Squad::whereIn('id', explode(',', $ids['class_ids']))
                     ->get()
                     ->toArray();
