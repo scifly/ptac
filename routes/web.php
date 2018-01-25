@@ -305,7 +305,7 @@ Route::delete('message_replaydel/{id}', 'Wechat\MessageCenterController@replayDe
 //布置作业
 Route::get('homework', 'Wechat\HomeWorkController@index');
 //微网站
-Route::get('wapsite', 'Wechat\MobileSiteController@index');
+Route::get('wapsite/home', 'Wechat\MobileSiteController@wapHome');
 // 考勤
 Route::get('lists', 'Wechat\AttendanceController@index');
 Route::get('attendance_records/{id}', 'Wechat\AttendanceController@records');
