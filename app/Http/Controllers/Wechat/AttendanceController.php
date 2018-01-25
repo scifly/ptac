@@ -12,6 +12,12 @@ use App\Models\User;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
 
+/**
+ *  微信考勤
+ *
+ * Class AttendanceController
+ * @package App\Http\Controllers\Wechat
+ */
 class AttendanceController extends Controller {
     
     /**

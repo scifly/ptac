@@ -11,35 +11,37 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 use Throwable;
 
+
 /**
- * 成绩
+ * 成绩模块
  *
  * Class ScoreController
  * @package App\Http\Controllers
  */
 class ScoreController extends Controller {
-    
-    function __construct() {
-        
+
+    public function __construct() {
+
         $this->middleware(['auth', 'checkrole']);
-        
+
     }
-    
+
     /**
      * 成绩列表
      *
      * @return bool|JsonResponse
-     * @throws Throwable
+     * @throws \Throwable
      */
     public function index() {
-        
+
         if (Request::get('draw')) {
             return response()->json(Score::datatable());
         }
-        
+
         return $this->output();
-        
+
     }
+
     
     /**
      * 录入成绩
@@ -52,7 +54,7 @@ class ScoreController extends Controller {
         return $this->output();
         
     }
-    
+
     /**
      * 保存成绩
      *
@@ -159,8 +161,9 @@ class ScoreController extends Controller {
                 $result = $score->scores($exam, $squad, explode(',', $subject), explode(',', $project));
                 return response()->json($result);
             }else{
+
                 $ids = Exam::whereId($exam)->first();
-                
+
                 $classes = Squad::whereIn('id', explode(',', $ids['class_ids']))
                     ->get()
                     ->toArray();
