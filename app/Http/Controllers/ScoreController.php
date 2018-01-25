@@ -28,6 +28,7 @@ class ScoreController extends Controller {
 
     /**
      * 成绩列表
+     * 
      * @return bool|JsonResponse
      * @throws \Throwable
      */
