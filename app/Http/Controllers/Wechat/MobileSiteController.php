@@ -28,17 +28,13 @@ class MobileSiteController extends Controller
         $corps = $corp::whereName('万浪软件')->first();
         $corpId = $corps->corpid;
         $secret = App::whereAgentid('999')->first()->secret;
+
         $userId = Session::get('userId') ? Session::get('userId') : null;
-
         $code = Request::input('code');
-
-        # 从微信企业号后台获取userid
-        if (empty($code)) {
+        if (empty($code) && empty($userId)) {
             $codeUrl = Wechat::getCodeUrl($corpId, '999', 'http://weixin.028lk.com/wapsite/home');
-            $url = explode('http', $codeUrl);
-
-            return redirect('http' . $url[1]);
-        } elseif(!empty($code) && empty($userId)){
+            return redirect($codeUrl);
+        }elseif(!empty($code) && empty($userId)){
             $accessToken = Wechat::getAccessToken($corpId, $secret);
             $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
             $userId = $userInfo['UserId'];
