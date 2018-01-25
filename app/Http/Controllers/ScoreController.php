@@ -241,17 +241,22 @@ class ScoreController extends Controller {
      * @param $exam_id
      * @return JsonResponse|string
      */
-    public function claLists($exam_id){
+    public function claLists($exam_id) {
         $exam = Exam::whereId($exam_id)->first();
-        $lists = Squad::whereIn('id', explode(',', $exam->class_ids))
-            ->whereEnabled(1)
-            ->pluck('name', 'id')
-            ->toArray();
+        if (!$exam) {
+            $lists = [];
+        } else {
+            $lists = Squad::whereIn('id', explode(',', $exam->class_ids))
+                ->whereEnabled(1)
+                ->pluck('name', 'id')
+                ->toArray();
+        }
         #返回下拉列表的字符串
         $html = '';
         foreach ($lists as $key => $value) {
             $html .= '<option value="' . $key . '">' . $value . '</option>';
         }
+        
         return $lists ? $this->succeed($html) : $this->fail();
     }
     

@@ -36,14 +36,15 @@ class ScoreAnalysisComposer {
                 $examarr[$item->id] = $item->name;
             }
         }
-        
-        $stuData = Student::whereEnabled(1)
-            ->whereClassId(array_keys($classes)[0])
-            ->get();
         $students = [];
+        if(!empty($classes)) {
+            $stuData = Student::whereEnabled(1)
+                ->whereClassId(array_keys($classes)[0])
+                ->get();
             foreach ($stuData as $stu){
                 $students[$stu->id] = $stu->student_number . '-' . $stu->user->realname;
             }
+        }
         if (empty($examarr)) {$examarr[] = '' ;}
         if (empty($classes)) {$classes[] = '' ;}
         if (empty($students)) {$students[] = '' ;}
