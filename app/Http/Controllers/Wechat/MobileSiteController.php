@@ -55,7 +55,6 @@ class MobileSiteController extends Controller
                 $wapSite = WapSite::
                 where('school_id', $school_id)
                     ->first();
-                dd($wapSite);
                 if ($wapSite) {
                     // dd($wapSite->wapSiteModules->media);
                     return view('wechat.wapsite.home', [
