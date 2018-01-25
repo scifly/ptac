@@ -241,17 +241,22 @@ class ScoreController extends Controller {
      * @param $exam_id
      * @return JsonResponse|string
      */
-    public function claLists($exam_id){
+    public function claLists($exam_id) {
         $exam = Exam::whereId($exam_id)->first();
-        $lists = Squad::whereIn('id', explode(',', $exam->class_ids))
-            ->whereEnabled(1)
-            ->pluck('name', 'id')
-            ->toArray();
+        if (!$exam) {
+            $lists = [];
+        } else {
+            $lists = Squad::whereIn('id', explode(',', $exam->class_ids))
+                ->whereEnabled(1)
+                ->pluck('name', 'id')
+                ->toArray();
+        }
         #返回下拉列表的字符串
         $html = '';
         foreach ($lists as $key => $value) {
             $html .= '<option value="' . $key . '">' . $value . '</option>';
         }
+        
         return $lists ? $this->succeed($html) : $this->fail();
     }
     
@@ -273,96 +278,5 @@ class ScoreController extends Controller {
         $view = Score::analysis($input);
       return $view ? $this->succeed($view) : $this->fail('未录入或未统计成绩！');
     }
-  
-    // /**
-    //  * 成绩发送
-    //  *
-    //  * @return JsonResponse
-    //  */
-    // public function send() {
-    //
-    //     if (Request::method() === 'POST') {
-    //         $exam = Request::input('exam');
-    //         if($exam) {
-    //             $ids = Exam::whereId($exam)->first();
-    //
-    //             $classes = Squad::where('id', explode(',', $ids->class_ids))
-    //                 ->pluck('name', 'id')
-    //                 ->toArray();
-    //             return response()->json($classes);
-    //         }
-    //     }
-    // }
-    //
-    //
-    // /**
-    //  * 统计成绩排名
-    //  *
-    //  * @param $examId
-    //  * @return JsonResponse
-    //  */
-    // public function statistics($examId) {
-    //
-    //     return $this->result(Score::statistics($examId));
-    // }
-    //
-    // /**
-    //  * Excel模板生成
-    //  * @param $examId
-    //  */
-    // public function export($examId) {
-    //
-    //     $exam = Exam::find($examId);
-    //     $subject = Exam::subjects($exam->subject_ids);
-    //     $heading = ['学号', '姓名'];
-    //     foreach ($subject as $value) {
-    //         $heading[] = $value;
-    //     }
-    //     $cellData = Student::studentsNum($exam->class_ids);
-    //     array_unshift($cellData, $heading);
-    //     Excel::create('score', function ($excel) use ($cellData, $examId) {
-    //         $excel->sheet('score', function ($sheet) use ($cellData) {
-    //             $sheet->rows($cellData);
-    //         });
-    //         $excel->setTitle($examId);
-    //     })->store('xls')->export('xls');
-    //
-    // }
-    //
-    // /**
-    //  * 成绩导入
-    //  */
-    // public function import() {
-    //     $filePath = 'storage/exports/score.xls';
-    //     $insert = [];
-    //     Excel::load($filePath, function ($reader) use (&$insert) {
-    //         $exam_id = $reader->getTitle();
-    //         $subjects = Subject::ids(array_slice(array_keys($reader->toArray()[0]), 2));
-    //         $reader->each(function ($sheet) use ($exam_id, $subjects, &$insert) {
-    //             $studentNum = '';
-    //             foreach ($sheet as $key => $row) {
-    //                 switch ($key) {
-    //                     case '学号':
-    //                         $studentNum = Student::whereStudentNumber($row)->value('id');
-    //                         break;
-    //                     case '姓名':
-    //                         break;
-    //                     default:
-    //                         if (!is_null($row) && isset($subjects[$key])) {
-    //                             $insert [] = [
-    //                                 'student_id' => $studentNum,
-    //                                 'subject_id' => $subjects[$key],
-    //                                 'exam_id'    => $exam_id,
-    //                                 'score'      => $row,
-    //                                 'enabled'    => 1,
-    //                             ];
-    //                         }
-    //                 }
-    //             }
-    //         });
-    //     });
-    //
-    //     return Score::insert($insert) ? $this->succeed() : $this->fail();
-    // }
 }
 
