@@ -45,6 +45,7 @@ class MobileSiteController extends Controller
         // $type = $departmentType::whereName('学校')->first();
         # 通过微信企业后台返回的userid  获取数据库user数据
         $user = User::where('userid', $userId)->first();
+        print_r($user);die;
         if ($user) {
 //        $department = new Department();
 //        # 获取当前用户的最高顶级部门
