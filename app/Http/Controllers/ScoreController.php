@@ -19,15 +19,15 @@ use Throwable;
  * @package App\Http\Controllers
  */
 class ScoreController extends Controller {
-    
-    function __construct() {
-        
+
+    public function __construct() {
+
         $this->middleware(['auth', 'checkrole']);
-        
+
     }
 
     /**
-     * 啊水电费
+     * 成绩列表
      * @return bool|JsonResponse
      * @throws \Throwable
      */
