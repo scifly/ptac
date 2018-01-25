@@ -233,12 +233,15 @@ class Student extends Model {
             ->where('school_id', School::schoolId())
             ->pluck('name', 'id')
             ->toArray();
-        $gradeId = $gradeId == 0 ? array_keys($grades)[0] : $gradeId;
-        $classes = Squad::whereEnabled(1)
-            ->where('grade_id', $gradeId)
-            ->pluck('name', 'id')
-            ->toArray();
-        
+        if(empty($grades)){
+            $classes = [];
+        } else {
+            $gradeId = $gradeId == 0 ? array_keys($grades)[0] : $gradeId;
+            $classes = Squad::whereEnabled(1)
+                ->where('grade_id', $gradeId)
+                ->pluck('name', 'id')
+                ->toArray();
+        }
         return [
             'grades' => $grades,
             'classes' => $classes,
