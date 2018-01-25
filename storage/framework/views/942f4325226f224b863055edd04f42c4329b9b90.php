@@ -9,10 +9,12 @@
 			<tr class="bg-info">
                 <th>#</th>
                 <th>名称</th>
-                <th>所属学校</th>
-                <th>副科</th>
-                <th>最高分数</th>
-                <th>及格分数</th>
+                <th>备注</th>
+                <th>考试类型</th>
+                <th>科目满分</th>
+                <th>科目及格分数</th>
+                <th>考试开始日期</th>
+                <th>考试结束日期</th>
                 <th>创建于</th>
                 <th>更新于</th>
                 <th>状态</th>
@@ -23,4 +25,3 @@
     </div>
     <?php echo $__env->make('partials.form_overlay', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
 </div>
-

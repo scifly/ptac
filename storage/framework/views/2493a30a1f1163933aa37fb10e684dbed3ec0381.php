@@ -25,7 +25,7 @@
 
                         <!-- 角色名称 -->
                         <div class="form-group">
-                            <?php echo Form::label('name', '名称', [
+                            <?php echo Form::label('name', '角色名称', [
                                 'class' => 'col-sm-3 control-label'
                             ]); ?>
 
@@ -46,7 +46,7 @@
                                 <?php if(!isset($group)): ?>
                                     <select name="school_id" class="form-control menu" id="school_id" style="width: 100%">
                                         <?php $__currentLoopData = $schools; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $value): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                            <option value="<?php echo e($key); ?>" ><?php echo e($value); ?></option>
+                                            <option value="<?php echo e($value); ?>" ><?php echo e($key); ?></option>
                                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                     </select>
                                 <?php else: ?>
@@ -61,7 +61,7 @@
                         <!-- 状态 -->
                         <?php echo $__env->make('partials.enabled', [
                             'id' => 'enabled',
-                            'value' => $group['enabled'] ?? null
+                            'value' => $group['enabled'] ?? NULL
                         ], array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
                     </div>
                 </div>

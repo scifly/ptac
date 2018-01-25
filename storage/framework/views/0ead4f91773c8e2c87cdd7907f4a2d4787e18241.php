@@ -42,12 +42,27 @@
 
                 </div>
             </div>
-            <?php echo $__env->make('partials.enabled', [
-                'label' => '性别',
-                'id' => 'user[gender]',
-                'value' => $operator->user->gender ?? null,
-                'options' => ['男', '女']
-            ], array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+            <div class="form-group">
+                <label for="user[gender]" class="col-sm-3 control-label">性别</label>
+                <div class="col-sm-6">
+                    <label id="user[gender]">
+                        <input id="user[gender]"
+                               <?php if((isset($operator) && $operator->user->gender) || !isset($operator)): ?>
+                                   checked
+                               <?php endif; ?>
+                               type="radio" name="user[gender]" class="minimal" value="1"
+                        />
+                    </label> 男
+                    <label id="user[gender]">
+                        <input id="user[gender]"
+                               <?php if((isset($operator) && $operator->user->gender == 0 )): ?>
+                                   checked
+                               <?php endif; ?>
+                               type="radio" name="user[gender]" class="minimal" value="0"
+                        />
+                    </label> 女
+                </div>
+            </div>
             <?php if(!isset($operator)): ?>
                 <?php echo Form::hidden('role', $role, ['id' => 'role']); ?>
 
@@ -196,7 +211,7 @@
             </div>
             <?php echo $__env->make('partials.enabled', [
                 'id' => 'user[enabled]',
-                'value' => $operator->user->enabled ?? null
+                'value' => $operator->user->enabled ?? NULL
             ], array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
         </div>
     </div>
