@@ -3,7 +3,7 @@
 <title>微网站</title>
 @endsection
 @section('css')
-<link rel="stylesheet" href="{{ asset('/css/wechat/message_center/index.css') }}">
+<link rel="stylesheet" href="{{ asset('/css/wechat/wapsite/index.css') }}">
 @endsection
 @section('content')
 	<!--轮播图-->
@@ -33,11 +33,11 @@
 	<!--九宫格图标-->
 	<div class="weui-grids">
 		@foreach($wapsite->wapSiteModules as $v)
-			<a href="javascript:" class="col-xs-4">
-				<div class="item-icon">
-					<img src="../../{{$v->media->path}}" alt="">
+			<a href="javascript:" class=" weui-grid js_grid">
+				<div class=" weui-grid__icon">
+					<img src="../{{$v->media->path}}" alt="">
 				</div>
-				<p class="item-label">{{$v->name}}</p>
+				<p class="weui-grid__label">{{$v->name}}</p>
 			</a>
 		@endforeach
 	</div>
@@ -46,12 +46,12 @@
 
 @endsection
 @section('script')
-@endsection
 	<script>
 		
       $(".swiper-container").swiper({
-        loop: true,
+        	loop: true,
         autoplay: 3000
       });
     
 	</script>
+@endsection
