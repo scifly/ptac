@@ -13,7 +13,7 @@ use Throwable;
 
 
 /**
- * 成绩模块
+ * 成绩
  *
  * Class ScoreController
  * @package App\Http\Controllers
