@@ -9,6 +9,10 @@ $('#reset').on('click', function (e) {
         page.inform('操作结果', '原密码不能为空!', page.failure);
         password.focus();
         return false;
+    }else if (pwd1.replace(/^\s*|\s*$/g, "") === '') {
+        page.inform('操作结果', '新密码不正确，请勿使用空格!', page.failure);
+        pwd1.focus();
+        return false;
     } else if (pwd1.value === '') {
         page.inform('操作结果', '新密码不能为空!', page.failure);
         pwd1.focus();
@@ -38,17 +42,12 @@ $('#reset').on('click', function (e) {
         },
         success: function (result) {
             if (result.statusCode === 400) {
-                $.gritter.add({
-                    title: '操作结果',
-                    text: '原密码输入不正确,请重新输入',
-                    image: '../img/error.png'
-                });
+                page.inform('操作结果','原密码输入不正确,请重新输入',page.failure);
+
+            }if(result.statusCode === 401) {
+                page.inform('操作结果','请填写正确的密码',page.failure);
             } else if (result.statusCode === 200) {
-                $.gritter.add({
-                    title: '操作结果',
-                    text: '修改成功',
-                    image: '../img/confirm.png'
-                });
+                page.inform('操作结果','修改成功',page.success);
                 window.location = '../logout';
             }
         }
