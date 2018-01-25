@@ -27,8 +27,7 @@ class ScoreController extends Controller {
     }
 
     /**
-     * 教成绩列表
-     *
+     * 啊水电费
      * @return bool|JsonResponse
      * @throws \Throwable
      */
