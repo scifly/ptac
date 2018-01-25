@@ -28,6 +28,8 @@ class MobileSiteController extends Controller
         $corps = $corp::whereName('万浪软件')->first();
         $corpId = $corps->corpid;
         $secret = App::whereAgentid('999')->first()->secret;
+        $userId = Session::get('userId') ? Session::get('userId') : null;
+        
         $code = Request::input('code');
 
         # 从微信企业号后台获取userid
