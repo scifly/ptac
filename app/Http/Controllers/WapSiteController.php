@@ -5,10 +5,8 @@ use App\Facades\Wechat;
 use App\Http\Requests\WapSiteRequest;
 use App\Models\App;
 use App\Models\Corp;
-use App\Models\Department;
 use App\Models\Media;
 use App\Models\School;
-use App\Models\User;
 use App\Models\WapSite;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -16,7 +14,6 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Storage;
 use Throwable;
-use Illuminate\Support\Facades\Session;
 
 /**
  * 微网站
@@ -200,5 +197,57 @@ class WapSiteController extends Controller {
         
     }
 
+    /**
+     * 微网站首页
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param $school_id
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+     public function wapHome(\Illuminate\Http\Request $request, $school_id) {
+
+         $corp = new Corp();
+         $corps = $corp::whereName('万浪软件')->first();
+         $corpId = $corps->corpid;
+         $token = Wechat::getAccessToken($corpId, App::whereAgentid('999')->first()->secret);
+         $code = $request->input('code');
+         if (empty($code)) {
+ //            $codeUrl = Wechat::getCodeUrl($corpId, '1000006', 'http://weixin.028lk.com/wap_sites/userInfo');
+             $codeUrl = Wechat::getCodeUrl($corpId, '1000006', 'http://weixin.028lk.com/wap_sites/webindex');
+             $url = explode('https', $codeUrl);
+
+             return redirect('https' . $url[1]);
+         } else {
+             # 从微信企业号后台获取userid
+             $userInfo = Wechat::getUserInfo($token, $code);
+             $wechatUserInfo = json_decode($userInfo);
+             # 获取学校的部门类型
+             // $departmentType = new DepartmentType();
+             // $type = $departmentType::whereName('学校')->first();
+             # 通过微信企业后台返回的userid  获取数据库user数据
+             $user = User::where('userid', $wechatUserInfo['UserId'])->first();
+             $department = new Department();
+             # 获取当前用户的最高顶级部门
+             $level = $department->groupLevel($user->id);
+             $group = User::whereId($user->id)->first()->group;
+             if ($level == 'school' || $school_id) {
+                 $school_id = empty($school_id) ? $group->school_id : $school_id;
+                 $wapSite = $this->wapSite
+                     ->where('school_id', $school_id)
+                     ->first();
+
+                 // dd($wapSite->wapSiteModules->media);
+                 return view('frontend.wap_site.index', [
+                     'wapsite' => $wapSite,
+                     // 'code' => $code,
+                     'medias'  => $this->media->medias($wapSite->media_ids),
+                     'ws'      => true,
+                 ]);
+             } else {
+
+             }
+         }
+
+     }
 }
 

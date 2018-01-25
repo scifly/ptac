@@ -29,13 +29,15 @@ class MobileSiteController extends Controller
         $corpId = $corps->corpid;
         $secret = App::whereAgentid('999')->first()->secret;
         $userId = Session::get('userId') ? Session::get('userId') : null;
-        
+
         $code = Request::input('code');
 
         # 从微信企业号后台获取userid
         if (empty($code)) {
             $codeUrl = Wechat::getCodeUrl($corpId, '999', 'http://weixin.028lk.com/wapsite/home');
-            return redirect($codeUrl);
+            $url = explode('https', $codeUrl);
+
+            return redirect('https' . $url[1]);
         } elseif(!empty($code) && empty($userId)){
             $accessToken = Wechat::getAccessToken($corpId, $secret);
             $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
