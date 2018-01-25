@@ -25,12 +25,12 @@ class ScoreController extends Controller {
         $this->middleware(['auth', 'checkrole']);
         
     }
-    
+
     /**
      * 成绩列表
      *
      * @return bool|JsonResponse
-     * @throws Throwable
+     * @throws \Throwable
      */
     public function index() {
         
