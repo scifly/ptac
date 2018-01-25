@@ -44,27 +44,29 @@ class MobileSiteController extends Controller
         // $departmentType = new DepartmentType();
         // $type = $departmentType::whereName('学校')->first();
         # 通过微信企业后台返回的userid  获取数据库user数据
-        print_r($userId);die;
         $user = User::where('userid', $userId)->first();
-        $department = new Department();
-        # 获取当前用户的最高顶级部门
-        $level = $department->groupLevel($user->id);
-        $group = User::whereId($user->id)->first()->group;
-        if ($level == 'school') {
-            $school_id = $group->school_id;
-            $wapSite = WapSite::
-            where('school_id', $school_id)
-                ->first();
-            if ($wapSite) {
-                // dd($wapSite->wapSiteModules->media);
-                return view('wechat.wapsite.home', [
-                    'wapsite' => $wapSite,
-                    // 'code' => $code,
-                    'medias'  => Media::medias(explode(',', $wapSite->media_ids)),
-                ]);
-            }
+        if ($user) {
+//        $department = new Department();
+//        # 获取当前用户的最高顶级部门
+//        $level = $department->groupLevel($user->id);
+//        $group = User::whereId($user->id)->first()->group;
+            if ($user->group->school_id) {
+                $school_id = $user->group->school_id;
+                $wapSite = WapSite::
+                where('school_id', $school_id)
+                    ->first();
+                if ($wapSite) {
+                    // dd($wapSite->wapSiteModules->media);
+                    return view('wechat.wapsite.home', [
+                        'wapsite' => $wapSite,
+                        // 'code' => $code,
+                        'medias'  => Media::medias(explode(',', $wapSite->media_ids)),
+                    ]);
+                }
 
+            }
         }
+
 
     }
 }
