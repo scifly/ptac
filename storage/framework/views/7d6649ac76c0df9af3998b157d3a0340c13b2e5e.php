@@ -15,11 +15,11 @@
 				    <div class="form-group">
 
 					    <div class="col-sm-12">
-							@include('partials.single_select', [
+							<?php echo $__env->make('partials.single_select', [
 								'label' => '考试名称',
 								'id' => 'exam_id',
 								'items' => $exams
-							])
+							], array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
 					    </div>
 					</div>
 			   	</div>
@@ -27,11 +27,11 @@
 			   	<div class="col-md-6">
 				    <div class="form-group">
 					    <div class="col-sm-12">
-							@include('partials.single_select', [
+							<?php echo $__env->make('partials.single_select', [
 								'label' => '考试范围',
 								'id' => 'squad_id',
 								'items' => $classes
-							])
+							], array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
 					    </div>
 					</div>
 			   	</div>
@@ -48,14 +48,14 @@
 									<input type="checkbox" class="minimal" value="-1">
 									总分
 								</label>
-								@if(!empty($subjects))
-								{{--@foreach($subjects as $s)--}}
-									{{--<label>--}}
-										{{--<input type="checkbox" class="minimal" value="{{$s['id']}}">--}}
-										{{--{{$s['name']}}--}}
-									{{--</label>--}}
-								{{--@endforeach--}}
-								@endif
+								<?php if(!empty($subjects)): ?>
+								
+									
+										
+										
+									
+								
+								<?php endif; ?>
 				   			</div>
 				    	</div>
 				    </div>
