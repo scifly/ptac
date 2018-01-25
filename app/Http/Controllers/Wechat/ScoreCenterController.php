@@ -36,6 +36,8 @@ class ScoreCenterController extends Controller {
     }
 
     /**
+     *  微信端成绩
+     *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function index()
