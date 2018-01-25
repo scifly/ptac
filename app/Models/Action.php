@@ -293,6 +293,7 @@ class Action extends Model {
         }
         foreach ($selfDefinedMethods as $actions) {
             foreach ($actions as $action) {
+                print_r($action);
                 $a = $this->where([
                     ['controller', $action['controller']],
                     ['method', $action['method']],
@@ -477,10 +478,8 @@ class Action extends Model {
      * @return mixed|string
      */
     private static function getMethodComment(ReflectionClass $controllerObj, ReflectionMethod $method) {
-
-        print_r($controllerObj);
+       
         $comment = $controllerObj->getMethod($method->getName())->getDocComment();
-        print_r($comment);
         $name = 'n/a';
         preg_match_all("#\/\*\*\n\s{5}\*[^\*]*\*#", $comment, $matches);
         if (isset($matches[0][0])) {
@@ -491,7 +490,6 @@ class Action extends Model {
                 $name = str_replace(str_split("\r\n/*"), '', $matches[0][0]);
             }
         }
-        print_r($name);
         return $name;
 
     }
