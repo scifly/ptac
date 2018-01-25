@@ -478,7 +478,9 @@ class Action extends Model {
      */
     private static function getMethodComment(ReflectionClass $controllerObj, ReflectionMethod $method) {
 
+        print_r($controllerObj);
         $comment = $controllerObj->getMethod($method->getName())->getDocComment();
+        print_r($comment);
         $name = 'n/a';
         preg_match_all("#\/\*\*\n\s{5}\*[^\*]*\*#", $comment, $matches);
         if (isset($matches[0][0])) {
