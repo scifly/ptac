@@ -34,7 +34,6 @@ class AttendanceController extends Controller {
             $userId = $userInfo['UserId'];
             Session::put('userId',$userId);
         }
-        
         $user = User::whereUserid($userId)->first();
         #判断是否为教职工
         $educator = false;
@@ -201,6 +200,9 @@ class AttendanceController extends Controller {
         $input = Request::all();
         $user = User::whereUserid(Session::get('userId'))->first();
         $educator = $user->educator;
+        if(!$educator){
+            return response()->json(['data' => '暂未找到您教师的身份！', 'statusCode' => 500]);
+        }
         #班级列表 可能存在多个年级
         $squadLists = $educator->classes;
         if(count($squadLists) == 0){
