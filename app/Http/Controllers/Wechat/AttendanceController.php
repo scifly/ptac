@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers\Wechat;
 
+use App\Facades\Wechat;
 use App\Http\Controllers\Controller;
 use App\Models\Semester;
 use App\Models\Squad;
@@ -11,6 +12,12 @@ use App\Models\User;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
 
+/**
+ *  微信考勤
+ *
+ * Class AttendanceController
+ * @package App\Http\Controllers\Wechat
+ */
 class AttendanceController extends Controller {
     
     /**
@@ -36,7 +43,7 @@ class AttendanceController extends Controller {
         $user = User::whereUserid($userId)->first();
         #判断是否为教职工
         $educator = false;
-        if (empty($user)) {
+        if (!$user) {
             return '<h4>你暂不是教职员工或监护人</h4>';
         }
         if ($user->group->name != '教职员工' && $user->group->name != '监护人') {
@@ -199,8 +206,14 @@ class AttendanceController extends Controller {
         $input = Request::all();
         $user = User::whereUserid(Session::get('userId'))->first();
         $educator = $user->educator;
+        if(!$educator){
+            return response()->json(['data' => '暂未找到您教师的身份！', 'statusCode' => 500]);
+        }
         #班级列表 可能存在多个年级
         $squadLists = $educator->classes;
+        if(count($squadLists) == 0){
+            return response()->json(['data' => '老师，您还未绑定班级关系！', 'statusCode' => 500]);
+        }
         $data['squadnames'] = [];
         $gradeIds = [];
         foreach ($squadLists as $s) {
@@ -248,7 +261,7 @@ class AttendanceController extends Controller {
         $squad = $educator->classes->first();
         $grade = $squad->grade;
         $school = $grade->school;
-        $schoolSemesters = Semester::where('school_id', $school->id)->get();
+        $schoolSemesters = Semester::where('school_id', $school->id)->whereEnabled(1)->get();
         $students = $squad->students;
         $studentIds = [];
         $date = date('Y-m-d', time());

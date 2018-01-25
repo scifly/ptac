@@ -47,7 +47,7 @@ function getdata(data) {
     $.ajax({
         type: 'POST',
         data: data,
-        url: '../public/attendance_charts',
+        url: 'attendance_charts',
         success: function (result) {
             console.log(result.data);
             if (result.statusCode === 200) {
@@ -117,7 +117,7 @@ function classchange() {
         $.ajax({
             type: 'GET',
             data: token,
-            url: '../public/attendance_rules/' + squadId,
+            url: 'attendance_rules/' + squadId,
             success: function (result) {
                 if (result.statusCode === 200) {
                     $rule.select("update", {items: result.data});
@@ -154,7 +154,7 @@ function date_rule() {
     $.ajax({
         type: 'GET',
         data: $data,
-        url: '../public/attendance_date',
+        url: 'attendance_date',
         success: function (result) {
             if (result.statusCode !== 200) {
                 $.alert(result.message);

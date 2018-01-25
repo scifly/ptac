@@ -48,13 +48,15 @@
 									<input type="checkbox" class="minimal" value="-1">
 									总分
 								</label>
-								@if(!empty($subjects))
-								{{--@foreach($subjects as $s)--}}
-									{{--<label>--}}
-										{{--<input type="checkbox" class="minimal" value="{{$s['id']}}">--}}
-										{{--{{$s['name']}}--}}
-									{{--</label>--}}
-								{{--@endforeach--}}
+								@if(($subjects))
+									@foreach($subjects as $s)
+										@if($s)
+										<label>
+											<input type="checkbox" class="minimal" value="{{$s['id']}}">
+											{{$s['name']}}
+										</label>
+										@endif
+									@endforeach
 								@endif
 				   			</div>
 				    	</div>
