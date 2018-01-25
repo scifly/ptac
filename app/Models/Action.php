@@ -293,11 +293,12 @@ class Action extends Model {
         }
         foreach ($selfDefinedMethods as $actions) {
             foreach ($actions as $action) {
-                print_r($action);
                 $a = $this->where([
                     ['controller', $action['controller']],
                     ['method', $action['method']],
                 ])->first();
+                print_r($action);
+                print_r($a);
                 if ($a) {
                     $a->name = $action['name'];
                     $a->route = $action['route'];
