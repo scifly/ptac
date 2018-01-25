@@ -17,7 +17,9 @@ class OperatorCreateComposer {
         $user = Auth::user();
         switch ($user->group->name) {
             case '运营':
-                $groups = Group::whereSchoolId(null)->pluck('name', 'id');
+                // $groups = Group::whereSchoolId(null)->pluck('name', 'id');
+                $groups = Group::whereSchoolId(null)->where('name','企业')->pluck('name', 'id');
+
                 $corps = Corp::pluck('name', 'department_id');
                 $schools = School::pluck('name', 'department_id');
                 $view->with(['groups' => $groups, 'corps' => $corps, 'schools' => $schools, 'uris' => $this->uris()]);
