@@ -11,8 +11,9 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 use Throwable;
 
+
 /**
- * 成绩
+ * 成绩模块
  *
  * Class ScoreController
  * @package App\Http\Controllers
