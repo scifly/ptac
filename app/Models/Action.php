@@ -291,8 +291,6 @@ class Action extends Model {
             }
 
         }
-        print_r($selfDefinedMethods);
-        die;
         foreach ($selfDefinedMethods as $actions) {
             foreach ($actions as $action) {
                 $a = $this->where([
