@@ -25,21 +25,7 @@ class ScoreController extends Controller {
 
     }
 
-    /**
-     * 成绩列表
-     *
-     * @return bool|JsonResponse
-     * @throws \Throwable
-     */
-    public function index() {
 
-        if (Request::get('draw')) {
-            return response()->json(Score::datatable());
-        }
-
-        return $this->output();
-
-    }
 
     
     /**
