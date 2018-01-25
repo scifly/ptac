@@ -871,7 +871,13 @@ class Score extends Model {
         #存放总分分数段设置和统计人数的数组
         $scoreToRanges = [];
         $exam = Exam::whereId($input['exam_id'])->first();
+        if (!$exam){
+            return false;
+        }
         $squad = Squad::whereId($input['squad_id'])->first();
+        if(!$squad){
+            return false;
+        }
         #找到考试对应的科目存到数组 ids
         $examSub = explode(',', $exam->subject_ids);
         #找到班级下面对应所有的学生 ids
