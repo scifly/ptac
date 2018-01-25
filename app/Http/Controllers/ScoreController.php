@@ -26,6 +26,20 @@ class ScoreController extends Controller {
     }
 
 
+    
+    /**
+     * 录入成绩
+     *
+     * @return bool|JsonResponse
+     * @throws Throwable
+     */
+    public function create() {
+        
+        return $this->output();
+        
+    }
+
+
     /**
      * 录入成绩1111
      *
@@ -40,19 +54,6 @@ class ScoreController extends Controller {
 
         return $this->output();
 
-    }
-
-    
-    /**
-     * 录入成绩
-     *
-     * @return bool|JsonResponse
-     * @throws Throwable
-     */
-    public function create() {
-        
-        return $this->output();
-        
     }
     
     /**
