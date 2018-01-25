@@ -8,7 +8,6 @@ use App\Models\Squad;
 use App\Models\Subject;
 use Exception;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Throwable;
 
@@ -28,7 +27,7 @@ class ScoreController extends Controller {
 
     /**
      * 成绩列表
-     * 
+     *
      * @return bool|JsonResponse
      * @throws \Throwable
      */
@@ -41,6 +40,7 @@ class ScoreController extends Controller {
         return $this->output();
 
     }
+
     
     /**
      * 录入成绩
