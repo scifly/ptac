@@ -35,7 +35,7 @@
 		@foreach($wapsite->wapSiteModules as $v)
 			<a href="javascript:" class="col-xs-4">
 				<div class="item-icon">
-					<img src="../../{{$v->media->path}}" alt="">
+					<img src="../{{$v->media->path}}" alt="">
 				</div>
 				<p class="item-label">{{$v->name}}</p>
 			</a>
@@ -46,12 +46,12 @@
 
 @endsection
 @section('script')
-@endsection
 	<script>
 		
       $(".swiper-container").swiper({
-        loop: true,
+        	loop: true,
         autoplay: 3000
       });
     
 	</script>
+@endsection
