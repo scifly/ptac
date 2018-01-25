@@ -491,7 +491,7 @@ class Action extends Model {
                 $name = str_replace(str_split("\r\n/*"), '', $matches[0][0]);
             }
         }
-
+        print_r($name);
         return $name;
 
     }
