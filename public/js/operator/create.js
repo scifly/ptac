@@ -39,7 +39,7 @@ switch (role) {
         $schoolId.on('change', function() { dept.init(uri + '?rootId=' + $schoolId.val()); });
         $corps.hide();
         $schools.hide();
-        dept.init(uri);
+        // dept.init(uri);
         break;
     case '企业':
         $group.on('change', function() {

@@ -1,0 +1,54 @@
+body, html {
+    height: 100%;
+    width: 100%;
+    overflow-x: hidden;
+}
+body{
+    margin: 0;
+    padding:0;
+    background-color: #fff;
+    font-family: "微软雅黑";
+}
+.main{
+    height: 100%;
+    width: 100%;
+}
+.swiper-container{
+    height: 230px;
+}
+.swiper-wrapper{
+    transform: translate3d(-640px, 0px, 0px); transition-duration: 0ms;
+}
+.swiper-slide{
+    width: 100%;
+}
+.multi-role {
+    background: #fff;
+    position: relative;
+}
+.multi-role .switchclass-item {
+    padding: 0px;
+    padding-right: 0;
+    display: -webkit-box;
+    line-height: 30px;
+    border-bottom: 5px solid #f8f8f8;
+    text-align: center;
+}
+.multi-role .switchclass-item .switchclass-title{
+    -webkit-box-flex: 1;position: relative;
+}
+.title-name{
+    font-size: 18px;
+    color: #686868;
+    width: 100%;
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    float: left;
+    text-align: center;
+    color: #4DC9B6;
+}
+.switchclass-head{
+    width: 100%;
+}
