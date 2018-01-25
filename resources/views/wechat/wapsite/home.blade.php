@@ -3,7 +3,7 @@
 <title>微网站</title>
 @endsection
 @section('css')
-<link rel="stylesheet" href="{{ asset('/css/wechat/message_center/index.css') }}">
+<link rel="stylesheet" href="{{ asset('/css/wechat/wapsite/index.css') }}">
 @endsection
 @section('content')
 	<!--轮播图-->
