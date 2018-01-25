@@ -7,6 +7,7 @@ use App\Models\App;
 use App\Models\Corp;
 use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Log;
 
 
 class AppIndexComposer {
@@ -19,7 +20,6 @@ class AppIndexComposer {
         $corp = Corp::find($corpId);
         $apps = App::whereCorpId($corpId)->get()->toArray();
         $this->formatDateTime($apps);
-
         $view->with([
             'corp' => $corp,
             'apps' => $apps,
