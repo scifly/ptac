@@ -20,9 +20,11 @@
 	</div>
 	<div class="swiper-container swiper-container-horizontal" style="height: 230px;">
       	<div class="swiper-wrapper" style="">
-			@foreach($medias as $k => $v)
-				<div class="swiper-slide" data-swiper-slide-index="{{$k}}"><img src="{{$v->path}}"></div>
-			@endforeach
+			@if($medias)
+				@foreach($medias as $k => $v)
+					<div class="swiper-slide" data-swiper-slide-index="{{$k}}"><img src="../{{$v->path}}"></div>
+				@endforeach
+			@endif
       	</div>
       	<div class="swiper-pagination swiper-pagination-bullets"><span class="swiper-pagination-bullet"></span><span class="swiper-pagination-bullet swiper-pagination-bullet-active"></span><span class="swiper-pagination-bullet"></span></div>
     </div>

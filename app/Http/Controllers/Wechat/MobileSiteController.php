@@ -29,41 +29,45 @@ class MobileSiteController extends Controller
         $corpId = $corps->corpid;
         $secret = App::whereAgentid('1000006')->first()->secret;
 
-        $userId = Session::get('userId') ? Session::get('userId') : null;
-        $code = Request::input('code');
-        if (empty($code) && empty($userId)) {
-            $codeUrl = Wechat::getCodeUrl($corpId, '1000006', 'http://weixin.028lk.com/wapsite/home');
-            return redirect($codeUrl);
-        }elseif(!empty($code) && empty($userId)){
-            $accessToken = Wechat::getAccessToken($corpId, $secret);
-            $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
-            $userId = $userInfo['UserId'];
-            Session::put('userId',$userId);
-        }
+//        $userId = Session::get('userId') ? Session::get('userId') : null;
+//        $code = Request::input('code');
+//        if (empty($code) && empty($userId)) {
+//            $codeUrl = Wechat::getCodeUrl($corpId, '1000006', 'http://weixin.028lk.com/wapsite/home');
+//            return redirect($codeUrl);
+//        }elseif(!empty($code) && empty($userId)){
+//            $accessToken = Wechat::getAccessToken($corpId, $secret);
+//            $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
+//            $userId = $userInfo['UserId'];
+//            Session::put('userId',$userId);
+//        }
+        $userId = 'user_5a699bf4827e9';
         # 获取学校的部门类型
         // $departmentType = new DepartmentType();
         // $type = $departmentType::whereName('学校')->first();
         # 通过微信企业后台返回的userid  获取数据库user数据
         $user = User::where('userid', $userId)->first();
-        $department = new Department();
-        # 获取当前用户的最高顶级部门
-        $level = $department->groupLevel($user->id);
-        $group = User::whereId($user->id)->first()->group;
-        if ($level == 'school') {
-            $school_id = $group->school_id;
-            $wapSite = WapSite::
-            where('school_id', $school_id)
-                ->first();
-            if ($wapSite) {
-                // dd($wapSite->wapSiteModules->media);
-                return view('wechat.wapsite.home', [
-                    'wapsite' => $wapSite,
-                    // 'code' => $code,
-                    'medias'  => Media::medias(explode(',', $wapSite->media_ids)),
-                ]);
-            }
+        if ($user) {
+//        $department = new Department();
+//        # 获取当前用户的最高顶级部门
+//        $level = $department->groupLevel($user->id);
+//        $group = User::whereId($user->id)->first()->group;
+            if ($user->group->school_id) {
+                $school_id = $user->group->school_id;
+                $wapSite = WapSite::
+                where('school_id', $school_id)
+                    ->first();
+                if ($wapSite) {
+                    // dd($wapSite->wapSiteModules->media);
+                    return view('wechat.wapsite.home', [
+                        'wapsite' => $wapSite,
+                        // 'code' => $code,
+                        'medias'  => Media::medias(explode(',', $wapSite->media_ids)),
+                    ]);
+                }
 
+            }
         }
+
 
     }
 }
