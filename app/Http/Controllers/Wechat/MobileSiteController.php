@@ -35,9 +35,9 @@ class MobileSiteController extends Controller
         # 从微信企业号后台获取userid
         if (empty($code)) {
             $codeUrl = Wechat::getCodeUrl($corpId, '999', 'http://weixin.028lk.com/wapsite/home');
-            $url = explode('https', $codeUrl);
+            $url = explode('http', $codeUrl);
 
-            return redirect('https' . $url[1]);
+            return redirect('http' . $url[1]);
         } elseif(!empty($code) && empty($userId)){
             $accessToken = Wechat::getAccessToken($corpId, $secret);
             $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
