@@ -477,7 +477,7 @@ class Action extends Model {
      * @return mixed|string
      */
     private static function getMethodComment(ReflectionClass $controllerObj, ReflectionMethod $method) {
-
+       
         $comment = $controllerObj->getMethod($method->getName())->getDocComment();
         $name = 'n/a';
         preg_match_all("#\/\*\*\n\s{5}\*[^\*]*\*#", $comment, $matches);
@@ -489,7 +489,6 @@ class Action extends Model {
                 $name = str_replace(str_split("\r\n/*"), '', $matches[0][0]);
             }
         }
-
         return $name;
 
     }
