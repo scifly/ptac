@@ -70,6 +70,7 @@
 <script src="<?php echo e(URL::asset('js/adminlte.min.js')); ?>"></script>
 <script src="<?php echo e(asset('js/bootstrap.min.js')); ?>"></script>
 <script src="<?php echo e(asset('js/auth/login.js')); ?>"></script>
+<script src="<?php echo e(asset('js/home/page.js')); ?>"></script>
 <script src="<?php echo e(URL::asset('js/plugins/icheck/icheck.min.js')); ?>"></script>
 <script src="<?php echo e(URL::asset('js/plugins/gritter/js/jquery.gritter.min.js')); ?>"></script>
 <script>
