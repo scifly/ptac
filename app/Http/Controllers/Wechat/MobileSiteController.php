@@ -31,18 +31,18 @@ class MobileSiteController extends Controller
         $corpId = $corps->corpid;
         $secret = App::whereAgentid('1000006')->first()->secret;
 
-        $userId = Session::get('userId') ? Session::get('userId') : null;
-        $code = Request::input('code');
-        if (empty($code) && empty($userId)) {
-            $codeUrl = Wechat::getCodeUrl($corpId, '1000006', 'http://weixin.028lk.com/wapsite/home');
-            return redirect($codeUrl);
-        }elseif(!empty($code) && empty($userId)){
-            $accessToken = Wechat::getAccessToken($corpId, $secret);
-            $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
-            $userId = $userInfo['UserId'];
-            Session::put('userId',$userId);
-        }
-//        $userId = 'user_5a699bf4827e9';
+//        $userId = Session::get('userId') ? Session::get('userId') : null;
+//        $code = Request::input('code');
+//        if (empty($code) && empty($userId)) {
+//            $codeUrl = Wechat::getCodeUrl($corpId, '1000006', 'http://weixin.028lk.com/wapsite/home');
+//            return redirect($codeUrl);
+//        }elseif(!empty($code) && empty($userId)){
+//            $accessToken = Wechat::getAccessToken($corpId, $secret);
+//            $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
+//            $userId = $userInfo['UserId'];
+//            Session::put('userId',$userId);
+//        }
+        $userId = 'user_5a699bf4827e9';
         # 获取学校的部门类型
         // $departmentType = new DepartmentType();
         // $type = $departmentType::whereName('学校')->first();
