@@ -288,12 +288,18 @@ class Custodian extends Model
         $columns = [
             ['db' => 'Custodian.id', 'dt' => 0],
             ['db' => 'User.realname', 'dt' => 1],
-            ['db' => 'User.gender', 'dt' => 2,
-                'formatter' => function ($d) {
-                    return $d == 1 ? '男' : '女';
-                },
+            [
+                'db' => 'CustodianStudent.student_id', 'dt' => 2,
+                'formatter' => function($d){
+                     return Student::whereId($d)->first()->user->realname;
+                }
+
             ],
-            ['db' => 'User.email', 'dt' => 3],
+            ['db' => 'User.gender', 'dt' => 3,
+             'formatter' => function ($d) {
+                 return $d == 1 ? '男' : '女';
+             },
+            ],
             ['db' => 'Custodian.id as mobile', 'dt' => 4,
                 'formatter' => function ($d) {
                     $custodian = Custodian::find($d);

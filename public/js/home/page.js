@@ -113,8 +113,8 @@ var page = {
             ? window.location.origin + '/'
             : window.location.protocol + '/' + window.location.host + '/';
         if (window.location.href.indexOf('public') > -1) {
+            // return siteRoot + 'ptac/public/';
             return siteRoot + 'ptac/public/';
-            // return siteRoot + 'pppp/public/';
         }
         return siteRoot;
     },
@@ -175,16 +175,15 @@ var page = {
         return '?menuId=' + this.getActiveMenuId() + '&tabId=' + this.getActiveTabId();
     },
     errorHandler: function (e) {
-         var obj = JSON.parse(e.responseText);
+        var obj = JSON.parse(e.responseText);
         $('.overlay').hide();
         switch (obj['statusCode']) {
             case 400:
-                // var response = JSON.parse(e.responseText);
+                var response = JSON.parse(e.responseText);
                 var errors = obj['errors'];
-                alert(errors.remark);
-                // $.each(errors, function() {
-                //     page.inform('验证错误', this, page.failure);
-                // });
+                $.each(errors, function() {
+                    page.inform('验证错误', this, page.failure);
+                });
                 break;
             case 401:
                 page.inform('重新登录', '会话已过期，请重新登录', page.info);

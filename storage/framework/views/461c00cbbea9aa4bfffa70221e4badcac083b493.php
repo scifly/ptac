@@ -19,8 +19,8 @@
 			<tr class="bg-info">
                 <th>#</th>
                 <th>监护人姓名</th>
+                <th>学生姓名</th>
                 <th>性别</th>
-                <th>电子邮箱</th>
                 <th>手机号码</th>
                 <th>创建于</th>
                 <th>更新于</th>
