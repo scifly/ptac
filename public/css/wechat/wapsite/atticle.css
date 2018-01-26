@@ -1,0 +1,103 @@
+body, html {
+    height: 100%;
+    width: 100%;
+    overflow-x: hidden;
+}
+body{
+    margin: 0;
+    padding:0;
+    background-color: #fff;
+    font-family: "微软雅黑";
+}
+.weui_tab {
+    position: relative;
+    height: 100%;
+}
+.weui_tab_bd {
+    box-sizing: border-box;
+    height: 100%;
+    padding-bottom: 55px;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+}
+div.weui_tab_bd {
+    padding-bottom: 50px;
+}
+.overflow-homework{
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 50px;
+    overflow-y: auto!important;
+    overflow-x: hidden!important;
+    padding: 10px;
+}
+.homework{
+    background: #fff;
+}
+.homework .artic-head{
+    padding: 18px 11px 0;
+    position: relative;
+}
+.homework .artic-title{
+    font-size: 21px;
+    width: 100%;
+    display: inline-block;
+    float: left;
+}
+.homework .artic-time{
+    font-size: 15px;
+    color: #ccc;
+    display: inline-block;
+    margin-top: 1.1px;
+}
+.homework .model-name-layout{
+    font-size: 15px;
+    padding: 0 11px;
+    width: 100%;
+    box-sizing: border-box;
+}
+.d-inline{
+    display: inline-block;
+}
+.model-name-layout .model-name-left{
+    width: 100%!important;
+    float: left;
+}
+.white-over{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.homework .detail-content{
+    min-height: 23px;
+    padding: 0 11px;
+}
+.homework .wwbw{
+    padding-top: 11px;
+    font-size: 17px;
+}
+.bottom-artic{
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #fff;
+}
+.bottom-icon-box {
+    padding: 11px 0;
+    display: inline-block;
+    width: 49%;
+    text-align: center;
+}
+.bottom-icon-box span{
+    font-size: 17px;
+}
+.c-green {
+    color: #1aad19!important;
+}
+.swiper-slide img{
+    width: 100%;
+    height: 100%;
+}

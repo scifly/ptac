@@ -97,7 +97,7 @@ class MobileSiteController extends Controller
      *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function detail() {
+    public function articleHome() {
         $id = Request::input('id');
 
         $article = WsmArticle::find($id);
