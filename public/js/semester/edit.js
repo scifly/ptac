@@ -9,8 +9,14 @@ function datetime($initTime) {
     })
 }
 
-$.getMultiScripts([page.plugins.timepicker.js, page.plugins.timepicker.jscn], page.siteRoot())
-    .done(function () {
-        datetime($(".start_date"));
-        datetime($(".end_date"));
-    });
+if (!($.fn.timepicker)) {
+    $.getMultiScripts([page.plugins.timepicker.js, page.plugins.timepicker.jscn], page.siteRoot())
+        .done(function () {
+            datetime($(".start_date"));
+            datetime($(".end_date"));
+        });
+} else {
+    datetime($(".start_date"));
+    datetime($(".end_date"));
+}
+
