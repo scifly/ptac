@@ -48,7 +48,7 @@
                             @foreach($medias as $key => $value)
                                 @if(!empty($value))
                                     <div class="img-item">
-                                        <img src="../../{{$value->path}}" id="{{$value->id}}">
+                                        <img src="../../{{$value->path}}" id="{{$value->id}}" style="width: 100px;height: 100px">
                                         <input type="hidden" name="media_ids[]" value="{{$value->id}}"/>
                                         <div class="del-mask">
                                             <i class="delete fa fa-trash"></i>
