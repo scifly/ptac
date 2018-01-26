@@ -79,7 +79,7 @@ class WsmArticleController extends Controller {
         
         return $this->output([
             'article' => $article,
-            'medias'  => Media::medias($article->media_ids),
+            'medias'  => Media::medias(explode(',', $article->media_ids)),
         ]);
         
     }
@@ -98,7 +98,7 @@ class WsmArticleController extends Controller {
         
         return $this->output([
             'article' => $article,
-            'medias'  => Media::medias($article->media_ids),
+            'medias'  => Media::medias(explode(',', $article->media_ids)),
         ]);
         
     }
