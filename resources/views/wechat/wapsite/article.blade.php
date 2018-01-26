@@ -38,7 +38,7 @@
 							<div class="artic-detail-module"> 
 								<div class="writing-texts bg-fff"> 
 									<div class="wwbw js-wwbw mce-item-table article-message"> 
-										{{$article->content}}
+										{!! $article->content !!}
 									</div> 
 								</div> 
 							</div> 
