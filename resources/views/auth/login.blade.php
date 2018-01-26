@@ -59,7 +59,7 @@
                     </div>
                 </div>
             </form>
-            <a href="{{Url('password/reset')}}">忘记密码</a><br>
+            {{--<a href="{{Url('password/reset')}}">忘记密码</a><br>--}}
         </div>
         @include('partials.form_overlay')
     </div>

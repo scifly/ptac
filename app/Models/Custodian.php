@@ -293,14 +293,14 @@ class Custodian extends Model
                 'formatter' => function($d){
                      return Student::whereId($d)->first()->user->realname;
                 }
-
             ],
-            ['db' => 'User.gender', 'dt' => 3,
+            ['db' => 'User.email', 'dt' => 3],
+            ['db' => 'User.gender', 'dt' => 4,
              'formatter' => function ($d) {
                  return $d == 1 ? '男' : '女';
              },
             ],
-            ['db' => 'Custodian.id as mobile', 'dt' => 4,
+            ['db' => 'Custodian.id as mobile', 'dt' => 5,
                 'formatter' => function ($d) {
                     $custodian = Custodian::find($d);
                     $mobiles = Mobile::whereUserId($custodian->user_id)->get();
@@ -312,10 +312,10 @@ class Custodian extends Model
                     return implode(',', $mobile);
                 },
             ],
-            ['db' => 'Custodian.created_at', 'dt' => 5],
-            ['db' => 'Custodian.updated_at', 'dt' => 6],
+            ['db' => 'Custodian.created_at', 'dt' => 6],
+            ['db' => 'Custodian.updated_at', 'dt' => 7],
             [
-                'db' => 'User.enabled', 'dt' => 7,
+                'db' => 'User.enabled', 'dt' => 8,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($d, $row, false);
                 },
