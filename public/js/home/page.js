@@ -181,10 +181,10 @@ var page = {
             case 400:
                 // var response = JSON.parse(e.responseText);
                 var errors = obj['errors'];
-                alert(errors.remark);
-                // $.each(errors, function() {
-                //     page.inform('验证错误', this, page.failure);
-                // });
+                // alert(errors.remark);
+                $.each(errors, function() {
+                    page.inform('验证错误', this, page.failure);
+                });
                 break;
             case 401:
                 page.inform('重新登录', '会话已过期，请重新登录', page.info);
