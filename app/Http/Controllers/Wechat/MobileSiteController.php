@@ -83,7 +83,9 @@ class MobileSiteController extends Controller
         $id = Request::input('id');
         $articles = WsmArticle::whereWsmId($id)->get();
         $module = WapSiteModule::whereId($id)->first();
-dd($articles);
+foreach ($articles as $a) {
+    dd($a->thumbnailmedia);
+}
         return view('wechat.wapsite.module_index', [
             'articles' => $articles,
             'module' => $module,
