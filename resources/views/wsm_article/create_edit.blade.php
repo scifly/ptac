@@ -43,7 +43,7 @@
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
-                    <div class="preview">
+                    <div class="preview_meida">
                         @if(isset($medias))
                             @foreach($medias as $key => $value)
                                 @if(!empty($value))

@@ -9,7 +9,7 @@ $.getMultiScripts([page.plugins.ueditor_config.js, page.plugins.ueditor_all.js],
     var ue = UE.getEditor('container', {
         initialFrameHeight: 300
     });
-    var $pre = $('.preview');
+    var $pre = $('.preview_meida');
     var $uploadFile = $('#uploadFile');
     // 初始化
     $uploadFile.fileinput({

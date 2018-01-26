@@ -31,8 +31,8 @@
 							</div>
 							<div class="weui-media-box__bd">
 								<h4 class="weui-media-box__title">{{$a->name}}</h4>
-								<p class="weui-media-box__desc">时间:{{$a->created_at}}</p>
-								<p class="weui-media-box__desc">摘要:{{$a->summary}}</p>
+								<p class="weui-media-box__desc">时间：{{$a->created_at}}</p>
+								<p class="weui-media-box__desc">摘要：{{$a->summary}}</p>
 							</div>
 						</a>
 					@endforeach

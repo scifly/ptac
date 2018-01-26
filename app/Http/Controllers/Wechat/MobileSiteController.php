@@ -91,4 +91,21 @@ class MobileSiteController extends Controller
         ]);
 
     }
+
+    /**
+     * 微网站文章详情
+     *
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function detail() {
+        $id = Request::input('id');
+
+        $article = WsmArticle::find($id);
+
+        return view('frontend.wap_site.article', [
+            'article' => $article,
+            'medias'  => Media::medias($article->media_ids),
+        ]);
+
+    }
 }
