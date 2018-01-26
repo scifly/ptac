@@ -101,11 +101,10 @@ class MobileSiteController extends Controller
         $id = Request::input('id');
 
         $article = WsmArticle::find($id);
-        dd($article);
 
         return view('wechat.wapsite.article', [
             'article' => $article,
-            'medias'  => Media::medias($article->media_ids),
+            'medias'  => Media::medias(explode(',', $article->media_ids)),
         ]);
 
     }
