@@ -23,7 +23,10 @@ $import.on('click', function () {
             contentType: false,
             processData: false,
             success: function (result) {
-                if (result.error !== 0) {
+                console.log(result);
+                if (result.statusCode === 200) {
+                    page.inform("操作成功",result.message, page.success);
+                } else {
                     page.inform("操作失败",result.message, page.failure);
                 }
             },

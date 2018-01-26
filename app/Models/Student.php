@@ -359,6 +359,7 @@ class Student extends Model {
         #if (!isset($custodian)) { return false; }
         try {
             DB::transaction(function () use ($studentId, $student) {
+                $userId = $student->user_id;
                 # 删除指定的学生记录
                 $student->delete();
                 # 删除与指定学生绑定的监护人记录
@@ -367,6 +368,8 @@ class Student extends Model {
                 DepartmentUser::whereUserId($student['user_id'])->delete();
                 # 删除与指定学生绑定的手机记录
                 Mobile::whereUserId($student['user_id'])->delete();
+                # 删除企业号成员
+                User::deleteWechatUser($userId);
             });
         } catch (Exception $e) {
             throw $e;
