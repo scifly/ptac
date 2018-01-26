@@ -18,6 +18,9 @@ class GroupRequest extends FormRequest {
             'name'   => 'required|string|between:2,255|unique:groups,name,' .
                 $this->input('id') . ',id',
             'remark' => 'required|string|between:2,20',
+            'menu_ids' => 'required',
+            'actionId' => 'required',
+            // 'tabId' => 'required',
         ];
 
     }
@@ -25,6 +28,7 @@ class GroupRequest extends FormRequest {
     protected function prepareForValidation() {
 
         $input = $this->all();
+
         $tabIds = [];
         if (isset($input['tabs'])) {
             foreach ($input['tabs'] as $k => $v) {

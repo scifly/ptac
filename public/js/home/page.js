@@ -175,15 +175,16 @@ var page = {
         return '?menuId=' + this.getActiveMenuId() + '&tabId=' + this.getActiveTabId();
     },
     errorHandler: function (e) {
-        var obj = JSON.parse(e.responseText);
+         var obj = JSON.parse(e.responseText);
         $('.overlay').hide();
         switch (obj['statusCode']) {
             case 400:
                 // var response = JSON.parse(e.responseText);
                 var errors = obj['errors'];
-                $.each(errors, function() {
-                    page.inform('验证错误', this, page.failure);
-                });
+                alert(errors.remark);
+                // $.each(errors, function() {
+                //     page.inform('验证错误', this, page.failure);
+                // });
                 break;
             case 401:
                 page.inform('重新登录', '会话已过期，请重新登录', page.info);

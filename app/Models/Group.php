@@ -103,6 +103,7 @@ class Group extends Model {
                     'enabled' => $data['enabled'],
                     'school_id' => $data['school_id'],
                 ]);
+
                 # 功能与角色的对应关系
                 ActionGroup::storeByGroupId($group->id, $data['acitonId']);
                 # 功能与菜单的对应关系
