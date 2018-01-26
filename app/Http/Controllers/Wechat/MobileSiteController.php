@@ -102,7 +102,7 @@ class MobileSiteController extends Controller
 
         $article = WsmArticle::find($id);
 
-        return view('frontend.wap_site.article', [
+        return view('wechat.wapsite.article', [
             'article' => $article,
             'medias'  => Media::medias($article->media_ids),
         ]);
