@@ -83,6 +83,7 @@ var group = function(action) {
                     page.inform('出现异常', obj['message'], page.failure);
                     for(var j in errors){
                         page.inform('出现异常', errors[j], page.failure);
+                        return false;
                     }
                 }
             });
