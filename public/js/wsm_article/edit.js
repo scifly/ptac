@@ -1,10 +1,14 @@
 page.edit('formWsmArticle', 'wsm_articles');
-$(function () {
-    $.getMultiScripts(page.plugins.ueditor_all);
-    $.getMultiScripts(page.plugins.ueditor_all);
+// page.loadCss(page.plugins.ueditor_all.css);
+page.loadCss(page.plugins.fileinput.css);
+$.getMultiScripts([page.plugins.fileinput.js], page.siteRoot());
+$.getMultiScripts([page.plugins.ueditor_config.js, page.plugins.ueditor_all.js], page.siteRoot()).done(function () {
     // var editor = UE.getEditor('container').render('container');//初始化富文本编辑器
+    // $(function () {
     UE.delEditor('container');
-    var ue = UE.getEditor('container');
+    var ue = UE.getEditor('container', {
+        initialFrameHeight: 300
+    });
     var $pre = $('.preview');
     var $uploadFile = $('#uploadFile');
     // 初始化
