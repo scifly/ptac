@@ -11,6 +11,7 @@ use App\Models\Department;
 use App\Models\Media;
 use App\Models\User;
 use App\Models\WapSite;
+use App\Models\WsmArticle;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
 
@@ -29,18 +30,18 @@ class MobileSiteController extends Controller
         $corpId = $corps->corpid;
         $secret = App::whereAgentid('1000006')->first()->secret;
 
-//        $userId = Session::get('userId') ? Session::get('userId') : null;
-//        $code = Request::input('code');
-//        if (empty($code) && empty($userId)) {
-//            $codeUrl = Wechat::getCodeUrl($corpId, '1000006', 'http://weixin.028lk.com/wapsite/home');
-//            return redirect($codeUrl);
-//        }elseif(!empty($code) && empty($userId)){
-//            $accessToken = Wechat::getAccessToken($corpId, $secret);
-//            $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
-//            $userId = $userInfo['UserId'];
-//            Session::put('userId',$userId);
-//        }
-        $userId = 'user_5a699bf4827e9';
+        $userId = Session::get('userId') ? Session::get('userId') : null;
+        $code = Request::input('code');
+        if (empty($code) && empty($userId)) {
+            $codeUrl = Wechat::getCodeUrl($corpId, '1000006', 'http://weixin.028lk.com/wapsite/home');
+            return redirect($codeUrl);
+        }elseif(!empty($code) && empty($userId)){
+            $accessToken = Wechat::getAccessToken($corpId, $secret);
+            $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
+            $userId = $userInfo['UserId'];
+            Session::put('userId',$userId);
+        }
+//        $userId = 'user_5a699bf4827e9';
         # 获取学校的部门类型
         // $departmentType = new DepartmentType();
         // $type = $departmentType::whereName('学校')->first();
@@ -68,6 +69,23 @@ class MobileSiteController extends Controller
             }
         }
 
+
+    }
+
+
+    /**
+     * 微网站栏目首页
+     *
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function wapSiteModuleHome() {
+        $id = Request::input('id');
+        $articles = WsmArticle::whereWsmId($id)->get();
+
+        return view('wechat.wapsite.module_index', [
+            'articles' => $articles,
+            'ws'       => true,
+        ]);
 
     }
 }

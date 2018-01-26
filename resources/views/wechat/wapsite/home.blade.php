@@ -33,12 +33,14 @@
 	<!--九宫格图标-->
 	<div class="weui-grids">
 		@foreach($wapsite->wapSiteModules as $v)
-			<a href="javascript:" class=" weui-grid js_grid">
-				<div class=" weui-grid__icon">
-					<img src="../{{$v->media->path}}" alt="">
-				</div>
-				<p class="weui-grid__label">{{$v->name}}</p>
-			</a>
+			@if($v)
+				<a href="/module/home/?id={{$v->id}}" class=" weui-grid js_grid">
+					<div class=" weui-grid__icon">
+						<img src="../{{$v->media->path}}" alt="">
+					</div>
+					<p class="weui-grid__label">{{$v->name}}</p>
+				</a>
+			@endif
 		@endforeach
 	</div>
 
