@@ -504,7 +504,8 @@ class AttendanceController extends Controller {
      */
     public function getRules($id) {
         #当前年级所有考勤规则，不分学期
-        $rules = StudentAttendanceSetting::whereGradeId($id)->get();
+        $gradeId = Squad::whereId($id)->first()->grade_id;
+        $rules = StudentAttendanceSetting::whereGradeId($gradeId)->get();
         $data = [];
         foreach ($rules as $r) {
             $data[] = [
