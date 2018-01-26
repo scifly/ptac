@@ -60,7 +60,7 @@
                     </div>
                 </div>
             </form>
-            <a href="<?php echo e(Url('password/reset')); ?>">忘记密码</a><br>
+            
         </div>
         <?php echo $__env->make('partials.form_overlay', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
     </div>
