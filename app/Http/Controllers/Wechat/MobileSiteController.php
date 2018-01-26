@@ -11,6 +11,7 @@ use App\Models\Department;
 use App\Models\Media;
 use App\Models\User;
 use App\Models\WapSite;
+use App\Models\WapSiteModule;
 use App\Models\WsmArticle;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
@@ -81,10 +82,29 @@ class MobileSiteController extends Controller
     public function wapSiteModuleHome() {
         $id = Request::input('id');
         $articles = WsmArticle::whereWsmId($id)->get();
+        $module = WapSiteModule::whereId($id)->first();
 
         return view('wechat.wapsite.module_index', [
             'articles' => $articles,
+            'module' => $module,
             'ws'       => true,
+        ]);
+
+    }
+
+    /**
+     * 微网站文章详情
+     *
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function articleHome() {
+        $id = Request::input('id');
+
+        $article = WsmArticle::find($id);
+
+        return view('wechat.wapsite.article', [
+            'article' => $article,
+            'medias'  => Media::medias(explode(',', $article->media_ids)),
         ]);
 
     }

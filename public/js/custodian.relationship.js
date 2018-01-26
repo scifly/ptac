@@ -36,7 +36,23 @@ var custodian = {
                 alert('被监护人不能为空');
                 return false
             }
-
+            var $studentIds = [];
+            // var warn = $('#warn-info');
+            $("#tBody :input[type='hidden']").each(function(i){
+                $studentIds.push(this.value);
+            });
+            if($studentIds.length !== 0){
+                var index = $.inArray(studentId, $studentIds);
+                if(index >= 0){
+                    alert('已有该学生的监护关系！');
+                    return false;
+                    // var html = '<div id="warn-info" class="text-red">tips：已有该学生的监护关系</div>';
+                    // if(warn.length > 0){
+                    //     warn.remove();
+                    // }
+                    // $('#relationship').parent().append(html);
+                }
+            }
             item++;
 
             var htm = '<tr>' +

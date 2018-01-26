@@ -34,7 +34,7 @@
 	<div class="weui-grids">
 		@foreach($wapsite->wapSiteModules as $v)
 			@if($v)
-				<a href="/module/home/?id={{$v->id}}" class=" weui-grid js_grid">
+				<a href="/wapsite/module/home/?id={{$v->id}}" class=" weui-grid js_grid">
 					<div class=" weui-grid__icon">
 						<img src="../{{$v->media->path}}" alt="">
 					</div>

@@ -1,97 +1,107 @@
 <div class="box box-default box-solid">
     <div class="box-header with-border">
-        @include('partials.form_header')
+        <?php echo $__env->make('partials.form_header', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
     </div>
     <div class="box-body">
         <div class="form-horizontal">
             <!-- 监护人ID -->
-        @if (!empty($custodian['id']))
-            {{ Form::hidden('id', $custodian['id'], ['id' => 'id']) }}
-        @endif
+        <?php if(!empty($custodian['id'])): ?>
+            <?php echo e(Form::hidden('id', $custodian['id'], ['id' => 'id'])); ?>
+
+        <?php endif; ?>
         <!-- 监护人UserID -->
-        @if (!empty($custodian['user_id']))
-            {{ Form::hidden('user_id', $custodian['user_id'], ['id' => 'user_id']) }}
-        @endif
+        <?php if(!empty($custodian['user_id'])): ?>
+            <?php echo e(Form::hidden('user_id', $custodian['user_id'], ['id' => 'user_id'])); ?>
+
+        <?php endif; ?>
         <!-- 监护人姓名 -->
             <div class="form-group">
-                {{ Form::label('user[realname]', '姓名', [
+                <?php echo e(Form::label('user[realname]', '姓名', [
                     'class' => 'col-sm-3 control-label'
-                ]) }}
+                ])); ?>
+
                 <div class="col-sm-6">
                     <div class="input-group">
                         <div class="input-group-addon">
                             <i class="fa fa-user"></i>
                         </div>
-                        {{ Form::text('user[realname]', null, [
+                        <?php echo e(Form::text('user[realname]', null, [
                             'class' => 'form-control',
                             'required' => 'true',
                             'placeholder' => '(请填写真实姓名)',
                             'data-parsley-length' => '[2, 255]'
-                        ]) }}
+                        ])); ?>
+
                     </div>
                 </div>
             </div>
             <!-- 监护人英文名 -->
             <div class="form-group">
-                {{ Form::label('user[english_name]', '英文名', [
+                <?php echo e(Form::label('user[english_name]', '英文名', [
                     'class' => 'col-sm-3 control-label'
-                ]) }}
+                ])); ?>
+
                 <div class="col-sm-6">
                     <div class="input-group">
                         <div class="input-group-addon">
                             <i class="fa fa-language"></i>
                         </div>
-                        {{ Form::text('user[english_name]', null, [
+                        <?php echo e(Form::text('user[english_name]', null, [
                             'class' => 'form-control',
                             'placeholder' => '请填写英文名(可选)',
                             'type' => 'string',
                             'data-parsley-length' => '[2, 255]'
-                        ]) }}
+                        ])); ?>
+
                     </div>
                 </div>
             </div>
             <!-- 监护人性别 -->
-        @include('partials.enabled', [
+        <?php echo $__env->make('partials.enabled', [
             'label' => '性别',
             'id' => 'user[gender]',
             'value' => $custodian->user->gender ?? null,
             'options' => ['男', '女']
-        ])
+        ], array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
         <!-- 监护人手机列表 -->
-        @include('partials.mobile')
+        <?php echo $__env->make('partials.mobile', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
         <!-- 监护人座机号码 -->
             <div class="form-group">
-                {{ Form::label('user[telephone]', '座机', [
+                <?php echo e(Form::label('user[telephone]', '座机', [
                     'class' => 'col-sm-3 control-label'
-                ]) }}
+                ])); ?>
+
                 <div class="col-sm-6">
                     <div class="input-group">
                         <div class="input-group-addon">
                             <i class="fa fa-phone"></i>
                         </div>
-                        {{ Form::text('user[telephone]', null, [
+                        <?php echo e(Form::text('user[telephone]', null, [
                             'class' => 'form-control',
                             'placeholder' => '请输入座机号码(可选}',
-                        ]) }}
+                        ])); ?>
+
                     </div>
                 </div>
             </div>
             <!-- 监护人电子邮件地址 -->
             <div class="form-group">
-                {{ Form::label('user[email]', '邮箱', [
+                <?php echo e(Form::label('user[email]', '邮箱', [
                     'class' => 'col-sm-3 control-label'
-                ]) }}
+                ])); ?>
+
                 <div class="col-sm-6">
                     <div class="input-group">
                         <div class="input-group-addon">
                             <i class="fa fa-envelope-o"></i>
                         </div>
-                        {{ Form::text('user[email]', null, [
+                        <?php echo e(Form::text('user[email]', null, [
                             'class' => 'form-control',
                             'placeholder' => '(请输入电子邮件地址)',
                             'maxlength' => '255',
                             'data-parsley-type'=>"email"
-                        ]) }}
+                        ])); ?>
+
                     </div>
                 </div>
             </div>
@@ -111,17 +121,17 @@
                             </tr>
                             </thead>
                             <tbody id="tBody">
-                            @if(!empty($pupils))
-                                @foreach($pupils as $key => $pupil)
+                            <?php if(!empty($pupils)): ?>
+                                <?php $__currentLoopData = $pupils; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $pupil): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                     <tr>
-                                        <input type="hidden" value="{{$pupil->student_id}}" name="student_ids[{{$key}}]"
+                                        <input type="hidden" value="<?php echo e($pupil->student_id); ?>" name="student_ids[<?php echo e($key); ?>]"
                                                id="student_ids">
-                                        <td>{{$pupil->student->user->realname}}</td>
-                                        <td>{{$pupil->student->student_number}}</td>
+                                        <td><?php echo e($pupil->student->user->realname); ?></td>
+                                        <td><?php echo e($pupil->student->student_number); ?></td>
                                         <td>
-                                            <input type="text" name="relationships[{{$key}}]" id="" readonly
+                                            <input type="text" name="relationships[<?php echo e($key); ?>]" id="" readonly
                                                    class="no-border" style="background: none"
-                                                   value="{{$pupil->relationship}}">
+                                                   value="<?php echo e($pupil->relationship); ?>">
                                         </td>
                                         <td>
                                             <a href="javascript:" class="delete">
@@ -129,8 +139,8 @@
                                             </a>
                                         </td>
                                     </tr>
-                                @endforeach
-                            @endif
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                            <?php endif; ?>
 
                             </tbody>
                         </table>
@@ -138,19 +148,20 @@
                     <button id="add-pupil" class="btn btn-box-tool" type="button">
                         <i class="fa fa-user-plus text-blue">&nbsp;新增</i>
                     </button>
-                    {{--@endif--}}
+                    
                 </div>
             </div>
             <!-- 监护人角色 -->
-        {!! Form::hidden('user[group_id]', $groupId) !!}
+        <?php echo Form::hidden('user[group_id]', $groupId); ?>
+
         <!-- 监护人状态 -->
-            @include('partials.enabled', [
+            <?php echo $__env->make('partials.enabled', [
                 'id' => 'user[enabled]',
                 'value' => $custodian->user->enabled ?? null
-            ])
+            ], array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
         </div>
     </div>
-    @include('partials.form_buttons')
+    <?php echo $__env->make('partials.form_buttons', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
 </div>
 <!-- 添加被监护人 -->
 <div class="modal fade" id="pupils">
@@ -163,118 +174,120 @@
             <div class="modal-body with-border">
                 <div class="form-horizontal">
                     <!-- 所属学校 -->
-                        @if(isset($schools))
-                            @include('partials.single_select', [
+                        <?php if(isset($schools)): ?>
+                            <?php echo $__env->make('partials.single_select', [
                                     'id' => 'schoolId',
                                     'label' => '所属学校',
                                     'items' => $schools,
-                                ])
-                            {{--@if($schools->count() > 1)--}}
-                            {{--@include('partials.single_select', [--}}
-                            {{--'id' => 'schoolId',--}}
-                            {{--'label' => '所属学校',--}}
-                            {{--'items' => $schools--}}
-                            {{--])--}}
-                            {{--@else--}}
-                            {{--{{ Form::label('schoolId', '所属学校', [--}}
-                            {{--'class' => 'control-label col-sm-3'--}}
-                            {{--]) }}--}}
-                            {{--<div class="col-sm-6" style="padding-top: 8px;">--}}
-                            {{--{{ $grades->first() }}--}}
-                            {{--{{ Form::hidden('schoolId', $grades->keys()->first(), [--}}
-                            {{--'id' => 'schoolId'--}}
-                            {{--]) }}--}}
-                            {{--</div>--}}
-                            {{--@endif--}}
-                        @endif
+                                ], array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                        <?php endif; ?>
                     <!-- 所属年级 -->
-                        @if(isset($grades))
-                            @include('partials.single_select', [
+                        <?php if(isset($grades)): ?>
+                            <?php echo $__env->make('partials.single_select', [
                                     'id' => 'gradeId',
                                     'label' => '所属年级',
                                     'items' => $grades
-                                ])
-                            {{--@if($grades->count() > 1)--}}
-                            {{--@include('partials.single_select', [--}}
-                            {{--'id' => 'gradeId',--}}
-                            {{--'label' => '所属年级',--}}
-                            {{--'items' => $grades--}}
-                            {{--])--}}
-                            {{--@else--}}
-                            {{--{{ Form::label('gradeId', '所属班级', [--}}
-                            {{--'class' => 'control-label col-sm-3'--}}
-                            {{--]) }}--}}
-                            {{--<div class="col-sm-6" style="padding-top: 8px;">--}}
-                            {{--{{ $grades->first() }}--}}
-                            {{--{{ Form::hidden('gradeId', $grades->keys()->first(), [--}}
-                            {{--'id' => 'gradeId'--}}
-                            {{--]) }}--}}
-                            {{--</div>--}}
-                            {{--@endif--}}
-                        @endif
+                                ], array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                        <?php endif; ?>
                     <!-- 所属班级 -->
-                        @if(isset($classes))
-                            @include('partials.single_select', [
+                        <?php if(isset($classes)): ?>
+                            <?php echo $__env->make('partials.single_select', [
                                     'id' => 'classId',
                                     'label' => '所属班级',
                                     'items' => $classes
-                                ])
-                            {{--@if($classes->count() > 1)--}}
-                            {{--@include('partials.single_select', [--}}
-                            {{--'id' => 'classId',--}}
-                            {{--'label' => '所属班级',--}}
-                            {{--'items' => $classes--}}
-                            {{--])--}}
-                            {{--@else--}}
-                            {{--{{ Form::label('classId', '所属班级', [--}}
-                            {{--'class' => 'control-label col-sm-3'--}}
-                            {{--]) }}--}}
-                            {{--<div class="col-sm-6" style="padding-top: 8px;">--}}
-                            {{--{{ $classes->first() }}--}}
-                            {{--{{ Form::hidden('classId', $classes->keys()->first(), [--}}
-                            {{--'id' => 'classId'--}}
-                            {{--]) }}--}}
-                            {{--</div>--}}
-                            {{--@endif--}}
-                        @endif
+                                ], array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                        <?php endif; ?>
                     <!-- 学生列表 -->
-                        @if(isset($students))
-                            @include('partials.single_select', [
+                        <?php if(isset($students)): ?>
+                            <?php echo $__env->make('partials.single_select', [
                                     'id' => 'studentId',
                                     'label' => '被监护人',
                                     'items' => $students
-                                ])
-                            {{--@if($students->count() > 1)--}}
-                            {{--@include('partials.single_select', [--}}
-                            {{--'id' => 'studentId',--}}
-                            {{--'label' => '被监护人',--}}
-                            {{--'items' => $students--}}
-                            {{--])--}}
-                            {{--@else--}}
-                            {{--{{ Form::label('studentId', '学生', [--}}
-                            {{--'class' => 'control-label col-sm-3'--}}
-                            {{--]) }}--}}
-                            {{--<div class="col-sm-6" style="padding-top: 8px;">--}}
-                            {{--{{ $students->first() }}--}}
-                            {{--{{ Form::hidden('studentId', $students->keys()->first(), [--}}
-                            {{--'id' => 'classId'--}}
-                            {{--]) }}--}}
-                            {{--</div>--}}
-                            {{--@endif--}}
-                        @endif
-                    {{--<!-- 监护关系 -->--}}
+                                ], array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                        <?php endif; ?>
+                    
                     <div class="form-group">
-                        {{--@if(isset($students))--}}
+                        
 
-                        {{--@endif--}}
-                        {{ Form::label('relationship', '监护关系', [
+                        
+                        <?php echo e(Form::label('relationship', '监护关系', [
                                 'class' => 'control-label col-sm-3'
-                            ]) }}
+                            ])); ?>
+
                         <div class="col-sm-6">
-                            {{ Form::text('relationship', null, [
+                            <?php echo e(Form::text('relationship', null, [
                                 'id' => 'relationship',
                                 'require' => 'true'
-                            ]) }}
+                            ])); ?>
+
                         </div>
                     </div>
                 </div>
