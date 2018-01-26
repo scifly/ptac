@@ -58,7 +58,7 @@ class SemesterController extends Controller {
      * 保存学期
      *
      * @param SemesterRequest $request
-     * @return Semester|Model
+     * @return JsonResponse|string
      * @throws AuthorizationException
      */
     public function store(SemesterRequest $request) {

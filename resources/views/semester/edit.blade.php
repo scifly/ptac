@@ -1,4 +1,4 @@
-{!! Form::model($school, [
+{!! Form::model($semester, [
     'method' => 'put',
     'id' => 'formSemester',
     'data-parsley-validate' => 'true'
