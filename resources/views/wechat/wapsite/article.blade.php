@@ -27,7 +27,7 @@
 					      	<div class="swiper-wrapper" style="">
 								@if($medias)
 									@foreach($medias as $k => $v)
-										<div class="swiper-slide" data-swiper-slide-index="{{$k}}"><img src="../{{$v->path}}"></div>
+										<div class="swiper-slide" data-swiper-slide-index="{{$k}}"><img src="../../{{$v->path}}"></div>
 									@endforeach
 								@endif
 					      	</div>
