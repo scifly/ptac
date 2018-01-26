@@ -169,6 +169,7 @@ return [
         'actionId'              => '卡片/功能权限',
         // 'tabId'              => '卡片/功能权限',
         'remark'                => '备注',
-        'menu_ids'              => '菜单权限'
+        'menu_ids'              => '菜单权限',
+        'user.email'            => '电子邮箱',
     ],
 ];

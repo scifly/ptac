@@ -48,14 +48,15 @@
                 'value' => $operator->user->gender ?? null,
                 'options' => ['男', '女']
             ], array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
-            <?php if(isset($operator)): ?>
+                <?php echo $__env->make('partials.single_select', [
+                 'label' => '角色',
+                 'id' => 'user[group_id]',
+                 'items' => $groups
+             ], array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+            <?php if(!isset($operator)): ?>
                 <?php echo Form::hidden('role', $role, ['id' => 'role']); ?>
 
-                <?php echo $__env->make('partials.single_select', [
-                    'label' => '角色',
-                    'id' => 'user[group_id]',
-                    'items' => $groups
-                ], array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+
                 <?php switch($role):
                     case ('运营'): ?>
                         <?php echo $__env->make('partials.single_select', [

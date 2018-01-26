@@ -42,13 +42,13 @@
                 'value' => $operator->user->gender ?? null,
                 'options' => ['男', '女']
             ])
+             @include('partials.single_select', [
+                 'label' => '角色',
+                 'id' => 'user[group_id]',
+                 'items' => $groups
+             ])
             @if(!isset($operator))
                 {!! Form::hidden('role', $role, ['id' => 'role']) !!}
-                @include('partials.single_select', [
-                    'label' => '角色',
-                    'id' => 'user[group_id]',
-                    'items' => $groups
-                ])
                 @switch($role)
                     @case('运营')
                         @include('partials.single_select', [
