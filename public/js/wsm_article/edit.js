@@ -5,7 +5,7 @@ $(function () {
     // var editor = UE.getEditor('container').render('container');//初始化富文本编辑器
     UE.delEditor('container');
     var ue = UE.getEditor('container');
-    var $pre = $('.preview_meida');
+    var $pre = $('.preview');
     var $uploadFile = $('#uploadFile');
     // 初始化
     $uploadFile.fileinput({

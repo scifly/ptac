@@ -43,7 +43,7 @@
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
-                    <div class="preview_meida">
+                    <div class="preview">
                         @if(isset($medias))
                             @foreach($medias as $key => $value)
                                 @if(!empty($value))
@@ -64,7 +64,7 @@
             <div class="form-group">
                 {!! Form::label('content', '文章内容', ['class' => 'control-label col-sm-3']) !!}
                 <div class="col-sm-6">
-                    <div class="preview">
+                    <div class="preview_content">
                         <script id="container" name="content" type="text/plain" >
                             @if(isset($article))
                                 {!! $article['content'] !!}
