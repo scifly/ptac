@@ -600,7 +600,7 @@ class Educator extends Model {
             ],
         ];
         // todo: 根据角色显示教职员工列表，[运营/企业/学校]角色显示当前学校的所有教职员工，其他角色显示所属所有部门的教职员工
-        $condition = 'Educator.school_id = ' . School::schoolId();
+        $condition = 'Educator.school_id = ' . School::schoolId().' or User.group_id=3';
         
         return Datatable::simple(self::getModel(), $columns, $joins, $condition);
 
