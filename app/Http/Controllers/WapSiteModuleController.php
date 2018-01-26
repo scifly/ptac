@@ -138,22 +138,6 @@ class WapSiteModuleController extends Controller {
         return $this->result($wsm->delete());
         
     }
-    
-    /**
-     * 微网站栏目首页
-     *
-     * @param $id
-     * @return Factory|View
-     */
-    public function wapSiteModuleHome($id) {
-        
-        $articles = WsmArticle::whereWsmId($id)->get();
 
-        return view('frontend.wap_site.module', [
-            'articles' => $articles,
-            'ws'       => true,
-        ]);
-        
-    }
     
 }

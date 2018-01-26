@@ -64,8 +64,7 @@
                         'class' => 'form-control',
                         'placeholder' => '(不超过5个数字含小数点)',
                         'required' => 'true',
-                        'data-parsley-min' => '60',
-                        'data-parsley-max' => '90',
+                        'data-parsley-range' => '[60,90]',
                         'type' => 'number',
                         'data-parsley-length' => '[2, 5]'
                     ]); ?>

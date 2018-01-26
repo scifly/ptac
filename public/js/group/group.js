@@ -77,9 +77,13 @@ var group = function(action) {
                         result.statusCode === 200 ? page.success : page.failure
                     );
                 },
-                error:function () {
+                error:function (e) {
                     var obj = JSON.parse(e.responseText);
+                    var errors = obj.errors;
                     page.inform('出现异常', obj['message'], page.failure);
+                    for(var j in errors){
+                        page.inform('出现异常', errors[j], page.failure);
+                    }
                 }
             });
         }
