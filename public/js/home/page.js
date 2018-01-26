@@ -113,8 +113,8 @@ var page = {
             ? window.location.origin + '/'
             : window.location.protocol + '/' + window.location.host + '/';
         if (window.location.href.indexOf('public') > -1) {
-            // return siteRoot + 'ptac/public/';
             return siteRoot + 'ptac/public/';
+            // return siteRoot + 'pppp/public/';
         }
         return siteRoot;
     },
@@ -175,11 +175,11 @@ var page = {
         return '?menuId=' + this.getActiveMenuId() + '&tabId=' + this.getActiveTabId();
     },
     errorHandler: function (e) {
-        var obj = JSON.parse(e.responseText);
+         var obj = JSON.parse(e.responseText);
         $('.overlay').hide();
         switch (obj['statusCode']) {
             case 400:
-                var response = JSON.parse(e.responseText);
+                // var response = JSON.parse(e.responseText);
                 var errors = obj['errors'];
                 $.each(errors, function() {
                     page.inform('验证错误', this, page.failure);
