@@ -114,6 +114,8 @@ function classchange() {
     $('#squad').change(function () {
         var squadId = $(this).attr('data-values');
         var $rule = $('#rule');
+        alert(squadId);
+        return;
         $.ajax({
             type: 'GET',
             data: token,
