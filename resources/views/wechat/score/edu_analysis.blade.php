@@ -60,11 +60,15 @@
                         <div class="show-item score-level">
                             <div class="table-title">{{ $one['sub'] }}分数统计详情</div>
                             <table class="table-count">
-                                <tr>
-                                    <td class="subtit">统计人数</td>
-                                    <td>{{ $data['rangs'][$one['subId']][0]['score']['count'] }}</td>
-                                </tr>
+                                {{--<tr>--}}
+                                    {{--<td class="subtit">统计人数</td>--}}
+                                    {{--<td>{{ $data['rangs'][$one['subId']][0]['score']['count'] }}</td>--}}
+                                {{--</tr>--}}
                                 @foreach($data['rangs'][$one['subId']] as $ran)
+                                    <tr>
+                                        <td class="subtit">统计人数</td>
+                                        <td>{{ $ran['score']['count'] }}</td>
+                                    </tr>
                                     <tr>
                                         <td class="subtit">{{ $ran['range']['min'] }} - {{ $ran['range']['max'] }}分</td>
                                         <td>{{ $ran['score']['number'] }}</td>
