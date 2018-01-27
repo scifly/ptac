@@ -90,6 +90,7 @@ Route::group(['prefix' => 'score_totals'], function () {
     $c = 'ScoreTotalController';
     Route::get('index', $c . '@index');
     Route::get('show/{id}', $c . '@show');
+    Route::delete('delete/{id}', $c . '@destroy');
     Route::get('statistics/{examId}', $c . '@statistics');
 });
 Route::group(['prefix' => 'score_ranges'], routes('ScoreRangeController'));
