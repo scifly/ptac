@@ -951,7 +951,7 @@ class Score extends Model {
                                 ->where('score', '<=', $maxRange)
                                 ->count();
                         } else {
-                            $count = Score::whereEnabled(1)
+                                $count = Score::whereEnabled(1)
                                 ->whereExamId($exam->id)
                                 ->whereIn('student_id', $claStuIds)
                                 ->whereSubjectId($sub)
