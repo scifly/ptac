@@ -318,7 +318,7 @@ class Operator extends Model {
             [
                 'db' => 'User.enabled', 'dt' => 8,
                 'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($d, $row);
+                    return Datatable::dtOps($d, $row, false);
                 },
             ],
         ];

@@ -235,7 +235,8 @@ $statistics.on('click', function () {
                 $('.overlay').hide();
                 if(result.statusCode === 200){
                     var $activeTabPane = $('#tab_' + page.getActiveTabId());
-                    page.getTabContent($activeTabPane, '/scores/index');
+                    page.getTabContent($activeTabPane, 'scores/index');
+                    $('.modal-backdrop').hide();
                 }
                 page.inform(
                     '操作结果', result.message,

@@ -59,7 +59,7 @@
                     </div>
                 </div>
             </form>
-            <a href="{{Url('password/reset')}}">忘记密码</a><br>
+            {{--<a href="{{Url('password/reset')}}">忘记密码</a><br>--}}
         </div>
         @include('partials.form_overlay')
     </div>
@@ -69,6 +69,7 @@
 <script src="{{ URL::asset('js/adminlte.min.js') }}"></script>
 <script src="{{ asset('js/bootstrap.min.js')  }}"></script>
 <script src="{{ asset('js/auth/login.js')  }}"></script>
+<script src="{{ asset('js/home/page.js')  }}"></script>
 <script src="{{ URL::asset('js/plugins/icheck/icheck.min.js') }}"></script>
 <script src="{{ URL::asset('js/plugins/gritter/js/jquery.gritter.min.js') }}"></script>
 <script>

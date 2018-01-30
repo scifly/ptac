@@ -899,25 +899,31 @@ class Score extends Model {
                 ->whereEnabled(1)
                 ->get();
             if (count($scores) == 0) {
-                return false;
+               $countAll = 0;
+               $max = 0;
+               $min = 0;
+               $avg = 0;
+               $bigNumber = 0;
+               $minNumber = 0;
+            } else {
+                #参与考试的总人数
+                $countAll = $scores->count();
+                #该科目的最高分
+                $max = $scores->max('score');
+                #该科目的最低分
+                $min = $scores->min('score');
+                #该科目的平均分
+                $avg = $scores->average('score');
+                #大于等于平均分的人数
+                $bigNumber = Score::whereExamId($exam->id)
+                    ->whereSubjectId($sub)
+                    ->whereIn('student_id', $claStuIds)
+                    ->whereEnabled(1)
+                    ->where('score', '>=', $avg)
+                    ->count();
+                #小于平均分的人数
+                $minNumber = $countAll - $bigNumber;
             }
-            #参与考试的总人数
-            $countAll = $scores->count();
-            #该科目的最高分
-            $max = $scores->max('score');
-            #该科目的最低分
-            $min = $scores->min('score');
-            #该科目的平均分
-            $avg = $scores->average('score');
-            #大于等于平均分的人数
-            $bigNumber = Score::whereExamId($exam->id)
-                ->whereSubjectId($sub)
-                ->whereIn('student_id', $claStuIds)
-                ->whereEnabled(1)
-                ->where('score', '>=', $avg)
-                ->count();
-            #小于平均分的人数
-            $minNumber = $countAll - $bigNumber;
             $firstTableData[] = [
                 'sub'        => $subject->name,
                 'count'      => $countAll,
@@ -928,43 +934,45 @@ class Score extends Model {
                 'min_number' => $minNumber,
                 'subId'      => $sub,
             ];
-            #处理单科分数段
-            foreach ($rangAll as $ran) {
-                #筛选出针对于这一科的所有分数段设置
-                if (in_array($sub, explode(',', $ran->subject_ids))) {
-                    $minRange = $ran->start_score;
-                    $maxRange = $ran->end_score;
-                    #需要判断科目满分是否与最大相等
-                    if ($subject->max_score == $maxRange) {
-                        $count = Score::whereEnabled(1)
-                            ->whereExamId($exam->id)
-                            ->whereIn('student_id', $claStuIds)
-                            ->whereSubjectId($sub)
-                            ->where('score', '>=', $minRange)
-                            ->where('score', '<=', $maxRange)
-                            ->count();
-                    } else {
-                        $count = Score::whereEnabled(1)
-                            ->whereExamId($exam->id)
-                            ->whereIn('student_id', $claStuIds)
-                            ->whereSubjectId($sub)
-                            ->where('score', '>=', $minRange)
-                            ->where('score', '<', $maxRange)
-                            ->count();
+            if (count($rangAll) != 0) {
+                #处理单科分数段
+                foreach ($rangAll as $ran) {
+                    #筛选出针对于这一科的所有分数段设置
+                    if (in_array($sub, explode(',', $ran->subject_ids))) {
+                        $minRange = $ran->start_score;
+                        $maxRange = $ran->end_score;
+                        #需要判断科目满分是否与最大相等
+                        if ($subject->max_score == $maxRange) {
+                            $count = Score::whereEnabled(1)
+                                ->whereExamId($exam->id)
+                                ->whereIn('student_id', $claStuIds)
+                                ->whereSubjectId($sub)
+                                ->where('score', '>=', $minRange)
+                                ->where('score', '<=', $maxRange)
+                                ->count();
+                        } else {
+                                $count = Score::whereEnabled(1)
+                                ->whereExamId($exam->id)
+                                ->whereIn('student_id', $claStuIds)
+                                ->whereSubjectId($sub)
+                                ->where('score', '>=', $minRange)
+                                ->where('score', '<', $maxRange)
+                                ->count();
+                        }
+                        $rangs[$sub][] = [
+                            'range' =>
+                                [
+                                    'min' => $minRange,
+                                    'max' => $maxRange,
+                                ],
+                            'score' =>
+                                [
+                                    'sub'    => $subject->name,
+                                    'count'  => $countAll,
+                                    'number' => $count,
+                                ],
+                        ];
                     }
-                    $rangs[$sub][] = [
-                        'range' =>
-                            [
-                                'min' => $minRange,
-                                'max' => $maxRange,
-                            ],
-                        'score' =>
-                            [
-                                'sub'    => $subject->name,
-                                'count'  => $countAll,
-                                'number' => $count,
-                            ],
-                    ];
                 }
             }
         }

@@ -1,5 +1,8 @@
 
 @extends('wechat.layouts.master')
+@section('title')
+	<title>成绩中心</title>
+@endsection
 @section('css')
 	<link rel="stylesheet" href="{{ asset('css/wechat/score/detail.css') }}">
 @endsection

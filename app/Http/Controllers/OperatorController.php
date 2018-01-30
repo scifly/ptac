@@ -112,6 +112,7 @@ class OperatorController extends Controller {
             return response()->json($this->department->tree());
         }
         $operator = $this->operator->find($id);
+
         if (!$operator) { return $this->notFound(); }
         
         return $this->output(['operator' => $operator]);

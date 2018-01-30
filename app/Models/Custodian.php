@@ -224,6 +224,7 @@ class Custodian extends Model
         }
         try {
             DB::transaction(function () use ($custodianId, $custodian) {
+                $userId = $custodian->user_id;
                 # 删除指定的监护人记录
                 $custodian->delete();
                 # 删除与指定监护人绑定的学生记录
@@ -232,6 +233,8 @@ class Custodian extends Model
                 DepartmentUser::whereUserId($custodian['user_id'])->delete();
                 # 删除与指定监护人绑定的手机记录
                 Mobile::whereUserId($custodian['user_id'])->delete();
+                # 删除企业号成员
+                User::deleteWechatUser($userId);
             });
         } catch (Exception $e) {
             throw $e;
@@ -288,13 +291,19 @@ class Custodian extends Model
         $columns = [
             ['db' => 'Custodian.id', 'dt' => 0],
             ['db' => 'User.realname', 'dt' => 1],
-            ['db' => 'User.gender', 'dt' => 2,
-                'formatter' => function ($d) {
-                    return $d == 1 ? '男' : '女';
-                },
+            [
+                'db' => 'CustodianStudent.student_id', 'dt' => 2,
+                'formatter' => function($d){
+                     return Student::whereId($d)->first()->user->realname;
+                }
             ],
             ['db' => 'User.email', 'dt' => 3],
-            ['db' => 'Custodian.id as mobile', 'dt' => 4,
+            ['db' => 'User.gender', 'dt' => 4,
+             'formatter' => function ($d) {
+                 return $d == 1 ? '男' : '女';
+             },
+            ],
+            ['db' => 'Custodian.id as mobile', 'dt' => 5,
                 'formatter' => function ($d) {
                     $custodian = Custodian::find($d);
                     $mobiles = Mobile::whereUserId($custodian->user_id)->get();
@@ -306,10 +315,10 @@ class Custodian extends Model
                     return implode(',', $mobile);
                 },
             ],
-            ['db' => 'Custodian.created_at', 'dt' => 5],
-            ['db' => 'Custodian.updated_at', 'dt' => 6],
+            ['db' => 'Custodian.created_at', 'dt' => 6],
+            ['db' => 'Custodian.updated_at', 'dt' => 7],
             [
-                'db' => 'User.enabled', 'dt' => 7,
+                'db' => 'User.enabled', 'dt' => 8,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($d, $row, false);
                 },

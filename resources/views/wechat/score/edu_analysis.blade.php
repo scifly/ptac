@@ -56,7 +56,7 @@
                                 </tr>
                             </table>
                         </div>
-
+                        @if(!empty($data['rangs']))
                         <div class="show-item score-level">
                             <div class="table-title">{{ $one['sub'] }}分数统计详情</div>
                             <table class="table-count">
@@ -72,6 +72,7 @@
                                 @endforeach
                             </table>
                         </div>
+                        @endif
                         <div class="show-item table">
                             <div id="main"></div>
                         </div>
