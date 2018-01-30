@@ -412,6 +412,8 @@ class Educator extends Model {
                             ]);
                         }
                     }
+                } else {
+                    EducatorClass::whereEducatorId($request->input('id'))->delete();
                 }
                 $mobiles = $request->input('mobile');
                 if ($mobiles) {
