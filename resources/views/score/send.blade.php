@@ -18,7 +18,7 @@
 							@include('partials.single_select', [
 								'label' => '考试名称',
 								'id' => 'exam_id',
-								'items' => $exams
+								'items' => $examScore
 							])
 					    </div>
 					</div>
