@@ -1,16 +1,20 @@
 page.create('formScore', 'scores');
-
-// $('#exam_id').change(function () {
-//     var $examId = $(this).attr('data-values');
+// var examId = $('#exam_id');
+// getData(examId.val());
+// function getData($examId) {
 //     $.ajax({
 //         type: 'GET',
 //         data: {'_token': $('#csrf_token').attr('content')},
-//         url: 'attendance_rules/' + $examId,
+//         url: 'get_datas/' + $examId,
 //         success: function (result) {
 //             if (result.statusCode === 200) {
-//             } else {
-//                 $.alert(result.data);
+//                 $('#subject_id').html(result.students);
+//                 $('#student_id').html(result.subjects);
 //             }
 //         }
 //     });
+// }
+// examId.change(function () {
+//     var $examId = $(this).val();
+//     getData($examId);
 // });

@@ -311,12 +311,36 @@ class ScoreController extends Controller {
     /**
      * 根据考试id获取 对应的学生和科目
      * @param $examId
+     * @return JsonResponse
      */
-    public function getDatas($examId){
-        $exam = Exam::whereId($examId)->first();
-        #找出这个考试
-        // $squadIds = $exam->
-    }
-
+    // public function getDatas($examId){
+    //     $exam = Exam::whereId($examId)->first();
+    //     $squadIds = explode(',', $exam->class_ids);
+    //     $subjectIds = explode(',', $exam->subject_ids);
+    //     #找出这个考试对应的学生
+    //     $students = [];
+    //     foreach ($squadIds as $squadId){
+    //         $squ = Squad::whereId($squadId)->first();
+    //         foreach ($squ->students as $student){
+    //             $students[$student->id] = $student->student_number . '-' . $student->user->realname;
+    //         }
+    //     }
+    //     #找出这个考试对应的科目
+    //     $subjects = [];
+    //     foreach ($subjectIds as $subjectId){
+    //         $sub = Subject::whereId($subjectId)->first();
+    //         $subjects[$sub->id] = $sub->name;
+    //     }
+    //     #返回下拉列表的字符串
+    //     $studentHtml = '';
+    //     foreach ($students as $key => $value) {
+    //         $studentHtml .= '<option value="' . $key . '">' . $value . '</option>';
+    //     }
+    //     $subjectHtml = '';
+    //     foreach ($subjects as $key => $value) {
+    //         $subjectHtml .= '<option value="' . $key . '">' . $value . '</option>';
+    //     }
+    //     return response()->json(['students' => $studentHtml, 'subjects' => $subjectHtml, 'statusCode' => 200]);
+    // }
 }
 
