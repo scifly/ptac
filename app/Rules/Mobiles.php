@@ -18,6 +18,7 @@ class Mobiles implements Rule {
         if (!isset($value['id'])) {
             $value['id'] = 0;
         }
+
         $mobile = Mobile::whereMobile($value['mobile'])
             ->where('id', '!=', $value['id'])
             ->get()->toArray();
