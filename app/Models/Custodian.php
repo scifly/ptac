@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 
 /**
@@ -224,6 +225,7 @@ class Custodian extends Model
                     }
                     unset($mobile);
                 }
+//                die;
                 // TODO: 向部门用户表添加数据
                 # 向监护人学生表中添加数据
                 CustodianStudent::whereCustodianId($custodianId)->delete();
