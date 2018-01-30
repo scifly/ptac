@@ -37,7 +37,9 @@ class Overlaid implements Rule
                         ->where('enabled','1')
                         ->pluck('end', 'start')->toArray();
                 } else {
-                    $settings = EducatorAttendanceSetting::pluck('end', 'start')->toArray();
+                    $settings = EducatorAttendanceSetting::pluck('end', 'start')
+                        ->where('enabled','1')
+                        ->toArray();
                 }
                 break;
             case 'student':
