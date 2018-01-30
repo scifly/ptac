@@ -21,6 +21,7 @@ class Mobiles implements Rule {
         $mobile = Mobile::whereMobile($value['mobile'])
             ->where('id', '!=', $value['id'])
             ->get()->toArray();
+
         if(Request::isMethod('put')) {
             if(preg_match(self::PHONEREG, $value['mobile']) || !$mobile){
                 return true;
