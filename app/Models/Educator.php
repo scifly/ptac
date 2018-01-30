@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
@@ -334,7 +335,7 @@ class Educator extends Model {
      * @throws \Throwable
      */
     static function modify(EducatorRequest $request) {
-        
+        Log::debug(214);
         try {
             DB::transaction(function () use ($request) {
                 $user = $request->input('user');
@@ -352,6 +353,7 @@ class Educator extends Model {
                     'enabled' => $user['enabled'],
                 ]);
                 $selectedDepartments = $request->input('selectedDepartments');
+                Log::debug($selectedDepartments);
                 if (!empty($selectedDepartments)) {
                     DepartmentUser::whereUserId($request->input('user_id'))->delete();
                     foreach ($selectedDepartments as $department) {
@@ -360,6 +362,7 @@ class Educator extends Model {
                             'department_id' => $department,
                             'enabled' => $user['enabled'],
                         ]);
+
                     }
                 }
                 # 当选择了学校角色没有选择学校部门时
