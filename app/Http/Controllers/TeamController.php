@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\TeamRequest;
+use App\Models\EducatorTeam;
 use App\Models\Team;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -112,7 +113,10 @@ class TeamController extends Controller {
         
         $team = Team::find($id);
         $this->authorize('rud', $team);
-        
+        $educators = EducatorTeam::whereTeamId($id);
+        if ($educators) {
+            return $this->result(false, '', '该组下包含教师，无法删除！');
+        }
         return $this->result($team->delete());
         
     }
