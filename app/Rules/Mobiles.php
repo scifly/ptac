@@ -4,6 +4,7 @@ namespace App\Rules;
 use App\Models\Mobile;
 use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Request;
 
 class Mobiles implements Rule {
     
@@ -12,16 +13,36 @@ class Mobiles implements Rule {
 
 
     public function passes($attribute, $value) {
+        Log::debug($value);
         $this->value = $value;
         if (!isset($value['id'])) {
             $value['id'] = 0;
         }
+
         $mobile = Mobile::whereMobile($value['mobile'])
             ->where('id', '!=', $value['id'])
             ->get()->toArray();
-        if ($mobile || !preg_match(self::PHONEREG, $value['mobile'])) {
+
+        if (!preg_match(self::PHONEREG, $value['mobile'])) {
             return false;
         }
+        if(Request::isMethod('put')) {
+            if (isset($value['user_id']) && $value['user_id'] != 0) {
+                $userMobile = Mobile::whereMobile($value['mobile'])
+                    ->where('id', '!=', $value['id'])
+                    ->where('user_id', '!=', $value['user_id'])
+                    ->get()->toArray();
+
+                if ($userMobile) {
+                    return false;
+                }
+            }
+        }else {
+            if ($mobile) {
+                return false;
+            }
+        }
+
         
         return true;
     }
