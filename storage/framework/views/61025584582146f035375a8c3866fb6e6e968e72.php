@@ -9,19 +9,19 @@
 
             <?php endif; ?>
             <?php echo $__env->make('partials.single_select', [
+                    'label' => '考试名称',
+                    'id' => 'exam_id',
+                    'items' => $exams
+                ], array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+            <?php echo $__env->make('partials.single_select', [
+               'label' => '科目名称',
+               'id' => 'subject_id',
+               'items' => $subjects
+           ], array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
+            <?php echo $__env->make('partials.single_select', [
                 'label' => '学号',
                 'id' => 'student_id',
                 'items' => $students
-            ], array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
-            <?php echo $__env->make('partials.single_select', [
-                'label' => '科目名称',
-                'id' => 'subject_id',
-                'items' => $subjects
-            ], array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
-            <?php echo $__env->make('partials.single_select', [
-                'label' => '考试名称',
-                'id' => 'exam_id',
-                'items' => $exams
             ], array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
             <div class="form-group">
                 <?php echo Form::label('score', '分数', [

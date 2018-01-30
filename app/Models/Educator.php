@@ -475,7 +475,15 @@ class Educator extends Model {
         $filename = date('His') . uniqid() . '.' . $ext;
         $stored = Storage::disk('uploads')->put($filename, file_get_contents($realPath));
         if ($stored) {
-            $filePath = 'storage/app/uploads/' . date('Y') . '/' . date('m') . '/' . date('d') . '/' . $filename;
+            $filePath =
+                'public/uploads/'
+                . date('Y')
+                . '/'
+                . date('m')
+                . '/'
+                . date('d')
+                . '/'
+                . $filename;
             // var_dump($filePath);die;
             /** @var LaravelExcelReader $reader */
             $reader = Excel::load($filePath);

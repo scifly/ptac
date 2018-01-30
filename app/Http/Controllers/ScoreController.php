@@ -307,5 +307,15 @@ class ScoreController extends Controller {
         $view = Score::analysis($input);
       return $view ? $this->succeed($view) : $this->fail('未录入或未统计成绩！');
     }
+    
+    /**
+     * 根据考试id获取 对应的学生和科目
+     * @param $examId
+     */
+    public function getDatas($examId){
+        $exam = Exam::whereId($examId)->first();
+        // $squadIds = $exam->
+    }
+
 }
 
