@@ -531,11 +531,11 @@ class Student extends Model {
             $user['class_id'] = $class->id;
             $deptId = self::deptId($user['school'], $user['grade'], $user['class']);
             $user['department_id'] = $deptId;
-            if ($user['department_id'] == 0) {
-                $invalidRows[] = $datum;
-                unset($data[$i]);
-                continue;
-            }
+//            if ($user['department_id'] == 0) {
+//                $invalidRows[] = $datum;
+//                unset($data[$i]);
+//                continue;
+//            }
             # 学生数据已存在 更新操作
             if ($student) {
                 $updateRows[] = $user;
