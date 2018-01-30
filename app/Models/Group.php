@@ -103,9 +103,9 @@ class Group extends Model {
                     'enabled' => $data['enabled'],
                     'school_id' => $data['school_id'],
                 ]);
-
+                $tabIds = [];
                 # 功能与角色的对应关系
-                ActionGroup::storeByGroupId($group->id, $data['acitonId']);
+                ActionGroup::storeByGroupId($group->id, $data['actionId']);
                 # 功能与菜单的对应关系
                 GroupMenu::storeByGroupId($group->id, explode(',', $data['menu_ids']));
                 # 功能与卡片的对应关系
