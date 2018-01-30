@@ -22,9 +22,27 @@ class Mobiles implements Rule {
             ->where('id', '!=', $value['id'])
             ->get()->toArray();
 
-        if ($mobile || !preg_match(self::PHONEREG, $value['mobile'])) {
+        if (!preg_match(self::PHONEREG, $value['mobile'])) {
             return false;
         }
+
+        if(Request::isMethod('put')) {
+            if (isset($value['user_id']) && $value['user_id'] != 0) {
+                $userMobile = Mobile::whereMobile($value['mobile'])
+                    ->where('id', '!=', $value['id'])
+                    ->where('user_id', '!=', $value['user_id'])
+                    ->get()->toArray();
+
+                if ($userMobile) {
+                    return false;
+                }
+            }
+        }else {
+            if ($mobile) {
+                return false;
+            }
+        }
+
         
         return true;
     }
