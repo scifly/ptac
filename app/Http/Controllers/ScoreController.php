@@ -62,7 +62,15 @@ class ScoreController extends Controller {
      * @return JsonResponse
      */
     public function store(ScoreRequest $request) {
-        
+        $input = $request->all();
+        $exam = Exam::whereId($input['exam_id'])->first();
+        if(!in_array($input['subject_id'], explode( ',', $exam->subject_ids))){
+            return $this->fail('该科目未在该场考试内');
+        }
+        $subject = Subject::whereId($input['subject_id'])->first();
+        if($input['score'] > $subject->max_score){
+            return $this->fail('该科目最高分为'. $subject->max_score);
+        }
         return $this->result(Score::create($request->all()));
         
     }

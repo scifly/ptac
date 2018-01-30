@@ -26,7 +26,7 @@
                 {!! Form::label('score', '分数', [
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
-                <div class="col-sm-3">
+                <div class="col-sm-6">
                     {!! Form::text('score', null, [
                         'class' => 'form-control',
                         'placeholder' => '(不超过5个数字含小数点)',
