@@ -34,6 +34,7 @@ class Overlaid implements Rule
             case 'educator':
                 if ($value[3]) {
                     $settings = EducatorAttendanceSetting::where('id', '<>', $value[3])
+
                         ->pluck('end', 'start')->toArray();
                 } else {
                     $settings = EducatorAttendanceSetting::pluck('end', 'start')->toArray();
