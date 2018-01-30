@@ -120,12 +120,15 @@ class StudentAttendanceController extends Controller {
         $input = $request->all();
         #处理返回错误信息
         $student = Student::where('card_number', $input['card_number'])->first();
+        if(!$student){
+            return response()->json('学生信息有误！', self::INTERNAL_SERVER_ERROR);
+        }
         $squad = $student->squad;
-        $grade = $squad->grade;
-        $school = $grade->school;
         if (!$squad) {
             return response()->json('学生信息有误！', self::INTERNAL_SERVER_ERROR);
         }
+        $grade = $squad->grade;
+        $school = $grade->school;
         $weekArray = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
         //将时间转化成时间戳 获得星期 日期 时间
         $time = strtotime($input['punch_time']);
