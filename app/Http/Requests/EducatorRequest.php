@@ -41,7 +41,7 @@ class EducatorRequest extends FormRequest {
             $index = $input['mobile']['isdefault'];
             unset($input['mobile']['isdefault']);
             foreach ($input['mobile'] as $i => $m) {
-//                $m['user_id'] = $input['user_id'];
+//                $input['mobile'][$i]['user_id'] = $input['user_id'];
 
                 if ($i == $index) {
                     $input['mobile'][$i]['isdefault'] = 1;

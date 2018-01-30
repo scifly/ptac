@@ -40,7 +40,7 @@ class CustodianRequest extends FormRequest {
             $defaultIndex = $input['mobile']['isdefault'];
             unset($input['mobile']['isdefault']);
             foreach ($input['mobile'] as $index => $mobile) {
-//                $mobile['user_id'] = $input['user_id'];
+                $input['mobile'][$index]['user_id'] = isset($input['user_id']) ? $input['user_id'] : 0;
                 if ($index == $defaultIndex) {
                     $input['mobile'][$index]['isdefault'] = 1;
                 } else {
