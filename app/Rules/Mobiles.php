@@ -26,7 +26,6 @@ class Mobiles implements Rule {
         if (!preg_match(self::PHONEREG, $value['mobile'])) {
             return false;
         }
-
         if(Request::isMethod('put')) {
             if (isset($value['user_id']) && $value['user_id'] != 0) {
                 $userMobile = Mobile::whereMobile($value['mobile'])
