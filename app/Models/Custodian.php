@@ -112,7 +112,7 @@ class Custodian extends Model
                         if ($du) {
                             # 创建企业微信部门成员
                             $departmentUser = [
-                                'department_id' => $du->id,
+                                'department_id' => $du->department_id,
                                 'user_id' => $u->id,
                                 'enabled' => 1,
                             ];
@@ -196,7 +196,7 @@ class Custodian extends Model
                             if ($du) {
                                 # 创建企业微信部门成员
                                 $departmentUser = [
-                                    'department_id' => $du->id,
+                                    'department_id' => $du->department_id,
                                     'user_id' => $userId,
                                     'enabled' => 1,
                                 ];
