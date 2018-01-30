@@ -43,7 +43,6 @@ class Mobiles implements Rule {
             }
         }
 
-
         
         return true;
     }
