@@ -9,7 +9,7 @@
                     <div class="box-body" id="datas" style="display: none;">
 
                     </div>
-                    {{--@include('score.analysis_student_data')--}}
+                    
                     
 					<div class="box-body" id="roles" style="display: block;">
 						<div class="row">
@@ -25,10 +25,10 @@
 													<input id="byTest" type="radio" name="exam_type" class="minimal" value="0" checked=""/>
 													按考次
 												</label>
-												{{--<label>--}}
-													{{--<input id="byStudent" type="radio" name="exam_type" class="minimal" value="1" />--}}
-													{{--按学生--}}
-												{{--</label>--}}
+												
+													
+													
+												
 											</div>
 											
 									    </div>
@@ -47,9 +47,9 @@
 											</label>
 											<div class="col-sm-6">
 												<select id="exam_id" class="form-control select2 select2-hidden-accessible" style="width: 100%;" >
-                                                    @foreach($examarr as $key => $exam)
-                                                    <option value="{{ $key }}">{{ $exam }}</option>
-                                                    @endforeach
+                                                    <?php $__currentLoopData = $examarr; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $exam): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                    <option value="<?php echo e($key); ?>"><?php echo e($exam); ?></option>
+                                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 												</select>
 											</div>
 									    </div>
@@ -77,9 +77,9 @@
 											</label>
 											<div class="col-sm-6">
 												<select id="class_id" class="form-control select2 select2-hidden-accessible" style="width: 100%;" >
-													@foreach($classes as $key => $class)
-                                                    <option value="{{ $key }}">{{ $class }}</option>
-                                                    @endforeach
+													<?php $__currentLoopData = $classes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $class): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                    <option value="<?php echo e($key); ?>"><?php echo e($class); ?></option>
+                                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 												</select>
 											</div>
 									    </div>
@@ -90,9 +90,9 @@
 											</label>
 											<div class="col-sm-6">
 												<select id="student_id" class="form-control select2 select2-hidden-accessible" style="width: 100%;" >
-													@foreach($students as $key => $student)
-                                                    <option value="{{ $key }}">{{ $student }}</option>
-                                                        @endforeach
+													<?php $__currentLoopData = $students; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $student): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                    <option value="<?php echo e($key); ?>"><?php echo e($student); ?></option>
+                                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 												</select>
 											</div>
 									    </div>

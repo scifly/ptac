@@ -105,7 +105,7 @@ class MessageController extends Controller {
         return $this->output([
             'message' => $message,
             'users'   => User::users($message->user_ids),
-            'medias'  => Media::medias($message->media_ids),
+            'medias'  => Media::medias(explode(',', $message->media_ids)),
         ]);
         
     }

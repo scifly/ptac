@@ -79,20 +79,20 @@ class ScoreRangeController extends Controller {
      * @return bool|JsonResponse
      * @throws Throwable
      */
-    public function show($id) {
-        
-        $scoreRange = $this->scoreRange->find($id);
-        if (!$scoreRange) { return $this->notFound(); }
-        $subjectsArr = explode(',', $scoreRange['subject_ids']);
-        $str = '';
-        foreach ($subjectsArr as $val) {
-            $str .= ',' . $this->subject->find($val)->name;
-        }
-        $scoreRange['subject_ids'] = substr($str, 1);
-        
-        return $this->output(['scoreRange' => $scoreRange]);
-        
-    }
+    // public function show($id) {
+    //
+    //     $scoreRange = $this->scoreRange->find($id);
+    //     if (!$scoreRange) { return $this->notFound(); }
+    //     $subjectsArr = explode(',', $scoreRange['subject_ids']);
+    //     $str = '';
+    //     foreach ($subjectsArr as $val) {
+    //         $str .= ',' . $this->subject->find($val)->name;
+    //     }
+    //     $scoreRange['subject_ids'] = substr($str, 1);
+    //
+    //     return $this->output(['scoreRange' => $scoreRange]);
+    //
+    // }
     
     /**
      * 编辑成绩统计项
@@ -124,7 +124,7 @@ class ScoreRangeController extends Controller {
         $scoreRange = $this->scoreRange->find($id);
         if (!$scoreRange) { return $this->notFound(); }
         $score_range = $request->all();
-        $score_range['subject_ids'] = implode(',', $score_range['subject_ids']);
+        // $score_range['subject_ids'] = explode(',', $score_range['subject_ids']);
         
         return $scoreRange->update($score_range) ? $this->succeed() : $this->fail();
         

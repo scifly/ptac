@@ -318,7 +318,7 @@ class School extends Model {
             [
                 'db' => 'School.enabled', 'dt' => 7,
                 'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($d, $row);
+                    return Datatable::dtOps($d, $row,false);
                 },
             ],
         ];

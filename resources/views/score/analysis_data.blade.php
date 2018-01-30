@@ -38,7 +38,8 @@
 	            </tbody>
 	        </table>
 		</div>
-		
+
+	@if(!empty($rangs))
 		<div class="row">
 			<div class="subtitle">
 				各科分数段成绩分布情况
@@ -67,7 +68,9 @@
 				@endforeach
 	        </table>
 		</div>
-		<div class="row">
+	@endif
+@if(!empty($scoreToRanges))
+	<div class="row">
 			<div class="subtitle">
 				总分分数段成绩分布情况
 			</div>
@@ -93,5 +96,6 @@
 	            </tbody>
 	        </table>
 		</div>
-		<div class="table-pie" style=" width: 100%;height:550px;">
+@endif
+	<div class="table-pie" style=" width: 100%;height:550px;">
 		</div>

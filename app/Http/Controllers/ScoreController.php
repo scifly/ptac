@@ -5,6 +5,7 @@ use App\Http\Requests\ScoreRequest;
 use App\Models\Exam;
 use App\Models\Score;
 use App\Models\Squad;
+use App\Models\Student;
 use App\Models\Subject;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -62,7 +63,20 @@ class ScoreController extends Controller {
      * @return JsonResponse
      */
     public function store(ScoreRequest $request) {
-        
+        $input = $request->all();
+        $exam = Exam::whereId($input['exam_id'])->first();
+        if(!in_array($input['subject_id'], explode( ',', $exam->subject_ids))){
+            return $this->fail('该科目未在该场考试内！');
+        }
+        $subject = Subject::whereId($input['subject_id'])->first();
+        if($input['score'] > $subject->max_score){
+            return $this->fail('该科目最高分为'. $subject->max_score);
+        }
+        $student = Student::whereId($input['student_id'])->first();
+        $squad = $student->squad;
+        if(!in_array($squad->id, explode(',', $exam->class_ids))){
+            return $this->fail('该学生未在这场考试范围内！');
+        }
         return $this->result(Score::create($request->all()));
         
     }
@@ -113,10 +127,22 @@ class ScoreController extends Controller {
      * @return JsonResponse
      */
     public function update(ScoreRequest $request, $id) {
-        
+        $input = $request->all();
         $score = Score::find($id);
         if (!$score) { return $this->notFound(); }
-        
+        $exam = Exam::whereId($input['exam_id'])->first();
+        if(!in_array($input['subject_id'], explode( ',', $exam->subject_ids))){
+            return $this->fail('该科目未在该场考试内');
+        }
+        $subject = Subject::whereId($input['subject_id'])->first();
+        if($input['score'] > $subject->max_score){
+            return $this->fail('该科目最高分为'. $subject->max_score);
+        }
+        $student = Student::whereId($input['student_id'])->first();
+        $squad = $student->squad;
+        if(!in_array($squad->id, explode(',', $exam->class_ids))){
+            return $this->fail('该学生未在这场考试范围内！');
+        }
         return $this->result($score->update($request->all()));
         
     }
@@ -281,5 +307,15 @@ class ScoreController extends Controller {
         $view = Score::analysis($input);
       return $view ? $this->succeed($view) : $this->fail('未录入或未统计成绩！');
     }
+    
+    /**
+     * 根据考试id获取 对应的学生和科目
+     * @param $examId
+     */
+    public function getDatas($examId){
+        $exam = Exam::whereId($examId)->first();
+        // $squadIds = $exam->
+    }
+
 }
 

@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
@@ -315,7 +316,7 @@ class Educator extends Model {
                     }
                 }
                 # 创建企业号成员
-                User::createWechatUser($u->id);
+//                User::createWechatUser($u->id);
             });
         } catch (Exception $e) {
             throw $e;
@@ -334,7 +335,7 @@ class Educator extends Model {
      * @throws \Throwable
      */
     static function modify(EducatorRequest $request) {
-        
+        Log::debug(214);
         try {
             DB::transaction(function () use ($request) {
                 $user = $request->input('user');
@@ -352,6 +353,7 @@ class Educator extends Model {
                     'enabled' => $user['enabled'],
                 ]);
                 $selectedDepartments = $request->input('selectedDepartments');
+                Log::debug($selectedDepartments);
                 if (!empty($selectedDepartments)) {
                     DepartmentUser::whereUserId($request->input('user_id'))->delete();
                     foreach ($selectedDepartments as $department) {
@@ -360,6 +362,7 @@ class Educator extends Model {
                             'department_id' => $department,
                             'enabled' => $user['enabled'],
                         ]);
+
                     }
                 }
                 # 当选择了学校角色没有选择学校部门时
@@ -472,7 +475,15 @@ class Educator extends Model {
         $filename = date('His') . uniqid() . '.' . $ext;
         $stored = Storage::disk('uploads')->put($filename, file_get_contents($realPath));
         if ($stored) {
-            $filePath = 'storage/app/uploads/' . date('Y') . '/' . date('m') . '/' . date('d') . '/' . $filename;
+            $filePath =
+                'public/uploads/'
+                . date('Y')
+                . '/'
+                . date('m')
+                . '/'
+                . date('d')
+                . '/'
+                . $filename;
             // var_dump($filePath);die;
             /** @var LaravelExcelReader $reader */
             $reader = Excel::load($filePath);
@@ -600,7 +611,7 @@ class Educator extends Model {
             ],
         ];
         // todo: 根据角色显示教职员工列表，[运营/企业/学校]角色显示当前学校的所有教职员工，其他角色显示所属所有部门的教职员工
-        $condition = 'Educator.school_id = ' . School::schoolId();
+        $condition = 'Educator.school_id = ' . School::schoolId().' or User.group_id=3';
         
         return Datatable::simple(self::getModel(), $columns, $joins, $condition);
 

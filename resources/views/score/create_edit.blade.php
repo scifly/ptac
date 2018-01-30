@@ -8,25 +8,25 @@
                 {{ Form::hidden('id', $score['id'], ['id' => 'id']) }}
             @endif
             @include('partials.single_select', [
+                    'label' => '考试名称',
+                    'id' => 'exam_id',
+                    'items' => $exams
+                ])
+            @include('partials.single_select', [
+               'label' => '科目名称',
+               'id' => 'subject_id',
+               'items' => $subjects
+           ])
+            @include('partials.single_select', [
                 'label' => '学号',
                 'id' => 'student_id',
                 'items' => $students
-            ])
-            @include('partials.single_select', [
-                'label' => '科目名称',
-                'id' => 'subject_id',
-                'items' => $subjects
-            ])
-            @include('partials.single_select', [
-                'label' => '考试名称',
-                'id' => 'exam_id',
-                'items' => $exams
             ])
             <div class="form-group">
                 {!! Form::label('score', '分数', [
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
-                <div class="col-sm-3">
+                <div class="col-sm-6">
                     {!! Form::text('score', null, [
                         'class' => 'form-control',
                         'placeholder' => '(不超过5个数字含小数点)',

@@ -13,7 +13,7 @@ var $importEducator = $('#import-educator');
 var $file = $('#confirm-import');
 $import.on('click', function () {
     $importEducator.modal({backdrop: true});
-    $file.on('click', function () {
+    $file.off('click').click(function () {
         page.inform("温馨提示", '正在导入中...', page.info);
         var formData = new FormData();
         formData.append('file', $('#fileupload')[0].files[0]);
@@ -25,7 +25,9 @@ $import.on('click', function () {
             contentType: false,
             processData: false,
             success: function (result) {
-                if (result.error !== 0) {
+                if(result.error === 0){
+                    page.inform('操作结果', result.message, page.success);
+                } else {
                     page.inform("操作失败",result.message, page.failure);
                 }
             },

@@ -121,6 +121,7 @@ class ComposerServiceProvider extends ServiceProvider {
         View::composer('message.index', 'App\Http\ViewComposers\MessageIndexComposer');
         
         View::composer('message_type.index', 'App\Http\ViewComposers\MessageTypeIndexComposer');
+        View::composer('message_type.create_edit', 'App\Http\ViewComposers\MessageTypeIndexComposer');
 
         View::composer(
             ['combo_type.create_edit', 'combo_type.index'],

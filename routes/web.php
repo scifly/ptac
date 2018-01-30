@@ -85,12 +85,14 @@ Route::group(['prefix' => 'scores'], function () {
     Route::post('import', $c . '@import');
     Route::post('send', $c . '@send');
     Route::post('send_message', $c . '@send_message');
+    Route::get('get_datas', $c . '@getDatas');
 });
 Route::group(['prefix' => 'score_totals'], function () {
     $c = 'ScoreTotalController';
     Route::get('index', $c . '@index');
     Route::get('show/{id}', $c . '@show');
-    Route::get('statistics/{examId}', $c . '@statistics');
+    Route::delete('delete/{id}', $c . '@destroy');
+    // Route::get('statistics/{examId}', $c . '@statistics');
 });
 Route::group(['prefix' => 'score_ranges'], routes('ScoreRangeController'));
 Route::group(['prefix' => 'score_ranges'], function () {
@@ -305,7 +307,9 @@ Route::delete('message_replaydel/{id}', 'Wechat\MessageCenterController@replayDe
 //布置作业
 Route::get('homework', 'Wechat\HomeWorkController@index');
 //微网站
-Route::get('wapsite/home', 'Wechat\MobileSiteController@wapHome');
+Route::any('wapsite/home', 'Wechat\MobileSiteController@wapHome');
+Route::any('wapsite/module/home', 'Wechat\MobileSiteController@wapSiteModuleHome');
+Route::any('wapsite/article/home', 'Wechat\MobileSiteController@articleHome');
 // 考勤
 Route::get('lists', 'Wechat\AttendanceController@index');
 Route::get('attendance_records/{id}', 'Wechat\AttendanceController@records');

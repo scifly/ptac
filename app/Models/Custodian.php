@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 
 /**
@@ -86,9 +87,7 @@ class Custodian extends Model
                 $relationships = $request->input('relationships');
                 $studentId_relationship = [];
 
-                foreach ($studentIds as $key => $studentId) {
-                    $studentId_relationship[$studentId] = $relationships[$key];
-                }
+
                 # 创建用户
                 $userid = uniqid('custodian_'); // 企业号会员userid
                 $u = User::create([
@@ -106,6 +105,24 @@ class Custodian extends Model
                     'wechatid' => '',
                     'enabled' => $user['enabled'],
                 ]);
+
+                foreach ($studentIds as $key => $studentId) {
+                    $student = Student::whereId($studentId)->first();
+                    if ($student) {
+                        $du = DepartmentUser::whereUserId($student->user->id)->first();
+                        if ($du) {
+                            # 创建企业微信部门成员
+                            $departmentUser = [
+                                'department_id' => $du->department_id,
+                                'user_id' => $u->id,
+                                'enabled' => 1,
+                            ];
+                            DepartmentUser::create($departmentUser);
+                        }
+                    }
+                    $studentId_relationship[$studentId] = $relationships[$key];
+                }
+
                 # 保存手机号码
                 $mobiles = $request->input('mobile');
                 if ($mobiles) {
@@ -160,11 +177,7 @@ class Custodian extends Model
                 # 与学生之间的关系
                 $relationships = $request->input('relationships');
                 $studentId_Relationship = [];
-                if (!empty($studentIds)) {
-                    foreach ($studentIds as $key => $studentId) {
-                        $studentId_Relationship[$studentId] = $relationships[$key];
-                    }
-                }
+
                 User::find($userId)->update([
                     'group_id' => $userData['group_id'],
                     'email' => $userData['email'],
@@ -175,6 +188,25 @@ class Custodian extends Model
                     'telephone' => $userData['telephone'],
                     'enabled' => $userData['enabled'],
                 ]);
+                if (!empty($studentIds)) {
+                    DepartmentUser::whereUserId($userId)->delete();
+                    foreach ($studentIds as $key => $studentId) {
+                        $student = Student::whereId($studentId)->first();
+                        if ($student) {
+                            $du = DepartmentUser::whereUserId($student->user->id)->first();
+                            if ($du) {
+                                # 创建企业微信部门成员
+                                $departmentUser = [
+                                    'department_id' => $du->department_id,
+                                    'user_id' => $userId,
+                                    'enabled' => 1,
+                                ];
+                                DepartmentUser::create($departmentUser);
+                            }
+                        }
+                        $studentId_Relationship[$studentId] = $relationships[$key];
+                    }
+                }
                 $custodian->update(['user_id' => $userId]);
                 $mobiles = $request->input('mobile');
                 if ($mobiles) {
@@ -193,6 +225,7 @@ class Custodian extends Model
                     }
                     unset($mobile);
                 }
+//                die;
                 // TODO: 向部门用户表添加数据
                 # 向监护人学生表中添加数据
                 CustodianStudent::whereCustodianId($custodianId)->delete();
@@ -224,6 +257,7 @@ class Custodian extends Model
         }
         try {
             DB::transaction(function () use ($custodianId, $custodian) {
+                $userId = $custodian->user_id;
                 # 删除指定的监护人记录
                 $custodian->delete();
                 # 删除与指定监护人绑定的学生记录
@@ -232,6 +266,8 @@ class Custodian extends Model
                 DepartmentUser::whereUserId($custodian['user_id'])->delete();
                 # 删除与指定监护人绑定的手机记录
                 Mobile::whereUserId($custodian['user_id'])->delete();
+                # 删除企业号成员
+                User::deleteWechatUser($userId);
             });
         } catch (Exception $e) {
             throw $e;
@@ -288,13 +324,19 @@ class Custodian extends Model
         $columns = [
             ['db' => 'Custodian.id', 'dt' => 0],
             ['db' => 'User.realname', 'dt' => 1],
-            ['db' => 'User.gender', 'dt' => 2,
-                'formatter' => function ($d) {
-                    return $d == 1 ? '男' : '女';
-                },
+            [
+                'db' => 'CustodianStudent.student_id', 'dt' => 2,
+                'formatter' => function($d){
+                     return Student::whereId($d)->first()->user->realname;
+                }
             ],
             ['db' => 'User.email', 'dt' => 3],
-            ['db' => 'Custodian.id as mobile', 'dt' => 4,
+            ['db' => 'User.gender', 'dt' => 4,
+             'formatter' => function ($d) {
+                 return $d == 1 ? '男' : '女';
+             },
+            ],
+            ['db' => 'Custodian.id as mobile', 'dt' => 5,
                 'formatter' => function ($d) {
                     $custodian = Custodian::find($d);
                     $mobiles = Mobile::whereUserId($custodian->user_id)->get();
@@ -306,10 +348,10 @@ class Custodian extends Model
                     return implode(',', $mobile);
                 },
             ],
-            ['db' => 'Custodian.created_at', 'dt' => 5],
-            ['db' => 'Custodian.updated_at', 'dt' => 6],
+            ['db' => 'Custodian.created_at', 'dt' => 6],
+            ['db' => 'Custodian.updated_at', 'dt' => 7],
             [
-                'db' => 'User.enabled', 'dt' => 7,
+                'db' => 'User.enabled', 'dt' => 8,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($d, $row, false);
                 },
