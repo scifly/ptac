@@ -314,6 +314,7 @@ class ScoreController extends Controller {
      */
     public function getDatas($examId){
         $exam = Exam::whereId($examId)->first();
+        #找出这个考试
         // $squadIds = $exam->
     }
 
