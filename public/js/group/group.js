@@ -80,7 +80,7 @@ var group = function(action) {
                 error:function (e) {
                     var obj = JSON.parse(e.responseText);
                     var errors = obj.errors;
-                    page.inform('出现异常', obj['message'], page.failure);
+                    // page.inform('出现异常', obj['message'], page.failure);
                     for(var j in errors){
                         page.inform('出现异常', errors[j], page.failure);
                         return false;
