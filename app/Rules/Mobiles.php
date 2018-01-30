@@ -13,6 +13,7 @@ class Mobiles implements Rule {
 
 
     public function passes($attribute, $value) {
+        Log::debug($value);
         $this->value = $value;
         if (!isset($value['id'])) {
             $value['id'] = 0;
@@ -20,7 +21,7 @@ class Mobiles implements Rule {
         $mobile = Mobile::whereMobile($value['mobile'])
             ->where('id', '!=', $value['id'])
             ->get()->toArray();
-
+ 
         if ($mobile || !preg_match(self::PHONEREG, $value['mobile'])) {
             return false;
         }
