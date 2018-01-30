@@ -9,7 +9,6 @@ use App\Models\Semester;
 use App\Models\Student;
 use App\Models\StudentAttendance;
 use App\Models\StudentAttendanceSetting;
-
 use Illuminate\Support\Facades\Request;
 
 /**
@@ -120,12 +119,12 @@ class StudentAttendanceController extends Controller {
         $input = $request->all();
         #处理返回错误信息
         $student = Student::where('card_number', $input['card_number'])->first();
-        if(!$student){
-            return response()->json('学生信息有误！', self::INTERNAL_SERVER_ERROR);
+        if (!$student) {
+            return response()->json(['message' => '学生信息有误！', 'statusCode' => self::INTERNAL_SERVER_ERROR]);
         }
         $squad = $student->squad;
         if (!$squad) {
-            return response()->json('学生信息有误！', self::INTERNAL_SERVER_ERROR);
+            return response()->json(['message' => '学生信息有误！', 'statusCode' => self::INTERNAL_SERVER_ERROR]);
         }
         $grade = $squad->grade;
         $school = $grade->school;
@@ -143,13 +142,13 @@ class StudentAttendanceController extends Controller {
         }
         if (!isset($semester)) {
             #没有找到打卡对应的学期
-            return response()->json('学期信息有误！', self::INTERNAL_SERVER_ERROR);
+            return response()->json(['message' => '学期信息有误！', 'statusCode' => self::INTERNAL_SERVER_ERROR]);
         }
         //找出对应的考勤机id
         $attendance = AttendanceMachine::whereMachineid($input['attendId'])
             ->where('school_id', $school->id)->first();
         if (empty($attendance)) {
-            return response()->json('考勤机信息有误！', self::INTERNAL_SERVER_ERROR);
+            return response()->json(['message' => '考勤机信息有误！', 'statusCode' => self::INTERNAL_SERVER_ERROR]);
         }
         //根据时间找出对应的 规则
         $rules = StudentAttendanceSetting::where('grade_id', $grade->id)
@@ -157,12 +156,12 @@ class StudentAttendanceController extends Controller {
             ->where('day', $weekDay)
             ->get();
         if (count($rules) == 0) {
-            return response()->json('考勤规则有误！', self::INTERNAL_SERVER_ERROR);
+            return response()->json(['message' => '考勤规则有误！', 'statusCode' => self::INTERNAL_SERVER_ERROR]);
         }
         
         return $this->studentAttendance->storeByFace($input)
-            ? response()->json('success', self::OK)
-            : response()->json('failed', self::INTERNAL_SERVER_ERROR);
+            ? response()->json(['message' => 'success', 'statusCode' => self::OK])
+            : response()->json(['message' => 'failed', 'statusCode' => self::INTERNAL_SERVER_ERROR]);
     }
     
 }
