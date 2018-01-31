@@ -75,8 +75,7 @@ class Custodian extends Model
      * @throws Exception
      * @throws \Throwable
      */
-    static function store(CustodianRequest $request)
-    {
+    static function store(CustodianRequest $request) {
 
         try {
             DB::transaction(function () use ($request) {
@@ -86,7 +85,6 @@ class Custodian extends Model
                 # 与学生之间的关系
                 $relationships = $request->input('relationships');
                 $studentId_relationship = [];
-
 
                 # 创建用户
                 $userid = uniqid('custodian_'); // 企业号会员userid
@@ -136,7 +134,6 @@ class Custodian extends Model
                     }
                 }
                 $c = self::create(['user_id' => $u->id]);
-                // TODO: 向部门用户表(department_users)添加数据
                 # 向监护人学生表中添加数据
                 if (isset($studentId_relationship)) {
                     CustodianStudent::storeByCustodianId($c->id, $studentId_relationship);
@@ -225,8 +222,6 @@ class Custodian extends Model
                     }
                     unset($mobile);
                 }
-//                die;
-                // TODO: 向部门用户表添加数据
                 # 向监护人学生表中添加数据
                 CustodianStudent::whereCustodianId($custodianId)->delete();
                 CustodianStudent::storeByCustodianId($custodianId, $studentId_Relationship);

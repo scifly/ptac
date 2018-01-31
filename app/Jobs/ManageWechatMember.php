@@ -9,6 +9,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 
 /**
  * 企业号会员管理
@@ -51,9 +52,13 @@ class ManageWechatMember implements ShouldQueue {
         // $secret = 'IoiSOIsOGrdps03Lx_h5V3cCvMl3ibu-FyqqAsy-qLM';
         // $agentId = $app->agentid;
         $token = Wechat::getAccessToken($corpId, $secret);
+        Log::debug('token: ' . $token);
         switch ($this->action) {
             case 'create':
-                Wechat::createUser($token, $this->data);
+                $result = Wechat::createUser($token, $this->data);
+                $result = json_decode($result);
+                Log::debug($result->{'errcode'});
+                Log::debug($result->{'errmsg'});
                 break;
             case 'update':
                 Wechat::updateUser($token, $this->data);
