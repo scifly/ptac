@@ -455,7 +455,8 @@ class Student extends Model {
                 'required',
                 Rule::in(['男', '女']),
             ],
-            'birthday' => ['required', 'string', 'regex:/^((19\d{2})|(20\d{2}))-([1-12])-([1-31])$/'],
+            // 'birthday' => ['required', 'string', 'regex:/^((19\d{2})|(20\d{2}))-([1-12])-([1-31])$/'],
+            'birthday' => 'required|date',
             'school' => 'required|string|between:4,20',
             'grade' => 'required|string|between:3,20',
             'class' => 'required|string|between:2,20',
@@ -530,11 +531,11 @@ class Student extends Model {
             $user['class_id'] = $class->id;
             $deptId = self::deptId($user['school'], $user['grade'], $user['class']);
             $user['department_id'] = $deptId;
-            if ($user['department_id'] == 0) {
-                $invalidRows[] = $datum;
-                unset($data[$i]);
-                continue;
-            }
+//            if ($user['department_id'] == 0) {
+//                $invalidRows[] = $datum;
+//                unset($data[$i]);
+//                continue;
+//            }
             # 学生数据已存在 更新操作
             if ($student) {
                 $updateRows[] = $user;
