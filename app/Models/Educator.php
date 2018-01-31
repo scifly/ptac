@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
@@ -315,7 +316,7 @@ class Educator extends Model {
                     }
                 }
                 # 创建企业号成员
-                User::createWechatUser($u->id);
+//                User::createWechatUser($u->id);
             });
         } catch (Exception $e) {
             throw $e;
@@ -334,7 +335,7 @@ class Educator extends Model {
      * @throws \Throwable
      */
     static function modify(EducatorRequest $request) {
-        
+        Log::debug(214);
         try {
             DB::transaction(function () use ($request) {
                 $user = $request->input('user');
@@ -352,6 +353,7 @@ class Educator extends Model {
                     'enabled' => $user['enabled'],
                 ]);
                 $selectedDepartments = $request->input('selectedDepartments');
+                Log::debug($selectedDepartments);
                 if (!empty($selectedDepartments)) {
                     DepartmentUser::whereUserId($request->input('user_id'))->delete();
                     foreach ($selectedDepartments as $department) {
@@ -360,6 +362,7 @@ class Educator extends Model {
                             'department_id' => $department,
                             'enabled' => $user['enabled'],
                         ]);
+
                     }
                 }
                 # 当选择了学校角色没有选择学校部门时
@@ -409,6 +412,8 @@ class Educator extends Model {
                             ]);
                         }
                     }
+                } else {
+                    EducatorClass::whereEducatorId($request->input('id'))->delete();
                 }
                 $mobiles = $request->input('mobile');
                 if ($mobiles) {
@@ -472,7 +477,15 @@ class Educator extends Model {
         $filename = date('His') . uniqid() . '.' . $ext;
         $stored = Storage::disk('uploads')->put($filename, file_get_contents($realPath));
         if ($stored) {
-            $filePath = 'storage/app/uploads/' . date('Y') . '/' . date('m') . '/' . date('d') . '/' . $filename;
+            $filePath =
+                'public/uploads/'
+                . date('Y')
+                . '/'
+                . date('m')
+                . '/'
+                . date('d')
+                . '/'
+                . $filename;
             // var_dump($filePath);die;
             /** @var LaravelExcelReader $reader */
             $reader = Excel::load($filePath);
@@ -651,7 +664,8 @@ class Educator extends Model {
         $rules = [
             'name' => 'required|string|between:2,6',
             'gender' => ['required', Rule::in(['男', '女'])],
-            'birthday' => ['required', 'string', 'regex:/^((19\d{2})|(20\d{2}))-([1-12])-([1-31])$/'],
+            'birthday' => 'required|date',
+            // 'birthday' => ['required', 'string', 'regex:/^((19\d{2})|(20\d{2}))-([1-12])-([1-31])$/'],
             'school' => 'required|string|between:4,20',
             'mobile' => 'required', new Mobiles(),
             'grades' => 'string',

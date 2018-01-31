@@ -85,12 +85,14 @@ Route::group(['prefix' => 'scores'], function () {
     Route::post('import', $c . '@import');
     Route::post('send', $c . '@send');
     Route::post('send_message', $c . '@send_message');
+    // Route::get('get_datas/{examId}', $c . '@getDatas');
 });
 Route::group(['prefix' => 'score_totals'], function () {
     $c = 'ScoreTotalController';
     Route::get('index', $c . '@index');
     Route::get('show/{id}', $c . '@show');
-    Route::get('statistics/{examId}', $c . '@statistics');
+    Route::delete('delete/{id}', $c . '@destroy');
+    // Route::get('statistics/{examId}', $c . '@statistics');
 });
 Route::group(['prefix' => 'score_ranges'], routes('ScoreRangeController'));
 Route::group(['prefix' => 'score_ranges'], function () {

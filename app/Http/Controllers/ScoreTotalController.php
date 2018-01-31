@@ -44,25 +44,40 @@ class ScoreTotalController extends Controller {
     }
     
     /**
+     * 删除总成绩
+     *
+     * @param $id
+     * @return JsonResponse
+     * @throws Exception
+     */
+    public function destroy($id) {
+        
+        $scoreTotal = ScoreTotal::find($id);
+        if (!$scoreTotal) { return $this->notFound(); }
+
+        return $this->result($scoreTotal->delete());
+        
+    }
+    /**
      * 总成绩详情
      *
      * @param $id
      * @return bool|JsonResponse
      * @throws Throwable
      */
-    public function show($id) {
-        
-        $st = ScoreTotal::find($id);
-        if (!$st) { return $this->notFound(); }
-        
-        return $this->output([
-            'score_total' => $st,
-            'studentname' => $st->student->user->realname,
-            'subjects'    => Subject::subjects($st->subject_ids),
-            'na_subjects' => Subject::subjects($st->na_subject_ids),
-        ]);
-        
-    }
+    // public function show($id) {
+    //
+    //     $st = ScoreTotal::find($id);
+    //     if (!$st) { return $this->notFound(); }
+    //
+    //     return $this->output([
+    //         'score_total' => $st,
+    //         'studentname' => $st->student->user->realname,
+    //         'subjects'    => Subject::subjects($st->subject_ids),
+    //         'na_subjects' => Subject::subjects($st->na_subject_ids),
+    //     ]);
+    //
+    // }
     
     /**
      * 总成绩统计
@@ -71,10 +86,10 @@ class ScoreTotalController extends Controller {
      * @return JsonResponse
      * @throws Exception
      */
-    public function statistics($examId) {
-        
-        return $this->result(ScoreTotal::statistics($examId));
-        
-    }
+    // public function statistics($examId) {
+    //
+    //     return $this->result(ScoreTotal::statistics($examId));
+    //
+    // }
     
 }

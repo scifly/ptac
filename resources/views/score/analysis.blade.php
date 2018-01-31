@@ -9,7 +9,7 @@
                     <div class="box-body" id="datas" style="display: none;">
 
                     </div>
-                    @include('score.analysis_student_data')
+                    {{--@include('score.analysis_student_data')--}}
                     
 					<div class="box-body" id="roles" style="display: block;">
 						<div class="row">
@@ -25,10 +25,10 @@
 													<input id="byTest" type="radio" name="exam_type" class="minimal" value="0" checked=""/>
 													按考次
 												</label>
-												<label>
-													<input id="byStudent" type="radio" name="exam_type" class="minimal" value="1" />
-													按学生
-												</label>
+												{{--<label>--}}
+													{{--<input id="byStudent" type="radio" name="exam_type" class="minimal" value="1" />--}}
+													{{--按学生--}}
+												{{--</label>--}}
 											</div>
 											
 									    </div>

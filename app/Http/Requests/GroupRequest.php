@@ -17,10 +17,14 @@ class GroupRequest extends FormRequest {
         return [
             'name'   => 'required|string|between:2,255|unique:groups,name,' .
                 $this->input('id') . ',id',
+<<<<<<< HEAD
+            #'remark' => 'required|string|between:2,20',
+=======
             'remark' => 'required|string|between:2,20',
-            'menu_ids' => 'required',
+             'menu_ids' => 'required',
             'actionId' => 'required',
             // 'tabId' => 'required',
+>>>>>>> refs/remotes/origin/master
         ];
 
     }
@@ -29,7 +33,6 @@ class GroupRequest extends FormRequest {
 
         $input = $this->all();
 
-        $tabIds = [];
         if (isset($input['tabs'])) {
             foreach ($input['tabs'] as $k => $v) {
                 $tabIds[] = $k;
@@ -41,8 +44,9 @@ class GroupRequest extends FormRequest {
             foreach ($input['actions'] as $k => $v) {
                 $actionIds[] = $k;
             }
-            $input['acitonId'] = $actionIds;
+            $input['actionId'] = $actionIds;
         }
+
         $this->replace($input);
 
     }
