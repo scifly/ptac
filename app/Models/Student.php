@@ -27,6 +27,7 @@ use Log;
 use Maatwebsite\Excel\Facades\Excel;
 use Maatwebsite\Excel\Readers\LaravelExcelReader;
 use PHPExcel_Exception;
+use PHPExcel_Shared_Date;
 
 /**
  * App\Models\Student 学生
@@ -496,6 +497,7 @@ class Student extends Model {
                 'class_id' => 0,
                 'department_id' => 0,
             ];
+//            gmdate("Y-m-d H:i:s", PHPExcel_Shared_Date::ExcelToPHP($datum[2]));
             $status = Validator::make($user, $rules);
             if ($status->fails()) {
                 $invalidRows[] = $datum;

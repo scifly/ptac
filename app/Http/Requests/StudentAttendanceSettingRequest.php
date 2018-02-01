@@ -43,7 +43,7 @@ class StudentAttendanceSettingRequest extends FormRequest {
 
         $input = $this->all();
         $input['startend'] = [
-            $input['start'], $input['end'], 'student', $input['id'] ?? null
+            $input['start'], $input['end'], 'student', $input['id'] ?? null , $input['day']
         ];
         
         $this->replace($input);
