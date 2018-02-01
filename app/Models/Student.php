@@ -378,13 +378,12 @@ class Student extends Model {
         return true;
         
     }
-    
+
     /**
      * 导入
      *
      * @param UploadedFile $file
      * @return array
-     * @throws PHPExcel_Exception
      */
     static function upload(UploadedFile $file) {
 
