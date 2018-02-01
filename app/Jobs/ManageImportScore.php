@@ -36,7 +36,6 @@ class ManageImportScore implements ShouldQueue {
         
         $rows = $this->data;
         #rows 多批次进来
-        Log::info($rows);
         try {
             DB::transaction(function () use ($rows) {
                 foreach ($rows as $row) {
@@ -51,8 +50,7 @@ class ManageImportScore implements ShouldQueue {
                         'grade_rank' => 0,
                         'enabled'    => 1,
                     ];
-                    $score = Score::create($scoreData);
-                    Log::debug($score);
+                    Score::create($scoreData);
                 }
             });
         } catch (Exception $e) {
