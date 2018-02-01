@@ -94,7 +94,7 @@
                             'class' => 'form-control',
                             'placeholder' => '(请输入用户名)',
                             'required' => 'true',
-                            'data-parsley-length' => '[6,20]'
+                            'data-parsley-length' => '[6,30]'
                         ]) !!}
                     </div>
                 </div>
