@@ -437,7 +437,7 @@ class Educator extends Model {
         return true;
         
     }
-
+    
     /**
      * 删除教职员工
      *
@@ -445,6 +445,8 @@ class Educator extends Model {
      * @param bool $fireEvent
      * @return bool
      * @throws Exception
+     * @throws \ReflectionException
+     * @throws \Throwable
      */
     static function remove($id, $fireEvent = false) {
 
@@ -455,8 +457,8 @@ class Educator extends Model {
         if ($removed && $fireEvent) {
             /** @var School $school */
     
-            # 删除企业号成员
-            User::deleteWechatUser($userId);
+            # 删除User数据
+            User::remove($userId);
             return true;
         }
 
