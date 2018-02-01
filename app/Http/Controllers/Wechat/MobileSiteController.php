@@ -57,7 +57,7 @@ class MobileSiteController extends Controller
 //        $group = User::whereId($user->id)->first()->group;
             if ($user->group_id != 1 && $user->group_id != 2) {
                 $dept_id = DepartmentUser::whereUserId($user->id)->first()->department_id;
-                print_r($dept_id);
+//                print_r($dept_id);
                 $schoolDept = Department::schoolDeptId($dept_id);
                 if ($schoolDept) {
                     print_r($schoolDept);die;
