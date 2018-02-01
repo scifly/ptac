@@ -56,8 +56,8 @@ class MobileSiteController extends Controller
 //        $level = $department->groupLevel($user->id);
 //        $group = User::whereId($user->id)->first()->group;
             if ($user->group_id != 1 && $user->group_id != 2) {
-                $dept_id = DepartmentUser::whereUserId($user->id)->department_id;
-                $schoolDept = Department::schoolDeptId(Department::find($dept_id)->first()->id);
+                $dept_id = DepartmentUser::whereUserId($user->id)->first()->department_id;
+                $schoolDept = Department::schoolDeptId($dept_id);
                 if ($schoolDept) {
                     $school_id = School::whereDepartmentId($schoolDept)->first()->id;
                     $wapSite = WapSite::
