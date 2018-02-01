@@ -412,6 +412,8 @@ class Educator extends Model {
                             ]);
                         }
                     }
+                } else {
+                    EducatorClass::whereEducatorId($request->input('id'))->delete();
                 }
                 $mobiles = $request->input('mobile');
                 if ($mobiles) {
@@ -662,7 +664,8 @@ class Educator extends Model {
         $rules = [
             'name' => 'required|string|between:2,6',
             'gender' => ['required', Rule::in(['男', '女'])],
-            'birthday' => ['required', 'string', 'regex:/^((19\d{2})|(20\d{2}))-([1-12])-([1-31])$/'],
+            'birthday' => 'required|date',
+            // 'birthday' => ['required', 'string', 'regex:/^((19\d{2})|(20\d{2}))-([1-12])-([1-31])$/'],
             'school' => 'required|string|between:4,20',
             'mobile' => 'required', new Mobiles(),
             'grades' => 'string',

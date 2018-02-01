@@ -165,7 +165,7 @@ class ConferenceQueuePolicy {
             ? explode(',', $cq->educator_ids)
             : explode(',', Request::input('educator_ids'));
 
-        return array($conferenceRoomId, $educatorIds);
+        return [$conferenceRoomId, $educatorIds];
 
     }
 

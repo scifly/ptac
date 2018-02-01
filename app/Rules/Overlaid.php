@@ -3,6 +3,9 @@
 namespace App\Rules;
 
 use App\Models\EducatorAttendanceSetting;
+use App\Models\Grade;
+use App\Models\School;
+use App\Models\Score;
 use App\Models\StudentAttendanceSetting;
 use Illuminate\Contracts\Validation\Rule;
 
@@ -23,7 +26,6 @@ class Overlaid implements Rule
      *
      * @param  string $attribute
      * @param  mixed $value
-     * @param null $day
      * @return bool
      */
     public function passes($attribute, $value)
@@ -43,11 +45,21 @@ class Overlaid implements Rule
                 }
                 break;
             case 'student':
+                $gradeIds = [];
+                $schoolId = School::schoolId();
+                $grade = Grade::whereSchoolId($schoolId)->get();
+                foreach ($grade as $g){
+                    $gradeIds[] = $g->id;
+                }
                 if($value[3]){
                     $settings = StudentAttendanceSetting::where('id','<>', $value[3])
+                        ->whereIn('grade_id',$gradeIds)
+                        ->where('day',$value[4])
                         ->pluck('end', 'start')->toArray();
                 } else {
-                    $settings = StudentAttendanceSetting::pluck('end', 'start')->toArray();
+                    $settings = StudentAttendanceSetting::whereIn('grade_id',$gradeIds)
+                        ->where('day',$value[4])
+                        ->pluck('end', 'start')->toArray();
                 }
                 break;
             default :

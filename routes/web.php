@@ -85,7 +85,7 @@ Route::group(['prefix' => 'scores'], function () {
     Route::post('import', $c . '@import');
     Route::post('send', $c . '@send');
     Route::post('send_message', $c . '@send_message');
-    Route::get('get_datas', $c . '@getDatas');
+    Route::get('get_datas/{examId}', $c . '@getDatas');
 });
 Route::group(['prefix' => 'score_totals'], function () {
     $c = 'ScoreTotalController';

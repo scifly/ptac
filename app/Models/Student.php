@@ -379,13 +379,12 @@ class Student extends Model {
         return true;
         
     }
-    
+
     /**
      * 导入
      *
      * @param UploadedFile $file
      * @return array
-     * @throws PHPExcel_Exception
      */
     static function upload(UploadedFile $file) {
 
@@ -457,7 +456,8 @@ class Student extends Model {
                 'required',
                 Rule::in(['男', '女']),
             ],
-            'birthday' => ['required', 'string', 'regex:/^((19\d{2})|(20\d{2}))-([1-12])-([1-31])$/'],
+            // 'birthday' => ['required', 'string', 'regex:/^((19\d{2})|(20\d{2}))-([1-12])-([1-31])$/'],
+            'birthday' => 'required|date',
             'school' => 'required|string|between:4,20',
             'grade' => 'required|string|between:3,20',
             'class' => 'required|string|between:2,20',
