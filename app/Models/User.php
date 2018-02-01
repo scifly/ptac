@@ -333,7 +333,7 @@ class User extends Authenticatable {
         $user->english_name=$data["english_name"];
         $user->wechatid=$data["wechatid"];
         $user->gender=$data["gender"];
-        $user->telephone=
+        $user->telephone = $data["telephone"];
         $user->email=$data["email"];
         $updated = $user->update();
         if ($updated && $fireEvent) {
