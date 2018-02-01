@@ -664,7 +664,7 @@ class Educator extends Model {
     private static function checkData(array $data) {
         
         $rules = [
-            'name' => 'required|string|between:2,6',
+            'name' => 'required|string|between:2,20',
             'gender' => ['required', Rule::in(['男', '女'])],
             'birthday' => 'required|date',
             // 'birthday' => ['required', 'string', 'regex:/^((19\d{2})|(20\d{2}))-([1-12])-([1-31])$/'],
