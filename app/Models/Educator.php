@@ -455,8 +455,8 @@ class Educator extends Model {
         if ($removed && $fireEvent) {
             /** @var School $school */
     
-            # 删除企业号成员
-            User::deleteWechatUser($userId);
+            # 删除User数据
+            User::remove($userId);
             return true;
         }
 
