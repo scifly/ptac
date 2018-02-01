@@ -182,7 +182,7 @@ class Student extends Model {
                 ];
                 DepartmentUser::create($departmentUser);
                 # 创建企业号成员
-                User::createWechatUser($u->id);
+                 User::createWechatUser($u->id);
             });
         } catch (Exception $e) {
             throw $e;
@@ -360,6 +360,7 @@ class Student extends Model {
         try {
             DB::transaction(function () use ($studentId, $student) {
                 $userId = $student->user_id;
+                $custodian = $student->custodians;
                 # 删除指定的学生记录
                 $student->delete();
                 # 删除与指定学生绑定的监护人记录
@@ -369,7 +370,7 @@ class Student extends Model {
                 # 删除与指定学生绑定的手机记录
                 Mobile::whereUserId($student['user_id'])->delete();
                 # 删除企业号成员
-                User::deleteWechatUser($userId);
+                 User::deleteWechatUser($userId);
             });
         } catch (Exception $e) {
             throw $e;
