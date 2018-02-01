@@ -39,7 +39,10 @@ class ManageCreateMenu implements ShouldQueue {
         // ];
         $this->menu = new Menu();
         $this->menuNameTab = [];
-        $schoolMenus = $this->menu->where('parent_id',5)->get();
+        $schoolMenus = $this->menu
+            ->where('parent_id',5)
+            ->whereEnabled(1)
+            ->get();
         foreach ($schoolMenus as $schoolMenu){
             $this->menuNameTab[] = $schoolMenu->name;
         }

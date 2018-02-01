@@ -27,6 +27,7 @@ use Log;
 use Maatwebsite\Excel\Facades\Excel;
 use Maatwebsite\Excel\Readers\LaravelExcelReader;
 use PHPExcel_Exception;
+use PHPExcel_Shared_Date;
 
 /**
  * App\Models\Student 学生
@@ -456,7 +457,8 @@ class Student extends Model {
                 'required',
                 Rule::in(['男', '女']),
             ],
-            'birthday' => ['required', 'string', 'regex:/^((19\d{2})|(20\d{2}))-([1-12])-([1-31])$/'],
+            // 'birthday' => ['required', 'string', 'regex:/^((19\d{2})|(20\d{2}))-([1-12])-([1-31])$/'],
+            'birthday' => 'required|date',
             'school' => 'required|string|between:4,20',
             'grade' => 'required|string|between:3,20',
             'class' => 'required|string|between:2,20',
@@ -495,6 +497,7 @@ class Student extends Model {
                 'class_id' => 0,
                 'department_id' => 0,
             ];
+//            gmdate("Y-m-d H:i:s", PHPExcel_Shared_Date::ExcelToPHP($datum[2]));
             $status = Validator::make($user, $rules);
             if ($status->fails()) {
                 $invalidRows[] = $datum;

@@ -117,11 +117,13 @@
                                 <a class="edit_input" title="编辑" href="#">
                                     <i class="fa fa-pencil"></i>
                                 </a>
+                                @if(count($school->schoolType) != 0)
                                 <hr>
                                 <strong class="title">学校类型</strong>
                                 <p class="text-muted">{{$school->schoolType->name}}</p>
                                 {{ Form::hidden('school_type_id', $school->school_type_id, ['id' => 'school_type_id']) }}
                                 <hr>
+                                @endif
                             </div>
                             <div class="col-lg-6 otherinfo-con">
                                 <strong class="title">所属企业</strong>

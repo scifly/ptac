@@ -12,7 +12,7 @@
 			
 			<div class="weui-cell">
 		        <div class="weui-cell__bd title-name">
-		          	<div>标题</div>
+		          	<div>{{$wapsite->site_title}}</div>
 		        </div>
 		    </div>
 			
@@ -22,7 +22,9 @@
       	<div class="swiper-wrapper" style="">
 			@if($medias)
 				@foreach($medias as $k => $v)
-					<div class="swiper-slide" data-swiper-slide-index="{{$k}}"><img src="../{{$v->path}}"></div>
+					@if($v)
+						<div class="swiper-slide" data-swiper-slide-index="{{$k}}"><img src="../{{$v->path}}"></div>
+					@endif
 				@endforeach
 			@endif
       	</div>
@@ -32,16 +34,18 @@
 	
 	<!--九宫格图标-->
 	<div class="weui-grids">
-		@foreach($wapsite->wapSiteModules as $v)
-			@if($v)
-				<a href="/wapsite/module/home/?id={{$v->id}}" class=" weui-grid js_grid">
-					<div class=" weui-grid__icon">
-						<img src="../{{$v->media->path}}" alt="">
-					</div>
-					<p class="weui-grid__label">{{$v->name}}</p>
-				</a>
-			@endif
-		@endforeach
+		@if($wapsite)
+			@foreach($wapsite->wapSiteModules as $v)
+				@if($v)
+					<a href="/wapsite/module/home/?id={{$v->id}}" class=" weui-grid js_grid">
+						<div class=" weui-grid__icon">
+							<img src="../{{$v->media->path}}" alt="">
+						</div>
+						<p class="weui-grid__label">{{$v->name}}</p>
+					</a>
+				@endif
+			@endforeach
+		@endif
 	</div>
 
 

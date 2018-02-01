@@ -316,7 +316,7 @@ class Educator extends Model {
                     }
                 }
                 # 创建企业号成员
-//                User::createWechatUser($u->id);
+                User::createWechatUser($u->id);
             });
         } catch (Exception $e) {
             throw $e;
@@ -449,12 +449,14 @@ class Educator extends Model {
     static function remove($id, $fireEvent = false) {
 
         $educator = self::find($id);
+        $userId = $educator->user_id;
         /** @var Educator $educator */
         $removed = self::removable($educator) ? $educator->delete() : false;
         if ($removed && $fireEvent) {
             /** @var School $school */
-
-            event(new UserDeleted($educator->user_id));
+    
+            # 删除企业号成员
+            User::deleteWechatUser($userId);
             return true;
         }
 
@@ -662,9 +664,10 @@ class Educator extends Model {
     private static function checkData(array $data) {
         
         $rules = [
-            'name' => 'required|string|between:2,6',
+            'name' => 'required|string|between:2,20',
             'gender' => ['required', Rule::in(['男', '女'])],
-            'birthday' => ['required', 'string', 'regex:/^((19\d{2})|(20\d{2}))-([1-12])-([1-31])$/'],
+            'birthday' => 'required|date',
+            // 'birthday' => ['required', 'string', 'regex:/^((19\d{2})|(20\d{2}))-([1-12])-([1-31])$/'],
             'school' => 'required|string|between:4,20',
             'mobile' => 'required', new Mobiles(),
             'grades' => 'string',
