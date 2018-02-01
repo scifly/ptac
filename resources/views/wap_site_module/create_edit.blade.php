@@ -4,8 +4,8 @@
     </div>
     <div class="box-body">
         <div class="form-horizontal">
-            @if (!empty($wsm['id']))
-                {{ Form::hidden('id', $wsm['id'], ['id' => 'id']) }}
+            @if (!empty($wapSiteModule['id']))
+                {{ Form::hidden('id', $wapSiteModule['id'], ['id' => 'id']) }}
 
             @endif
             @include('partials.single_select', [
@@ -45,7 +45,7 @@
             </div>
             @include('partials.enabled', [
                 'id' => 'enabled',
-                'value' => $wsm['enabled'] ?? null
+                'value' => $wapSiteModule['enabled'] ?? null
             ])
         </div>
     </div>
