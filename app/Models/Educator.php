@@ -454,8 +454,9 @@ class Educator extends Model {
         $removed = self::removable($educator) ? $educator->delete() : false;
         if ($removed && $fireEvent) {
             /** @var School $school */
-
-            event(new UserDeleted($userId));
+    
+            # 删除企业号成员
+            User::deleteWechatUser($userId);
             return true;
         }
 
