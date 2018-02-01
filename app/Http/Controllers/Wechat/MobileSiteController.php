@@ -60,7 +60,6 @@ class MobileSiteController extends Controller
 //                print_r($dept_id);
                 $schoolDept = Department::schoolDeptId($dept_id);
                 if ($schoolDept) {
-                    print_r($schoolDept);die;
                     $school_id = School::whereDepartmentId($schoolDept)->first()->id;
                     $wapSite = WapSite::
                     where('school_id', $school_id)
