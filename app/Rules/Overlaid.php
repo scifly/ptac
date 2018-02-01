@@ -26,14 +26,10 @@ class Overlaid implements Rule
      *
      * @param  string $attribute
      * @param  mixed $value
-     * @param null $day
      * @return bool
      */
     public function passes($attribute, $value)
     {
-        $schoolId = School::schoolId();
-        $grade = Grade::whereSchoolId($schoolId)->get();
-
         $start = $value[0];
         $end = $value[1];
         switch ($value[2]) {
@@ -58,10 +54,12 @@ class Overlaid implements Rule
                 if($value[3]){
                     $settings = StudentAttendanceSetting::where('id','<>', $value[3])
                         ->whereIn('grade_id',$gradeIds)
+                        ->where('day',$value[4])
                         ->pluck('end', 'start')->toArray();
                 } else {
-                    $settings = StudentAttendanceSetting::whereIn('grade_id',$gradeIds)->
-                    pluck('end', 'start')->toArray();
+                    $settings = StudentAttendanceSetting::whereIn('grade_id',$gradeIds)
+                        ->where('day',$value[4])
+                        ->pluck('end', 'start')->toArray();
                 }
                 break;
             default :
