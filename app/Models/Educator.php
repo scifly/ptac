@@ -449,12 +449,14 @@ class Educator extends Model {
     static function remove($id, $fireEvent = false) {
 
         $educator = self::find($id);
+        $userId = $educator->user_id;
         /** @var Educator $educator */
         $removed = self::removable($educator) ? $educator->delete() : false;
         if ($removed && $fireEvent) {
             /** @var School $school */
-
-            event(new UserDeleted($educator->user_id));
+    
+            # 删除企业号成员
+            User::deleteWechatUser($userId);
             return true;
         }
 
