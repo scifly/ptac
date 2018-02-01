@@ -1,5 +1,8 @@
 
 @extends('wechat.layouts.master')
+@section('title')
+	<title>成绩中心</title>
+@endsection
 @section('css')
 	<link rel="stylesheet" href="{{ asset('css/wechat/score/detail.css') }}">
 @endsection
@@ -14,10 +17,10 @@
 		</div>
 	</div>
 	<div class="weui-search-bar" id="searchBar">
-		<form class="weui-search-bar__form" action="#">
+		<form class="weui-search-bar__form" action="">
 			<div class="weui-search-bar__box">
 				<i class="weui-icon-search"></i>
-				<input type="search" class="weui-search-bar__input" id="searchInput" placeholder="搜索" required="">
+				<input type="search" class="weui-search-bar__input" name="student" id="searchInput" placeholder="搜索" required="">
 				<a href="javascript:" class="weui-icon-clear" id="searchClear"></a>
 			</div>
 			<label class="weui-search-bar__label" id="searchText" style="transform-origin: 0px 0px 0px; opacity: 1; transform: scale(1, 1);">
@@ -42,28 +45,33 @@
 			</thead>
 
 			<tbody>
-			@foreach($data['items'] as $d)
+			@if($data['items'])
+				@foreach($data['items'] as $d)
 
-				<tr class="tongji-item" data-s="{{$d['student_id']}}" data-e="{{$d['exam_id']}}">
-					<td>{{$d['realname']}}</td>
-					<td>{{$d['student_number']}}</td>
-					<td>{{$d['class_rank']}}</td>
-					<td>{{$d['grade_rank']}}</td>
-					<td>{{$d['total']}}</td>
-					<td>
-						@foreach($d['detail'] as $t)
+					<tr class="tongji-item" data-s="{{$d['student_id']}}" data-e="{{$d['exam_id']}}">
+						<td>{{$d['realname']}}</td>
+						<td>{{$d['student_number']}}</td>
+						<td>{{$d['class_rank']}}</td>
+						<td>{{$d['grade_rank']}}</td>
+						<td>{{$d['total']}}</td>
+						<td>
+							@if($d['detail'])
+								@foreach($d['detail'] as $t)
 
-							<div>
-								<span class="subj">{{$t['subject']}}</span>
-								<span class="score">{{$t['score']}}</span>
-								<div style="clear: both;"></div>
-							</div>
-						@endforeach
+									<div>
+										<span class="subj">{{$t['subject']}}</span>
+										<span class="score">{{$t['score']}}</span>
+										<div style="clear: both;"></div>
+									</div>
+								@endforeach
+							@endif
 
-					</td>
+						</td>
 
-				</tr>
-			@endforeach
+					</tr>
+				@endforeach
+
+			@endif
 			</tbody>
 		</table>
 	</div>
@@ -74,12 +82,12 @@
 			<i class="icon iconfont icon-document"></i>
 			<p>详情</p>
 		</a>
-		<a class="btnItem" href="count.html">
-			<i class="icon iconfont icon-renzheng7"></i>
-			<p>统计</p>
-		</a>
-		<div style="clear: both;"></div>
-	</div>
+		<a class="btnItem" href='{{ url("wechat/score/analysis?examId=". $examId ."&classId=". $classId) }}'>
+                            <i class="icon iconfont icon-renzheng7"></i>
+                            <p>统计</p>
+                        </a>
+                        <div style="clear: both;"></div>
+                    </div>
 
 
 @endsection
@@ -90,6 +98,7 @@
             var exam = $(this).attr('data-e');
             window.location.href = '../score/show?student='+student+'&exam='+exam;
         });
+
 	</script>
 @endsection
 

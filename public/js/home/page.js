@@ -114,6 +114,7 @@ var page = {
             : window.location.protocol + '/' + window.location.host + '/';
         if (window.location.href.indexOf('public') > -1) {
             return siteRoot + 'ptac/public/';
+            // return siteRoot + 'pppp/public/';
         }
         return siteRoot;
     },
@@ -174,7 +175,7 @@ var page = {
         return '?menuId=' + this.getActiveMenuId() + '&tabId=' + this.getActiveTabId();
     },
     errorHandler: function (e) {
-        var obj = JSON.parse(e.responseText);
+         var obj = JSON.parse(e.responseText);
         $('.overlay').hide();
         switch (obj['statusCode']) {
             case 400:
@@ -366,6 +367,7 @@ var page = {
                     case 401:
                         window.location = page.siteRoot() + 'login?returnUrl=' + page.getTabUrl();
                         break;
+
                     case 500:
                         page.inform('操作失败',result.message,page.failure);
                         break;

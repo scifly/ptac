@@ -15,6 +15,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ManageImportStudent implements ShouldQueue {
     
@@ -72,6 +73,7 @@ class ManageImportStudent implements ShouldQueue {
                             'remark'         => $row['remark'],
                             'enabled'        => 1,
                         ]);
+                        Log::debug($s);
                         # 创建监护人关系
                         if (!empty($relationships)) {
                             foreach ($relationships as $r) {

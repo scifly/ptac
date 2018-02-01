@@ -58,6 +58,7 @@ class OperatorRequest extends FormRequest {
                 }
             }
         }
+
         $this->replace($input);
         
     }

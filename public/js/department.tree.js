@@ -95,7 +95,6 @@ var dept = {
                         type: 'POST',
                         dataType: 'json',
                         data: function (node) {
-                            console.log(node);
 
                             return {id: node.id, _token: $('#csrf_token').attr('content')}
                         }
@@ -168,7 +167,6 @@ var dept = {
             for (var i = 0; i < selectedNodes.length; i++) {
                 //通过id查找节点
                 var node = dept.$tree().jstree("get_node", selectedNodes[i]);
-                console.log('save--' + node);
                 var checkedNode = '<button type="button" class="btn btn-flat" style="margin-right: 5px;margin-bottom: 5px">' +
                     '<i class="' + node.icon + '"></i>' + node.text +
                     '<i class="fa fa-close close-selected"></i>' +

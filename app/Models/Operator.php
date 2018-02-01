@@ -295,7 +295,7 @@ class Operator extends Model {
         $operator = self::find($id);
         if (!$operator) { return false; }
         
-        return self::removable($id) ? $operator->delete() : false;
+        return self::removable($operator) ? $operator->delete() : false;
 
     }
     
@@ -318,7 +318,7 @@ class Operator extends Model {
             [
                 'db' => 'User.enabled', 'dt' => 8,
                 'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($d, $row);
+                    return Datatable::dtOps($d, $row, false);
                 },
             ],
         ];

@@ -86,7 +86,8 @@ class Handler extends ExceptionHandler {
                 default:
                     break;
             }
-            if (env('APP_DEBUG') && $eName == 'ValidationException' ) {
+            #如果是调试环境env('APP_DEBUG')，如果非调试环境
+            if ($eName == 'ValidationException' ) {
                 /** @var ValidationException $ve */
                 $ve = $exception;
                 $response['errors'] = $ve->errors();
@@ -117,7 +118,6 @@ class Handler extends ExceptionHandler {
         }
         
         return redirect()->guest(route('login'));
-        
     }
     
 }

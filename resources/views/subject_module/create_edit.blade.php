@@ -35,7 +35,7 @@
                         'placeholder' => '次分类权重是数字',
                         'required' => 'true',
                         'type' => 'number',
-                        'data-parsley-length' => '[1, 3]'
+                        'data-parsley-min' => '101'
                     ]) !!}
                 </div>
             </div>

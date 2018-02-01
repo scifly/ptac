@@ -233,12 +233,15 @@ class Student extends Model {
             ->where('school_id', School::schoolId())
             ->pluck('name', 'id')
             ->toArray();
-        $gradeId = $gradeId == 0 ? array_keys($grades)[0] : $gradeId;
-        $classes = Squad::whereEnabled(1)
-            ->where('grade_id', $gradeId)
-            ->pluck('name', 'id')
-            ->toArray();
-        
+        if(empty($grades)){
+            $classes = [];
+        } else {
+            $gradeId = $gradeId == 0 ? array_keys($grades)[0] : $gradeId;
+            $classes = Squad::whereEnabled(1)
+                ->where('grade_id', $gradeId)
+                ->pluck('name', 'id')
+                ->toArray();
+        }
         return [
             'grades' => $grades,
             'classes' => $classes,
@@ -356,6 +359,7 @@ class Student extends Model {
         #if (!isset($custodian)) { return false; }
         try {
             DB::transaction(function () use ($studentId, $student) {
+                $userId = $student->user_id;
                 # 删除指定的学生记录
                 $student->delete();
                 # 删除与指定学生绑定的监护人记录
@@ -364,6 +368,8 @@ class Student extends Model {
                 DepartmentUser::whereUserId($student['user_id'])->delete();
                 # 删除与指定学生绑定的手机记录
                 Mobile::whereUserId($student['user_id'])->delete();
+                # 删除企业号成员
+                User::deleteWechatUser($userId);
             });
         } catch (Exception $e) {
             throw $e;
@@ -372,13 +378,12 @@ class Student extends Model {
         return true;
         
     }
-    
+
     /**
      * 导入
      *
      * @param UploadedFile $file
      * @return array
-     * @throws PHPExcel_Exception
      */
     static function upload(UploadedFile $file) {
 
@@ -450,7 +455,8 @@ class Student extends Model {
                 'required',
                 Rule::in(['男', '女']),
             ],
-            'birthday' => ['required', 'string', 'regex:/^((19\d{2})|(20\d{2}))-([1-12])-([1-31])$/'],
+            // 'birthday' => ['required', 'string', 'regex:/^((19\d{2})|(20\d{2}))-([1-12])-([1-31])$/'],
+            'birthday' => 'required|date',
             'school' => 'required|string|between:4,20',
             'grade' => 'required|string|between:3,20',
             'class' => 'required|string|between:2,20',
@@ -525,11 +531,11 @@ class Student extends Model {
             $user['class_id'] = $class->id;
             $deptId = self::deptId($user['school'], $user['grade'], $user['class']);
             $user['department_id'] = $deptId;
-            if ($user['department_id'] == 0) {
-                $invalidRows[] = $datum;
-                unset($data[$i]);
-                continue;
-            }
+//            if ($user['department_id'] == 0) {
+//                $invalidRows[] = $datum;
+//                unset($data[$i]);
+//                continue;
+//            }
             # 学生数据已存在 更新操作
             if ($student) {
                 $updateRows[] = $user;
@@ -568,7 +574,7 @@ class Student extends Model {
                     $student->card_number . "\t",
                     $student->oncampus == 1 ? '是' : '否',
                     $mobiles,
-                    substr($student->birthday, 0, -8),
+                    $student->birthday,
                     $student->created_at,
                     $student->updated_at,
                     $student->enabled == 1 ? '启用' : '禁用',

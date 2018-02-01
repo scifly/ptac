@@ -18,7 +18,7 @@
 							@include('partials.single_select', [
 								'label' => '考试名称',
 								'id' => 'exam_id',
-								'items' => $exams
+								'items' => $examScore
 							])
 					    </div>
 					</div>
@@ -48,12 +48,16 @@
 									<input type="checkbox" class="minimal" value="-1">
 									总分
 								</label>
-								@foreach($subjects as $s)
-									<label>
-										<input type="checkbox" class="minimal" value="{{$s['id']}}">
-										{{$s['name']}}
-									</label>
-								@endforeach
+								@if(($subjects))
+									@foreach($subjects as $s)
+										@if($s)
+										<label>
+											<input type="checkbox" class="minimal" value="{{$s['id']}}">
+											{{$s['name']}}
+										</label>
+										@endif
+									@endforeach
+								@endif
 				   			</div>
 				    	</div>
 				    </div>

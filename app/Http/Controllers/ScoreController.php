@@ -5,11 +5,13 @@ use App\Http\Requests\ScoreRequest;
 use App\Models\Exam;
 use App\Models\Score;
 use App\Models\Squad;
+use App\Models\Student;
 use App\Models\Subject;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 use Throwable;
+
 
 /**
  * 成绩
@@ -18,28 +20,29 @@ use Throwable;
  * @package App\Http\Controllers
  */
 class ScoreController extends Controller {
-    
-    function __construct() {
-        
+
+    public function __construct() {
+
         $this->middleware(['auth', 'checkrole']);
-        
+
     }
-    
+
     /**
      * 成绩列表
      *
      * @return bool|JsonResponse
-     * @throws Throwable
+     * @throws \Throwable
      */
     public function index() {
-        
+
         if (Request::get('draw')) {
             return response()->json(Score::datatable());
         }
-        
+
         return $this->output();
-        
+
     }
+
     
     /**
      * 录入成绩
@@ -52,7 +55,7 @@ class ScoreController extends Controller {
         return $this->output();
         
     }
-    
+
     /**
      * 保存成绩
      *
@@ -60,7 +63,20 @@ class ScoreController extends Controller {
      * @return JsonResponse
      */
     public function store(ScoreRequest $request) {
-        
+        $input = $request->all();
+        $subject = Subject::whereId($input['subject_id'])->first();
+        if($input['score'] > $subject->max_score){
+            return $this->fail('该科目最高分为'. $subject->max_score);
+        }
+        // $exam = Exam::whereId($input['exam_id'])->first();
+        // if(!in_array($input['subject_id'], explode( ',', $exam->subject_ids))){
+        //     return $this->fail('该科目未在该场考试内！');
+        // }
+        // $student = Student::whereId($input['student_id'])->first();
+        // $squad = $student->squad;
+        // if(!in_array($squad->id, explode(',', $exam->class_ids))){
+        //     return $this->fail('该学生未在这场考试范围内！');
+        // }
         return $this->result(Score::create($request->all()));
         
     }
@@ -111,9 +127,13 @@ class ScoreController extends Controller {
      * @return JsonResponse
      */
     public function update(ScoreRequest $request, $id) {
-        
+        $input = $request->all();
         $score = Score::find($id);
         if (!$score) { return $this->notFound(); }
+        $subject = Subject::whereId($input['subject_id'])->first();
+        if($input['score'] > $subject->max_score){
+            return $this->fail('该科目最高分为'. $subject->max_score);
+        }
         
         return $this->result($score->update($request->all()));
         
@@ -159,8 +179,9 @@ class ScoreController extends Controller {
                 $result = $score->scores($exam, $squad, explode(',', $subject), explode(',', $project));
                 return response()->json($result);
             }else{
+
                 $ids = Exam::whereId($exam)->first();
-                
+
                 $classes = Squad::whereIn('id', explode(',', $ids['class_ids']))
                     ->get()
                     ->toArray();
@@ -241,17 +262,22 @@ class ScoreController extends Controller {
      * @param $exam_id
      * @return JsonResponse|string
      */
-    public function claLists($exam_id){
+    public function claLists($exam_id) {
         $exam = Exam::whereId($exam_id)->first();
-        $lists = Squad::whereIn('id', explode(',', $exam->class_ids))
-            ->whereEnabled(1)
-            ->pluck('name', 'id')
-            ->toArray();
+        if (!$exam) {
+            $lists = [];
+        } else {
+            $lists = Squad::whereIn('id', explode(',', $exam->class_ids))
+                ->whereEnabled(1)
+                ->pluck('name', 'id')
+                ->toArray();
+        }
         #返回下拉列表的字符串
         $html = '';
         foreach ($lists as $key => $value) {
             $html .= '<option value="' . $key . '">' . $value . '</option>';
         }
+        
         return $lists ? $this->succeed($html) : $this->fail();
     }
     
@@ -273,96 +299,40 @@ class ScoreController extends Controller {
         $view = Score::analysis($input);
       return $view ? $this->succeed($view) : $this->fail('未录入或未统计成绩！');
     }
-  
-    // /**
-    //  * 成绩发送
-    //  *
-    //  * @return JsonResponse
-    //  */
-    // public function send() {
-    //
-    //     if (Request::method() === 'POST') {
-    //         $exam = Request::input('exam');
-    //         if($exam) {
-    //             $ids = Exam::whereId($exam)->first();
-    //
-    //             $classes = Squad::where('id', explode(',', $ids->class_ids))
-    //                 ->pluck('name', 'id')
-    //                 ->toArray();
-    //             return response()->json($classes);
-    //         }
-    //     }
-    // }
-    //
-    //
-    // /**
-    //  * 统计成绩排名
-    //  *
-    //  * @param $examId
-    //  * @return JsonResponse
-    //  */
-    // public function statistics($examId) {
-    //
-    //     return $this->result(Score::statistics($examId));
-    // }
-    //
-    // /**
-    //  * Excel模板生成
-    //  * @param $examId
-    //  */
-    // public function export($examId) {
-    //
-    //     $exam = Exam::find($examId);
-    //     $subject = Exam::subjects($exam->subject_ids);
-    //     $heading = ['学号', '姓名'];
-    //     foreach ($subject as $value) {
-    //         $heading[] = $value;
-    //     }
-    //     $cellData = Student::studentsNum($exam->class_ids);
-    //     array_unshift($cellData, $heading);
-    //     Excel::create('score', function ($excel) use ($cellData, $examId) {
-    //         $excel->sheet('score', function ($sheet) use ($cellData) {
-    //             $sheet->rows($cellData);
-    //         });
-    //         $excel->setTitle($examId);
-    //     })->store('xls')->export('xls');
-    //
-    // }
-    //
-    // /**
-    //  * 成绩导入
-    //  */
-    // public function import() {
-    //     $filePath = 'storage/exports/score.xls';
-    //     $insert = [];
-    //     Excel::load($filePath, function ($reader) use (&$insert) {
-    //         $exam_id = $reader->getTitle();
-    //         $subjects = Subject::ids(array_slice(array_keys($reader->toArray()[0]), 2));
-    //         $reader->each(function ($sheet) use ($exam_id, $subjects, &$insert) {
-    //             $studentNum = '';
-    //             foreach ($sheet as $key => $row) {
-    //                 switch ($key) {
-    //                     case '学号':
-    //                         $studentNum = Student::whereStudentNumber($row)->value('id');
-    //                         break;
-    //                     case '姓名':
-    //                         break;
-    //                     default:
-    //                         if (!is_null($row) && isset($subjects[$key])) {
-    //                             $insert [] = [
-    //                                 'student_id' => $studentNum,
-    //                                 'subject_id' => $subjects[$key],
-    //                                 'exam_id'    => $exam_id,
-    //                                 'score'      => $row,
-    //                                 'enabled'    => 1,
-    //                             ];
-    //                         }
-    //                 }
-    //             }
-    //         });
-    //     });
-    //
-    //     return Score::insert($insert) ? $this->succeed() : $this->fail();
-    // }
+    
+    /**
+     * 根据考试id获取 对应的学生和科目
+     * @param $examId
+     * @return JsonResponse
+     */
+    public function getDatas($examId){
+        $exam = Exam::whereId($examId)->first();
+        $squadIds = explode(',', $exam->class_ids);
+        $subjectIds = explode(',', $exam->subject_ids);
+        #找出这个考试对应的学生
+        $students = [];
+        foreach ($squadIds as $squadId){
+            $squ = Squad::whereId($squadId)->first();
+            foreach ($squ->students as $student){
+                $students[$student->id] = $student->student_number . '-' . $student->user->realname;
+            }
+        }
+        #找出这个考试对应的科目
+        $subjects = [];
+        foreach ($subjectIds as $subjectId){
+            $sub = Subject::whereId($subjectId)->first();
+            $subjects[$sub->id] = $sub->name;
+        }
+        #返回下拉列表的字符串
+        $studentHtml = '';
+        foreach ($students as $key => $value) {
+            $studentHtml .= '<option value="' . $key . '">' . $value . '</option>';
+        }
+        $subjectHtml = '';
+        foreach ($subjects as $key => $value) {
+            $subjectHtml .= '<option value="' . $key . '">' . $value . '</option>';
+        }
+        return response()->json(['students' => $studentHtml, 'subjects' => $subjectHtml, 'statusCode' => 200]);
+    }
 }
 

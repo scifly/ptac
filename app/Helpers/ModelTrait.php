@@ -24,7 +24,8 @@ trait ModelTrait {
         foreach ($reflectionClass->getMethods() as $method) {
             if ($method->isUserDefined() && $method->isPublic() && $method->class == $class) {
                 $doc = $method->getDocComment();
-                if ($doc && stripos($doc, 'Relations\Has') !== false) {
+                // if ($doc && stripos($doc, 'Relations\Has') !== false) {
+                if ($doc && stripos($doc, 'Has') !== false) {
                     $relations[] = $method->getName();
                 }
             }

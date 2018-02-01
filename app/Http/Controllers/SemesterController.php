@@ -58,15 +58,14 @@ class SemesterController extends Controller {
      * 保存学期
      *
      * @param SemesterRequest $request
-     * @return Semester|Model
+     * @return JsonResponse|string
      * @throws AuthorizationException
      */
     public function store(SemesterRequest $request) {
         
         $this->authorize('c', Semester::class);
         
-        return Semester::create($request->all());
-        
+        return $this->result(Semester::create($request->all()));
     }
    
     /**

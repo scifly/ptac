@@ -9,7 +9,9 @@
                     <div class="box-body" id="datas" style="display: none;">
 
                     </div>
-					<div class="box-body" id="roles">
+                    {{--@include('score.analysis_student_data')--}}
+                    
+					<div class="box-body" id="roles" style="display: block;">
 						<div class="row">
 							<div class="form-horizontal">
 								<div class="col-md-12">
@@ -18,15 +20,15 @@
 											<label class="col-sm-3 control-label">
 												分析类型
 											</label>
-											<div class="col-sm-9 checkbox">
+											<div class="col-sm-9 checkbox" id="analysis-type">
 												<label style="padding-left: 0;">
 													<input id="byTest" type="radio" name="exam_type" class="minimal" value="0" checked=""/>
 													按考次
 												</label>
-												<label>
-													<input id="byStudent" type="radio" name="exam_type" class="minimal" value="1" />
-													按学生
-												</label>
+												{{--<label>--}}
+													{{--<input id="byStudent" type="radio" name="exam_type" class="minimal" value="1" />--}}
+													{{--按学生--}}
+												{{--</label>--}}
 											</div>
 											
 									    </div>

@@ -17,7 +17,6 @@ function save_input(input_obj) {
 
         if(telephone.length !== 0 && !/^(\(\d{3,4}\)|\d{3,4}-|\s)?\d{7,14}$/.test(telephone)){
 
-
             page.inform('出现异常', '座机号码格式有误,请重填!', page.failure);
 
             return false;

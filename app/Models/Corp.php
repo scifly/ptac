@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 
 /**
@@ -194,7 +195,7 @@ class Corp extends Model {
             case '运营':
             case '企业':
                 $corpMenuId = Menu::menuId(session('menuId'), '企业');
-                return $corpMenuId ? self::whereMenuId($corpMenuId)->first()->id : 0;
+                return $corpMenuId ? self::whereMenuId($corpMenuId)->first()->id : 1;
             case '学校':
                 $departmentId = $user->topDeptId();
                 return School::whereDepartmentId($departmentId)->first()->corp_id;

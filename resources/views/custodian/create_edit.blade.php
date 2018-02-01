@@ -116,8 +116,8 @@
                                     <tr>
                                         <input type="hidden" value="{{$pupil->student_id}}" name="student_ids[{{$key}}]"
                                                id="student_ids">
-                                        <td>{{$pupil->user->realname}}</td>
-                                        <td>{{$pupil->student_number}}</td>
+                                        <td>{{$pupil->student->user->realname}}</td>
+                                        <td>{{$pupil->student->student_number}}</td>
                                         <td>
                                             <input type="text" name="relationships[{{$key}}]" id="" readonly
                                                    class="no-border" style="background: none"
@@ -163,7 +163,6 @@
             <div class="modal-body with-border">
                 <div class="form-horizontal">
                     <!-- 所属学校 -->
-                    <div class="form-group">
                         @if(isset($schools))
                             @include('partials.single_select', [
                                     'id' => 'schoolId',
@@ -188,9 +187,7 @@
                             {{--</div>--}}
                             {{--@endif--}}
                         @endif
-                    </div>
                     <!-- 所属年级 -->
-                    <div class="form-group">
                         @if(isset($grades))
                             @include('partials.single_select', [
                                     'id' => 'gradeId',
@@ -215,9 +212,7 @@
                             {{--</div>--}}
                             {{--@endif--}}
                         @endif
-                    </div>
                     <!-- 所属班级 -->
-                    <div class="form-group">
                         @if(isset($classes))
                             @include('partials.single_select', [
                                     'id' => 'classId',
@@ -242,9 +237,7 @@
                             {{--</div>--}}
                             {{--@endif--}}
                         @endif
-                    </div>
                     <!-- 学生列表 -->
-                    <div class="form-group">
                         @if(isset($students))
                             @include('partials.single_select', [
                                     'id' => 'studentId',
@@ -269,7 +262,6 @@
                             {{--</div>--}}
                             {{--@endif--}}
                         @endif
-                    </div>
                     {{--<!-- 监护关系 -->--}}
                     <div class="form-group">
                         {{--@if(isset($students))--}}

@@ -21,12 +21,16 @@ class StudentAttendanceSettingComposer {
             '星期四' => '星期四',
             '星期五' => '星期五',
             '星期六' => '星期六',
-            '星期天' => '星期天',
+            '星期天' => '星期日',
         ];
         $schoolId = School::schoolId();
-
+        $grades = Grade::whereEnabled(1)
+            ->where('school_id', $schoolId)
+            ->pluck('name', 'id')
+            ->toArray();
+        if (empty($grades)) {$grades[] = '' ;}
         $view->with([
-            'grades' => Grade::pluck('name', 'id'),
+            'grades' => $grades,
             'semesters' => Semester::whereSchoolId($schoolId)->pluck('name', 'id'),
             'days' => $days,
             'uris' => $this->uris()

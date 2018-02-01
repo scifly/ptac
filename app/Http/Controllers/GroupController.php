@@ -67,7 +67,7 @@ class GroupController extends Controller {
      * @throws Throwable
      */
     public function store(GroupRequest $request) {
-        
+
         return $this->result(Group::store($request->all()));
         
     }

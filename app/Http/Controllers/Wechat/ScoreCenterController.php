@@ -1,22 +1,17 @@
 <?php
 namespace App\Http\Controllers\Wechat;
 
+use App\Facades\Wechat;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\ScoreRequest;
 use App\Models\Exam;
 use App\Models\Score;
 use App\Models\Squad;
 use App\Models\Student;
 use App\Models\Subject;
 use App\Models\User;
-use Excel;
-use Exception;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
-use Maatwebsite\Excel\Classes\PHPExcel;
-use Maatwebsite\Excel\Files\ExcelFile;
-use Throwable;
+use Illuminate\Support\Facades\Session;
 
 /**
  * 微信端成绩
@@ -40,108 +35,195 @@ class ScoreCenterController extends Controller {
 
     }
 
+    /**
+     *  微信端成绩
+     *
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function index()
     {
-        // $corpId = 'wxe75227cead6b8aec';
-        // $secret = 'uorwAVlN3_EU31CDX0X1oQJk9lB0Or41juMH-cLcIEU';
-        // $agentId = 1000007;
-        // $userId = Session::get('userId') ? Session::get('userId') : null;
-        // $code = Request::input('code');
-        // if (empty($code) && empty($userId)) {
-        //     $codeUrl = Wechat::getCodeUrl($corpId, $agentId, 'http://weixin.028lk.com/score_lists');
-        //     return redirect($codeUrl);
-        // }elseif(!empty($code) && empty($userId)){
-        //     $accessToken = Wechat::getAccessToken($corpId, $secret);
-        //     $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
-        //     $userId = $userInfo['UserId'];
-        //     Session::put('userId',$userId);
-        // }
-        $userId = 'wangdongxi';
-        // $role = '教职员工';
+        $corpId = 'wxe75227cead6b8aec';
+        $secret = 'viHdGD1DaiDAOwbrxCZP5wT7QYNNqJpPnr3Sw5YPio4';
+        $agentId = 1000008;
+        $userId = Session::get('userId') ? Session::get('userId') : null;
+        $code = Request::input('code');
+        if (empty($code) && empty($userId)) {
+            $codeUrl = Wechat::getCodeUrl($corpId, $agentId, 'http://weixin.028lk.com/wechat/score/score_lists');
+            return redirect($codeUrl);
+        }elseif(!empty($code) && empty($userId)){
+            $accessToken = Wechat::getAccessToken($corpId, $secret);
+            $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
+            $userId = $userInfo['UserId'];
+            Session::put('userId',$userId);
+        }
         $role = User::whereUserid($userId)->first()->group->name;
         $pageSize = 4;
         $start = Request::get('start') ? Request::get('start') * $pageSize : 0;
+        $scores = [];
         switch ($role){
             case '监护人':
                 if(Request::isMethod('post'))
                 {
-                    if(array_key_exists('class_id', Request::all()))
+                    $studentId = Request::get('student_id');
+                    $classId = Student::whereId($studentId)->first()->class_id;
+                    if(array_key_exists('start', Request::all()))
                     {
-                        $classId = Request::get('class_id');
-                        $exams = Exam::where('class_ids','like','%' . $classId . '%')
-                            ->get();
-                        foreach ($exams as $key=>$e)
-                        {
-                            $score[$key]['id'] = $e->id;
-                            $score[$key]['name'] = $e->name;
-                            $score[$key]['start_date'] = $e->start_date;
-                            $score[$key]['class_id'] = $classId;
-                        }
+                        $score = $this->score->getClassScore($classId);
                         $scores=array_slice($score,$start,$pageSize);
-                        return response()->json(['data' => $scores ]);
-
-                    }else{
-                        $data = $this->getStudentScore($userId);
-                        $score = $data['score'];
-                        $scores=array_slice($score[0],$start,$pageSize);
-                        return response()->json(['data' => $scores ]);
+                        return response()->json(['data' => $scores, 'studentId'=>$studentId ]);
+                    }elseif(array_key_exists('keywords', Request::all())){
+                        $keyword = Request::get('keywords');
+                        $score = $this->score->getClassScore($classId,$keyword);
+                        $scores=array_slice($score,$start,$pageSize);
+                        return response()->json(['data' => $scores ,'studentId'=>$studentId ]);
+                    } else{
+                        $score = $this->score->getClassScore($classId);
+                        $scores=array_slice($score,$start,$pageSize);
+                        return response()->json(['data' => $scores ,'studentId'=>$studentId ]);
                     }
-
                 }
-                $data = $this->getStudentScore($userId);
+                $data =  $this->score->getStudentScore($userId);
                 $score = $data['score'];
                 $studentName = $data['studentName'];
                 if( sizeof($score) != 0) { $scores=array_slice($score[0],$start,$pageSize); }
-                return view('wechat.scores.students_score_lists',[
+                return view('wechat.score.students_score_lists',[
                     'scores' => $scores,
                     'studentName' => json_encode($studentName, JSON_UNESCAPED_UNICODE),
+                    'pageSize' => $pageSize,
                 ]);
                 break;
             case '教职员工':
-                return view('wechat.scores.educator_score_lists');
+                if(Request::isMethod('post'))
+                {
+                    $classId = Request::get('class_id');
+                    if(array_key_exists('start', Request::all()))
+                    {
+                        $score = $this->score->getClassScore($classId);
+                        $scores=array_slice($score,$start,$pageSize);
+                        return response()->json(['data' => $scores ]);
+
+                    }elseif(array_key_exists('keywords',Request::all())){
+                        $keyword = Request::get('keywords');
+                        $score = $this->score->getClassScore($classId,$keyword);
+                        $scores=array_slice($score,$start,$pageSize);
+                        return response()->json(['data' => $scores ]);
+                    }else{
+                        $score =  $this->score->getClassScore($classId);
+                        $scores=array_slice($score,$start,$pageSize);
+                        return response()->json(['data' => $scores ]);
+                    }
+                }
+                $datas = $this->score->getEducatorScore($userId);
+                $score =$datas['score'];
+                $className = $datas['className'];
+                if( sizeof($score) != 0) { $scores=array_slice($score[0],$start,$pageSize); }
+                return view('wechat.score.educator_score_lists',[
+                    'scores' => $scores,
+                    'className' => json_encode($className, JSON_UNESCAPED_UNICODE),
+                    'pageSize' => $pageSize,
+                ]);
                 break;
             default:
                 break;
         }
     }
 
-    /**
-     * 根据监护人获取学生相关考试信息
-     * @param $userId
-     * @return array
-     */
-    public function getStudentScore( $userId)
-    {
-        $students = User::whereUserid($userId)->first()->custodian->students;
 
-        $score = $data =[];
-        foreach ($students as $k=>$s)
-        {
-            $exams = Exam::where('class_ids','like','%' . $s->class_id . '%')
-                ->get();
-            foreach ($exams as $key=>$e)
-            {
-                $score[$k][$key]['id'] = $e->id;
-                $score[$k][$key]['name'] = $e->name;
-                $score[$k][$key]['start_date'] = $e->start_date;
-                $score[$k][$key]['user_id'] = $s->user_id;
-                $score[$k][$key]['realname'] = $s->user->realname;
-                $score[$k][$key]['class_id'] = $s->class_id;
+    /**
+     * 学生考试详情页
+     */
+    public function subjectDetail()
+    {
+        $subjectIds =$subjects = $studentIds = $allStudentIds = $classIds = $data = $allScores =$total = [];
+        $examId = Request::get('examId');
+        $studentId= Request::get('studentId');
+        // $studentId= 2;
+        # 获取该学生班级所有学生
+        $exam = Exam::whereId($examId)->first();
+        # 获取该次考试该学生所在的年级id
+        $gradeId = Student::whereId($studentId)->first()->squad->grade->id;
+        $classes = Squad::whereGradeId($gradeId)->get();
+        foreach ($classes as $c){ $classIds[] = $c->id; }
+        # 获取该次考试所有科目id
+        if( sizeof($exam)!= 0){
+            $subjectIds = explode(',',$exam->subject_ids);
+        }else{
+            $subject = Subject::all();
+            foreach ($subject as $s){
+                $subjectIds[] = $s->id;
             }
-            // $studentName['title'] = '选择学生';
-            $studentName[]= [
-                'title' => $s->user->realname,
-                'value' => $s->class_id,
+        }
+        # 获取该班级所有学生
+        $students = Student::whereId($studentId)->first()->squad->students;
+        foreach ($students as $s) { $studentIds[] = $s->id; }
+        # 获取该年级所有学生
+        $allStudents = Student::whereIn('class_id',$classIds)->get();
+        foreach ($allStudents as $a){ $allStudentIds[] = $a->id; }
+        foreach ($subjectIds as $k=>$s){
+            $subjects[] = [
+                'title' => Subject::whereId($s)->first()->name,
+                'value' => $s,
             ];
         }
-        $data = [
-            'score' => $score,
-            'studentName' => $studentName
+        if(Request::isMethod('post')){
+            $data =$scores = $allScores =$total = [];
+            $subjectId = Request::get('subject_id');
+            $scores = $this->score->getScores($examId, $subjectId, $studentId);
+            $allScores = $this->score->getAllScores($subjectId, $studentId);
+
+            $scores['start_date'] = $exam['start_date'];
+            foreach ($allScores as $k=>$a){
+                $total['name'][] = $a->exam->name;
+                $total['score'][] = $a->score;
+                $total['avg'][] = $this->score->getClassAvg($a->exam_id,$subjectId,$studentIds)['avg'];
+            }
+            $scores['start_date'] = $exam['start_date'];
+            $classData = $this->score->getClassAvg($examId,$subjectId,$studentIds);
+            $gradesData = $this->score->getClassAvg($examId,$subjectId,$allStudentIds);
+            $data =[
+                # 统计该学生本次考试该科目班上的平均成绩
+                'avg' => number_format($classData['avg'],2),
+                'nums' => $classData['nums'],
+                # 统计该学生本次考试该科目年级的平均成绩
+                'gradeavg' => number_format($gradesData['avg'],2),
+                'gradeNums' => $gradesData['nums']
+            ];
+            return response()->json([ 'scores' => $scores, 'data' => $data, 'total' =>$total]);
+        }
+        $scores = $this->score->getScores($examId, $subjectIds[0], $studentId);
+        if(!empty($scores)){
+            $scores->start_date = $exam['start_date'];
+        }
+        if(empty($scores)){
+            $scores = [];
+        }
+        $allScores = $this->score->getAllScores($subjectIds[0], $studentId);
+        $total['name'] = $total['score'] = $total['avg'] = [];
+        foreach ($allScores as $k=>$a){
+            $total['name'][] = $a->exam->name;
+            $total['score'][] = $a->score;
+            $total['avg'][] = $this->score->getClassAvg($a->exam_id,$subjectIds[0],$studentIds)['avg'];
+        }
+        $classData = $this->score->getClassAvg($examId,$subjectIds[0],$studentIds);
+        $gradesData = $this->score->getClassAvg($examId,$subjectIds[0],$allStudentIds);
+        $data =[
+            # 统计该学生本次考试该科目班上的平均成绩
+            'avg' => number_format($classData['avg'],2),
+            'nums' => $classData['nums'],
+            # 统计该学生本次考试该科目年级的平均成绩
+            'gradeavg' => number_format($gradesData['avg'],2),
+            'gradeNums' => $gradesData['nums']
         ];
 
-        return $data;
+        return view('wechat.score.student_subject_detail',[
+            'scores' => $scores,
+            'data' => $data,
+            'subjects' => json_encode($subjects, JSON_UNESCAPED_UNICODE),
+            'total' => json_encode($total, JSON_UNESCAPED_UNICODE),
+            'examId'=> $examId,
+            'studentId' => $studentId,
+        ]);
     }
-
 
 
     /**
@@ -151,17 +233,19 @@ class ScoreCenterController extends Controller {
      */
     public function detail() {
 
-        $classId = Request::input('class_id');
-        $examId = Request::input('exam_id');
-        $classId = 1;
-        $examId = 1;
+        $classId = Request::input('classId');
+        $examId = Request::input('examId');
+        $student = Request::input('student');
+//        $classId = 1;
+//        $examId = 1;
         if ($classId && $examId) {
-            $data = $this->score->getExamClass($examId, $classId);
-//            return response()->json($this->score->getExamClass($examId, $classId));
+            $data = $this->score->getExamClass($examId, $classId, $student);
+//            print_r($data);die;
             return view('wechat.score.detail', [
                 'data' => $data,
+                'classId' => $classId,
+                'examId' => $examId,
             ]);
-
         }
 
     }
@@ -197,12 +281,65 @@ class ScoreCenterController extends Controller {
     /**
      * 微信 教师端成绩分析
      *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return string
      */
-    public function analysis(){
-     
-        return view('wechat.score.edu_analysis');
+    public function analysis() {
+        #需要判断当前访问者是否是教师
+        $input['exam_id'] = Request::get('examId');
+        $input['squad_id'] = Request::get('classId');
+        $exam = Exam::whereId($input['exam_id'])->first();
+        $squad = Squad::whereId($input['squad_id'])->first();
+        if(!$exam){
+            return '暂未找到本场考试相关数据！';
+        }
+        if(!$squad){
+            return '暂未该班级相关数据！';
+        }
+        #需要返回给视图页面的数据
+        $data = $this->score->claAnalysis($input, true);
+        if (!$data){
+             $data = [
+                'className'   => $exam->start_date,
+                'examName'    => $exam->name,
+                'oneData'     => [],
+                'rangs'       => [],
+                'totalRanges' => [],
+            ];
+        }
+        return view('wechat.score.edu_analysis', [
+            'data' => $data,
+            'examId' => $input['exam_id'],
+            'classId' => $input['squad_id']
+            ]);
     }
     
+    /**
+     * 微信 监护人端综合
+     */
+    public function cusTotal(){
+        #综合返回回分数
+        $input['exam_id'] = Request::get('examId');
+        $input['student_id'] = Request::get('studentId');
+        $exam = Exam::whereId($input['exam_id'])->first();
+        $student = Student::whereId($input['student_id'])->first();
+        if(!$exam){
+            $examName = '';
+            $examDate = '';
+        } else {
+            $examName = $exam->name;
+            $examDate = $exam->start_date;
+        }
+        if(!$student){
+            return '暂未该学生相关数据';
+        }
+        $data = $this->score->totalAnalysis($input);
+        return view('wechat.score.cus_total',[
+            'data' => $data,
+            'examName' => $examName,
+            'examDate' => $examDate,
+            'studentId' => $input['student_id'],
+            'examId' => $input['exam_id']
+            ]);
+    }
 }
 

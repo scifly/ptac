@@ -48,7 +48,7 @@
                             @foreach($medias as $key => $value)
                                 @if(!empty($value))
                                     <div class="img-item">
-                                        <img src="../../{{$value->path}}" id="{{$value->id}}">
+                                        <img src="../../{{$value->path}}" id="{{$value->id}}" style="width: 100px;height: 100px">
                                         <input type="hidden" name="media_ids[]" value="{{$value->id}}"/>
                                         <div class="del-mask">
                                             <i class="delete fa fa-trash"></i>
@@ -64,7 +64,7 @@
             <div class="form-group">
                 {!! Form::label('content', '文章内容', ['class' => 'control-label col-sm-3']) !!}
                 <div class="col-sm-6">
-                    <div class="preview">
+                    <div class="preview_content">
                         <script id="container" name="content" type="text/plain" >
                             @if(isset($article))
                                 {!! $article['content'] !!}
