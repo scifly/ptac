@@ -9,6 +9,13 @@ use ReflectionClass;
 
 trait ModelTrait {
     
+    /**
+     * 判断指定记录能否被删除
+     *
+     * @param Model $model
+     * @return bool
+     * @throws \ReflectionException
+     */
     static function removable(Model $model) {
         
         $relations = [];
@@ -24,9 +31,6 @@ trait ModelTrait {
             }
         }
         foreach ($relations as $relation) {
-            // if ($model->{$relation}) {
-            //     return false;
-            // }
             if(count($model->{$relation})){
                 return false;
             }
