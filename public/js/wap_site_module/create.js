@@ -1,5 +1,8 @@
 page.create('formWapSiteModule', 'wap_site_modules');
-$(function () {
+
+page.loadCss(page.plugins.fileinput.css);
+$.getMultiScripts([page.plugins.fileinput.js], page.siteRoot()).done(function () {
+
     var $pre = $('.preview');
     var $uploadFile = $('#uploadFile');
     // 初始化
@@ -46,4 +49,5 @@ $(function () {
         $(this).parent().parent().remove();
         $pre.append('<input type="hidden" name="del_id[]" value="' + $(this).parent().siblings().attr('id') + '">');
     })
+
 });

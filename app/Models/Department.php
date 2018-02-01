@@ -783,7 +783,7 @@ class Department extends Model {
     static function schoolDeptId($dept) {
         $de = Department::whereId($dept)->first();
         if ($de->department_type_id != 4) {
-            self::schoolDeptId($de->parent_id);
+            return self::schoolDeptId($de->parent_id);
         }
         return $de->id;
     }
