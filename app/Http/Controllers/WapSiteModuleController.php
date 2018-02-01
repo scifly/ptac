@@ -99,7 +99,7 @@ class WapSiteModuleController extends Controller {
         if (!$wsm) { return $this->notFound(); }
         
         return $this->output([
-            'wsm' => $wsm,
+            'wapSiteModule' => $wsm,
             'media' => Media::find($wsm->media_id),
         ]);
         
