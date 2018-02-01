@@ -12,7 +12,7 @@
 			
 			<div class="weui-cell">
 		        <div class="weui-cell__bd title-name">
-		          	<div>标题</div>
+		          	<div>{{$wapsite->site_title}}</div>
 		        </div>
 		    </div>
 			
