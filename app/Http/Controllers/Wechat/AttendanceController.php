@@ -223,7 +223,7 @@ class AttendanceController extends Controller {
             ];
         }
         if(!empty($data['squadnames'])){
-            $data['squadnames'] = array_unique($data['squadnames']);
+            array_unique($data['squadnames']);
         }
         #根据年级分组规则
         $rules = StudentAttendanceSetting::whereIn('grade_id', array_unique($gradeIds))->get();
