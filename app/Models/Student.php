@@ -79,12 +79,6 @@ class Student extends Model {
         'card_number', 'oncampus', 'birthday',
         'remark', 'enabled',
     ];
-
-    function __construct() {
-
-        parent::__construct();
-
-    }
     /**
      * 返回指定学生所属的班级对象
      *
