@@ -217,9 +217,9 @@ class AttendanceController extends Controller {
         $data['squadnames'] = [];
         $gradeIds = [];
         foreach (array_unique($squadLists) as $s) {
-            $gradeIds[] = $s['grade->id'];
+            $gradeIds[] = $s->grade->id;
             $data['squadnames'][] = [
-                'title' => $s['name'], 'value' => $s['id'],
+                'title' => $s->name, 'value' => $s->id,
             ];
             // $data['squadnames'] = array_unique($data['squadnames']);
         }
