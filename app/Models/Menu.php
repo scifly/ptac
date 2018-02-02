@@ -66,7 +66,7 @@ class Menu extends Model {
 
     // todo: needs to be optimized
 
-    const SUPER_ROLES = ['运营', '企业', '学校'];
+    const SUPER_ROLES = ['运营', '企业', '学校','教职员工'];
     # 不含子菜单的HTML模板
     const SIMPLE = '<li%s><a id="%s" href="%s" class="leaf"><i class="%s"></i> %s</a></li>';
     # 包含子菜单的HTML模板
@@ -587,7 +587,7 @@ HTML;
                 return School::whereDepartmentId($user->topDeptId())
                     ->first()->menu_id;
             default:
-                return School::find(Group::find($user->group->id)->school_id)
+                return School::find(Educator::whereUserId($user->id)->first()->school_id)
                     ->menu_id;
         }
 
