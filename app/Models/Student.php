@@ -78,7 +78,6 @@ class Student extends Model {
         'card_number', 'oncampus', 'birthday',
         'remark', 'enabled',
     ];
-
     /**
      * 返回指定学生所属的班级对象
      *
