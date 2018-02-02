@@ -315,8 +315,8 @@ class Educator extends Model {
                         ]);
                     }
                 }
-                # 创建企业号成员
-                User::createWechatUser($u->id);
+                // # 创建企业号成员
+                // User::createWechatUser($u->id);
             });
         } catch (Exception $e) {
             throw $e;
