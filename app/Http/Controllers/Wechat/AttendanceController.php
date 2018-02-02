@@ -222,6 +222,7 @@ class AttendanceController extends Controller {
                 'title' => $s->name, 'value' => $s->id,
             ];
         }
+        $data['squadnames'] = array_unique($data['squadnames'], SORT_REGULAR);
         #根据年级分组规则
         $rules = StudentAttendanceSetting::whereIn('grade_id', array_unique($gradeIds))->get();
         $data['rulenames'] = [];
@@ -299,7 +300,7 @@ class AttendanceController extends Controller {
             ->unique('student_id');
         $normalRecords = $attendances->where('status', 1)->count();
         $abnormalRecords = $attendances->where('status', 0)->count();
-        $noRecords = $grade->students->count() - $normalRecords - $abnormalRecords;
+        $noRecords = $squad->students->count() - $normalRecords - $abnormalRecords;
         $data['charts'] = [
             ['name' => '打卡', 'value' => $normalRecords],
             ['name' => '异常', 'value' => $abnormalRecords],
@@ -401,7 +402,7 @@ class AttendanceController extends Controller {
         foreach ($students as $student) {
             $studentIds[] = $student->id;
         }
-        $grade = $squad->grade;
+        // $grade = $squad->grade;
         $attendances = StudentAttendance::where('sas_id', $input['rule'])
             ->whereIn('student_id', $studentIds)
             ->whereNotNull('sas_id')
@@ -411,7 +412,7 @@ class AttendanceController extends Controller {
             ->unique('student_id');
         $normalRecords = $attendances->where('status', 1)->count();
         $abnormalRecords = $attendances->where('status', 0)->count();
-        $noRecords = $grade->students->count() - $normalRecords - $abnormalRecords;
+        $noRecords = $squad->students->count() - $normalRecords - $abnormalRecords;
         $data['charts'] = [
             ['name' => '打卡', 'value' => $normalRecords],
             ['name' => '异常', 'value' => $abnormalRecords],
