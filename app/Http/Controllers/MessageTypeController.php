@@ -15,9 +15,12 @@ use Illuminate\Support\Facades\Request;
  */
 class MessageTypeController extends Controller {
     
-    function __construct() {
+    protected $mt;
+    
+    function __construct(MessageType $mt) {
     
         $this->middleware(['auth', 'checkrole']);
+        $this->mt = $mt;
     
     }
     
@@ -30,7 +33,9 @@ class MessageTypeController extends Controller {
     public function index() {
         
         if (Request::get('draw')) {
-            return response()->json(MessageType::datatable());
+            return response()->json(
+                $this->mt->datatable()
+            );
         }
         
         return $this->output();
@@ -57,7 +62,9 @@ class MessageTypeController extends Controller {
      */
     public function store(MessageTypeRequest $request) {
         
-        return $this->result(MessageType::create($request->all()));
+        return $this->result(
+            $this->mt->store($request->all())
+        );
         
     }
     
@@ -70,10 +77,12 @@ class MessageTypeController extends Controller {
      */
     public function edit($id) {
         
-        $messageType = MessageType::find($id);
-        if (!$messageType) { return $this->notFound(); }
+        $mt = MessageType::find($id);
+        abort_if(!$mt, self::NOT_FOUND);
         
-        return $this->output(['messageType' => $messageType]);
+        return $this->output([
+            'mt' => $mt
+        ]);
         
     }
     
@@ -86,10 +95,12 @@ class MessageTypeController extends Controller {
      */
     public function update(MessageTypeRequest $request, $id) {
         
-        $messageType = MessageType::find($id);
-        if (!$messageType) { return $this->notFound(); }
+        $mt = MessageType::find($id);
+        abort_if(!$mt, self::NOT_FOUND);
         
-        return $this->result($messageType->update($request->all()));
+        return $this->result(
+            $mt->modify($request->all(), $id)
+        );
         
     }
     
@@ -102,10 +113,12 @@ class MessageTypeController extends Controller {
      */
     public function destroy($id) {
         
-        $messageType = MessageType::find($id);
-        if (!$messageType) { return $this->notFound(); }
+        $mt = MessageType::find($id);
+        abort_if(!$mt, self::NOT_FOUND);
         
-        return $this->result($messageType->delete());
+        return $this->result(
+            $mt->remove($id)
+        );
         
     }
     

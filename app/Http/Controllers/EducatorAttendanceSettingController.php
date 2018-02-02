@@ -16,9 +16,12 @@ use Illuminate\Support\Facades\Request;
  */
 class EducatorAttendanceSettingController extends Controller {
     
-    function __construct() {
+    protected $eas;
+    
+    function __construct(EducatorAttendanceSetting $eas) {
     
         $this->middleware(['auth', 'checkrole']);
+        $this->eas = $eas;
         
     }
     
@@ -31,7 +34,9 @@ class EducatorAttendanceSettingController extends Controller {
     public function index() {
         
         if (Request::get('draw')) {
-            return response()->json(EducatorAttendanceSetting::datatable());
+            return response()->json(
+                $this->eas->datatable()
+            );
         }
         
         return $this->output();
@@ -45,7 +50,9 @@ class EducatorAttendanceSettingController extends Controller {
      */
     public function create() {
         
-        $this->authorize('c', EducatorAttendanceSetting::class);
+        $this->authorize(
+            'c', EducatorAttendanceSetting::class
+        );
         
         return $this->output();
         
@@ -60,9 +67,13 @@ class EducatorAttendanceSettingController extends Controller {
      */
     public function store(EducatorAttendanceSettingRequest $request) {
         
-        $this->authorize('c', EducatorAttendanceSetting::class);
+        $this->authorize(
+            'c', EducatorAttendanceSetting::class
+        );
         
-        return $this->result(EducatorAttendanceSetting::create($request->all()));
+        return $this->result(
+            $this->eas->create($request->all())
+        );
         
     }
     
@@ -75,7 +86,8 @@ class EducatorAttendanceSettingController extends Controller {
      */
     public function show($id) {
         
-        $eas = EducatorAttendanceSetting::find($id);
+        $eas = $this->eas->find($id);
+        abort_if(!$eas, self::NOT_FOUND);
         $this->authorize('rud', $eas);
         
         return $this->output(['eas' => $eas]);
@@ -90,10 +102,12 @@ class EducatorAttendanceSettingController extends Controller {
      */
     public function edit($id) {
         
-        $eas = EducatorAttendanceSetting::find($id);
+        $eas = $this->eas->find($id);
+        abort_if(!$eas, self::NOT_FOUND);
         $this->authorize('rud', $eas);
         
         return $this->output(['eas' => $eas]);
+        
     }
     
     /**
@@ -106,7 +120,8 @@ class EducatorAttendanceSettingController extends Controller {
      */
     public function update(EducatorAttendanceSettingRequest $request, $id) {
         
-        $eas = EducatorAttendanceSetting::find($id);
+        $eas = $this->eas->find($id);
+        abort_if(!$eas, self::NOT_FOUND);
         $this->authorize('rud', $eas);
         
         return $this->result($eas->update($request->all()));
@@ -122,7 +137,8 @@ class EducatorAttendanceSettingController extends Controller {
      */
     public function destroy($id) {
         
-        $eas = EducatorAttendanceSetting::find($id);
+        $eas = $this->eas->find($id);
+        abort_if(!$eas, self::NOT_FOUND);
         $this->authorize('rud', $eas);
         
         return $this->result($eas->delete());

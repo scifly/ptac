@@ -9,6 +9,7 @@ use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use ReflectionException;
 
 /**
  * App\Models\Exam 考试
@@ -74,7 +75,7 @@ class Exam extends Model {
      * @param $classIds
      * @return array
      */
-    static function classes($classIds) {
+    public function classes($classIds) {
         
         $classIds = explode(",", $classIds);
         $selectedClasses = [];
@@ -93,7 +94,7 @@ class Exam extends Model {
      * @param $subjectIds
      * @return array
      */
-    static function subjects($subjectIds = null) {
+    public function subjects($subjectIds = null) {
 
         $subjectIds = explode(",", $subjectIds);
         $selectedSubjects = [];
@@ -104,64 +105,6 @@ class Exam extends Model {
 
     }
     
-    /**
-     * 获取当前考试班级
-     *
-     * @param $classIds
-     * @return array
-     */
-    static function examClasses($classIds) {
-        
-        $class_ids = explode(',', $classIds);
-        $classes = [];
-        foreach ($class_ids as $class_id) {
-            $classes[] = Squad::find($class_id);
-        }
-
-        return $classes;
-
-    }
-
-    /**
-     * 返回班级相关的所有考试
-     *
-     * @param $classId
-     * @return array
-     */
-    static function examsByClassId($classId) {
-        
-        $exams = self::all();
-        $_exams = [];
-        foreach ($exams as $exam) {
-            $classIds = explode(',', $exam->class_ids);
-            if (in_array($classId, $classIds)) {
-                $_exams[] = $exam;
-            }
-        }
-        
-        return $_exams;
-
-    }
-
-    /**
-     * 获取指定考试包含的的科目列表
-     *
-     * @param $id
-     * @return array
-     * @internal param $subjectIds
-     */
-    static function subjectsByExamId($id) {
-        
-        $subjectIds = self::find($id)->first(["subject_ids"])->toArray();
-        $subject_ids = explode(',', $subjectIds['subject_ids']);
-        $subjects = [];
-        foreach ($subject_ids as $subject_id) {
-            $subjects[] = Subject::whereId($subject_id)->first(['id', 'name']);
-        }
-        
-        return $subjects;
-
-    }
 
     /**
      * 保存考试
@@ -169,7 +112,7 @@ class Exam extends Model {
      * @param array $data
      * @return bool
      */
-    static function store(array $data) {
+    public function store(array $data) {
         
         $exam = self::create($data);
 
@@ -184,7 +127,7 @@ class Exam extends Model {
      * @param $id
      * @return bool
      */
-    static function modify(array $data, $id) {
+    public function modify(array $data, $id) {
         
         $exam = self::find($id);
         if (!$exam) { return false; }
@@ -192,14 +135,15 @@ class Exam extends Model {
         return $exam->update($data) ? true : false;
 
     }
-
+    
     /**
      * 删除考试
      *
      * @param $id
      * @return bool
+     * @throws ReflectionException
      */
-    static function remove($id) {
+    public function remove($id) {
         
         $exam = self::find($id);
         if (!$exam) { return false; }
@@ -213,7 +157,7 @@ class Exam extends Model {
      *
      * @return array
      */
-    static function datatable() {
+    public function datatable() {
         
         $columns = [
             ['db' => 'Exam.id', 'dt' => 0],

@@ -113,7 +113,7 @@ class Grade extends Model {
      * @param bool $fireEvent
      * @return bool
      */
-    static function store(array $data, $fireEvent = false) {
+    public function store(array $data, $fireEvent = false) {
         
         $grade = self::create($data);
         if ($grade && $fireEvent) {
@@ -133,7 +133,7 @@ class Grade extends Model {
      * @param bool $fireEvent
      * @return bool
      */
-    static function modify(array $data, $id, $fireEvent = false) {
+    public function modify(array $data, $id, $fireEvent = false) {
         
         $grade = self::find($id);
         $updated = $grade->update($data);
@@ -154,7 +154,7 @@ class Grade extends Model {
      * @return bool
      * @throws Exception
      */
-    static function remove($id, $fireEvent = false) {
+    public function remove($id, $fireEvent = false) {
         
         $grade = self::find($id);
         if (!$grade) { return false; }
@@ -173,7 +173,7 @@ class Grade extends Model {
      *
      * @return array
      */
-    static function datatable() {
+    public function datatable() {
         
         $columns = [
             ['db' => 'Grade.id', 'dt' => 0],

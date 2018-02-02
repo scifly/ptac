@@ -93,7 +93,7 @@ class Group extends Model {
      * @throws Exception
      * @throws \Throwable
      */
-    static function store(array $data) {
+    public function store(array $data) {
 
         try {
             DB::transaction(function () use ($data) {
@@ -128,7 +128,7 @@ class Group extends Model {
      * @throws Exception
      * @throws \Throwable
      */
-    static function modify(array $data, $id) {
+    public function modify(array $data, $id) {
 
         $group = self::find($id);
         if (!$group) { return false; }
@@ -161,7 +161,7 @@ class Group extends Model {
      * @return bool
      * @throws Exception
      */
-    static function remove($id) {
+    public function remove($id) {
 
         $group = self::find($id);
         if (!$group) { return false; }
@@ -175,7 +175,7 @@ class Group extends Model {
      *
      * @return array
      */
-    static function datatable() {
+    public function datatable() {
 
         $columns = [
             ['db' => 'Groups.id', 'dt' => 0],

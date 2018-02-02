@@ -4,8 +4,8 @@
     </div>
     <div class="box-body">
         <div class="form-horizontal">
-            @if (!empty($messageType['id']))
-                {{ Form::hidden('id', $messageType['id'], ['id' => 'id']) }}
+            @if (!empty($mt['id']))
+                {{ Form::hidden('id', $mt['id'], ['id' => 'id']) }}
             @endif
             <div class="form-group">
                 {!! Form::label('name', '名称', [
@@ -23,7 +23,7 @@
             @include('partials.remark')
             @include('partials.enabled', [
                 'id' => 'enabled',
-                'value' => $messageType['enabled'] ?? null
+                'value' => $mt['enabled'] ?? null
             ])
         </div>
     </div>

@@ -20,9 +20,12 @@ use Throwable;
  */
 class SchoolController extends Controller {
     
-    function __construct() {
+    protected $school;
+    
+    function __construct(School $school) {
         
         $this->middleware(['auth', 'checkrole']);
+        $this->school = $school;
         
     }
     
@@ -35,7 +38,9 @@ class SchoolController extends Controller {
     public function index() {
         
         if (Request::get('draw')) {
-            return response()->json(School::datatable());
+            return response()->json(
+                $this->school->datatable()
+            );
         }
     
         return $this->output();
@@ -63,7 +68,7 @@ class SchoolController extends Controller {
     public function store(SchoolRequest $request) {
         
         return $this->result(
-            School::store($request->all(), true)
+            $this->school->store($request->all(), true)
         );
         
     }
@@ -78,9 +83,11 @@ class SchoolController extends Controller {
     public function show($id) {
         
         $school = School::find($id);
-        if (!$school) { return $this->notFound(); }
+        abort_if(!$school, self::NOT_FOUND);
     
-        return $this->output(['school' => $school]);
+        return $this->output([
+            'school' => $school,
+        ]);
         
     }
     
@@ -94,9 +101,11 @@ class SchoolController extends Controller {
     public function edit($id) {
         
         $school = School::find($id);
-        if (!$school) { return $this->notFound(); }
+        abort_if(!$school, self::NOT_FOUND);
     
-        return $this->output(['school' => $school]);
+        return $this->output([
+            'school' => $school,
+        ]);
         
     }
     
@@ -110,10 +119,10 @@ class SchoolController extends Controller {
     public function update(SchoolRequest $request, $id) {
         
         $school = School::find($id);
-        if (!$school) { return $this->notFound(); }
+        abort_if(!$school, self::NOT_FOUND);
         
         return $this->result(
-            School::modify($request->all(), $id, true)
+            $school->modify($request->all(), $id, true)
         );
         
     }
@@ -128,9 +137,11 @@ class SchoolController extends Controller {
     public function destroy($id) {
         
         $school = School::find($id);
-        if (!$school) { return $this->notFound(); }
+        abort_if(!$school, self::NOT_FOUND);
         
-        return $this->result($school->remove($id, true));
+        return $this->result(
+            $school->remove($id, true)
+        );
         
     }
     

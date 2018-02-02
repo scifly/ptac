@@ -16,12 +16,14 @@ use Throwable;
  */
 class ScoreTotalController extends Controller {
     
-    protected $scoreTotal;
+    protected $st;
     protected $subject;
     
-    function __construct(ScoreTotal $score_total, Subject $subject) {
+    function __construct(ScoreTotal $st, Subject $subject) {
     
         $this->middleware(['auth', 'checkrole']);
+        $this->st = $st;
+        $this->subject = $subject;
         
     }
     
@@ -35,7 +37,7 @@ class ScoreTotalController extends Controller {
         
         if (Request::get('draw')) {
             return response()->json(
-                ScoreTotal::datatable()
+                $this->st->datatable()
             );
         }
         
@@ -52,32 +54,15 @@ class ScoreTotalController extends Controller {
      */
     public function destroy($id) {
         
-        $scoreTotal = ScoreTotal::find($id);
-        if (!$scoreTotal) { return $this->notFound(); }
+        $st = ScoreTotal::find($id);
+        abort_if(!$st, self::NOT_FOUND);
 
-        return $this->result($scoreTotal->delete());
+        return $this->result(
+            $st->remove($id)
+        );
         
     }
-    /**
-     * 总成绩详情
-     *
-     * @param $id
-     * @return bool|JsonResponse
-     * @throws Throwable
-     */
-    // public function show($id) {
-    //
-    //     $st = ScoreTotal::find($id);
-    //     if (!$st) { return $this->notFound(); }
-    //
-    //     return $this->output([
-    //         'score_total' => $st,
-    //         'studentname' => $st->student->user->realname,
-    //         'subjects'    => Subject::subjects($st->subject_ids),
-    //         'na_subjects' => Subject::subjects($st->na_subject_ids),
-    //     ]);
-    //
-    // }
+    
     
     /**
      * 总成绩统计
@@ -86,10 +71,10 @@ class ScoreTotalController extends Controller {
      * @return JsonResponse
      * @throws Exception
      */
-    // public function statistics($examId) {
-    //
-    //     return $this->result(ScoreTotal::statistics($examId));
-    //
-    // }
+    public function statistics($examId) {
+    
+         return $this->result(ScoreTotal::statistics($examId));
+    
+    }
     
 }

@@ -16,9 +16,12 @@ use Throwable;
  */
 class DepartmentTypeController extends Controller {
 
-    function __construct() {
+    protected $dt;
+    
+    function __construct(DepartmentType $dt) {
     
         $this->middleware(['auth', 'checkrole']);
+        $this->dt = $dt;
 
     }
     
@@ -31,7 +34,9 @@ class DepartmentTypeController extends Controller {
     public function index() {
 
         if (Request::get('draw')) {
-            return response()->json(DepartmentType::datatable());
+            return response()->json(
+                $this->dt->datatable()
+            );
         }
 
         return $this->output();
@@ -58,7 +63,9 @@ class DepartmentTypeController extends Controller {
      */
     public function store(DepartmentTypeRequest $request) {
 
-        return $this->result(DepartmentType::store($request->all()));
+        return $this->result(
+            $this->dt->store($request->all())
+        );
 
     }
     
@@ -71,11 +78,11 @@ class DepartmentTypeController extends Controller {
      */
     public function edit($id) {
 
-        $departmentType = DepartmentType::find($id);
-        if (!$departmentType) { return $this->notFound(); }
+        $dt = DepartmentType::find($id);
+        abort_if(!$dt, self::NOT_FOUND);
 
         return $this->output([
-            'departmentType' => $departmentType
+            'departmentType' => $dt,
         ]);
 
     }
@@ -89,10 +96,12 @@ class DepartmentTypeController extends Controller {
      */
     public function update(DepartmentTypeRequest $request, $id) {
 
-        $departmentType = DepartmentType::find($id);
-        if (!$departmentType) { return $this->notFound(); }
-
-        return $this->result($departmentType::modify($request->all(), $id));
+        $dt = DepartmentType::find($id);
+        abort_if(!$dt, self::NOT_FOUND);
+        
+        return $this->result(
+            $dt->modify($request->all(), $id)
+        );
 
     }
     
@@ -105,10 +114,12 @@ class DepartmentTypeController extends Controller {
      */
     public function destroy($id) {
 
-        $departmentType = DepartmentType::find($id);
-        if (!$departmentType) { return $this->notFound(); }
-
-        return $this->result(departmentType::remove($id));
+        $dt = DepartmentType::find($id);
+        abort_if(!$dt, self::NOT_FOUND);
+        
+        return $this->result(
+            $dt->remove($id)
+        );
 
     }
 

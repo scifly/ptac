@@ -4,8 +4,8 @@
     </div>
     <div class="box-body">
         <div class="form-horizontal">
-            @if (isset($iconType['id']))
-                {!! Form::hidden('id', $iconType['id'], ['id' => 'id']) !!}
+            @if (isset($it['id']))
+                {!! Form::hidden('id', $it['id'], ['id' => 'id']) !!}
             @endif
             <div class="form-group">
                 {!! Form::label('name', '名称',[
@@ -24,7 +24,7 @@
             @include('partials.remark')
             @include('partials.enabled', [
                 'id' => 'enabled',
-                'value' => $iconType['enabled'] ?? null
+                'value' => $it['enabled'] ?? null
             ])
         </div>
     </div>

@@ -51,11 +51,11 @@ class MessageType extends Model {
      * @param array $data
      * @return bool
      */
-    static function store(array $data) {
+    public function store(array $data) {
 
-        $messageType = self::create($data);
+        $mt = self::create($data);
 
-        return $messageType ? true : false;
+        return $mt ? true : false;
 
     }
 
@@ -66,12 +66,12 @@ class MessageType extends Model {
      * @param $id
      * @return bool
      */
-    static function modify(array $data, $id) {
+    public function modify(array $data, $id) {
 
-        $messageType = self::find($id);
-        if (!$messageType) { return false; }
+        $mt = self::find($id);
+        if (!$mt) { return false; }
 
-        return $messageType->update($data) ? true : false;
+        return $mt->update($data) ? true : false;
 
     }
     
@@ -82,12 +82,12 @@ class MessageType extends Model {
      * @return bool|null
      * @throws Exception
      */
-    static function remove($id) {
+    public function remove($id) {
 
-        $messageType = self::find($id);
-        if (!$messageType) { return false; }
+        $mt = self::find($id);
+        if (!$mt) { return false; }
         
-        return $messageType->removable($messageType) ? $messageType->delete() : false;
+        return $mt->removable($mt) ? $mt->delete() : false;
 
     }
     
@@ -96,7 +96,7 @@ class MessageType extends Model {
      *
      * @return array
      */
-    static function datatable() {
+    public function datatable() {
 
         $columns = [
             ['db' => 'MessageType.id', 'dt' => 0],

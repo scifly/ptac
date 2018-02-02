@@ -17,9 +17,12 @@ use Throwable;
  */
 class ProcedureController extends Controller {
     
-    function __construct() {
+    protected $procedure;
+    
+    function __construct(Procedure $procedure) {
     
         $this->middleware(['auth', 'checkrole']);
+        $this->procedure = $procedure;
     
     }
     
@@ -33,7 +36,7 @@ class ProcedureController extends Controller {
         
         if (Request::get('draw')) {
             return response()->json(
-                Procedure::datatable()
+                $this->procedure->datatable()
             );
         }
         
@@ -49,7 +52,9 @@ class ProcedureController extends Controller {
      */
     public function create() {
         
-        $this->authorize('c', Procedure::class);
+        $this->authorize(
+            'c', Procedure::class
+        );
         
         return $this->output();
         
@@ -66,7 +71,9 @@ class ProcedureController extends Controller {
         
         $this->authorize('c', Procedure::class);
         
-        return $this->result(Procedure::store($request->all()));
+        return $this->result(
+            $this->procedure->store($request->all())
+        );
         
     }
     
@@ -80,9 +87,12 @@ class ProcedureController extends Controller {
     public function show($id) {
         
         $procedure = Procedure::find($id);
+        abort_if(!$procedure, self::NOT_FOUND);
         $this->authorize('rud', $procedure);
         
-        return $this->output(['procedure' => $procedure]);
+        return $this->output([
+            'procedure' => $procedure,
+        ]);
         
     }
     
@@ -96,9 +106,12 @@ class ProcedureController extends Controller {
     public function edit($id) {
         
         $procedure = Procedure::find($id);
+        abort_if(!$procedure, self::NOT_FOUND);
         $this->authorize('rud', $procedure);
         
-        return $this->output(['procedure' => $procedure]);
+        return $this->output([
+            'procedure' => $procedure,
+        ]);
         
     }
     
@@ -113,9 +126,12 @@ class ProcedureController extends Controller {
     public function update(ProcedureRequest $request, $id) {
         
         $procedure = Procedure::find($id);
+        abort_if(!$procedure, self::NOT_FOUND);
         $this->authorize('rud', $procedure);
         
-        return $this->result($procedure->modify($request->all(), $id));
+        return $this->result(
+            $procedure->modify($request->all(), $id)
+        );
         
     }
     
@@ -129,9 +145,12 @@ class ProcedureController extends Controller {
     public function destroy($id) {
         
         $procedure = Procedure::find($id);
+        abort_if(!$procedure, self::NOT_FOUND);
         $this->authorize('rud', $procedure);
         
-        return $this->result($procedure->remove($id));
+        return $this->result(
+            $procedure->remove($id)
+        );
         
     }
     

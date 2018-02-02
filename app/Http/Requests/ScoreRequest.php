@@ -18,6 +18,7 @@ class ScoreRequest extends FormRequest {
      * @return array
      */
     public function rules() {
+        
         return [
             'student_id' => 'required|integer|unique:scores,student_id,' .
                 $this->input('id') . ',id,' .
@@ -25,12 +26,16 @@ class ScoreRequest extends FormRequest {
                 'exam_id,' . $this->input('exam_id'),
             'score'      => 'required|numeric',
         ];
+        
     }
 
     protected function prepareForValidation() {
+        
         $input = $this->all();
         $input['class_rank'] = 0;
         $input['grade_rank'] = 0;
         $this->replace($input);
+        
     }
+    
 }
