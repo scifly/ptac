@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
-use App\Http\Requests\ActionRequest;
 use App\Models\ActionType as ActionType;
 use Carbon\Carbon;
 use Doctrine\Common\Inflector\Inflector;
@@ -113,7 +112,7 @@ class Action extends Model {
      *
      * @return array
      */
-    static function datatable() {
+    public function datatable() {
         
         $columns = [
             ['db' => 'Action.id', 'dt' => 0],
@@ -172,35 +171,6 @@ class Action extends Model {
         
         return Datatable::simple(self::getModel(), $columns);
         
-    }
-    
-    /**
-     * 保存新创建的Action记录
-     *
-     * @param ActionRequest $request
-     * @return bool
-     */
-    static function store(ActionRequest $request) {
-
-        # 创建新的Action记录及卡片绑定记录
-        return self::create($request->all()) ? true : false;
-
-    }
-
-    /**
-     * 修改指定的Action记录
-     *
-     * @param ActionRequest $request
-     * @param $actionId
-     * @return bool
-     */
-    static function modify(ActionRequest $request, $actionId) {
-
-        $action = self::find($actionId);
-        if (!isset($action)) { return false; }
-        
-        return $action->update($request->all());
-
     }
     
     /**

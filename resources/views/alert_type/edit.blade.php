@@ -1,4 +1,4 @@
-{!! Form::model($alertType, [
+{!! Form::model($at, [
     'method' => 'put',
     'id' => 'formAlertType',
     'data-parsley-validate' => 'true'

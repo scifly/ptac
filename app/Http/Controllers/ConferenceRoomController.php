@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ConferenceRoomRequest;
+use App\Models\ConferenceQueue;
 use App\Models\ConferenceRoom;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -17,9 +18,12 @@ use Throwable;
  */
 class ConferenceRoomController extends Controller {
     
-    function __construct() {
+    protected $cr;
+    
+    function __construct(ConferenceQueue $cr) {
     
         $this->middleware(['auth', 'checkrole']);
+        $this->cr = $cr;
         
     }
     
@@ -33,7 +37,7 @@ class ConferenceRoomController extends Controller {
         
         if (Request::get('draw')) {
             return response()->json(
-                ConferenceRoom::datatable()
+                $this->cr->datatable()
             );
         }
         
@@ -49,7 +53,9 @@ class ConferenceRoomController extends Controller {
      */
     public function create() {
         
-        $this->authorize('c', ConferenceRoom::class);
+        $this->authorize(
+            'c', ConferenceRoom::class
+        );
         
         return $this->output();
         
@@ -64,9 +70,13 @@ class ConferenceRoomController extends Controller {
      */
     public function store(ConferenceRoomRequest $request) {
         
-        $this->authorize('c', ConferenceRoom::class);
+        $this->authorize(
+            'c', ConferenceRoom::class
+        );
         
-        return $this->result(ConferenceRoom::store($request->all()));
+        return $this->result(
+            $this->cr->store($request->all())
+        );
         
     }
     
@@ -80,6 +90,7 @@ class ConferenceRoomController extends Controller {
     public function show($id) {
         
         $cr = ConferenceRoom::find($id);
+        abort_if(!$cr, self::NOT_FOUND);
         $this->authorize('rud', $cr);
         
         return $this->output(['cr' => $cr]);
@@ -96,9 +107,10 @@ class ConferenceRoomController extends Controller {
     public function edit($id) {
         
         $cr = ConferenceRoom::find($id);
+        abort_if(!$cr, self::NOT_FOUND);
         $this->authorize('rud', $cr);
         
-        return $this->output(['conferenceRoom' => $cr]);
+        return $this->output(['cr' => $cr]);
         
     }
     
@@ -113,6 +125,7 @@ class ConferenceRoomController extends Controller {
     public function update(ConferenceRoomRequest $request, $id) {
         
         $cr = ConferenceRoom::find($id);
+        abort_if(!$cr, self::NOT_FOUND);
         $this->authorize('rud', $cr);
         
         return $this->result($cr->modify($request->all(), $id));
@@ -129,6 +142,7 @@ class ConferenceRoomController extends Controller {
     public function destroy($id) {
         
         $cr = ConferenceRoom::find($id);
+        abort_if(!$cr, self::NOT_FOUND);
         $this->authorize('rud', $cr);
         
         return $this->result($cr->remove($id));

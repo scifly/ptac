@@ -45,7 +45,7 @@ class CommType extends Model {
      *
      * @return array
      */
-    static function datatable() {
+    public function datatable() {
 
         $columns = [
             ['db' => 'CommType.id', 'dt' => 0],

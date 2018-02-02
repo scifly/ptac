@@ -39,9 +39,7 @@ class ActionController extends Controller {
                 $this->action->datatable()
             );
         }
-        if (!$this->action->scan()) {
-            return $this->notFound();
-        }
+        abort_if(!$this->action->scan(), self::NOT_FOUND);
 
         return $this->output();
 
@@ -56,10 +54,12 @@ class ActionController extends Controller {
      */
     public function edit($id) {
 
-        $action = $this->action->find($id);
-        if (!$action) { return $this->notFound(); }
+        $action = Action::find($id);
+        abort_if(!$action, self::NOT_FOUND);
 
-        return $this->output(['action' => $action]);
+        return $this->output([
+            'action' => $action,
+        ]);
 
     }
 
@@ -72,10 +72,12 @@ class ActionController extends Controller {
      */
     public function update(ActionRequest $request, $id) {
 
-        $action = $this->action->find($id);
-        if (!$action) { return $this->notFound(); }
+        $action = Action::find($id);
+        abort_if(!$action, self::NOT_FOUND);
 
-        return $this->result($action->update($request->all()));
+        return $this->result(
+            $action->update($request->all())
+        );
 
     }
     
