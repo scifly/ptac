@@ -23,11 +23,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
-use Log;
 use Maatwebsite\Excel\Facades\Excel;
 use Maatwebsite\Excel\Readers\LaravelExcelReader;
 use PHPExcel_Exception;
-use PHPExcel_Shared_Date;
 
 /**
  * App\Models\Student 学生
@@ -80,7 +78,14 @@ class Student extends Model {
         'card_number', 'oncampus', 'birthday',
         'remark', 'enabled',
     ];
+    protected $custodian;
 
+    function __construct(Custodian $custodian) {
+
+        parent::__construct();
+        $this->custodian = $custodian;
+
+    }
     /**
      * 返回指定学生所属的班级对象
      *

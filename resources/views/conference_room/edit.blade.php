@@ -1,4 +1,4 @@
-{!! Form::model($conferenceRoom, [
+{!! Form::model($cr, [
     'method' => 'put',
     'id' => 'formConferenceRoom',
     'data-parsley-validate' => 'true'
