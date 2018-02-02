@@ -1164,12 +1164,15 @@ class Score extends Model {
 
     /**根据教职员工userId获取所在班级的考试
      * @param $userId
-     * @return array
+     * @return array|bool
      */
     public function getEducatorScore($userId)
     {
         $score = $data = $className = [];
         $class = User::whereUserid($userId)->first()->educator->classes;
+        if(!$class){
+            return false;
+        }
         // $class = Squad::where('educator_ids','like','%' . $educatorId . '%')->get();
         foreach ($class as $k=>$c){
             $exams = Exam::where('class_ids','like','%' . $c->id . '%')
