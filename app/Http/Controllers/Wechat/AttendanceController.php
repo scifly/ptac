@@ -210,13 +210,13 @@ class AttendanceController extends Controller {
             return response()->json(['data' => '暂未找到您教师的身份！', 'statusCode' => 500]);
         }
         #班级列表 可能存在多个年级
-        $squadLists = $educator->classes->toArray();
+        $squadLists = $educator->classes;
         if(count($squadLists) == 0){
             return response()->json(['data' => '老师，您还未绑定班级关系！', 'statusCode' => 500]);
         }
         $data['squadnames'] = [];
         $gradeIds = [];
-        foreach (array_unique($squadLists) as $s) {
+        foreach ($squadLists as $s) {
             $gradeIds[] = $s->grade->id;
             $data['squadnames'][] = [
                 'title' => $s->name, 'value' => $s->id,
