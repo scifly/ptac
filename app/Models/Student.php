@@ -153,7 +153,6 @@ class Student extends Model {
                     'enabled' => $user['enabled'],
                 ]);
                 $student = $request->all();
-                Log::info($u);
                 # 向student表添加数据
                 self::create([
                     'user_id' => $u->id,
