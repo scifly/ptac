@@ -60,7 +60,7 @@
                     </div>
                 </div>
             </form>
-            <a href="<?php echo e(Url('password/reset')); ?>">忘记密码</a><br>
+            
         </div>
         <?php echo $__env->make('partials.form_overlay', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
     </div>
@@ -70,6 +70,7 @@
 <script src="<?php echo e(URL::asset('js/adminlte.min.js')); ?>"></script>
 <script src="<?php echo e(asset('js/bootstrap.min.js')); ?>"></script>
 <script src="<?php echo e(asset('js/auth/login.js')); ?>"></script>
+<script src="<?php echo e(asset('js/home/page.js')); ?>"></script>
 <script src="<?php echo e(URL::asset('js/plugins/icheck/icheck.min.js')); ?>"></script>
 <script src="<?php echo e(URL::asset('js/plugins/gritter/js/jquery.gritter.min.js')); ?>"></script>
 <script>
