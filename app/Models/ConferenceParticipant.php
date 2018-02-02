@@ -58,7 +58,7 @@ class ConferenceParticipant extends Model {
      *
      * @return array
      */
-    static function datatable() {
+    public function datatable() {
         
         $columns = [
             ['db' => 'ConferenceParticipant.id', 'dt' => 0],
@@ -107,7 +107,6 @@ class ConferenceParticipant extends Model {
         if (!in_array($user->group->name, ['运营', '企业', '学校'])) {
             $condition .= ' AND ConferenceQueue.user_id = ' . $user->id;
         }
-
 
         return Datatable::simple(self::getModel(), $columns, $joins, $condition);
 

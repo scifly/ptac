@@ -73,7 +73,7 @@ class App extends Model {
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    static function store() {
+    public function store() {
 
         $secret = Request::input('secret');
         $agentid = Request::input('agentid');
@@ -139,7 +139,7 @@ class App extends Model {
      * @param $id
      * @return bool|Collection|Model|null|static|static[]
      */
-    static function modify(array $data, $id) {
+    public function modify(array $data, $id) {
 
         $app = self::find($id);
         if (!$app) { return false; }
@@ -148,31 +148,11 @@ class App extends Model {
             event(new AppUpdated($app));
             return $app;
         }
+
         return $updated ? $app : false;
 
     }
 
-    /**
-     * 同步菜单
-     *
-     * @param array $data
-     * @param $id
-     * @return bool|Collection|Model|null|static|static[]
-     */
-    static function storeMenu(array $data, $id) {
-
-        $app = self::find($id);
-        if (!$app) { return false; }
-        $updated = $app->update($data);
-        if ($updated) {
-            event(new AppMenuUpdated($app));
-            return $app;
-        }
-        
-        return $updated ? $app : false;
-
-    }
-    
     /**
      * 将日期时间转换为人类友好的格式
      *

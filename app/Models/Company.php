@@ -100,7 +100,7 @@ class Company extends Model {
      * @param bool $fireEvent
      * @return bool
      */
-    static function store(array $data, $fireEvent = false) {
+    public function store(array $data, $fireEvent = false) {
 
         $company = self::create($data);
         if ($company && $fireEvent) {
@@ -120,7 +120,7 @@ class Company extends Model {
      * @param bool $fireEvent
      * @return bool
      */
-    static function modify(array $data, $id, $fireEvent = false) {
+    public function modify(array $data, $id, $fireEvent = false) {
 
         $company = self::find($id);
         $updated = $company->update($data);
@@ -141,7 +141,7 @@ class Company extends Model {
      * @return bool
      * @throws Exception
      */
-    static function remove($id, $fireEvent = false) {
+    public function remove($id, $fireEvent = false) {
 
         $company = Company::find($id);
         if (!$company) { return false; }
@@ -160,7 +160,7 @@ class Company extends Model {
      *
      * @return array
      */
-    static function datatable() {
+    public function datatable() {
 
         $columns = [
             ['db' => 'Company.id', 'dt' => 0],

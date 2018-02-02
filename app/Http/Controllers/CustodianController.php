@@ -21,10 +21,12 @@ use Throwable;
  */
 class CustodianController extends Controller {
 
-
-    function __construct() {
+    protected $custodian;   
+    
+    function __construct(Custodian $custodian) {
     
         $this->middleware(['auth', 'checkrole']);
+        $this->custodian = $custodian;
 
     }
     
@@ -38,7 +40,7 @@ class CustodianController extends Controller {
         
         if (Request::get('draw')) {
             return response()->json(
-                Custodian::datatable()
+                $this->custodian->datatable()
             );
         }
 
@@ -75,7 +77,9 @@ class CustodianController extends Controller {
      */
     public function store(CustodianRequest $request) {
 
-        return $this->result(Custodian::store($request));
+        return $this->result(
+            $this->custodian->store($request)
+        );
 
     }
     
@@ -89,8 +93,11 @@ class CustodianController extends Controller {
     public function show($id){
         
         $custodian = Custodian::find($id);
-
-        return $this->output(['custodian'  => $custodian]);
+        abort_if(!$custodian, self::NOT_FOUND);
+        
+        return $this->output([
+            'custodian'  => $custodian,
+        ]);
         
     }
     
@@ -114,6 +121,7 @@ class CustodianController extends Controller {
             }
         }
         $custodian = Custodian::find($id);
+        abort_if(!$custodian, self::NOT_FOUND);
         $pupils = CustodianStudent::whereCustodianId($id)->get();
         return $this->output([
             'mobiles'   => $custodian->user->mobiles,
@@ -124,16 +132,21 @@ class CustodianController extends Controller {
     }
     
     /**
-     * 更新监护人.
+     * 更新监护人
+     * 
      * @param CustodianRequest $request
      * @param $id
      * @return JsonResponse
-     * @throws Exception
      * @throws Throwable
      */
     public function update(CustodianRequest $request, $id) {
 
-        return $this->result(Custodian::modify($request, $id));
+        $custodian = Custodian::find($id);
+        abort_if(!$custodian, self::NOT_FOUND);
+        
+        return $this->result(
+            $custodian->modify($request, $id)
+        );
 
     }
     
@@ -147,7 +160,12 @@ class CustodianController extends Controller {
      */
     public function destroy($id) {
         
-        return $this->result(Custodian::remove($id));
+        $custodian = Custodian::find($id);
+        abort_if(!$custodian, self::NOT_FOUND);
+        
+        return $this->result(
+            $custodian->remove($id)
+        );
         
     }
     
@@ -158,7 +176,7 @@ class CustodianController extends Controller {
      */
     public function export() {
         
-        $data = Custodian::export();
+        $data = $this->custodian->export();
         /** @noinspection PhpMethodParametersCountMismatchInspection */
         /** @noinspection PhpUndefinedMethodInspection */
         Excel::create(iconv('UTF-8', 'GBK', '监护人列表'), function ($excel) use ($data) {

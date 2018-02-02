@@ -15,10 +15,13 @@ use Throwable;
  * @package App\Http\Controllers
  */
 class CompanyController extends Controller {
-    
-    function __construct() {
+
+    protected $company;
+
+    function __construct(Company $company) {
     
         $this->middleware(['auth', 'checkrole']);
+        $this->company = $company;
         
     }
     
@@ -32,7 +35,7 @@ class CompanyController extends Controller {
 
         if (Request::get('draw')) {
             return response()->json(
-                Company::datatable()
+                $this->company->datatable()
             );
         }
         
@@ -61,7 +64,7 @@ class CompanyController extends Controller {
     public function store(CompanyRequest $request) {
         
         return $this->result(
-            Company::store($request->all(), true)
+            $this->company->store($request->all(), true)
         );
         
     }
@@ -76,9 +79,11 @@ class CompanyController extends Controller {
     public function edit($id) {
         
         $company = Company::find($id);
-        if (!$company) { return $this->notFound(); }
-        
-        return $this->output(['company' => $company]);
+        abort_if(!$company, self::NOT_FOUND);
+
+        return $this->output([
+            'company' => $company,
+        ]);
         
     }
     
@@ -92,8 +97,8 @@ class CompanyController extends Controller {
     public function update(CompanyRequest $request, $id) {
         
         $company = Company::find($id);
-        if (!$company) { return $this->notFound(); }
-        
+        abort_if(!$company, self::NOT_FOUND);
+
         return $this->result(
             $company->modify($request->all(), $id, true)
         );
@@ -110,8 +115,8 @@ class CompanyController extends Controller {
     public function destroy($id) {
     
         $company = Company::find($id);
-        if (!$company) { return $this->notFound(); }
-        
+        abort_if(!$company, self::NOT_FOUND);
+
         return $this->result(
             $company->remove($id, true)
         );
