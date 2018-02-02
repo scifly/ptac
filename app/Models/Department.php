@@ -775,6 +775,20 @@ class Department extends Model {
     }
 
     /**
+     * 返回指定部门所属学校
+     *
+     * @param $dept
+     * @return int|mixed
+     */
+    static function schoolDeptId($dept) {
+        $de = Department::whereId($dept)->first();
+        if ($de->department_type_id != 4) {
+            return self::schoolDeptId($de->parent_id);
+        }
+        return $de->id;
+    }
+
+    /**
      * 返回用户所处的顶级部门id
      *
      * @return int

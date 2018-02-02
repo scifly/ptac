@@ -17,9 +17,12 @@ use Throwable;
  */
 class ComboTypeController extends Controller {
     
-    function __construct() {
+    protected $ct;
+    
+    function __construct(ComboType $ct) {
     
         $this->middleware(['auth', 'checkrole']);
+        $this->ct = $ct;
         
     }
     
@@ -33,7 +36,7 @@ class ComboTypeController extends Controller {
         
         if (Request::get('draw')) {
             return response()->json(
-                ComboType::datatable()
+                $this->ct->datatable()
             );
         }
         
@@ -49,7 +52,9 @@ class ComboTypeController extends Controller {
      */
     public function create() {
         
-        $this->authorize('c', ComboType::class);
+        $this->authorize(
+            'c', ComboType::class
+        );
         
         return $this->output();
         
@@ -64,9 +69,13 @@ class ComboTypeController extends Controller {
      */
     public function store(ComboTypeRequest $request) {
         
-        $this->authorize('c', ComboType::class);
+        $this->authorize(
+            'c', ComboType::class
+        );
         
-        return $this->result(ComboType::create($request->all()));
+        return $this->result(
+            ComboType::create($request->all())
+        );
         
     }
     
@@ -79,10 +88,10 @@ class ComboTypeController extends Controller {
      */
     public function edit($id) {
         
-        $comboType = ComboType::find($id);
-        $this->authorize('rud', $comboType);
+        $ct = ComboType::find($id);
+        $this->authorize('rud', $ct);
         
-        return $this->output(['comboType' => $comboType]);
+        return $this->output(['ct' => $ct]);
         
     }
     
@@ -96,10 +105,12 @@ class ComboTypeController extends Controller {
      */
     public function update(ComboTypeRequest $request, $id) {
         
-        $comboType = ComboType::find($id);
-        $this->authorize('rud', $comboType);
+        $ct = ComboType::find($id);
+        $this->authorize('rud', $ct);
         
-        return $this->result($comboType->update($request->all()));
+        return $this->result(
+            $ct->update($request->all())
+        );
         
     }
     
@@ -112,10 +123,10 @@ class ComboTypeController extends Controller {
      */
     public function destroy($id) {
         
-        $comboType = ComboType::find($id);
-        $this->authorize('rud', $comboType);
+        $ct = ComboType::find($id);
+        $this->authorize('rud', $ct);
         
-        return $this->result($comboType->delete());
+        return $this->result($ct->delete());
         
     }
     

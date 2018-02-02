@@ -55,7 +55,7 @@ class ComboType extends Model {
      *
      * @return array
      */
-    static function datatable() {
+    public function datatable() {
         
         $columns = [
             ['db' => 'ComboType.id', 'dt' => 0],

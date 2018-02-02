@@ -52,13 +52,10 @@ class ManageWechatMember implements ShouldQueue {
         // $secret = 'IoiSOIsOGrdps03Lx_h5V3cCvMl3ibu-FyqqAsy-qLM';
         // $agentId = $app->agentid;
         $token = Wechat::getAccessToken($corpId, $secret);
-        Log::debug('token: ' . $token);
+        // Log::debug('token: ' . $token);
         switch ($this->action) {
             case 'create':
-                $result = Wechat::createUser($token, $this->data);
-                $result = json_decode($result);
-                Log::debug($result->{'errcode'});
-                Log::debug($result->{'errmsg'});
+                Wechat::createUser($token, $this->data);
                 break;
             case 'update':
                 Wechat::updateUser($token, $this->data);

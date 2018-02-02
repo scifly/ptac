@@ -61,7 +61,7 @@ class AttendanceMachine extends Model {
      *
      * @return array
      */
-    static function datatable() {
+    public function datatable() {
         
         $columns = [
             ['db' => 'AttendanceMachine.id', 'dt' => 0],

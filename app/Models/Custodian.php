@@ -13,8 +13,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-
+use Throwable;
 
 /**
  * App\Models\Custodian 监护人
@@ -31,8 +30,7 @@ use Illuminate\Support\Facades\Log;
  * @method static Builder|Custodian whereUserId($value)
  * @mixin Eloquent
  */
-class Custodian extends Model
-{
+class Custodian extends Model {
 
     const EXCEL_EXPORT_TITLE = [
         '监护人姓名', '性别', '电子邮箱',
@@ -45,8 +43,7 @@ class Custodian extends Model
      *
      * @return BelongsTo
      */
-    public function user()
-    {
+    public function user() {
         return $this->belongsTo('App\Models\User');
     }
 
@@ -55,8 +52,7 @@ class Custodian extends Model
      *
      * @return BelongsToMany
      */
-    public function students()
-    {
+    public function students() {
 
         return $this->belongsToMany(
             'App\Models\Student',
@@ -75,7 +71,7 @@ class Custodian extends Model
      * @throws Exception
      * @throws \Throwable
      */
-    static function store(CustodianRequest $request) {
+    public function store(CustodianRequest $request) {
 
         try {
             DB::transaction(function () use ($request) {
@@ -155,11 +151,9 @@ class Custodian extends Model
      * @param CustodianRequest $request
      * @param $custodianId
      * @return bool|mixed
-     * @throws Exception
-     * @throws \Throwable
+     * @throws Throwable
      */
-    static function modify(CustodianRequest $request, $custodianId)
-    {
+    public function modify(CustodianRequest $request, $custodianId) {
 
         $custodian = self::find($custodianId);
         if (!isset($custodian)) {
@@ -241,28 +235,21 @@ class Custodian extends Model
      * @param $custodianId
      * @return bool|mixed
      * @throws Exception
-     * @throws \Throwable
+     * @throws Throwable
      */
-    static function remove($custodianId)
-    {
+    static function remove($custodianId) {
 
         $custodian = self::find($custodianId);
-        if (!isset($custodian)) {
-            return false;
-        }
+        if (!isset($custodian)) { return false; }
         try {
             DB::transaction(function () use ($custodianId, $custodian) {
                 $userId = $custodian->user_id;
-                # 删除指定的监护人记录
-                $custodian->delete();
                 # 删除与指定监护人绑定的学生记录
                 CustodianStudent::whereCustodianId($custodianId)->delete();
-                # 删除与指定监护人绑定的部门记录
-                DepartmentUser::whereUserId($custodian['user_id'])->delete();
-                # 删除与指定监护人绑定的手机记录
-                Mobile::whereUserId($custodian['user_id'])->delete();
-                # 删除企业号成员
-                User::deleteWechatUser($userId);
+                # 删除指定的监护人记录
+                $custodian->delete();
+                # 删除user数据
+                User::remove($userId);
             });
         } catch (Exception $e) {
             throw $e;
@@ -277,8 +264,7 @@ class Custodian extends Model
      *
      * @return array
      */
-    static function export()
-    {
+    public function export() {
 
         $custodians = self::all();
         $data = array(self::EXCEL_EXPORT_TITLE);
@@ -313,23 +299,22 @@ class Custodian extends Model
      *
      * @return array
      */
-    static function datatable()
-    {
+    public function datatable() {
 
         $columns = [
             ['db' => 'Custodian.id', 'dt' => 0],
             ['db' => 'User.realname', 'dt' => 1],
             [
                 'db' => 'CustodianStudent.student_id', 'dt' => 2,
-                'formatter' => function($d){
-                     return Student::whereId($d)->first()->user->realname;
+                'formatter' => function ($d) {
+                    return Student::whereId($d)->first()->user->realname;
                 }
             ],
             ['db' => 'User.email', 'dt' => 3],
             ['db' => 'User.gender', 'dt' => 4,
-             'formatter' => function ($d) {
-                 return $d == 1 ? '男' : '女';
-             },
+                'formatter' => function ($d) {
+                    return $d == 1 ? '男' : '女';
+                },
             ],
             ['db' => 'Custodian.id as mobile', 'dt' => 5,
                 'formatter' => function ($d) {

@@ -8,6 +8,7 @@ use App\Events\UserUpdated;
 use App\Facades\DatatableFacade as Datatable;
 use Carbon\Carbon;
 use Eloquent;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -19,6 +20,7 @@ use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Notifications\DatabaseNotificationCollection;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 /**
  * App\Models\User 用户
@@ -408,6 +410,38 @@ class User extends Authenticatable {
 
         return Datatable::simple(self::getModel(), $columns, $joins);
 
+    }
+    
+    /**
+     * 删除用户数据
+     *
+     * @param $userId
+     * @return bool
+     * @throws \Exception
+     * @throws \Throwable
+     */
+    static function remove($userId){
+        $user = self::find($userId);
+        if (!isset($user)) {
+            return false;
+        }
+        try {
+            DB::transaction(function () use ($userId, $user) {
+                # custodian删除指定user绑定的部门记录
+                DepartmentUser::whereUserId($userId)->delete();
+                # 删除与指定user绑定的手机记录
+                Mobile::whereUserId($userId)->delete();
+                # 删除企业号成员
+                User::deleteWechatUser($userId);
+                # 删除user
+                $user->delete();
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+    
+        return true;
+        
     }
 
 }

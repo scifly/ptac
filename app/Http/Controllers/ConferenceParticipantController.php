@@ -15,10 +15,13 @@ use Throwable;
  * @package App\Http\Controllers
  */
 class ConferenceParticipantController extends Controller {
-    
-    function __construct() {
+
+    protected $cp;
+
+    function __construct(ConferenceParticipant $cp) {
     
         $this->middleware(['auth', 'checkrole']);
+        $this->cp = $cp;
         
     }
     
@@ -32,7 +35,7 @@ class ConferenceParticipantController extends Controller {
         
         if (Request::get('draw')) {
             return response()->json(
-                ConferenceParticipant::datatable()
+                $this->cp->datatable()
             );
         }
         
@@ -70,6 +73,7 @@ class ConferenceParticipantController extends Controller {
     public function show($id) {
         
         $cp = ConferenceParticipant::find($id);
+        abort_if(!$cp, self::NOT_FOUND);
         $this->authorize('show', $cp);
         
         return $this->output(['cp' => $cp]);

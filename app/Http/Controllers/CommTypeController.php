@@ -15,11 +15,14 @@ use Throwable;
  * @package App\Http\Controllers
  */
 class CommTypeController extends Controller {
-    
-    function __construct() {
+
+    protected $ct;
+
+    function __construct(CommType $ct) {
     
         $this->middleware(['auth', 'checkrole']);
-        
+        $this->ct = $ct;
+
     }
     
     /**
@@ -32,7 +35,7 @@ class CommTypeController extends Controller {
         
         if (Request::get('draw')) {
             return response()->json(
-                CommType::datatable()
+                $this->ct->datatable()
             );
         }
         
@@ -75,11 +78,11 @@ class CommTypeController extends Controller {
      */
     public function edit($id) {
         
-        $commType = CommType::find($id);
-        if (!$commType) { return $this->notFound(); }
-        
+        $ct = CommType::find($id);
+        abort_if(!$ct, self::NOT_FOUND);
+
         return $this->output([
-            'commType' => $commType
+            'ct' => $ct
         ]);
         
     }
@@ -93,11 +96,11 @@ class CommTypeController extends Controller {
      */
     public function update(CommTypeRequest $request, $id) {
         
-        $commType = CommType::find($id);
-        if (!$commType) { return $this->notFound(); }
-        
+        $ct = CommType::find($id);
+        abort_if(!$ct, self::NOT_FOUND);
+
         return $this->result(
-            $commType->update($request->all())
+            $ct->update($request->all())
         );
         
     }
@@ -111,11 +114,11 @@ class CommTypeController extends Controller {
      */
     public function destroy($id) {
         
-        $commType = CommType::find($id);
-        if (!$commType) { return $this->notFound(); }
-        
+        $ct = CommType::find($id);
+        abort_if(!$ct, self::NOT_FOUND);
+
         return $this->result(
-            $commType->delete()
+            $ct->delete()
         );
         
     }

@@ -23,7 +23,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
-use Log;
 use Maatwebsite\Excel\Facades\Excel;
 use Maatwebsite\Excel\Readers\LaravelExcelReader;
 use PHPExcel_Exception;
@@ -79,7 +78,14 @@ class Student extends Model {
         'card_number', 'oncampus', 'birthday',
         'remark', 'enabled',
     ];
+    protected $custodian;
 
+    function __construct(Custodian $custodian) {
+
+        parent::__construct();
+        $this->custodian = $custodian;
+
+    }
     /**
      * 返回指定学生所属的班级对象
      *
@@ -182,7 +188,7 @@ class Student extends Model {
                 ];
                 DepartmentUser::create($departmentUser);
                 # 创建企业号成员
-                 User::createWechatUser($u->id);
+                User::createWechatUser($u->id);
             });
         } catch (Exception $e) {
             throw $e;
@@ -360,17 +366,21 @@ class Student extends Model {
         try {
             DB::transaction(function () use ($studentId, $student) {
                 $userId = $student->user_id;
-                $custodian = $student->custodians;
-                # 删除指定的学生记录
-                $student->delete();
+                #删除关联监护人
+                $custodians = $student->custodians;
+                foreach ($custodians as $custodian){
+                    #判断当前监护人下是否只有当前学生，是则删除监护人
+                    $cusStuents = $custodian->students;
+                    if(count($cusStuents)  == 1){
+                        Custodian::remove($custodian->id);
+                    }
+                }
                 # 删除与指定学生绑定的监护人记录
                 CustodianStudent::whereStudentId($studentId)->delete();
-                # custodian删除与指定学生绑定的部门记录
-                DepartmentUser::whereUserId($student['user_id'])->delete();
-                # 删除与指定学生绑定的手机记录
-                Mobile::whereUserId($student['user_id'])->delete();
-                # 删除企业号成员
-                 User::deleteWechatUser($userId);
+                # 删除指定的学生记录
+                $student->delete();
+                # 删除user数据
+                User::remove($userId);
             });
         } catch (Exception $e) {
             throw $e;
@@ -379,12 +389,13 @@ class Student extends Model {
         return true;
         
     }
-
+    
     /**
      * 导入
      *
      * @param UploadedFile $file
      * @return array
+     * @throws PHPExcel_Exception
      */
     static function upload(UploadedFile $file) {
 
@@ -496,6 +507,7 @@ class Student extends Model {
                 'class_id' => 0,
                 'department_id' => 0,
             ];
+//            gmdate("Y-m-d H:i:s", PHPExcel_Shared_Date::ExcelToPHP($datum[2]));
             $status = Validator::make($user, $rules);
             if ($status->fails()) {
                 $invalidRows[] = $datum;

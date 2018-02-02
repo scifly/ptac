@@ -8,7 +8,10 @@ use App\Models\Corp;
 use App\Facades\Wechat;
 use App\Models\App;
 use App\Models\Department;
+use App\Models\DepartmentUser;
+use App\Models\Group;
 use App\Models\Media;
+use App\Models\School;
 use App\Models\User;
 use App\Models\WapSite;
 use App\Models\WapSiteModule;
@@ -53,8 +56,16 @@ class MobileSiteController extends Controller
 //        # 获取当前用户的最高顶级部门
 //        $level = $department->groupLevel($user->id);
 //        $group = User::whereId($user->id)->first()->group;
-            if ($user->group->school_id) {
-                $school_id = $user->group->school_id;
+            if ($user->group_id != 1 && $user->group_id != 2) {
+
+                $school_id = Group::whereId($user->group_id)->first()->school_id;
+                if (!$school_id) {
+                    $dept_id = DepartmentUser::whereUserId($user->id)->first()->department_id;
+//                print_r($dept_id);
+                    $schoolDept = Department::schoolDeptId($dept_id);
+                    $school_id = School::whereDepartmentId($schoolDept)->first()->id;
+
+                }
                 $wapSite = WapSite::
                 where('school_id', $school_id)
                     ->first();
@@ -66,6 +77,7 @@ class MobileSiteController extends Controller
                         'medias'  => Media::medias(explode(',', $wapSite->media_ids)),
                     ]);
                 }
+
 
             }
         }

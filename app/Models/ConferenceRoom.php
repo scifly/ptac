@@ -65,7 +65,7 @@ class ConferenceRoom extends Model {
      * @param array $data
      * @return bool
      */
-    static function store(array $data) {
+    public function store(array $data) {
 
         $cr = self::create($data);
         
@@ -80,7 +80,7 @@ class ConferenceRoom extends Model {
      * @param $id
      * @return bool
      */
-    static function modify(array $data, $id) {
+    public function modify(array $data, $id) {
 
         $cr = self::find($id);
         if (!$cr) { return false; }
@@ -96,7 +96,7 @@ class ConferenceRoom extends Model {
      * @return bool
      * @throws Exception
      */
-    static function remove($id) {
+    public function remove($id) {
 
         $cr = self::find($id);
         if (!$cr) { return false; }

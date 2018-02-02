@@ -1,4 +1,3 @@
-
 {!! Form::model($semester, [
     'method' => 'put',
     'id' => 'formSemester',

@@ -4,8 +4,8 @@
     </div>
     <div class="box-body">
         <div class="form-horizontal">
-            @if (!empty($alertType['id']))
-                {{ Form::hidden('id', $alertType['id'], ['id' => 'id']) }}
+            @if (!empty($at['id']))
+                {{ Form::hidden('id', $at['id'], ['id' => 'id']) }}
             @endif
             <div class="form-group">
                 {!! Form::label('name', '名称', [
@@ -45,7 +45,7 @@
             </div>
             @include('partials.enabled', [
                 'id' => 'enabled',
-                'value' => $alertType['enabled'] ?? null
+                'value' => $at['enabled'] ?? null
             ])
         </div>
     </div>
