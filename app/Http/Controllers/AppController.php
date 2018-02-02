@@ -15,9 +15,12 @@ use Illuminate\Support\Facades\Request;
  */
 class AppController extends Controller {
     
-    function __construct() {
+    protected $app;
+    
+    function __construct(App $app) {
     
         $this->middleware(['auth', 'checkrole']);
+        $this->app = $app;
 
     }
     
@@ -30,7 +33,7 @@ class AppController extends Controller {
     public function index() {
 
         if (Request::method() == 'POST') {
-            return App::store();
+            return $this->app->store();
         }
         
         return $this->output();
@@ -47,6 +50,7 @@ class AppController extends Controller {
     public function edit($id) {
         
         $app = App::find($id);
+        abort_if(!$app, self::NOT_FOUND);
         $this->authorize('eum', $app);
 
         return $this->output(['app' => $app]);
@@ -64,10 +68,11 @@ class AppController extends Controller {
     public function update(AppRequest $request, $id) {
         
         $app = App::find($id);
+        abort_if(!$app, self::NOT_FOUND);
         $this->authorize('eum', $app);
 
         return $this->result(
-            $app->update($request->all())
+            $app->modify($request->all(), $id)
         );
 
     }
@@ -82,6 +87,7 @@ class AppController extends Controller {
     public function menu($id) {
         
         $app = App::find($id);
+        abort_if(!$app, self::NOT_FOUND);
         $this->authorize('eum', $app);
 
         $menu = "[

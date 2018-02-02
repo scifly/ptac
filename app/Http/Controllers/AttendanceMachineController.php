@@ -16,10 +16,13 @@ use Illuminate\Support\Facades\Request;
  */
 class AttendanceMachineController extends Controller {
     
-    function __construct() {
+    protected $am;
+    
+    function __construct(AttendanceMachine $am) {
     
         $this->middleware(['auth', 'checkrole']);
-    
+        $this->am = $am;
+        
     }
     
     /**
@@ -32,7 +35,7 @@ class AttendanceMachineController extends Controller {
 
         if (Request::get('draw')) {
             return response()->json(
-                AttendanceMachine::datatable()
+                $this->am->datatable()
             );
         }
         
@@ -48,7 +51,9 @@ class AttendanceMachineController extends Controller {
      */
     public function create() {
         
-        $this->authorize('c', AttendanceMachine::class);
+        $this->authorize(
+            'c', AttendanceMachine::class
+        );
 
         return $this->output();
         
@@ -63,7 +68,9 @@ class AttendanceMachineController extends Controller {
      */
     public function store(AttendanceMachineRequest $request) {
 
-        $this->authorize('c', AttendanceMachine::class);
+        $this->authorize(
+            'c', AttendanceMachine::class
+        );
 
         return $this->result(
             AttendanceMachine::create($request->all())
@@ -81,6 +88,7 @@ class AttendanceMachineController extends Controller {
     public function edit($id) {
         
         $am = AttendanceMachine::find($id);
+        abort_if(!$am, self::NOT_FOUND);
         $this->authorize('rud', $am);
         
         return $this->output(['am' => $am]);
@@ -98,9 +106,12 @@ class AttendanceMachineController extends Controller {
     public function update(AttendanceMachineRequest $request, $id) {
         
         $am = AttendanceMachine::find($id);
+        abort_if(!$am, self::NOT_FOUND);
         $this->authorize('rud', $am);
         
-        return $this->result($am->update($request->all()));
+        return $this->result(
+            $am->update($request->all())
+        );
         
     }
     
@@ -114,6 +125,7 @@ class AttendanceMachineController extends Controller {
     public function destroy($id) {
         
         $am = AttendanceMachine::find($id);
+        abort_if(!$am, self::NOT_FOUND);
         $this->authorize('rud', $am);
         
         return $this->result($am->delete());

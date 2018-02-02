@@ -15,10 +15,13 @@ use Throwable;
  * @package App\Http\Controllers
  */
 class AlertTypeController extends Controller {
-    
-    function __construct() {
+
+    protected $at;
+
+    function __construct(AlertType $at) {
     
         $this->middleware(['auth', 'checkrole']);
+        $this->at = $at;
         
     }
     
@@ -32,7 +35,7 @@ class AlertTypeController extends Controller {
         
         if (Request::get('draw')) {
             return response()->json(
-                AlertType::datatable()
+                $this->at->datatable()
             );
         }
         
@@ -75,10 +78,12 @@ class AlertTypeController extends Controller {
      */
     public function edit($id) {
         
-        $alertType = AlertType::find($id);
-        if (!$alertType) { return $this->notFound(); }
-        
-        return $this->output(['alertType' => $alertType]);
+        $at = AlertType::find($id);
+        abort_if(!$at, self::NOT_FOUND);
+
+        return $this->output([
+            'at' => $at,
+        ]);
         
     }
     
@@ -91,11 +96,11 @@ class AlertTypeController extends Controller {
      */
     public function update(AlertTypeRequest $request, $id) {
         
-        $alertType = AlertType::find($id);
-        if (!$alertType) { return $this->notFound(); }
-        
+        $at = AlertType::find($id);
+        abort_if(!$at, self::NOT_FOUND);
+
         return $this->result(
-            $alertType->update($request->all())
+            $at->update($request->all())
         );
 
     }
@@ -109,11 +114,11 @@ class AlertTypeController extends Controller {
      */
     public function destroy($id) {
         
-        $alertType = AlertType::find($id);
-        if (!$alertType) { return $this->notFound(); }
-        
+        $at = AlertType::find($id);
+        abort_if(!$at, self::NOT_FOUND);
+
         return $this->result(
-            $alertType->delete()
+            $at->delete()
         );
 
     }

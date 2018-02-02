@@ -17,7 +17,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 
 /**
@@ -127,7 +126,7 @@ class Corp extends Model {
      * @param bool $fireEvent
      * @return bool
      */
-    static function store(array $data, $fireEvent = false) {
+    public function store(array $data, $fireEvent = false) {
 
         $corp = self::create($data);
         if ($corp && $fireEvent) {
@@ -147,7 +146,7 @@ class Corp extends Model {
      * @param bool $fireEvent
      * @return bool
      */
-    static function modify(array $data, $id, $fireEvent = false) {
+    public function modify(array $data, $id, $fireEvent = false) {
 
         $corp = self::find($id);
         $updated = $corp->update($data);
@@ -210,7 +209,7 @@ class Corp extends Model {
      *
      * @return mixed
      */
-    static function datatable() {
+    public function datatable() {
 
         $columns = [
             ['db' => 'Corp.id', 'dt' => 0],

@@ -9,6 +9,7 @@ use App\Facades\Wechat;
 use App\Models\App;
 use App\Models\Department;
 use App\Models\DepartmentUser;
+use App\Models\Group;
 use App\Models\Media;
 use App\Models\School;
 use App\Models\User;
@@ -56,22 +57,25 @@ class MobileSiteController extends Controller
 //        $level = $department->groupLevel($user->id);
 //        $group = User::whereId($user->id)->first()->group;
             if ($user->group_id != 1 && $user->group_id != 2) {
-                $dept_id = DepartmentUser::whereUserId($user->id)->first()->department_id;
+
+                $school_id = Group::whereId($user->group_id)->first()->school_id;
+                if (!$school_id) {
+                    $dept_id = DepartmentUser::whereUserId($user->id)->first()->department_id;
 //                print_r($dept_id);
-                $schoolDept = Department::schoolDeptId($dept_id);
-                if ($schoolDept) {
+                    $schoolDept = Department::schoolDeptId($dept_id);
                     $school_id = School::whereDepartmentId($schoolDept)->first()->id;
-                    $wapSite = WapSite::
-                    where('school_id', $school_id)
-                        ->first();
-                    if ($wapSite) {
-                        // dd($wapSite->wapSiteModules->media);
-                        return view('wechat.wapsite.home', [
-                            'wapsite' => $wapSite,
-                            // 'code' => $code,
-                            'medias'  => Media::medias(explode(',', $wapSite->media_ids)),
-                        ]);
-                    }
+
+                }
+                $wapSite = WapSite::
+                where('school_id', $school_id)
+                    ->first();
+                if ($wapSite) {
+                    // dd($wapSite->wapSiteModules->media);
+                    return view('wechat.wapsite.home', [
+                        'wapsite' => $wapSite,
+                        // 'code' => $code,
+                        'medias'  => Media::medias(explode(',', $wapSite->media_ids)),
+                    ]);
                 }
 
 

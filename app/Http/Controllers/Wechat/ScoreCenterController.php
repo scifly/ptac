@@ -38,7 +38,7 @@ class ScoreCenterController extends Controller {
     /**
      *  微信端成绩
      *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return string
      */
     public function index()
     {
@@ -114,6 +114,9 @@ class ScoreCenterController extends Controller {
                     }
                 }
                 $datas = $this->score->getEducatorScore($userId);
+                if(!$datas){
+                    return '你还没有对应的班级';
+                }
                 $score =$datas['score'];
                 $className = $datas['className'];
                 if( sizeof($score) != 0) { $scores=array_slice($score[0],$start,$pageSize); }

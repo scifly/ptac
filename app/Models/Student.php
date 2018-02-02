@@ -27,7 +27,6 @@ use Illuminate\Validation\Rule;
 use Maatwebsite\Excel\Facades\Excel;
 use Maatwebsite\Excel\Readers\LaravelExcelReader;
 use PHPExcel_Exception;
-use PHPExcel_Shared_Date;
 
 /**
  * App\Models\Student 学生
@@ -81,6 +80,11 @@ class Student extends Model {
         'remark', 'enabled',
     ];
 
+    function __construct() {
+
+        parent::__construct();
+
+    }
     /**
      * 返回指定学生所属的班级对象
      *

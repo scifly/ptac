@@ -1,4 +1,4 @@
-{!! Form::model($comboType, [
+{!! Form::model($ct, [
     'method' => 'put',
     'id' => 'formComboType',
     'data-parsley-validate' => 'true'

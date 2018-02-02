@@ -88,8 +88,7 @@ class WapSiteModule extends Model {
         if ($mediaIds) {
             $medias = Media::whereIn('id', $mediaIds)->get(['id', 'path']);
             foreach ($medias as $media) {
-                $paths = explode("/", $media->path);
-                Storage::disk('public')->delete($paths[5]);
+                Storage::disk('uploads')->delete($media->path);
             }
             try {
                 Media::whereIn('id', $mediaIds)->delete();

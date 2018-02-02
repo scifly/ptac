@@ -47,7 +47,7 @@ use Illuminate\Support\Facades\Auth;
  * @property-read ConferenceRoom $conferenceRoom
  * @property int $educator_id 发起人教职员工ID
  * @property-read \App\Models\User $user
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ConferenceQueue whereEducatorId($value)
+ * @method static Builder|ConferenceQueue whereEducatorId($value)
  */
 class ConferenceQueue extends Model {
 
@@ -89,7 +89,7 @@ class ConferenceQueue extends Model {
      * @param array $data
      * @return bool
      */
-    static function store(array $data) {
+    public function store(array $data) {
 
         $cq = self::create($data);
         
@@ -104,7 +104,7 @@ class ConferenceQueue extends Model {
      * @param $id
      * @return bool
      */
-    static function modify(array $data, $id) {
+    public function modify(array $data, $id) {
 
         $cq = self::find($id);
         if (!$cq) {return false;}
@@ -120,7 +120,7 @@ class ConferenceQueue extends Model {
      * @return bool
      * @throws Exception
      */
-    static function remove($id) {
+    public function remove($id) {
 
         $cq = self::find($id);
         if (!$cq) { return false; }
@@ -134,7 +134,7 @@ class ConferenceQueue extends Model {
      *
      * @return array
      */
-    static function datatable() {
+    public function datatable() {
 
         $columns = [
             ['db' => 'ConferenceQueue.id', 'dt' => 0],
