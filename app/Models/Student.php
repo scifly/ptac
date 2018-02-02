@@ -78,14 +78,6 @@ class Student extends Model {
         'card_number', 'oncampus', 'birthday',
         'remark', 'enabled',
     ];
-    protected $custodian;
-
-    function __construct(Custodian $custodian) {
-
-        parent::__construct();
-        $this->custodian = $custodian;
-
-    }
     /**
      * 返回指定学生所属的班级对象
      *

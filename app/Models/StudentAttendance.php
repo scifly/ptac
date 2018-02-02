@@ -184,7 +184,7 @@ class StudentAttendance extends Model {
 
                 }
             }
-            for ($i = 1;$i < $days+1; $i++)
+            for ($i = 0;$i < $days; $i++)
             {
                 $date = strtotime($startTime);
                 $date = date("Y-m-d",$date+(86400*$i));
@@ -303,19 +303,20 @@ class StudentAttendance extends Model {
           select max(t.id) id,t.student_id, substring_index(group_concat( t.status order by t.punch_time DESC),',',1) lastest, DATE(t.punch_time) day 
           from (
             select ord.id,ord.student_id, ord.inorout,ord.status, ord.punch_time 
-              from student_attendances ord where ord.punch_time >= '". $start."' and ord.punch_time < '". $end."' order by ord.student_id asc , ord.punch_time desc) t 
+              from student_attendances ord where ord.punch_time >= '". $start."' and ord.punch_time <= '". $end."' order by ord.student_id asc , ord.punch_time desc) t 
               where t.student_id in (" . $studentIds . ") 
           group by t.student_id,day"
         );
+//        Log::debug($data);
 //        foreach ($data as $d) {
-//            Log::debug("
-//          select max(t.id) id,t.student_id, substring_index(group_concat( t.status order by t.punch_time DESC),',',1) lastest, DATE(t.punch_time) day
-//          from (
-//            select ord.id,ord.student_id, ord.inorout,ord.status, ord.punch_time
-//              from student_attendances ord where ord.punch_time >= '". $start."' and ord.punch_time < '". $end."' order by ord.student_id asc , ord.punch_time desc) t
-//              where t.student_id in (" . $studentIds . ")
-//          group by t.student_id,day"
-//            );
+            Log::debug("
+          select max(t.id) id,t.student_id, substring_index(group_concat( t.status order by t.punch_time DESC),',',1) lastest, DATE(t.punch_time) day
+          from (
+            select ord.id,ord.student_id, ord.inorout,ord.status, ord.punch_time
+              from student_attendances ord where ord.punch_time >= '". $start."' and ord.punch_time <= '". $end."' order by ord.student_id asc , ord.punch_time desc) t
+              where t.student_id in (" . $studentIds . ")
+          group by t.student_id,day"
+            );
 //        }
         return $data;
     }

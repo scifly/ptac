@@ -85,7 +85,7 @@
                 ]); ?>
 
                 <div class="col-sm-6">
-                    <?php echo Form::text('msg_template', null, [
+                    <?php echo Form::text('msg_template', '尊敬的{name}家长, 你的孩子于{time}在校打卡, 打卡规则：{rule}, 状态：{status}', [
                         'class' => 'form-control',
                         'placeholder' => '消息模板必须为字符',
                         'required' => 'true',

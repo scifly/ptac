@@ -119,12 +119,14 @@
                                 <a class="edit_input" title="编辑" href="#">
                                     <i class="fa fa-pencil"></i>
                                 </a>
+                                <?php if(count($school->schoolType) != 0): ?>
                                 <hr>
                                 <strong class="title">学校类型</strong>
                                 <p class="text-muted"><?php echo e($school->schoolType->name); ?></p>
                                 <?php echo e(Form::hidden('school_type_id', $school->school_type_id, ['id' => 'school_type_id'])); ?>
 
                                 <hr>
+                                <?php endif; ?>
                             </div>
                             <div class="col-lg-6 otherinfo-con">
                                 <strong class="title">所属企业</strong>
