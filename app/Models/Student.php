@@ -361,16 +361,21 @@ class Student extends Model {
         try {
             DB::transaction(function () use ($studentId, $student) {
                 $userId = $student->user_id;
-                # 删除指定的学生记录
-                $student->delete();
+                #删除关联监护人
+                $custodians = $student->custodians;
+                foreach ($custodians as $custodian){
+                    #判断当前监护人下是否只有当前学生，是则删除监护人
+                    $cusStuents = $custodian->students;
+                    if(count($cusStuents)  == 1){
+                        Custodian::remove($custodian->id);
+                    }
+                }
                 # 删除与指定学生绑定的监护人记录
                 CustodianStudent::whereStudentId($studentId)->delete();
-                # custodian删除与指定学生绑定的部门记录
-                DepartmentUser::whereUserId($student['user_id'])->delete();
-                # 删除与指定学生绑定的手机记录
-                Mobile::whereUserId($student['user_id'])->delete();
-                # 删除企业号成员
-                User::deleteWechatUser($userId);
+                # 删除指定的学生记录
+                $student->delete();
+                # 删除user数据
+                User::remove($userId);
             });
         } catch (Exception $e) {
             throw $e;

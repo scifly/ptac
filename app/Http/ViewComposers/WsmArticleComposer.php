@@ -3,6 +3,8 @@
 namespace App\Http\ViewComposers;
 
 use App\Helpers\ModelTrait;
+use App\Models\School;
+use App\Models\WapSite;
 use App\Models\WapSiteModule;
 use Illuminate\Contracts\View\View;
 
@@ -14,9 +16,12 @@ class WsmArticleComposer {
      * @param View $view
      */
     public function compose(View $view) {
-        
+        $schoolId = School::schoolId();
+
         $view->with([
-            'wsms' => WapSiteModule::pluck('name', 'id'),
+            'wsms' => WapSiteModule::
+                    whereWapSiteId(WapSite::whereSchoolId($schoolId)->first()->id)
+                    ->pluck('name', 'id'),
             'uris' => $this->uris()
         ]);
         

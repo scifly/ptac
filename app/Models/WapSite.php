@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Throwable;
 
@@ -154,8 +155,9 @@ class WapSite extends Model {
         if ($mediaIds) {
             $medias = Media::whereIn('id', $mediaIds)->get(['id', 'path']);
             foreach ($medias as $media) {
-                $paths = explode("/", $media->path);
-                Storage::disk('public')->delete($paths[5]);
+//                $paths = explode("/", $media->path);
+//                Log::debug(json_encode($paths));
+                Storage::disk('uploads')->delete($media->path);
             }
             try {
                 Media::whereIn('id', $mediaIds)->delete();

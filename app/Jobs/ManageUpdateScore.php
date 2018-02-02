@@ -36,7 +36,7 @@ class ManageUpdateScore implements ShouldQueue {
         
         $rows = $this->data;
         #rows 多批次进来
-        Log::info($rows);
+        // Log::info($rows);
 
         try {
             DB::transaction(function () use ($rows) {
@@ -60,8 +60,8 @@ class ManageUpdateScore implements ShouldQueue {
                         'grade_rank' => 0,
                         'enabled'    => 1,
                     ];
-                    $res = $score->update($scoreData);
-                    Log::debug($res);
+                    $score->update($scoreData);
+                    // Log::debug($res);
                 }
             });
         } catch (Exception $e) {
