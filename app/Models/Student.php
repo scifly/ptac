@@ -78,12 +78,10 @@ class Student extends Model {
         'card_number', 'oncampus', 'birthday',
         'remark', 'enabled',
     ];
-    protected $custodian;
 
-    function __construct(Custodian $custodian) {
+    function __construct() {
 
         parent::__construct();
-        $this->custodian = $custodian;
 
     }
     /**
