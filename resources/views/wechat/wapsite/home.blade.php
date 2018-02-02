@@ -53,11 +53,12 @@
 @endsection
 @section('script')
 	<script>
-		
-      $(".swiper-container").swiper({
-        	loop: true,
-        autoplay: 3000
-      });
+
+        $(".swiper-container").swiper({
+            loop: true,
+            autoplay: 3000,
+            autoplayDisableOnInteraction : false,
+        });
     
 	</script>
 @endsection
