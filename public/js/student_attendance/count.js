@@ -51,7 +51,8 @@ function getdata(){
 	var time_arr = time.split('~');
     var formData = new FormData();
     var days = diy_time($.trim(time_arr[0]),$.trim(time_arr[1])); // 获取总共多少天
-    formData.append('_token', $token.attr('content'));
+    console.log($.trim(time_arr[1]));
+	formData.append('_token', $token.attr('content'));
     formData.append('class_id', $('#classId').val());
     formData.append('start_time', $.trim(time_arr[0]));
     formData.append('end_time', $.trim(time_arr[1]));

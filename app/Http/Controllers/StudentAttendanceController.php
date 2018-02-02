@@ -68,8 +68,7 @@ class StudentAttendanceController extends Controller {
                 $this->result['html'] = School::getFieldList($field, $id);
                 return response()->json($this->result);
             }else{
-                return response()->json($this->studentAttendance->getData($classId , $startTime , $endTime, $days));
-
+                return response()->json($this->studentAttendance->getData($classId , $startTime , date("Y-m-d", (strtotime($endTime) + 86400)), $days));
             }
 
         }
