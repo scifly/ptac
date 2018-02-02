@@ -587,18 +587,8 @@ HTML;
                 return School::whereDepartmentId($user->topDeptId())
                     ->first()->menu_id;
             default:
-<<<<<<< HEAD
-                return School::find(Educator::whereUserId($user->id)->first()->school_id)
-=======
-                $school_id = Group::whereId($user->group_id)->first()->school_id;
-                if (!$school_id) {
-                    $dept_id = DepartmentUser::whereUserId($user->id)->first()->department_id;
-                    $schoolDept = Department::schoolDeptId($dept_id);
-                    $school_id = School::whereDepartmentId($schoolDept)->first()->id;
-                }
-                return School::find($school_id)
->>>>>>> bc483efa53cb9079d2767f31bf096bac152f168e
-                    ->menu_id;
+                return School::find(Educator::whereUserId($user->id)->first()->school_id);
+
         }
 
     }
