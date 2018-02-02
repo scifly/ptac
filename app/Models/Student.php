@@ -20,10 +20,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
-use Log;
 use Maatwebsite\Excel\Facades\Excel;
 use Maatwebsite\Excel\Readers\LaravelExcelReader;
 use PHPExcel_Exception;
@@ -149,6 +149,7 @@ class Student extends Model {
                     'enabled' => $user['enabled'],
                 ]);
                 $student = $request->all();
+                Log::info($u);
                 # 向student表添加数据
                 self::create([
                     'user_id' => $u->id,
