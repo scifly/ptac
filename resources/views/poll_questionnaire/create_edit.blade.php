@@ -4,8 +4,8 @@
     </div>
     <div class="box-body">
         <div class="form-horizontal">
-            @if (isset($pollQuestionnaire) && !empty($pollQuestionnaire['id']))
-                {{ Form::hidden('id', $pollQuestionnaire['id'], ['id' => 'id']) }}
+            @if (isset($pq) && !empty($pq['id']))
+                {{ Form::hidden('id', $pq['id'], ['id' => 'id']) }}
             @endif
             <div class="form-group">
                 {!! Form::label('name', '名称', [
@@ -38,7 +38,7 @@
             </div>
             @include('partials.enabled', [
                 'id' => 'enabled',
-                'value' => $pollQuestionnaire['enabled'] ?? null
+                'value' => $pq['enabled'] ?? null
             ])
         </div>
     </div>

@@ -1,4 +1,4 @@
-{!! Form::model($departmentType, [
+{!! Form::model($dt, [
     'method' => 'put',
     'id' => 'formDepartmentType',
     'data-parsley-validate' => 'true'

@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\SchoolTypeRequest;
+use App\Models\School;
 use App\Models\SchoolType;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -16,9 +17,12 @@ use Throwable;
  */
 class SchoolTypeController extends Controller {
     
-    function __construct() {
+    protected $st;
+    
+    function __construct(SchoolType $st) {
     
         $this->middleware(['auth', 'checkrole']);
+        $this->st = $st;
         
     }
     
@@ -31,7 +35,9 @@ class SchoolTypeController extends Controller {
     public function index() {
         
         if (Request::get('draw')) {
-            return response()->json(SchoolType::datatable());
+            return response()->json(
+                $this->st->datatable()
+            );
         }
         
         return $this->output();
@@ -58,7 +64,9 @@ class SchoolTypeController extends Controller {
      */
     public function store(SchoolTypeRequest $request) {
         
-        return $this->result(SchoolType::create($request->all()));
+        return $this->result(
+            $this->st->store($request->all())
+        );
         
     }
     
@@ -71,10 +79,10 @@ class SchoolTypeController extends Controller {
      */
     public function edit($id) {
         
-        $schoolType = SchoolType::find($id);
-        if (!$schoolType) { return $this->notFound(); }
+        $st = SchoolType::find($id);
+        abort_if(!$st, self::NOT_FOUND);
         
-        return $this->output(['schoolType' => $schoolType]);
+        return $this->output(['st' => $st]);
         
     }
     
@@ -87,10 +95,12 @@ class SchoolTypeController extends Controller {
      */
     public function update(SchoolTypeRequest $request, $id) {
         
-        $schoolType = SchoolType::find($id);
-        if (!$schoolType) { return $this->notFound(); }
+        $st = SchoolType::find($id);
+        abort_if(!$st, self::NOT_FOUND);
         
-        return $this->result($schoolType->update($request->all()));
+        return $this->result(
+            $st->modify($request->all(), $id)
+        );
         
     }
     
@@ -103,10 +113,12 @@ class SchoolTypeController extends Controller {
      */
     public function destroy($id) {
         
-        $schoolType = SchoolType::find($id);
-        if (!$schoolType) { return $this->notFound(); }
+        $st = SchoolType::find($id);
+        abort_if(!$st, self::NOT_FOUND);
         
-        return $this->result($schoolType->delete());
+        return $this->result(
+            $st->remove($id)
+        );
         
     }
     

@@ -17,9 +17,12 @@ use Illuminate\Support\Facades\Request;
  */
 class GradeController extends Controller {
     
-    function __construct() {
+    protected $grade;
+    
+    function __construct(Grade $grade) {
         
         $this->middleware(['auth', 'checkrole']);
+        $this->grade = $grade;
         
     }
     
@@ -32,7 +35,9 @@ class GradeController extends Controller {
     public function index() {
         
         if (Request::get('draw')) {
-            return response()->json(Grade::datatable());
+            return response()->json(
+                $this->grade->datatable()
+            );
         }
         
         return $this->output();
@@ -64,7 +69,9 @@ class GradeController extends Controller {
         
         $this->authorize('c', Grade::class);
         
-        return $this->result(Grade::store($request->all(), true));
+        return $this->result(
+            $this->grade->store($request->all(), true)
+        );
         
     }
     
@@ -78,6 +85,7 @@ class GradeController extends Controller {
     public function edit($id) {
         
         $grade = Grade::find($id);
+        abort_if(!$grade, self::NOT_FOUND);
         $this->authorize('rud', $grade);
         
         $selectedEducators = [];
@@ -105,9 +113,12 @@ class GradeController extends Controller {
     public function update(GradeRequest $request, $id) {
         
         $grade = Grade::find($id);
+        abort_if(!$grade, self::NOT_FOUND);
         $this->authorize('rud', $grade);
         
-        return $this->result($grade::modify($request->all(), $id, true));
+        return $this->result(
+            $grade->modify($request->all(), $id, true)
+        );
         
     }
     
@@ -121,9 +132,12 @@ class GradeController extends Controller {
     public function destroy($id) {
        
         $grade = Grade::find($id);
+        abort_if(!$grade, self::NOT_FOUND);
         $this->authorize('rud', $grade);
         
-        return $this->result($grade::remove($id, true));
+        return $this->result(
+            $grade->remove($id, true)
+        );
         
     }
     

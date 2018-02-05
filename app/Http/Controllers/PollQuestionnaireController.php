@@ -17,9 +17,12 @@ use Throwable;
  */
 class PollQuestionnaireController extends Controller {
     
-    function __construct() {
+    protected $pq;
+    
+    function __construct(PollQuestionnaire $pq) {
         
         $this->middleware(['auth', 'checkrole']);
+        $this->pq = $pq;
         
     }
     
@@ -32,7 +35,9 @@ class PollQuestionnaireController extends Controller {
     public function index() {
         
         if (Request::get('draw')) {
-            return response()->json(PollQuestionnaire::dataTable());
+            return response()->json(
+                $this->pq->dataTable()
+            );
         }
         
         return $this->output();
@@ -47,7 +52,9 @@ class PollQuestionnaireController extends Controller {
      */
     public function create() {
         
-        $this->authorize('c', PollQuestionnaire::class);
+        $this->authorize(
+            'c', PollQuestionnaire::class
+        );
         
         return $this->output();
         
@@ -62,9 +69,13 @@ class PollQuestionnaireController extends Controller {
      */
     public function store(PqRequest $request) {
     
-        $this->authorize('c', PollQuestionnaire::class);
+        $this->authorize(
+            'c', PollQuestionnaire::class
+        );
         
-        return $this->result(PollQuestionnaire::create($request->all()));
+        return $this->result(
+            $this->pq->store($request->all())
+        );
         
     }
     
@@ -78,10 +89,11 @@ class PollQuestionnaireController extends Controller {
     public function show($id) {
         
         $pq = PollQuestionnaire::find($id);
+        abort_if(!$pq, self::NOT_FOUND);
         $this->authorize('rud', $pq);
         
         return $this->output([
-            'pollQuestionnaire' => $pq,
+            'pq' => $pq,
         ]);
         
     }
@@ -95,9 +107,10 @@ class PollQuestionnaireController extends Controller {
     public function edit($id) {
         
         $pq = PollQuestionnaire::find($id);
+        abort_if(!$pq, self::NOT_FOUND);
         $this->authorize('rud', $pq);
         
-        return $this->output(['pollQuestionnaire' => $pq]);
+        return $this->output(['pq' => $pq]);
         
     }
     
@@ -112,9 +125,12 @@ class PollQuestionnaireController extends Controller {
     public function update(PqRequest $request, $id) {
         
         $pq = PollQuestionnaire::find($id);
+        abort_if(!$pq, self::NOT_FOUND);
         $this->authorize('rud', $pq);
         
-        return $this->result($pq->update($request->all()));
+        return $this->result(
+            $pq->modify($request->all(), $id)
+        );
         
     }
     
@@ -128,6 +144,7 @@ class PollQuestionnaireController extends Controller {
     public function destroy($id) {
         
         $pq = PollQuestionnaire::find($id);
+        abort_if(!$pq, self::NOT_FOUND);
         $this->authorize('rud', $pq);
         
         return $this->result($pq->remove($id));

@@ -1,4 +1,4 @@
-{!! Form::model($iconType, [
+{!! Form::model($it, [
     'method' => 'put',
     'id' => 'formIconType',
     'data-parsley-validate' => 'true'

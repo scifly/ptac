@@ -81,11 +81,57 @@ class Score extends Model {
     public function exam() { return $this->belongsTo('App\Models\Exam'); }
     
     /**
+     * 保存分数
+     *
+     * @param array $data
+     * @return bool
+     */
+    public function store(array $data) {
+        
+        $score = self::create($data);
+        
+        return $score ? true : false;
+        
+    }
+    
+    /**
+     * 更新分数
+     *
+     * @param array $data
+     * @param $id
+     * @return bool
+     */
+    public function modify(array $data, $id) {
+        
+        $score = self::find($id);
+        if (!$score) { return false; }
+        
+        return $score->update($data) ? true : false;
+        
+    }
+    
+    /**
+     * 删除分数
+     *
+     * @param $id
+     * @return bool
+     * @throws \Exception
+     */
+    public function remove($id) {
+        
+        $score = self::find($id);
+        if (!$score) { return false; }
+        
+        return $score->delete() ? true : false;
+        
+    }
+    
+    /**
      * 分数记录列表
      *
      * @return array
      */
-    static function datatable() {
+    public function datatable() {
         
         $columns = [
             ['db' => 'Score.id', 'dt' => 0],

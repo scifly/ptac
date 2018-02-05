@@ -17,9 +17,12 @@ use Throwable;
  */
 class ExamController extends Controller {
     
-    function __construct() {
+    protected $exam;
+    
+    function __construct(Exam $exam) {
     
         $this->middleware(['auth', 'checkrole']);
+        $this->exam = $exam;
         
     }
     
@@ -32,7 +35,9 @@ class ExamController extends Controller {
     public function index() {
         
         if (Request::get('draw')) {
-            return response()->json(Exam::datatable());
+            return response()->json(
+                $this->exam->datatable()
+            );
         }
         
         return $this->output();
@@ -64,7 +69,9 @@ class ExamController extends Controller {
         
         $this->authorize('c', Exam::class);
         
-        return $this->result(Exam::create($request->all()));
+        return $this->result(
+            $this->exam->store($request->all())
+        );
         
     }
     
@@ -78,12 +85,12 @@ class ExamController extends Controller {
     public function show($id) {
         
         $exam = Exam::find($id);
-        // $this->authorize('rud', $exam);
+        abort_if(!$exam, self::NOT_FOUND);
         
         return $this->output([
             'exam'     => $exam,
-            'classes'  => Exam::classes($exam->class_ids),
-            'subjects' => Exam::subjects(),
+            'classes'  => $exam->classes($exam->class_ids),
+            'subjects' => $exam->subjects(),
         ]);
         
     }
@@ -98,12 +105,12 @@ class ExamController extends Controller {
     public function edit($id) {
         
         $exam = Exam::find($id);
-        // $this->authorize('rud', $exam);
+        abort_if(!$exam, self::NOT_FOUND);
         
         return $this->output([
             'exam'             => $exam,
-            'selectedClasses'  => Exam::classes($exam->class_ids),
-            'selectedSubjects' => Exam::subjects($exam->subject_ids),
+            'selectedClasses'  => $exam->classes($exam->class_ids),
+            'selectedSubjects' => $exam->subjects($exam->subject_ids),
         ]);
     }
     
@@ -117,9 +124,11 @@ class ExamController extends Controller {
     public function update(ExamRequest $request, $id) {
         
         $exam = Exam::find($id);
-        // $this->authorize('rud', $exam);
+        abort_if(!$exam, self::NOT_FOUND);
         
-        return $this->result($exam->update($request->all()));
+        return $this->result(
+            $exam->modify($request->all(), $id)
+        );
         
     }
     
@@ -133,7 +142,7 @@ class ExamController extends Controller {
     public function destroy($id) {
         
         $exam = Exam::find($id);
-        // $this->authorize('rud', $exam);
+        abort_if(!$exam, self::NOT_FOUND);
         
         return $this->result($exam->delete());
         

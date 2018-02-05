@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ExamTypeRequest;
+use App\Models\Exam;
 use App\Models\ExamType;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
@@ -16,9 +17,12 @@ use Throwable;
  */
 class ExamTypeController extends Controller {
     
-    function __construct() {
+    protected $et;
+    
+    function __construct(ExamType $et) {
     
         $this->middleware(['auth', 'checkrole']);
+        $this->et = $et;
         
     }
     
@@ -31,7 +35,9 @@ class ExamTypeController extends Controller {
     public function index() {
         
         if (Request::get('draw')) {
-            return response()->json(ExamType::datatable());
+            return response()->json(
+                $this->et->datatable()
+            );
         }
         
         return $this->output();
@@ -63,7 +69,9 @@ class ExamTypeController extends Controller {
      
         $this->authorize('c', ExamType::class);
         
-        return $this->result(ExamType::store($request->all()));
+        return $this->result(
+            $this->et->store($request->all())
+        );
         
     }
     
@@ -76,10 +84,11 @@ class ExamTypeController extends Controller {
      */
     public function edit($id) {
         
-        $examType = ExamType::find($id);
-        $this->authorize('rud', $examType);
+        $et = ExamType::find($id);
+        abort_if(!$et, self::NOT_FOUND);
+        $this->authorize('rud', $et);
         
-        return $this->output(['examType' => $examType]);
+        return $this->output(['et' => $et]);
         
     }
     
@@ -93,10 +102,13 @@ class ExamTypeController extends Controller {
      */
     public function update(ExamTypeRequest $request, $id) {
         
-        $examType = ExamType::find($id);
-        $this->authorize('rud', $examType);
+        $et = ExamType::find($id);
+        abort_if(!$et, self::NOT_FOUND);
+        $this->authorize('rud', $et);
         
-        return $this->result($examType->modify($request->all(), $id));
+        return $this->result(
+            $et->modify($request->all(), $id)
+        );
         
     }
     
@@ -109,10 +121,11 @@ class ExamTypeController extends Controller {
      */
     public function destroy($id) {
         
-        $examType = ExamType::find($id);
-        $this->authorize('rud', $examType);
+        $et = ExamType::find($id);
+        abort_if(!$et, self::NOT_FOUND);
+        $this->authorize('rud', $et);
         
-        return $this->result($examType->remove($id));
+        return $this->result($et->remove($id));
         
     }
     
