@@ -166,7 +166,6 @@ class HomeController extends Controller {
             'menuId' => $id,
             'js'     => self::PAGEJS,
         ]);
-
     }
 
     /**
