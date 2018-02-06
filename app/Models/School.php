@@ -235,7 +235,7 @@ class School extends Model {
      * @param bool $fireEvent
      * @return bool
      */
-    static function store(array $data, $fireEvent = false) {
+    public function store(array $data, $fireEvent = false) {
 
         $school = self::create($data);
         if ($school && $fireEvent) {
@@ -243,7 +243,7 @@ class School extends Model {
             return true;
         }
 
-        return false;
+        return $school ? true : false;
 
     }
 
@@ -255,9 +255,10 @@ class School extends Model {
      * @param bool $fireEvent
      * @return bool
      */
-    static function modify(array $data, $id, $fireEvent = false) {
+    public function modify(array $data, $id, $fireEvent = false) {
 
         $school = self::find($id);
+        if (!$school) { return false; }
         $updated = $school->update($data);
         if ($updated && $fireEvent) {
             event(new SchoolUpdated(self::find($id)));
@@ -276,7 +277,7 @@ class School extends Model {
      * @return bool|null
      * @throws Exception
      */
-    static function remove($id, $fireEvent = false) {
+    public function remove($id, $fireEvent = false) {
 
         $school = self::find($id);
         if (!$school) { return false; }
@@ -295,7 +296,7 @@ class School extends Model {
      *
      * @return array
      */
-    static function datatable() {
+    public function datatable() {
 
         $columns = [
             ['db' => 'School.id', 'dt' => 0],

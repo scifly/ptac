@@ -17,9 +17,12 @@ use Throwable;
  */
 class MajorController extends Controller {
     
-    function __construct() {
+    protected $major;
+    
+    function __construct(Major $major) {
     
         $this->middleware(['auth', 'checkrole']);
+        $this->major = $major;
         
     }
     
@@ -32,7 +35,9 @@ class MajorController extends Controller {
     public function index() {
         
         if (Request::get('draw')) {
-            return response()->json(Major::datatable());
+            return response()->json(
+                $this->major->datatable()
+            );
         }
         
         return $this->output();
@@ -47,7 +52,7 @@ class MajorController extends Controller {
      */
     public function create() {
         
-        return $this->output(['subjects' => Subject::subjects(1)]);
+        return $this->output();
         
     }
     
@@ -61,7 +66,9 @@ class MajorController extends Controller {
      */
     public function store(MajorRequest $request) {
         
-        return Major::store($request) ? $this->succeed() : $this->fail();
+        return $this->result(
+            $this->major->store($request)
+        );
         
     }
 
@@ -75,9 +82,8 @@ class MajorController extends Controller {
     public function edit($id) {
         
         $major = Major::find($id);
-        if (!$major) {
-            return $this->notFound();
-        }
+        abort_if(!$major, self::NOT_FOUND);
+
         $majorSubjects = $major->subjects;
         $selectedSubjects = [];
         foreach ($majorSubjects as $subject) {
@@ -86,7 +92,6 @@ class MajorController extends Controller {
         
         return $this->output([
             'major'            => $major,
-//            'subjects' => $this->subject->subjects(1),
             'selectedSubjects' => $selectedSubjects,
         ]);
         
@@ -104,9 +109,11 @@ class MajorController extends Controller {
     public function update(MajorRequest $request, $id) {
         
         $major = Major::find($id);
-        if (!$major) { return $this->notFound(); }
+        abort_if(!$major, self::NOT_FOUND);
         
-        return $major->modify($request, $id) ? $this->succeed() : $this->fail();
+        return $this->result(
+            $major->modify($request, $id)
+        );
         
     }
     
@@ -121,9 +128,11 @@ class MajorController extends Controller {
     public function destroy($id) {
         
         $major = Major::find($id);
-        if (!$major) { return $this->notFound(); }
-        
-        return $major->remove($id) ? $this->succeed() : $this->fail();
+        abort_if(!$major, self::NOT_FOUND);
+
+        return $this->result(
+            $major->remove($id)
+        );
         
     }
     

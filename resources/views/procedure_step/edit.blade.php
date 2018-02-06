@@ -1,4 +1,4 @@
-{!! Form::model($procedureStep, [
+{!! Form::model($ps, [
     'method' => 'put',
     'id' => 'formProcedureStep',
     'data-parsley-validate' => 'true'

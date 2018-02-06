@@ -4,8 +4,8 @@
     </div>
     <div class="box-body">
         <div class="form-horizontal">
-            @if (!empty($departmentType['id']))
-                {{ Form::hidden('id', $departmentType['id'], ['id' => 'id']) }}
+            @if (!empty($dt['id']))
+                {{ Form::hidden('id', $dt['id'], ['id' => 'id']) }}
             @endif
             <div class="form-group">
                 {!! Form::label('name', '名称', [
@@ -23,7 +23,7 @@
             @include('partials.remark')
             @include('partials.enabled', [
                 'id' => 'enabled',
-                'value' => $departmentType['enabled'] ?? null
+                'value' => $dt['enabled'] ?? null
             ])
         </div>
     </div>

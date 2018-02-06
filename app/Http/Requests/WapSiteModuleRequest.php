@@ -16,7 +16,7 @@ class WapSiteModuleRequest extends FormRequest {
         
         return [
             'wap_site_id' => 'required|integer',
-            'name'        => 'required|string|max:255',
+            'name' => 'required|string|max:255|unique:wap_site_modules,name,',
             'media_id'    => 'required|integer',
             'enabled'     => 'required|boolean',
         ];

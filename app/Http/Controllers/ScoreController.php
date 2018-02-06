@@ -21,9 +21,12 @@ use Throwable;
  */
 class ScoreController extends Controller {
 
-    public function __construct() {
+    protected $score;
+    
+    public function __construct(Score $score) {
 
         $this->middleware(['auth', 'checkrole']);
+        $this->score = $score;
 
     }
 
@@ -36,7 +39,9 @@ class ScoreController extends Controller {
     public function index() {
 
         if (Request::get('draw')) {
-            return response()->json(Score::datatable());
+            return response()->json(
+                $this->score->datatable()
+            );
         }
 
         return $this->output();
@@ -63,40 +68,10 @@ class ScoreController extends Controller {
      * @return JsonResponse
      */
     public function store(ScoreRequest $request) {
-        $input = $request->all();
-        $subject = Subject::whereId($input['subject_id'])->first();
-        if($input['score'] > $subject->max_score){
-            return $this->fail('该科目最高分为'. $subject->max_score);
-        }
-        // $exam = Exam::whereId($input['exam_id'])->first();
-        // if(!in_array($input['subject_id'], explode( ',', $exam->subject_ids))){
-        //     return $this->fail('该科目未在该场考试内！');
-        // }
-        // $student = Student::whereId($input['student_id'])->first();
-        // $squad = $student->squad;
-        // if(!in_array($squad->id, explode(',', $exam->class_ids))){
-        //     return $this->fail('该学生未在这场考试范围内！');
-        // }
-        return $this->result(Score::create($request->all()));
         
-    }
-    
-    /**
-     * 成绩详情
-     *
-     * @param $id
-     * @return bool|JsonResponse
-     * @throws Throwable
-     */
-    public function show($id) {
-        
-        $score = Score::find($id);
-        if (!$score) { return $this->notFound(); }
-        
-        return $this->output([
-            'score'       => $score,
-            'studentName' => $score->student->user->realname,
-        ]);
+        return $this->result(
+            $this->score->store($request->all())
+        );
         
     }
     
@@ -110,7 +85,7 @@ class ScoreController extends Controller {
     public function edit($id) {
         
         $score = Score::find($id);
-        if (!$score) { return $this->notFound(); }
+        abort_if(!$score, self::NOT_FOUND);
         
         return $this->output([
             'score'       => $score,
@@ -127,15 +102,13 @@ class ScoreController extends Controller {
      * @return JsonResponse
      */
     public function update(ScoreRequest $request, $id) {
-        $input = $request->all();
-        $score = Score::find($id);
-        if (!$score) { return $this->notFound(); }
-        $subject = Subject::whereId($input['subject_id'])->first();
-        if($input['score'] > $subject->max_score){
-            return $this->fail('该科目最高分为'. $subject->max_score);
-        }
         
-        return $this->result($score->update($request->all()));
+        $score = Score::find($id);
+        abort_if(!$score, self::NOT_FOUND);
+        
+        return $this->result(
+            $score->modify($request->all(), $id)
+        );
         
     }
     
@@ -149,9 +122,11 @@ class ScoreController extends Controller {
     public function destroy($id) {
         
         $score = Score::find($id);
-        if (!$score) { return $this->notFound(); }
+        abort_if(!$score, self::NOT_FOUND);
         
-        return $this->result($score->delete());
+        return $this->result(
+            $score->remove($id)
+        );
         
     }
     

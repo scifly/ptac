@@ -48,7 +48,7 @@ class IconType extends Model {
      * @param array $data
      * @return bool
      */
-    static function store(array $data) {
+    public function store(array $data) {
 
         $iconType = self::create($data);
 
@@ -63,7 +63,7 @@ class IconType extends Model {
      * @param $id
      * @return bool
      */
-    static function modify(array $data, $id) {
+    public function modify(array $data, $id) {
 
         $iconType = self::find($id);
         if (!$iconType) { return false; }
@@ -79,7 +79,7 @@ class IconType extends Model {
      * @return bool|null
      * @throws Exception
      */
-    static function remove($id) {
+    public function remove($id) {
 
         $iconType = self::find($id);
         if (!$iconType) { return false; }
@@ -93,7 +93,7 @@ class IconType extends Model {
      *
      * @return array
      */
-    static function datatable() {
+    public function datatable() {
 
         $columns = [
             ['db' => 'IconType.id', 'dt' => 0],

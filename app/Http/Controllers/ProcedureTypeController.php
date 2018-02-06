@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProcedureTypeRequest;
+use App\Models\Procedure;
 use App\Models\ProcedureType;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -16,9 +17,12 @@ use Throwable;
  */
 class ProcedureTypeController extends Controller {
     
-    function __construct() {
+    protected $pt;
+    
+    function __construct(ProcedureType $pt) {
     
         $this->middleware(['auth', 'checkrole']);
+        $this->pt = $pt;
         
     }
     
@@ -32,7 +36,7 @@ class ProcedureTypeController extends Controller {
         
         if (Request::get('draw')) {
             return response()->json(
-                ProcedureType::datatable()
+                $this->pt->datatable()
             );
         }
         
@@ -61,7 +65,7 @@ class ProcedureTypeController extends Controller {
     public function store(ProcedureTypeRequest $request) {
         
         return $this->result(
-            ProcedureType::create($request->all())
+            $this->pt->store($request->all())
         );
         
     }
@@ -75,12 +79,10 @@ class ProcedureTypeController extends Controller {
      */
     public function edit($id) {
         
-        $procedureType = ProcedureType::find($id);
-        if (!$procedureType) {
-            return $this->notFound();
-        }
+        $pt = ProcedureType::find($id);
+        abort_if(!$pt, self::NOT_FOUND);
         
-        return $this->output(['procedureType' => $procedureType]);
+        return $this->output(['pt' => $pt]);
         
     }
     
@@ -94,9 +96,11 @@ class ProcedureTypeController extends Controller {
     public function update(ProcedureTypeRequest $request, $id) {
         
         $pt = ProcedureType::find($id);
-        if (!$pt) { return $this->notFound(); }
+        abort_if(!$pt, self::NOT_FOUND);
         
-        return $this->result($pt->update($request->all()));
+        return $this->result(
+            $pt->modify($request->all(), $id)
+        );
         
     }
     
@@ -110,9 +114,11 @@ class ProcedureTypeController extends Controller {
     public function destroy($id) {
         
         $pt = ProcedureType::find($id);
-        if (!$pt) { return $this->notFound(); }
+        abort_if(!$pt, self::NOT_FOUND);
         
-        return $this->result($pt->delete());
+        return $this->result(
+            $pt->remove($id)
+        );
         
     }
     

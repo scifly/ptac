@@ -18,9 +18,12 @@ use Throwable;
  */
 class GroupController extends Controller {
     
-    function __construct() {
+    protected $group;
+    
+    function __construct(Group $group) {
     
         $this->middleware(['auth', 'checkrole']);
+        $this->group = $group;
         
     }
     
@@ -33,7 +36,9 @@ class GroupController extends Controller {
     public function index() {
         
         if (Request::get('draw')) {
-            return response()->json(Group::datatable());
+            return response()->json(
+                $this->group->datatable()
+            );
         }
 
         return $this->output();
@@ -68,7 +73,9 @@ class GroupController extends Controller {
      */
     public function store(GroupRequest $request) {
 
-        return $this->result(Group::store($request->all()));
+        return $this->result(
+            $this->group->store($request->all())
+        );
         
     }
     
@@ -82,7 +89,7 @@ class GroupController extends Controller {
     public function edit($id) {
         
         $group = Group::find($id);
-        if (!$group) { return $this->notFound(); }
+        abort_if(!$group, self::NOT_FOUND);
         if (Request::method() === 'POST') {
             $schoolId = Request::query('schoolId');
             $menuId = School::find($schoolId)->menu_id;
@@ -105,7 +112,7 @@ class GroupController extends Controller {
     public function update(GroupRequest $request, $id) {
         
         $group = Group::find($id);
-        if (!$group) { return $this->notFound(); }
+        abort_if(!$group, self::NOT_FOUND);
         
         return $this->result(
             $group->modify($request->all(), $id)
@@ -123,9 +130,11 @@ class GroupController extends Controller {
     public function destroy($id) {
         
         $group = Group::find($id);
-        if (!$group) { return $this->notFound(); }
+        abort_if(!$group, self::NOT_FOUND);
         
-        return $this->result($group->remove($id));
+        return $this->result(
+            $group->remove($id)
+        );
         
     }
     

@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ProcedureStepRequest;
 use App\Models\ProcedureStep;
+use App\Models\ProcedureType;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
@@ -16,9 +17,12 @@ use Throwable;
  */
 class ProcedureStepController extends Controller {
     
-    function __construct() {
+    protected $ps;
+    
+    function __construct(ProcedureStep $ps) {
     
         $this->middleware(['auth', 'checkrole']);
+        $this->ps = $ps;
     
     }
     
@@ -31,7 +35,9 @@ class ProcedureStepController extends Controller {
     public function index() {
         
         if (Request::get('draw')) {
-            return response()->json(ProcedureStep::datatable());
+            return response()->json(
+                $this->ps->datatable()
+            );
         }
         
         return $this->output();
@@ -58,23 +64,9 @@ class ProcedureStepController extends Controller {
      */
     public function store(ProcedureStepRequest $request) {
         
-        return $this->result(ProcedureStep::store($request->all()));
-        
-    }
-    
-    /**
-     * 审批流程步骤详情
-     *
-     * @param $id
-     * @return JsonResponse
-     * @throws Throwable
-     */
-    public function show($id) {
-        
-        $ps = ProcedureStep::find($id);
-        if (!$ps) { return $this->notFound(); }
-        
-        return $this->output();
+        return $this->result(
+            $this->ps->store($request->all())
+        );
         
     }
     
@@ -88,9 +80,11 @@ class ProcedureStepController extends Controller {
     public function edit($id) {
         
         $ps = ProcedureStep::find($id);
-        if (!$ps) { return $this->notFound(); }
+        abort_if(!$ps, self::NOT_FOUND);
         
-        return $this->output(['procedureStep' => $ps]);
+        return $this->output([
+            'ps' => $ps
+        ]);
         
     }
     
@@ -104,9 +98,11 @@ class ProcedureStepController extends Controller {
     public function update(ProcedureStepRequest $request, $id) {
         
         $ps = ProcedureStep::find($id);
-        if (!$ps) { return $this->notFound(); }
+        abort_if(!$ps, self::NOT_FOUND);
         
-        return $this->result($ps->modify($request->all(), $id));
+        return $this->result(
+            $ps->modify($request->all(), $id)
+        );
         
     }
     

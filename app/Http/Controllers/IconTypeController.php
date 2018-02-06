@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\IconTypeRequest;
+use App\Models\Icon;
 use App\Models\IconType;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -16,9 +17,12 @@ use Throwable;
  */
 class IconTypeController extends Controller {
     
-    function __construct() {
+    protected $it;
     
-        $this->middleware(['auth']);
+    function __construct(IconType $it) {
+    
+        $this->middleware(['auth', 'checkrole']);
+        $this->it = $it;
     
     }
     
@@ -31,7 +35,9 @@ class IconTypeController extends Controller {
     public function index() {
         
         if (Request::get('draw')) {
-            return response()->json(IconType::datatable());
+            return response()->json(
+                $this->it->datatable()
+            );
         }
         
         return $this->output();
@@ -58,7 +64,9 @@ class IconTypeController extends Controller {
      */
     public function store(IconTypeRequest $request) {
         
-        return $this->result(IconType::store($request->all()));
+        return $this->result(
+            $this->it->store($request->all())
+        );
         
     }
     
@@ -71,10 +79,10 @@ class IconTypeController extends Controller {
      */
     public function edit($id) {
         
-        $iconType = IconType::find($id);
-        if (!$iconType) { return $this->notFound(); }
+        $it = IconType::find($id);
+        abort_if(!$it, self::NOT_FOUND);
         
-        return $this->output(['iconType' => $iconType]);
+        return $this->output(['it' => $it]);
         
     }
     
@@ -87,10 +95,12 @@ class IconTypeController extends Controller {
      */
     public function update(IconTypeRequest $request, $id) {
         
-        $iconType = IconType::find($id);
-        if (!$iconType) { return $this->notFound(); }
+        $it = IconType::find($id);
+        abort_if(!$it, self::NOT_FOUND);
         
-        return $this->result($iconType->modify($request->all(), $id));
+        return $this->result(
+            $it->modify($request->all(), $id)
+        );
         
     }
     
@@ -103,10 +113,12 @@ class IconTypeController extends Controller {
      */
     public function destroy($id) {
         
-        $iconType = IconType::find($id);
-        if (!$iconType) { return $this->notFound(); }
+        $it = IconType::find($id);
+        abort_if(!$it, self::NOT_FOUND);
         
-        return $this->result($iconType->remove($id));
+        return $this->result(
+            $it->remove($id)
+        );
         
     }
     

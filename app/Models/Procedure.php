@@ -83,7 +83,7 @@ class Procedure extends Model {
      * @param array $data
      * @return bool
      */
-    static function store(array $data) {
+    public function store(array $data) {
         
         $procedure = self::create($data);
 
@@ -98,7 +98,7 @@ class Procedure extends Model {
      * @param $id
      * @return bool
      */
-    static function modify(array $data, $id) {
+    public function modify(array $data, $id) {
         
         $procedure = self::find($id);
         if (!$procedure) { return false; }
@@ -114,7 +114,7 @@ class Procedure extends Model {
      * @return bool|null
      * @throws Exception
      */
-    static function remove($id) {
+    public function remove($id) {
         
         $procedure = self::find($id);
         if (!$procedure) { return false; }
@@ -128,7 +128,7 @@ class Procedure extends Model {
      *
      * @return array
      */
-    static function datatable() {
+    public function datatable() {
         
         $columns = [
             ['db' => 'Procedures.id', 'dt' => 0],

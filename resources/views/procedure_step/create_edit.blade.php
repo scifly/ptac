@@ -4,8 +4,8 @@
     </div>
     <div class="box-body">
         <div class="form-horizontal">
-            @if (!empty($procedureStep['id']))
-                {{ Form::hidden('id', $procedureStep['id'], ['id' => 'id']) }}
+            @if (!empty($ps['id']))
+                {{ Form::hidden('id', $ps['id'], ['id' => 'id']) }}
             @endif
             @include('partials.single_select', [
                 'label' => '流程',
@@ -32,7 +32,7 @@
                 <div class="col-sm-6">
                     <select multiple="multiple" name="approver_user_ids[]" id="approver_user_ids" class="form-control">
                         <input type="hidden" id="approver_select_ids"
-                               value="{{ $procedureStep->approver_user_ids or '' }}">
+                               value="{{ $ps->approver_user_ids or '' }}">
                     </select>
                 </div>
             </div>
@@ -43,14 +43,14 @@
                 <div class="col-sm-6">
                     <select multiple="multiple" name="related_user_ids[]" id="related_user_ids" class="form-control">
                         <input type="hidden" id="related_select_ids"
-                               value="{{$procedureStep->related_user_ids or '' }}">
+                               value="{{$ps->related_user_ids or '' }}">
                     </select>
                 </div>
             </div>
             @include('partials.remark')
             @include('partials.enabled', [
                 'id' => 'enabled',
-                'value' => $procedureStep['enabled'] ?? null
+                'value' => $ps['enabled'] ?? null
             ])
         </div>
     </div>

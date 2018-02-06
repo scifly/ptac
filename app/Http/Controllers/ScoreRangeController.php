@@ -73,28 +73,6 @@ class ScoreRangeController extends Controller {
     }
     
     /**
-     * 成绩统计项详情
-     *
-     * @param $id
-     * @return bool|JsonResponse
-     * @throws Throwable
-     */
-    // public function show($id) {
-    //
-    //     $scoreRange = $this->scoreRange->find($id);
-    //     if (!$scoreRange) { return $this->notFound(); }
-    //     $subjectsArr = explode(',', $scoreRange['subject_ids']);
-    //     $str = '';
-    //     foreach ($subjectsArr as $val) {
-    //         $str .= ',' . $this->subject->find($val)->name;
-    //     }
-    //     $scoreRange['subject_ids'] = substr($str, 1);
-    //
-    //     return $this->output(['scoreRange' => $scoreRange]);
-    //
-    // }
-    
-    /**
      * 编辑成绩统计项
      *
      * @param $id

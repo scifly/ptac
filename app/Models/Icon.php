@@ -85,7 +85,7 @@ class Icon extends Model {
      * @param array $data
      * @return bool
      */
-    static function store(array $data) {
+    public function store(array $data) {
 
         $icon = self::create($data);
 
@@ -100,7 +100,7 @@ class Icon extends Model {
      * @param $id
      * @return bool
      */
-    static function modify(array $data, $id) {
+    public function modify(array $data, $id) {
 
         $icon = self::find($id);
         if (!$icon) {
@@ -118,7 +118,7 @@ class Icon extends Model {
      * @return bool|null
      * @throws Exception
      */
-    static function remove($id) {
+    public function remove($id) {
 
         $icon = self::find($id);
         if (!$icon) { return false; }
@@ -132,7 +132,7 @@ class Icon extends Model {
      *
      * @return array
      */
-    static function datatable() {
+    public function datatable() {
 
         $columns = [
             ['db' => 'Icon.id', 'dt' => 0],
