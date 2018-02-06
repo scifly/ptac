@@ -22,7 +22,7 @@
 
                             <div class="col-sm-6">
                                 <div class="input-group">
-                                    <?php if(Auth::user()->avatar_url): ?>
+                                    <?php if(Auth::user()->avatar_url && file_exists(Auth::user()->avatar_url)): ?>
                                         <img src="<?php echo e(Auth::user()->avatar_url); ?>" style="height: 80px;border-radius: 40px;">
                                         <?php else: ?>
                                         <img src="<?php echo e(asset('img/user2-160x160.jpg')); ?>" style="height: 80px;border-radius: 40px;">
