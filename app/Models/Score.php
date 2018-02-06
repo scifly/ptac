@@ -458,14 +458,14 @@ class Score extends Model {
                                 ->where('exam_id', $exam)
                                 ->get();
                             $ga = $gaToTal->sum('score') / $gaToTal->count();
-                            $message[] = '年平均:' . $ga;
+                            $message[] = '年平均:' . sprintf("%.2f", $ga);
                         } else {
                             $sgaToTal = Score::whereIn('student_id', $gradeStudents->pluck('id'))
                                 ->where('exam_id', $exam)
                                 ->where('subject_id', $j)
                                 ->get();
                             $sga = $sgaToTal->sum('score') / $sgaToTal->count();
-                            $message[] = $subName . '(年平均):' . $sga;
+                            $message[] = $subName . '(年平均):' . sprintf("%.2f", $sga);
                         }
                     }
                     if ($p == 'class_average') {
@@ -474,14 +474,14 @@ class Score extends Model {
                                 ->where('exam_id', $exam)
                                 ->get();
                             $ca = $caToTal->sum('score') / $caToTal->count();
-                            $message[] = '班平均:' . $ca;
+                            $message[] = '班平均:' . sprintf("%.2f", $ca);
                         } else {
                             $scaToTal = Score::whereIn('student_id', $students->pluck('id'))
                                 ->where('exam_id', $exam)
                                 ->where('subject_id', $j)
                                 ->get();
                             $sca = $scaToTal->sum('score') / $scaToTal->count();
-                            $message[] = $subName . '(班平均):' . $sca;
+                            $message[] = $subName . '(班平均):' . sprintf("%.2f", $sca);
                         }
                     }
                     if ($p == 'grade_max') {
