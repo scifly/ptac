@@ -83,6 +83,7 @@ Route::group(['prefix' => 'scores'], function () {
     Route::get('analysis', $c . '@analysis');
     Route::post('analysis_data', $c . '@analysisData');
     Route::post('import', $c . '@import');
+    Route::get('exports', $c . '@exports');
     Route::post('send', $c . '@send');
     Route::post('send_message', $c . '@send_message');
     Route::get('get_datas/{examId}', $c . '@getDatas');

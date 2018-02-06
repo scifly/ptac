@@ -5,13 +5,12 @@ use App\Http\Requests\ScoreRequest;
 use App\Models\Exam;
 use App\Models\Score;
 use App\Models\Squad;
-use App\Models\Student;
 use App\Models\Subject;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
+use Maatwebsite\Excel\Facades\Excel;
 use Throwable;
-
 
 /**
  * 成绩
@@ -309,5 +308,54 @@ class ScoreController extends Controller {
         }
         return response()->json(['students' => $studentHtml, 'subjects' => $subjectHtml, 'statusCode' => 200]);
     }
+
+    /**
+     * 导出成绩模板
+     *
+     * @return void
+     */
+    public function exports() {
+        $classId = Request::get('classId');
+        $class = Squad::whereId($classId)->first();
+        $students = Squad::whereId($classId)->first()->students;
+        $data = [
+            ['班级', '学号', '姓名', '数学', '语文', '英语'],
+        ];
+        foreach ($students as $s) {
+            $exams = [
+                $class->name,
+                $s->student_number,
+                $s->user->realname,
+                '',
+                '',
+                '',
+            ];
+            $data[] = $exams;
+            unset($exams);
+        }
+
+        // print_r($data);exit;
+        /** @noinspection PhpMethodParametersCountMismatchInspection */
+        /** @noinspection PhpUndefinedMethodInspection */
+        Excel::create(iconv('UTF-8', 'GBK', 'scores'), function ($excel) use ($data) {
+            /** @noinspection PhpUndefinedMethodInspection */
+            $excel->sheet('score', function($sheet) use ($data) {
+                /** @noinspection PhpUndefinedMethodInspection */
+                $sheet->rows($data);
+                /** @noinspection PhpUndefinedMethodInspection */
+                $sheet->setWidth(array(
+                    'A'     =>  15,
+                    'B'     =>  15,
+                    'C'     =>  15,
+                    'D'     =>  10,
+                    'E'     =>  10,
+                    'F'     =>  10,
+                ));
+
+            });
+        },'UTF-8')->export('xls');
+
+    }
+
 }
 

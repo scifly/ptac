@@ -250,3 +250,11 @@ $statistics.on('click', function () {
         });
     });
 });
+
+
+//点击下载模板
+$('.help-block').on('click',function () {
+    var exam_id = $('#exam').val();
+    var class_id = $('#classId').val();
+    location.href = '../scores/exports?classId='+class_id;
+});
