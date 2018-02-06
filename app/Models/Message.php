@@ -306,7 +306,6 @@ class Message extends Model {
             $userItems = implode('|', $us);
             $touser = implode('|', $users);
             $toparty = implode('|', $depts);
-            Log::debug($us);
             # 推送的所有用户以及电话
             $userDatas = $this->getMobiles($us, $depts);
             $title = '';
@@ -356,6 +355,7 @@ class Message extends Model {
 
                         break;
                         case 'mpnews' :
+                            if(isset($i)) unset($i);
                             $i['articles'][] = $data['content']['articles'];
                             $message['mpnews'] = $i;
                             $title = $data['content']['articles']['title'];
