@@ -434,19 +434,9 @@ class Message extends Model {
      */
     public function sendSms($touser, $toparty, $content) {
         $items = $this->getMobiles($touser, $toparty);
-//        $autograph = School::find(School::id())->autograph;
         $autograph = '【成都外国语】';
-        // print_r(array_unique($items['mobiles']));
-        // print_r($content);
-        // die;
         $result = Wechat::batchSend('LKJK004923', "654321@", implode(',', $items['mobiles']), $content . $autograph);
         return json_encode($result);
-//Log::debug($content . $autograph);
-//Log::debug(implode(',', $mobiles));
-//Log::debug(json_encode($result));
-//Log::debug(md5('654321@'));
-//Log::debug(bcrypt('654321@'));
-
     }
 
     /**
