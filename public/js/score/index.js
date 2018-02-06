@@ -256,5 +256,5 @@ $statistics.on('click', function () {
 $('.help-block').on('click',function () {
     var exam_id = $('#exam').val();
     var class_id = $('#classId').val();
-    location.href = '../scores/exports?classId='+class_id;
+    location.href = '../scores/exports?classId=' + class_id + '&examId=' + exam_id;
 });
