@@ -315,26 +315,27 @@ class ScoreController extends Controller {
      * @return void
      */
     public function exports() {
+        $examId = Request::get('examId');
+        $exam = Exam::whereId($examId)->first();
+        $subjectIds = explode(',',$exam->subject_ids);
+        $subjects = Subject::whereIn('id',$subjectIds)->get();
+        $title = ['班级', '学号', '姓名'];
+        foreach ($subjects as $s) {
+            $title[] = $s->name;
+        }
+        $data[] = $title;
         $classId = Request::get('classId');
         $class = Squad::whereId($classId)->first();
         $students = Squad::whereId($classId)->first()->students;
-        $data = [
-            ['班级', '学号', '姓名', '数学', '语文', '英语'],
-        ];
         foreach ($students as $s) {
             $exams = [
                 $class->name,
                 $s->student_number,
                 $s->user->realname,
-                '',
-                '',
-                '',
             ];
             $data[] = $exams;
             unset($exams);
         }
-
-        // print_r($data);exit;
         /** @noinspection PhpMethodParametersCountMismatchInspection */
         /** @noinspection PhpUndefinedMethodInspection */
         Excel::create(iconv('UTF-8', 'GBK', 'scores'), function ($excel) use ($data) {
