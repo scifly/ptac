@@ -2,6 +2,8 @@
 namespace App\Http\Requests;
 
 use App\Models\School;
+use App\Rules\Overlaid;
+use App\Rules\StartEnd;
 use Illuminate\Foundation\Http\FormRequest;
 
 class SemesterRequest extends FormRequest {
@@ -27,6 +29,9 @@ class SemesterRequest extends FormRequest {
             'start_date' => 'required|date|before:end_date',
             'end_date'   => 'required|date|after:start_date',
             'enabled'    => 'required|boolean',
+            'startend' => [
+                'required', new StartEnd(), new Overlaid()
+            ]
         ];
         
     }
@@ -35,7 +40,9 @@ class SemesterRequest extends FormRequest {
         
         $input = $this->all();
         $input['school_id'] = School::schoolId();
-        
+        $input['startend'] = [
+            $input['start_date'], $input['end_date'], 'semster', $input['id'] ?? null
+        ];
         $this->replace($input);
         
     }

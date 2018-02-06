@@ -4,6 +4,9 @@ namespace App\Http\Middleware;
 use App\Models\Action;
 use App\Models\ActionGroup;
 use App\Models\Corp;
+use App\Models\Department;
+use App\Models\DepartmentUser;
+use App\Models\Group;
 use App\Models\GroupMenu;
 use App\Models\Menu;
 use App\Models\School;
@@ -54,6 +57,19 @@ class CheckRole {
                     );
                     $abort = !in_array($menuId, $menuIds) ?? false;
                     break;
+                case '教职员工':
+                    $school_id = Group::whereId($user->group_id)->first()->school_id;
+                    if (!$school_id) {
+                        $dept_id = DepartmentUser::whereUserId($user->id)->first()->department_id;
+                        $schoolDept = Department::schoolDeptId($dept_id);
+                        $school_id = School::whereDepartmentId($schoolDept)->first()->id;
+                    }
+                    $menuIds = Menu::subMenuIds(
+                        School::find($school_id)
+                            ->menu_id
+                    );
+                    $abort = !in_array($menuId, $menuIds) ?? false;
+                    break;
                 default:
                     $groupMenu = GroupMenu::whereMenuId($menuId)
                         ->where('group_id', $groupId)
@@ -79,6 +95,12 @@ class CheckRole {
                 $abort = !$tab ?? false;
                 break;
             case '学校':
+                $tab = Tab::whereIn('group_id', [0, 3])
+                    ->where('controller', $controller)
+                    ->first();
+                $abort = !$tab ?? false;
+                break;
+            case '教职员工':
                 $tab = Tab::whereIn('group_id', [0, 3])
                     ->where('controller', $controller)
                     ->first();
