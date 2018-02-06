@@ -39,6 +39,7 @@ class SemesterRequest extends FormRequest {
     protected function prepareForValidation() {
         
         $input = $this->all();
+
         $start = substr($input['start_date'],0,10);
         $end = substr($input['end_date'],0,10);
         $input['school_id'] = School::schoolId();
