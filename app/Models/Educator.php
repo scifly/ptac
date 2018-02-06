@@ -304,7 +304,6 @@ class Educator extends Model {
                         'enabled' => $user['enabled'],
                     ]);
                 }
-
                 $mobiles = $request->input('mobile');
                 if ($mobiles) {
                     foreach ($mobiles as $k => $mobile) {
