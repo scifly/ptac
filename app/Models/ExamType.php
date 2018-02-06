@@ -60,11 +60,11 @@ class ExamType extends Model {
      * @param array $data
      * @return bool
      */
-    static function store(array $data) {
+    public function store(array $data) {
         
-        $examType = self::create($data);
+        $et = self::create($data);
 
-        return $examType ? true : false;
+        return $et ? true : false;
 
     }
 
@@ -75,12 +75,12 @@ class ExamType extends Model {
      * @param $id
      * @return bool
      */
-    static function modify(array $data, $id) {
+    public function modify(array $data, $id) {
         
-        $examType = self::find($id);
-        if (!$examType) { return false; }
+        $et = self::find($id);
+        if (!$et) { return false; }
 
-        return $examType->update($data) ? true : false;
+        return $et->update($data) ? true : false;
 
     }
     
@@ -91,12 +91,12 @@ class ExamType extends Model {
      * @return bool
      * @throws Exception
      */
-    static function remove($id) {
+    public function remove($id) {
         
-        $examType = self::find($id);
-        if (!$examType) { return false; }
+        $et = self::find($id);
+        if (!$et) { return false; }
 
-        return self::removable($examType) ? $examType->delete() : false;
+        return self::removable($et) ? $et->delete() : false;
 
     }
     
@@ -105,7 +105,7 @@ class ExamType extends Model {
      *
      * @return array
      */
-    static function datatable() {
+    public function datatable() {
         
         $columns = [
             ['db' => 'ExamType.id', 'dt' => 0],

@@ -49,7 +49,7 @@ class DepartmentType extends Model {
      * @param array $data
      * @return $this|Model
      */
-    static function store(array $data) {
+    public function store(array $data) {
 
         return self::create($data);
 
@@ -62,7 +62,7 @@ class DepartmentType extends Model {
      * @param $id
      * @return bool
      */
-    static function modify(array $data, $id) {
+    public function modify(array $data, $id) {
 
         return self::find($id)->update($data);
 
@@ -75,11 +75,11 @@ class DepartmentType extends Model {
      * @return bool|null
      * @throws Exception
      */
-    static function remove($id) {
+    public function remove($id) {
 
-        $departmentType = self::find($id);
-        if (!$departmentType) { return false; }
-        $removed = self::removable($departmentType) ? $departmentType->delete() : false;
+        $dt = self::find($id);
+        if (!$dt) { return false; }
+        $removed = self::removable($dt) ? $dt->delete() : false;
 
         return $removed ? true : false;
 
@@ -90,7 +90,7 @@ class DepartmentType extends Model {
      *
      * @return array
      */
-    static function datatable() {
+    public function datatable() {
 
         $columns = [
             ['db' => 'DepartmentType.id', 'dt' => 0],

@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Facades\DB;
+use Throwable;
 
 /**
  * App\Models\Major
@@ -83,10 +84,9 @@ class Major extends Model {
      *
      * @param MajorRequest $request
      * @return bool|mixed
-     * @throws Exception
-     * @throws \Throwable
+     * @throws Throwable
      */
-    static function store(MajorRequest $request) {
+    public function store(MajorRequest $request) {
 
         try {
             DB::transaction(function () use ($request) {
@@ -94,7 +94,6 @@ class Major extends Model {
                 $subjectIds = $request->input('subject_ids', []);
                 MajorSubject::storeByMajorId($m->id, $subjectIds);
             });
-
         } catch (Exception $e) {
             throw $e;
         }
@@ -108,10 +107,9 @@ class Major extends Model {
      * @param MajorRequest $request
      * @param $id
      * @return bool|mixed
-     * @throws Exception
-     * @throws \Throwable
+     * @throws Throwable
      */
-    static function modify(MajorRequest $request, $id) {
+    public function modify(MajorRequest $request, $id) {
 
         $major = self::find($id);
         if (!isset($major)) { return false; }
@@ -136,13 +134,12 @@ class Major extends Model {
      *
      * @param $id
      * @return bool|mixed
-     * @throws Exception
-     * @throws \Throwable
+     * @throws Throwable
      */
-    static function remove($id) {
+    public function remove($id) {
 
         $major = self::find($id);
-        if (!isset($major)) { return false; }
+        if (!$major) { return false; }
         try {
             DB::transaction(function () use ($id, $major) {
                 # 删除指定的专业记录
@@ -163,7 +160,7 @@ class Major extends Model {
      *
      * @return array
      */
-    static function datatable() {
+    public function datatable() {
 
         $columns = [
             ['db' => 'Major.id', 'dt' => 0],

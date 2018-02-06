@@ -6,6 +6,7 @@ use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -45,11 +46,57 @@ class ProcedureType extends Model {
     public function procedures() { return $this->hasMany('App\Models\Procedure'); }
     
     /**
+     * 保存审批流程类型
+     *
+     * @param array $data
+     * @return bool
+     */
+    public function store(array $data) {
+        
+        $pt = self::create($data);
+        
+        return $pt ? true : false;
+        
+    }
+    
+    /**
+     * 更新审批流程类型
+     *
+     * @param array $data
+     * @param $id
+     * @return bool
+     */
+    public function modify(array $data, $id) {
+        
+        $pt = self::find($id);
+        if (!$pt) { return false; }
+        
+        return $pt->update($data) ? true : false;
+        
+    }
+    
+    /**
+     * 删除审批流程类型
+     *
+     * @param $id
+     * @return bool
+     * @throws Exception
+     */
+    public function remove($id) {
+        
+        $pt = self::find($id);
+        if (!$pt) { return false; }
+        
+        return $pt->delete() ? true : false;
+        
+    }
+    
+    /**
      * 流程种类列表
      *
      * @return array
      */
-    static function datatable() {
+    public function datatable() {
         
         $columns = [
             ['db' => 'ProcedureType.id', 'dt' => 0],

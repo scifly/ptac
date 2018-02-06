@@ -95,13 +95,43 @@ class PollQuestionnaire extends Model {
     }
     
     /**
-     * 删除问卷
+     * 保存调查问卷
+     *
+     * @param array $data
+     * @return bool
+     */
+    public function store(array $data) {
+        
+        $pq = self::create($data);
+        
+        return $pq ? true : false;
+        
+    }
+    
+    /**
+     * 更新调查问卷
+     *
+     * @param array $data
+     * @param $id
+     * @return bool
+     */
+    public function modify(array $data, $id) {
+        
+        $pq = self::find($id);
+        if (!$pq) { return false; }
+        
+        return self::update($data) ? true : false;
+        
+    }
+    
+    /**
+     * 删除调查问卷
      *
      * @param $id
      * @return bool|null
      * @throws Exception
      */
-    static function remove($id) {
+    public function remove($id) {
         
         $pq = self::find($id);
         if (!$pq) { return false; }
@@ -115,7 +145,7 @@ class PollQuestionnaire extends Model {
      *
      * @return array
      */
-    static function dataTable() {
+    public function dataTable() {
         
         $columns = [
             ['db' => 'PollQuestionnaire.id', 'dt' => 0],

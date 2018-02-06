@@ -11,7 +11,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\DB;
 
-
 /**
  * App\Models\ScoreTotal 总分
  *
@@ -73,11 +72,57 @@ class ScoreTotal extends Model {
     function subject() { return $this->belongsTo('App\Models\Subject'); }
     
     /**
-     * 总分记录列表
+     * 保存总成绩
+     *
+     * @param array $data
+     * @return bool
+     */
+    public function store(array $data) {
+        
+        $st = self::create($data);
+        
+        return $st ? true : false;
+        
+    }
+    
+    /**
+     * 更新总成绩
+     *
+     * @param array $data
+     * @param $id
+     * @return bool
+     */
+    public function modify(array $data, $id) {
+        
+        $st = self::find($id);
+        if (!$st) { return false; }
+        
+        return $st->update($data) ? true : false;
+        
+    }
+    
+    /**
+     * 删除总成绩
+     *
+     * @param $id
+     * @return bool
+     * @throws Exception
+     */
+    public function remove($id) {
+    
+        $st = self::find($id);
+        if (!$st) { return false; }
+
+        return $st->delete() ? true : false;
+        
+    }
+    
+    /**
+     * 总成绩记录列表
      *
      * @return array
      */
-    static function datatable() {
+    public function datatable() {
         
         $columns = [
             ['db' => 'ScoreTotal.id', 'dt' => 0],
@@ -149,7 +194,10 @@ class ScoreTotal extends Model {
             throw $e;
         }
         //查询参与这场考试的所有班级和科目
-        $exam = DB::table('exams')->where('id', $exam_id)->select('class_ids', 'subject_ids')->first();
+        $exam = DB::table('exams')
+            ->where('id', $exam_id)
+            ->select('class_ids', 'subject_ids')
+            ->first();
         $class = DB::table('classes')
             ->whereIn('id', explode(',', $exam->class_ids))
             ->select('id', 'grade_id')

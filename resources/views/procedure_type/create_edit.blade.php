@@ -4,8 +4,8 @@
     </div>
     <div class="box-body">
         <div class="form-horizontal">
-            @if (!empty($procedureType['id']))
-                {{ Form::hidden('id', $procedureType['id'], ['id' => 'id']) }}
+            @if (!empty($pt['id']))
+                {{ Form::hidden('id', $pt['id'], ['id' => 'id']) }}
             @endif
             <div class="form-group">
                 {!! Form::label('name', '名称', [
@@ -23,7 +23,7 @@
             @include('partials.remark')
             @include('partials.enabled', [
                 'id' => 'enabled',
-                'value' => $procedureType['enabled'] ?? null
+                'value' => $pt['enabled'] ?? null
             ])
         </div>
     </div>

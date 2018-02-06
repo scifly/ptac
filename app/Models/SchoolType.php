@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -37,8 +38,59 @@ class SchoolType extends Model {
      * @return HasMany
      */
     public function schools() { return $this->hasMany('App\Models\School'); }
-
-    static function datatable() {
+    
+    /**
+     * 保存学校类型
+     *
+     * @param array $data
+     * @return bool
+     */
+    public function store(array $data) {
+        
+        $st = self::create($data);
+        
+        return $st ? true: false;
+        
+    }
+    
+    /**
+     * 更新学校类型
+     *
+     * @param array $data
+     * @param $id
+     * @return bool
+     */
+    public function modify(array $data, $id) {
+        
+        $st = self::find($id);
+        if (!$st) { return false; }
+        
+        return $st->update($data) ? true: false;
+        
+    }
+    
+    /**
+     * 删除学校类型
+     *
+     * @param $id
+     * @return bool
+     * @throws Exception
+     */
+    public function remove($id) {
+        
+        $st = self::find($id);
+        if (!$st) { return false; }
+        
+        return $st->delete() ? true : false;
+        
+    }
+    
+    /**
+     * 学校类型列表
+     *
+     * @return array
+     */
+    public function datatable() {
 
         $columns = [
             ['db' => 'SchoolType.id', 'dt' => 0],
