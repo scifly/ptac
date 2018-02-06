@@ -72,9 +72,9 @@ class Overlaid implements Rule
                         ->pluck('end_date','start_date')->toArray();
                 }else{
                     $settings =Semester::whereSchoolId($schoolId)
-                        ->where('enabled',1)
                         ->where('end_date','!=',$start)
                         ->orWhere('start_date','!=',$end)
+                        ->where('enabled',1)
                         ->pluck('end_date','start_date')->toArray();
                 }
                 break;
