@@ -6,6 +6,7 @@ use App\Models\EducatorAttendanceSetting;
 use App\Models\Grade;
 use App\Models\School;
 use App\Models\Score;
+use App\Models\Semester;
 use App\Models\StudentAttendanceSetting;
 use Illuminate\Contracts\Validation\Rule;
 
@@ -60,6 +61,19 @@ class Overlaid implements Rule
                     $settings = StudentAttendanceSetting::whereIn('grade_id',$gradeIds)
                         ->where('day',$value[4])
                         ->pluck('end', 'start')->toArray();
+                }
+                break;
+            case 'semester':
+                $schoolId = School::schoolId();
+                if($value[3]){
+                    $settings = Semester::whereSchoolId($schoolId)
+                        ->where('id','<>', $value[3])
+                        ->where('enabled',1)
+                        ->pluck('end_date','start_date')->toArray();
+                }else{
+                    $settings =Semester::whereSchoolId($schoolId)
+                        ->where('enabled',1)
+                        ->pluck('end_date','start_date')->toArray();
                 }
                 break;
             default :
