@@ -293,7 +293,7 @@ class Educator extends Model {
                     }
                 }
                 # 当选择了学校角色没有选择 学校部门时
-                $deptUser = DepartmentUser::whereDepartmentId(Group::whereName('学校')->first()->id)
+                $deptUser = DepartmentUser::whereDepartmentId(School::find(School::schoolId())->department_id)
                     ->where('user_id', $u->id)
                     ->first();
                 if ($u->group_id == Group::whereName('学校')->first()->id && empty($deptUser)) {
