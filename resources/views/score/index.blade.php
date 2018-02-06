@@ -85,7 +85,7 @@
 
                             <div class="col-sm-6">
                                 <input type="file" id="fileupload" accept=".xls,.xlsx" name="file">
-                                <p class="help-block">下载<a href="{{URL::asset('files/scores.xls')}}">模板</a></p>
+                                <p class="help-block">下载<a href="javascript:void(0)">模板</a></p>
                             </div>
                         </div>
                     </div>
