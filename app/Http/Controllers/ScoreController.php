@@ -364,24 +364,22 @@ class ScoreController extends Controller {
      * @param $suquad_id
      * @return JsonResponse|string
      */
-    public function claStudens($suquad_id) {
-        // $squad = Squad::whereId($suquad_id)->first();
-        // if (!$squad) {
-        //     $students = [];
-        // } else {
-        //     $stus = $squad->students;
-        //     foreach ($stus as $item){
-        //
-        //     }
-        // }
-        //
-        // #返回下拉列表的字符串
-        // $html = '';
-        // foreach ($students as $key => $value) {
-        //     $html .= '<option value="' . $key . '">' . $value . '</option>';
-        // }
-        //
-        // return $students ? $this->succeed($html) : $this->fail();
+    public function claStudents($suquad_id) {
+        $squad = Squad::whereId($suquad_id)->first();
+        $students = [];
+        if ($squad) {
+            $stus = $squad->students;
+            foreach ($stus as $item){
+                $students[$item->id] = $item->student_number . '-' . $item->user->realname;
+            }
+        }
+        #返回下拉列表的字符串
+        $html = '';
+        foreach ($students as $key => $value) {
+            $html .= '<option value="' . $key . '">' . $value . '</option>';
+        }
+        
+        return $students ? $this->succeed($html) : $this->fail();
     }
 
 }

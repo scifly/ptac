@@ -378,7 +378,7 @@ class Message extends Model {
                         ];
                     } else {
                         $result = [
-                            'statusCode' => 0,
+                            'statusCode' => $status->errcode,
                             'message' => '消息发送失败！',
                         ];
                         return response()->json($result);
