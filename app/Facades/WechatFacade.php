@@ -340,7 +340,6 @@ class Wechat extends Facade {
         
         $accessToken, array $data
     ) {
-        Log::debug(json_encode($data));
         return self::curlPost(
             sprintf(self::URL_CREATE_USER, $accessToken),
             json_encode($data)

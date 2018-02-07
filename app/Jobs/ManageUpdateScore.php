@@ -61,7 +61,6 @@ class ManageUpdateScore implements ShouldQueue {
                         'enabled'    => 1,
                     ];
                     $score->update($scoreData);
-                    // Log::debug($res);
                 }
             });
         } catch (Exception $e) {

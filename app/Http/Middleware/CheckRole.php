@@ -81,7 +81,6 @@ class CheckRole {
             
             return $next($request);
         }
-        Log::debug($route);
         # 功能权限判断
 //        if (strpos($route, '?')) {
 //            $route = explode('?', $route);

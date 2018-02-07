@@ -595,7 +595,6 @@ class Score extends Model {
                         } else {
                             $code = json_encode(Wechat::batchSend('LKJK004923', "654321@", $m, $d->content . $school->signature));
                             if ($code != '0' && $code != '-1') {
-                                Log::debug($code);
                                 $success[] = $m;
                             } else {
                                 $failure[] = $m;

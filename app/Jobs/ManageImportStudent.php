@@ -73,7 +73,6 @@ class ManageImportStudent implements ShouldQueue {
                             'remark'         => $row['remark'],
                             'enabled'        => 1,
                         ]);
-                        // Log::debug($s);
                         # 创建监护人关系
                         if (!empty($relationships)) {
                             foreach ($relationships as $r) {

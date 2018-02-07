@@ -13,7 +13,6 @@ class Mobiles implements Rule {
 
 
     public function passes($attribute, $value) {
-        Log::debug($value);
         $this->value = $value;
         if (!isset($value['id'])) {
             $value['id'] = 0;

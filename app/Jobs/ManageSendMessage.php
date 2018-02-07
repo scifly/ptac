@@ -140,7 +140,6 @@ class ManageSendMessage implements ShouldQueue {
                         $read = $data['type'] == 'sms' ? 1 : 0;
                         $sent = $result['statusCode'] == 200 ? 1 : 0;
                         $mediaIds = $data['media_id'] == '' ? 0 : $data['media_id'];
-                        Log::debug(json_encode($content));
                         $m = [
                             'comm_type_id' => CommType::whereName($comtype)->first()->id,
                             'app_id' => $app['id'],
@@ -157,8 +156,6 @@ class ManageSendMessage implements ShouldQueue {
                             'read' => $read,
                             'sent' => $sent,
                         ];
-                        Log::debug(json_encode($m));
-
                         $this->create($m);
                     }
 
