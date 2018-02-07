@@ -448,7 +448,6 @@ class Message extends Model {
         $mobiles = [];
         $userDatas = [];
         if ($touser) {
-            Log::debug($touser);
 //             $userIds = explode('|', $touser);
             foreach ($touser as $i) {
                 $user = User::find($i);
