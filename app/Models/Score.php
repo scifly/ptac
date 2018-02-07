@@ -157,7 +157,7 @@ class Score extends Model {
             [
                 'db'        => 'Score.enabled', 'dt' => 12,
                 'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($d, $row,false);
+                    return Datatable::dtOps($d, $row,false,true,false);
                 },
             ],
         ];
@@ -458,14 +458,22 @@ class Score extends Model {
                             $gaToTal = ScoreTotal::whereIn('student_id', $gradeStudents->pluck('id'))
                                 ->where('exam_id', $exam)
                                 ->get();
-                            $ga = $gaToTal->sum('score') / $gaToTal->count();
+                            if ($gaToTal->count() == 0){
+                                $ga = 0;
+                            }else{
+                                $ga = $gaToTal->sum('score') / $gaToTal->count();
+                            }
                             $message[] = '年平均:' . sprintf("%.2f", $ga);
                         } else {
                             $sgaToTal = Score::whereIn('student_id', $gradeStudents->pluck('id'))
                                 ->where('exam_id', $exam)
                                 ->where('subject_id', $j)
                                 ->get();
-                            $sga = $sgaToTal->sum('score') / $sgaToTal->count();
+                            if ($sgaToTal->count() == 0){
+                                $sga = 0;
+                            }else{
+                                $sga = $sgaToTal->sum('score') / $sgaToTal->count();
+                            }
                             $message[] = $subName . '(年平均):' . sprintf("%.2f", $sga);
                         }
                     }
@@ -474,14 +482,22 @@ class Score extends Model {
                             $caToTal = ScoreTotal::whereIn('student_id', $students->pluck('id'))
                                 ->where('exam_id', $exam)
                                 ->get();
-                            $ca = $caToTal->sum('score') / $caToTal->count();
+                            if ($caToTal->count() == 0){
+                                $ca = 0;
+                            }else{
+                                $ca = $caToTal->sum('score') / $caToTal->count();
+                            }
                             $message[] = '班平均:' . sprintf("%.2f", $ca);
                         } else {
                             $scaToTal = Score::whereIn('student_id', $students->pluck('id'))
                                 ->where('exam_id', $exam)
                                 ->where('subject_id', $j)
                                 ->get();
-                            $sca = $scaToTal->sum('score') / $scaToTal->count();
+                            if ($scaToTal->count() == 0){
+                                $sca = 0;
+                            }else {
+                                $sca = $scaToTal->sum('score') / $scaToTal->count();
+                            }
                             $message[] = $subName . '(班平均):' . sprintf("%.2f", $sca);
                         }
                     }
