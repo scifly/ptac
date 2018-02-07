@@ -357,6 +357,30 @@ class ScoreController extends Controller {
         },'UTF-8')->export('xls');
 
     }
+    
+    /**
+     * 根据班级异步加载学生列表
+     *
+     * @param $suquad_id
+     * @return JsonResponse|string
+     */
+    public function claStudents($suquad_id) {
+        $squad = Squad::whereId($suquad_id)->first();
+        $students = [];
+        if ($squad) {
+            $stus = $squad->students;
+            foreach ($stus as $item){
+                $students[$item->id] = $item->student_number . '-' . $item->user->realname;
+            }
+        }
+        #返回下拉列表的字符串
+        $html = '';
+        foreach ($students as $key => $value) {
+            $html .= '<option value="' . $key . '">' . $value . '</option>';
+        }
+        
+        return $students ? $this->succeed($html) : $this->fail();
+    }
 
 }
 

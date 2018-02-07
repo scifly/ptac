@@ -20,7 +20,6 @@ class UserCreated {
      * @param array $data
      */
     public function __construct(array $data) {
-        Log::debug('sub');
         $this->data = $data;
         
     }

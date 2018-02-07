@@ -18,8 +18,11 @@ var $analysisType = $('#analysis-type');
 var $StudentDatas = $('#student-datas');
 var $classranke = $('#classranke');
 var $graderanke = $('#graderanke');
+var $class_id = $('#class_id');
 //初始化班级列表
 getSquadList($exam.val());
+//初始化学生列表
+getStudents($class_id.val());
 
 $checkTest.on('ifChecked', function (event) {
     $Test.slideToggle();
@@ -177,9 +180,24 @@ function getSquadList($id) {
     });
 }
 
+//根据班级获取学生列表
+$class_id.on('change', function () {
+    var $class_id = $(this).val();
+    getStudents($class_id);
+});
+function getStudents($claId) {
+    var $data = {'_token': $token.attr('content')};
+    $.ajax({
+        type: 'GET',
+        data: $data,
+        url: '../scores/clastudents/' + $claId,
+        success: function (result) {
+            $('#student_id').html(result.message);
+        }
+    });
+}
 
 //学生个人统计
-
 function getstudentdata(){
 	var subjectNum = 4; //科目数量（包括总分）
 	var $data = $('#scores tbody tr');
@@ -233,12 +251,12 @@ function showlinetable(data,subjectname,testName,type,i){
 	        text: subjectname,
 	        textStyle: {
 	        	fontWeight: '100',
-	        	fontSize: '16',
+	        	fontSize: '16'
 	        },
-	        top: 15,
+	        top: 15
 	    },
 	    grid:{
-	    	bottom:'80',
+	    	bottom:'80'
 	    },
 	    tooltip: {
 	        trigger: 'axis'
@@ -254,22 +272,22 @@ function showlinetable(data,subjectname,testName,type,i){
             axisTick:{ // 隐藏刻度线
                 show: false
             },
-            boundaryGap : false,
+            boundaryGap : false
 	    },
 	    yAxis: {
 	        type: 'value',
 	        axisLabel: {
 	            formatter: '{value}'
 	        },
-	        inverse: true,
+	        inverse: true
 	    },
 		
 	    series: [
 	        {
 	            name:'排名',
 	            type:'line',
-	            data:data,
-	        },
+	            data:data
+	        }
 	        
 	    ]
 	};

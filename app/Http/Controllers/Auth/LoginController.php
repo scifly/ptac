@@ -50,7 +50,6 @@ class LoginController extends Controller {
     public function login(Request $request) {
         
         if (!$request->ajax() && Auth::id()) {
-            Log::debug('GET request');
             return response()->redirectTo($request->server('HTTP_REFERER'));
         }
         $returnUrl = null;

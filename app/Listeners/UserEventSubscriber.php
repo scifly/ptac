@@ -16,7 +16,6 @@ class UserEventSubscriber {
      * @param $event
      */
     public function onUserCreated($event) {
-        Log::debug('come');
         // $job = new ManageWechatMember($event->data, 'create');
         // $this->dispatch($job)->onQueue('import');
         ManageWechatMember::dispatch($event->data, 'create')->onQueue('import');
