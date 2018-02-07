@@ -6,11 +6,7 @@
 					<div class="box-header with-border">
 	                    <span id="breadcrumb" style="color: #999; font-size: 13px;">成绩分析</span>
 	                </div>
-                    <div class="box-body" id="datas" style="display: none;">
-
-                    </div>
-                    <?php echo $__env->make('score.analysis_student_data', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
-                    
+                    <div class="box-body" id="datas" style="display: none;"></div>
 					<div class="box-body" id="roles" style="display: block;">
 						<div class="row">
 							<div class="form-horizontal">

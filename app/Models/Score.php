@@ -303,6 +303,7 @@ class Score extends Model {
         #按学生id对本次考试成绩 分组
         $studentScore = Score::whereExamId($exam_id)
             ->whereEnabled(1)
+            ->whereIn('subject_id', $examSub)
             ->get()
             ->groupBy('student_id');
         foreach ($studentScore as $s) {
@@ -828,6 +829,17 @@ class Score extends Model {
         }
         
         #分析学生
+        if($input['type'] == 1){
+            $data = (new Score)->stuAnalysis($input);
+            if ($data) {
+                return view('score.analysis_student_data', [
+                    'examScore'   => $data['examScore'],
+                ])->render();
+            } else {
+                return false;
+            }
+            
+        }
         return false;
     }
     
@@ -1082,6 +1094,55 @@ class Score extends Model {
     }
     
     /**
+     * 学生成绩分析
+     * @param $input
+     */
+    public function stuAnalysis($input){
+        #先找出这个学生最近十场考试
+          $exams = Exam::all();
+          $stuExams = [];
+          foreach ($exams as $exam){
+              if(in_array($input['class_id'], explode(',', $exam->class_ids))){
+                  if(count($stuExams) < 10) {
+                      $stuExams[] = $exam->id;
+                  }
+              }
+          }
+          $stuScores = [];
+          #十次考试科目汇总
+          $examSubjects = [];
+          $subjects = [];
+          #存这十次考试的科目和id
+          $subName = [];
+          foreach ($stuExams as $stuExam){
+              $exam = Exam::whereId($stuExam)->first();
+              $examSubjects[] = explode(',', $exam->subject_ids);
+          }
+          foreach ($examSubjects as $sub){
+              foreach ($sub as $s){
+                  $subjects[] = $s;
+              }
+          }
+          foreach(array_unique($subjects) as $item){
+              $subName[$item] = Subject::whereId($item)->first()->name;
+          }
+          foreach ($stuExams as $stuExam){
+              $stuScores[] = $this->whereExamId($stuExam)
+                  ->whereStudentId($input['student_id'])
+                  ->whereEnabled(1)
+                  ->get();
+          }
+          $data['examScore'] = $stuScores;
+          $data['subjectName'] = $subName;
+    
+        // foreach ($stuScores as $stuScore){
+          //
+          // }
+          // print_r($stuScores);
+          // die;
+    }
+    
+    /**
      * 微信 监护人端 综合成绩分析
      * @param $input
      * @return array|bool
@@ -1331,8 +1392,4 @@ class Score extends Model {
         }
         return $allScores;
     }
-
-
-
-
 }
