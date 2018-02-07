@@ -103,7 +103,7 @@
                             'class' => 'form-control',
                             'placeholder' => '(请输入用户名)',
                             'required' => 'true',
-                            'data-parsley-length' => '[6,20]'
+                            'data-parsley-length' => '[6,30]'
                         ]); ?>
 
                     </div>
@@ -196,7 +196,7 @@
             <!-- 所属班级 -->
             <?php echo $__env->make('educator.class_subject', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
             <!-- 所属部门 -->
-            <div class="form-group">
+            <div class="form-group depart">
                 <?php echo Form::label('departmentId', '所属部门', [
                     'class' => 'col-sm-3 control-label'
                 ]); ?>

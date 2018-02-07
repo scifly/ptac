@@ -254,7 +254,7 @@ function showlinetable(data,subjectname,testName,type,i){
             axisTick:{ // 隐藏刻度线
                 show: false
             },
-            boundaryGap : false,
+            boundaryGap : false
 	    },
 	    yAxis: {
 	        type: 'value',
@@ -268,7 +268,7 @@ function showlinetable(data,subjectname,testName,type,i){
 	        {
 	            name:'排名',
 	            type:'line',
-	            data:data,
+	            data:data
 	        },
 	        
 	    ]

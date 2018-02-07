@@ -306,7 +306,6 @@ class Message extends Model {
             $userItems = implode('|', $us);
             $touser = implode('|', $users);
             $toparty = implode('|', $depts);
-            Log::debug($us);
             # 推送的所有用户以及电话
             $userDatas = $this->getMobiles($us, $depts);
             $title = '';
@@ -356,6 +355,7 @@ class Message extends Model {
 
                         break;
                         case 'mpnews' :
+                            if(isset($i)) unset($i);
                             $i['articles'][] = $data['content']['articles'];
                             $message['mpnews'] = $i;
                             $title = $data['content']['articles']['title'];
@@ -371,7 +371,7 @@ class Message extends Model {
                     $status = json_decode(Wechat::sendMessage($token, $message));
                     $content = $message[$data['type']];
 
-                    if ($status->errcode == 0) {
+                    if ($status->errcode == 0   ) {
                         $result = [
                             'statusCode' => 200,
                             'message' => '消息已发送！',
@@ -390,7 +390,6 @@ class Message extends Model {
                     $read = $data['type'] == 'sms' ? 1 : 0;
                     $sent = $result['statusCode'] == 200 ? 1 : 0;
                     $mediaIds = $data['media_id'] == '' ? 0 : $data['media_id'];
-                    Log::debug(json_encode($content));
                     $m = [
                         'comm_type_id' => CommType::whereName($comtype)->first()->id,
                         'app_id' => $app['id'],
@@ -407,8 +406,6 @@ class Message extends Model {
                         'read' => $read,
                         'sent' => $sent,
                     ];
-                    Log::debug(json_encode($m));
-
                     $this->create($m);
                 }
 
@@ -434,19 +431,9 @@ class Message extends Model {
      */
     public function sendSms($touser, $toparty, $content) {
         $items = $this->getMobiles($touser, $toparty);
-//        $autograph = School::find(School::id())->autograph;
         $autograph = '【成都外国语】';
-        // print_r(array_unique($items['mobiles']));
-        // print_r($content);
-        // die;
         $result = Wechat::batchSend('LKJK004923', "654321@", implode(',', $items['mobiles']), $content . $autograph);
         return json_encode($result);
-//Log::debug($content . $autograph);
-//Log::debug(implode(',', $mobiles));
-//Log::debug(json_encode($result));
-//Log::debug(md5('654321@'));
-//Log::debug(bcrypt('654321@'));
-
     }
 
     /**
@@ -461,7 +448,6 @@ class Message extends Model {
         $mobiles = [];
         $userDatas = [];
         if ($touser) {
-            Log::debug($touser);
 //             $userIds = explode('|', $touser);
             foreach ($touser as $i) {
                 $user = User::find($i);

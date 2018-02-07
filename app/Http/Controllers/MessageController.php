@@ -38,7 +38,6 @@ class MessageController extends Controller {
     public function index() {
         
         if (Request::get('draw')) {
-            Log::debug(response()->json(Message::datatable()));
             return response()->json(Message::datatable());
         }
         if (Request::method() == 'POST') {
@@ -219,7 +218,10 @@ class MessageController extends Controller {
             if ($mes) {
                 $result['statusCode'] = 1;
                 $result['message'] = '上传成功！';
-                $path = $mes['path'];
+                #window env 2018-02-06 by wenw
+                $path =public_path().'\\'.str_replace('/','\\',$mes['path']) ;
+                #linux env 2018-02-06 by wenw
+                #$path =$mes['path'];
                 $data = ["media" => curl_file_create($path)];
                 $crop = Corp::whereName('万浪软件')->first();
                 $app = App::whereAgentid('999')->first();
