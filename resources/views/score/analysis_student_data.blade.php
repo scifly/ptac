@@ -51,9 +51,9 @@
 					<td class="classrankeItem">{{ $item['class_rank'] }}</td>
 					<td class="graderankeItem">{{ $item['grade_rank'] }}</td>
 					@endforeach
-						<td>250</td>
-					<td class="classrankeItem">18</td>
-					<td class="graderankeItem">153</td>
+					<td>{{ $exam['scoreTotal']['score'] }}</td>
+					<td class="classrankeItem">{{ $exam['scoreTotal']['class_rank'] }}</td>
+					<td class="graderankeItem">{{ $exam['scoreTotal']['grade_rank'] }}</td>
 				</tr>
 				@endforeach
 				@endif

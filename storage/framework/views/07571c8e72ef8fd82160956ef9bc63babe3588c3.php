@@ -51,9 +51,9 @@
 					<td class="classrankeItem"><?php echo e($item['class_rank']); ?></td>
 					<td class="graderankeItem"><?php echo e($item['grade_rank']); ?></td>
 					<?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-						<td>250</td>
-					<td class="classrankeItem">18</td>
-					<td class="graderankeItem">153</td>
+					<td><?php echo e($exam['scoreTotal']['score']); ?></td>
+					<td class="classrankeItem"><?php echo e($exam['scoreTotal']['class_rank']); ?></td>
+					<td class="graderankeItem"><?php echo e($exam['scoreTotal']['grade_rank']); ?></td>
 				</tr>
 				<?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 				<?php endif; ?>

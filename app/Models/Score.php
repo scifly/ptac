@@ -1185,6 +1185,7 @@ class Score extends Model {
             'subjectName' => $subName,
             'student' => $student
         ];
+
         return $data;
     }
     
