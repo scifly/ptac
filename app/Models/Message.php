@@ -370,7 +370,6 @@ class Message extends Model {
 
                     $status = json_decode(Wechat::sendMessage($token, $message));
                     $content = $message[$data['type']];
-                    Log::debug($status->errcode);
                     if ($status->errcode == 0) {
                         $result = [
                             'statusCode' => 200,
@@ -378,7 +377,7 @@ class Message extends Model {
                         ];
                     } else {
                         $result = [
-                            'statusCode' => 0,
+                            'statusCode' => $status->errcode,
                             'message' => '消息发送失败！',
                         ];
                         return response()->json($result);
