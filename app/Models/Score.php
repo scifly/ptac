@@ -419,7 +419,11 @@ class Score extends Model {
                 foreach ($project as $p) {
                     if ($p == 'score') {
                         if ($j == '-1') {
-                            $message[] = '总分:' . $sum;
+                            $message[] = '总分:' . ScoreTotal::
+                                whereExamId($exam)
+                                    ->where('student_id', $s->id)
+                                    ->first()
+                                    ->score;
                         } else {
                             $message[] = $sub->name . ':' . $subScore->score;
                         }
