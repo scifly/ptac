@@ -69,7 +69,7 @@
 	        </table>
 		</div>
 	@endif
-@if(!empty($scoreToRanges))
+@if(!empty($totalRanges))
 	<div class="row">
 			<div class="subtitle">
 				总分分数段成绩分布情况
