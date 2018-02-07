@@ -217,15 +217,17 @@ class Educator extends Model {
                     'telephone' => $user['telephone'],
                     'enabled' => $user['enabled'],
                 ]);
-                # 创建教职员工
+                # 创建教职员工(当角色选择学校管理员时，也同时创建教职员工数据)
+
+                $educatorInputData = $request->input('educator');
+                $educator = self::create([
+                    'user_id' => $u->id,
+                    'school_id' => $educatorInputData['school_id'],
+                    'sms_quote' => 0,
+                    'enabled' => $user['enabled'],
+                ]);
                 if ($u->group_id != Group::whereName('学校')->first()->id) {
-                    $educatorInputData = $request->input('educator');
-                    $educator = self::create([
-                        'user_id' => $u->id,
-                        'school_id' => $educatorInputData['school_id'],
-                        'sms_quote' => 0,
-                        'enabled' => $user['enabled'],
-                    ]);
+
                     # 保存班级科目绑定关系
                     $classSubjectData = $request->input('classSubject');
                     if ($classSubjectData['class_ids'] && $classSubjectData['subject_ids']) {
@@ -279,7 +281,6 @@ class Educator extends Model {
                         }
                     }
                 }
-
                 # 创建部门信息
                 $selectedDepartments = $request->input('selectedDepartments');
                 if (!empty($selectedDepartments)) {
@@ -303,7 +304,6 @@ class Educator extends Model {
                         'enabled' => $user['enabled'],
                     ]);
                 }
-
                 $mobiles = $request->input('mobile');
                 if ($mobiles) {
                     foreach ($mobiles as $k => $mobile) {

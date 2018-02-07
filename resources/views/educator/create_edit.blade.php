@@ -178,7 +178,7 @@
             <!-- 所属班级 -->
             @include('educator.class_subject')
             <!-- 所属部门 -->
-            <div class="form-group">
+            <div class="form-group depart">
                 {!! Form::label('departmentId', '所属部门', [
                     'class' => 'col-sm-3 control-label'
                 ]) !!}

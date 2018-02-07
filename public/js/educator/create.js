@@ -22,6 +22,9 @@ $(document).on('click', '.btn-class-add', function (e) {
     $class.find('tr:not(:last) .btn-class-add')
         .removeClass('btn-class-add').addClass('btn-class-remove')
         .html('<i class="fa fa-minus text-blue"></i>');
+    $('#user[group_id]').on('click',function(){
+        alert(123);
+    });
 }).on('click', '.btn-class-remove', function (e) {
     // 删除元素
     $(this).parents('tr:first').remove();
