@@ -371,7 +371,7 @@ class Message extends Model {
                     $status = json_decode(Wechat::sendMessage($token, $message));
                     $content = $message[$data['type']];
 
-                    if ($status->errcode == 0) {
+                    if ($status->errcode == 0   ) {
                         $result = [
                             'statusCode' => 200,
                             'message' => '消息已发送！',
@@ -390,7 +390,6 @@ class Message extends Model {
                     $read = $data['type'] == 'sms' ? 1 : 0;
                     $sent = $result['statusCode'] == 200 ? 1 : 0;
                     $mediaIds = $data['media_id'] == '' ? 0 : $data['media_id'];
-                    Log::debug(json_encode($content));
                     $m = [
                         'comm_type_id' => CommType::whereName($comtype)->first()->id,
                         'app_id' => $app['id'],
@@ -407,8 +406,6 @@ class Message extends Model {
                         'read' => $read,
                         'sent' => $sent,
                     ];
-                    Log::debug(json_encode($m));
-
                     $this->create($m);
                 }
 

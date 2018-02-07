@@ -335,7 +335,6 @@ class Educator extends Model {
      * @throws \Throwable
      */
     static function modify(EducatorRequest $request) {
-        Log::debug(214);
         try {
             DB::transaction(function () use ($request) {
                 $user = $request->input('user');
@@ -353,7 +352,6 @@ class Educator extends Model {
                     'enabled' => $user['enabled'],
                 ]);
                 $selectedDepartments = $request->input('selectedDepartments');
-                Log::debug($selectedDepartments);
                 if (!empty($selectedDepartments)) {
                     DepartmentUser::whereUserId($request->input('user_id'))->delete();
                     foreach ($selectedDepartments as $department) {
