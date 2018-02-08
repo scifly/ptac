@@ -225,29 +225,51 @@ function getstudentdata() {
         classrankes[p] = new Array();
         graderankes[p] = new Array();
         for (var q = 0; q < $data.length; q++) {
+            var tmp = 1;
             var $datacon = $data.eq(q);
             var name = $datacon.find('.testName').text();
+            var classval = $datacon.find('.classrankeItem').eq(p).text();
             var json1 = {
                 'name': name,
-                'value': $datacon.find('.classrankeItem').eq(p).text()
+                'value': classval
             };
             classrankes[p].push(json1);
-
+            var gradeval = $datacon.find('.graderankeItem').eq(p).text();
             var json2 = {
                 'name': name,
-                'value': $datacon.find('.graderankeItem').eq(p).text()
+                'value': gradeval
             };
             graderankes[p].push(json2);
         }
+
         subjectName.push($('#scores thead tr .subjectName').eq(p).text());
         //班级排名图表
         $classranke.append('<div class="linetableitem" id="class-' + p + '">');
-
-        showlinetable(classrankes[p], subjectName[p], testName, 'class', p);
-
+        var classtmp = 0;
+        for(var k=0;k<classrankes[p].length;k++){
+            if(classrankes[p][k].value !== '——'){
+                classtmp = 1;
+            }
+        }
+        if(classtmp === 1){
+            showlinetable(classrankes[p], subjectName[p], testName, 'class', p);
+        }else{
+            $('#class-' + [p]).remove();
+        }
         //年级排名图表
         $graderanke.append('<div class="linetableitem" id="grade-' + p + '">');
-        showlinetable(graderankes[p], subjectName[p], testName, 'grade', p);
+        var gradetmp = 0;
+        for(var j=0;j<graderankes[p].length;j++){
+            if(graderankes[p][j].value !== '——'){
+                gradetmp = 1;
+            }
+        }
+        if(gradetmp === 1){
+            showlinetable(graderankes[p], subjectName[p], testName, 'grade', p);
+        }else{
+            $('#grade-' + [p]).remove();
+        }
+
     }
 }
 
