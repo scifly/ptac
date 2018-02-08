@@ -65,7 +65,10 @@ class ScoreRangeController extends Controller {
      * @return JsonResponse|Response|string
      */
     public function store(ScoreRangeRequest $request) {
-        
+        $input = $request->all();
+        if($input['start_score'] > $input['end_score'] || $input['start_score'] == $input['end_score']){
+            return $this->fail('截止分数应该小于起始分数！');
+        }
         //添加新数据
         return $this->scoreRange->store($request->all())
             ? $this->succeed() : $this->fail();
@@ -98,13 +101,14 @@ class ScoreRangeController extends Controller {
      * @return JsonResponse
      */
     public function update(ScoreRangeRequest $request, $id) {
-        
+        $input = $request->all();
         $scoreRange = $this->scoreRange->find($id);
         if (!$scoreRange) { return $this->notFound(); }
-        $score_range = $request->all();
-        // $score_range['subject_ids'] = explode(',', $score_range['subject_ids']);
+        if($input['start_score'] > $input['end_score'] || $input['start_score'] == $input['end_score']){
+            return $this->fail('截止分数应该小于起始分数！');
+        }
         
-        return $scoreRange->update($score_range) ? $this->succeed() : $this->fail();
+        return $scoreRange->update($request->all()) ? $this->succeed() : $this->fail();
         
     }
     
