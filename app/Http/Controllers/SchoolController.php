@@ -165,7 +165,7 @@ class SchoolController extends Controller {
             ]);
         }
         session(['menuId' => $menuId]);
-        $school = School::find(School::schoolId())->first();
+        $school = School::find(School::schoolId());
 
         return response()->json([
             'statusCode' => self::OK,
