@@ -68,12 +68,14 @@
                                         <td>0</td>
                                     @endif
                                 </tr>
+                                @if(!empty($data['rangs'][$one['subId']]))
                                 @foreach($data['rangs'][$one['subId']] as $ran)
                                     <tr>
                                         <td class="subtit">{{ $ran['range']['min'] }} - {{ $ran['range']['max'] }}分</td>
                                         <td>{{ $ran['score']['number'] }}</td>
                                     </tr>
                                 @endforeach
+                                @endif
                             </table>
                         </div>
                         @endif
