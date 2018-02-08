@@ -211,8 +211,7 @@ function getStudents($claId) {
 function getstudentdata() {
     var $classranke = $('#classranke');
     var $graderanke = $('#graderanke');
-
-    var subjectNum = 3; //科目数量（包括总分）
+    var subjectNum = parseInt($('#sub_number').val()) + 1; //科目数量（包括总分）
     var $data = $('#scores tbody tr');
     var length = $data.length;
     var subjectName = new Array();
