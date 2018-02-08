@@ -44,7 +44,7 @@
 				@foreach($examScore as $exam)
 				<tr>
 					<td>{{ $exam['examId'] }}</td>
-					<td class="testName">{{ $exam['examName'] }}/td>
+					<td class="testName">{{ $exam['examName'] }}</td>
 					<td>{{ $exam['examTime'] }}</td>
 					@foreach($exam['score'] as $item)
 					<td>{{ $item['score'] }}</td>
@@ -72,7 +72,7 @@
 	
 	<div class="row">
 		<div class="subtitle">
-			徐邹昊各科班级排名变化
+			徐邹昊各科年级排名变化
 		</div>
 		<div id="graderanke">
 			

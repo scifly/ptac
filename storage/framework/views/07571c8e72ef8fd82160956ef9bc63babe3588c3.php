@@ -44,7 +44,7 @@
 				<?php $__currentLoopData = $examScore; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $exam): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
 				<tr>
 					<td><?php echo e($exam['examId']); ?></td>
-					<td class="testName"><?php echo e($exam['examName']); ?>/td>
+					<td class="testName"><?php echo e($exam['examName']); ?></td>
 					<td><?php echo e($exam['examTime']); ?></td>
 					<?php $__currentLoopData = $exam['score']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
 					<td><?php echo e($item['score']); ?></td>

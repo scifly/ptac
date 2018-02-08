@@ -16,8 +16,7 @@ var $exam = $('#exam_id');
 var $squad = $('#squad');
 var $analysisType = $('#analysis-type');
 var $StudentDatas = $('#student-datas');
-var $classranke = $('#classranke');
-var $graderanke = $('#graderanke');
+
 var $class_id = $('#class_id');
 //初始化班级列表
 getSquadList($exam.val());
@@ -44,29 +43,47 @@ $show_data.off('click').click(function () {
         examId = $exam.val();
         squad = $squad.val();
         data = {'_token': $token.attr('content'), 'exam_id': examId, 'squad_id': squad, 'type': $type};
-    } else {
+        // 异步填充表格数据
+        $.ajax({
+            type: 'POST',
+            data: data,
+            url: '../scores/analysis_data',
+            success: function (result) {
+                if (result.statusCode === 200) {
+                    $datas.html(result.message);
+                    $roles.hide();
+                    $datas.show();
+                    $show_rols = $('#close-data');
+                    close_data();
+                    getdata();
+                } else {
+                    page.inform('操作结果', result.message, page.failure);
+                }
+            }
+        });
+       } else {
         classId = $('#class_id').val();
         student = $('#student_id').val();
         data = {'_token': $token.attr('content'), 'class_id': classId, 'student_id': student, 'type': $type};
-    }
-    // 异步填充表格数据
-    $.ajax({
-        type: 'POST',
-        data: data,
-        url: '../scores/analysis_data',
-        success: function (result) {
-            if (result.statusCode === 200) {
-                $datas.html(result.message);
-                $roles.hide();
-                $datas.show();
-                $show_rols = $('#close-data');
-                close_data();
-                getdata();
-            } else {
-                page.inform('操作结果', result.message, page.failure);
+        // 异步填充表格数据
+        $.ajax({
+            type: 'POST',
+            data: data,
+            url: '../scores/analysis_data',
+            success: function (result) {
+                if (result.statusCode === 200) {
+                    $datas.html(result.message);
+                    $roles.hide();
+                    $datas.show();
+                    $show_rols = $('#close-data');
+                    close_data();
+                    getstudentdata();
+                } else {
+                    page.inform('操作结果', result.message, page.failure);
+                }
             }
-        }
-    });
+        });
+    }
 });
 
 function close_data() {
@@ -192,7 +209,10 @@ function getStudents($claId) {
 
 //学生个人统计
 function getstudentdata() {
-    var subjectNum = 4; //科目数量（包括总分）
+    var $classranke = $('#classranke');
+    var $graderanke = $('#graderanke');
+
+    var subjectNum = 3; //科目数量（包括总分）
     var $data = $('#scores tbody tr');
     var length = $data.length;
     var subjectName = new Array();
@@ -210,20 +230,22 @@ function getstudentdata() {
             var name = $datacon.find('.testName').text();
             var json1 = {
                 'name': name,
-                'value': $datacon.find('.classrankeItem').eq(p).text(),
+                'value': $datacon.find('.classrankeItem').eq(p).text()
             };
             classrankes[p].push(json1);
 
             var json2 = {
                 'name': name,
-                'value': $datacon.find('.graderankeItem').eq(p).text(),
+                'value': $datacon.find('.graderankeItem').eq(p).text()
             };
             graderankes[p].push(json2);
         }
         subjectName.push($('#scores thead tr .subjectName').eq(p).text());
         //班级排名图表
         $classranke.append('<div class="linetableitem" id="class-' + p + '">');
+
         showlinetable(classrankes[p], subjectName[p], testName, 'class', p);
+
         //年级排名图表
         $graderanke.append('<div class="linetableitem" id="grade-' + p + '">');
         showlinetable(graderankes[p], subjectName[p], testName, 'grade', p);
@@ -231,6 +253,7 @@ function getstudentdata() {
 }
 
 function showlinetable(data, subjectname, testName, type, i) {
+    // console.log(i);
     var myChart = echarts.init($('#' + type + '-' + i)[0]);
     var option = {
         title: {
@@ -248,6 +271,7 @@ function showlinetable(data, subjectname, testName, type, i) {
         tooltip: {
             trigger: 'axis'
         },
+
         xAxis: {
             show: false,
             type: 'category',
@@ -259,7 +283,10 @@ function showlinetable(data, subjectname, testName, type, i) {
             axisTick: { // 隐藏刻度线
                 show: false
             },
-            boundaryGap: false
+            boundaryGap: false,
+            axisLabel :{
+                interval:0
+            }
         },
         yAxis: {
             type: 'value',
@@ -273,7 +300,9 @@ function showlinetable(data, subjectname, testName, type, i) {
             {
                 name: '排名',
                 type: 'line',
-                data: data
+                data: data,
+                connectNulls:true,
+
             }
 
         ]
