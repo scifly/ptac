@@ -216,7 +216,8 @@ class Score extends Model {
         ];
         
         // todo: 增加过滤条件
-        return Datatable::simple(self::getModel(), $columns, $joins);
+        $condition = 'Subject.school_id = ' . School::schoolId();
+        return Datatable::simple(self::getModel(), $columns, $joins, $condition);
         
     }
     
