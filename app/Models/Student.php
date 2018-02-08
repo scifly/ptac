@@ -681,7 +681,6 @@ class Student extends Model {
         $user = Auth::user();
         $role = $user->group->name;
         if($role == '教职员工'){
-            $gradeIds = $classIds = [];
             $educatorId = $user->educator->id;
             $grades = Grade::where('educator_ids','like','%'.$educatorId.'%')
                 ->get();
@@ -718,10 +717,6 @@ class Student extends Model {
 
     }
 
-
-    public function getStudentIds()
-    {
-
-    }
+    
 
 }
