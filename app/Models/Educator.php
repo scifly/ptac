@@ -217,7 +217,7 @@ class Educator extends Model {
                     'telephone' => $user['telephone'],
                     'enabled' => $user['enabled'],
                 ]);
-                # 创建教职员工(当角色选择学校管理员时，也同时创建教职员工数据)
+                # 创建教职员工(当角色选择学校管理员时，也同时创建教职员工数据20180207 by wenw)
 
                 $educatorInputData = $request->input('educator');
                 $educator = self::create([

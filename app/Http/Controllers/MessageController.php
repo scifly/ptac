@@ -219,11 +219,7 @@ class MessageController extends Controller {
                 $result['statusCode'] = 1;
                 $result['message'] = '上传成功！';
                 #window env 2018-02-06 by wenw
-<<<<<<< HEAD
-                #$path =public_path().'\\'.str_replace('/','\\',$mes['path']) ;
-=======
 //                $path =public_path().'\\'.str_replace('/','\\',$mes['path']) ;
->>>>>>> refs/remotes/origin/master
                 #linux env 2018-02-06 by wenw
                 $path =$mes['path'];
                 $data = ["media" => curl_file_create($path)];
