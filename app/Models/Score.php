@@ -1172,7 +1172,11 @@ class Score extends Model {
                     'grade_rank' => $examTotal->grade_rank
                 ];
             } else {
-                $scoreTotal = [];
+                $scoreTotal = [
+                    'score'      => '——',
+                    'class_rank' => '——',
+                    'grade_rank' => '——'
+                ];
             }
             $stuScores[] = [
                 'examId' => $stuExam,
