@@ -294,7 +294,7 @@ class Tab extends Model {
                     ->whereIn('group_id', [0, 3])
                     ->pluck('id')
                     ->toArray();
-                
+
 //            case '教职员工':
 //                return self::whereEnabled(1)
 //                    ->whereIn('group_id', [0, 3])
