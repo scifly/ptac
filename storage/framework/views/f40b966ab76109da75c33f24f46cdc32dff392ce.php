@@ -16,6 +16,7 @@
                 <th>年级排名</th>
                 <th>创建于</th>
                 <th>更新于</th>
+                <th>状态</th>
             </tr>
             </thead>
             <tbody></tbody>

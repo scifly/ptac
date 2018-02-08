@@ -18,7 +18,7 @@
 							<?php echo $__env->make('partials.single_select', [
 								'label' => '考试名称',
 								'id' => 'exam_id',
-								'items' => $exams
+								'items' => $examScore
 							], array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
 					    </div>
 					</div>
@@ -48,13 +48,17 @@
 									<input type="checkbox" class="minimal" value="-1">
 									总分
 								</label>
-								<?php $__currentLoopData = $subjects; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $s): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-									<label>
-										<input type="checkbox" class="minimal" value="<?php echo e($s['id']); ?>">
-										<?php echo e($s['name']); ?>
+								<?php if(($subjects)): ?>
+									<?php $__currentLoopData = $subjects; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $s): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+										<?php if($s): ?>
+										<label>
+											<input type="checkbox" class="minimal" value="<?php echo e($s['id']); ?>">
+											<?php echo e($s['name']); ?>
 
-									</label>
-								<?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+										</label>
+										<?php endif; ?>
+									<?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+								<?php endif; ?>
 				   			</div>
 				    	</div>
 				    </div>

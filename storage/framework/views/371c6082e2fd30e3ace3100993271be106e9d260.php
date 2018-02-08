@@ -51,6 +51,7 @@
                         'placeholder' => '(不超过10个数字)',
                         'required' => 'true',
                         'type' => "number",
+                        'data-parsley-range' => '[100,150]',
                         'data-parsley-length' => '[1, 10]'
                     ]); ?>
 
@@ -67,6 +68,7 @@
                         'placeholder' => '(不超过10个数字)',
                         'required' => 'true',
                         'type' => "number",
+                        'data-parsley-range' => '[60,90]',
                         'data-parsley-length' => '[1, 10]'
                     ]); ?>
 

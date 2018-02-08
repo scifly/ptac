@@ -21,8 +21,8 @@ class ExamRequest extends FormRequest {
             'exam_type_id' => 'required|integer',
             'class_ids'    => 'required|string',
             'subject_ids'  => 'required|string',
-            'max_scores'   => 'required|string|max:20',
-            'pass_scores'  => 'required|string|max:20',
+            // 'max_scores'   => 'required|string|max:20',
+            // 'pass_scores'  => 'required|string|max:20',
             'start_date'   => 'required|date',
             'end_date'     => 'required|date',
             'enabled'      => 'required|boolean',
@@ -39,7 +39,12 @@ class ExamRequest extends FormRequest {
         if (isset($input['subject_ids'])) {
             $input['subject_ids'] = implode(',', $input['subject_ids']);
         }
-        
+        if(!isset($input['max_scores'])){
+            $input['max_scores'] = '150';
+        }
+        if(!isset($input['pass_scores'])){
+            $input['pass_scores'] = '90';
+        }
         $this->replace($input);
         
     }

@@ -748,7 +748,7 @@ class Student extends Model {
                 }
             }
         }
-        
+
         return [$classIds,$studentIds];
     }
     /**
