@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
@@ -29,7 +30,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property-read Collection|School[] $schools
  */
 class SchoolType extends Model {
-
+    
+    use ModelTrait;
+    
     protected $fillable = ['name', 'remark', 'enabled'];
 
     /**
@@ -80,9 +83,9 @@ class SchoolType extends Model {
         
         $st = self::find($id);
         if (!$st) { return false; }
+        $removed = SchoolType::removable($st) ? $st->delete() : false;
         
-        return $st->delete() ? true : false;
-        
+        return $removed ?? false;     
     }
     
     /**
