@@ -678,9 +678,45 @@ class Student extends Model {
             ],
         ];
         $condition = 'Grade.school_id = ' . School::schoolId();
-        
+        $user = Auth::user();
+        $role = $user->group->name;
+        if($role == '教职员工'){
+            $educatorId = $user->educator->id;
+            $grades = Grade::where('educator_ids','like','%'.$educatorId.'%')
+                ->get();
+            if(sizeof($grades) !== 0)
+            {
+                foreach ($grades as $g){
+                    $classes = $g->classes;
+                    foreach ($classes as $c){
+                        $students = $c->students;
+                        foreach ($students as $s){
+                            $studentIds[] = $s->id;
+                        }
+                    }
+                }
+                sort($studentIds);
+                $studentIds = implode(',',$studentIds);
+                $condition .= " and Student.id in ($studentIds)";
+            }else{
+                $classes = Squad::where('educator_ids','like','%'.$educatorId.'%')->get();
+
+                foreach ($classes as $c){
+                    $students = $c->students;
+                    foreach ($students as $s){
+                        $studentIds[] = $s->id;
+                    }
+                }
+                sort($studentIds);
+                $studentIds = implode(',',$studentIds);
+                $condition .= " and Student.id in ($studentIds)";
+            }
+
+        }
         return Datatable::simple(self::getModel(), $columns, $joins, $condition);
 
     }
+
+    
 
 }
