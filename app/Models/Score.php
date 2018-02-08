@@ -1089,7 +1089,7 @@ class Score extends Model {
             }
         }
         $data = [
-            'className'   => $exam->start_date,
+            'className'   => $squad->name,
             'examName'    => $exam->name,
             'oneData'     => $firstTableData,
             'rangs'       => $rangs,
