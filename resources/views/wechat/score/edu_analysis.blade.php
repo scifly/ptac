@@ -62,7 +62,11 @@
                             <table class="table-count">
                                 <tr>
                                     <td class="subtit">统计人数</td>
+                                    @if(!empty($data['rangs'][$one['subId']][0]['score']['count']))
                                     <td>{{ $data['rangs'][$one['subId']][0]['score']['count'] }}</td>
+                                    @else
+                                        <td>0</td>
+                                    @endif
                                 </tr>
                                 @foreach($data['rangs'][$one['subId']] as $ran)
                                     <tr>
