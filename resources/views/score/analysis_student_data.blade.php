@@ -20,6 +20,7 @@
 				考试情况
 			@endif
 		</div>
+		<input class="number" id="sub_number" value="{{ count($subjectName) }}" hidden>
         <table id="scores" style="width: 100%;"
            class="display nowrap table table-striped table-bordered table-hover table-condensed">
 			<thead>

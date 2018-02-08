@@ -20,6 +20,7 @@
 				考试情况
 			<?php endif; ?>
 		</div>
+		<input class="number" id="sub_number" value="<?php echo e(count($subjectName)); ?>" hidden>
         <table id="scores" style="width: 100%;"
            class="display nowrap table table-striped table-bordered table-hover table-condensed">
 			<thead>
@@ -46,13 +47,11 @@
 					<td><?php echo e($exam['examId']); ?></td>
 					<td class="testName"><?php echo e($exam['examName']); ?></td>
 					<td><?php echo e($exam['examTime']); ?></td>
-					<?php if(!empty($exam['score'])): ?>
 					<?php $__currentLoopData = $exam['score']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
 					<td><?php echo e($item['score']); ?></td>
 					<td class="classrankeItem"><?php echo e($item['class_rank']); ?></td>
 					<td class="graderankeItem"><?php echo e($item['grade_rank']); ?></td>
 					<?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-					<?php endif; ?>
 					<td><?php echo e($exam['scoreTotal']['score']); ?></td>
 					<td class="classrankeItem"><?php echo e($exam['scoreTotal']['class_rank']); ?></td>
 					<td class="graderankeItem"><?php echo e($exam['scoreTotal']['grade_rank']); ?></td>
