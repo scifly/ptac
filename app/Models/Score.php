@@ -1137,8 +1137,8 @@ class Score extends Model {
         foreach (array_unique($subjects) as $item) {
             $subName[$item] = Subject::whereId($item)->first()->name;
         }
-        #处理$subName 按照key值的大小排序
-        
+        #处理$subName 按照key值升序
+        ksort($subName);
         foreach ($stuExams as $stuExam) {
             $exam = Exam::whereId($stuExam)->first();
             $studentScore = [];
@@ -1164,6 +1164,8 @@ class Score extends Model {
                     ];
                 }
             }
+            #处理$studentScore 按照key值升序
+            ksort($studentScore);
             $examTotal = ScoreTotal::whereStudentId($input['student_id'])
                 ->whereExamId($stuExam)
                 ->first();
