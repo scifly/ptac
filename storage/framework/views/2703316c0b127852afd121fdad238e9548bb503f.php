@@ -24,7 +24,7 @@
 
                         <?php endif; ?>
                         <div class="form-group">
-                            <?php echo Form::label('password', '请输入原密码', [
+                            <?php echo Form::label('old_password', '请输入原密码', [
                                 'class' => 'col-sm-3 control-label'
                             ]); ?>
 
@@ -33,18 +33,18 @@
                                     <div class="input-group-addon">
                                         <i class="fa fa-lock"></i>
                                     </div>
-                                    <?php echo Form::password('password', [
+                                    <?php echo Form::password('old_password', [
                                         'class' => 'form-control',
                                         'placeholder' => '(请输入密码)',
                                         'required' => 'true',
-                                        'minlength' => '6'
+                                        'minlength' => '6',
                                     ]); ?>
 
                                 </div>
                             </div>
                         </div>
                         <div class="form-group">
-                            <?php echo Form::label('pwd1', '请输入新密码', [
+                            <?php echo Form::label('password', '请输入新密码', [
                                 'class' => 'col-sm-3 control-label'
                             ]); ?>
 
@@ -64,7 +64,7 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <?php echo Form::label('password', '请确认新密码', [
+                            <?php echo Form::label('confirm_password', '请确认新密码', [
                                 'class' => 'col-sm-3 control-label'
                             ]); ?>
 
@@ -73,14 +73,12 @@
                                     <div class="input-group-addon">
                                         <i class="fa fa-lock"></i>
                                     </div>
-                                    <?php echo Form::password('password', [
+                                    <?php echo Form::password('confirm_password', [
                                         'class' => 'form-control',
                                         'placeholder' => '(请确认密码)',
                                         'required' => 'true',
                                         'minlength' => '6',
-                                        'data-parsley-equalto' => ''
-
-
+                                        'data-parsley-equalto' => '#password'
                                     ]); ?>
 
                                 </div>

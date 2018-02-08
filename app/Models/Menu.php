@@ -587,12 +587,8 @@ HTML;
                 return School::whereDepartmentId($user->topDeptId())
                     ->first()->menu_id;
             default:
-                $school_id = Group::whereId($user->group_id)->first()->school_id;
-                if (!$school_id) {
-                    $dept_id = DepartmentUser::whereUserId($user->id)->first()->department_id;
-                    $schoolDept = Department::schoolDeptId($dept_id);
-                    $school_id = School::whereDepartmentId($schoolDept)->first()->id;
-                }
+
+                $school_id = $user->educator->school_id;
                 return School::find($school_id)
                     ->menu_id;
         }
