@@ -67,6 +67,11 @@ class ScoreController extends Controller {
      * @return JsonResponse
      */
     public function store(ScoreRequest $request) {
+        $input = $request->all();
+        $subject = Subject::whereId($input['subject_id'])->first();
+        if($input['score'] > $subject->max_score){
+            return $this->fail('该科目最高分为'. $subject->max_score);
+        }
         
         return $this->result(
             $this->score->store($request->all())
@@ -101,9 +106,13 @@ class ScoreController extends Controller {
      * @return JsonResponse
      */
     public function update(ScoreRequest $request, $id) {
-        
+        $input = $request->all();
         $score = Score::find($id);
         abort_if(!$score, self::NOT_FOUND);
+        $subject = Subject::whereId($input['subject_id'])->first();
+        if($input['score'] > $subject->max_score){
+            return $this->fail('该科目最高分为'. $subject->max_score);
+        }
         
         return $this->result(
             $score->modify($request->all(), $id)
