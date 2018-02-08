@@ -680,6 +680,11 @@ class Student extends Model {
         $condition = 'Grade.school_id = ' . School::schoolId();
         $user = Auth::user();
         $role = $user->group->name;
+        $roleID=$user->group->id;
+        #学校管理员及以下权限
+        if($roleID>=6){
+            $rc=$user->educator->relationClasses();
+        }
         if($role == '教职员工'){
             $educatorId = $user->educator->id;
             $grades = Grade::where('educator_ids','like','%'.$educatorId.'%')
