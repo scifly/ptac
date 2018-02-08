@@ -6,7 +6,9 @@ use App\Helpers\ModelTrait;
 use App\Models\Grade;
 use App\Models\School;
 use App\Models\Squad;
+use App\Models\Student;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Auth;
 
 class StudentComposer {
 
@@ -15,18 +17,30 @@ class StudentComposer {
     public function compose(View $view) {
 
         $schoolId = School::schoolId();
-        $grades = Grade::whereEnabled(1)
-            ->where('school_id', $schoolId)
-            ->pluck('name', 'id')
-            ->toArray();
-        if (empty($grades)){
-            $classes = [];
-        } else {
-            $classes = Squad::whereEnabled(1)
-                ->where('grade_id', array_keys($grades)[0])
-                ->pluck('name', 'id')
-                ->toArray();
+        $user = Auth::user();
+        $role = $user->group->name;
+        switch ($role){
+            case '教职员工':
+                $educatorId = $user->educator->id;
+                $grades = Student::getGrade($educatorId)[0];
+                $classes = Student::getGrade($educatorId)[1];
+                break;
+            default:
+                $grades = Grade::whereEnabled(1)
+                    ->where('school_id', $schoolId)
+                    ->pluck('name', 'id')
+                    ->toArray();
+                if (empty($grades)){
+                    $classes = [];
+                } else {
+                    $classes = Squad::whereEnabled(1)
+                        ->where('grade_id', array_keys($grades)[0])
+                        ->pluck('name', 'id')
+                        ->toArray();
+                }
+                break;
         }
+
         if (empty($classes)) {$classes[] = '' ;}
         if (empty($grades)) {$grades[] = '' ;}
         $view->with([
