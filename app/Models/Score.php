@@ -704,23 +704,25 @@ class Score extends Model {
                 $subject = Subject::where('school_id', $schoolId)
                     ->where('name', $sub)->first();
                 #判断录入科目分数是否在这次考试中  在
-                if (in_array($subject->id, $subjectIds)) {
-                    foreach ($scoreArr as $arr) {
-                        $data[] = [
-                            'class'          => $arr[0],
-                            'student_number' => $arr[1],
-                            'student_name'   => $arr[2],
-                            'subject_id'     => $subject->id,
-                            'score'          => $arr[$i],
-                            'exam_id'        => $input['exam_id'],
-                        ];
-                        
+                if($subject) {
+                    if (in_array($subject->id, $subjectIds)) {
+                        foreach ($scoreArr as $arr) {
+                            $data[] = [
+                                'class'          => $arr[0],
+                                'student_number' => $arr[1],
+                                'student_name'   => $arr[2],
+                                'subject_id'     => $subject->id,
+                                'score'          => $arr[$i],
+                                'exam_id'        => $input['exam_id'],
+                            ];
+            
+                        }
+                        if (!self::checkData($data, $input)) {
+                            return ['statusCode' => 500, 'message' => '数据有误!',];
+                        }
+                    } else {
+                        unset($sub);
                     }
-                    if (!self::checkData($data, $input)) {
-                        return ['statusCode' => 500, 'message' => '数据有误!',];
-                    }
-                } else {
-                    unset($sub);
                 }
             }
             unset($scores);
