@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * App\Models\Grade 年级
@@ -225,9 +226,10 @@ class Grade extends Model {
                 ],
             ],
         ];
+
         // todo: 增加角色过滤条件
         $condition = 'Grade.school_id = ' . School::schoolId();
-        
+      
         return Datatable::simple(self::getModel(), $columns, $joins, $condition);
 
     }
