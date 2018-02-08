@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * App\Models\Squad 班级
@@ -219,7 +220,31 @@ class Squad extends Model {
         ];
         // todo: 增加角色过滤条件
         $condition = 'Grade.school_id = ' . School::schoolId();
-        
+        $user = Auth::user();
+        $role = $user->group->name;
+
+        if($role == '教职员工'){
+            $gradeIds = $classIds = [];
+            $educatorId = $user->educator->id;
+            $grades = Grade::where('educator_ids','like','%'.$educatorId.'%')
+                ->get();
+            if(sizeof($grades) !== 0)
+            {
+                foreach ($grades as $g){
+                    $gradeIds[] = $g->id;
+                }
+                $gradeIds = implode(',',$gradeIds);
+                $condition .= " and Squad.grade_id in ($gradeIds)";
+            }else{
+                $classes = self::where('educator_ids','like','%'.$educatorId.'%')->get();
+                foreach ($classes as $c){
+                    $classIds[] = $c->id;
+                }
+                $classIds = implode(',',$classIds);
+                $condition .= " and Squad.id in ($classIds)";
+            }
+
+        }
         return Datatable::simple(self::getModel(), $columns, $joins, $condition);
 
     }
