@@ -219,16 +219,15 @@ class MessageController extends Controller {
                 $result['statusCode'] = 1;
                 $result['message'] = '上传成功！';
                 #window env 2018-02-06 by wenw
-                $path =public_path().'\\'.str_replace('/','\\',$mes['path']) ;
+//                $path =public_path().'\\'.str_replace('/','\\',$mes['path']) ;
                 #linux env 2018-02-06 by wenw
-                #$path =$mes['path'];
+                $path =$mes['path'];
                 $data = ["media" => curl_file_create($path)];
                 $crop = Corp::whereName('万浪软件')->first();
                 $app = App::whereAgentid('999')->first();
                 $token = Wechat::getAccessToken($crop->corpid, $app->secret);
                 $status = Wechat::uploadMedia($token, $type, $data);
                 $message = json_decode($status);
-
                 if ($message->errcode == 0) {
                     $mes['media_id'] = $message->media_id;
                     $result['data'] = $mes;
