@@ -26,20 +26,21 @@ class AttendanceController extends Controller {
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|string
      */
     public function index() {
-        $corpId = 'wxe75227cead6b8aec';
-        $secret = 'uorwAVlN3_EU31CDX0X1oQJk9lB0Or41juMH-cLcIEU';
-        $agentId = 1000007;
-        $userId = Session::get('userId') ? Session::get('userId') : null;
-        $code = Request::input('code');
-        if (empty($code) && empty($userId)) {
-            $codeUrl = Wechat::getCodeUrl($corpId, $agentId, 'http://weixin.028lk.com/lists');
-            return redirect($codeUrl);
-        }elseif(!empty($code) && empty($userId)){
-            $accessToken = Wechat::getAccessToken($corpId, $secret);
-            $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
-            $userId = $userInfo['UserId'];
-            Session::put('userId',$userId);
-        }
+        // $corpId = 'wxe75227cead6b8aec';
+        // $secret = 'uorwAVlN3_EU31CDX0X1oQJk9lB0Or41juMH-cLcIEU';
+        // $agentId = 1000007;
+        // $userId = Session::get('userId') ? Session::get('userId') : null;
+        // $code = Request::input('code');
+        // if (empty($code) && empty($userId)) {
+        //     $codeUrl = Wechat::getCodeUrl($corpId, $agentId, 'http://weixin.028lk.com/lists');
+        //     return redirect($codeUrl);
+        // }elseif(!empty($code) && empty($userId)){
+        //     $accessToken = Wechat::getAccessToken($corpId, $secret);
+        //     $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
+        //     $userId = $userInfo['UserId'];
+        //     Session::put('userId',$userId);
+        // }
+        $userId = 'custodian_5a7415ad50eae';
         $user = User::whereUserid($userId)->first();
         #判断是否为教职工
         $educator = false;
@@ -140,6 +141,8 @@ class AttendanceController extends Controller {
             ->orderBy('punch_time', 'ASC')
             ->get();
         $data = $this->getDays($id, $beginTime, $endTime);
+        // echo '<pre>';
+        // print_r($data);exit;
         
         return view('wechat.attendance_records.attendance_records', [
             'id'   => $id,
@@ -171,6 +174,7 @@ class AttendanceController extends Controller {
         foreach ($abnormal as $a) {
             # 查询考勤异常当天的所有数据
             $sAttendance = StudentAttendance::whereDate('punch_time', substr($a->punch_time, 0, 10))
+                ->where('student_id',$id)
                 ->where('punch_time', '>', $beginTime)
                 ->where('punch_time', '<', $endTime)
                 ->get();
@@ -183,6 +187,7 @@ class AttendanceController extends Controller {
         }
         # 查询考勤正常天数的数据
         $normal = StudentAttendance::whereNotIn('id', $ids)
+            ->where('student_id',$id)
             ->where('punch_time', '>', $beginTime)
             ->where('punch_time', '<', $endTime)
             ->get();

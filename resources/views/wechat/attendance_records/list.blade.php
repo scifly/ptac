@@ -142,7 +142,6 @@
                             <i class="icon iconfont icon-jiantouyou"></i>
                         </a>
                     </div>
-
                 </div>
             @endforeach
         @endif
