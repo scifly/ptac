@@ -127,7 +127,6 @@ class AttendanceController extends Controller {
         $endTime = $endTime . ' 23:59:59';
         # 当天时间
         $time = date('Y-m-d', time());
-        // $time = '2018-01-08';
         $into = $out = [];
         $into = StudentAttendance::whereDate('punch_time', $time)
             ->where('student_id', $id)
@@ -140,9 +139,7 @@ class AttendanceController extends Controller {
             ->orderBy('punch_time', 'ASC')
             ->get();
         $data = $this->getDays($id, $beginTime, $endTime);
-        // echo '<pre>';
-        // print_r($data);exit;
-        
+
         return view('wechat.attendance_records.attendance_records', [
             'id'   => $id,
             'data' => $data,

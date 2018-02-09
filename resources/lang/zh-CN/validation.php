@@ -173,5 +173,7 @@ return [
         'menu_ids'              => '菜单权限',
         'user.email'            => '电子邮箱',
         'student_id'            => '该学生本次考试该科目成绩',
+        'start_date'            => '开始日期',
+        'end_date'              => '结束日期',
     ],
 ];
