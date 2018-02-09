@@ -118,7 +118,7 @@
 
 	   	<div class="row">
 	   		<div class="col-md-12" style="text-align: center;">
-	   			<button type="button" id="btn-browse" class="btn btn-primary" style="margin-right: 30px;">浏览</button>
+	   			<button type="button" id="btn-browse" class="btn btn-primary" style="margin-right: 30px;">预览</button>
 	   			<button type="button" id="btn-send-message" class="btn btn-success">发送</button>
 	   		</div>
 
