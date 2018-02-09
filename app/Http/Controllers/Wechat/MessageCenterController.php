@@ -60,6 +60,8 @@ class MessageCenterController extends Controller {
              $userId = $userInfo['UserId'];
              Session::put('userId',$userId);
          }
+        // $userId = 'user_5a73f795232e4';
+        // Session::put('userId',$userId);
         $user = User::whereUserid($userId)->first();
         if (Request::isMethod('post')) {
             $keywords = Request::get('keywords');
@@ -148,26 +150,20 @@ class MessageCenterController extends Controller {
                     'user'=> $users
                 ]);
             }
+
             $users = User::where('realname', 'like', '%' . $keywords . '%')->get();
             if($users){
                 return response()->json(['statusCode'=> self::OK, 'user'=> $users]);
             }
         }
-    
         #教师可发送消息
         #取的和教师关联的学校的部门id
-        $user = $this->user->where('userid', $userId)->first();
-        $educator = Educator::where('user_id',$user->id)->first();
-        $school = $educator->school;
-        $departmentId = Department::where('name',$school->name)->first()->id;
-        $departments = Department::where('parent_id', $departmentId)->get();
-        $department = Department::whereId($departmentId)->first();
-        $users = $department->users;
-
+        $lists = $this->initLists($userId);
         return view('wechat.message_center.create', [
-            'department' => $department,
-            'departments' => $departments,
-            'users' => $users
+            'department' => $lists['department'],
+            'graLists' => $lists['graLists'],
+            'claLists' => $lists['claLists'],
+            'users' => $lists['users']
         ]);
     }
     
@@ -373,12 +369,23 @@ class MessageCenterController extends Controller {
      * @throws \Throwable
      */
     public function getNextDept($id) {
-        
+        $userId = Session::get('userId');
+        #判断传过来的id是否为学校id
         $department = Department::whereId($id)->first();
-        $users = $department->users;
-        $nextDepts = Department::where('parent_id', $id)->get();
-        $data = view('wechat.message_center.select', ['departments' => $nextDepts, 'users' => $users])->render();
+        if ($department->department_type_id == 4) {
+            $lists = $this->initLists($userId);
+            $data = view('wechat.message_center.select', [
+                'graLists' => $lists['graLists'],
+                'claLists' => $lists['claLists'],
+                'users'    => $lists['users'],
+            ])->render();
         
+        } else {
+            $users = $department->users;
+            $nextDepts = Department::where('parent_id', $id)->get();
+            $data = view('wechat.message_center.select', ['departments' => $nextDepts, 'users' => $users])->render();
+        }
+    
         return $data ? $this->succeed($data) : $this->fail();
         
     }
@@ -619,5 +626,43 @@ class MessageCenterController extends Controller {
         $code = $this->message->sendSms($input['user_ids'], $input['department_ids'], $input['content']);
         
         return $code > 0 ? true : false;
+    }
+    
+    /**
+     * 初始化发送对象列表
+     * @param $userId
+     * @return array
+     */
+    private function initLists($userId){
+        $user = User::where('userid', $userId)->first();
+        $educator = Educator::where('user_id', $user->id)->first();
+        $school = $educator->school;
+        $departmentId = Department::where('name', $school->name)->first()->id;
+        $department = Department::whereId($departmentId)->first();
+        #找出教师关联的班级
+        $classes = $educator->classes;
+        #找出教师关联的年级 且判断是否为年级主任
+        $gradeId = [];
+        $classId = [];
+        foreach ($classes as $squad) {
+            $grade = $squad->grade;
+            if (in_array($educator->id, explode(',', $grade->educator_ids))) {
+                $gradeId[] = $grade->department_id;
+            } else {
+                $classId[] = $squad->department_id;
+            }
+        }
+        $data = [
+            #年级列表
+            'graLists' => Department::whereIn('id', $gradeId)->get(),
+            #班级列表
+            'claLists' => Department::whereIn('id', $classId)->get(),
+            #初始人员列表
+            'users'    => false,
+            #学校对应的部门
+            'department' => $department
+        ];
+    
+        return $data;
     }
 }

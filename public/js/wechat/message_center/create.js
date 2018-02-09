@@ -192,7 +192,7 @@ function show_group() {
         $.ajax({
             type: 'GET',
             data: {},
-            url: '../message_dept/' + id,
+            url: 'message_dept/' + id,
             success: function (result) {
                 if (result.statusCode === 200) {
 
@@ -573,20 +573,21 @@ function getdept() {
         // var name = $(this).find('a').html();
         var choose_box = $('.air-choose-group');
         $(this).nextAll().remove();
-        $.ajax({
-            type: 'GET',
-            url: '../message_dept/' + id,
-            success: function (result) {
-                if (result.statusCode === 200) {
-                    choose_box.html(result.message);
-                    show_group();
-                    choose_item();
-                    remove_choose_result();
-                    getdept();
-                } else {
-                    choose_box.empty();
+            $.ajax({
+                type: 'GET',
+                url: 'message_dept/' + id,
+                success: function (result) {
+                    if (result.statusCode === 200) {
+                        choose_box.html(result.message);
+                        show_group();
+                        choose_item();
+                        remove_choose_result();
+                        getdept();
+                    } else {
+                        choose_box.empty();
+                    }
                 }
-            }
-        });
+            });
+
     });
 }
