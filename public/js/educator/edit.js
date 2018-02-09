@@ -3,7 +3,8 @@ page.edit('formEducator', 'educators');
 
 var size = $('#mobile-size').val();
 var id = $('#id').val();
-
+$(document).off('click', '.btn-class-add');
+$(document).off('click', '.btn-class-remove');
 // $(crud.mobile('formEducator',size, 'PUT', 'educators/update/'+id));
 if (typeof crud === 'undefined') {
     $.getMultiScripts(['js/admin.crud.js'], page.siteRoot())
@@ -13,20 +14,22 @@ var $tbody2 = $("#classTable").find("tbody");
 // 手机号
 // $(crud.mobileMgmt('formEducator'));
 // 班级、科目
+var $class = $("#classes").find("tbody");
 $(document).on('click', '.btn-class-add', function (e) {
-    $(document).off('click', '.btn-class-add');
-    $(document).off('click', '.btn-class-remove');
     e.preventDefault();
-    var html = $tbody2.find('tr').last().clone();
+    var html = $class.find('tr').last().clone();
     html.find('span.select2').remove();
     // 删除插件初始化增加的html
-    $tbody2.append(html);
+    $class.append(html);
     // select2 init
-    $('select').select2();
+    page.initSelect2();
     // 加减切换
-    $tbody2.find('tr:not(:last) .btn-class-add')
+    $class.find('tr:not(:last) .btn-class-add')
         .removeClass('btn-class-add').addClass('btn-class-remove')
         .html('<i class="fa fa-minus text-blue"></i>');
+    $('#user[group_id]').on('click',function(){
+        alert(123);
+    });
 }).on('click', '.btn-class-remove', function (e) {
     // 删除元素
     $(this).parents('tr:first').remove();

@@ -436,7 +436,7 @@ class Educator extends Model {
                     }
                 }
                 # 更新企业号成员
-                User::UpdateWechatUser($request->input('user_id'));
+//                User::UpdateWechatUser($request->input('user_id'));
             });
         } catch (Exception $e) {
             throw $e;
