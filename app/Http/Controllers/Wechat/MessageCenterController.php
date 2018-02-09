@@ -155,7 +155,6 @@ class MessageCenterController extends Controller {
             }
         }
     
-        // $departmentId = 4;
         #教师可发送消息
         #取的和教师关联的学校的部门id
         $user = $this->user->where('userid', $userId)->first();

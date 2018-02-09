@@ -1,6 +1,6 @@
 page.edit('formScore', 'scores');
 var examId = $('#exam_id');
-getData(examId.val());
+// getData(examId.val());
 function getData($examId) {
     $.ajax({
         type: 'GET',
@@ -21,3 +21,10 @@ examId.change(function () {
     var $examId = $(this).val();
     getData($examId);
 });
+changeselect();
+function changeselect() {
+    var subject = $('#subject').val();
+    var student = $('#student').val();
+    $("#subject_id").val(subject);
+    $("#student_id").val(student);
+}
