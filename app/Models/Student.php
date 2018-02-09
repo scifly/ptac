@@ -679,6 +679,7 @@ class Student extends Model {
         ];
         $condition = 'Grade.school_id = ' . School::schoolId();
         $user = Auth::user();
+
         $role = $user->group->id;
         if($role > 5){
             $educatorId = $user->educator->id;

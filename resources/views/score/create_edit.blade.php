@@ -6,6 +6,8 @@
         <div class="form-horizontal">
             @if (!empty($score['id']))
                 {{ Form::hidden('id', $score['id'], ['id' => 'id']) }}
+                {{ Form::hidden('subject', $score['subject_id'], ['id' => 'subject']) }}
+                {{ Form::hidden('student', $score['student_id'], ['id' => 'student']) }}
             @endif
             @include('partials.single_select', [
                     'label' => '考试名称',

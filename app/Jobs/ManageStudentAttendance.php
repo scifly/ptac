@@ -174,6 +174,7 @@ class ManageStudentAttendance implements ShouldQueue {
                 }
                 //推送应用信息 失败将推送短信
                 if (!$this->pushMessage($userId, $msg)) {
+                // $autograph = $school->signature;
                 $autograph = '【成都外国语】';
                 Wechat::batchSend('LKJK004923', "654321@", implode(',', $mobiles), urlencode($msg) . $autograph);
                 };
