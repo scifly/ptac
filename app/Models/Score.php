@@ -216,7 +216,8 @@ class Score extends Model {
         ];
         
         // todo: 增加过滤条件
-        return Datatable::simple(self::getModel(), $columns, $joins);
+        $condition = 'Subject.school_id = ' . School::schoolId();
+        return Datatable::simple(self::getModel(), $columns, $joins, $condition);
         
     }
     
@@ -973,7 +974,9 @@ class Score extends Model {
         #查出当前学校的所有分数段设置
         $grade = $squad->grade;
         $schoolId = $grade->school_id;
-        $rangAll = ScoreRange::whereSchoolId($schoolId)->get();
+        $rangAll = ScoreRange::whereSchoolId($schoolId)
+            ->whereEnabled(1)
+            ->get();
         foreach ($examSub as $sub) {
             #一次处理一个科目  查出这个科目下 班级下所有学生的成绩
             $subject = Subject::whereId($sub)->first();

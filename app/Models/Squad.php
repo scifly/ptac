@@ -54,6 +54,7 @@ class Squad extends Model {
         'educator_ids', 'enabled',
     ];
 
+
     /**
      * 返回对应的部门对象
      *
@@ -221,30 +222,15 @@ class Squad extends Model {
         // todo: 增加角色过滤条件
         $condition = 'Grade.school_id = ' . School::schoolId();
         $user = Auth::user();
-        $role = $user->group->name;
+        $role = $user->group->id;
 
-        if($role == '教职员工'){
-            $gradeIds = $classIds = [];
+        if($role > 5){
             $educatorId = $user->educator->id;
-            $grades = Grade::where('educator_ids','like','%'.$educatorId.'%')
-                ->get();
-            if(sizeof($grades) !== 0)
-            {
-                foreach ($grades as $g){
-                    $gradeIds[] = $g->id;
-                }
-                $gradeIds = implode(',',$gradeIds);
-                $condition .= " and Squad.grade_id in ($gradeIds)";
-            }else{
-                $classes = self::where('educator_ids','like','%'.$educatorId.'%')->get();
-                foreach ($classes as $c){
-                    $classIds[] = $c->id;
-                }
-                $classIds = implode(',',$classIds);
-                $condition .= " and Squad.id in ($classIds)";
-            }
-
+            $classIds = Student::getClassStudent($educatorId)[0];
+            $classIds = implode(',',$classIds);
+            $condition .= " and Squad.id in ($classIds)";
         }
+
         return Datatable::simple(self::getModel(), $columns, $joins, $condition);
 
     }
