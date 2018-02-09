@@ -8,6 +8,7 @@ use App\Models\CommType;
 use App\Models\Corp;
 use App\Models\Department;
 use App\Models\Educator;
+use App\Models\Grade;
 use App\Models\Media;
 use App\Models\Message;
 use App\Models\MessageReply;
@@ -644,11 +645,15 @@ class MessageCenterController extends Controller {
         #找出教师关联的年级 且判断是否为年级主任
         $gradeId = [];
         $classId = [];
+        $grades = Grade::whereEnabled(1)->where('school_id',$school->id)->all();
+        foreach ($grades as $gra){
+            if(in_array($educator->id, explode(',', $gra->educator_ids))){
+                $gradeId[] = $gra->department_id;
+            }
+        }
         foreach ($classes as $squad) {
             $grade = $squad->grade;
-            if (in_array($educator->id, explode(',', $grade->educator_ids))) {
-                $gradeId[] = $grade->department_id;
-            } else {
+            if (!in_array($educator->id, explode(',', $grade->educator_ids))) {
                 $classId[] = $squad->department_id;
             }
         }
