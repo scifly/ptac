@@ -149,13 +149,13 @@
                 <td>
                     <div class="kaoqin-date-circle okstatus"></div>
                     <span class="pl10">正常:</span>
-                    <span>{{ count($data['adays']) }}天</span>
+                    <span>{{ count($data['ndays']) }}天</span>
                 </td>
 
                 <td>
                     <div class="kaoqin-date-circle notstatus"></div>
                     <span class="pl10">异常:</span>
-                    <span>{{ count($data['ndays']) }}天</span>
+                    <span>{{ count($data['adays']) }}天</span>
                 </td>
 
                 <td>
@@ -216,36 +216,29 @@
         });
 
     }
+    var nowyear = $('.current-year-value').text();
+    var nowmonth = $('.current-month-value').text();
+    nowmonth = getMonth(nowmonth);
     for(var i in ndays){
-        $('.picker-calendar-month-current .picker-calendar-day').eq(ndays[i].substring(8,10)-1).addClass('picker-calendar-day-normal');
+
+        $('.picker-calendar-month-current .picker-calendar-day').eq(ndays[i].substring(8,10)).addClass('picker-calendar-day-normal');
     }
     for(var j in adays)
     {
-        $('.picker-calendar-month-current .picker-calendar-day').eq(adays[j].substring(8,10)-1).addClass('picker-calendar-day-abnormal');
+
+        var temp = nowyear+'-'+(nowmonth-1)+'-'+parseInt((adays[j].substring(8,10)));
+        $("[data-date = "+temp+"]").addClass('picker-calendar-day-abnormal')
+
     }
-    $('.picker-calendar-month-current .picker-calendar-day').eq(1).addClass('picker-calendar-day-leave');
+    // $('.picker-calendar-month-current .picker-calendar-day').eq(1).addClass('picker-calendar-day-leave');
 
 
     // 点击年份
     $('.picker-calendar-year-picker a').click(function () {
         var y = $('.current-year-value').html();
         var m = $('.current-month-value').html();
-        switch (m){
-            case '一月': m = '01'; break;
-            case '二月': m = '02'; break;
-            case '三月': m = '03'; break;
-            case '四月': m = '04'; break;
-            case '五月': m = '05'; break;
-            case '六月': m = '06'; break;
-            case '七月': m = '07'; break;
-            case '八月': m = '08'; break;
-            case '九月': m = '09'; break;
-            case '十月': m = '10'; break;
-            case '十一月': m = '11'; break;
-            case '十二月': m = '12'; break;
-            default:
-        }
-        var ym =  y+'-'+m;
+        m = getMonth(m);
+        var ym = y+'-'+m;
         $.ajax({
             type:'post',
             dataType:'json',
@@ -258,14 +251,12 @@
 
                 for(var k in normal){
                     var tmp = y+'-'+(m-1)+'-'+parseInt((normal[k].substring(8,10)));
-                    $("[data-date = "+tmp+" ]").addClass('picker-calendar-day-normal')
-                    // $('.picker-calendar-month-current .picker-calendar-day').eq(normal[k].substring(8,10)-1).addClass('picker-calendar-day-normal');
+                    $("[data-date = "+tmp+" ]").addClass('picker-calendar-day-normal');
                 }
                 for(var l in abnormal)
                 {
                     var temp = y+'-'+(m-1)+'-'+parseInt((abnormal[l].substring(8,10)));
-                    $("[data-date = "+temp+"]").addClass('picker-calendar-day-abnormal')
-                    // $('.picker-calendar-month-current .picker-calendar-day').eq(abnormal[l].substring(8,10)-1).addClass('picker-calendar-day-abnormal');
+                    $("[data-date = "+temp+"]").addClass('picker-calendar-day-abnormal');
                 }
                 $('.picker-calendar-month-current .picker-calendar-day').eq(11).addClass('picker-calendar-day-leave');
                 str += '<tr>' +
@@ -294,21 +285,7 @@
     $('.picker-calendar-month-picker a').click(function () {
         var year = $('.current-year-value').html();
         var month =$('.current-month-value').html();
-        switch (month){
-            case '一月': month = '01'; break;
-            case '二月': month = '02'; break;
-            case '三月': month = '03'; break;
-            case '四月': month = '04'; break;
-            case '五月': month = '05'; break;
-            case '六月': month = '06'; break;
-            case '七月': month = '07'; break;
-            case '八月': month = '08'; break;
-            case '九月': month = '09'; break;
-            case '十月': month = '10'; break;
-            case '十一月': month = '11'; break;
-            case '十二月': month = '12'; break;
-            default:
-        }
+        month = getMonth(month);
         var years =  year+'-'+month;
         $.ajax({
             type:'post',
@@ -321,16 +298,14 @@
                 var str = '';
                 for(var s in nor){
                     var tmp = year+'-'+(month-1)+'-'+parseInt((nor[s].substring(8,10)));
-                    $("[data-date = "+tmp+" ]").addClass('picker-calendar-day-normal')
-                    // $('.picker-calendar-month-current .picker-calendar-day').eq(normal[k].substring(8,10)-1).addClass('picker-calendar-day-normal');
+                    $("[data-date = "+tmp+" ]").addClass('picker-calendar-day-normal');
                 }
                 for(var n in abnor)
                 {
                     var temp = year+'-'+(month-1)+'-'+parseInt((abnor[n].substring(8,10)));
-                    $("[data-date = "+temp+"]").addClass('picker-calendar-day-abnormal')
-                    // $('.picker-calendar-month-current .picker-calendar-day').eq(abnormal[l].substring(8,10)-1).addClass('picker-calendar-day-abnormal');
+                    $("[data-date = "+temp+"]").addClass('picker-calendar-day-abnormal');
                 }
-                $('.picker-calendar-month-current .picker-calendar-day').eq(11).addClass('picker-calendar-day-leave');
+                // $('.picker-calendar-month-current .picker-calendar-day').eq(11).addClass('picker-calendar-day-leave');
                 str += '<tr>' +
                         '<td>' +
                         '<div class="kaoqin-date-circle okstatus"></div>' +
@@ -423,6 +398,24 @@
         });
     });
 
+    function getMonth(month) {
+        switch (month){
+            case '一月': month = '01'; break;
+            case '二月': month = '02'; break;
+            case '三月': month = '03'; break;
+            case '四月': month = '04'; break;
+            case '五月': month = '05'; break;
+            case '六月': month = '06'; break;
+            case '七月': month = '07'; break;
+            case '八月': month = '08'; break;
+            case '九月': month = '09'; break;
+            case '十月': month = '10'; break;
+            case '十一月': month = '11'; break;
+            case '十二月': month = '12'; break;
+            default:
+        }
+        return parseInt(month);
+    }
 
 </script>
 </body>

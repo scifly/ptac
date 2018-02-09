@@ -140,6 +140,8 @@ class AttendanceController extends Controller {
             ->orderBy('punch_time', 'ASC')
             ->get();
         $data = $this->getDays($id, $beginTime, $endTime);
+        // echo '<pre>';
+        // print_r($data);exit;
         
         return view('wechat.attendance_records.attendance_records', [
             'id'   => $id,
@@ -171,6 +173,7 @@ class AttendanceController extends Controller {
         foreach ($abnormal as $a) {
             # 查询考勤异常当天的所有数据
             $sAttendance = StudentAttendance::whereDate('punch_time', substr($a->punch_time, 0, 10))
+                ->where('student_id',$id)
                 ->where('punch_time', '>', $beginTime)
                 ->where('punch_time', '<', $endTime)
                 ->get();
@@ -183,6 +186,7 @@ class AttendanceController extends Controller {
         }
         # 查询考勤正常天数的数据
         $normal = StudentAttendance::whereNotIn('id', $ids)
+            ->where('student_id',$id)
             ->where('punch_time', '>', $beginTime)
             ->where('punch_time', '<', $endTime)
             ->get();
