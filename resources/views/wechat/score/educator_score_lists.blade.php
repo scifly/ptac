@@ -84,8 +84,8 @@
         }
         .loadmore{
             text-align: center;
-            /*height: 40px;*/
-            /*line-height: 40px;*/
+            height: 40px;
+            line-height: 40px;
         }
         .loadmore i{
             font-size: 16px;
@@ -127,7 +127,7 @@
     </div>
 
     <!--列表-->
-    <div class="weui-cells">
+    <div class="weui-cells" style="margin-top: 0px;">
         @if(sizeof($scores) !== 0)
         @foreach($scores as $s)
             <a class="weui-cell weui-cell_access" href='{{ url("wechat/score/detail?examId=".$s['id']."&classId=".$s['class_id']) }}'>
