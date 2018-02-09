@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * App\Models\Squad 班级
@@ -52,6 +53,7 @@ class Squad extends Model {
         'id', 'grade_id', 'name', 'department_id',
         'educator_ids', 'enabled',
     ];
+
 
     /**
      * 返回对应的部门对象
@@ -219,7 +221,16 @@ class Squad extends Model {
         ];
         // todo: 增加角色过滤条件
         $condition = 'Grade.school_id = ' . School::schoolId();
-        
+        $user = Auth::user();
+        $role = $user->group->id;
+
+        if($role > 5){
+            $educatorId = $user->educator->id;
+            $classIds = Student::getClassStudent($educatorId)[0];
+            $classIds = implode(',',$classIds);
+            $condition .= " and Squad.id in ($classIds)";
+        }
+
         return Datatable::simple(self::getModel(), $columns, $joins, $condition);
 
     }

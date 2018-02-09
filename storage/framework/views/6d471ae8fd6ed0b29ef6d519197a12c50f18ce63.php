@@ -126,8 +126,8 @@
                                     <tr>
                                         <input type="hidden" value="<?php echo e($pupil->student_id); ?>" name="student_ids[<?php echo e($key); ?>]"
                                                id="student_ids">
-                                        <td><?php echo e($pupil->user->realname); ?></td>
-                                        <td><?php echo e($pupil->student_number); ?></td>
+                                        <td><?php echo e($pupil->student->user->realname); ?></td>
+                                        <td><?php echo e($pupil->student->student_number); ?></td>
                                         <td>
                                             <input type="text" name="relationships[<?php echo e($key); ?>]" id="" readonly
                                                    class="no-border" style="background: none"
@@ -174,7 +174,6 @@
             <div class="modal-body with-border">
                 <div class="form-horizontal">
                     <!-- 所属学校 -->
-                    <div class="form-group">
                         <?php if(isset($schools)): ?>
                             <?php echo $__env->make('partials.single_select', [
                                     'id' => 'schoolId',
@@ -199,9 +198,7 @@
                             
                             
                         <?php endif; ?>
-                    </div>
                     <!-- 所属年级 -->
-                    <div class="form-group">
                         <?php if(isset($grades)): ?>
                             <?php echo $__env->make('partials.single_select', [
                                     'id' => 'gradeId',
@@ -226,9 +223,7 @@
                             
                             
                         <?php endif; ?>
-                    </div>
                     <!-- 所属班级 -->
-                    <div class="form-group">
                         <?php if(isset($classes)): ?>
                             <?php echo $__env->make('partials.single_select', [
                                     'id' => 'classId',
@@ -253,9 +248,7 @@
                             
                             
                         <?php endif; ?>
-                    </div>
                     <!-- 学生列表 -->
-                    <div class="form-group">
                         <?php if(isset($students)): ?>
                             <?php echo $__env->make('partials.single_select', [
                                     'id' => 'studentId',
@@ -280,7 +273,6 @@
                             
                             
                         <?php endif; ?>
-                    </div>
                     
                     <div class="form-group">
                         

@@ -21,11 +21,6 @@
 <script src="{{ asset('/js/fastclick.js') }}"></script>
 <script src="{{ asset('/js/jquery-weui.min.js') }}"></script>
 <script src="{{ asset('/js/swiper.js') }}"></script>
-<script>
-    $(function() {
-        FastClick.attach(document.body);
-    });
-</script>
 <script src="{{ asset('/js/plugins/echarts/echarts.common.min.js') }}"></script>
 @yield('script')
 </body>

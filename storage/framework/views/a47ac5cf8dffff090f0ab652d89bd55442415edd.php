@@ -43,6 +43,7 @@
                         'placeholder' => '(不超过6个数字含小数点)',
                         'required' => 'true',
                         'type' => 'number',
+                        'data-parsley-range' => '[100,150]',
                         'data-parsley-length' => '[3, 6]'
                     ]); ?>
 
@@ -63,6 +64,7 @@
                         'class' => 'form-control',
                         'placeholder' => '(不超过5个数字含小数点)',
                         'required' => 'true',
+                        'data-parsley-range' => '[60,90]',
                         'type' => 'number',
                         'data-parsley-length' => '[2, 5]'
                     ]); ?>

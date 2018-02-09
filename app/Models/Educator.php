@@ -101,6 +101,16 @@ class Educator extends Model {
 
     }
 
+    public function relationClasses(){
+        #获取当前教职员工任教班级及科目
+        $relation=[];
+        foreach ($this->educatorClasses as $cls){
+            $relation[]=
+                ["class_id"=>$cls->id,"subject_id"=>$cls->subject_id];
+        }
+        return $relation;
+    }
+
 
     /**
      * 获取指定教职员工所属的所管理班级科目对象
@@ -217,7 +227,7 @@ class Educator extends Model {
                     'telephone' => $user['telephone'],
                     'enabled' => $user['enabled'],
                 ]);
-                # 创建教职员工(当角色选择学校管理员时，也同时创建教职员工数据)
+                # 创建教职员工(当角色选择学校管理员时，也同时创建教职员工数据20180207 by wenw)
 
                 $educatorInputData = $request->input('educator');
                 $educator = self::create([

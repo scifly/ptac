@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * App\Models\Grade 年级
@@ -225,9 +226,22 @@ class Grade extends Model {
                 ],
             ],
         ];
+
         // todo: 增加角色过滤条件
         $condition = 'Grade.school_id = ' . School::schoolId();
-        
+        $user = Auth::user();
+        $role = $user->group->name;
+
+        if($role == '教职员工'){
+            $educatorId = $user->educator->id;
+            $grades = Grade::where('educator_ids','like','%'.$educatorId.'%')
+                ->get();
+            foreach ($grades as $g){
+                $gradeIds[] = $g->id;
+            }
+            $gradeIds = implode(',',$gradeIds);
+            $condition .= " and Grade.id in ($gradeIds)";
+        }
         return Datatable::simple(self::getModel(), $columns, $joins, $condition);
 
     }

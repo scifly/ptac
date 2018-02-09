@@ -35,7 +35,7 @@
             background-color: #fff;
         }
         .header{
-            position: fixed;top: 0;z-index: 999;width: 100%;background-color: #fff
+            width: 100%;background-color: #fff
         }
         .multi-role {
             background: #fff;
@@ -129,7 +129,7 @@
         </div>
     </div>
     <!--列表-->
-    <div class="weui-cells" style="margin-top: 89px;">
+    <div class="weui-cells" style="margin-top: 0px;">
         @if( sizeof($scores)!==0)
         @foreach($scores as $s)
         <a class="weui-cell weui-cell_access" href='{{ url("wechat/score/student_detail?examId=".$s['id']."&studentId=".$s['student_id']) }}'>
