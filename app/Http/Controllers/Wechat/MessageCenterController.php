@@ -57,10 +57,10 @@ class MessageCenterController extends Controller {
          }elseif(!empty($code) && empty($userId)){
              $accessToken = Wechat::getAccessToken($corpId, $secret);
              $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
-             Log::debug(json_encode($userInfo));
              $userId = $userInfo['UserId'];
              Session::put('userId',$userId);
          }
+         Log::debug($userId);
         $user = User::whereUserid($userId)->first();
         if (Request::isMethod('post')) {
             $keywords = Request::get('keywords');
