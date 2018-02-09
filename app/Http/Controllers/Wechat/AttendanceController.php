@@ -140,9 +140,7 @@ class AttendanceController extends Controller {
             ->orderBy('punch_time', 'ASC')
             ->get();
         $data = $this->getDays($id, $beginTime, $endTime);
-        // echo '<pre>';
-        // print_r($data);exit;
-        
+
         return view('wechat.attendance_records.attendance_records', [
             'id'   => $id,
             'data' => $data,
