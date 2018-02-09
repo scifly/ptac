@@ -327,6 +327,7 @@ function showlinetable(data, subjectname, testName, type, i) {
             axisLabel: {
                 formatter: '{value}'
             },
+
         },
 
         series: [
