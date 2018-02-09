@@ -16,6 +16,7 @@ use App\Models\MessageType;
 use App\Models\User;
 use Exception;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
 
@@ -56,6 +57,7 @@ class MessageCenterController extends Controller {
          }elseif(!empty($code) && empty($userId)){
              $accessToken = Wechat::getAccessToken($corpId, $secret);
              $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
+             Log::debug(json_encode($userinfo));
              $userId = $userInfo['UserId'];
              Session::put('userId',$userId);
          }
