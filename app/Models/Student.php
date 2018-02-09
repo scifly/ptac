@@ -720,12 +720,6 @@ class Student extends Model {
             $classIds = self::getStudentIds($classes)[0];
             $studentIds = self::getStudentIds($classes)[1];
         }
-        if(sizeof($studentIds)!= 0){
-            sort($studentIds);
-        }
-        if(sizeof($classIds)!= 0){
-            sort($classIds);
-        }
 
         $data = [$classIds,$studentIds];
         return $data;
@@ -733,14 +727,16 @@ class Student extends Model {
     }
 
     /**
+     * 根据班级对象查询班级下面对应的所有学生id
      * @param $classes
      * @return array
      */
     static function getStudentIds($classes)
     {
-        $classIds = $studentIds = [];
+        $gradeIds = $classIds = $studentIds = [];
         if(sizeof($classes) != 0){
             foreach ($classes as $c){
+                $gradeIds[] = $c->grade_id;
                 $classIds[] = $c->id;
                 $students = $c->students;
                 foreach ($students as $s){
@@ -749,9 +745,24 @@ class Student extends Model {
             }
         }
 
-        return [$classIds,$studentIds];
+        if(sizeof($studentIds)!= 0){
+            array_unique($studentIds);
+            sort($studentIds);
+        }
+        if(sizeof($classIds)!= 0){
+            array_unique($classIds);
+            sort($classIds);
+        }
+        if(sizeof($gradeIds)!= 0){
+            array_unique($gradeIds);
+            sort($gradeIds);
+        }
+
+        return [$classIds,$studentIds,$gradeIds];
     }
+
     /**
+     * 根据登录教职员工获取所在的年级和班级数据
      * @param $id ||教职员工id
      * @return array
      */
@@ -762,6 +773,10 @@ class Student extends Model {
         $grades = Grade::whereEnabled(1)->where('educator_ids','like','%'.$id.'%')
             ->pluck('name', 'id')
             ->toArray();
+        // 查询该教职员工是否是班主任
+        $class = Squad::where('educator_ids','like','%'.$id.'%')
+            ->where('enabled',1)
+            ->get();
         if(sizeof($grades) !== 0){
             foreach ($grades as $k=>$g){
                 $classes = Squad::whereGradeId($k)->where('enabled',1)->first();
@@ -773,13 +788,21 @@ class Student extends Model {
                 ->whereIn('id',$classIds)
                 ->pluck('name', 'id')
                 ->toArray();
+        }elseif(sizeof($grades)==0 && sizeof($class) !==0){
+            $gradeIds = self::getStudentIds($class)[2];
+            $classIds = self::getStudentIds($class)[0];
+            $grades = Grade::whereEnabled(1)
+                ->whereIn('id',$gradeIds)
+                ->pluck('name', 'id')
+                ->toArray();
+            $classes = Squad::whereEnabled(1)
+                ->whereIn('id',$classIds)
+                ->pluck('name', 'id')
+                ->toArray();
         }else{
-            $class = Squad::where('educator_ids','like','%'.$id.'%')->get();
-            foreach ($class as $c){
-                $gradeIds[] = $c->grade_id;
-                $classIds[] = $c->id;
-            }
-            array_unique($gradeIds);
+            $class = Educator::whereId($id)->first()->classes;
+            $gradeIds = self::getStudentIds($class)[2];
+            $classIds = self::getStudentIds($class)[0];
             $grades = Grade::whereEnabled(1)
                 ->whereIn('id',$gradeIds)
                 ->pluck('name', 'id')
