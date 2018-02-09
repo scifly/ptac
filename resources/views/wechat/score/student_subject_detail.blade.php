@@ -354,12 +354,6 @@
                 type: 'category',
                 boundaryGap: false,
                 data: test_name,
-                axisLine:{ // 隐藏X轴
-                    show: false
-                },
-                axisTick:{ // 隐藏刻度线
-                    show: false
-                },
                 boundaryGap : false,
             },
             yAxis: {
@@ -367,7 +361,6 @@
                 axisLabel: {
                     formatter: '{value}'
                 },
-                inverse: true,
             },
             dataZoom: [
                 {
