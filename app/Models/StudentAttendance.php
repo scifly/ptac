@@ -260,7 +260,7 @@ class StudentAttendance extends Model {
                                 ->pluck('realname'),
                             'moblie' => array_column($datum->student->user->mobiles->toArray(), 'mobile'),
                             'punch_time' => $datum->punch_time,
-                            'inorout' => $datum->inorout,
+                            'inorout' => $datum->inorout == 1 ? '进' : '出',
                         ];
                     }
 
@@ -281,7 +281,7 @@ class StudentAttendance extends Model {
                                 ->pluck('realname'),
                             'moblie' => array_column($datum->student->user->mobiles->toArray(), 'mobile'),
                             'punch_time' => $datum->punch_time,
-                            'inorout' => $datum->inorout,
+                            'inorout' => $datum->inorout == 1 ? '进' : '出',
                         ];
                     }
                     break;
