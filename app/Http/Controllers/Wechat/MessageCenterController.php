@@ -61,8 +61,8 @@ class MessageCenterController extends Controller {
              $userId = $userInfo['UserId'];
              Session::put('userId',$userId);
          }
-        // $userId = 'user_5a73f795232e4';
-        // Session::put('userId',$userId);
+         // $userId = 'user_5a73f795232e4';
+         Session::put('userId',$userId);
         $user = User::whereUserid($userId)->first();
         if (Request::isMethod('post')) {
             $keywords = Request::get('keywords');
@@ -138,17 +138,12 @@ class MessageCenterController extends Controller {
         if(Request::isMethod('post')){
             $keywords = Request::get('keywords');
             if (empty($keywords)){
-                $user = $this->user->where('userid', $userId)->first();
-                $educator = Educator::where('user_id',$user->id)->first();
-                $school = $educator->school;
-                $departmentId = Department::where('name',$school->name)->first()->id;
-                $departments = Department::where('parent_id', $departmentId)->get();
-                $department = Department::whereId($departmentId)->first();
-                $users = $department->users;
+                $lists = $this->initLists($userId);
                 return response()->json([
-                    'department' => $department,
-                    'departments'=>$departments,
-                    'user'=> $users
+                    'department' => $lists['department'],
+                    'graLists' => $lists['graLists'],
+                    'claLists' => $lists['claLists'],
+                    'users' => $lists['users']
                 ]);
             }
 

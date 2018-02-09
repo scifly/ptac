@@ -92,77 +92,88 @@ $('.js-search-input').bind("input propertychange change", function (event) {
     var keywords = $(this).val();
     if (keywords === '') {
         $.ajax({
-            type:'post',
-            dataType:'json',
-            url:'message_create',
-            data:{keywords:keywords,_token:$('#csrf_token').attr('content')},
+            type: 'post',
+            dataType: 'json',
+            url: 'message_create',
+            data: {keywords: keywords, _token: $('#csrf_token').attr('content')},
             success: function ($data) {
                 var str = '';
-                if($data.departments.length > 0 || $data.user.length > 0){
-                    for(var i = 0; i<$data.departments.length; i++){
-                        var data = $data.departments[i];
+                console.log($data);
+                // 年级列表
+                if ($data.graLists.length > 0 || $data.claLists.length > 0 ) {
+
+                    for (var i = 0; i < $data.graLists.length; i++) {
+                        var graLists = $data.graLists[i];
                         str += '<div class="air-choose-item" style="position: relative;">' +
-                            '<label class="weui-cell weui-check__label" id="group-'+data.id+'" data-item="'+data.id+'" data-uid="'+data.id+'" data-type="group">' +
+                            '<label class="weui-cell weui-check__label" id="group-' + graLists.id + '" data-item="' + graLists.id + '" data-uid="' + graLists.id + '" data-type="group">' +
                             '<div class="weui-cell__hd">' +
                             '<input type="checkbox" class="weui-check choose-item-btn" name="checkbox" >' +
                             '<i class="weui-icon-checked"></i>' +
                             '</div>' +
                             '<div class="weui-cell__bd">' +
-                            '<img src="http://shp.qpic.cn/bizmp/UsXhSsnUkjjG5UGo8OES72Sw7U1CJYHXEkg1UlGkono5lDEiaZeBFlw/64" style="border-radius: 0;" class="js-go-detail lazy" width="75" height="75">' +
-                            '<span class="contacts-text">'+data.name+'</span>' +
+                            '<img src="img/department.png" style="border-radius: 0;" class="js-go-detail lazy" width="75" height="75">' +
+                            '<span class="contacts-text">' + graLists.name + '</span>' +
                             '</div>' +
                             '</label>' +
                             '<a class="icon iconfont icon-jiantouyou show-group" style="position:absolute;top: 0;right:0;height: 55px;line-height:55px;z-index: 1;width: 30px;"></a>' +
                             '</div>';
                     }
-                    for(var j = 0; j<$data.user.length; j++){
-                        var user = $data.user[j];
+
+                    // 班级列表
+
+                    for (var k = 0; k < $data.claLists.length; k++) {
+                        var claLists = $data.claLists[k];
                         str += '<div class="air-choose-item" style="position: relative;">' +
-                            '<label class="weui-cell weui-check__label" id="person-'+user.id+'" data-item="'+user.id+'" data-uid="'+user.id+'" data-type="person">' +
+                            '<label class="weui-cell weui-check__label" id="group-' + claLists.id + '" data-item="' + claLists.id + '" data-uid="' + claLists.id + '" data-type="group">' +
                             '<div class="weui-cell__hd">' +
-                            '<input type="checkbox" class="weui-check choose-item-btn" name="checkbox">' +
+                            '<input type="checkbox" class="weui-check choose-item-btn" name="checkbox" >' +
                             '<i class="weui-icon-checked"></i>' +
                             '</div>' +
                             '<div class="weui-cell__bd">' +
-                            '<img src="http://shp.qpic.cn/bizmp/UsXhSsnUkjgYesvoOibygyRfgukxHDouo6ovRRicAKOphkKd0Licg3I2w/64" class="js-go-detail lazy" width="75" height="75">' +
-                            '<span class="contacts-text">'+user.realname+'</span>' +
+                            '<img src="img/department.png" style="border-radius: 0;" class="js-go-detail lazy" width="75" height="75">' +
+                            '<span class="contacts-text">' + claLists.name + '</span>' +
                             '</div>' +
                             '</label>' +
-                            '</div>'
+                            '<a class="icon iconfont icon-jiantouyou show-group" style="position:absolute;top: 0;right:0;height: 55px;line-height:55px;z-index: 1;width: 30px;"></a>' +
+                            '</div>';
                     }
+
                     $('.air-choose-group').html(str);
                     choose_item();
                     show_group();
+
                 }
+
             }
+
         });
         // $('.js-choose-items .weui-check__label').show();
         // $('.js-choose-breadcrumb-li').text('全部');
     } else {
         // $('.js-choose-items .air-choose-item').html('');
         $.ajax({
-            type:'post',
-            dataType:'json',
-            url:'message_create',
-            data:{keywords:keywords,_token:$('#csrf_token').attr('content')},
+            type: 'post',
+            dataType: 'json',
+            url: 'message_create',
+            data: {keywords: keywords, _token: $('#csrf_token').attr('content')},
             success: function ($data) {
-                if ($data.user.length>0) {
+                if ($data.user.length > 0) {
                     for (var i = 0; i < $data.user.length; i++) {
                         var data = $data.user[i];
-                        var str = '<div class="air-choose-item" style="position: relative;"><label class="weui-cell weui-check__label" id="person-'+data.id+'" data-item="'+data.id+'" data-uid="'+data.id+'" data-type="person">' +
+                        var str = '<div class="air-choose-item" style="position: relative;"><label class="weui-cell weui-check__label" id="person-' + data.id + '" data-item="' + data.id + '" data-uid="' + data.id + '" data-type="person">' +
                             '<div class="weui-cell__hd">' +
                             '<input type="checkbox" class="weui-check choose-item-btn" name="checkbox">' +
                             '<i class="weui-icon-checked"></i>' +
                             '</div>' +
                             '<div class="weui-cell__bd">' +
-                            '<img src="http://shp.qpic.cn/bizmp/UsXhSsnUkjgYesvoOibygyRfgukxHDouo6ovRRicAKOphkKd0Licg3I2w/64" class="js-go-detail lazy" width="75" height="75">' +
-                            '<span class="contacts-text">'+data.realname+'</span>' +
+                            '<img src="img/personal.png" class="js-go-detail lazy" width="75" height="75">' +
+                            '<span class="contacts-text">' + data.realname + '</span>' +
                             '</div>' +
                             '</label></div>';
                     }
                     $('.air-choose-group').html(str);
                     choose_item();
-                }else{
+                } else {
                     $('.js-choose-items .air-choose-item').html('');
                 }
             }
@@ -224,13 +235,13 @@ function choose_item() {
         if ($(this).is(':checked')) {
             var imgsrc = $this.find('img').attr('src');
             var uid = $this.attr('data-uid');
-            var html= '';
+            var html = '';
             if (type === 'group') {
-                 html = '<a class="choose-results-item js-choose-results-item choose-item-type-group" id="group-' + num + '" data-list="' + num + '" data-uid="' + uid + '" data-type="' + type + '">' +
+                html = '<a class="choose-results-item js-choose-results-item choose-item-type-group" id="group-' + num + '" data-list="' + num + '" data-uid="' + uid + '" data-type="' + type + '">' +
                     '<img src="' + imgsrc + '">' +
                     '</a>';
             } else {
-                 html = '<a class="choose-results-item js-choose-results-item choose-item-type-person" id="person-' + num + '" data-list="' + num + '" data-uid="' + uid + '" data-type="' + type + '">' +
+                html = '<a class="choose-results-item js-choose-results-item choose-item-type-person" id="person-' + num + '" data-list="' + num + '" data-uid="' + uid + '" data-type="' + type + '">' +
                     '<img src="' + imgsrc + '" style="border-radius:50%">' +
                     '</a>';
             }
@@ -321,9 +332,9 @@ function upload_cover() {
             $('#upload-wait').hide();
             if (result.statusCode === 1) {
                 var html = '<img class="uploadimg-item upload_mpnews" id="' + result.data.id + '" src="http://weixin.028lk.com/' + result.data.path + '"  style="width: 100%" data-id="' + result.data.id + '">' +
-                '<input id="mpnews_media_id" name="mpnews_media_id" onchange="upload_cover()" data-content-id="' + result.data.media_id + '" class="weui-uploader__input upload_mpnews" type="file" accept="image/*" multiple="" >';
+                    '<input id="mpnews_media_id" name="mpnews_media_id" onchange="upload_cover()" data-content-id="' + result.data.media_id + '" class="weui-uploader__input upload_mpnews" type="file" accept="image/*" multiple="" >';
                 $('#cover').html(html);
-            }else {
+            } else {
                 $.alert('上传失败，请稍后重新尝试！')
             }
         }
@@ -490,11 +501,11 @@ $(function () {
             content = $('#description-video').val();
             wechat_media_id = $('#video_media_id').val();
             media_ids.push($('.video-id').attr('id'));
-            if(media_ids.length === 0){
+            if (media_ids.length === 0) {
                 $.alert('亲，还没有上传视频！');
                 return;
             }
-            if(!content){
+            if (!content) {
                 $.alert('亲，请填写描述！');
                 return;
             }
@@ -503,7 +514,7 @@ $(function () {
             content = '0';
             wechat_media_id = $('#image_media_id').val();
             media_ids.push($('.img-id').attr('id'));
-            if(media_ids.length === 0){
+            if (media_ids.length === 0) {
                 $.alert('亲，还没有上传图片！');
                 return;
             }
@@ -531,11 +542,11 @@ $(function () {
             $.alert('发送对象不能为空');
             return false;
         }
-        if(!title){
+        if (!title) {
             $.alert('标题不能为空');
             return false;
         }
-        if(!content){
+        if (!content) {
             $.alert('发送内容不能为空');
             return false;
         }
@@ -568,26 +579,26 @@ $(function () {
 });
 
 function getdept() {
-    $(".js-choose-breadcrumb-ol li").off('click').click( function () {
+    $(".js-choose-breadcrumb-ol li").off('click').click(function () {
         var id = $(this).attr("data-id");
         // var name = $(this).find('a').html();
         var choose_box = $('.air-choose-group');
         $(this).nextAll().remove();
-            $.ajax({
-                type: 'GET',
-                url: 'message_dept/' + id,
-                success: function (result) {
-                    if (result.statusCode === 200) {
-                        choose_box.html(result.message);
-                        show_group();
-                        choose_item();
-                        remove_choose_result();
-                        getdept();
-                    } else {
-                        choose_box.empty();
-                    }
+        $.ajax({
+            type: 'GET',
+            url: 'message_dept/' + id,
+            success: function (result) {
+                if (result.statusCode === 200) {
+                    choose_box.html(result.message);
+                    show_group();
+                    choose_item();
+                    remove_choose_result();
+                    getdept();
+                } else {
+                    choose_box.empty();
                 }
-            });
+            }
+        });
 
     });
 }
