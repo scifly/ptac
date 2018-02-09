@@ -41,7 +41,7 @@
                             </select>
                         </td>
                         <td class="text-center">
-                            @if($index == sizeof($educator->$educatorClass) - 1)
+                            @if($index == sizeof($educator->educatorClasses) - 1)
                                 <span class="input-group-btn">
                                             <button class="btn btn-box-tool  btn-class-add btn-add" type="button">
                                                 <i class="fa fa-plus text-blue"></i>

@@ -269,27 +269,6 @@ class Educator extends Model {
                             ]);
                         }
                     }
-                    if ($classSubjectData) {
-                        $uniqueArray = [];
-                        foreach ($classSubjectData['class_ids'] as $index => $class) {
-                            $uniqueArray[] = [
-                                'class_id' => $class,
-                                'subject_id' => $classSubjectData['subject_ids'][$index],
-                            ];
-                        }
-                        $classSubjects = self::array_unique_fb($uniqueArray);
-
-                        foreach ($classSubjects as $key => $row) {
-                            if ($row['class_id'] != 0 && $row['class_id'] != 0) {
-                                EducatorClass::create([
-                                    'educator_id' => $educator->id,
-                                    'class_id' => $row['class_id'],
-                                    'subject_id' => $row['subject_id'],
-                                    'enabled' => $user['enabled'],
-                                ]);
-                            }
-                        }
-                    }
                 }
                 # 创建部门信息
                 $selectedDepartments = $request->input('selectedDepartments');
@@ -374,7 +353,10 @@ class Educator extends Model {
                     }
                 }
                 # 当选择了学校角色没有选择学校部门时
-                if ($user['group_id'] == Group::whereName('学校')->first()->id) {
+                $deptUser = DepartmentUser::whereDepartmentId(School::find(School::schoolId())->department_id)
+                    ->where('user_id', $request->input('user_id'))
+                    ->first();
+                if ($user['group_id'] == Group::whereName('学校')->first()->id && empty($deptUser)) {
                     DepartmentUser::create([
                         'user_id' => $request->input('user_id'),
                         'department_id' => School::find(School::schoolId())->department_id,
@@ -398,30 +380,32 @@ class Educator extends Model {
                         ]);
                     }
                 }
-                $classSubjectData = $request->input('classSubject');
-                if ($classSubjectData) {
-                    EducatorClass::whereEducatorId($request->input('id'))->delete();
-                    $uniqueArray = [];
-                    foreach ($classSubjectData['class_ids'] as $index => $class) {
-                        $uniqueArray[] = [
-                            'class_id' => $class,
-                            'subject_id' => $classSubjectData['subject_ids'][$index],
-                        ];
-                    }
-                    $classSubjects = self::array_unique_fb($uniqueArray);
-
-                    foreach ($classSubjects as $key => $row) {
-                        if ($row['class_id'] != 0 && $row['subject_id'] != 0) {
-                            EducatorClass::create([
-                                'educator_id' => $request->input('id'),
-                                'class_id' => $row['class_id'],
-                                'subject_id' => $row['subject_id'],
-                                'enabled' => $user['enabled'],
-                            ]);
+                if ($user['group_id'] != Group::whereName('学校')->first()->id) {
+                    $classSubjectData = $request->input('classSubject');
+                    if ($classSubjectData) {
+                        EducatorClass::whereEducatorId($request->input('id'))->delete();
+                        $uniqueArray = [];
+                        foreach ($classSubjectData['class_ids'] as $index => $class) {
+                            $uniqueArray[] = [
+                                'class_id' => $class,
+                                'subject_id' => $classSubjectData['subject_ids'][$index],
+                            ];
                         }
+                        $classSubjects = self::array_unique_fb($uniqueArray);
+
+                        foreach ($classSubjects as $key => $row) {
+                            if ($row['class_id'] != 0 && $row['subject_id'] != 0) {
+                                EducatorClass::create([
+                                    'educator_id' => $request->input('id'),
+                                    'class_id' => $row['class_id'],
+                                    'subject_id' => $row['subject_id'],
+                                    'enabled' => $user['enabled'],
+                                ]);
+                            }
+                        }
+                    } else {
+                        EducatorClass::whereEducatorId($request->input('id'))->delete();
                     }
-                } else {
-                    EducatorClass::whereEducatorId($request->input('id'))->delete();
                 }
                 $mobiles = $request->input('mobile');
                 if ($mobiles) {

@@ -8,6 +8,7 @@ use App\Models\CommType;
 use App\Models\Corp;
 use App\Models\Department;
 use App\Models\Educator;
+use App\Models\Grade;
 use App\Models\Media;
 use App\Models\Message;
 use App\Models\MessageReply;
@@ -137,12 +138,12 @@ class MessageCenterController extends Controller {
         if(Request::isMethod('post')){
             $keywords = Request::get('keywords');
             if (empty($keywords)){
-                $user = User::where('userid', $userId)->first();
                 $lists = $this->initLists($userId);
                 return response()->json([
+                    'department' => $lists['department'],
                     'graLists' => $lists['graLists'],
                     'claLists' => $lists['claLists'],
-                    'user' => $user
+                    'users' => $lists['users']
                 ]);
             }
 
@@ -161,44 +162,7 @@ class MessageCenterController extends Controller {
             'users' => $lists['users']
         ]);
     }
-
-    /**
-     * 初始化发送对象列表
-     * @param $userId
-     * @return array
-     */
-    private function initLists($userId){
-        $user = User::where('userid', $userId)->first();
-        $educator = Educator::where('user_id', $user->id)->first();
-        $school = $educator->school;
-        $departmentId = Department::where('name', $school->name)->first()->id;
-        $department = Department::whereId($departmentId)->first();
-        #找出教师关联的班级
-        $classes = $educator->classes;
-        #找出教师关联的年级 且判断是否为年级主任
-        $gradeId = [];
-        $classId = [];
-        foreach ($classes as $squad) {
-            $grade = $squad->grade;
-            if (in_array($educator->id, explode(',', $grade->educator_ids))) {
-                $gradeId[] = $grade->department_id;
-            } else {
-                $classId[] = $squad->department_id;
-            }
-        }
-        $data = [
-            #年级列表
-            'graLists' => Department::whereIn('id', $gradeId)->get(),
-            #班级列表
-            'claLists' => Department::whereIn('id', $classId)->get(),
-            #初始人员列表
-            'users'    => false,
-            #学校对应的部门
-            'department' => $department
-        ];
-
-        return $data;
-    }
+    
     /**
      * 消息发送操作
      *
@@ -660,5 +624,45 @@ class MessageCenterController extends Controller {
         return $code > 0 ? true : false;
     }
     
-
+    /**
+     * 初始化发送对象列表
+     * @param $userId
+     * @return array
+     */
+    private function initLists($userId){
+        $user = User::where('userid', $userId)->first();
+        $educator = Educator::where('user_id', $user->id)->first();
+        $school = $educator->school;
+        $departmentId = Department::where('name', $school->name)->first()->id;
+        $department = Department::whereId($departmentId)->first();
+        #找出教师关联的班级
+        $classes = $educator->classes;
+        #找出教师关联的年级 且判断是否为年级主任
+        $gradeId = [];
+        $classId = [];
+        $grades = Grade::whereEnabled(1)->where('school_id',$school->id)->get();
+        foreach ($grades as $gra){
+            if(in_array($educator->id, explode(',', $gra->educator_ids))){
+                $gradeId[] = $gra->department_id;
+            }
+        }
+        foreach ($classes as $squad) {
+            $grade = $squad->grade;
+            if (!in_array($educator->id, explode(',', $grade->educator_ids))) {
+                $classId[] = $squad->department_id;
+            }
+        }
+        $data = [
+            #年级列表
+            'graLists' => Department::whereIn('id', $gradeId)->get(),
+            #班级列表
+            'claLists' => Department::whereIn('id', $classId)->get(),
+            #初始人员列表
+            'users'    => false,
+            #学校对应的部门
+            'department' => $department
+        ];
+    
+        return $data;
+    }
 }

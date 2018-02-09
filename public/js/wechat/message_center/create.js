@@ -98,9 +98,9 @@ $('.js-search-input').bind("input propertychange change", function (event) {
             data: {keywords: keywords, _token: $('#csrf_token').attr('content')},
             success: function ($data) {
                 var str = '';
-
+                console.log($data);
                 // 年级列表
-                if ($data.graLists.length > 0 || $data.graLists.length > 0 || $data.user.length>0 ) {
+                if ($data.graLists.length > 0 || $data.claLists.length > 0 ) {
 
                     for (var i = 0; i < $data.graLists.length; i++) {
                         var graLists = $data.graLists[i];
@@ -121,7 +121,7 @@ $('.js-search-input').bind("input propertychange change", function (event) {
 
                     // 班级列表
 
-                    for (var k = 0; k < $data.graLists.length; k++) {
+                    for (var k = 0; k < $data.claLists.length; k++) {
                         var claLists = $data.claLists[k];
                         str += '<div class="air-choose-item" style="position: relative;">' +
                             '<label class="weui-cell weui-check__label" id="group-' + claLists.id + '" data-item="' + claLists.id + '" data-uid="' + claLists.id + '" data-type="group">' +
@@ -137,24 +137,7 @@ $('.js-search-input').bind("input propertychange change", function (event) {
                             '<a class="icon iconfont icon-jiantouyou show-group" style="position:absolute;top: 0;right:0;height: 55px;line-height:55px;z-index: 1;width: 30px;"></a>' +
                             '</div>';
                     }
-
-                    for (var j = 0; j < $data.user.length; j++) {
-                        var user = $data.user[j];
-                        str += '<div class="air-choose-item" style="position: relative;">' +
-                            '<label class="weui-cell weui-check__label" id="person-' + user.id + '" data-item="' + user.id + '" data-uid="' + user.id + '" data-type="person">' +
-                            '<div class="weui-cell__hd">' +
-                            '<input type="checkbox" class="weui-check choose-item-btn" name="checkbox">' +
-                            '<i class="weui-icon-checked"></i>' +
-                            '</div>' +
-                            '<div class="weui-cell__bd">' +
-                            '<img src="http://shp.qpic.cn/bizmp/UsXhSsnUkjgYesvoOibygyRfgukxHDouo6ovRRicAKOphkKd0Licg3I2w/64" class="js-go-detail lazy" width="75" height="75">' +
-                            '<span class="contacts-text">' + user.realname + '</span>' +
-                            '</div>' +
-                            '</label>' +
-                            '</div>'
-                    }
-
-                    console.log(str);
+     
                     $('.air-choose-group').html(str);
                     choose_item();
                     show_group();
@@ -183,7 +166,7 @@ $('.js-search-input').bind("input propertychange change", function (event) {
                             '<i class="weui-icon-checked"></i>' +
                             '</div>' +
                             '<div class="weui-cell__bd">' +
-                            '<img src="http://shp.qpic.cn/bizmp/UsXhSsnUkjgYesvoOibygyRfgukxHDouo6ovRRicAKOphkKd0Licg3I2w/64" class="js-go-detail lazy" width="75" height="75">' +
+                            '<img src="img/personal.png" class="js-go-detail lazy" width="75" height="75">' +
                             '<span class="contacts-text">' + data.realname + '</span>' +
                             '</div>' +
                             '</label></div>';
