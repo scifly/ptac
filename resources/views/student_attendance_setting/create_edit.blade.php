@@ -95,7 +95,7 @@
             @include('partials.enabled', [
               'label' => '进或出',
               'id' => 'inorout',
-              'value' => $sas['ispublic'] ?? null,
+              'value' => $sas['inorout'] ?? null,
               'options' => ['进', '出']
           ])
         </div>
