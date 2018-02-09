@@ -645,7 +645,7 @@ class MessageCenterController extends Controller {
         #找出教师关联的年级 且判断是否为年级主任
         $gradeId = [];
         $classId = [];
-        $grades = Grade::whereEnabled(1)->where('school_id',$school->id)->all();
+        $grades = Grade::whereEnabled(1)->where('school_id',$school->id)->get();
         foreach ($grades as $gra){
             if(in_array($educator->id, explode(',', $gra->educator_ids))){
                 $gradeId[] = $gra->department_id;
