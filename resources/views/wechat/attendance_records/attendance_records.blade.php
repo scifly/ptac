@@ -117,12 +117,12 @@
         .kaoqin-day-detail .history-list-con .kaoqin-detail-status {
             position: absolute;
             top: 0;
-            left: 30%;
+            left: 50%;
         }
         .kaoqin-day-detail .history-list-con .time{
             position: absolute;
             top: 0;
-            left: 60%;
+            right: 8%;
             color: #888;
         }
         .c-83db74 {
@@ -172,23 +172,28 @@
         <div class="js-kaoqin-detail-date kaoqin-detail-date">
             {{ $time }}
         </div>
+        @foreach($into as $i)
         <div class="mt20 history-list-con" style="">
-            <span class="js-kaoqin-status-morning" style="display:inline-block">上班</span>
             @if(sizeof($into) != 0)
-            <span class="kaoqin-detail-status c-83db74">{{ $into[0]->status == 1 ? '正常' : '异常' }}</span>
-            <span class="time">{{ $into[0]->punch_time }}</span>
-                @else
-                <span class="kaoqin-detail-status c-83db74">{{ '暂无数据' }}</span>
-                <span class="time">暂无数据</span>
+            <span class="js-kaoqin-status-morning" style="display:inline-block">{{ $i->studentAttendancesetting->name }}</span>
+            <span class="kaoqin-detail-status c-83db74">{{ $i->status == 1 ? '正常' : '异常' }}</span>
+            <span class="time">{{ substr($i->punch_time,11) }}</span>
+                {{--@else--}}
+                {{--<span class="js-kaoqin-status-morning" style="display:inline-block">暂无数据</span>--}}
+                {{--<span class="kaoqin-detail-status c-83db74">{{ '暂无数据' }}</span>--}}
+                {{--<span class="time">暂无数据</span>--}}
             @endif
         </div>
+        @endforeach
+        @foreach($out as $o)
         <div class="mt20 history-list-con" style="">
-            <span class="js-kaoqin-status-morning" style="display:inline-block">下班</span>
             @if(sizeof($out) != 0)
-            <span class="kaoqin-detail-status c-83db74">{{ $out[0]->status == 1 ?'正常' : '异常' }}</span>
-            <span class="time">{{ $out[0]->punch_time }}</span>
+            <span class="js-kaoqin-status-morning" style="display:inline-block">下班</span>
+            <span class="kaoqin-detail-status c-83db74">{{ $o->status == 1 ?'正常' : '异常' }}</span>
+            <span class="time">{{ substr($o->punch_time,11) }}</span>
             @endif
         </div>
+        @endforeach
     </div>
 </div>
 
@@ -220,12 +225,12 @@
     var nowmonth = $('.current-month-value').text();
     nowmonth = getMonth(nowmonth);
     for(var i in ndays){
-
-        $('.picker-calendar-month-current .picker-calendar-day').eq(ndays[i].substring(8,10)).addClass('picker-calendar-day-normal');
+        var tmp = nowyear+'-'+(nowmonth-1)+'-'+parseInt((adays[i].substring(8,10)));
+        $("[data-date = "+temp+"]").addClass('picker-calendar-day-normal')
+        // $('.picker-calendar-month-current .picker-calendar-day').eq(ndays[i].substring(8,10)).addClass('picker-calendar-day-normal');
     }
     for(var j in adays)
     {
-
         var temp = nowyear+'-'+(nowmonth-1)+'-'+parseInt((adays[j].substring(8,10)));
         $("[data-date = "+temp+"]").addClass('picker-calendar-day-abnormal')
 
