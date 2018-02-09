@@ -768,9 +768,12 @@ class Student extends Model {
      */
     static function getGrade($id)
     {
+        $schoolId = School::schoolId();
         $grades = $classes = $data = [];
         // 查询该教职员工是否是年级主任
-        $grades = Grade::whereEnabled(1)->where('educator_ids','like','%'.$id.'%')
+        $grades = Grade::whereEnabled(1)
+            ->where('school_id',$schoolId)
+            ->where('educator_ids','like','%'.$id.'%')
             ->pluck('name', 'id')
             ->toArray();
         // 查询该教职员工是否是班主任
