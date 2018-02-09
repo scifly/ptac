@@ -59,8 +59,6 @@ class MessageCenterController extends Controller {
              $userId = $userInfo['UserId'];
              Session::put('userId',$userId);
          }
-        // $userId = 'user_5a4c9eed43eb8';ZZ
-        // Session::put('userId',$userId);
         $user = User::whereUserid($userId)->first();
         if (Request::isMethod('post')) {
             $keywords = Request::get('keywords');
@@ -113,8 +111,8 @@ class MessageCenterController extends Controller {
         if ($user->group->name == '教职员工') {
             $educator = true;
         }
-        $sendMessages = $this->message->where('s_user_id', $user->id)->get()->unique('msl_id')->groupBy('message_type_id');
-        $receiveMessages = $this->message->where('r_user_id', $user->id)->get()->groupBy('message_type_id');
+        $sendMessages = $this->message->where('s_user_id', $user->id)->get()->unique('msl_id')->sortByDesc('created_at')->groupBy('message_type_id');
+        $receiveMessages = $this->message->where('r_user_id', $user->id)->get()->sortByDesc('created_at')->groupBy('message_type_id');
         $count = $this->message->where('r_user_id', $user->id)->where('read', '0')->count();
         
         return view('wechat.message_center.index', [
