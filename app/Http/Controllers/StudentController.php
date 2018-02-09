@@ -10,7 +10,7 @@ use App\Models\School;
 use App\Models\Student;
 use Exception;
 use Illuminate\Http\JsonResponse;
-
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use Throwable;
@@ -65,7 +65,7 @@ class StudentController extends Controller {
         }
 
         $items = Student::gradeClasses();
-        
+
         return $this->output([
             'grades'  => $items['grades'],
             'classes' => $items['classes'],
@@ -120,16 +120,26 @@ class StudentController extends Controller {
         # 查询学生信息
         $student = Student::find($id);
         if (!$student) { return $this->notFound(); }
+        $users = Auth::user();
+        $groupId =  $users->group->id;
         $user = $student->user;
-        $items = Student::gradeClasses(
-            $student->squad->grade_id
-        );
-        $student->{'grade_id'} = $student->squad->grade_id;
+        if($groupId > 5){
+            $educatorId = $users->educator->id;
+            $grades = Student::getGrade($educatorId)[0];
+            $classes = Student::getGrade($educatorId)[1];
+        }else{
+            $items = Student::gradeClasses(
+                $student->squad->grade_id
+            );
+            $student->{'grade_id'} = $student->squad->grade_id;
+            $grades = $items['grades'];
+            $classes = $items['classes'];
+        }
         return $this->output([
             'student' => $student,
             'mobiles' => $user->mobiles,
-            'grades'  => $items['grades'],
-            'classes' => $items['classes'],
+            'grades'  => $grades,
+            'classes' => $classes,
         ]);
         
     }

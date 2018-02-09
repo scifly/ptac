@@ -679,44 +679,144 @@ class Student extends Model {
         ];
         $condition = 'Grade.school_id = ' . School::schoolId();
         $user = Auth::user();
-        $role = $user->group->name;
-        if($role == '教职员工'){
+        $role = $user->group->id;
+        if($role > 5){
             $educatorId = $user->educator->id;
-            $grades = Grade::where('educator_ids','like','%'.$educatorId.'%')
-                ->get();
-            if(sizeof($grades) !== 0)
-            {
-                foreach ($grades as $g){
-                    $classes = $g->classes;
-                    foreach ($classes as $c){
-                        $students = $c->students;
-                        foreach ($students as $s){
-                            $studentIds[] = $s->id;
-                        }
-                    }
-                }
-                sort($studentIds);
-                $studentIds = implode(',',$studentIds);
-                $condition .= " and Student.id in ($studentIds)";
-            }else{
-                $classes = Squad::where('educator_ids','like','%'.$educatorId.'%')->get();
-
-                foreach ($classes as $c){
-                    $students = $c->students;
-                    foreach ($students as $s){
-                        $studentIds[] = $s->id;
-                    }
-                }
-                sort($studentIds);
-                $studentIds = implode(',',$studentIds);
-                $condition .= " and Student.id in ($studentIds)";
-            }
-
+            $studentIds = self::getClassStudent($educatorId)[1];
+            $studentIds = implode(',',$studentIds);
+            $condition .= " and Student.id in ($studentIds)";
         }
         return Datatable::simple(self::getModel(), $columns, $joins, $condition);
 
     }
 
-    
+    /**
+     * 根据教职员工id获取对应的班级ID和学生id
+     * @param $id||教职员工id
+     * @return array
+     */
+    static function getClassStudent($id){
+        $classIds = $studentIds = [];
+        // 查询该教职员工是否为年级主任
+        $grades = Grade::where('educator_ids','like','%'.$id.'%')
+            ->where('enabled',1)
+            ->get();
+        // 查询该教职员工是否是班主任
+        $classes = Squad::where('educator_ids','like','%'.$id.'%')
+            ->where('enabled',1)
+            ->get();
+        if(sizeof($grades) !== 0)
+        {
+            foreach ($grades as $g){
+                $classes = $g->classes;
+                $classIds = self::getStudentIds($classes)[0];
+                $studentIds = self::getStudentIds($classes)[1];
+            }
+        }elseif(sizeof($grades)==0 && sizeof($classes) !==0){
+            $classIds = self::getStudentIds($classes)[0];
+            $studentIds = self::getStudentIds($classes)[1];
+        }else{
+            $classes = Educator::whereId($id)->first()->classes;
+            $classIds = self::getStudentIds($classes)[0];
+            $studentIds = self::getStudentIds($classes)[1];
+        }
+
+        $data = [$classIds,$studentIds];
+        return $data;
+
+    }
+
+    /**
+     * 根据班级对象查询班级下面对应的所有学生id
+     * @param $classes
+     * @return array
+     */
+    static function getStudentIds($classes)
+    {
+        $gradeIds = $classIds = $studentIds = [];
+        if(sizeof($classes) != 0){
+            foreach ($classes as $c){
+                $gradeIds[] = $c->grade_id;
+                $classIds[] = $c->id;
+                $students = $c->students;
+                foreach ($students as $s){
+                    $studentIds[] = $s->id;
+                }
+            }
+        }
+
+        if(sizeof($studentIds)!= 0){
+            array_unique($studentIds);
+            sort($studentIds);
+        }
+        if(sizeof($classIds)!= 0){
+            array_unique($classIds);
+            sort($classIds);
+        }
+        if(sizeof($gradeIds)!= 0){
+            array_unique($gradeIds);
+            sort($gradeIds);
+        }
+
+        return [$classIds,$studentIds,$gradeIds];
+    }
+
+    /**
+     * 根据登录教职员工获取所在的年级和班级数据
+     * @param $id ||教职员工id
+     * @return array
+     */
+    static function getGrade($id)
+    {
+        $schoolId = School::schoolId();
+        $grades = $classes = $data = [];
+        // 查询该教职员工是否是年级主任
+        $grades = Grade::whereEnabled(1)
+            ->where('school_id',$schoolId)
+            ->where('educator_ids','like','%'.$id.'%')
+            ->pluck('name', 'id')
+            ->toArray();
+        // 查询该教职员工是否是班主任
+        $class = Squad::where('educator_ids','like','%'.$id.'%')
+            ->where('enabled',1)
+            ->get();
+        if(sizeof($grades) !== 0){
+            foreach ($grades as $k=>$g){
+                $classes = Squad::whereGradeId($k)->where('enabled',1)->first();
+                $classIds[] = $classes->id;
+            }
+            array_unique($classIds);
+            sort($classIds);
+            $classes = Squad::whereEnabled(1)
+                ->whereIn('id',$classIds)
+                ->pluck('name', 'id')
+                ->toArray();
+        }elseif(sizeof($grades)==0 && sizeof($class) !==0){
+            $gradeIds = self::getStudentIds($class)[2];
+            $classIds = self::getStudentIds($class)[0];
+            $grades = Grade::whereEnabled(1)
+                ->whereIn('id',$gradeIds)
+                ->pluck('name', 'id')
+                ->toArray();
+            $classes = Squad::whereEnabled(1)
+                ->whereIn('id',$classIds)
+                ->pluck('name', 'id')
+                ->toArray();
+        }else{
+            $class = Educator::whereId($id)->first()->classes;
+            $gradeIds = self::getStudentIds($class)[2];
+            $classIds = self::getStudentIds($class)[0];
+            $grades = Grade::whereEnabled(1)
+                ->whereIn('id',$gradeIds)
+                ->pluck('name', 'id')
+                ->toArray();
+            $classes = Squad::whereEnabled(1)
+                ->whereIn('id',$classIds)
+                ->pluck('name', 'id')
+                ->toArray();
+        }
+        $data = [$grades,$classes];
+        return $data;
+    }
 
 }

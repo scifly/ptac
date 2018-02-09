@@ -147,41 +147,41 @@
             @endforeach
         @endif
 
-        <div class="list-item">
-            <div class="list-item-info">
-                <div class="username">姓名 : <span>张三</span></div>
-                <div class="school">学校 : <span>希望小学</span></div>
-                <div class="grade">班级 : <span>三年级三班</span></div>
-            </div>
-            <div class="line"></div>
+        {{--<div class="list-item">--}}
+            {{--<div class="list-item-info">--}}
+                {{--<div class="username">姓名 : <span>张三</span></div>--}}
+                {{--<div class="school">学校 : <span>希望小学</span></div>--}}
+                {{--<div class="grade">班级 : <span>三年级三班</span></div>--}}
+            {{--</div>--}}
+            {{--<div class="line"></div>--}}
 
-            <table class="kaoqin-tongji">
-                <tr>
-                    <td>
-                        <div class="kaoqin-date-circle okstatus"></div>
-                        <span class="pl10">正常:</span>
-                        <span>14天</span>
-                    </td>
+            {{--<table class="kaoqin-tongji">--}}
+                {{--<tr>--}}
+                    {{--<td>--}}
+                        {{--<div class="kaoqin-date-circle okstatus"></div>--}}
+                        {{--<span class="pl10">正常:</span>--}}
+                        {{--<span>14天</span>--}}
+                    {{--</td>--}}
 
-                    <td>
-                        <div class="kaoqin-date-circle notstatus"></div>
-                        <span class="pl10">异常:</span>
-                        <span>0天</span>
-                    </td>
+                    {{--<td>--}}
+                        {{--<div class="kaoqin-date-circle notstatus"></div>--}}
+                        {{--<span class="pl10">异常:</span>--}}
+                        {{--<span>0天</span>--}}
+                    {{--</td>--}}
 
-                    <td>
-                        <div class="kaoqin-date-circle reststatus"></div>
-                        <span class="pl10">请假:</span>
-                        <span>0天</span>
-                    </td>
-                </tr>
-            </table>
+                    {{--<td>--}}
+                        {{--<div class="kaoqin-date-circle reststatus"></div>--}}
+                        {{--<span class="pl10">请假:</span>--}}
+                        {{--<span>0天</span>--}}
+                    {{--</td>--}}
+                {{--</tr>--}}
+            {{--</table>--}}
 
-            <div class="list-item-icon">
-                <a><i class="icon iconfont icon-jiantouyou"></i></a>
-            </div>
+            {{--<div class="list-item-icon">--}}
+                {{--<a><i class="icon iconfont icon-jiantouyou"></i></a>--}}
+            {{--</div>--}}
 
-        </div>
+        {{--</div>--}}
 
 
     </div>
