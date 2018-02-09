@@ -293,28 +293,40 @@ function showlinetable(data, subjectname, testName, type, i) {
             trigger: 'axis'
         },
 
-        xAxis: {
-            show: false,
+        // xAxis: {
+        //     show: false,
+        //     type: 'category',
+        //     boundaryGap: false,
+        //     data: testName,
+        //     axisLine: { // 隐藏X轴
+        //         show: false
+        //     },
+        //     axisTick: { // 隐藏刻度线
+        //         show: false
+        //     },
+        //     boundaryGap: false,
+        //     axisLabel :{
+        //         interval:0
+        //     }
+        // },
+        // yAxis: {
+        //     type: 'value',
+        //     axisLabel: {
+        //         formatter: '{value}'
+        //     },
+        //     inverse: true
+        // },
+        xAxis:  {
             type: 'category',
             boundaryGap: false,
             data: testName,
-            axisLine: { // 隐藏X轴
-                show: false
-            },
-            axisTick: { // 隐藏刻度线
-                show: false
-            },
-            boundaryGap: false,
-            axisLabel :{
-                interval:0
-            }
+            boundaryGap : false,
         },
         yAxis: {
             type: 'value',
             axisLabel: {
                 formatter: '{value}'
             },
-            inverse: true
         },
 
         series: [
