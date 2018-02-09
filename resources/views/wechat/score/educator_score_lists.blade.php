@@ -127,7 +127,7 @@
     </div>
 
     <!--列表-->
-    <div class="weui-cells" style="margin-top: 89px;">
+    <div class="weui-cells" style="margin-top: 44px;">
         @if(sizeof($scores) !== 0)
         @foreach($scores as $s)
             <a class="weui-cell weui-cell_access" href='{{ url("wechat/score/detail?examId=".$s['id']."&classId=".$s['class_id']) }}'>
