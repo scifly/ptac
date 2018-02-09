@@ -21,3 +21,10 @@ examId.change(function () {
     var $examId = $(this).val();
     getData($examId);
 });
+changeselect();
+function changeselect() {
+    var subject = $('#subject').val();
+    var student = $('#student').val();
+    $("#subject_id").val(subject).select2();
+    $("#student_id").val(student).select2();
+}
