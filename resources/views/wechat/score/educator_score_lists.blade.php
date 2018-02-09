@@ -84,8 +84,8 @@
         }
         .loadmore{
             text-align: center;
-            height: 40px;
-            line-height: 40px;
+            /*height: 40px;*/
+            /*line-height: 40px;*/
         }
         .loadmore i{
             font-size: 16px;
