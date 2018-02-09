@@ -901,18 +901,31 @@ class Score extends Model {
     public function getGraphData($studentId, $examId, $subjectId) {
         $exam = Exam::whereId($examId)->first();
         if ($subjectId == '-1') {
-            $exams = Exam::whereId($examId)->where('start_date', '<=', $exam->start_date)
-                ->orderBy('start_date', 'asc')
+//            $exams = Exam::where('start_date', '<=', $exam->start_date)
+//                ->orderBy('start_date', 'asc')
+//                ->limit(10)
+//                ->get();
+            $scores = DB::table('score_totals')
+                ->join('exams', 'exams.id', '=', 'score_totals.exam_id')
+//                ->select('users.id', 'contacts.phone', 'orders.price')
+                ->where('student_id', $studentId)
+                ->where('exams.start_date', '<=', $exam->start_date)
+                ->orderBy('exams.start_date', 'asc')
                 ->limit(10)
                 ->get();
             $es = [];
             $class_rank = [];
             $grade_rank = [];
-            foreach ($exams as $e) {
-                $total = ScoreTotal::whereExamId($e->id)->where('student_id', $studentId)->first();
-                $es[] = $e->name;
-                $class_rank[] = $total->class_rank;
-                $grade_rank[] = $total->grade_rank;
+//            foreach ($exams as $e) {
+//                $total = ScoreTotal::whereExamId($e->id)->where('student_id', $studentId)->first();
+//                $es[] = $e->name;
+//                $class_rank[] = $total->class_rank;
+//                $grade_rank[] = $total->grade_rank;
+//            }
+            foreach ($scores as $s) {
+                $es[] = $s->name;
+                $class_rank[] = $s->class_rank;
+                $grade_rank[] = $s->grade_rank;
             }
             
         } else {
@@ -924,6 +937,7 @@ class Score extends Model {
 //                ->select('users.id', 'contacts.phone', 'orders.price')
                 ->where('subject_id', $subjectId)
                 ->where('student_id', $studentId)
+                ->where('exams.start_date', '<=', $exam->start_date)
                 ->orderBy('exams.start_date', 'asc')
                 ->limit(10)
                 ->get();
