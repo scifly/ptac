@@ -149,6 +149,7 @@ class MessageCenterController extends Controller {
                     'user'=> $users
                 ]);
             }
+
             $users = User::where('realname', 'like', '%' . $keywords . '%')->get();
             if($users){
                 return response()->json(['statusCode'=> self::OK, 'user'=> $users]);

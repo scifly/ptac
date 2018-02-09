@@ -9,6 +9,7 @@ use App\Models\School;
 use App\Models\Squad;
 use App\Models\Student;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Auth;
 
 class CustodianComposer {
 
@@ -25,24 +26,37 @@ class CustodianComposer {
         $schools = School::whereId($schoolId)
             ->where('enabled', 1)
             ->pluck('name', 'id');
-        if ($schools) {
-            $grades = Grade::whereSchoolId($schoolId)
-                ->where('enabled', 1)
-                ->pluck('name', 'id');
+        $groupId = Auth::user()->group->id;
+        if($groupId > 5){
+            $educatorId = Auth::user()->educator->id;
+            $grades = Student::getGrade($educatorId)[0];
+            $classes = Student::getGrade($educatorId)[1];
+            foreach($classes as $k=>$c){
+                $list = Student::whereClassId($k)
+                    ->where('enabled', 1)
+                    ->get();
+            }
+
+        }else{
+            if ($schools) {
+                $grades = Grade::whereSchoolId($schoolId)
+                    ->where('enabled', 1)
+                    ->pluck('name', 'id');
+            }
+            if ($grades) {
+                $classes = Squad::whereGradeId($grades->keys()->first())
+                    ->where('enabled', 1)
+                    ->pluck('name', 'id');
+            }
+            if ($classes) {
+                $list = Student::whereClassId($classes->keys()->first())
+                    ->where('enabled', 1)
+                    ->get();
+            }
         }
-        if ($grades) {
-            $classes = Squad::whereGradeId($grades->keys()->first())
-                ->where('enabled', 1)
-                ->pluck('name', 'id');
-        }
-        if ($classes) {
-            $list = Student::whereClassId($classes->keys()->first())
-                ->where('enabled', 1)
-                ->get();
-            if (!empty($list)) {
-                foreach ($list as $s) {
-                    $students[$s->id] = $s->user->realname . "-" . $s->student_number;
-                }
+        if (!empty($list)) {
+            foreach ($list as $s) {
+                $students[$s->id] = $s->user->realname . "-" . $s->student_number;
             }
         }
         if (empty($students)) {$students[] = '' ;}
