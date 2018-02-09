@@ -137,7 +137,7 @@ $('.js-search-input').bind("input propertychange change", function (event) {
                             '<a class="icon iconfont icon-jiantouyou show-group" style="position:absolute;top: 0;right:0;height: 55px;line-height:55px;z-index: 1;width: 30px;"></a>' +
                             '</div>';
                     }
-     
+
                     $('.air-choose-group').html(str);
                     choose_item();
                     show_group();
